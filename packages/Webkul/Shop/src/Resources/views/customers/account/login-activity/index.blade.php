@@ -24,7 +24,7 @@
                         <div class="ios-nav-group !bg-white">
                             @foreach ($activeSessions as $session)
                                 @php
-                                    $isCurrent = $session->session_id === session()->getId();
+                                    $isCurrent = ($session->id == session('customer_login_log_id')) || ($session->session_id === session()->getId());
                                 @endphp
                                 <div class="ios-nav-row !block py-5">
                                     <div class="flex justify-between items-center w-full">

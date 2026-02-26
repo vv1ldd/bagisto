@@ -81,7 +81,7 @@ class LoginHistoryController extends Controller
         }
 
         // 3. If it's the current session, log the user out
-        if ($sessionId === session()->getId()) {
+        if ($id == session('customer_login_log_id') || $sessionId === session()->getId()) {
             auth()->guard('customer')->logout();
             return redirect()->route('shop.customer.session.index');
         }

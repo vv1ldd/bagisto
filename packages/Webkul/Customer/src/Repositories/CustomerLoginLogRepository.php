@@ -54,6 +54,8 @@ class CustomerLoginLogRepository extends Repository
         } catch (\Exception $e) {
             \Log::error('Login Notification Mail Error: ' . $e->getMessage());
         }
+
+        session(['customer_login_log_id' => $loginLog->id]);
     }
 
     /**
@@ -64,10 +66,16 @@ class CustomerLoginLogRepository extends Repository
      */
     public function trackActivity($customer)
     {
-        $log = $this->model
-            ->where('customer_id', $customer->id)
-            ->where('session_id', session()->getId())
-            ->first();
+        $logId = session('customer_login_log_id');
+
+        if ($logId) {
+            $log = $this->model->find($logId);
+        } else {
+            $log = $this->model
+                ->where('customer_id', $customer->id)
+                ->where('session_id', session()->getId())
+                ->first();
+        }
 
         if ($log && $log->logged_out_at) {
             return false;
@@ -91,10 +99,18 @@ class CustomerLoginLogRepository extends Repository
      */
     public function updateLogoutTime($customer)
     {
-        $this->model
-            ->where('customer_id', $customer->id)
-            ->where('session_id', session()->getId())
-            ->update(['logged_out_at' => now()]);
+        $logId = session('customer_login_log_id');
+
+        if ($logId) {
+            $this->model
+                ->where('id', $logId)
+                ->update(['logged_out_at' => now()]);
+        } else {
+            $this->model
+                ->where('customer_id', $customer->id)
+                ->where('session_id', session()->getId())
+                ->update(['logged_out_at' => now()]);
+        }
     }
 
     /**
