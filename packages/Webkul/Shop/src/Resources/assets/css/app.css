@@ -791,6 +791,8 @@ img.lazy {
         display: inline-flex !important;
         align-items: center !important;
         height: 24px !important;
+        margin-left: auto !important;
+        /* Push to the right */
         /* Match other inputs */
     }
 
@@ -864,7 +866,8 @@ img.lazy {
         height: 100% !important;
         display: flex !important;
         align-items: center !important;
-        padding: 0 8px !important;
+        padding: 0 8px 0 16px !important;
+        /* Shift flag/code to the right */
         background: transparent !important;
     }
 }
