@@ -129,6 +129,9 @@ class RegistrationController extends Controller
             'last_login_ip' => $currentIp,
         ], $customer->id);
 
+        // Log login activity
+        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
+
         Event::dispatch('customer.after.login', auth()->guard('customer')->user());
         session()->flash('recovery_key', $recoveryKey);
         session()->forget('pending_recovery_key');
@@ -227,6 +230,9 @@ class RegistrationController extends Controller
             'last_login_ip' => $currentIp,
         ], $customer->id);
 
+        // Log login activity
+        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
+
         Event::dispatch('customer.after.login', auth()->guard()->user());
 
         session()->flash('success', 'Регистрация прошла успешно! Пожалуйста, заполните данные вашего профиля.');
@@ -278,6 +284,9 @@ class RegistrationController extends Controller
             'first_login_ip' => $currentIp,
             'last_login_ip' => $currentIp,
         ], $customer->id);
+
+        // Log login activity
+        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
 
         Event::dispatch('customer.after.login', $customer);
 

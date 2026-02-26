@@ -248,6 +248,9 @@ class SessionController extends Controller
             $customerRepository->update(['last_login_ip' => $currentIp], $customer->id);
         }
 
+        // Log login activity
+        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
+
         Event::dispatch('customer.after.login', $customer);
 
         session()->flash('success', 'Личность подтверждена. С возвращением!');
@@ -313,6 +316,9 @@ class SessionController extends Controller
             app(\Webkul\Customer\Repositories\CustomerRepository::class)->update(['last_login_ip' => $currentIp], $customer->id);
         }
 
+        // Log login activity
+        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
+
         /**
          * Event passed to prepare cart after login.
          */
@@ -333,6 +339,12 @@ class SessionController extends Controller
     public function destroy()
     {
         $id = auth()->guard('customer')->user()->id;
+
+        // Mark logout in our log
+        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->update(['logged_out_at' => now()], [
+            'session_id' => session()->getId(),
+            'customer_id' => $id,
+        ]);
 
         auth()->guard('customer')->logout();
 

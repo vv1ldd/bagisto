@@ -23,6 +23,13 @@ return [
         'sort' => 2,
     ],
     [
+        'key' => 'account.login_activity',
+        'name' => 'shop::app.layouts.login-activity',
+        'route' => 'shop.customers.account.login_activity.index',
+        'icon' => 'icon-activity',
+        'sort' => 3,
+    ],
+    [
         'key' => 'account.address',
         'name' => 'shop::app.layouts.address',
         'route' => 'shop.customers.account.addresses.index',

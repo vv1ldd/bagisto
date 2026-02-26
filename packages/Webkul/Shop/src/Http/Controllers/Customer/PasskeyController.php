@@ -199,6 +199,9 @@ class PasskeyController extends Controller
 
             Auth::guard('customer')->login($user, $request->boolean('remember'));
 
+            // Log login activity
+            app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($user);
+
             session()->regenerate();
             session()->put('logged_in_via_passkey', true);
             session()->forget('passkey-authentication-options-json');

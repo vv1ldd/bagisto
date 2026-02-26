@@ -18,5 +18,6 @@ class ModuleServiceProvider extends CoreModuleServiceProvider
         \Webkul\Customer\Models\CustomerGroup::class,
         \Webkul\Customer\Models\CustomerNote::class,
         \Webkul\Customer\Models\Wishlist::class,
+        \Webkul\Customer\Models\CustomerLoginLog::class,
     ];
 }

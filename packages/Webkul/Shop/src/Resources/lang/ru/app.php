@@ -1166,8 +1166,9 @@ return [
     'layouts' => [
         'address' => 'Адрес',
         'downloadable-products' => 'Загружаемые товары',
-        'gdpr-request' => 'Запросы GDPR',
-        'my-account' => 'Мой аккаунт',
+        'gdpr-request' => 'Запрос данных GDPR',
+        'login-activity' => 'Активность входа',
+        'my-account' => 'Мой профиль',
         'orders' => 'Заказы',
         'profile' => 'Профиль',
         'reviews' => 'Отзывы',

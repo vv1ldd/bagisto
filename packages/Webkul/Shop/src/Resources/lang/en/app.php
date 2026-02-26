@@ -1162,7 +1162,8 @@ return [
     'layouts' => [
         'address' => 'Address',
         'downloadable-products' => 'Downloadable Products',
-        'gdpr-request' => 'GDPR Requests',
+        'gdpr-request' => 'GDPR Data Request',
+        'login-activity' => 'Login Activity',
         'my-account' => 'My Account',
         'orders' => 'Orders',
         'profile' => 'Profile',

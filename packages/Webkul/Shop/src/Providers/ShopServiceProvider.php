@@ -34,6 +34,7 @@ class ShopServiceProvider extends ServiceProvider
             Locale::class,
             Currency::class,
             \Webkul\Shop\Http\Middleware\CheckCustomerIp::class,
+            \Webkul\Shop\Http\Middleware\TrackCustomerSession::class,
         ]);
 
         $router->aliasMiddleware('theme', Theme::class);

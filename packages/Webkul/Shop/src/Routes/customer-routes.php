@@ -113,6 +113,14 @@ Route::prefix('customer')->group(function () {
         });
 
         /**
+         * Login activity routes.
+         */
+        Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\LoginHistoryController::class)->prefix('login-activity')->group(function () {
+            Route::get('', 'index')->name('shop.customers.account.login_activity.index');
+            Route::delete('{id}', 'destroy')->name('shop.customers.account.login_activity.destroy');
+        });
+
+        /**
          * Logout.
          */
         Route::get('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy.get');
