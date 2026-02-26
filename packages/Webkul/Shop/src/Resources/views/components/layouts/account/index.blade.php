@@ -91,7 +91,7 @@
                 <div class="flex flex-col items-center mt-6 mb-8 max-md:mt-4 max-md:mb-6 mx-auto w-full"
                     style="max-width: 600px;">
                     <div
-                        class="w-full bg-white rounded-2xl border border-zinc-200 p-5 flex items-center shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+                        class="w-full glass-card !bg-white/40 !rounded-3xl p-5 flex items-center shadow-[0_8px_32px_rgba(0,0,0,0.04)]">
 
                         <!-- User Info Area (Clickable) -->
                         <a @if (!request()->routeIs('shop.customers.account.profile.edit'))
@@ -132,7 +132,7 @@
                     </div>
                 @else
                     <!-- Main Content Pane (Drill-Down View) -->
-                    <div class="flex flex-col w-full bg-white rounded-2xl border border-zinc-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden mb-8"
+                    <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl"
                         style="max-width: 600px;">
 
                         <!-- Drill-Down Header: Minimal iOS style -->
