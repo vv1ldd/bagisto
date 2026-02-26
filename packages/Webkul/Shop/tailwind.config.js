@@ -50,6 +50,9 @@ module.exports = {
         {
             pattern: /icon-/,
         },
+        {
+            pattern: /iti__/,
+        },
         // Grid columns — needed because inside <script type="x-template"> blocks
         // Tailwind JIT doesn't scan these, so we safelist them explicitly
         {

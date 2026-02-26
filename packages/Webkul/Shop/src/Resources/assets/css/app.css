@@ -889,21 +889,4 @@ img.lazy {
         background-color: rgba(124, 69, 245, 0.08) !important;
     }
 
-    .iti__flag-container {
-        padding: 0 !important;
-        left: 0 !important;
-        right: auto !important;
-        height: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    .iti__selected-country {
-        height: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        padding: 0 8px 0 16px !important;
-        /* Shift flag/code to the right */
-        background: transparent !important;
-    }
 }
