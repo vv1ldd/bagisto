@@ -786,7 +786,8 @@ img.lazy {
 
     /* ─── intl-tel-input Premium Overrides ───────────────────── */
     .iti {
-        width: 100% !important;
+        width: auto !important;
+        max-width: 300px !important;
     }
 
     /* Target inputs managed by intl-tel-input */
