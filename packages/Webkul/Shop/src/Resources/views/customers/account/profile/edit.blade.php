@@ -84,7 +84,9 @@
 
                         .ios-input-wrapper input:not([name="phone"]),
                         .ios-input-wrapper select {
-                            width: 100%;
+                            width: 100% !important;
+                            height: 24px !important;
+                            line-height: 24px !important;
                             text-align: right !important;
                             text-align-last: right !important;
                             background: transparent !important;
@@ -95,6 +97,7 @@
                             color: #71717a !important;
                             font-size: 15px !important;
                             appearance: none;
+                            outline: none !important;
                         }
 
                         /* Phone input needs padding for the flag */
@@ -161,7 +164,9 @@
                             outline: none !important;
                             padding: 0 !important;
                             margin: 0 !important;
-                            width: auto !important;
+                            width: 100% !important;
+                            height: 24px !important;
+                            line-height: 24px !important;
                             font-size: 15px !important;
                             color: #71717a !important;
                             text-align: right !important;
@@ -182,7 +187,9 @@
                             box-shadow: none !important;
                             padding: 0 !important;
                             margin: 0 !important;
-                            width: auto !important;
+                            width: 100% !important;
+                            height: 24px !important;
+                            line-height: 24px !important;
                             font-size: 15px !important;
                             color: #71717a !important;
                             text-align: right !important;
