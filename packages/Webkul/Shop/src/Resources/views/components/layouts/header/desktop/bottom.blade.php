@@ -102,16 +102,22 @@
                             </div>
 
                             <div class="p-5">
-                                <div class="mb-4">
-                                    <p class="text-xl font-dmserif text-zinc-800" v-pre>
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.welcome'),
-                                        {{ auth()->guard('customer')->user()->first_name }}
-                                    </p>
-
-                                    <p class="mt-1 text-sm text-zinc-500">
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.dropdown-text')
-                                    </p>
-                                </div>
+                                <!-- Rich Profile Card inside Dropdown -->
+                                <a href="{{ route('shop.customers.account.profile.edit') }}"
+                                    class="mb-6 flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50/50 p-4 transition hover:bg-zinc-100/80 active:scale-[0.98] group/card">
+                                    <div class="flex-grow">
+                                        <h2
+                                            class="text-lg font-bold text-zinc-900 leading-tight group-hover/card:text-[#7C45F5] transition">
+                                            {{ auth()->guard('customer')->user()->first_name }}
+                                            {{ auth()->guard('customer')->user()->last_name }}
+                                        </h2>
+                                        <p class="text-zinc-500 text-sm mt-0.5 break-all">
+                                            {{ auth()->guard('customer')->user()->email }}
+                                        </p>
+                                    </div>
+                                    <span
+                                        class="icon-arrow-right text-xl text-zinc-300 group-hover/card:text-[#7C45F5] transition rtl:icon-arrow-left"></span>
+                                </a>
 
                                 <div class="space-y-1">
                                     {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile_dropdown.links.before') !!}
@@ -165,7 +171,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                            <!-- Loading State -->
+                                                                <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -283,9 +289,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                    'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                    'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                }">
+                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                    }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">

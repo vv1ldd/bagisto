@@ -83,17 +83,25 @@
                                         <div class="h-0.5 w-full"
                                             style="background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%);"></div>
 
-                                        <div class="grid gap-2.5 p-5 pb-0">
-                                            <p class="text-xl font-dmserif" v-pre>
-                                                {{ auth()->guard('customer')->user()->first_name }}
-                                            </p>
-
-                                            <p class="text-sm">
-                                                @lang('shop::app.components.layouts.header.mobile.dropdown-text')
-                                            </p>
+                                        <div class="p-5 pb-0">
+                                            <!-- Rich Profile Card inside Mobile Dropdown -->
+                                            <a href="{{ route('shop.customers.account.profile.edit') }}"
+                                                class="mb-5 flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50/50 p-4 transition active:bg-zinc-100 group/card">
+                                                <div class="flex-grow">
+                                                    <h2 class="text-lg font-bold text-zinc-900 leading-tight">
+                                                        {{ auth()->guard('customer')->user()->first_name }}
+                                                        {{ auth()->guard('customer')->user()->last_name }}
+                                                    </h2>
+                                                    <p class="text-zinc-500 text-sm mt-0.5 break-all">
+                                                        {{ auth()->guard('customer')->user()->email }}
+                                                    </p>
+                                                </div>
+                                                <span
+                                                    class="icon-arrow-right text-xl text-zinc-300 rtl:icon-arrow-left"></span>
+                                            </a>
                                         </div>
 
-                                        <p class="w-full mt-3 border border-zinc-200"></p>
+                                        <p class="w-full border border-zinc-200"></p>
 
                                         <div class="mt-2.5 grid gap-1 pb-2.5">
                                             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.profile_dropdown.links.before') !!}
