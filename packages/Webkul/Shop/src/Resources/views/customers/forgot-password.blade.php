@@ -10,7 +10,8 @@
 
         <div class="flex min-h-screen w-full flex-wrap overflow-hidden bg-white">
             <!-- Left Side: Form -->
-            <div class="flex w-full flex-col min-h-screen p-10 md:w-1/2 lg:p-20">
+            <div
+                class="flex w-full flex-col min-h-screen px-8 pt-12 pb-6 md:px-10 md:pt-16 md:pb-10 lg:px-20 lg:pt-20 lg:pb-20 md:w-1/2">
                 <!-- Header/Logo -->
                 <div class="mb-12 flex items-center justify-between">
                     <a href="{{ route('shop.home.index') }}"
