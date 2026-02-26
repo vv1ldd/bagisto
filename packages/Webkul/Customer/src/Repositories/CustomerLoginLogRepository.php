@@ -78,7 +78,20 @@ class CustomerLoginLogRepository extends Repository
         }
 
         if ($log && $log->logged_out_at) {
+            \Log::warning('[trackActivity] Session marked as logged out', [
+                'customer_id' => $customer->id,
+                'log_id' => $log->id,
+                'logged_out_at' => $log->logged_out_at
+            ]);
             return false;
+        }
+
+        if (!$log) {
+            \Log::debug('[trackActivity] No log found for session', [
+                'customer_id' => $customer->id,
+                'session_id' => session()->getId(),
+                'log_id_sess' => $logId
+            ]);
         }
 
         if ($log) {

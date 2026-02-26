@@ -16,12 +16,16 @@ class TrackCustomerSession
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $response = $next($request);
-
         if (auth()->guard('customer')->check()) {
-            if (!app(CustomerLoginLogRepository::class)->trackActivity(auth()->guard('customer')->user())) {
-                auth()->guard('customer')->logout();
+            $customer = auth()->guard('customer')->user();
 
+            if (!app(CustomerLoginLogRepository::class)->trackActivity($customer)) {
+                \Log::info('[TrackCustomerSession] Revoking session for customer: ' . $customer->email, [
+                    'session_id' => session()->getId(),
+                    'log_id' => session('customer_login_log_id')
+                ]);
+
+                auth()->guard('customer')->logout();
                 session()->invalidate();
                 session()->regenerateToken();
 
@@ -29,6 +33,6 @@ class TrackCustomerSession
             }
         }
 
-        return $response;
+        return $next($request);
     }
 }
