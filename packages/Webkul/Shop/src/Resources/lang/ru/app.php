@@ -79,6 +79,12 @@ return [
                 'back' => 'Назад',
             ],
 
+            'login-activity' => [
+                'title' => 'Активность входа',
+                'revoke-failed' => 'Не удалось отозвать сессию.',
+                'revoked' => 'Сессия успешно отозвана.',
+            ],
+
             'profile' => [
                 'index' => [
                     'delete' => 'Удалить',
@@ -1167,7 +1173,6 @@ return [
         'address' => 'Адрес',
         'downloadable-products' => 'Загружаемые товары',
         'gdpr-request' => 'Запрос данных GDPR',
-        'login-activity' => 'Активность входа',
         'my-account' => 'Мой профиль',
         'orders' => 'Заказы',
         'profile' => 'Профиль',

@@ -81,6 +81,12 @@ return [
                 'back' => 'Back',
             ],
 
+            'login-activity' => [
+                'title' => 'Login Activity',
+                'revoke-failed' => 'Failed to revoke session.',
+                'revoked' => 'Session revoked successfully.',
+            ],
+
             'profile' => [
                 'index' => [
                     'delete' => 'Delete',
@@ -1163,7 +1169,6 @@ return [
         'address' => 'Address',
         'downloadable-products' => 'Downloadable Products',
         'gdpr-request' => 'GDPR Data Request',
-        'login-activity' => 'Login Activity',
         'my-account' => 'My Account',
         'orders' => 'Orders',
         'profile' => 'Profile',

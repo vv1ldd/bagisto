@@ -1,7 +1,7 @@
 <x-shop::layouts.account>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.customers.account.login-activity')
+        @lang('shop::app.customers.account.login-activity.title')
         </x-slot>
 
         <!-- Breadcrumbs -->
@@ -13,7 +13,8 @@
 
         <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5">
             <div class="mb-10">
-                <h2 class="text-2xl font-bold text-zinc-900 mb-6">@lang('shop::app.customers.account.login-activity')
+                <h2 class="text-2xl font-bold text-zinc-900 mb-6">
+                    @lang('shop::app.customers.account.login-activity.title')
                 </h2>
 
                 <!-- Active Sessions Section -->
