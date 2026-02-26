@@ -43,7 +43,7 @@
                                             </p>
                                             <p class="text-[12px] text-zinc-400 mt-1">
                                                 Активность:
-                                                {{ core()->formatDate($session->updated_at, 'd M Y H:i') }}
+                                                {{ core()->formatDate($session->last_active_at ?: $session->created_at, 'd M Y H:i') }}
                                             </p>
                                         </div>
 
@@ -82,7 +82,7 @@
                                         </div>
                                         <div class="text-right">
                                             <p class="text-sm text-zinc-500">
-                                                {{ core()->formatDate($log->logged_at, 'd M Y H:i') }}
+                                                {{ core()->formatDate($log->created_at, 'd M Y H:i') }}
                                             </p>
                                         </div>
                                     </div>
