@@ -161,6 +161,31 @@
                                                         @endforeach
                                                     </div>
                                                 @endif
+
+                                                @if ($item->type == 'downloadable' && count($item->downloadable_link_purchased))
+                                                    <div class="mt-2 flex flex-col gap-2">
+                                                        @foreach ($item->downloadable_link_purchased as $link)
+                                                            @if ($link->status !== 'pending')
+                                                                <a 
+                                                                    href="{{ route('shop.customers.account.downloadable_products.download', $link->id) }}" 
+                                                                    class="flex items-center gap-1.5 text-[14px] text-[#007AFF] font-medium hover:underline"
+                                                                >
+                                                                    <span class="icon-download text-lg"></span>
+                                                                    {{ $link->name }} 
+                                                                    <span class="text-zinc-400 font-normal text-xs">
+                                                                        (@lang('shop::app.customers.account.downloadable-products.remaining-downloads'): {{ $link->download_bought - ($link->download_used + $link->download_canceled) }})
+                                                                    </span>
+                                                                </a>
+                                                            @else
+                                                                <div class="flex items-center gap-1.5 text-[14px] text-zinc-400 font-medium cursor-not-allowed">
+                                                                    <span class="icon-download text-lg opacity-50"></span>
+                                                                    {{ $link->name }}
+                                                                    <span class="text-xs font-normal">(@lang('shop::app.customers.account.downloadable-products.pending'))</span>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endif
                                             </td>
 
                                             <td
@@ -520,6 +545,31 @@
                                                 <div>
                                                     @foreach ($item->additional['attributes'] as $attribute)
                                                         <b  class="max-sm:!font-semibold">{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+
+                                            @if ($item->type == 'downloadable' && count($item->downloadable_link_purchased))
+                                                <div class="mt-2 flex flex-col gap-2">
+                                                    @foreach ($item->downloadable_link_purchased as $link)
+                                                        @if ($link->status !== 'pending')
+                                                            <a 
+                                                                href="{{ route('shop.customers.account.downloadable_products.download', $link->id) }}" 
+                                                                class="flex items-center gap-1.5 text-xs text-[#007AFF] font-medium hover:underline"
+                                                            >
+                                                                <span class="icon-download text-base"></span>
+                                                                {{ $link->name }} 
+                                                                <span class="text-zinc-400 font-normal">
+                                                                    ({{ $link->download_bought - ($link->download_used + $link->download_canceled) }})
+                                                                </span>
+                                                            </a>
+                                                        @else
+                                                            <div class="flex items-center gap-1.5 text-xs text-zinc-400 font-medium cursor-not-allowed">
+                                                                <span class="icon-download text-base opacity-50"></span>
+                                                                {{ $link->name }}
+                                                                <span class="font-normal">(@lang('shop::app.customers.account.downloadable-products.pending'))</span>
+                                                            </div>
+                                                        @endif
                                                     @endforeach
                                                 </div>
                                             @endif
