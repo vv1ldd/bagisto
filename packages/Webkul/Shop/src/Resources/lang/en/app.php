@@ -1205,6 +1205,17 @@ return [
                 'subject' => 'Reset Password Email',
             ],
 
+            'login-notification' => [
+                'subject' => 'Login Notification',
+                'greeting' => 'New login detected!',
+                'description' => 'We detected a new login to your account :customer_name.',
+                'details' => 'Login Details:',
+                'ip-address' => 'IP Address',
+                'device' => 'Device/Browser',
+                'time' => 'Login Time',
+                'warning' => 'If this wasn\'t you, we recommend changing your password immediately and revoking active sessions in your account.',
+            ],
+
             'update-password' => [
                 'description' => 'You are receiving this email because you have updated your password.',
                 'greeting' => 'Password Updated!',

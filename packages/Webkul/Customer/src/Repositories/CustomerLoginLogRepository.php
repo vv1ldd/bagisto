@@ -4,6 +4,9 @@ namespace Webkul\Customer\Repositories;
 
 use Webkul\Core\Eloquent\Repository;
 
+use Illuminate\Support\Facades\Mail;
+use Webkul\Shop\Mail\Customer\LoginNotification;
+
 class CustomerLoginLogRepository extends Repository
 {
     /**
@@ -35,7 +38,7 @@ class CustomerLoginLogRepository extends Repository
             $currentIp = trim(explode(',', $currentIp)[0]);
         }
 
-        $this->create([
+        $loginLog = $this->create([
             'customer_id' => $customer->id,
             'session_id' => session()->getId(),
             'ip_address' => $currentIp,
@@ -45,6 +48,12 @@ class CustomerLoginLogRepository extends Repository
             'browser' => $this->getBrowser($userAgent),
             'last_active_at' => now(),
         ]);
+
+        try {
+            Mail::queue(new LoginNotification($customer, $loginLog));
+        } catch (\Exception $e) {
+            \Log::error('Login Notification Mail Error: ' . $e->getMessage());
+        }
     }
 
     /**
