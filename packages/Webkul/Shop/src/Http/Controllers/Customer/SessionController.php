@@ -338,17 +338,29 @@ class SessionController extends Controller
      */
     public function destroy()
     {
-        $id = auth()->guard('customer')->user()->id;
+        $customer = auth()->guard('customer')->user();
 
-        // Mark logout in our log
-        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->update(['logged_out_at' => now()], [
-            'session_id' => session()->getId(),
-            'customer_id' => $id,
-        ]);
+        if ($customer) {
+            $id = $customer->id;
 
-        auth()->guard('customer')->logout();
+            // Mark logout in our log
+            try {
+                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->trackActivity($customer);
 
-        Event::dispatch('customer.after.logout', $id);
+                // Set logged_out_at
+                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)
+                    ->model
+                    ->where('customer_id', $id)
+                    ->where('session_id', session()->getId())
+                    ->update(['logged_out_at' => now()]);
+            } catch (\Exception $e) {
+                Log::error('Logout log update failed: ' . $e->getMessage());
+            }
+
+            auth()->guard('customer')->logout();
+
+            Event::dispatch('customer.after.logout', $id);
+        }
 
         return redirect()->route('shop.home.index');
     }
