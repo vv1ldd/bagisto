@@ -1,0 +1,86 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: bagisto-app
+    environment:
+      APP_NAME: "${APP_NAME:-Bagisto}"
+      APP_ENV: "${APP_ENV:-production}"
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_URL: "${APP_URL}"
+      APP_ADMIN_URL: "${APP_ADMIN_URL:-admin}"
+      DB_CONNECTION: mysql
+      DB_HOST: "${DB_HOST:-mysql}"
+      DB_PORT: "${DB_PORT:-3306}"
+      DB_DATABASE: "${DB_DATABASE:-bagisto}"
+      DB_USERNAME: "${DB_USERNAME:-bagisto}"
+      DB_PASSWORD: "${DB_PASSWORD:-password}"
+      REDIS_HOST: "${REDIS_HOST:-redis}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-redispassword}"
+      REDIS_PORT: "${REDIS_PORT:-6379}"
+      MAIL_MAILER: "${MAIL_MAILER:-smtp}"
+      MAIL_HOST: "${MAIL_HOST:-mailpit}"
+      MAIL_PORT: "${MAIL_PORT:-1025}"
+      SCOUT_DRIVER: "${SCOUT_DRIVER:-database}"
+      ELASTICSEARCH_HOST: "${ELASTICSEARCH_HOST:-elasticsearch}"
+      SESSION_DRIVER: "${SESSION_DRIVER:-redis}"
+      CACHE_DRIVER: "${CACHE_DRIVER:-redis}"
+      QUEUE_CONNECTION: "${QUEUE_CONNECTION:-redis}"
+    expose:
+      - "80"
+    networks:
+      - bagisto-network
+      - coolify
+    volumes:
+      - 'bagisto-storage:/var/www/html/storage'
+    depends_on:
+
+      - elasticsearch
+      - mailpit
+
+  elasticsearch:
+    image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.0'
+    container_name: bagisto-elasticsearch
+    restart: always
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - 'bagisto-elasticsearch-data:/var/lib/elasticsearch/data'
+    networks:
+      - bagisto-network
+
+  mailpit:
+    image: 'axllent/mailpit:latest'
+    container_name: bagisto-mailpit
+    restart: always
+    ports:
+      - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+    networks:
+      - bagisto-network
+
+networks:
+  bagisto-network:
+    driver: bridge
+  coolify:
+    external: true
+
+volumes:
+
+  bagisto-elasticsearch-data:
+    driver: local
+  bagisto-storage:
+    driver: local
