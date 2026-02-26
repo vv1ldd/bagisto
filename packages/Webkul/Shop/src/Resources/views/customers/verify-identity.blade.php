@@ -91,7 +91,9 @@
 
                                     .ios-input-wrapper input,
                                     .ios-input-wrapper select {
-                                        width: 100%;
+                                        width: 100% !important;
+                                        height: 24px !important;
+                                        line-height: 24px !important;
                                         text-align: right !important;
                                         text-align-last: right !important;
                                         background: transparent !important;
@@ -102,6 +104,7 @@
                                         color: #71717a !important;
                                         font-size: 15px !important;
                                         appearance: none;
+                                        outline: none !important;
                                     }
 
                                     .ios-input-wrapper p.text-red-500 {
@@ -147,7 +150,9 @@
                                         outline: none !important;
                                         padding: 0 !important;
                                         margin: 0 !important;
-                                        width: auto !important;
+                                        width: 100% !important;
+                                        height: 24px !important;
+                                        line-height: 24px !important;
                                         font-size: 15px !important;
                                         color: #71717a !important;
                                         text-align: right !important;
@@ -170,7 +175,9 @@
                                         box-shadow: none !important;
                                         padding: 0 !important;
                                         margin: 0 !important;
-                                        width: auto !important;
+                                        width: 100% !important;
+                                        height: 24px !important;
+                                        line-height: 24px !important;
                                         font-size: 15px !important;
                                         color: #71717a !important;
                                         text-align: right !important;
@@ -186,11 +193,14 @@
                                         padding: 0 !important;
                                         font-size: 15px !important;
                                         color: #71717a !important;
-                                        width: auto !important;
+                                        width: 100% !important;
+                                        height: 24px !important;
+                                        line-height: 24px !important;
                                         text-align: right !important;
                                         outline: none !important;
                                         display: flex !important;
                                         align-items: center !important;
+                                        justify-content: flex-end !important;
                                     }
 
                                     .ios-arrow {
