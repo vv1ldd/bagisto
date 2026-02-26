@@ -45,7 +45,6 @@
                                         border: 1px solid #e4e4e7;
                                         border-radius: 16px;
                                         margin-bottom: 24px;
-                                        overflow: hidden;
                                         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
                                     }
 
@@ -58,7 +57,14 @@
                                         position: relative;
                                     }
 
+                                    .ios-row:first-child {
+                                        border-top-left-radius: 16px;
+                                        border-top-right-radius: 16px;
+                                    }
+
                                     .ios-row:last-child {
+                                        border-bottom-left-radius: 16px;
+                                        border-bottom-right-radius: 16px;
                                         border-bottom: none;
                                     }
 
