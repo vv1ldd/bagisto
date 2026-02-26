@@ -6,8 +6,9 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Customer\Repositories\CustomerLoginLogRepository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Redirect;
 
 class LoginHistoryController extends Controller
 {
@@ -26,7 +27,7 @@ class LoginHistoryController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index(): View
+    public function index()
     {
         $customer = auth()->guard('customer')->user();
         $lifetime = config('session.lifetime') ?? 120; // minutes
@@ -53,7 +54,7 @@ class LoginHistoryController extends Controller
      * @param  string  $sessionId
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id): RedirectResponse
+    public function destroy($id)
     {
         $customer = auth()->guard('customer')->user();
         $log = $this->customerLoginLogRepository->findOneWhere([

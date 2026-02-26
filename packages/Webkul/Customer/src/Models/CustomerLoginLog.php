@@ -4,6 +4,7 @@ namespace Webkul\Customer\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Customer\Contracts\CustomerLoginLog as CustomerLoginLogContract;
+use Webkul\Customer\Models\CustomerProxy;
 
 class CustomerLoginLog extends Model implements CustomerLoginLogContract
 {
