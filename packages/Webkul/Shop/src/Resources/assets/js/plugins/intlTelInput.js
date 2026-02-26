@@ -35,22 +35,28 @@ export default {
 
                 const updatePlaceholderAndMaxLength = () => {
                     const checkInterval = setInterval(() => {
-                        // Ensure iti is initialized and utils script is loaded
                         if (typeof iti.getExampleNumber === 'function') {
                             clearInterval(checkInterval);
 
-                            const exampleNumber = iti.getExampleNumber();
+                            const selectedData = iti.getSelectedCountryData();
+                            const dialCode = selectedData.dialCode || "";
+                            const dialCodeLength = dialCode.replace(/\D/g, '').length;
 
+                            // E.164 maximum is 15 digits TOTAL (including dial code)
+                            const maxRemainingDigits = 15 - dialCodeLength;
+
+                            const exampleNumber = iti.getExampleNumber();
                             if (exampleNumber) {
                                 const digitsOnly = exampleNumber.replace(/\D/g, '');
-                                el.setAttribute('maxlength', digitsOnly.length);
+                                // Use whichever is smaller: country-specific length or E.164 limit
+                                const finalMaxLength = Math.min(digitsOnly.length, maxRemainingDigits);
+                                el.setAttribute('maxlength', finalMaxLength.toString());
                             } else {
-                                el.setAttribute('maxlength', '15');
+                                el.setAttribute('maxlength', maxRemainingDigits.toString());
                             }
                         }
                     }, 100);
 
-                    // Safety timeout
                     setTimeout(() => clearInterval(checkInterval), 5000);
                 };
 
@@ -68,11 +74,9 @@ export default {
                 el.addEventListener('compositionstart', () => { isComposing = true; });
                 el.addEventListener('compositionend', (e) => {
                     isComposing = false;
-                    // Trigger cleaning after IME composition
                     el.dispatchEvent(new Event('input'));
                 });
 
-                // Strictly allow only digits and control keys
                 el.addEventListener('keydown', (e) => {
                     if (isComposing) return;
 
@@ -92,7 +96,7 @@ export default {
                     const originalLength = target.value.length;
                     let cleaned = target.value.replace(/\D/g, '');
 
-                    // Enforce maxlength
+                    // Enforce maxlength (calculated in updatePlaceholderAndMaxLength)
                     const maxLength = target.getAttribute('maxlength');
                     if (maxLength && cleaned.length > parseInt(maxLength)) {
                         cleaned = cleaned.substring(0, parseInt(maxLength));
@@ -100,11 +104,8 @@ export default {
 
                     if (target.value !== cleaned) {
                         target.value = cleaned;
-
-                        // Sync with Vue if possible
                         target.dispatchEvent(new Event('input', { bubbles: true }));
 
-                        // Adjust cursor position
                         const newLength = target.value.length;
                         if (cursorPosition !== null && originalLength !== newLength) {
                             const pos = Math.max(0, cursorPosition - (originalLength - newLength));
