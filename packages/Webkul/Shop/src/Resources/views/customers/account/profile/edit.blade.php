@@ -400,6 +400,17 @@
                                 <span class="ios-arrow icon-arrow-right"></span>
                             </div>
                         </div>
+
+                        <!-- Address -->
+                        <div class="ios-row cursor-pointer" onclick="window.location.href='{{ route('shop.customers.account.addresses.index') }}'">
+                            <label class="ios-label cursor-pointer text-zinc-900">@lang('shop::app.layouts.address')</label>
+                            <div class="ios-input-wrapper justify-end">
+                                <span class="text-[15px] text-zinc-400 text-right truncate max-w-[200px]">
+                                    {{ $customer->default_address ? ($customer->default_address->address . ', ' . $customer->default_address->city) : 'Настроить' }}
+                                </span>
+                                <span class="ios-arrow icon-arrow-right"></span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Group 2: Personal Details -->

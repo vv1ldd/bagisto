@@ -30,13 +30,6 @@ return [
         'sort' => 3,
     ],
     [
-        'key' => 'account.address',
-        'name' => 'shop::app.layouts.address',
-        'route' => 'shop.customers.account.addresses.index',
-        'icon' => 'icon-location',
-        'sort' => 3,
-    ],
-    [
         'key' => 'account.orders',
         'name' => 'shop::app.layouts.orders',
         'route' => 'shop.customers.account.orders.index',
