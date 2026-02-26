@@ -83,8 +83,14 @@ return [
 
             'login-activity' => [
                 'title' => 'Login Activity',
+                'active-sessions' => 'Active Sessions',
+                'login-history' => 'Login History',
                 'revoke-failed' => 'Failed to revoke session.',
                 'revoked' => 'Session revoked successfully.',
+                'current' => 'Current',
+                'last-activity' => 'Last Activity',
+                'revoke' => 'Logout',
+                'empty-history' => 'Login history is empty',
             ],
 
             'profile' => [
@@ -1175,6 +1181,7 @@ return [
         'reviews' => 'Reviews',
         'wishlist' => 'Wishlist',
         'passkeys' => 'Login Methods',
+        'login-activity' => 'Login Activity',
     ],
 
     'subscription' => [

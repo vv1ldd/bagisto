@@ -81,8 +81,14 @@ return [
 
             'login-activity' => [
                 'title' => 'Активность входа',
+                'active-sessions' => 'Активные сессии',
+                'login-history' => 'История входов',
                 'revoke-failed' => 'Не удалось отозвать сессию.',
                 'revoked' => 'Сессия успешно отозвана.',
+                'current' => 'Текущая',
+                'last-activity' => 'Активность',
+                'revoke' => 'Выйти',
+                'empty-history' => 'История входов пуста',
             ],
 
             'profile' => [
@@ -1179,6 +1185,7 @@ return [
         'reviews' => 'Отзывы',
         'wishlist' => 'Список желаний',
         'passkeys' => 'Способы входа',
+        'login-activity' => 'Активность входа',
     ],
 
     'subscription' => [

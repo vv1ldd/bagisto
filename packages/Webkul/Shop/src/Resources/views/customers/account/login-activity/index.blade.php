@@ -20,7 +20,9 @@
                 <!-- Active Sessions Section -->
                 @if (count($activeSessions))
                     <div class="mb-10">
-                        <h3 class="text-lg font-semibold text-zinc-800 mb-4">Активные сессии</h3>
+                        <h3 class="text-lg font-semibold text-zinc-800 mb-4">
+                            @lang('shop::app.customers.account.login-activity.active-sessions')
+                        </h3>
                         <div class="ios-nav-group !bg-white">
                             @foreach ($activeSessions as $session)
                                 @php
@@ -35,7 +37,7 @@
                                                 </span>
                                                 @if ($isCurrent)
                                                     <span
-                                                        class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] uppercase font-bold rounded-full">Текущая</span>
+                                                        class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] uppercase font-bold rounded-full">@lang('shop::app.customers.account.login-activity.current')</span>
                                                 @endif
                                             </div>
                                             <p class="text-sm text-zinc-500 mt-1 max-w-[300px] truncate"
@@ -43,7 +45,7 @@
                                                 {{ $session->device_name }} • {{ $session->browser }}
                                             </p>
                                             <p class="text-[12px] text-zinc-400 mt-1">
-                                                Активность:
+                                                @lang('shop::app.customers.account.login-activity.last-activity'):
                                                 {{ core()->formatDate($session->last_active_at ?: $session->created_at, 'd M Y H:i') }}
                                             </p>
                                         </div>
@@ -56,7 +58,7 @@
                                                 @method('DELETE')
                                                 <button type="submit"
                                                     class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition">
-                                                    Выйти
+                                                    @lang('shop::app.customers.account.login-activity.revoke')
                                                 </button>
                                             </form>
                                         @endif
@@ -69,7 +71,9 @@
 
                 <!-- Login History Section -->
                 <div>
-                    <h3 class="text-lg font-semibold text-zinc-800 mb-4">История входов</h3>
+                    <h3 class="text-lg font-semibold text-zinc-800 mb-4">
+                        @lang('shop::app.customers.account.login-activity.login-history')
+                    </h3>
                     @if ($loginHistory->count())
                         <div class="ios-nav-group !bg-white">
                             @foreach ($loginHistory as $log)
@@ -96,7 +100,7 @@
                         </div>
                     @else
                         <div class="glass-card !bg-white/40 p-10 text-center rounded-3xl">
-                            <p class="text-zinc-500">История входов пуста.</p>
+                            <p class="text-zinc-500">@lang('shop::app.customers.account.login-activity.empty-history').</p>
                         </div>
                     @endif
                 </div>
