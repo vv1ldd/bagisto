@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Customer\Repositories\CustomerLoginLogRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class LoginHistoryController extends Controller
 {
@@ -33,13 +35,13 @@ class LoginHistoryController extends Controller
             ->scopeQuery(function ($query) use ($customer, $lifetime) {
                 return $query->where('customer_id', $customer->id)
                     ->where('logged_out_at', null)
-                    ->where('updated_at', '>=', now()->subMinutes($lifetime));
+                    ->where('last_active_at', '>=', now()->subMinutes($lifetime));
             })->get();
 
         $loginHistory = $this->customerLoginLogRepository
             ->scopeQuery(function ($query) use ($customer) {
                 return $query->where('customer_id', $customer->id)
-                    ->orderBy('logged_at', 'desc');
+                    ->orderBy('created_at', 'desc');
             })->paginate(10);
 
         return view('shop::customers.account.login-activity.index', compact('activeSessions', 'loginHistory'));

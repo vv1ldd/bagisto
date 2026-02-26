@@ -43,8 +43,25 @@ class CustomerLoginLogRepository extends Repository
             'device_name' => $this->getDeviceName($userAgent),
             'platform' => $this->getPlatform($userAgent),
             'browser' => $this->getBrowser($userAgent),
-            'logged_at' => now(),
+            'last_active_at' => now(),
         ]);
+    }
+
+    /**
+     * Track activity for the current session.
+     *
+     * @param  \Webkul\Customer\Models\Customer  $customer
+     * @return void
+     */
+    public function trackActivity($customer)
+    {
+        $this->model
+            ->where('customer_id', $customer->id)
+            ->where('session_id', session()->getId())
+            ->update([
+                'last_active_at' => now(),
+                'updated_at' => now(),
+            ]);
     }
 
     /**
