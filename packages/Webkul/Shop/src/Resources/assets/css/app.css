@@ -797,7 +797,6 @@ img.lazy {
     /* Target inputs managed by intl-tel-input */
     .iti input[type="text"],
     .iti input[type="tel"] {
-        padding-left: 90px !important;
         text-align: right !important;
         width: 100% !important;
         background: transparent !important;

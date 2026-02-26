@@ -11,6 +11,7 @@ export default {
 
         app.directive('phone', {
             mounted(el) {
+                const utilsScriptVersion = "26.7.5";
                 const iti = intlTelInput(el, {
                     initialCountry: "auto",
                     geoIpLookup: function (callback) {
@@ -22,6 +23,7 @@ export default {
                     separateDialCode: true,
                     strictMode: true,
                     countrySearch: true,
+                    utilsScript: `https://cdn.jsdelivr.net/npm/intl-tel-input@${utilsScriptVersion}/build/js/utils.js`,
                     preferredCountries: ["ru", "by", "kz", "uz", "ua"],
                     i18n: {
                         searchPlaceholder: "Поиск страны...",
@@ -59,12 +61,6 @@ export default {
 
                     setTimeout(() => clearInterval(checkInterval), 5000);
                 };
-
-                // Version synchronized with package.json
-                const utilsScriptVersion = "26.7.5";
-                iti.set({
-                    utilsScript: `https://cdn.jsdelivr.net/npm/intl-tel-input@${utilsScriptVersion}/build/js/utils.js`
-                });
 
                 updatePlaceholderAndMaxLength();
 
