@@ -345,14 +345,7 @@ class SessionController extends Controller
 
             // Mark logout in our log
             try {
-                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->trackActivity($customer);
-
-                // Set logged_out_at
-                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)
-                    ->model
-                    ->where('customer_id', $id)
-                    ->where('session_id', session()->getId())
-                    ->update(['logged_out_at' => now()]);
+                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->updateLogoutTime($customer);
             } catch (\Exception $e) {
                 Log::error('Logout log update failed: ' . $e->getMessage());
             }

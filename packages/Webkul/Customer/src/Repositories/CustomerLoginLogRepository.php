@@ -65,6 +65,20 @@ class CustomerLoginLogRepository extends Repository
     }
 
     /**
+     * Update logout time for the current session.
+     *
+     * @param  \Webkul\Customer\Models\Customer  $customer
+     * @return void
+     */
+    public function updateLogoutTime($customer)
+    {
+        $this->model
+            ->where('customer_id', $customer->id)
+            ->where('session_id', session()->getId())
+            ->update(['logged_out_at' => now()]);
+    }
+
+    /**
      * Get platform from user agent.
      */
     protected function getPlatform($userAgent)
