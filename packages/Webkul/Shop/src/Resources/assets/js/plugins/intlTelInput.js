@@ -22,7 +22,6 @@ export default {
                     separateDialCode: true,
                     strictMode: true,
                     countrySearch: true,
-                    dropdownContainer: document.body,
                     preferredCountries: ["ru", "by", "kz", "uz", "ua"],
                     i18n: {
                         searchPlaceholder: "Поиск страны...",
@@ -39,7 +38,7 @@ export default {
                         // Ensure iti is initialized and utils script is loaded
                         if (typeof iti.getExampleNumber === 'function') {
                             clearInterval(checkInterval);
-                            
+
                             const exampleNumber = iti.getExampleNumber();
 
                             if (exampleNumber) {
