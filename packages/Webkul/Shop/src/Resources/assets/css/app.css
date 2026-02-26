@@ -853,7 +853,8 @@ img.lazy {
         width: 100% !important;
         border-radius: 10px !important;
         border: 1px solid #e4e4e7 !important;
-        padding: 10px 12px !important;
+        padding: 10px 40px 10px 12px !important;
+        /* Increased right padding to clear cross icon */
         text-align: left !important;
         font-size: 14px !important;
         margin-bottom: 8px !important;
