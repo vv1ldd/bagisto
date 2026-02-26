@@ -149,8 +149,8 @@
                         /* Special styling for Date of Birth pill */
                         v-date-picker,
                         v-datetime-picker,
-                        #dob_input_edit,
-                        #dob_input_edit input {
+                        #dob_input_edit_container,
+                        #dob_input_edit {
                             background: transparent !important;
                             border: none !important;
                             box-shadow: none !important;
@@ -159,6 +159,13 @@
                             color: #18181b !important;
                             width: auto !important;
                             text-align: right !important;
+                            outline: none !important;
+                        }
+
+                        /* Ensure picker children don't have grey backgrounds */
+                        #dob_input_edit_container > *,
+                        #dob_input_edit > * {
+                            background: transparent !important;
                         }
 
                         .ios-arrow {
@@ -404,7 +411,7 @@
                                             :label="trans('shop::app.customers.account.profile.edit.dob')" />
                                         <x-shop::form.control-group.error control-name="date_of_birth" />
                                     </x-shop::form.control-group>
-                                    <span class="ios-arrow icon-arrow-right"></span>
+                                    <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
                                 </div>
                             </div>
                         @endif
