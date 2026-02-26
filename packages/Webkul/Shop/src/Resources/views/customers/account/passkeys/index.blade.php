@@ -37,7 +37,8 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm">{{ $passkey->name }}
+                                            <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm">
+                                                {{ $passkey->name ?: 'Passkey устройство' }}
                                             </p>
                                             <p class="text-xs text-zinc-500">Добавлено:
                                                 {{ $passkey->created_at->format('d.m.Y') }}</p>

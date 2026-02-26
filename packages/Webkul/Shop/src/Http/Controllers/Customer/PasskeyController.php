@@ -54,12 +54,24 @@ class PasskeyController extends Controller
         }
 
         try {
+            $userAgent = $request->userAgent();
+            $deviceName = $this->getDeviceName($userAgent);
+
             $storePasskeyAction->execute(
                 authenticatable: $user,
                 passkeyJson: json_encode($request->all()),
                 passkeyOptionsJson: $optionsJson,
                 hostName: $request->getHost(),
             );
+
+            // Fetch the latest passkey and update its details (since StorePasskeyAction might not support custom name/UA)
+            $passkey = $user->passkeys()->latest()->first();
+            if ($passkey) {
+                $passkey->update([
+                    'name' => $deviceName,
+                    'user_agent' => $userAgent,
+                ]);
+            }
 
             $request->session()->forget('passkey-registration-options-json');
 
@@ -70,7 +82,7 @@ class PasskeyController extends Controller
             $trustedDeviceRepository->create([
                 'customer_id' => $user->id,
                 'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
+                'user_agent' => $userAgent,
                 'cookie_token' => $cookieToken,
                 'last_used_at' => now(),
             ]);
@@ -87,6 +99,32 @@ class PasskeyController extends Controller
             }
             return response()->json(['message' => 'Registration failed: ' . $message], 400);
         }
+    }
+
+    /**
+     * Get human-readable device name from User-Agent.
+     */
+    protected function getDeviceName($userAgent)
+    {
+        if (empty($userAgent)) {
+            return 'Passkey Device';
+        }
+
+        if (stripos($userAgent, 'iPhone') !== false) {
+            return 'iPhone';
+        } elseif (stripos($userAgent, 'iPad') !== false) {
+            return 'iPad';
+        } elseif (stripos($userAgent, 'Android') !== false) {
+            return 'Android Device';
+        } elseif (stripos($userAgent, 'Macintosh') !== false) {
+            return 'Mac';
+        } elseif (stripos($userAgent, 'Windows') !== false) {
+            return 'Windows PC';
+        } elseif (stripos($userAgent, 'Linux') !== false) {
+            return 'Linux PC';
+        }
+
+        return 'Passkey Device';
     }
 
     /**
