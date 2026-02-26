@@ -6,7 +6,7 @@
         <div class="flex min-h-screen w-full flex-wrap overflow-hidden bg-transparent">
             <!-- Left Side: Form -->
             <div
-                class="flex w-full flex-col min-h-screen px-8 pt-32 pb-6 md:px-10 md:pt-40 md:pb-10 lg:px-20 lg:pt-48 lg:pb-20 md:w-1/2">
+                class="flex w-full flex-col min-h-screen px-8 pt-16 pb-6 md:px-10 md:pt-20 md:pb-10 lg:px-20 lg:pt-24 lg:pb-20 md:w-1/2">
                 <!-- Header/Logo -->
                 <div class="mb-8 flex items-center justify-between">
                     <a href="{{ route('shop.home.index') }}" aria-label="Bagisto">
@@ -132,9 +132,52 @@
                                         box-shadow: none !important;
                                     }
 
-                                    /* Special styling for Date of Birth pill */
-                                    v-date-picker,
-                                    v-datetime-picker,
+                                    /* === Date input: strip ALL native browser styling === */
+                                    .ios-input-wrapper input[type="date"],
+                                    .ios-input-wrapper input[type="date"]:focus,
+                                    .ios-input-wrapper input[type="date"]:hover {
+                                        -webkit-appearance: none !important;
+                                        -moz-appearance: none !important;
+                                        appearance: none !important;
+                                        background: transparent !important;
+                                        background-color: transparent !important;
+                                        border: none !important;
+                                        border-radius: 0 !important;
+                                        box-shadow: none !important;
+                                        outline: none !important;
+                                        padding: 0 !important;
+                                        margin: 0 !important;
+                                        width: auto !important;
+                                        font-size: 15px !important;
+                                        color: #71717a !important;
+                                        text-align: right !important;
+                                        cursor: pointer !important;
+                                    }
+
+                                    /* Also target spans/wrappers added by v-date-picker */
+                                    .ios-input-wrapper span.relative {
+                                        background: transparent !important;
+                                        display: flex !important;
+                                        align-items: center !important;
+                                    }
+
+                                    /* Flatpickr overrides */
+                                    .ios-input-wrapper .flatpickr-input {
+                                        -webkit-appearance: none !important;
+                                        appearance: none !important;
+                                        background: transparent !important;
+                                        border: none !important;
+                                        box-shadow: none !important;
+                                        padding: 0 !important;
+                                        margin: 0 !important;
+                                        width: auto !important;
+                                        font-size: 15px !important;
+                                        color: #71717a !important;
+                                        text-align: right !important;
+                                        cursor: pointer !important;
+                                    }
+
+                                    /* Special fix for DOB alignment */
                                     #dob_input,
                                     #dob_input input {
                                         background: transparent !important;
@@ -142,9 +185,12 @@
                                         box-shadow: none !important;
                                         padding: 0 !important;
                                         font-size: 15px !important;
-                                        color: #18181b !important;
+                                        color: #71717a !important;
                                         width: auto !important;
                                         text-align: right !important;
+                                        outline: none !important;
+                                        display: flex !important;
+                                        align-items: center !important;
                                     }
 
                                     .ios-arrow {
@@ -251,7 +297,7 @@
                                                 :label="trans('shop::app.customers.account.profile.index.dob')" />
                                             <x-shop::form.control-group.error control-name="date_of_birth" />
                                         </x-shop::form.control-group>
-                                        <span class="ios-arrow icon-arrow-right"></span>
+                                        <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
                                     </div>
                                 </div>
 
