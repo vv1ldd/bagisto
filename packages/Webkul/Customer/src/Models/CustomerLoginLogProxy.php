@@ -2,8 +2,8 @@
 
 namespace Webkul\Customer\Models;
 
-use Webkul\Core\Eloquent\Proxy;
+use Konekt\Concord\Proxies\ModelProxy;
 
-class CustomerLoginLogProxy extends Proxy
+class CustomerLoginLogProxy extends ModelProxy
 {
 }
