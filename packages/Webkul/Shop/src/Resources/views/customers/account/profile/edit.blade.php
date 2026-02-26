@@ -146,26 +146,47 @@
                             -webkit-appearance: none !important;
                         }
 
-                        /* Special styling for Date of Birth pill */
-                        v-date-picker,
-                        v-datetime-picker,
-                        #dob_input_edit_container,
-                        #dob_input_edit {
+                        /* === Date input: strip ALL native browser styling === */
+                        .ios-input-wrapper input[type="date"],
+                        .ios-input-wrapper input[type="date"]:focus,
+                        .ios-input-wrapper input[type="date"]:hover {
+                            -webkit-appearance: none !important;
+                            -moz-appearance: none !important;
+                            appearance: none !important;
+                            background: transparent !important;
+                            background-color: transparent !important;
+                            border: none !important;
+                            border-radius: 0 !important;
+                            box-shadow: none !important;
+                            outline: none !important;
+                            padding: 0 !important;
+                            margin: 0 !important;
+                            width: auto !important;
+                            font-size: 15px !important;
+                            color: #71717a !important;
+                            text-align: right !important;
+                            cursor: pointer !important;
+                        }
+
+                        /* Also target spans/wrappers added by v-date-picker */
+                        .ios-input-wrapper span.relative {
+                            background: transparent !important;
+                        }
+
+                        /* Flatpickr overrides when inside ios-input-wrapper */
+                        .ios-input-wrapper .flatpickr-input {
+                            -webkit-appearance: none !important;
+                            appearance: none !important;
                             background: transparent !important;
                             border: none !important;
                             box-shadow: none !important;
                             padding: 0 !important;
-                            font-size: 15px !important;
-                            color: #18181b !important;
+                            margin: 0 !important;
                             width: auto !important;
+                            font-size: 15px !important;
+                            color: #71717a !important;
                             text-align: right !important;
-                            outline: none !important;
-                        }
-
-                        /* Ensure picker children don't have grey backgrounds */
-                        #dob_input_edit_container > *,
-                        #dob_input_edit > * {
-                            background: transparent !important;
+                            cursor: pointer !important;
                         }
 
                         .ios-arrow {
