@@ -124,6 +124,19 @@
                             justify-content: flex-end;
                         }
 
+                        .iti__flag-container {
+                            z-index: 5 !important;
+                            cursor: pointer !important;
+                        }
+
+                        .iti--container {
+                            z-index: 9999 !important;
+                        }
+
+                        .iti__country-list {
+                            z-index: 9999 !important;
+                        }
+
                         /* Hide browser date/time icons */
                         input::-webkit-calendar-picker-indicator,
                         input::-webkit-inner-spin-button,
