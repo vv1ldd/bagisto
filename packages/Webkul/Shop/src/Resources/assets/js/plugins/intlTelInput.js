@@ -11,6 +11,10 @@ export default {
 
         app.directive('phone', {
             mounted(el) {
+                // Immediate safety limit: E.164 total is 15.
+                // Defaulting to 14 in case dial code is 1+.
+                el.setAttribute('maxlength', '14');
+
                 const utilsScriptVersion = "26.7.5";
                 const iti = intlTelInput(el, {
                     initialCountry: "auto",
@@ -35,22 +39,23 @@ export default {
                     },
                 });
 
+                const getRemainingCapacity = () => {
+                    const selectedData = iti.getSelectedCountryData();
+                    const dialCode = selectedData.dialCode || "";
+                    const dialCodeLength = dialCode.replace(/\D/g, '').length;
+                    return Math.max(0, 15 - dialCodeLength);
+                };
+
                 const updatePlaceholderAndMaxLength = () => {
                     const checkInterval = setInterval(() => {
                         if (typeof iti.getExampleNumber === 'function') {
                             clearInterval(checkInterval);
 
-                            const selectedData = iti.getSelectedCountryData();
-                            const dialCode = selectedData.dialCode || "";
-                            const dialCodeLength = dialCode.replace(/\D/g, '').length;
-
-                            // E.164 maximum is 15 digits TOTAL (including dial code)
-                            const maxRemainingDigits = 15 - dialCodeLength;
-
+                            const maxRemainingDigits = getRemainingCapacity();
                             const exampleNumber = iti.getExampleNumber();
+
                             if (exampleNumber) {
                                 const digitsOnly = exampleNumber.replace(/\D/g, '');
-                                // Use whichever is smaller: country-specific length or E.164 limit
                                 const finalMaxLength = Math.min(digitsOnly.length, maxRemainingDigits);
                                 el.setAttribute('maxlength', finalMaxLength.toString());
                             } else {
@@ -64,7 +69,11 @@ export default {
 
                 updatePlaceholderAndMaxLength();
 
-                el.addEventListener('countrychange', updatePlaceholderAndMaxLength);
+                el.addEventListener('countrychange', () => {
+                    updatePlaceholderAndMaxLength();
+                    // Re-clean on country change in case dial code changed
+                    cleanInput(el);
+                });
 
                 let isComposing = false;
                 el.addEventListener('compositionstart', () => { isComposing = true; });
@@ -92,10 +101,10 @@ export default {
                     const originalLength = target.value.length;
                     let cleaned = target.value.replace(/\D/g, '');
 
-                    // Enforce maxlength (calculated in updatePlaceholderAndMaxLength)
-                    const maxLength = target.getAttribute('maxlength');
-                    if (maxLength && cleaned.length > parseInt(maxLength)) {
-                        cleaned = cleaned.substring(0, parseInt(maxLength));
+                    // Hard capping by calculating total E.164 digits
+                    const maxRemaining = getRemainingCapacity();
+                    if (cleaned.length > maxRemaining) {
+                        cleaned = cleaned.substring(0, maxRemaining);
                     }
 
                     if (target.value !== cleaned) {
