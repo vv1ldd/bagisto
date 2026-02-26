@@ -55,13 +55,23 @@ class CustomerLoginLogRepository extends Repository
      */
     public function trackActivity($customer)
     {
-        $this->model
+        $log = $this->model
             ->where('customer_id', $customer->id)
             ->where('session_id', session()->getId())
-            ->update([
+            ->first();
+
+        if ($log && $log->logged_out_at) {
+            return false;
+        }
+
+        if ($log) {
+            $log->update([
                 'last_active_at' => now(),
                 'updated_at' => now(),
             ]);
+        }
+
+        return true;
     }
 
     /**

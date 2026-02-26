@@ -19,7 +19,14 @@ class TrackCustomerSession
         $response = $next($request);
 
         if (auth()->guard('customer')->check()) {
-            app(CustomerLoginLogRepository::class)->trackActivity(auth()->guard('customer')->user());
+            if (!app(CustomerLoginLogRepository::class)->trackActivity(auth()->guard('customer')->user())) {
+                auth()->guard('customer')->logout();
+
+                session()->invalidate();
+                session()->regenerateToken();
+
+                return redirect()->route('shop.customer.session.index');
+            }
         }
 
         return $response;
