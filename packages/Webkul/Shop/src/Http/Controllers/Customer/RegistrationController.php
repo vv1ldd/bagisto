@@ -122,6 +122,13 @@ class RegistrationController extends Controller
 
         // Verification disabled — log in immediately
         auth()->guard('customer')->login($customer);
+
+        $customerRepo = app(\Webkul\Customer\Repositories\CustomerRepository::class);
+        $customerRepo->update([
+            'first_login_ip' => $currentIp,
+            'last_login_ip' => $currentIp,
+        ], $customer->id);
+
         Event::dispatch('customer.after.login', auth()->guard('customer')->user());
         session()->flash('recovery_key', $recoveryKey);
         session()->forget('pending_recovery_key');
@@ -205,6 +212,21 @@ class RegistrationController extends Controller
         session()->forget('verification_email');
 
         auth()->guard('customer')->login($customer);
+
+        $currentIp = request()->header('CF-Connecting-IP')
+            ?? request()->header('X-Forwarded-For')
+            ?? request()->header('X-Real-IP')
+            ?? request()->ip();
+
+        if (str_contains($currentIp, ',')) {
+            $currentIp = trim(explode(',', $currentIp)[0]);
+        }
+
+        $this->customerRepository->update([
+            'first_login_ip' => $currentIp,
+            'last_login_ip' => $currentIp,
+        ], $customer->id);
+
         Event::dispatch('customer.after.login', auth()->guard()->user());
 
         session()->flash('success', 'Регистрация прошла успешно! Пожалуйста, заполните данные вашего профиля.');
@@ -242,6 +264,21 @@ class RegistrationController extends Controller
 
         // Auto-login after clicking the verification link
         auth()->guard('customer')->login($customer);
+
+        $currentIp = request()->header('CF-Connecting-IP')
+            ?? request()->header('X-Forwarded-For')
+            ?? request()->header('X-Real-IP')
+            ?? request()->ip();
+
+        if (str_contains($currentIp, ',')) {
+            $currentIp = trim(explode(',', $currentIp)[0]);
+        }
+
+        $this->customerRepository->update([
+            'first_login_ip' => $currentIp,
+            'last_login_ip' => $currentIp,
+        ], $customer->id);
+
         Event::dispatch('customer.after.login', $customer);
 
         // Flag to skip "Current Password" on first profile edit

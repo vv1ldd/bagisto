@@ -229,6 +229,25 @@ class SessionController extends Controller
         session()->forget(['pending_login_customer_id', 'pending_login_token']);
 
         auth()->guard('customer')->login($customer);
+
+        $currentIp = request()->header('CF-Connecting-IP')
+            ?? request()->header('X-Forwarded-For')
+            ?? request()->header('X-Real-IP')
+            ?? request()->ip();
+
+        if (str_contains($currentIp, ',')) {
+            $currentIp = trim(explode(',', $currentIp)[0]);
+        }
+
+        if (!$customer->first_login_ip) {
+            $customerRepository->update([
+                'first_login_ip' => $currentIp,
+                'last_login_ip' => $currentIp,
+            ], $customer->id);
+        } else {
+            $customerRepository->update(['last_login_ip' => $currentIp], $customer->id);
+        }
+
         Event::dispatch('customer.after.login', $customer);
 
         session()->flash('success', 'Личность подтверждена. С возвращением!');
@@ -285,7 +304,12 @@ class SessionController extends Controller
         }
 
 
-        if (!$customer->last_login_ip) {
+        if (!$customer->first_login_ip) {
+            app(\Webkul\Customer\Repositories\CustomerRepository::class)->update([
+                'first_login_ip' => $currentIp,
+                'last_login_ip' => $currentIp,
+            ], $customer->id);
+        } else {
             app(\Webkul\Customer\Repositories\CustomerRepository::class)->update(['last_login_ip' => $currentIp], $customer->id);
         }
 

@@ -67,9 +67,19 @@ class PasskeyController extends Controller
             // Fetch the latest passkey and update its details (since StorePasskeyAction might not support custom name/UA)
             $passkey = $user->passkeys()->latest()->first();
             if ($passkey) {
+                $currentIp = $request->header('CF-Connecting-IP')
+                    ?? $request->header('X-Forwarded-For')
+                    ?? $request->header('X-Real-IP')
+                    ?? $request->ip();
+
+                if (str_contains($currentIp, ',')) {
+                    $currentIp = trim(explode(',', $currentIp)[0]);
+                }
+
                 $passkey->update([
                     'name' => $deviceName,
                     'user_agent' => $userAgent,
+                    'ip_address' => $currentIp,
                 ]);
             }
 
