@@ -104,7 +104,7 @@
                             <div class="p-5">
                                 <!-- Rich Profile Card inside Dropdown -->
                                 <a href="{{ route('shop.customers.account.profile.edit') }}"
-                                    class="mb-6 flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50/50 p-4 transition hover:bg-zinc-100/80 active:scale-[0.98] group/card">
+                                    class="mb-6 flex items-center gap-4 rounded-2xl border border-white/40 bg-white/30 backdrop-blur-xl p-4 transition-all hover:bg-white/50 active:scale-[0.98] group/card shadow-[0_8px_32px_rgba(0,0,0,0.04)]">
                                     <div class="flex-grow">
                                         <h2
                                             class="text-lg font-bold text-zinc-900 leading-tight group-hover/card:text-[#7C45F5] transition">
@@ -171,7 +171,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                <!-- Loading State -->
+                                                                    <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -289,9 +289,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                    }">
+                                                                                            'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                            'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                        }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">

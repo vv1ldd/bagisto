@@ -1,7 +1,7 @@
 <div class="flex flex-col w-full">
     @foreach (menu()->getItems('customer') as $menuItem)
         @if ($menuItem->haveChildren())
-            <div class="ios-nav-group">
+            <div class="glass-card !bg-white/40 mb-6 overflow-hidden rounded-2xl">
                 @foreach ($menuItem->getChildren() as $subMenuItem)
 
                     <a href="{{ $subMenuItem->getUrl() }}" class="ios-nav-row">
