@@ -8,7 +8,7 @@
     $showWishlist = (bool) core()->getConfigData('customer.settings.wishlist.wishlist_option');
 @endphp
 
-<div class="flex flex-wrap gap-4 px-4 pt-4 pb-3 shadow-sm lg:hidden">
+<div class="flex flex-wrap gap-4 px-4 pt-4 pb-3 shadow-none lg:hidden glass-header border-none !bg-transparent">
     <div class="flex items-center justify-between w-full">
         <!-- Left Navigation -->
         <div class="flex items-center gap-x-5">
@@ -86,7 +86,7 @@
                                         <div class="p-5 pb-0">
                                             <!-- Rich Profile Card inside Mobile Dropdown -->
                                             <a href="{{ route('shop.customers.account.profile.edit') }}"
-                                                class="mb-5 flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50/50 p-4 transition active:bg-zinc-100 group/card">
+                                                class="mb-5 flex items-center gap-4 rounded-2xl border border-white/40 bg-white/30 backdrop-blur-xl p-4 transition-all active:scale-[0.98] group/card shadow-[0_8px_32px_rgba(0,0,0,0.04)]">
                                                 <div class="flex-grow">
                                                     <h2 class="text-lg font-bold text-zinc-900 leading-tight">
                                                         {{ auth()->guard('customer')->user()->first_name }}
