@@ -1,4 +1,4 @@
-@props(['showBack' => true])
+@props(['showBack' => true, 'showProfileCard' => true])
 
 <x-shop::layouts :has-feature="false">
     <!-- Page Title -->
@@ -88,7 +88,7 @@
                 $customer = auth()->guard('customer')->user();
             @endphp
 
-            @if ($customer)
+            @if ($showProfileCard && $customer)
                 <!-- iOS Style Profile Card (No Avatar) -->
                 <div class="flex flex-col items-center mt-6 mb-8 max-md:mt-4 max-md:mb-6 mx-auto w-full"
                     style="max-width: 600px;">
