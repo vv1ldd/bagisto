@@ -53,9 +53,11 @@
                             display: flex;
                             align-items: center;
                             justify-content: space-between;
-                            padding: 16px 20px;
+                            padding: 18px 20px;
+                            min-height: 60px;
                             border-bottom: 1px solid #f4f4f5;
                             position: relative;
+                            transition: padding 0.2s ease;
                         }
 
                         .ios-row:first-child {
@@ -130,8 +132,11 @@
                             background: transparent !important;
                             display: block;
                             text-align: right;
-                            font-size: 12px;
-                            margin-top: 2px;
+                            font-size: 11px;
+                            margin-top: 4px;
+                            line-height: 1.2;
+                            font-weight: 500;
+                            color: #ef4444 !important;
                         }
 
                         /* intl-tel-input overrides for iOS style */
@@ -532,14 +537,14 @@
                     @endif
 
 
-                    <div class="flex justify-center mt-8">
+                    <div class="flex justify-center mt-10">
                         @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                             <button type="submit"
-                                class="relative inline-flex items-center justify-center rounded-2xl px-20 py-5 text-center text-lg font-bold text-white transition-all duration-300 transform active:scale-95 group overflow-hidden"
-                                style="background: #7C45F5; box-shadow: 0 10px 30px rgba(124, 69, 245, 0.3);">
-                                <span class="relative z-10">@lang('shop::app.customers.account.profile.edit.save')</span>
+                                class="relative inline-flex items-center justify-center rounded-2xl px-24 py-5 text-center text-[17px] font-bold text-white transition-all duration-300 transform active:scale-95 group overflow-hidden"
+                                style="background: linear-gradient(135deg, #7C45F5 0%, #9061FF 100%); box-shadow: 0 12px 30px rgba(124, 69, 245, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.2);">
+                                <span class="relative z-10 tracking-wide">@lang('shop::app.customers.account.profile.edit.save')</span>
                                 <div
-                                    class="absolute inset-0 translate-y-[100%] bg-[#6534d4] transition-transform duration-300 group-hover:translate-y-0">
+                                    class="absolute inset-0 translate-y-[100%] bg-gradient-to-br from-[#6534d4] to-[#7C45F5] transition-transform duration-300 group-hover:translate-y-0">
                                 </div>
                             </button>
                         @else
