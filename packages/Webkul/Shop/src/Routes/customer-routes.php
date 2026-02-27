@@ -151,6 +151,9 @@ Route::prefix('customer')->group(function () {
 
                     Route::get('complete-registration-passkey', 'completeRegistrationPasskey')->name('shop.customers.account.profile.complete_registration_passkey');
 
+                    Route::get('complete-registration-success', 'completeRegistrationSuccess')->name('shop.customers.account.profile.complete_registration_success');
+
+
                     Route::post('edit', 'update')->name('shop.customers.account.profile.update');
 
                     Route::post('destroy', 'destroy')->name('shop.customers.account.profile.destroy');

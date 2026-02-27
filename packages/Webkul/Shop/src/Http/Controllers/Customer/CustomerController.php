@@ -84,6 +84,18 @@ class CustomerController extends Controller
     }
 
     /**
+     * Handle the final success redirect after registration flow.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function completeRegistrationSuccess()
+    {
+        session()->flash('success', 'Аккаунт успешно создан и вход настроен!');
+
+        return redirect()->route('shop.home.index');
+    }
+
+    /**
      * Edit function for editing customer profile.
      *
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse

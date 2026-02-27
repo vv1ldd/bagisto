@@ -45,7 +45,7 @@
                                 <span id="add-passkey-button-text">Привязать устройство</span>
                             </button>
 
-                            <a href="{{ route('shop.customers.account.index') }}"
+                            <a href="{{ route('shop.customers.account.profile.complete_registration_success') }}"
                                 class="flex w-full items-center justify-center rounded-full bg-white/60 px-8 py-3 text-[14px] font-medium text-[#4A1D96] transition-all hover:bg-white focus:ring-2 focus:ring-[#7C45F5] border border-[#7C45F5]/10">
                                 Продолжить с почтой (Magic Link)
                             </a>
@@ -237,7 +237,11 @@
 
                         if (registrationResponse.ok) {
                             console.log('Registration success confirmed by server');
-                            window.location.reload();
+                            @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                                window.location.href = '{!! route('shop.customers.account.profile.complete_registration_success') !!}';
+                            @else
+                                window.location.reload();
+                            @endif
                         } else {
                             const errorData = await registrationResponse.json();
                             console.error('Registration rejected by server:', errorData);
