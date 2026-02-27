@@ -3,10 +3,10 @@
         Проверка кода
         </x-slot>
 
-        <div class="flex min-h-screen w-full flex-wrap overflow-hidden bg-white">
+        <div class="flex min-h-[100dvh] w-full flex-wrap overflow-x-hidden bg-white">
             <!-- Left Side: Form -->
             <div
-                class="flex w-full flex-col min-h-screen px-8 pt-12 pb-6 md:px-10 md:pt-16 md:pb-10 lg:px-20 lg:pt-20 lg:pb-20 md:w-1/2">
+                class="flex w-full flex-col min-h-[100dvh] px-6 pt-8 pb-4 md:px-10 md:pt-16 md:pb-10 lg:px-20 lg:pt-20 lg:pb-20 md:w-1/2">
                 <!-- Header/Logo -->
                 <div class="mb-12 flex items-center justify-between">
                     <a href="{{ route('shop.home.index') }}"
@@ -17,7 +17,7 @@
                 </div>
 
                 <!-- Content Area -->
-                <div class="flex flex-grow flex-col justify-center py-10">
+                <div class="flex flex-grow flex-col justify-center py-6 md:py-10">
                     <div class="mx-auto w-full max-w-[400px]">
                         <div
                             class="mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-full bg-[#7C45F5]/10">
@@ -89,27 +89,27 @@
                                                 class="absolute inset-0 h-full w-full cursor-default opacity-0" type="tel"
                                                 name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
                                                 autofocus oninput="
-                                                                                            this.value = this.value.replace(/\D/g, '');
-                                                                                            const val = this.value;
-                                                                                            for(let i=0; i<6; i++) {
-                                                                                                const charEl = document.getElementById('otp-char-' + i);
-                                                                                                const cellEl = document.getElementById('otp-cell-' + i);
-                                                                                                if (val[i]) {
-                                                                                                    charEl.textContent = val[i];
-                                                                                                    charEl.classList.remove('text-zinc-300');
-                                                                                                    charEl.classList.add('text-zinc-800');
-                                                                                                    cellEl.classList.add('border-[#7C45F5]', 'bg-[#7C45F5]/5');
-                                                                                                    cellEl.classList.remove('border-zinc-200', 'bg-zinc-50');
-                                                                                                } else {
-                                                                                                    charEl.textContent = '_';
-                                                                                                    charEl.classList.add('text-zinc-300');
-                                                                                                    charEl.classList.remove('text-zinc-800');
-                                                                                                    cellEl.classList.remove('border-[#7C45F5]', 'bg-[#7C45F5]/5');
-                                                                                                    cellEl.classList.add('border-zinc-200', 'bg-zinc-50');
+                                                                                                this.value = this.value.replace(/\D/g, '');
+                                                                                                const val = this.value;
+                                                                                                for(let i=0; i<6; i++) {
+                                                                                                    const charEl = document.getElementById('otp-char-' + i);
+                                                                                                    const cellEl = document.getElementById('otp-cell-' + i);
+                                                                                                    if (val[i]) {
+                                                                                                        charEl.textContent = val[i];
+                                                                                                        charEl.classList.remove('text-zinc-300');
+                                                                                                        charEl.classList.add('text-zinc-800');
+                                                                                                        cellEl.classList.add('border-[#7C45F5]', 'bg-[#7C45F5]/5');
+                                                                                                        cellEl.classList.remove('border-zinc-200', 'bg-zinc-50');
+                                                                                                    } else {
+                                                                                                        charEl.textContent = '_';
+                                                                                                        charEl.classList.add('text-zinc-300');
+                                                                                                        charEl.classList.remove('text-zinc-800');
+                                                                                                        cellEl.classList.remove('border-[#7C45F5]', 'bg-[#7C45F5]/5');
+                                                                                                        cellEl.classList.add('border-zinc-200', 'bg-zinc-50');
+                                                                                                    }
                                                                                                 }
-                                                                                            }
-                                                                                            if(val.length === 6) this.form.submit();
-                                                                                        " />
+                                                                                                if(val.length === 6) this.form.submit();
+                                                                                            " />
                                         </div>
                                     </div>
 
