@@ -536,6 +536,7 @@ return [
                     'back-button' => 'Back to Main Menu',
                     'bagisto' => 'Bagisto',
                     'compare' => 'Compare',
+                    'cart' => 'Cart',
                     'currencies' => 'Currencies',
                     'dropdown-text' => 'Manage Cart, Orders & Wishlist',
                     'locales' => 'Locales',
