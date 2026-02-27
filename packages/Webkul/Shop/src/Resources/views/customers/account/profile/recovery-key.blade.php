@@ -4,10 +4,10 @@
         @lang('shop::app.customers.account.profile.edit.edit-profile')
         </x-slot>
 
-        <div class="flex-auto p-8 max-md:p-5 pt-8">
+        <div class="flex-auto p-8 max-md:p-5 pt-8" style="margin-top: 10vh;">
             <div class="max-w-[600px] mx-auto w-full">
                 <div
-                    class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] border border-[#E9E1FF] p-10 md:p-14 flex flex-col items-center text-center shadow-[0_20px_50px_rgba(124,69,245,0.1)] relative overflow-hidden">
+                    class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-10 md:p-14 flex flex-col items-center text-center relative overflow-hidden">
                     <!-- Decorative background elements -->
                     <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
                     <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
@@ -54,7 +54,7 @@
                         <a href="{{ route('shop.customers.account.profile.complete_registration') }}"
                             class="relative inline-flex items-center justify-center rounded-2xl px-20 py-5 text-center text-lg font-bold text-white transition-all duration-300 transform active:scale-95 group overflow-hidden"
                             style="background: #7C45F5; box-shadow: 0 10px 30px rgba(124, 69, 245, 0.3);">
-                            <span class="relative z-10">Продолжить далее</span>
+                            <span class="relative z-10">Продолжить</span>
                             <div
                                 class="absolute inset-0 translate-y-[100%] bg-[#6534d4] transition-transform duration-300 group-hover:translate-y-0">
                             </div>
