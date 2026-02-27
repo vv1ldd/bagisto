@@ -27,6 +27,7 @@ export default {
                     separateDialCode: true,
                     strictMode: true,
                     countrySearch: true,
+                    useFullscreenPopup: false,
                     utilsScript: `https://cdn.jsdelivr.net/npm/intl-tel-input@${utilsScriptVersion}/build/js/utils.js`,
                     preferredCountries: ["ru", "by", "kz", "uz", "ua"],
                     i18n: {

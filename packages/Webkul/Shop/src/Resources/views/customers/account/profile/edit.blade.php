@@ -134,16 +134,33 @@
                         }
 
                         .iti__flag-container {
-                            z-index: 5 !important;
+                            z-index: 10 !important;
                             cursor: pointer !important;
                         }
 
                         .iti--container {
-                            z-index: 9999 !important;
+                            z-index: 99999 !important;
                         }
 
                         .iti__country-list {
-                            z-index: 9999 !important;
+                            z-index: 99999 !important;
+                            border-radius: 12px !important;
+                            box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+                            border: 1px solid #e4e4e7 !important;
+                            background-color: #fff !important;
+                        }
+
+                        /* Ensure search input inside iti list is always visible and correctly styled */
+                        .iti__search-input {
+                            margin-top: 5px !important;
+                            margin-bottom: 5px !important;
+                            border: 1px solid #e4e4e7 !important;
+                            border-radius: 8px !important;
+                            padding: 8px 12px !important;
+                            width: calc(100% - 20px) !important;
+                            margin-left: 10px !important;
+                            margin-right: 10px !important;
+                            box-sizing: border-box !important;
                         }
 
                         /* Hide browser date/time icons */
