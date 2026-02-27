@@ -145,6 +145,8 @@ Route::prefix('customer')->group(function () {
                 Route::prefix('profile')->group(function () {
                     Route::get('edit', 'edit')->name('shop.customers.account.profile.edit');
 
+                    Route::get('recovery-key', 'recoveryKey')->name('shop.customers.account.profile.recovery_key');
+
                     Route::post('edit', 'update')->name('shop.customers.account.profile.update');
 
                     Route::post('destroy', 'destroy')->name('shop.customers.account.profile.destroy');

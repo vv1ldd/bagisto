@@ -137,7 +137,7 @@ class RegistrationController extends Controller
         session()->flash('recovery_key', $recoveryKey);
         session()->forget('pending_recovery_key');
 
-        return redirect()->route('shop.customers.account.profile.edit');
+        return redirect()->route('shop.customers.account.profile.recovery_key');
     }
 
     /**
@@ -238,7 +238,7 @@ class RegistrationController extends Controller
 
         session()->flash('success', 'Регистрация прошла успешно! Пожалуйста, заполните данные вашего профиля.');
 
-        return redirect()->route('shop.customers.account.profile.edit');
+        return redirect()->route('shop.customers.account.profile.recovery_key');
     }
 
     /**
@@ -303,7 +303,7 @@ class RegistrationController extends Controller
 
         session()->flash('success', 'Почта подтверждена! Пожалуйста, заполните данные профиля.');
 
-        return redirect()->route('shop.customers.account.profile.edit');
+        return redirect()->route('shop.customers.account.profile.recovery_key');
     }
 
     /**

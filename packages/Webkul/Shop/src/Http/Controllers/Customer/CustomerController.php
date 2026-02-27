@@ -40,6 +40,20 @@ class CustomerController extends Controller
     }
 
     /**
+     * Show recovery key page.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function recoveryKey()
+    {
+        if (!session()->has('recovery_key')) {
+            return redirect()->route('shop.customers.account.profile.edit');
+        }
+
+        return view('shop::customers.account.profile.recovery-key');
+    }
+
+    /**
      * Edit function for editing customer profile.
      *
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse

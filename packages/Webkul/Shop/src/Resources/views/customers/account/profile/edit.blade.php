@@ -323,24 +323,6 @@
                 @endpush
 
                 <div class="ios-settings-wrapper">
-                    @if (session()->has('recovery_key'))
-                        <div
-                            class="mb-6 rounded-2xl bg-[#FFFBF0] border border-[#FBE3A1] p-6 flex flex-col md:flex-row items-start gap-4 shadow-sm">
-                            <span class="icon-information text-3xl text-[#F5A623] md:mt-1"></span>
-                            <div>
-                                <h3 class="text-[#8C6D1F] text-lg font-bold mb-2">Сохраните резервный ключ!</h3>
-                                <p class="text-[#8C6D1F]/80 text-[15px] mb-4 leading-relaxed">
-                                    Это ваш супер-секретный ключ доступа. Если вы потеряете доступ к почте и устройствам,
-                                    вы сможете использовать его вместе с вашими данными для восстановления аккаунта.
-                                    <strong>Этот ключ показывается только один раз!</strong>
-                                </p>
-                                <div
-                                    class="bg-[#FBE3A1]/30 border border-[#F5A623]/20 rounded-xl p-4 text-center text-[#8C6D1F] font-mono font-bold tracking-widest text-xl md:text-2xl select-all">
-                                    {{ session('recovery_key') }}
-                                </div>
-                            </div>
-                        </div>
-                    @endif
 
                     <!-- Group 1: Contact Info -->
                     <div class="ios-group">
