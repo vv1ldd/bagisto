@@ -2,20 +2,15 @@
     $isCompleteRegistration = isset($isCompleteRegistration) && $isCompleteRegistration;
 @endphp
 
-@if ($isCompleteRegistration)
-    <x-shop::layouts.split-screen title="Продолжение регистрации">
-@else
-    <x-shop::layouts.account.index
-        :show-back="true"
-        :show-profile-card="true"
-        :has-header="true"
-        :has-footer="true"
-        :title="trans('shop::app.customers.account.profile.edit.edit-profile')"
-    >
-@endif
+<x-shop::layouts.account
+    :show-back="!$isCompleteRegistration"
+    :show-profile-card="!$isCompleteRegistration"
+    :has-header="!$isCompleteRegistration"
+    :has-footer="!$isCompleteRegistration"
+>
     <!-- Page Title -->
     <x-slot:title>
-        @if ($isCompleteRegistration)
+        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
             Продолжение регистрации
         @else
             @lang('shop::app.customers.account.profile.edit.edit-profile')
@@ -35,8 +30,13 @@
 
             <!-- Profile Edit Form -->
             <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data" class="w-full">
-                @if ($isCompleteRegistration)
+                @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                     <input type="hidden" name="is_complete_registration" value="1">
+                    
+                    <!-- Site Logo -->
+                    <div class="flex justify-center mb-3 w-full max-w-[540px] mx-auto">
+                        <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg', 'shop') }}" alt="{{ config('app.name') }}" class="h-8 md:h-10 object-contain max-w-[200px]">
+                    </div>
                 @endif
 
                 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.before', ['customer' => $customer]) !!}
@@ -347,14 +347,19 @@
                 @endpush
 
                 <div class="ios-settings-wrapper max-w-[540px] mx-auto w-full">
-                    @if ($isCompleteRegistration)
-                        <div class="w-full mx-auto z-10 relative">
-                            <h2 class="text-3xl font-extrabold text-[#4A1D96] mb-2 mt-0 text-center tracking-tight">Расскажите о себе</h2>
-                            <p class="text-[15px] text-zinc-500 mb-8 text-center mx-auto max-w-[320px] leading-relaxed">
-                                Заполните базовую информацию, чтобы мы могли персонализировать ваш профиль.
-                            </p>
+                    @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-6 md:p-8 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
+                            <!-- Decorative background elements -->
+                            <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
+                            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
 
-                            <div class="ios-group w-full !mb-4 border border-zinc-200">
+                            <div class="w-full mx-auto z-10 relative">
+                                <h2 class="text-[22px] md:text-2xl font-bold text-zinc-900 mb-1 mt-0 text-center">Расскажите о себе</h2>
+                                <p class="text-[14px] text-zinc-600 mb-4 text-center mx-auto max-w-[320px]">
+                                    Заполните базовую информацию, чтобы мы могли персонализировать ваш профиль.
+                                </p>
+
+                                <div class="ios-group w-full !mb-4 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm !rounded-[24px] overflow-hidden">
                     @else
                         <!-- Group 1: Contact Info -->
                         <div class="ios-group">
@@ -539,16 +544,19 @@
                         </div>
                     @endif
 
-                    @if ($isCompleteRegistration)
-                            </div> <!-- End ios-group -->
+                    @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                                </div> <!-- End ios-group -->
 
-                            <div class="flex justify-center mt-6">
-                                <button type="submit"
-                                    class="flex w-full items-center justify-center gap-3 rounded-full bg-[#7C45F5] px-8 py-4 text-center text-[15px] font-bold text-white shadow-xl shadow-[#7C45F5]/25 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98]">
-                                    @lang('shop::app.customers.account.profile.edit.save')
-                                </button>
-                            </div>
-                        </div> <!-- End wrapper relative -->
+                                </div> <!-- End ios-group -->
+
+                                <div class="flex justify-center mt-4">
+                                    <button type="submit"
+                                        class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-xl shadow-purple-500/25 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98]">
+                                        @lang('shop::app.customers.account.profile.edit.save')
+                                    </button>
+                                </div>
+                            </div> <!-- End max-w container inside premium background -->
+                        </div> <!-- End premium background -->
                     @else
                         </div> <!-- End ios-group -->
 
@@ -568,8 +576,4 @@
             {!! view_render_event('bagisto.shop.customers.account.profile.edit.after', ['customer' => $customer]) !!}
 
         </div>
-@if ($isCompleteRegistration)
-    </x-shop::layouts.split-screen>
-@else
-    </x-shop::layouts.account.index>
-@endif
+</x-shop::layouts.account>

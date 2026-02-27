@@ -101,7 +101,7 @@
         </div>
     @endif
 
-    <div class="flex justify-center bg-white border-t border-zinc-200 px-[60px] py-6 max-sm:px-5">
+    <div class="flex justify-center bg-white/40 backdrop-blur-xl border-t border-white/20 px-[60px] py-6 max-sm:px-5">
         {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
 
         <p class="text-center text-[13px] font-medium text-zinc-500 tracking-wide uppercase">
