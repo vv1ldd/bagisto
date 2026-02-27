@@ -39,44 +39,25 @@
                             </x-slot>
 
                             <!-- Guest Dropdown -->
-                            <!-- Guest Dropdown -->
                             @guest('customer')
                                 <x-slot:content class="!p-0 min-w-[280px] overflow-hidden">
                                     <div class="h-0.5 w-full"
                                         style="background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%);"></div>
 
-                                    <div class="p-5 pb-2">
-                                        <div
-                                            class="mb-4 flex items-center gap-4 rounded-2xl border border-white/40 bg-zinc-50/50 p-4 shadow-sm">
-                                            <div
-                                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#7C45F5]/10">
-                                                <span class="icon-profile text-2xl text-[#7C45F5]"></span>
-                                            </div>
-                                            <div>
-                                                <p class="text-base font-bold text-zinc-900 leading-tight">
-                                                    @lang('shop::app.components.layouts.header.mobile.welcome-guest')
-                                                </p>
-                                                <p class="text-xs text-zinc-500 mt-0.5">
-                                                    @lang('shop::app.components.layouts.header.mobile.dropdown-text')
-                                                </p>
-                                            </div>
+                                    <div class="p-6">
+                                        <div class="mb-5 flex flex-col gap-3 text-left">
+                                            <p class="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.25em] ml-1 opacity-70 uppercase">
+                                                Личный кабинет
+                                            </p>
+                                            
+                                            <a href="{{ route('shop.customer.session.create') }}"
+                                                class="flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-6 py-4 text-center text-[15px] font-bold text-white shadow-xl shadow-purple-500/25 transition-all active:scale-[0.98]">
+                                                Войти / Регистрация
+                                            </a>
                                         </div>
 
                                         <div class="space-y-1">
                                             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.before') !!}
-
-                                            <a class="flex items-center gap-3 px-4 py-2.5 text-base font-medium text-zinc-700 transition active:bg-zinc-100 rounded-xl"
-                                                href="{{ route('shop.customer.session.create') }}">
-                                                <span
-                                                    class="icon-arrow-right text-xl text-zinc-400 rtl:icon-arrow-left"></span>
-                                                @lang('shop::app.components.layouts.header.mobile.sign-in')
-                                            </a>
-
-                                            <a class="flex items-center gap-3 px-4 py-2.5 text-base font-medium text-zinc-700 transition active:bg-zinc-100 rounded-xl"
-                                                href="{{ route('shop.customers.register.index') }}">
-                                                <span class="icon-profile text-xl text-zinc-400"></span>
-                                                @lang('shop::app.components.layouts.header.mobile.sign-up')
-                                            </a>
 
                                             <a class="flex items-center gap-3 px-4 py-2.5 text-base font-medium text-zinc-700 transition active:bg-zinc-100 rounded-xl"
                                                 href="{{ route('shop.checkout.cart.index') }}">
