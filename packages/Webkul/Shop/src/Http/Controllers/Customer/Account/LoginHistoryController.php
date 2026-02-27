@@ -48,7 +48,7 @@ class LoginHistoryController extends Controller
         if (request()->has('all')) {
             $loginHistory = $query->paginate(10);
         } else {
-            $loginHistory = $query->limit(3)->get();
+            $loginHistory = $query->paginate(3);
         }
 
         return view('shop::customers.account.login-activity.index', compact('activeSessions', 'loginHistory'));
