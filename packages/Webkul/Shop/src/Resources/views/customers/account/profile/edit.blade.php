@@ -326,6 +326,11 @@
                                 font-size: 14px !important;
                             }
                         }
+                        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                            .ios-settings-wrapper {
+                                margin-top: 10vh; /* Basic centering vertical-ish */
+                            }
+                        @endif
                     </style>
                 @endpush
 
@@ -393,19 +398,21 @@
                         </div>
 
                         <!-- Phone -->
-                        <div class="ios-row">
-                            <label class="ios-label">@lang('shop::app.customers.account.profile.edit.phone') <span
-                                    class="text-red-500">*</span></label>
-                            <div class="ios-input-wrapper">
-                                <x-shop::form.control-group class="!mb-0">
-                                    <x-shop::form.control-group.control type="text" name="phone" rules="required|phone" v-phone
-                                        :value="old('phone') ?? $customer->phone" placeholder="Телефон"
-                                        :label="trans('shop::app.customers.account.profile.edit.phone')" />
-                                    <x-shop::form.control-group.error control-name="phone" />
-                                </x-shop::form.control-group>
-                                <span class="ios-arrow icon-arrow-right"></span>
+                        @if (! (isset($isCompleteRegistration) && $isCompleteRegistration))
+                            <div class="ios-row">
+                                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.phone') <span
+                                        class="text-red-500">*</span></label>
+                                <div class="ios-input-wrapper">
+                                    <x-shop::form.control-group class="!mb-0">
+                                        <x-shop::form.control-group.control type="text" name="phone" rules="required|phone" v-phone
+                                            :value="old('phone') ?? $customer->phone" placeholder="Телефон"
+                                            :label="trans('shop::app.customers.account.profile.edit.phone')" />
+                                        <x-shop::form.control-group.error control-name="phone" />
+                                    </x-shop::form.control-group>
+                                    <span class="ios-arrow icon-arrow-right"></span>
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
                         <!-- Address -->
                         @if (! (isset($isCompleteRegistration) && $isCompleteRegistration))
@@ -491,20 +498,22 @@
 
 
                     <!-- Newsletter Toggle -->
-                    <div class="ios-switch-row">
-                        <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0"
-                            for="is-subscribed">
-                            Подписаться на уведомления
-                        </label>
-
-                        <div class="ios-toggle-container">
-                            <label class="ios-switch">
-                                <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed"
-                                    @checked($customer->subscribed_to_news_letter)>
-                                <span class="ios-slider"></span>
+                    @if (! (isset($isCompleteRegistration) && $isCompleteRegistration))
+                        <div class="ios-switch-row">
+                            <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0"
+                                for="is-subscribed">
+                                Подписаться на уведомления
                             </label>
+
+                            <div class="ios-toggle-container">
+                                <label class="ios-switch">
+                                    <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed"
+                                        @checked($customer->subscribed_to_news_letter)>
+                                    <span class="ios-slider"></span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <div class="flex justify-center">
                         <button type="submit"
