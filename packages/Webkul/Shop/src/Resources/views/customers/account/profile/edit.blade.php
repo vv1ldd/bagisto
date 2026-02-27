@@ -25,15 +25,20 @@
 
 
 
-        <div class="flex-auto p-8 max-md:p-5 pt-4">
+        <div class="flex-auto p-4 md:p-8 pt-6 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
 
 
             {!! view_render_event('bagisto.shop.customers.account.profile.edit.before', ['customer' => $customer]) !!}
 
             <!-- Profile Edit Form -->
-            <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data">
+            <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data" class="w-full">
                 @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                     <input type="hidden" name="is_complete_registration" value="1">
+                    
+                    <!-- Site Logo -->
+                    <div class="flex justify-center mb-6 w-full max-w-[540px] mx-auto">
+                        <img src="{{ bagisto_asset('images/logo.svg', 'shop') }}" alt="{{ config('app.name') }}" class="h-8 object-contain">
+                    </div>
                 @endif
 
                 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.before', ['customer' => $customer]) !!}
@@ -343,9 +348,9 @@
                     </style>
                 @endpush
 
-                <div class="ios-settings-wrapper">
+                <div class="ios-settings-wrapper max-w-[540px] mx-auto w-full">
                     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-10 md:p-14 flex flex-col items-center relative overflow-hidden w-full">
+                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-8 md:p-10 flex flex-col items-center relative overflow-hidden w-full">
                             <!-- Decorative background elements -->
                             <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
                             <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
