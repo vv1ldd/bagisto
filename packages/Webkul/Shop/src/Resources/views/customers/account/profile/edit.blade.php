@@ -1,15 +1,18 @@
 @php
     $isCompleteRegistration = isset($isCompleteRegistration) && $isCompleteRegistration;
-    $layoutName = $isCompleteRegistration ? 'shop::layouts.split-screen' : 'shop::layouts.account.index';
 @endphp
 
-<x-dynamic-component :component="$layoutName"
-    :show-back="!$isCompleteRegistration"
-    :show-profile-card="!$isCompleteRegistration"
-    :has-header="!$isCompleteRegistration"
-    :has-footer="!$isCompleteRegistration"
-    :title="$isCompleteRegistration ? 'Продолжение регистрации' : trans('shop::app.customers.account.profile.edit.edit-profile')"
->
+@if ($isCompleteRegistration)
+    <x-shop::layouts.split-screen title="Продолжение регистрации">
+@else
+    <x-shop::layouts.account.index
+        :show-back="true"
+        :show-profile-card="true"
+        :has-header="true"
+        :has-footer="true"
+        :title="trans('shop::app.customers.account.profile.edit.edit-profile')"
+    >
+@endif
     <!-- Page Title -->
     <x-slot:title>
         @if ($isCompleteRegistration)
@@ -565,4 +568,8 @@
             {!! view_render_event('bagisto.shop.customers.account.profile.edit.after', ['customer' => $customer]) !!}
 
         </div>
-</x-dynamic-component>
+@if ($isCompleteRegistration)
+    </x-shop::layouts.split-screen>
+@else
+    </x-shop::layouts.account.index>
+@endif
