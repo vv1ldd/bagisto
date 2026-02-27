@@ -40,6 +40,7 @@ class ProfileRequest extends FormRequest
             'image.*' => 'mimes:bmp,jpeg,jpg,png,webp',
             'phone' => ['nullable', new PhoneNumber, 'unique:customers,phone,' . $id],
             'subscribed_to_news_letter' => 'nullable',
+            'is_complete_registration' => 'boolean|nullable',
         ];
     }
 
