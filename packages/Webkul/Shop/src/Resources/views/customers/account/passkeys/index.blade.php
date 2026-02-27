@@ -1,17 +1,23 @@
 @php
     $isCompleteRegistration = isset($isCompleteRegistration) && $isCompleteRegistration;
+    $layoutName = $isCompleteRegistration ? 'shop::layouts.split-screen' : 'shop::layouts.account.index';
 @endphp
 
-<x-shop::layouts.account :show-back="!$isCompleteRegistration" :show-profile-card="!$isCompleteRegistration"
-    :has-header="!$isCompleteRegistration" :has-footer="!$isCompleteRegistration">
+<x-dynamic-component :component="$layoutName"
+    :show-back="!$isCompleteRegistration"
+    :show-profile-card="!$isCompleteRegistration"
+    :has-header="!$isCompleteRegistration"
+    :has-footer="!$isCompleteRegistration"
+    :title="$isCompleteRegistration ? 'Добавление Passkey' : 'Способы входа'"
+>
     <!-- Page Title -->
     <x-slot:title>
-        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+        @if ($isCompleteRegistration)
             Добавление Passkey
         @else
             Способы входа
         @endif
-        </x-slot>
+    </x-slot>
 
         <!-- Breadcrumbs -->
         @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
@@ -21,30 +27,20 @@
         @endif
 
         <div class="w-full flex flex-col items-center">
-            @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                <div class="w-full max-w-[540px] mx-auto z-10 relative">
-                    <!-- Site Logo -->
-                    <div class="flex justify-center mb-3">
-                        <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg', 'shop') }}" alt="{{ config('app.name') }}" class="h-8 md:h-10 object-contain max-w-[200px]">
+            @if ($isCompleteRegistration)
+                <div class="w-full mx-auto z-10 relative">
+                    <h3 class="text-3xl font-extrabold text-[#4A1D96] mb-2 mt-0 text-center tracking-tight">Быстрый вход</h3>
+
+                    <div class="space-y-2 mb-8">
+                        <p class="text-[15px] text-zinc-500 leading-relaxed max-w-[320px] mx-auto text-center">
+                            Добавьте это устройство (отпечаток или FaceID) для мгновенного входа без пароля.
+                        </p>
                     </div>
 
-                    <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
-                        <!-- Decorative background elements -->
-                        <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
-                        <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
-
-                        <h3 class="text-[#4A1D96] text-[26px] md:text-3xl font-extrabold mb-2 tracking-tight leading-tight">Быстрый вход</h3>
-
-                        <div class="space-y-2 mb-4">
-                            <p class="text-[#4A1D96]/90 text-[15px] leading-relaxed max-w-[320px] mx-auto">
-                                Добавьте это устройство (отпечаток или FaceID) для мгновенного входа без пароля.
-                            </p>
-                        </div>
-
-                        <div class="w-full relative z-10 max-w-[320px] mx-auto flex flex-col gap-3">
+                    <div class="w-full relative z-10 max-w-[320px] mx-auto flex flex-col gap-4">
                             <button type="button" id="add-passkey-button"
                                 onclick="window.startPasskeyRegistration()"
-                                class="flex w-full items-center justify-center gap-2 rounded-full bg-[#7C45F5] px-8 py-3.5 text-[15px] font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50">
+                                class="flex w-full items-center justify-center gap-2 rounded-full bg-[#7C45F5] px-8 py-4 text-[15px] font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-xl shadow-[#7C45F5]/25 disabled:opacity-50">
                                 <span class="icon-add text-lg"></span>
                                 <span id="add-passkey-button-text">Привязать устройство</span>
                             </button>
@@ -54,7 +50,6 @@
                                 Продолжить с почтой (Magic Link)
                             </a>
                         </div>
-                    </div> <!-- End premium registration container -->
                 </div> <!-- End absolute center wrapper -->
             @else
                 <!-- Original Profile Settings View -->
@@ -264,4 +259,4 @@
                 };
             </script>
         @endpush
-</x-shop::layouts.account>
+</x-dynamic-component>
