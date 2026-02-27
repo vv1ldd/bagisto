@@ -39,11 +39,17 @@ class LoginHistoryController extends Controller
                     ->where('last_active_at', '>=', now()->subMinutes($lifetime));
             })->get();
 
-        $loginHistory = $this->customerLoginLogRepository
+        $query = $this->customerLoginLogRepository
             ->scopeQuery(function ($query) use ($customer) {
                 return $query->where('customer_id', $customer->id)
                     ->orderBy('created_at', 'desc');
-            })->paginate(10);
+            });
+
+        if (request()->has('all')) {
+            $loginHistory = $query->paginate(10);
+        } else {
+            $loginHistory = $query->limit(3)->get();
+        }
 
         return view('shop::customers.account.login-activity.index', compact('activeSessions', 'loginHistory'));
     }

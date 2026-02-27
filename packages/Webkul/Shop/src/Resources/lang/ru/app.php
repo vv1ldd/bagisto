@@ -90,6 +90,7 @@ return [
                 'last-activity' => 'Активность',
                 'revoke' => 'Выйти',
                 'empty-history' => 'История входов пуста',
+                'view-all-history' => 'посмотреть всю историю',
             ],
 
             'profile' => [

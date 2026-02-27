@@ -92,8 +92,19 @@
                             @endforeach
                         </div>
 
-                        <div class="mt-4">
-                            {{ $loginHistory->links() }}
+                        <div class="mt-4 flex justify-between items-center">
+                            @if (!request()->has('all') && $loginHistory->count() >= 3)
+                                <a href="{{ route('shop.customers.account.login_activity.index', ['all' => 1]) }}"
+                                    class="text-sm font-medium text-[#7C45F5] hover:underline">
+                                    @lang('shop::app.customers.account.login-activity.view-all-history')
+                                </a>
+                            @endif
+
+                            @if (request()->has('all'))
+                                <div>
+                                    {{ $loginHistory->links() }}
+                                </div>
+                            @endif
                         </div>
                     @else
                         <div class="glass-card !bg-white/40 p-10 text-center rounded-3xl">
