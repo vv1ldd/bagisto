@@ -51,7 +51,7 @@
                     </div>
 
                     <div class="flex justify-center w-full">
-                        <a href="{{ route('shop.customers.account.profile.edit') }}"
+                        <a href="{{ route('shop.customers.account.profile.complete_registration') }}"
                             class="relative inline-flex items-center justify-center rounded-2xl px-20 py-5 text-center text-lg font-bold text-white transition-all duration-300 transform active:scale-95 group overflow-hidden"
                             style="background: #7C45F5; box-shadow: 0 10px 30px rgba(124, 69, 245, 0.3);">
                             <span class="relative z-10">Продолжить далее</span>

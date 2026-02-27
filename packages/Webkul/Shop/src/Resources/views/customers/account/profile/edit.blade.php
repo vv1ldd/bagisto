@@ -1,8 +1,12 @@
 <x-shop::layouts.account>
     <!-- Page Title -->
     <x-slot:title>
-        @lang('shop::app.customers.account.profile.edit.edit-profile')
-        </x-slot>
+        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+            Продолжение регистрации
+        @else
+            @lang('shop::app.customers.account.profile.edit.edit-profile')
+        @endif
+    </x-slot>
 
         <!-- Breadcrumbs -->
         @if ((core()->getConfigData('general.general.breadcrumbs.shop')))

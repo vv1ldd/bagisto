@@ -147,6 +147,8 @@ Route::prefix('customer')->group(function () {
 
                     Route::get('recovery-key', 'recoveryKey')->name('shop.customers.account.profile.recovery_key');
 
+                    Route::get('complete-registration', 'completeRegistration')->name('shop.customers.account.profile.complete_registration');
+
                     Route::post('edit', 'update')->name('shop.customers.account.profile.update');
 
                     Route::post('destroy', 'destroy')->name('shop.customers.account.profile.destroy');

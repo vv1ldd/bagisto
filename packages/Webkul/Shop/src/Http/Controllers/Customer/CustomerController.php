@@ -47,10 +47,25 @@ class CustomerController extends Controller
     public function recoveryKey()
     {
         if (!session()->has('recovery_key')) {
-            return redirect()->route('shop.customers.account.profile.edit');
+            return redirect()->route('shop.customers.account.profile.complete_registration');
         }
 
         return view('shop::customers.account.profile.recovery-key');
+    }
+
+    /**
+     * Show the profile completion page after registration.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function completeRegistration()
+    {
+        $customer = $this->customerRepository->find(auth()->guard('customer')->user()->id);
+
+        return view('shop::customers.account.profile.edit', [
+            'customer' => $customer,
+            'isCompleteRegistration' => true,
+        ]);
     }
 
     /**
