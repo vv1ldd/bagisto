@@ -114,10 +114,11 @@ class RegistrationController extends Controller
         Event::dispatch('customer.registration.after', $customer);
 
         if (core()->getConfigData('customer.settings.email.verification')) {
-            // Show a "check your email for the link" screen
-            session(['verification_email' => $customer->email]);
-
-            return redirect()->route('shop.customers.verify.code');
+            // Show a "check your email for the link" screen in-place
+            return redirect()->back()->with([
+                'status' => 'verification-sent',
+                'email' => $customer->email,
+            ]);
         }
 
         // Verification disabled — log in immediately
