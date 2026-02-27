@@ -9,8 +9,8 @@
             <div class="max-w-[540px] mx-auto w-full">
                 <!-- Site Logo -->
                 <div class="flex justify-center mb-6">
-                    <img src="{{ bagisto_asset('images/logo.svg', 'shop') }}" alt="{{ config('app.name') }}"
-                        class="h-8 object-contain">
+                    <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg', 'shop') }}"
+                        alt="{{ config('app.name') }}" class="h-8 md:h-10 object-contain max-w-[200px]">
                 </div>
 
                 <div
