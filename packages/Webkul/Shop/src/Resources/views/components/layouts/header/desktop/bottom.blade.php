@@ -59,33 +59,47 @@
 
                     <!-- Guest Dropdown -->
                     @guest('customer')
-                        <x-slot:content class="!p-0 min-w-[320px] overflow-hidden">
+                        <x-slot:content class="!p-0 min-w-[280px] overflow-hidden">
                             <!-- Neon Accent Indicator -->
                             <div class="h-0.5 w-full" style="background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%);">
                             </div>
 
-                            <div class="p-6">
-                                <div class="mb-5">
-                                    <p class="text-2xl font-dmserif text-zinc-800">
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.welcome-guest')
-                                    </p>
-
-                                    <p class="mt-2 text-sm text-zinc-500 leading-relaxed">
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.dropdown-text')
-                                    </p>
+                            <div class="p-5">
+                                <div
+                                    class="mb-4 flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50/50 p-4 shadow-sm">
+                                    <div
+                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#7C45F5]/10">
+                                        <span class="icon-profile text-2xl text-[#7C45F5]"></span>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-bold text-zinc-900 leading-tight">
+                                            @lang('shop::app.components.layouts.header.desktop.bottom.welcome-guest')
+                                        </p>
+                                        <p class="text-xs text-zinc-500 mt-0.5">
+                                            @lang('shop::app.components.layouts.header.desktop.bottom.dropdown-text')
+                                        </p>
+                                    </div>
                                 </div>
 
-                                <div class="flex flex-col gap-3">
+                                <div class="space-y-1">
                                     {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.customers_action.before') !!}
 
-                                    <a href="{{ route('shop.customer.session.create') }}"
-                                        class="flex items-center justify-center rounded-2xl bg-[#7C45F5] px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] active:scale-[0.98]">
+                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
+                                        href="{{ route('shop.customer.session.create') }}">
+                                        <span class="icon-arrow-right text-xl text-zinc-400 rtl:icon-arrow-left"></span>
                                         @lang('shop::app.components.layouts.header.desktop.bottom.sign-in')
                                     </a>
 
-                                    <a href="{{ route('shop.customers.register.index') }}"
-                                        class="flex items-center justify-center rounded-2xl border-2 border-[#7C45F5] px-8 py-3 text-base font-medium text-[#7C45F5] transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98]">
+                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
+                                        href="{{ route('shop.customers.register.index') }}">
+                                        <span class="icon-profile text-xl text-zinc-400"></span>
                                         @lang('shop::app.components.layouts.header.desktop.bottom.sign-up')
+                                    </a>
+
+                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
+                                        href="{{ route('shop.checkout.cart.index') }}">
+                                        <span class="icon-cart text-xl text-zinc-400"></span>
+                                        @lang('shop::app.components.layouts.header.desktop.bottom.cart')
                                     </a>
 
                                     {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.customers_action.after') !!}
@@ -177,7 +191,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                        <!-- Loading State -->
+                                                                            <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -295,9 +309,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                                'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                            }">
+                                                                                                    'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                    'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">

@@ -39,41 +39,54 @@
                             </x-slot>
 
                             <!-- Guest Dropdown -->
+                            <!-- Guest Dropdown -->
                             @guest('customer')
-                                <x-slot:content class="min-w-[300px]">
-                                    <div class="p-5 pb-0">
-                                        <div class="grid gap-2.5">
-                                            <p class="text-xl font-dmserif text-zinc-800">
-                                                @lang('shop::app.components.layouts.header.mobile.welcome-guest')
-                                            </p>
+                                <x-slot:content class="!p-0 min-w-[280px] overflow-hidden">
+                                    <div class="h-0.5 w-full"
+                                        style="background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%);"></div>
 
-                                            <p class="text-sm text-zinc-500 leading-relaxed">
-                                                @lang('shop::app.components.layouts.header.mobile.dropdown-text')
-                                            </p>
+                                    <div class="p-5 pb-2">
+                                        <div
+                                            class="mb-4 flex items-center gap-4 rounded-2xl border border-white/40 bg-zinc-50/50 p-4 shadow-sm">
+                                            <div
+                                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#7C45F5]/10">
+                                                <span class="icon-profile text-2xl text-[#7C45F5]"></span>
+                                            </div>
+                                            <div>
+                                                <p class="text-base font-bold text-zinc-900 leading-tight">
+                                                    @lang('shop::app.components.layouts.header.mobile.welcome-guest')
+                                                </p>
+                                                <p class="text-xs text-zinc-500 mt-0.5">
+                                                    @lang('shop::app.components.layouts.header.mobile.dropdown-text')
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-1">
+                                            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.before') !!}
+
+                                            <a class="flex items-center gap-3 px-4 py-2.5 text-base font-medium text-zinc-700 transition active:bg-zinc-100 rounded-xl"
+                                                href="{{ route('shop.customer.session.create') }}">
+                                                <span
+                                                    class="icon-arrow-right text-xl text-zinc-400 rtl:icon-arrow-left"></span>
+                                                @lang('shop::app.components.layouts.header.mobile.sign-in')
+                                            </a>
+
+                                            <a class="flex items-center gap-3 px-4 py-2.5 text-base font-medium text-zinc-700 transition active:bg-zinc-100 rounded-xl"
+                                                href="{{ route('shop.customers.register.index') }}">
+                                                <span class="icon-profile text-xl text-zinc-400"></span>
+                                                @lang('shop::app.components.layouts.header.mobile.sign-up')
+                                            </a>
+
+                                            <a class="flex items-center gap-3 px-4 py-2.5 text-base font-medium text-zinc-700 transition active:bg-zinc-100 rounded-xl"
+                                                href="{{ route('shop.checkout.cart.index') }}">
+                                                <span class="icon-cart text-xl text-zinc-400"></span>
+                                                @lang('shop::app.components.layouts.header.mobile.cart')
+                                            </a>
+
+                                            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.after') !!}
                                         </div>
                                     </div>
-
-                                    <p class="w-full mt-3 border border-zinc-100"></p>
-
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.before') !!}
-
-                                    <div class="flex flex-col gap-3 p-5">
-                                        {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.sign_in_button.before') !!}
-
-                                        <a href="{{ route('shop.customer.session.create') }}"
-                                            class="flex w-full items-center justify-center rounded-2xl bg-[#7C45F5] px-8 py-4 text-center font-medium text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] active:scale-[0.98]">
-                                            @lang('shop::app.components.layouts.header.mobile.sign-in')
-                                        </a>
-
-                                        <a href="{{ route('shop.customers.register.index') }}"
-                                            class="flex w-full items-center justify-center rounded-2xl border-2 border-[#7C45F5] bg-white px-8 py-3.5 text-center font-medium text-[#7C45F5] transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98]">
-                                            @lang('shop::app.components.layouts.header.mobile.sign-up')
-                                        </a>
-
-                                        {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.sign_in_button.after') !!}
-                                    </div>
-
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.after') !!}
                                 </x-slot:content>
                             @endguest
 
