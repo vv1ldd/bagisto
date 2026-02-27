@@ -2,9 +2,10 @@
     'showBack' => true,
     'showProfileCard' => true,
     'hasHeader' => true,
+    'hasFooter' => true,
 ])
 
-<x-shop::layouts :has-header="$hasHeader" :has-feature="false">
+<x-shop::layouts :has-header="$hasHeader" :has-feature="false" :has-footer="$hasFooter">
     <!-- Page Title -->
     <x-slot:title>
         {{ $title ?? '' }}
@@ -159,9 +160,17 @@
                     </div>
                 @endif
 
+                @endif
+
 
             </div>
         </div>
+
+        @if (!$hasFooter)
+            <div class="w-full text-center py-6 text-xs font-semibold text-zinc-500 tracking-wider">
+                © {{ date('Y') }} MEANLY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
+            </div>
+        @endif
 
         @push('scripts')
             <script>

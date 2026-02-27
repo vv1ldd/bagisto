@@ -3,7 +3,7 @@
 @endphp
 
 <x-shop::layouts.account :show-back="!$isCompleteRegistration" :show-profile-card="!$isCompleteRegistration"
-    :has-header="!$isCompleteRegistration">
+    :has-header="!$isCompleteRegistration" :has-footer="!$isCompleteRegistration">
     <!-- Page Title -->
     <x-slot:title>
         @if (isset($isCompleteRegistration) && $isCompleteRegistration)
