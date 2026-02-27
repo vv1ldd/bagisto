@@ -45,27 +45,16 @@
                                         style="background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%);"></div>
 
                                     <div class="p-6">
-                                        <div class="mb-5 flex flex-col gap-3 text-left">
-                                            <p class="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.25em] ml-1 opacity-70 uppercase">
+                                        <div class="flex flex-col gap-3 text-left">
+                                            <p
+                                                class="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.25em] ml-1 opacity-70 uppercase">
                                                 Личный кабинет
                                             </p>
-                                            
+
                                             <a href="{{ route('shop.customer.session.create') }}"
                                                 class="flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-6 py-4 text-center text-[15px] font-bold text-white shadow-xl shadow-purple-500/25 transition-all active:scale-[0.98]">
                                                 Войти / Регистрация
                                             </a>
-                                        </div>
-
-                                        <div class="space-y-1">
-                                            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.before') !!}
-
-                                            <a class="flex items-center gap-3 px-4 py-2.5 text-base font-medium text-zinc-700 transition active:bg-zinc-100 rounded-xl"
-                                                href="{{ route('shop.checkout.cart.index') }}">
-                                                <span class="icon-cart text-xl text-zinc-400"></span>
-                                                @lang('shop::app.components.layouts.header.mobile.cart')
-                                            </a>
-
-                                            {!! view_render_event('bagisto.shop.components.layouts.header.mobile.index.customers_action.after') !!}
                                         </div>
                                     </div>
                                 </x-slot:content>

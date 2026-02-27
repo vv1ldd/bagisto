@@ -65,7 +65,7 @@
                             </div>
 
                             <div class="p-6">
-                                <div class="mb-5 flex flex-col gap-3">
+                                <div class="flex flex-col gap-3">
                                     <p class="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.25em] ml-1 opacity-70 uppercase">
                                         Личный кабинет
                                     </p>
@@ -74,18 +74,6 @@
                                         class="flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-6 py-4 text-center text-[15px] font-bold text-white shadow-xl shadow-purple-500/25 transition-all hover:shadow-purple-500/40 active:scale-[0.98]">
                                         Войти / Регистрация
                                     </a>
-                                </div>
-
-                                <div class="space-y-1">
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.customers_action.before') !!}
-
-                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
-                                        href="{{ route('shop.checkout.cart.index') }}">
-                                        <span class="icon-cart text-xl text-zinc-400"></span>
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.cart')
-                                    </a>
-
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.customers_action.after') !!}
                                 </div>
                             </div>
                         </x-slot:content>
