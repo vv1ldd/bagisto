@@ -81,6 +81,10 @@ class PasskeyController extends Controller
                     'user_agent' => $userAgent,
                     'ip_address' => $currentIp,
                 ]);
+
+                // Track this passkey as the current device's passkey
+                session()->put('current_session_passkey_id', $passkey->id);
+                Cookie::queue('current_device_passkey_id', $passkey->id, 60 * 24 * 365); // 1 year cookie
             }
 
             $request->session()->forget('passkey-registration-options-json');
@@ -204,6 +208,9 @@ class PasskeyController extends Controller
 
             session()->regenerate();
             session()->put('logged_in_via_passkey', true);
+            session()->put('current_session_passkey_id', $passkey->id); // Track current passkey
+            Cookie::queue('current_device_passkey_id', $passkey->id, 60 * 24 * 365); // Track device via cookie
+
             session()->forget('passkey-authentication-options-json');
 
             return response()->json([

@@ -81,8 +81,11 @@
                                                 </svg>
                                             </div>
                                             <div class="text-left">
-                                                <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm">
+                                                <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm flex items-center gap-2">
                                                     {{ $passkey->name ?: 'Passkey устройство' }}
+                                                    @if($passkey->id == session('current_session_passkey_id') || $passkey->id == request()->cookie('current_device_passkey_id'))
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 px-2 py-0.5 rounded-md">Это устройство</span>
+                                                    @endif
                                                 </p>
                                                 <p class="text-xs text-zinc-500">Добавлено:
                                                     {{ $passkey->created_at->format('d.m.Y') }}
