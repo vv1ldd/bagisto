@@ -85,17 +85,31 @@
             </div>
             {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
 
-            <!-- Add to Cart -->
+            <!-- Buy Now & Add to Cart -->
             @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
-                {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
-                <button
-                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white transition-all hover:bg-purple-600 disabled:opacity-50 disabled:hover:bg-zinc-900"
-                    :disabled="! product.is_saleable || isAddingToCart" @click="addToCart()"
-                    aria-label="@lang('shop::app.components.products.card.add-to-cart')">
-                    <span class="icon-cart text-lg" v-if="!isAddingToCart"></span>
-                    <span class="icon-spinner animate-spin text-lg" v-else></span>
-                </button>
-                {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.after') !!}
+                <div class="flex gap-2">
+                    {!! view_render_event('bagisto.shop.components.products.card.buy_now.before') !!}
+                    <button
+                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 text-white transition-all hover:bg-purple-700 disabled:opacity-50"
+                        :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(true)"
+                        title="@lang('shop::app.components.products.card.buy-now')"
+                        aria-label="@lang('shop::app.components.products.card.buy-now')">
+                        <span class="icon-checkout text-lg" v-if="!isAddingToCart"></span>
+                        <span class="icon-spinner animate-spin text-lg" v-else></span>
+                    </button>
+                    {!! view_render_event('bagisto.shop.components.products.card.buy_now.after') !!}
+
+                    {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
+                    <button
+                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white transition-all hover:bg-purple-600 disabled:opacity-50 disabled:hover:bg-zinc-900"
+                        :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(false)"
+                        title="@lang('shop::app.components.products.card.add-to-cart')"
+                        aria-label="@lang('shop::app.components.products.card.add-to-cart')">
+                        <span class="icon-cart text-lg" v-if="!isAddingToCart"></span>
+                        <span class="icon-spinner animate-spin text-lg" v-else></span>
+                    </button>
+                    {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.after') !!}
+                </div>
             @endif
         </div>
     </div>
@@ -197,15 +211,20 @@
         {!! view_render_event('bagisto.shop.components.products.card.average_ratings.after') !!}
 
         @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
+            <div class="flex gap-4">
+                {!! view_render_event('bagisto.shop.components.products.card.buy_now.before') !!}
+                <x-shop::button
+                    class="primary-button whitespace-nowrap px-8 py-2.5 bg-purple-600 border-purple-600 hover:bg-purple-700 hover:border-purple-700"
+                    :title="trans('shop::app.components.products.card.buy-now')" ::loading="isAddingToCart"
+                    ::disabled="! product.is_saleable || isAddingToCart" @click="addToCart(true)" />
+                {!! view_render_event('bagisto.shop.components.products.card.buy_now.after') !!}
 
-            {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
-
-            <x-shop::button class="primary-button whitespace-nowrap px-8 py-2.5"
-                :title="trans('shop::app.components.products.card.add-to-cart')" ::loading="isAddingToCart"
-                ::disabled="! product.is_saleable || isAddingToCart" @click="addToCart()" />
-
-            {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.after') !!}
-
+                {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
+                <x-shop::button class="secondary-button whitespace-nowrap px-8 py-2.5"
+                    :title="trans('shop::app.components.products.card.add-to-cart')" ::loading="isAddingToCart"
+                    ::disabled="! product.is_saleable || isAddingToCart" @click="addToCart(false)" />
+                {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.after') !!}
+            </div>
         @endif
     </div>
 </div>
@@ -299,18 +318,23 @@
                 return JSON.parse(value);
             },
 
-            addToCart() {
+            addToCart(isBuyNow = false) {
                 this.isAddingToCart = true;
 
                 this.$axios.post('{{ route("shop.api.checkout.cart.store") }}', {
                     'quantity': 1,
                     'product_id': this.product.id,
+                    'is_buy_now': isBuyNow ? 1 : 0,
                 })
                     .then(response => {
                         if (response.data.message) {
                             this.$emitter.emit('update-mini-cart', response.data.data);
 
                             this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+
+                            if (response.data.redirect) {
+                                window.location.href = response.data.redirect;
+                            }
                         } else {
                             this.$emitter.emit('add-flash', { type: 'warning', message: response.data.data.message });
                         }

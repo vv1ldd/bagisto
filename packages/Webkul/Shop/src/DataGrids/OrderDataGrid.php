@@ -22,7 +22,9 @@ class OrderDataGrid extends DataGrid
                 'orders.status',
                 'orders.created_at',
                 'orders.grand_total',
-                'orders.order_currency_code'
+                'orders.order_currency_code',
+                DB::raw('(SELECT count(*) FROM order_items WHERE order_id = orders.id) as items_count'),
+                DB::raw('(SELECT count(*) FROM product_reviews WHERE product_reviews.customer_id = orders.customer_id AND product_reviews.product_id IN (SELECT product_id FROM order_items WHERE order_id = orders.id)) as reviews_count')
             )
             ->where('customer_id', auth()->guard('customer')->user()->id);
 
@@ -108,25 +110,25 @@ class OrderDataGrid extends DataGrid
             'closure' => function ($row) {
                 switch ($row->status) {
                     case Order::STATUS_PROCESSING:
-                        return '<p class="label-processing">'.trans('shop::app.customers.account.orders.status.options.processing').'</p>';
+                        return '<p class="label-processing">' . trans('shop::app.customers.account.orders.status.options.processing') . '</p>';
 
                     case Order::STATUS_COMPLETED:
-                        return '<p class="label-active">'.trans('shop::app.customers.account.orders.status.options.completed').'</p>';
+                        return '<p class="label-active">' . trans('shop::app.customers.account.orders.status.options.completed') . '</p>';
 
                     case Order::STATUS_CANCELED:
-                        return '<p class="label-canceled">'.trans('shop::app.customers.account.orders.status.options.canceled').'</p>';
+                        return '<p class="label-canceled">' . trans('shop::app.customers.account.orders.status.options.canceled') . '</p>';
 
                     case Order::STATUS_CLOSED:
-                        return '<p class="label-closed">'.trans('shop::app.customers.account.orders.status.options.closed').'</p>';
+                        return '<p class="label-closed">' . trans('shop::app.customers.account.orders.status.options.closed') . '</p>';
 
                     case Order::STATUS_PENDING:
-                        return '<p class="label-pending">'.trans('shop::app.customers.account.orders.status.options.pending').'</p>';
+                        return '<p class="label-pending">' . trans('shop::app.customers.account.orders.status.options.pending') . '</p>';
 
                     case Order::STATUS_PENDING_PAYMENT:
-                        return '<p class="label-pending">'.trans('shop::app.customers.account.orders.status.options.pending-payment').'</p>';
+                        return '<p class="label-pending">' . trans('shop::app.customers.account.orders.status.options.pending-payment') . '</p>';
 
                     case Order::STATUS_FRAUD:
-                        return '<p class="label-canceled">'.trans('shop::app.customers.account.orders.status.options.fraud').'</p>';
+                        return '<p class="label-canceled">' . trans('shop::app.customers.account.orders.status.options.fraud') . '</p>';
                 }
             },
         ]);

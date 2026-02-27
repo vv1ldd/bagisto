@@ -1,4 +1,5 @@
 <x-shop::layouts.account>
+    @inject('productReviewHelper', 'Webkul\Product\Helpers\Review')
     <!-- Page Title -->
     <x-slot:title>
         @lang('shop::app.customers.account.orders.view.page-title', ['order_id' => $order->increment_id])
@@ -184,6 +185,26 @@
                                                                 </div>
                                                             @endif
                                                         @endforeach
+                                                    </div>
+                                                @endif
+
+                                                @php $product = $item->product ?? $item->getTypeInstance()->getOrderedItem($item)->product; @endphp
+
+                                                @if ($product)
+                                                    <div class="mt-2">
+                                                        @php
+                                                            $review = $productReviewHelper->getCustomerReview($product, auth()->guard('customer')->user());
+                                                        @endphp
+
+                                                        @if ($review)
+                                                            <a href="{{ route('shop.customers.account.reviews.index') }}" class="text-blue-600 hover:underline">
+                                                                @lang('shop::app.customers.account.orders.view.information.view-review')
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('shop.product_or_category.index', $product->url_key) }}#review-tab" class="text-blue-600 hover:underline">
+                                                                @lang('shop::app.customers.account.orders.view.information.write-review')
+                                                            </a>
+                                                        @endif
                                                     </div>
                                                 @endif
                                             </td>
@@ -574,6 +595,26 @@
                                                 </div>
                                             @endif
                                         </p>
+
+                                        @php $product = $item->product ?? $item->getTypeInstance()->getOrderedItem($item)->product; @endphp
+
+                                        @if ($product)
+                                            <div class="mt-0.5 mb-2 px-0">
+                                                @php
+                                                    $review = $productReviewHelper->getCustomerReview($product, auth()->guard('customer')->user());
+                                                @endphp
+
+                                                @if ($review)
+                                                    <a href="{{ route('shop.customers.account.reviews.index') }}" class="text-blue-600 hover:underline text-[13px] font-medium leading-none">
+                                                        @lang('shop::app.customers.account.orders.view.information.view-review')
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('shop.product_or_category.index', $product->url_key) }}#review-tab" class="text-blue-600 hover:underline text-[13px] font-medium leading-none">
+                                                        @lang('shop::app.customers.account.orders.view.information.write-review')
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        @endif
 
                                         <div class="grid gap-1.5 text-xs font-medium">
                                             <!-- SKU -->

@@ -10,6 +10,11 @@ require 'auth-routes.php';
 
 Route::group(['middleware' => ['admin', NoCacheMiddleware::class], 'prefix' => config('app.admin_url')], function () {
     /**
+     * Configuration routes.
+     */
+    require 'configuration-routes.php';
+
+    /**
      * Sales routes.
      */
     require 'sales-routes.php';
@@ -43,11 +48,6 @@ Route::group(['middleware' => ['admin', NoCacheMiddleware::class], 'prefix' => c
      * Settings routes.
      */
     require 'settings-routes.php';
-
-    /**
-     * Configuration routes.
-     */
-    require 'configuration-routes.php';
 
     /**
      * Notification routes.

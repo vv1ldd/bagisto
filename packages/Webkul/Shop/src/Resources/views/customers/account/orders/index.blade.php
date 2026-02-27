@@ -55,7 +55,8 @@
                             <div class="flex flex-col items-center justify-center py-16 text-zinc-400">
                                 <span class="icon-orders text-5xl mb-3 text-zinc-300"></span>
                                 <p class="text-[15px] font-medium text-zinc-500">
-                                    @lang('shop::app.customers.account.orders.title')</p>
+                                    @lang('shop::app.customers.account.orders.title')
+                                </p>
                                 <p class="text-[13px] mt-1">@lang('shop::app.customers.account.orders.no-order')</p>
                             </div>
                         </template>
@@ -71,6 +72,16 @@
                                         <span v-html="record.status" class="text-xs"></span>
                                     </div>
                                     <p class="text-[13px] text-zinc-400 mt-0.5">@{{ record.created_at }}</p>
+
+                                    <div class="mt-2 flex gap-3">
+                                        <span v-if="record.reviews_count >= record.items_count"
+                                            class="text-xs text-blue-600 font-medium hover:underline">
+                                            @lang('shop::app.customers.account.orders.view.information.view-review')
+                                        </span>
+                                        <span v-else class="text-xs text-blue-600 font-medium hover:underline">
+                                            @lang('shop::app.customers.account.orders.view.information.write-review')
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <!-- Right: Total + chevron -->

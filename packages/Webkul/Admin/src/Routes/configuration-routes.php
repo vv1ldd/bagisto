@@ -8,11 +8,8 @@ use Webkul\Admin\Http\Controllers\ConfigurationController;
  */
 Route::get('configuration/search', [ConfigurationController::class, 'search'])->name('admin.configuration.search');
 
-Route::controller(ConfigurationController::class)->prefix('configuration/{slug?}/{slug2?}')->group(function () {
+Route::get('configuration/download/{path}', [ConfigurationController::class, 'download'])->name('admin.configuration.download');
 
-    Route::get('', 'index')->name('admin.configuration.index');
+Route::get('configuration/{slug?}/{slug2?}', [ConfigurationController::class, 'index'])->name('admin.configuration.index');
 
-    Route::post('', 'store')->name('admin.configuration.store');
-
-    Route::get('{path}', 'download')->name('admin.configuration.download');
-});
+Route::post('configuration/{slug?}/{slug2?}', [ConfigurationController::class, 'store'])->name('admin.configuration.store');

@@ -92,7 +92,7 @@ class Review
         $totalReviews = $this->getTotalReviews($product);
 
         for ($i = 5; $i >= 1; $i--) {
-            if (! $reviews->isEmpty()) {
+            if (!$reviews->isEmpty()) {
                 foreach ($reviews as $review) {
                     if ($review->rating == $i) {
                         $percentage[$i] = round(($review->total / $totalReviews) * 100);
@@ -102,11 +102,27 @@ class Review
                         $percentage[$i] = 0;
                     }
                 }
-            } else {
-                $percentage[$i] = 0;
             }
         }
 
         return $percentage;
+    }
+
+    /**
+     * Returns the review of the product by customer
+     *
+     * @param  \Webkul\Product\Contracts\Product  $product
+     * @param  \Webkul\Customer\Contracts\Customer $customer
+     * @return \Webkul\Product\Contracts\ProductReview|null
+     */
+    public function getCustomerReview($product, $customer)
+    {
+        if (!$customer) {
+            return null;
+        }
+
+        return $product->reviews()
+            ->where('customer_id', $customer->id)
+            ->first();
     }
 }

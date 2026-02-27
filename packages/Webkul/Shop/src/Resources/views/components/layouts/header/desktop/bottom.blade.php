@@ -145,6 +145,12 @@
                                         </a>
                                     @endif
 
+                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
+                                        href="{{ route('shop.checkout.cart.index') }}">
+                                        <span class="icon-cart text-xl text-zinc-400"></span>
+                                        @lang('shop::app.components.layouts.header.desktop.bottom.cart')
+                                    </a>
+
                                     <div class="my-2 border-t border-zinc-100"></div>
 
                                     <x-shop::form method="DELETE" action="{{ route('shop.customer.session.destroy') }}"
@@ -171,7 +177,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                    <!-- Loading State -->
+                                                                        <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -289,9 +295,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                            'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                            'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                        }">
+                                                                                                'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                            }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">

@@ -20,9 +20,6 @@
                 <!-- Active Sessions Section -->
                 @if (count($activeSessions))
                     <div class="mb-10">
-                        <h3 class="text-lg font-semibold text-zinc-800 mb-4">
-                            @lang('shop::app.customers.account.login-activity.active-sessions')
-                        </h3>
                         <div class="ios-nav-group !bg-white">
                             @foreach ($activeSessions as $session)
                                 @php
