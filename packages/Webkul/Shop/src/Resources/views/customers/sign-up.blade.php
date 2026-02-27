@@ -37,10 +37,7 @@
                                 </svg>
                             </div>
 
-                            <div class="mb-8 text-center">
-                                <h1 class="font-dmserif text-4xl font-normal text-zinc-800 md:text-5xl">
-                                    Подтвердите почту
-                                </h1>
+                            <div class="mb-4 text-center">
 
                                 <p class="mt-4 text-lg text-zinc-500 text-center">
                                     Мы отправили письмо на <br>
