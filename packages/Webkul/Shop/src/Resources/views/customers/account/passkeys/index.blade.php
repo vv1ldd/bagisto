@@ -17,7 +17,7 @@
         @endif
 
         <div
-            class="flex-auto p-8 max-md:p-5 pt-4 {{ (isset($isCompleteRegistration) && $isCompleteRegistration) ? 'mt-[5vh]' : '' }}">
+            class="flex-auto p-8 max-md:p-5 pt-4 {{ (isset($isCompleteRegistration) && $isCompleteRegistration) ? 'mt-[2vh]' : '' }}">
             @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                 <div class="max-w-[600px] mx-auto w-full">
                     <div
@@ -26,12 +26,6 @@
                         <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
                         <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
 
-                        <!-- Logo -->
-                        <div
-                            class="bg-white rounded-3xl shadow-sm flex items-center justify-center mb-10 border border-[#E9E1FF]/50 p-6 relative z-10">
-                            <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                                alt="{{ config('app.name') }}" width="140" class="h-auto">
-                        </div>
 
                         <h3 class="text-[#4A1D96] text-3xl font-extrabold mb-6 tracking-tight">Безопасный вход</h3>
 
@@ -119,12 +113,8 @@
                         @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                                     <div class="flex justify-center w-full mt-10">
                                         <a href="{{ route('shop.customers.account.index') }}"
-                                            class="relative inline-flex items-center justify-center rounded-2xl px-24 py-5 text-center text-[17px] font-bold text-white transition-all duration-300 transform active:scale-95 group overflow-hidden"
-                                            style="background: linear-gradient(135deg, #7C45F5 0%, #9061FF 100%); box-shadow: 0 12px 30px rgba(124, 69, 245, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.2);">
-                                            <span class="relative z-10 tracking-wide">Завершить</span>
-                                            <div
-                                                class="absolute inset-0 translate-y-[100%] bg-gradient-to-br from-[#6534d4] to-[#7C45F5] transition-transform duration-300 group-hover:translate-y-0">
-                                            </div>
+                                            class="flex w-full items-center justify-center gap-3 rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
+                                            Завершить
                                         </a>
                                     </div>
                                 </div> <!-- End premium container content -->
