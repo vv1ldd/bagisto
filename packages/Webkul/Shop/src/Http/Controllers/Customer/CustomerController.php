@@ -69,6 +69,21 @@ class CustomerController extends Controller
     }
 
     /**
+     * Show the passkey completion page after registration.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function completeRegistrationPasskey()
+    {
+        $customer = $this->customerRepository->find(auth()->guard('customer')->user()->id);
+
+        return view('shop::customers.account.passkeys.index', [
+            'customer' => $customer,
+            'isCompleteRegistration' => true,
+        ]);
+    }
+
+    /**
      * Edit function for editing customer profile.
      *
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
@@ -161,6 +176,10 @@ class CustomerController extends Controller
             }
 
             session()->flash('success', trans('shop::app.customers.account.profile.index.edit-success'));
+
+            if (isset($data['is_complete_registration']) && $data['is_complete_registration']) {
+                return redirect()->route('shop.customers.account.profile.complete_registration_passkey');
+            }
 
             if ($customer->passkeys()->count() === 0) {
                 return redirect()->route('shop.customers.account.passkeys.index');

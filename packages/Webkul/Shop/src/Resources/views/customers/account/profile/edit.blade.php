@@ -27,6 +27,10 @@
 
             <!-- Profile Edit Form -->
             <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data">
+                @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                    <input type="hidden" name="is_complete_registration" value="1">
+                @endif
+
                 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.before', ['customer' => $customer]) !!}
 
 
