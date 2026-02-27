@@ -6,6 +6,7 @@
     :show-back="!$isCompleteRegistration"
     :show-profile-card="!$isCompleteRegistration"
     :has-header="!$isCompleteRegistration"
+    :has-footer="!$isCompleteRegistration"
 >
     <!-- Page Title -->
     <x-slot:title>
@@ -23,11 +24,8 @@
         @endSection
         @endif
 
-
-
-        <div class="flex-auto p-4 md:p-8 pt-6 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
-
-
+        <!-- Page Content -->
+        <div class="w-full flex flex-col items-center">
             {!! view_render_event('bagisto.shop.customers.account.profile.edit.before', ['customer' => $customer]) !!}
 
             <!-- Profile Edit Form -->

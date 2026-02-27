@@ -20,7 +20,7 @@
         @endSection
         @endif
 
-        <div class="flex-auto p-4 md:p-8 pt-6 flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
+        <div class="w-full flex flex-col items-center">
             @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                 <div class="w-full max-w-[540px] mx-auto z-10 relative">
                     <!-- Site Logo -->
@@ -28,11 +28,10 @@
                         <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg', 'shop') }}" alt="{{ config('app.name') }}" class="h-8 md:h-10 object-contain max-w-[200px]">
                     </div>
 
-                    <div
-                        class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-8 md:p-10 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-8 md:p-10 flex flex-col items-center text-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
                         <!-- Decorative background elements -->
-                        <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
-                        <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
+                        <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
+                        <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
 
                         <h3 class="text-[#4A1D96] text-[26px] md:text-3xl font-extrabold mb-4 tracking-tight leading-tight">Быстрый вход</h3>
 

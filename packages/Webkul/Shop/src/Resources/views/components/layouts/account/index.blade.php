@@ -86,7 +86,7 @@
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container px-[60px] max-lg:px-8 max-md:px-0 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-120px)] flex flex-col justify-center py-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
+            class="container px-[60px] max-lg:px-8 max-md:px-0 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-72px)] flex flex-col pb-2 pt-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
             <x-shop::layouts.account.breadcrumb />
 
             @php
@@ -138,27 +138,37 @@
                         <x-shop::layouts.account.navigation />
                     </div>
                 @else
-                    <!-- Main Content Pane (Drill-Down View) -->
-                    <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl"
-                        style="max-width: 600px;">
-
-                        @if ($showBack)
-                            <!-- Drill-Down Header: Minimal iOS style -->
-                            <div class="flex items-center px-8 pt-6 pb-2 max-md:px-5 max-md:pt-5 max-md:pb-2">
-                                <a href="{{ route('shop.customers.account.index') }}"
-                                    class="flex items-center text-[#007AFF] font-medium transition active:opacity-50">
-                                    <span class="icon-arrow-left text-2xl rtl:icon-arrow-right"></span>
-                                    <span class="ml-1 text-[17px]">@lang('shop::app.customers.account.navigation.back')</span>
-                                </a>
+                    @if (!$hasHeader)
+                        <!-- Onboarding / Solo Content -->
+                        <div class="w-full flex-1 flex flex-col bg-transparent mt-4 mb-2">
+                            <div class="w-full my-auto">
+                                {{ $slot }}
                             </div>
-                        @endif
-
-                        <!-- Page Content -->
-                        <div class="flex-1">
-                            {{ $slot }}
                         </div>
-                    </div>
+                    @else
+                        <!-- Main Content Pane (Drill-Down View) -->
+                        <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl"
+                            style="max-width: 600px;">
+
+                            @if ($showBack)
+                                <!-- Drill-Down Header: Minimal iOS style -->
+                                <div class="flex items-center px-8 pt-6 pb-2 max-md:px-5 max-md:pt-5 max-md:pb-2">
+                                    <a href="{{ route('shop.customers.account.index') }}"
+                                        class="flex items-center text-[#007AFF] font-medium transition active:opacity-50">
+                                        <span class="icon-arrow-left text-2xl rtl:icon-arrow-right"></span>
+                                        <span class="ml-1 text-[17px]">@lang('shop::app.customers.account.navigation.back')</span>
+                                    </a>
+                                </div>
+                            @endif
+
+                            <!-- Page Content -->
+                            <div class="flex-1">
+                                {{ $slot }}
+                            </div>
+                        </div>
+                    @endif
                 @endif
+
 
 
             </div>
