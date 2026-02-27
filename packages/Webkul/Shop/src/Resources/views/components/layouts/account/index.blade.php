@@ -1,6 +1,10 @@
-@props(['showBack' => true, 'showProfileCard' => true])
+@props([
+    'showBack' => true,
+    'showProfileCard' => true,
+    'hasHeader' => true,
+])
 
-<x-shop::layouts :has-feature="false">
+<x-shop::layouts :has-header="$hasHeader" :has-feature="false">
     <!-- Page Title -->
     <x-slot:title>
         {{ $title ?? '' }}

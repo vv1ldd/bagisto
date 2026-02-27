@@ -1,4 +1,4 @@
-<x-shop::layouts.account :show-back="false" :show-profile-card="false">
+<x-shop::layouts.account :show-back="false" :show-profile-card="false" :has-header="false">
     <!-- Page Title -->
     <x-slot:title>
         @lang('shop::app.customers.account.profile.edit.edit-profile')

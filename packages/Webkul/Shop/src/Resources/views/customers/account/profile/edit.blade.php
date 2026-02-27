@@ -1,6 +1,11 @@
+@php
+    $isCompleteRegistration = isset($isCompleteRegistration) && $isCompleteRegistration;
+@endphp
+
 <x-shop::layouts.account
-    :show-back="!(isset($isCompleteRegistration) && $isCompleteRegistration)"
-    :show-profile-card="!(isset($isCompleteRegistration) && $isCompleteRegistration)"
+    :show-back="!$isCompleteRegistration"
+    :show-profile-card="!$isCompleteRegistration"
+    :has-header="!$isCompleteRegistration"
 >
     <!-- Page Title -->
     <x-slot:title>
