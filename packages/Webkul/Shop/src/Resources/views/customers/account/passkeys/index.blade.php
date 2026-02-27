@@ -20,113 +20,105 @@
         @endSection
         @endif
 
-        <div class="flex-auto p-8 max-md:p-5 pt-4">
+        <div class="flex-auto p-8 max-md:p-5 pt-4 flex flex-col items-center justify-center">
             @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                <div class="max-w-[600px] mx-auto w-full">
+                <div class="w-full max-w-[460px] mx-auto z-10 relative">
                     <div
                         class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-10 md:p-14 flex flex-col items-center text-center relative overflow-hidden">
                         <!-- Decorative background elements -->
                         <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
                         <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
 
+                        <h3 class="text-[#4A1D96] text-[28px] font-extrabold mb-4 tracking-tight leading-tight">Быстрый вход</h3>
 
-                        <h3 class="text-[#4A1D96] text-3xl font-extrabold mb-6 tracking-tight">Безопасный вход</h3>
-
-                        <div class="space-y-4 mb-10">
-                            <p class="text-[#4A1D96]/90 text-[17px] leading-relaxed max-w-[480px]">
-                                Добавьте Passkey для мгновенного входа с этого устройства.
-                            </p>
-                            <p
-                                class="text-[#4A1D96]/70 text-sm leading-relaxed max-w-[400px] bg-white/40 p-4 rounded-2xl border border-[#E9E1FF]/40">
-                                <span class="block font-bold text-[#7C45F5] mb-1">Важно знать:</span>
-                                Для входа с другого устройства вы всегда можете использовать <strong>Magic Link</strong>,
-                                который придет вам на почту.
+                        <div class="space-y-4 mb-8">
+                            <p class="text-[#4A1D96]/80 text-[15px] leading-relaxed max-w-[320px] mx-auto">
+                                Добавьте это устройство (отпечаток или FaceID) для мгновенного входа без пароля.
                             </p>
                         </div>
-            @endif
 
-                    <!-- Profile Information (Apple Settings Style) -->
-                    <div
-                        class="{{ (isset($isCompleteRegistration) && $isCompleteRegistration) ? 'w-full px-0' : 'px-8 max-md:px-5 mt-4' }}">
+                        <div class="w-full relative z-10 max-w-[320px] mx-auto flex flex-col gap-3">
+                            <button type="button" id="add-passkey-button"
+                                onclick="window.startPasskeyRegistration()"
+                                class="flex w-full items-center justify-center gap-2 rounded-full bg-[#7C45F5] px-8 py-4 text-[15px] font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50">
+                                <span class="icon-add text-lg"></span>
+                                <span id="add-passkey-button-text">Привязать устройство</span>
+                            </button>
 
-                        {!! view_render_event('bagisto.shop.customers.account.profile.email.after') !!}
+                            <a href="{{ route('shop.customers.account.index') }}"
+                                class="flex w-full items-center justify-center rounded-full bg-white/60 px-8 py-3 text-[14px] font-medium text-[#4A1D96] transition-all hover:bg-white focus:ring-2 focus:ring-[#7C45F5] border border-[#7C45F5]/10">
+                                Продолжить с почтой (Magic Link)
+                            </a>
+                        </div>
+                    </div> <!-- End premium registration container -->
+                </div> <!-- End absolute center wrapper -->
+            @else
+                <!-- Original Profile Settings View -->
+                <div class="px-8 max-md:px-5 mt-4 w-full max-w-[800px] mx-auto">
+                    {!! view_render_event('bagisto.shop.customers.account.profile.email.after') !!}
 
-                        <!-- Passkeys & Trusted Devices -->
-                        <div
-                            class="{{ (isset($isCompleteRegistration) && $isCompleteRegistration) ? 'mb-10 text-center w-full' : 'mt-8' }}">
-                            <h3
-                                class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1 {{ (isset($isCompleteRegistration) && $isCompleteRegistration) ? 'hidden' : '' }}">
-                                Passkeys & Безопасность
-                            </h3>
+                    <!-- Passkeys & Trusted Devices -->
+                    <div class="mt-8">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
+                            Passkeys & Безопасность
+                        </h3>
 
-                            <div
-                                class="bg-zinc-50 border border-zinc-100 rounded-[20px] overflow-hidden {{ (isset($isCompleteRegistration) && $isCompleteRegistration) ? 'bg-white shadow-sm border-[#E9E1FF]/50' : 'bg-zinc-50' }}">
-                                @if ($customer->passkeys->count())
-                                    @foreach ($customer->passkeys as $passkey)
-                                        <div
-                                            class="flex justify-between items-center px-5 py-4 border-b border-zinc-200/60 last:border-0 max-md:px-4">
-                                            <div class="flex items-center gap-3">
-                                                <div class="p-2 bg-zinc-200/50 rounded-lg">
-                                                    <svg class="h-5 w-5 text-zinc-600" viewBox="0 0 24 24" fill="none"
-                                                        stroke="currentColor" stroke-width="2">
-                                                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                                                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                                                    </svg>
-                                                </div>
-                                                <div class="text-left">
-                                                    <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm">
-                                                        {{ $passkey->name ?: 'Passkey устройство' }}
-                                                    </p>
-                                                    <p class="text-xs text-zinc-500">Добавлено:
-                                                        {{ $passkey->created_at->format('d.m.Y') }}
-                                                    </p>
-                                                </div>
+                        <div class="bg-zinc-50 border border-zinc-100 rounded-[20px] overflow-hidden">
+                            @if ($customer->passkeys->count())
+                                @foreach ($customer->passkeys as $passkey)
+                                    <div class="flex justify-between items-center px-5 py-4 border-b border-zinc-200/60 last:border-0 max-md:px-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="p-2 bg-zinc-200/50 rounded-lg">
+                                                <svg class="h-5 w-5 text-zinc-600" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                                                </svg>
                                             </div>
-                                            <form action="{{ route('passkeys.destroy', $passkey->id) }}" method="POST"
-                                                onsubmit="return confirm('Удалить это устройство?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 p-2">
-                                                    <span class="icon-bin text-xl"></span>
-                                                </button>
-                                            </form>
+                                            <div class="text-left">
+                                                <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm">
+                                                    {{ $passkey->name ?: 'Passkey устройство' }}
+                                                </p>
+                                                <p class="text-xs text-zinc-500">Добавлено:
+                                                    {{ $passkey->created_at->format('d.m.Y') }}
+                                                </p>
+                                            </div>
                                         </div>
-                                    @endforeach
-                                @else
-                                    <div class="px-5 py-8 text-center bg-white/50">
-                                        <p class="text-[15px] text-zinc-500 mb-2">У вас пока нет привязанных Passkey
-                                            устройств.</p>
-                                        <p class="text-xs text-zinc-400">Добавьте устройство (отпечаток или FaceID) для
-                                            быстрого
-                                            входа без пароля и подтверждений по почте.</p>
+                                        <form action="{{ route('passkeys.destroy', $passkey->id) }}" method="POST"
+                                            onsubmit="return confirm('Удалить это устройство?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700 p-2">
+                                                <span class="icon-bin text-xl"></span>
+                                            </button>
+                                        </form>
                                     </div>
-                                @endif
-
-                                <div class="p-5 bg-white/50 border-t border-zinc-100">
-                                    <button type="button" id="add-passkey-button"
-                                        onclick="window.startPasskeyRegistration()"
-                                        class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-50">
-                                        <span class="icon-add text-lg"></span>
-                                        <span id="add-passkey-button-text">Привязать новое устройство</span>
-                                    </button>
+                                @endforeach
+                            @else
+                                <div class="px-5 py-8 text-center bg-white/50">
+                                    <p class="text-[15px] text-zinc-500 mb-2">У вас пока нет привязанных Passkey
+                                        устройств.</p>
+                                    <p class="text-xs text-zinc-400">Добавьте устройство (отпечаток или FaceID) для
+                                        быстрого
+                                        входа без пароля и подтверждений по почте.</p>
                                 </div>
+                            @endif
+
+                            <div class="p-5 bg-white/50 border-t border-zinc-100">
+                                <button type="button" id="add-passkey-button"
+                                    onclick="window.startPasskeyRegistration()"
+                                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-50">
+                                    <span class="icon-add text-lg"></span>
+                                    <span id="add-passkey-button-text">Привязать новое устройство</span>
+                                </button>
                             </div>
                         </div>
+                    </div>
 
-                        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                                    <div class="flex justify-center w-full mt-10">
-                                        <a href="{{ route('shop.customers.account.index') }}"
-                                            class="flex w-full items-center justify-center gap-3 rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
-                                            Завершить
-                                        </a>
-                                    </div>
-                                </div> <!-- End premium container content -->
-                            </div> <!-- End premium registration wrapper -->
-                        @endif
-
-                {!! view_render_event('bagisto.shop.customers.account.profile.delete.before') !!}
-                {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
-            </div>
+                    {!! view_render_event('bagisto.shop.customers.account.profile.delete.before') !!}
+                    {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
+                </div>
+            @endif
         </div>
         @push('scripts')
             <script>
