@@ -350,13 +350,18 @@
 
                 <div class="ios-settings-wrapper max-w-[540px] mx-auto w-full">
                     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-8 md:p-10 flex flex-col items-center relative overflow-hidden w-full">
+                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-8 md:p-10 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
                             <!-- Decorative background elements -->
-                            <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
-                            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
+                            <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
+                            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
 
-                            <div class="w-full max-w-[460px] mx-auto z-10 relative">
-                                <div class="ios-group w-full">
+                            <div class="w-full mx-auto z-10 relative">
+                                <h2 class="text-[22px] md:text-2xl font-bold text-zinc-900 mb-2 mt-2 text-center">Расскажите о себе</h2>
+                                <p class="text-[14px] text-zinc-600 mb-6 text-center mx-auto max-w-[320px]">
+                                    Заполните базовую информацию, чтобы мы могли персонализировать ваш профиль.
+                                </p>
+
+                                <div class="ios-group w-full !mb-6 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm !rounded-[24px] overflow-hidden">
                     @else
                         <!-- Group 1: Contact Info -->
                         <div class="ios-group">
@@ -543,26 +548,25 @@
 
                     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                                 </div> <!-- End ios-group -->
-                            </div> <!-- End max-w-[460px] -->
-                        </div> <!-- End premium container -->
+
+                                <div class="flex justify-center mt-6">
+                                    <button type="submit"
+                                        class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center text-[15px] font-bold text-white shadow-xl shadow-purple-500/25 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98]">
+                                        @lang('shop::app.customers.account.profile.edit.save')
+                                    </button>
+                                </div>
+                            </div> <!-- End max-w container inside premium background -->
+                        </div> <!-- End premium background -->
                     @else
                         </div> <!-- End ios-group -->
-                    @endif
 
-
-                    <div class="flex justify-center mt-10">
-                        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                            <button type="submit"
-                                class="flex w-full items-center justify-center gap-3 rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
-                                @lang('shop::app.customers.account.profile.edit.save')
-                            </button>
-                        @else
+                        <div class="flex justify-center mt-10">
                             <button type="submit"
                                 class="primary-button inline-flex justify-center rounded-full px-12 py-3.5 text-center text-[15px] font-medium max-md:w-full">
                                 @lang('shop::app.customers.account.profile.edit.save')
                             </button>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
                 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.after', ['customer' => $customer]) !!}
