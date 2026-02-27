@@ -350,10 +350,12 @@
                             <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
                             <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
 
+                            <div class="w-full max-w-[460px] mx-auto z-10 relative">
+                                <div class="ios-group w-full">
+                    @else
+                        <!-- Group 1: Contact Info -->
+                        <div class="ios-group">
                     @endif
-
-                    <!-- Group 1: Contact Info -->
-                    <div class="ios-group">
                         <!-- Username -->
                         <div class="ios-row">
                             <label class="ios-label">@lang('shop::app.customers.account.profile.edit.username') <span
@@ -442,10 +444,13 @@
                                 </div>
                             </div>
                         @endif
-                    </div>
-
-                    <!-- Group 2: Personal Details -->
-                    <div class="ios-group">
+                    @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                        <!-- Continuing Group for Complete Registration -->
+                    @else
+                        </div>
+                        <!-- Group 2: Personal Details -->
+                        <div class="ios-group">
+                    @endif
                         <!-- Gender -->
                         @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
                             <div class="ios-row">
@@ -532,7 +537,11 @@
                     @endif
 
                     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                                </div> <!-- End ios-group -->
+                            </div> <!-- End max-w-[460px] -->
                         </div> <!-- End premium container -->
+                    @else
+                        </div> <!-- End ios-group -->
                     @endif
 
 
