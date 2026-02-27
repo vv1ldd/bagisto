@@ -346,9 +346,9 @@
                     </style>
                 @endpush
 
-                <div class="ios-settings-wrapper max-w-[540px] mx-auto w-full">
+                <div class="ios-settings-wrapper max-w-[460px] mx-auto w-full">
                     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-6 md:p-8 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
+                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-7 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
                             <!-- Decorative background elements -->
                             <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
                             <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
