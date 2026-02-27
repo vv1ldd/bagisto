@@ -20,8 +20,7 @@
         @endSection
         @endif
 
-        <div
-            class="flex-auto p-8 max-md:p-5 pt-4 {{ (isset($isCompleteRegistration) && $isCompleteRegistration) ? 'mt-[2vh]' : '' }}">
+        <div class="flex-auto p-8 max-md:p-5 pt-4">
             @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                 <div class="max-w-[600px] mx-auto w-full">
                     <div

@@ -340,11 +340,6 @@
                                 font-size: 14px !important;
                             }
                         }
-                        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                            .ios-settings-wrapper {
-                                margin-top: 2vh;
-                            }
-                        @endif
                     </style>
                 @endpush
 

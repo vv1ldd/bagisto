@@ -4,7 +4,7 @@
         @lang('shop::app.customers.account.profile.edit.edit-profile')
         </x-slot>
 
-        <div class="flex-auto p-8 max-md:p-5 pt-8" style="margin-top: 2vh;">
+        <div class="flex-auto p-8 max-md:p-5 pt-8">
             <div class="max-w-[600px] mx-auto w-full">
                 <div
                     class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-10 md:p-14 flex flex-col items-center text-center relative overflow-hidden">

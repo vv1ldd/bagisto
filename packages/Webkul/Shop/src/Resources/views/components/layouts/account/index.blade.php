@@ -85,7 +85,7 @@
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container px-[60px] max-lg:px-8 max-md:px-0 mt-8 mb-10 max-md:mt-5 max-md:mb-5 account-animate-in">
+            class="container px-[60px] max-lg:px-8 max-md:px-0 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-120px)] flex flex-col justify-center py-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
             <x-shop::layouts.account.breadcrumb />
 
             @php
