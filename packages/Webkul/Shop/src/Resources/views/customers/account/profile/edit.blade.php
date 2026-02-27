@@ -328,13 +328,25 @@
                         }
                         @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                             .ios-settings-wrapper {
-                                margin-top: 10vh; /* Basic centering vertical-ish */
+                                margin-top: 5vh;
                             }
                         @endif
                     </style>
                 @endpush
 
                 <div class="ios-settings-wrapper">
+                    @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-10 md:p-14 flex flex-col items-center relative overflow-hidden w-full">
+                            <!-- Decorative background elements -->
+                            <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
+                            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#7C45F5]/5 rounded-full blur-3xl"></div>
+
+                            <!-- Logo -->
+                            <div class="bg-white rounded-3xl shadow-sm flex items-center justify-center mb-10 border border-[#E9E1FF]/50 p-6 relative z-10">
+                                <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
+                                    alt="{{ config('app.name') }}" width="140" class="h-auto">
+                            </div>
+                    @endif
 
                     <!-- Group 1: Contact Info -->
                     <div class="ios-group">
@@ -515,11 +527,27 @@
                         </div>
                     @endif
 
-                    <div class="flex justify-center">
-                        <button type="submit"
-                            class="primary-button inline-flex justify-center rounded-full px-12 py-3.5 text-center text-[15px] font-medium max-md:w-full">
-                            @lang('shop::app.customers.account.profile.edit.save')
-                        </button>
+                    @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                        </div> <!-- End premium container -->
+                    @endif
+
+
+                    <div class="flex justify-center mt-8">
+                        @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                            <button type="submit"
+                                class="relative inline-flex items-center justify-center rounded-2xl px-20 py-5 text-center text-lg font-bold text-white transition-all duration-300 transform active:scale-95 group overflow-hidden"
+                                style="background: #7C45F5; box-shadow: 0 10px 30px rgba(124, 69, 245, 0.3);">
+                                <span class="relative z-10">@lang('shop::app.customers.account.profile.edit.save')</span>
+                                <div
+                                    class="absolute inset-0 translate-y-[100%] bg-[#6534d4] transition-transform duration-300 group-hover:translate-y-0">
+                                </div>
+                            </button>
+                        @else
+                            <button type="submit"
+                                class="primary-button inline-flex justify-center rounded-full px-12 py-3.5 text-center text-[15px] font-medium max-md:w-full">
+                                @lang('shop::app.customers.account.profile.edit.save')
+                            </button>
+                        @endif
                     </div>
                 </div>
 
