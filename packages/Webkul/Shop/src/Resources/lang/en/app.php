@@ -57,6 +57,7 @@ return [
             'click-here' => 'Click Here',
             'confirm-pass' => 'Confirm Password',
             'email' => 'Email',
+            'agreement' => 'By clicking \'Create Account\', you agree to the processing of personal data.',
             'first-name' => 'First Name',
             'footer' => '© :current_year MEANLY. All rights reserved.',
             'form-signup-text' => 'If you are new to our store, we glad to have you as member.',

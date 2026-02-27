@@ -48,18 +48,6 @@
 
                             <!-- Options: Newsletter & GDPR -->
                             <div class="flex flex-col gap-3 mb-8">
-                                @if (core()->getConfigData('customer.settings.create_new_account_options.news_letter'))
-                                    <div class="flex select-none items-center gap-2">
-                                        <input type="checkbox" name="is_subscribed" id="is-subscribed"
-                                            class="peer hidden" />
-                                        <label
-                                            class="icon-uncheck peer-checked:icon-check-box cursor-pointer text-2xl text-navyBlue"
-                                            for="is-subscribed"></label>
-                                        <label class="cursor-pointer text-sm text-zinc-500" for="is-subscribed">
-                                            @lang('shop::app.customers.signup-form.subscribe-to-newsletter')
-                                        </label>
-                                    </div>
-                                @endif
 
                                 @if(core()->getConfigData('general.gdpr.settings.enabled') && core()->getConfigData('general.gdpr.agreement.enabled'))
                                     <div class="flex select-none items-center gap-2">
@@ -89,7 +77,11 @@
                                 </div>
                             @endif
 
-                            <div class="mt-12">
+                            <div class="mt-8 text-center text-[13px] text-zinc-500 leading-relaxed">
+                                @lang('shop::app.customers.signup-form.agreement')
+                            </div>
+
+                            <div class="mt-6">
                                 <button
                                     class="w-full rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
                                     type="submit">
