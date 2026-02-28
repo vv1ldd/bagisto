@@ -20,7 +20,9 @@ class ResetPasswordController extends Controller
      *
      * @return void
      */
-    public function __construct(protected CustomerRepository $customerRepository) {}
+    public function __construct(protected CustomerRepository $customerRepository)
+    {
+    }
 
     /**
      * Display the password reset view for the given token.
@@ -53,7 +55,8 @@ class ResetPasswordController extends Controller
             ]);
 
             $response = $this->broker()->reset(
-                request(['email', 'password', 'password_confirmation', 'token']), function ($customer, $password) {
+                request(['email', 'password', 'password_confirmation', 'token']),
+                function ($customer, $password) {
                     $this->resetPassword($customer, $password);
                 }
             );
@@ -63,7 +66,7 @@ class ResetPasswordController extends Controller
 
                 Event::dispatch('customer.password.update.after', $customer);
 
-                return redirect()->route('shop.customers.account.profile.index');
+                return redirect()->route('shop.customers.account.index');
             }
 
             return back()

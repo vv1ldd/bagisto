@@ -21,7 +21,7 @@ it('should returns the profile page', function () {
     // Act and Assert.
     $customer = $this->loginAsCustomer();
 
-    get(route('shop.customers.account.profile.index'))
+    get(route('shop.customers.account.index'))
         ->assertOk()
         ->assertSeeText(trans('shop::app.customers.account.profile.index.edit'))
         ->assertSeeText(trans('shop::app.customers.account.profile.index.delete'))
@@ -79,7 +79,7 @@ it('should update the customer', function () {
             UploadedFile::fake()->image('TEST.png'),
         ],
     ])
-        ->assertRedirect(route('shop.customers.account.profile.index'));
+        ->assertRedirect(route('shop.customers.account.index'));
 
     $this->assertModelWise([
         Customer::class => [
@@ -118,7 +118,7 @@ it('should update the customer password and send email to the customer', functio
         'new_password' => $newPassword = fake()->password(8, 10),
         'new_password_confirmation' => $newPassword,
     ])
-        ->assertRedirect(route('shop.customers.account.profile.index'));
+        ->assertRedirect(route('shop.customers.account.index'));
 
     $this->assertModelWise([
         Customer::class => [

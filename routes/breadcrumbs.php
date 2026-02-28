@@ -11,19 +11,19 @@ Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
 // Home > My Account
 Breadcrumbs::for('account', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
-    $trail->push(trans('shop::app.layouts.my-account'), route('shop.customers.account.profile.index'));
+    $trail->push(trans('shop::app.layouts.my-account'), route('shop.customers.account.index'));
 });
 
 // Home > My Account > Profile
 Breadcrumbs::for('profile', function (BreadcrumbTrail $trail) {
     $trail->parent('account');
-    $trail->push(trans('shop::app.layouts.profile'), route('shop.customers.account.profile.index'));
+    $trail->push(trans('shop::app.layouts.profile'), route('shop.customers.account.index'));
 });
 
 // Home > My Account > Profile > Edit
 Breadcrumbs::for('profile.edit', function (BreadcrumbTrail $trail) {
     $trail->parent('profile');
-    $trail->push(trans('shop::app.customers.account.profile.edit.edit'), route('shop.customers.account.profile.index'));
+    $trail->push(trans('shop::app.customers.account.profile.edit.edit'), route('shop.customers.account.index'));
 });
 
 // Home > My Account > Address

@@ -18,7 +18,9 @@ class LoginController extends Controller
      *
      * @return void
      */
-    public function __construct(protected CustomerSocialAccountRepository $customerSocialAccountRepository) {}
+    public function __construct(protected CustomerSocialAccountRepository $customerSocialAccountRepository)
+    {
+    }
 
     /**
      * Redirects to the social provider
@@ -29,7 +31,7 @@ class LoginController extends Controller
     public function redirectToProvider($provider)
     {
         try {
-            return Socialite::driver($provider)->redirect('shop.customers.account.profile.index');
+            return Socialite::driver($provider)->redirect('shop.customers.account.index');
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
 
@@ -57,6 +59,6 @@ class LoginController extends Controller
 
         Event::dispatch('customer.after.login', $customer);
 
-        return redirect()->intended(route('shop.customers.account.profile.index'));
+        return redirect()->intended(route('shop.customers.account.index'));
     }
 }

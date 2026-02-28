@@ -29,8 +29,8 @@ if (file_exists($loaderPath)) {
         $hasPasskeyRoute = Illuminate\Support\Facades\Route::has('shop.customers.account.passkeys.index');
         echo "Route 'shop.customers.account.passkeys.index' exists: " . ($hasPasskeyRoute ? "<span style='color:green'>YES</span>" : "<span style='color:red'>NO</span>") . "<br>";
 
-        $hasProfileRoute = Illuminate\Support\Facades\Route::has('shop.customers.account.profile.index');
-        echo "Route 'shop.customers.account.profile.index' exists: " . ($hasProfileRoute ? "<span style='color:green'>YES</span>" : "<span style='color:red'>NO</span>") . "<br>";
+        $hasAccountRoute = Illuminate\Support\Facades\Route::has('shop.customers.account.index');
+        echo "Route 'shop.customers.account.index' exists: " . ($hasAccountRoute ? "<span style='color:green'>YES</span>" : "<span style='color:red'>NO</span>") . "<br>";
 
         echo "<h3>Registered Routes matching 'passkey':</h3><pre style='background:#f9f9f9; padding:10px; font-size:11px;'>";
         $routes = Illuminate\Support\Facades\Route::getRoutes();

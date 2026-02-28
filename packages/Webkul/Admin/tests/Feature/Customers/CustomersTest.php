@@ -161,7 +161,7 @@ it('should login the customer from the admin panel', function () {
     $this->loginAsAdmin();
 
     get(route('admin.customers.customers.login_as_customer', $customer->id))
-        ->assertRedirect(route('shop.customers.account.profile.index'))
+        ->assertRedirect(route('shop.customers.account.index'))
         ->isRedirection();
 });
 

@@ -50,7 +50,8 @@ class CustomerController extends Controller
         protected CustomerRepository $customerRepository,
         protected CustomerGroupRepository $customerGroupRepository,
         protected CustomerNoteRepository $customerNoteRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Display a listing of the resource.
@@ -91,15 +92,15 @@ class CustomerController extends Controller
             'is_verified' => 1,
             'channel_id' => core()->getCurrentChannel()->id,
         ], request()->only([
-            'first_name',
-            'last_name',
-            'gender',
-            'email',
-            'date_of_birth',
-            'phone',
-            'customer_group_id',
-            'channel_id',
-        ]));
+                        'first_name',
+                        'last_name',
+                        'gender',
+                        'email',
+                        'date_of_birth',
+                        'phone',
+                        'customer_group_id',
+                        'channel_id',
+                    ]));
 
         if (empty($data['phone'])) {
             $data['phone'] = null;
@@ -138,9 +139,9 @@ class CustomerController extends Controller
             'first_name' => 'string|required',
             'last_name' => 'string|required',
             'gender' => 'required',
-            'email' => 'required|unique:customers,email,'.$id,
+            'email' => 'required|unique:customers,email,' . $id,
             'date_of_birth' => 'date|before:today',
-            'phone' => ['unique:customers,phone,'.$id, new PhoneNumber],
+            'phone' => ['unique:customers,phone,' . $id, new PhoneNumber],
         ]);
 
         $data = request()->only([
@@ -183,11 +184,11 @@ class CustomerController extends Controller
     {
         $customer = $this->customerRepository->findorFail($id);
 
-        if (! $customer) {
+        if (!$customer) {
             return response()->json(['message' => trans('admin::app.customers.customers.delete-failed')], 400);
         }
 
-        if (! $this->customerRepository->haveActiveOrders($customer)) {
+        if (!$this->customerRepository->haveActiveOrders($customer)) {
 
             $this->customerRepository->delete($id);
 
@@ -214,7 +215,7 @@ class CustomerController extends Controller
 
         session()->flash('success', trans('admin::app.customers.customers.index.login-message', ['customer_name' => $customer->name]));
 
-        return redirect(route('shop.customers.account.profile.index'));
+        return redirect(route('shop.customers.account.index'));
     }
 
     /**
@@ -276,8 +277,8 @@ class CustomerController extends Controller
     public function search()
     {
         $customers = $this->customerRepository->scopeQuery(function ($query) {
-            return $query->where('email', 'like', '%'.urldecode(request()->input('query')).'%')
-                ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%'.urldecode(request()->input('query')).'%')
+            return $query->where('email', 'like', '%' . urldecode(request()->input('query')) . '%')
+                ->orWhere(DB::raw('CONCAT(first_name, " ", last_name)'), 'like', '%' . urldecode(request()->input('query')) . '%')
                 ->orderBy('created_at', 'desc');
         })->paginate(self::COUNT);
 
