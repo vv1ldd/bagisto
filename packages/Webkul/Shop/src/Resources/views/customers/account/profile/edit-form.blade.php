@@ -10,7 +10,7 @@
             background-color: #fff;
             border: 1px solid #e4e4e7;
             border-radius: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
@@ -18,8 +18,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            min-height: 48px;
+            padding: 8px 16px;
+            min-height: 40px;
             border-bottom: 1px solid #f4f4f5;
             position: relative;
             transition: padding 0.2s ease;
@@ -223,7 +223,7 @@
 
         @media (max-width: 768px) {
             .ios-settings-wrapper { padding: 0 16px; }
-            .ios-row { padding: 14px 16px; }
+            .ios-row { padding: 8px 16px; min-height: 40px; }
             .ios-label { font-size: 14px; }
             .ios-input-wrapper { margin-left: 12px; }
             .ios-input-wrapper input, .ios-input-wrapper select { font-size: 14px !important; }
@@ -243,17 +243,17 @@
 
     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
         {{-- Registration flow: premium card wrapper --}}
-        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-7 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
+        <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-6 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
             <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
             <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
 
             <div class="w-full mx-auto z-10 relative">
-                <h2 class="text-[22px] md:text-2xl font-bold text-zinc-900 mb-1 mt-0 text-center">Расскажите о себе</h2>
-                <p class="text-[14px] text-zinc-600 mb-4 text-center mx-auto max-w-[320px]">
+                <h2 class="text-[22px] md:text-2xl font-bold text-zinc-900 mb-0 mt-0 text-center">Расскажите о себе</h2>
+                <p class="text-[14px] text-zinc-600 mb-2 text-center mx-auto max-w-[320px]">
                     Укажите настоящие имя и фамилию — они понадобятся для безопасного входа по Magic Link и восстановления доступа.
                 </p>
 
-                <div class="ios-group w-full !mb-4 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm !rounded-[24px] overflow-hidden">
+                <div class="ios-group w-full !mb-3 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm !rounded-[24px] overflow-hidden">
                     {{-- Fields for registration mode --}}
                     <div class="ios-row">
                         <label class="ios-label">@lang('shop::app.customers.account.profile.edit.username') <span class="text-red-500">*</span></label>

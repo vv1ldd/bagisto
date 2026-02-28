@@ -9,9 +9,9 @@
    
     <div class="flex min-h-screen w-full flex-wrap overflow-hidden bg-white">
         <!-- Left Side: Content -->
-        <div class="flex w-full flex-col min-h-screen px-8 pt-12 pb-6 md:px-10 md:pt-16 md:pb-10 lg:px-20 lg:pt-20 lg:pb-20 md:w-1/2 overflow-y-auto">
+        <div class="flex w-full flex-col min-h-screen px-8 pt-8 pb-4 md:px-10 md:pt-10 md:pb-6 lg:px-20 lg:pt-12 lg:pb-10 md:w-1/2 overflow-y-auto">
             <!-- Header/Logo -->
-            <div class="mb-8 flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between">
                 <a href="{{ route('shop.home.index') }}">
                     <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
                         alt="{{ config('app.name') }}" width="120" class="h-auto">
