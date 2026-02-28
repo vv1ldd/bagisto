@@ -1,6 +1,5 @@
 @props([
     'showBack' => true,
-    'showProfileCard' => true,
     'hasHeader' => true,
     'hasFooter' => true,
 ])
@@ -93,42 +92,7 @@
                 $customer = auth()->guard('customer')->user();
             @endphp
 
-            @if ($showProfileCard && $customer)
-                <!-- iOS Style Profile Card (No Avatar) -->
-                <div class="flex flex-col items-center mt-6 mb-8 max-md:mt-4 max-md:mb-6 mx-auto w-full"
-                    style="max-width: 600px;">
-                    <div
-                        class="w-full glass-card !bg-white/40 !rounded-3xl p-5 flex items-center shadow-[0_8px_32px_rgba(0,0,0,0.04)]">
 
-                        <!-- User Info Area (Clickable) -->
-                        <a @if (!request()->routeIs('shop.customers.account.profile.edit'))
-                        href="{{ route('shop.customers.account.profile.edit') }}" @endif
-                            class="flex-grow flex items-center transition active:opacity-70 group/info">
-                            <div class="flex-grow">
-                                <h2
-                                    class="text-xl font-bold text-zinc-900 tracking-tight leading-tight group-hover/info:text-[#7C45F5] transition">
-                                    @if($customer->first_name === $customer->last_name)
-                                        {{ $customer->first_name }}
-                                    @else
-                                        {{ $customer->first_name }} {{ $customer->last_name }}
-                                    @endif
-                                </h2>
-                                <p class="text-zinc-500 text-[15px] leading-tight mt-1">
-                                    {{ $customer->email }}
-                                </p>
-                            </div>
-
-
-                            <!-- Action Arrow (Hidden on Edit page) -->
-                            @if (!request()->routeIs('shop.customers.account.profile.edit'))
-                                <div class="shrink-0 p-2 text-zinc-400 group-hover/info:text-[#7C45F5] transition">
-                                    <span class="icon-arrow-right text-2xl"></span>
-                                </div>
-                            @endif
-                        </a>
-                    </div>
-                </div>
-            @endif
 
             <div class="flex justify-center max-md:mt-5">
 
