@@ -39,6 +39,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
      */
     protected $casts = [
         'subscribed_to_news_letter' => 'boolean',
+        'balance' => 'decimal:4',
     ];
 
     /**
@@ -69,6 +70,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'last_login_ip',
         'verification_code',
         'registration_ip',
+        'balance',
     ];
 
     /**
@@ -278,6 +280,16 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     public function notes()
     {
         return $this->hasMany(CustomerNoteProxy::modelClass(), 'customer_id');
+    }
+
+    /**
+     * Get all transactions of a customer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function transactions()
+    {
+        return $this->hasMany(CustomerTransactionProxy::modelClass(), 'customer_id');
     }
 
     /**
