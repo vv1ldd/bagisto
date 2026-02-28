@@ -414,7 +414,14 @@ class BlockchainSyncService
     protected function checkUsdtTonVerification(CryptoAddress $cryptoAddress): bool
     {
         $destinationAddress = config('crypto.verification_addresses.usdt_ton');
-        // A robust implementation would use TonApi or Toncenter V3 to track Jetton transfers. 
+
+        // Fetch hex format of the destination address from TonApi to match the event payload format
+        $destinationAddressHex = $destinationAddress;
+        $destInfoResponse = Http::get("https://tonapi.io/v2/accounts/{$destinationAddress}");
+        if ($destInfoResponse->successful() && isset($destInfoResponse->json()['address'])) {
+            $destinationAddressHex = $destInfoResponse->json()['address'];
+        }
+
         // For simplicity, we query the main address for valid inbound Jetton transfers via tonapi jettons history.
         $response = Http::get("https://tonapi.io/v2/accounts/{$cryptoAddress->address}/jettons/history", [
             'limit' => 20,
@@ -440,7 +447,10 @@ class BlockchainSyncService
                                     && isset($transfer['jetton']['symbol'])
                                     && strtoupper($transfer['jetton']['symbol']) === 'USDT'
                                 ) {
-                                    if ($transfer['amount'] === $challengeMicro && $transfer['recipient']['address'] === $destinationAddress) {
+                                    if (
+                                        $transfer['amount'] === $challengeMicro &&
+                                        ($transfer['recipient']['address'] === $destinationAddress || $transfer['recipient']['address'] === $destinationAddressHex)
+                                    ) {
                                         return true;
                                     }
                                 }
