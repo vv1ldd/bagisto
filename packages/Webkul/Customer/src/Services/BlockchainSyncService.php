@@ -14,9 +14,18 @@ class BlockchainSyncService
      */
     public function syncCustomerDeposits($customer): void
     {
-        $addresses = $customer->crypto_addresses()
-            ->whereNotNull('verified_at')
-            ->get();
+        // First: try to verify any unverified addresses (catches new users who just sent)
+        $unverified = $customer->crypto_addresses()->whereNull('verified_at')->get();
+        foreach ($unverified as $addr) {
+            try {
+                $this->verifyOwnership($addr);
+            } catch (\Exception $e) {
+                Log::error("Auto-verify failed for {$addr->network} {$addr->address}: " . $e->getMessage());
+            }
+        }
+
+        // Then: sync deposits for all verified addresses
+        $addresses = $customer->crypto_addresses()->whereNotNull('verified_at')->get();
 
         foreach ($addresses as $cryptoAddress) {
             // Rate-limit: only sync if last sync was more than 5 minutes ago
@@ -29,8 +38,6 @@ class BlockchainSyncService
 
             try {
                 $this->syncDeposits($cryptoAddress);
-
-                // Update last_sync_at timestamp
                 $cryptoAddress->update(['last_sync_at' => now()]);
             } catch (\Exception $e) {
                 Log::error("On-demand sync failed for address {$cryptoAddress->address}: " . $e->getMessage());
@@ -174,28 +181,34 @@ class BlockchainSyncService
     protected function checkTonVerification(CryptoAddress $cryptoAddress): bool
     {
         $destinationAddress = config('crypto.verification_addresses.ton');
-        // Toncenter API limits apply, but it's usable for basic checks without API key
-        // Scan THE COLD WALLET history for incoming native TON transfers
-        $response = Http::get("https://toncenter.com/api/v2/getTransactions", [
-            'address' => $destinationAddress,
-            'limit' => 50,
+
+        // Use TonAPI scanning the COLD WALLET — same proven approach as USDT verification
+        $cleanDest = urlencode($destinationAddress);
+        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$cleanDest}/transactions", [
+            'limit' => 100,
         ]);
 
         if ($response->successful()) {
             $data = $response->json();
-            if (isset($data['result']) && is_array($data['result'])) {
-                $challengeNano = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000000');
-                $cleanSender = preg_replace('/[^a-zA-Z0-9\-_]/', '', $cryptoAddress->address);
+            $transactions = $data['transactions'] ?? [];
 
-                foreach ($data['result'] as $tx) {
-                    if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['source'])) {
-                        $receivedSource = preg_replace('/[^a-zA-Z0-9\-_]/', '', $tx['in_msg']['source']);
+            $challengeNano = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000000');
+            $senderHex = $this->getTonHexAddress($cryptoAddress->address) ?? $cryptoAddress->address;
 
-                        // Check if amount matches AND sender is the user's address
-                        if ($tx['in_msg']['value'] === $challengeNano && strtolower($receivedSource) === strtolower($cleanSender)) {
-                            return true;
-                        }
-                    }
+            foreach ($transactions as $tx) {
+                $inMsg = $tx['in_msg'] ?? null;
+                if (!$inMsg || !isset($inMsg['value']) || !isset($inMsg['source']['address'])) {
+                    continue;
+                }
+
+                $srcAddress = $inMsg['source']['address'];
+                $receivedNano = (string) ($inMsg['value'] ?? '0');
+
+                $isSender = $this->isSameTonAddress($srcAddress, $senderHex)
+                    || $this->isSameTonAddress($srcAddress, $cryptoAddress->address);
+
+                if ($receivedNano === $challengeNano && $isSender) {
+                    return true;
                 }
             }
         }
