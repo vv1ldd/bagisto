@@ -415,24 +415,36 @@ class BlockchainSyncService
     {
         $destinationAddress = config('crypto.verification_addresses.usdt_ton');
         // A robust implementation would use TonApi or Toncenter V3 to track Jetton transfers. 
-        // For simplicity, we assume we're querying the main address for valid inbound Jetton transfers.
-        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$cryptoAddress->address}/transfers", [
+        // For simplicity, we query the main address for valid inbound Jetton transfers via tonapi jettons history.
+        $response = Http::get("https://tonapi.io/v2/accounts/{$cryptoAddress->address}/jettons/history", [
             'limit' => 20,
         ]);
 
         if ($response->successful()) {
             $data = $response->json();
-            if (isset($data['transfers']) && is_array($data['transfers'])) {
+            if (isset($data['events']) && is_array($data['events'])) {
                 // USDT has 6 decimals
                 $challengeMicro = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000');
 
-                foreach ($data['transfers'] as $tx) {
-                    if (isset($tx['amount']) && isset($tx['destination']['address'])) {
-                        // Check if amount matches AND recipient is our cold wallet
-                        // Note: In TON, Jetton addresses formats can vary, we assume standard base64url or hex matching here. 
-                        // Real implementation requires address normalization.
-                        if ($tx['amount'] === $challengeMicro && $tx['destination']['address'] === $destinationAddress) {
-                            return true;
+                foreach ($data['events'] as $event) {
+                    if (isset($event['actions']) && is_array($event['actions'])) {
+                        foreach ($event['actions'] as $action) {
+                            if (isset($action['type']) && $action['type'] === 'JettonTransfer' && isset($action['JettonTransfer'])) {
+                                $transfer = $action['JettonTransfer'];
+
+                                // Only process if the symbol is USDT, the recipient matches the destination address
+                                // and the amount matches
+                                if (
+                                    isset($transfer['amount'])
+                                    && isset($transfer['recipient']['address'])
+                                    && isset($transfer['jetton']['symbol'])
+                                    && strtoupper($transfer['jetton']['symbol']) === 'USDT'
+                                ) {
+                                    if ($transfer['amount'] === $challengeMicro && $transfer['recipient']['address'] === $destinationAddress) {
+                                        return true;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
