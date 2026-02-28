@@ -417,18 +417,7 @@
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
             </div>
-            <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.phone') <span class="text-red-500">*</span></label>
-                <div class="ios-input-wrapper">
-                    <x-shop::form.control-group class="!mb-0">
-                        <x-shop::form.control-group.control type="text" name="phone" rules="required|phone"
-                            :value="old('phone') ?? $customer->phone" placeholder="Телефон"
-                            :label="trans('shop::app.customers.account.profile.edit.phone')" />
-                        <x-shop::form.control-group.error control-name="phone" />
-                    </x-shop::form.control-group>
-                    <span class="ios-arrow icon-arrow-right"></span>
-                </div>
-            </div>
+
             <div class="ios-row cursor-pointer" onclick="window.location.href='{{ route('shop.customers.account.addresses.index') }}'">
                 <label class="ios-label cursor-pointer text-zinc-900">@lang('shop::app.layouts.address')</label>
                 <div class="ios-input-wrapper justify-end">
