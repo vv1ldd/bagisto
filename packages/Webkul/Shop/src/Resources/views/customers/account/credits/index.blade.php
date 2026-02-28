@@ -37,7 +37,52 @@
             </style>
         @endpush
 
-        <div class="pb-8 pt-2">
+        <div class="pb-8 pt-2 ios-page">
+            {{-- Transfer Form --}}
+            <div class="ios-group-title">Перевести Credits</div>
+            <div class="ios-group mb-6">
+                <x-shop::form :action="route('shop.customers.account.credits.transfer')">
+                    <div class="ios-row">
+                        <label class="ios-label">Получатель</label>
+                        <div class="ios-input-wrapper">
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.control type="text" name="recipient" rules="required"
+                                    placeholder="@alias или M-ID" :label="'Получатель'" :value="request('recipient')" />
+                                <x-shop::form.control-group.error control-name="recipient" />
+                            </x-shop::form.control-group>
+                        </div>
+                    </div>
+
+                    <div class="ios-row">
+                        <label class="ios-label">Сумма</label>
+                        <div class="ios-input-wrapper">
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.control type="text" name="amount" rules="required|decimal"
+                                    placeholder="0.00" :label="'Сумма'" />
+                                <x-shop::form.control-group.error control-name="amount" />
+                            </x-shop::form.control-group>
+                        </div>
+                    </div>
+
+                    <div class="ios-row !h-auto !py-3">
+                        <label class="ios-label">Заметка</label>
+                        <div class="ios-input-wrapper">
+                            <x-shop::form.control-group class="!mb-0 w-full">
+                                <x-shop::form.control-group.control type="text" name="notes" placeholder="Необязательно"
+                                    :label="'Заметка'" />
+                            </x-shop::form.control-group>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white">
+                        <button type="submit" class="ios-button-primary w-full !rounded-xl !py-3">
+                            Отправить Перевод
+                        </button>
+                    </div>
+                </x-shop::form>
+            </div>
+
+            <div class="ios-group-title">История начислений</div>
             <div class="glass-card !bg-white/70 overflow-hidden rounded-2xl shadow-sm border border-zinc-100">
                 @if ($transactions->count() > 0)
                     <div class="flex flex-col">
@@ -54,6 +99,10 @@
                                                 Оплата
                                             @elseif($transaction->type === 'refund')
                                                 Возврат
+                                            @elseif($transaction->type === 'transfer_debit')
+                                                Перевод от вас
+                                            @elseif($transaction->type === 'transfer_credit')
+                                                Перевод вам
                                             @else
                                                 {{ $transaction->type }}
                                             @endif

@@ -10,6 +10,12 @@ use Webkul\Shop\Http\Controllers\ProductsCategoriesProxyController;
 use Webkul\Shop\Http\Controllers\SearchController;
 use Webkul\Shop\Http\Controllers\SubscriptionController;
 use Webkul\Shop\Http\Controllers\TetrisController;
+use Webkul\Shop\Http\Controllers\AliasProfileController;
+
+/**
+ * Public Alias Profiles
+ */
+Route::get('u/@{alias}', [AliasProfileController::class, 'index'])->name('shop.alias_profile.index');
 
 /**
  * CMS pages.

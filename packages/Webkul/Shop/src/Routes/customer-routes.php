@@ -167,6 +167,11 @@ Route::prefix('customer')->group(function () {
                 Route::get('reviews', 'reviews')->name('shop.customers.account.reviews.index');
             });
 
+            // Credits Transfer
+            Route::controller(TransferController::class)->prefix('credits')->group(function () {
+                Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
+            });
+
             /**
              * GDPR.
              */
