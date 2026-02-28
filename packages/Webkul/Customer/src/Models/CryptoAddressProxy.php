@@ -2,8 +2,8 @@
 
 namespace Webkul\Customer\Models;
 
-use Webkul\Core\Eloquent\Proxy;
+use Konekt\Concord\Proxies\ModelProxy;
 
-class CryptoAddressProxy extends Proxy
+class CryptoAddressProxy extends ModelProxy
 {
 }
