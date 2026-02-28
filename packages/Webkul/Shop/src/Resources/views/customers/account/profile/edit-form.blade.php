@@ -64,14 +64,14 @@
         .ios-input-wrapper input:not([name="phone"]),
         .ios-input-wrapper select {
             width: 100% !important;
-            height: 24px !important;
+            height: auto !important;
             line-height: normal !important;
             text-align: right !important;
             text-align-last: right !important;
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
-            padding: 0 !important;
+            padding: 0 0 2px 0 !important;
             margin: 0 !important;
             color: #71717a !important;
             font-size: 15px !important;
@@ -99,14 +99,7 @@
         }
 
         .ios-input-wrapper p.text-red-500 {
-            background: transparent !important;
-            display: block;
-            text-align: right;
-            font-size: 11px;
-            margin-top: 4px;
-            line-height: 1.2;
-            font-weight: 500;
-            color: #ef4444 !important;
+            display: none !important;
         }
 
         .iti { width: 100%; justify-content: flex-end; }
@@ -408,7 +401,8 @@
 
                 <div class="flex justify-center mt-4">
                     <button type="submit"
-                        class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98]">
+                        :disabled="!meta.valid"
+                        class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100">
                         @lang('shop::app.customers.account.profile.edit.save')
                     </button>
                 </div>
@@ -610,7 +604,8 @@
 
         <div class="flex justify-center mt-10">
             <button type="submit"
-                class="primary-button inline-flex justify-center rounded-full px-12 py-3.5 text-center text-[15px] font-medium max-md:w-full">
+                :disabled="!meta.valid"
+                class="primary-button inline-flex justify-center rounded-full px-12 py-3.5 text-center text-[15px] font-medium max-md:w-full disabled:opacity-50 disabled:cursor-not-allowed">
                 @lang('shop::app.customers.account.profile.edit.save')
             </button>
         </div>
