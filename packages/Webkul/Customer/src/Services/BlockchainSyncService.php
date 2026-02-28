@@ -9,6 +9,37 @@ use Webkul\Customer\Models\CryptoAddress;
 class BlockchainSyncService
 {
     /**
+     * Sync deposits for ALL verified addresses of a customer.
+     * Implements a 5-minute cooldown per address to protect API rate limits.
+     */
+    public function syncCustomerDeposits($customer): void
+    {
+        $addresses = $customer->crypto_addresses()
+            ->whereNotNull('verified_at')
+            ->get();
+
+        foreach ($addresses as $cryptoAddress) {
+            // Rate-limit: only sync if last sync was more than 5 minutes ago
+            if (
+                $cryptoAddress->last_sync_at &&
+                now()->diffInMinutes($cryptoAddress->last_sync_at) < 5
+            ) {
+                continue;
+            }
+
+            try {
+                $this->syncDeposits($cryptoAddress);
+
+                // Update last_sync_at timestamp
+                $cryptoAddress->update(['last_sync_at' => now()]);
+            } catch (\Exception $e) {
+                Log::error("On-demand sync failed for address {$cryptoAddress->address}: " . $e->getMessage());
+            }
+        }
+    }
+
+
+    /**
      * Sync balance for a specific crypto address.
      */
     public function syncBalance(CryptoAddress $cryptoAddress): bool
@@ -276,8 +307,14 @@ class BlockchainSyncService
                 }
 
                 // Match destination (cold wallet)
-                $receivedDest = preg_replace('/[^a-zA-Z0-9\-_]/', '', $tx['to']);
-                $isMatch = (strtolower($receivedDest) === strtolower($destHex) || strtolower($receivedDest) === strtolower($destinationAddress));
+                $receivedDest = $tx['to'];
+
+                if (str_contains($cryptoAddress->network, 'ton')) {
+                    $isMatch = $this->isSameTonAddress($receivedDest, $destinationAddress) || ($destHex && $this->isSameTonAddress($receivedDest, $destHex));
+                } else {
+                    $cleanReceived = preg_replace('/[^a-zA-Z0-9\-_]/', '', $receivedDest);
+                    $isMatch = (strtolower($cleanReceived) === strtolower($destHex) || strtolower($cleanReceived) === strtolower($destinationAddress));
+                }
 
                 if ($isMatch) {
                     $newTransactions[] = $this->processDeposit($cryptoAddress, $tx);
@@ -398,41 +435,38 @@ class BlockchainSyncService
         return $results;
     }
 
-    /**
-     * Fetch recent TON transactions.
-     */
     protected function fetchTonTransactions(string $address): array
     {
-        $response = Http::get("https://toncenter.com/api/v2/getTransactions", [
-            'address' => $address,
-            'limit' => 20,
+        // Use TonAPI for more consistent address formatting (Raw HEX)
+        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$address}/transactions", [
+            'limit' => 30,
         ]);
 
         $results = [];
 
         if ($response->successful()) {
             $data = $response->json();
-            if (isset($data['result']) && is_array($data['result'])) {
-                foreach ($data['result'] as $tx) {
-                    // Check in_msg (incoming to this address)
-                    if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['destination'])) {
-                        $results[] = [
-                            'tx_id' => $tx['transaction_id']['hash'],
-                            'to' => $tx['in_msg']['destination'],
-                            'amount' => (float) ($tx['in_msg']['value'] / 1000000000),
-                        ];
-                    }
+            $transactions = $data['transactions'] ?? [];
 
-                    // Check out_msgs (outgoing from this address)
-                    if (isset($tx['out_msgs']) && is_array($tx['out_msgs'])) {
-                        foreach ($tx['out_msgs'] as $outMsg) {
-                            if (isset($outMsg['value']) && isset($outMsg['destination'])) {
-                                $results[] = [
-                                    'tx_id' => $tx['transaction_id']['hash'] . '_' . $outMsg['created_lt'],
-                                    'to' => $outMsg['destination'],
-                                    'amount' => (float) ($outMsg['value'] / 1000000000),
-                                ];
-                            }
+            foreach ($transactions as $tx) {
+                // Incoming to user wallet (could be a test/return, usually not a deposit we care about for shop refill)
+                if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['destination']['address'])) {
+                    $results[] = [
+                        'tx_id' => $tx['hash'],
+                        'to' => $tx['in_msg']['destination']['address'],
+                        'amount' => (float) (($tx['in_msg']['value'] ?? 0) / 1000000000),
+                    ];
+                }
+
+                // Outgoing from user wallet (This is how they deposit to the SHOP)
+                if (isset($tx['out_msgs']) && is_array($tx['out_msgs'])) {
+                    foreach ($tx['out_msgs'] as $outMsg) {
+                        if (isset($outMsg['value']) && isset($outMsg['destination']['address'])) {
+                            $results[] = [
+                                'tx_id' => $tx['hash'] . '_' . ($outMsg['created_lt'] ?? microtime(true)),
+                                'to' => $outMsg['destination']['address'],
+                                'amount' => (float) (($outMsg['value'] ?? 0) / 1000000000),
+                            ];
                         }
                     }
                 }
@@ -637,5 +671,46 @@ class BlockchainSyncService
         }
 
         return $results;
+    }
+
+    /**
+     * Helper to compare two TON addresses robustly.
+     */
+    protected function isSameTonAddress(string $addr1, string $addr2): bool
+    {
+        $addr1 = preg_replace('/[^a-zA-Z0-9\-_]/', '', $addr1);
+        $addr2 = preg_replace('/[^a-zA-Z0-9\-_]/', '', $addr2);
+
+        if (strtolower($addr1) === strtolower($addr2)) {
+            return true;
+        }
+
+        // Check if they match after swapping EQ <-> UQ prefixes (common TON alias issue)
+        $altAddr1 = $addr1;
+        if (str_starts_with($addr1, 'UQ'))
+            $altAddr1 = 'EQ' . substr($addr1, 2);
+        elseif (str_starts_with($addr1, 'EQ'))
+            $altAddr1 = 'UQ' . substr($addr1, 2);
+
+        if (strtolower($altAddr1) === strtolower($addr2)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get HEX address from user-friendly TON address via TonAPI.
+     */
+    protected function getTonHexAddress(string $address): ?string
+    {
+        try {
+            $resp = Http::get("https://tonapi.io/v2/accounts/" . preg_replace('/[^a-zA-Z0-9\-_]/', '', $address));
+            if ($resp->successful()) {
+                return $resp->json()['address'] ?? null;
+            }
+        } catch (\Exception $e) {
+        }
+        return null;
     }
 }

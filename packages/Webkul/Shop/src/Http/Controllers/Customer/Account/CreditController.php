@@ -3,9 +3,14 @@
 namespace Webkul\Shop\Http\Controllers\Customer\Account;
 
 use Webkul\Shop\Http\Controllers\Controller;
+use Webkul\Customer\Services\BlockchainSyncService;
 
 class CreditController extends Controller
 {
+    public function __construct(protected BlockchainSyncService $syncService)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +18,12 @@ class CreditController extends Controller
      */
     public function index()
     {
-        $transactions = auth()->guard('customer')->user()
+        $customer = auth()->guard('customer')->user();
+
+        // Trigger on-demand deposit sync (rate-limited internally to 5 min per address)
+        $this->syncService->syncCustomerDeposits($customer);
+
+        $transactions = $customer
             ->credits()
             ->orderBy('id', 'desc')
             ->paginate(10);
