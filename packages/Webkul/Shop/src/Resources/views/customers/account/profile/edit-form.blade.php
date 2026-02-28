@@ -243,7 +243,7 @@
             <div class="w-full mx-auto z-10 relative">
                 <h2 class="text-[22px] md:text-2xl font-bold text-zinc-900 mb-1 mt-0 text-center">Расскажите о себе</h2>
                 <p class="text-[14px] text-zinc-600 mb-4 text-center mx-auto max-w-[320px]">
-                    Заполните базовую информацию, чтобы мы могли персонализировать ваш профиль.
+                    Укажите настоящие имя и фамилию — они понадобятся для безопасного входа по Magic Link и восстановления доступа.
                 </p>
 
                 <div class="ios-group w-full !mb-4 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm !rounded-[24px] overflow-hidden">
