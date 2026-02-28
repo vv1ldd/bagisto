@@ -35,7 +35,7 @@
            <!-- Right Side: Artistic Image -->
         @php
             $bgConfig = core()->getConfigData('customer.login_page.background_image');
-            $bgImageUrl = $bgConfig ? Storage::url($bgConfig) : 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2670&auto=format&fit=crop';
+            $bgImageUrl = $bgConfig ? \Illuminate\Support\Facades\Storage::url($bgConfig) : 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=2670&auto=format&fit=crop';
         @endphp
         <div cla    ss="hidden md:block md:w-1/2">
              <div    class="h-full w-full bg-cover bg-center bg-no-repeat"
