@@ -230,6 +230,18 @@ Route::prefix('customer')->group(function () {
 
                 Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
             });
+            /**
+             * Crypto Wallets.
+             */
+            Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->prefix('crypto')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.crypto.index');
+
+                Route::post('create', 'store')->name('shop.customers.account.crypto.store');
+
+                Route::get('sync/{id}', 'sync')->name('shop.customers.account.crypto.sync');
+
+                Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
+            });
         });
     });
 });

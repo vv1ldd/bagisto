@@ -5,7 +5,8 @@
 
     @if ($customer?->credits_alias || $customer?->credits_id)
         <div class="ios-nav-group !mb-6">
-            <div class="ios-nav-row !py-3 bg-zinc-50/50">
+            <div class="ios-nav-row !py-3 bg-zinc-50/50"
+                onclick="window.location.href='{{ route('shop.customers.account.credits.index') }}'">
                 <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
                     Credits ID
                 </span>
@@ -13,6 +14,13 @@
                     {{ $customer->credits_alias ? '@' . $customer->credits_alias : $customer->credits_id }}
                 </span>
             </div>
+            <a href="{{ route('shop.customers.account.crypto.index') }}" class="ios-nav-row">
+                <span
+                    class="ios-nav-label {{ request()->routeIs('shop.customers.account.crypto.index') ? 'font-semibold text-[#7C45F5]' : '' }}">
+                    Крипто Кошельки
+                </span>
+                <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left"></span>
+            </a>
         </div>
     @endif
     @foreach (menu()->getItems('customer') as $menuItem)

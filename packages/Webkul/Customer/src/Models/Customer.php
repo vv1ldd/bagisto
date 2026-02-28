@@ -297,6 +297,16 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     }
 
     /**
+     * Get all crypto addresses of a customer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function crypto_addresses()
+    {
+        return $this->hasMany(CryptoAddressProxy::modelClass(), 'customer_id');
+    }
+
+    /**
      * Get the customer's subscription.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
