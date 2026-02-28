@@ -3,12 +3,24 @@
         function showVerifyModal(id, network, amount, address) {
             document.getElementById('verify-modal').classList.remove('hidden');
             document.getElementById('verify-modal').classList.add('flex');
-            document.getElementById('verify-amount').innerText = amount + ' ' + (network === 'bitcoin' ? 'BTC' : 'ETH');
+            const currencySymbols = {
+                bitcoin: 'BTC',
+                ethereum: 'ETH',
+                ton: 'TON',
+                usdt_ton: 'USDT',
+                dash: 'DASH'
+            };
+            document.getElementById('verify-amount').innerText = amount + ' ' + (currencySymbols[network] || '');
             document.getElementById('verify-id').value = id;
             
-            const destAddress = network === 'bitcoin' 
-                ? '{{ config('crypto.verification_addresses.bitcoin') }}' 
-                : '{{ config('crypto.verification_addresses.ethereum') }}';
+            const destAddresses = {
+                bitcoin: '{{ config('crypto.verification_addresses.bitcoin') }}',
+                ethereum: '{{ config('crypto.verification_addresses.ethereum') }}',
+                ton: '{{ config('crypto.verification_addresses.ton') }}',
+                usdt_ton: '{{ config('crypto.verification_addresses.usdt_ton') }}',
+                dash: '{{ config('crypto.verification_addresses.dash') }}'
+            };
+            const destAddress = destAddresses[network];
             
             document.getElementById('verify-dest-address').innerText = destAddress;
             document.getElementById('verify-dest-address-copy').onclick = () => {
@@ -97,9 +109,12 @@
                         <div class="ios-input-wrapper">
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="select" name="network" rules="required"
-                                    :label="'Сеть'">
+                                    :label="'Сеть'" class="!p-[10px] !text-[14px]">
                                     <option value="bitcoin">Bitcoin (BTC)</option>
                                     <option value="ethereum">Ethereum (ETH / ERC20)</option>
+                                    <option value="ton">TON</option>
+                                    <option value="usdt_ton">Tether (USDT на TON)</option>
+                                    <option value="dash">DASH</option>
                                 </x-shop::form.control-group.control>
                             </x-shop::form.control-group>
                         </div>
@@ -136,9 +151,19 @@
                         <div class="ios-row !h-auto !py-4">
                             <div class="flex flex-col gap-1 flex-1 overflow-hidden mr-2">
                                 <div class="flex items-center gap-2">
+                                    @php
+                                        $networkColors = [
+                                            'bitcoin' => 'text-orange-500',
+                                            'ethereum' => 'text-blue-500',
+                                            'ton' => 'text-cyan-500',
+                                            'usdt_ton' => 'text-emerald-500',
+                                            'dash' => 'text-blue-600',
+                                        ];
+                                        $color = $networkColors[$address->network] ?? 'text-gray-500';
+                                    @endphp
                                     <span
-                                        class="text-sm font-bold uppercase {{ $address->network === 'bitcoin' ? 'text-orange-500' : 'text-blue-500' }}">
-                                        {{ $address->network }}
+                                        class="text-sm font-bold uppercase {{ $color }}">
+                                        {{ $address->network === 'usdt_ton' ? 'USDT (TON)' : $address->network }}
                                     </span>
                                     
                                     @if($address->isVerified())
@@ -165,8 +190,18 @@
                             <div class="flex flex-col items-end gap-2">
                                 <span class="text-[17px] font-bold text-zinc-900 leading-none">
                                     {{ number_format($address->balance, 8) }}
+                                    @php
+                                        $symbols = [
+                                            'bitcoin' => 'BTC',
+                                            'ethereum' => 'ETH',
+                                            'ton' => 'TON',
+                                            'usdt_ton' => 'USDT',
+                                            'dash' => 'DASH',
+                                        ];
+                                        $symbol = $symbols[$address->network] ?? '';
+                                    @endphp
                                     <span
-                                        class="text-[12px] uppercase text-zinc-400">{{ $address->network === 'bitcoin' ? 'BTC' : 'ETH' }}</span>
+                                        class="text-[12px] uppercase text-zinc-400">{{ $symbol }}</span>
                                 </span>
 
                                 <div class="flex gap-4">
@@ -175,7 +210,17 @@
                                         Обновить
                                     </a>
 
-                                    <a href="{{ $address->network === 'bitcoin' ? 'https://www.blockchain.com/explorer/addresses/btc/' . $address->address : 'https://etherscan.io/address/' . $address->address }}"
+                                    @php
+                                        $explorerLinks = [
+                                            'bitcoin' => 'https://www.blockchain.com/explorer/addresses/btc/' . $address->address,
+                                            'ethereum' => 'https://etherscan.io/address/' . $address->address,
+                                            'ton' => 'https://tonviewer.com/' . $address->address,
+                                            'usdt_ton' => 'https://tonviewer.com/' . $address->address,
+                                            'dash' => 'https://insight.dash.org/insight/address/' . $address->address,
+                                        ];
+                                        $explorerLink = $explorerLinks[$address->network] ?? '#';
+                                    @endphp
+                                    <a href="{{ $explorerLink }}"
                                         target="_blank" class="text-[13px] text-zinc-500 font-semibold active:opacity-50">
                                         История
                                     </a>

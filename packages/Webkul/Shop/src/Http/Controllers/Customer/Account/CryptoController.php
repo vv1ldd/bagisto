@@ -38,7 +38,7 @@ class CryptoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'network' => 'required|in:bitcoin,ethereum',
+            'network' => 'required|in:bitcoin,ethereum,ton,usdt_ton,dash',
             'address' => 'required|string',
         ]);
 
