@@ -701,43 +701,87 @@ class BlockchainSyncService
     }
 
     /**
-     * Helper to compare two TON addresses robustly.
+     * Convert any TON address (UQ/EQ/raw) to raw format "workchain:hexhash".
+     * Uses local base64url decoding — no API calls needed.
      */
-    protected function isSameTonAddress(string $addr1, string $addr2): bool
+    protected function tonAddressToRaw(string $address): ?string
     {
-        $addr1 = preg_replace('/[^a-zA-Z0-9\-_]/', '', $addr1);
-        $addr2 = preg_replace('/[^a-zA-Z0-9\-_]/', '', $addr2);
+        $address = trim($address);
 
-        if (strtolower($addr1) === strtolower($addr2)) {
-            return true;
+        // Already in raw format: "0:abc123..." (64 hex chars)
+        if (preg_match('/^(-?\d+):([0-9a-fA-F]{64})$/', $address, $m)) {
+            return strtolower($m[1]) . ':' . strtolower($m[2]);
         }
 
-        // Check if they match after swapping EQ <-> UQ prefixes (common TON alias issue)
-        $altAddr1 = $addr1;
-        if (str_starts_with($addr1, 'UQ'))
-            $altAddr1 = 'EQ' . substr($addr1, 2);
-        elseif (str_starts_with($addr1, 'EQ'))
-            $altAddr1 = 'UQ' . substr($addr1, 2);
-
-        if (strtolower($altAddr1) === strtolower($addr2)) {
-            return true;
+        // UQ/EQ base64url format (48 chars): decode → 36 bytes
+        // Format: 1 byte flags | 1 byte workchain | 32 bytes hash | 2 bytes CRC
+        $clean = preg_replace('/[^a-zA-Z0-9\-_]/', '', $address);
+        if (strlen($clean) !== 48) {
+            return null;
         }
 
-        return false;
+        try {
+            $binary = base64_decode(str_replace(['-', '_'], ['+', '/'], $clean), true);
+            if ($binary === false || strlen($binary) !== 36) {
+                return null;
+            }
+
+            $workchain = ord($binary[1]);
+            if ($workchain > 127) {
+                $workchain -= 256; // signed byte
+            }
+
+            $hash = strtolower(bin2hex(substr($binary, 2, 32)));
+            return "{$workchain}:{$hash}";
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
-     * Get HEX address from user-friendly TON address via TonAPI.
+     * Compare two TON addresses — handles UQ, EQ, and raw hex formats.
+     * Uses local decoding, no external API required.
+     */
+    protected function isSameTonAddress(string $addr1, string $addr2): bool
+    {
+        $raw1 = $this->tonAddressToRaw($addr1);
+        $raw2 = $this->tonAddressToRaw($addr2);
+
+        if ($raw1 !== null && $raw2 !== null) {
+            // Compare just the hash part (workchain is always 0 for user wallets)
+            $hash1 = explode(':', $raw1)[1] ?? '';
+            $hash2 = explode(':', $raw2)[1] ?? '';
+            return $hash1 === $hash2;
+        }
+
+        // Fallback: strip non-alphanumeric and compare strings
+        $a1 = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $addr1));
+        $a2 = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $addr2));
+        return $a1 === $a2;
+    }
+
+    /**
+     * Get raw hex address for a TON address.
+     * First tries local base64 decoding, then TonAPI as fallback.
      */
     protected function getTonHexAddress(string $address): ?string
     {
+        // Try local conversion first (works for UQ/EQ addresses)
+        $raw = $this->tonAddressToRaw($address);
+        if ($raw !== null) {
+            return $raw;
+        }
+
+        // Fallback to TonAPI for raw addresses or unknown formats
         try {
-            $resp = Http::get("https://tonapi.io/v2/accounts/" . preg_replace('/[^a-zA-Z0-9\-_]/', '', $address));
+            $clean = urlencode(trim($address));
+            $resp = Http::get("https://tonapi.io/v2/accounts/{$clean}");
             if ($resp->successful()) {
                 return $resp->json()['address'] ?? null;
             }
         } catch (\Exception $e) {
         }
+
         return null;
     }
 }
