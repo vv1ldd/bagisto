@@ -43,6 +43,7 @@ class ProfileRequest extends FormRequest
             'is_complete_registration' => 'boolean|nullable',
             'country_of_residence' => 'nullable|string',
             'citizenship' => 'nullable|string',
+            'credits_alias' => ['nullable', 'unique:customers,credits_alias,' . $id, 'max:255', 'regex:/^[a-z0-9_.]+$/'],
         ];
     }
 
