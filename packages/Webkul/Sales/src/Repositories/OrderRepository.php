@@ -54,18 +54,36 @@ class OrderRepository extends Repository
 
             $order->payment()->create($data['payment']);
 
-            // Handle Credits Balance Deduction
+            // Handle Credits Balance Deduction (Specific Crypto)
             if ($data['payment']['method'] === 'credits') {
                 $customer = $order->customer;
+                $cryptoCoin = $data['payment']['crypto_coin'] ?? null;
 
-                if (!$customer || $customer->balance < $order->base_grand_total) {
-                    throw new \Exception('Insufficient credits balance.');
+                if (!$cryptoCoin) {
+                    throw new \Exception('Cryptocurrency not selected for credits payment.');
                 }
 
-                $customer->balance -= $order->base_grand_total;
-                $customer->save();
+                $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
+                $rate = $exchangeRateService->getRate($cryptoCoin);
 
-                // Log the purchase transaction
+                if ($rate <= 0) {
+                    throw new \Exception("Could not fetch valid exchange rate for {$cryptoCoin}.");
+                }
+
+                // Calculate exact crypto needed: Fiat Total / Rate (e.g., $100 / $50000 = 0.002 BTC)
+                $cryptoAmountRequired = $order->base_grand_total / $rate;
+
+                $cryptoBalance = $customer->balances()->where('currency_code', $cryptoCoin)->first();
+
+                if (!$cryptoBalance || $cryptoBalance->amount < $cryptoAmountRequired) {
+                    throw new \Exception("Insufficient {$cryptoCoin} balance. Required: {$cryptoAmountRequired}, Available: " . ($cryptoBalance ? $cryptoBalance->amount : 0));
+                }
+
+                // Deduct native crypto
+                $cryptoBalance->amount -= $cryptoAmountRequired;
+                $cryptoBalance->save();
+
+                // Log the purchase transaction (keep amount as fiat for general history consistency)
                 \Webkul\Customer\Models\CustomerTransaction::create([
                     'uuid' => \Illuminate\Support\Str::uuid(),
                     'customer_id' => $customer->id,
@@ -74,7 +92,7 @@ class OrderRepository extends Repository
                     'status' => 'completed',
                     'reference_type' => get_class($order),
                     'reference_id' => $order->id,
-                    'notes' => "Purchase for Order #{$order->increment_id}",
+                    'notes' => "Purchase for Order #{$order->increment_id} (Paid " . number_format($cryptoAmountRequired, 8) . " {$cryptoCoin} @ rate {$rate})",
                 ]);
             }
 

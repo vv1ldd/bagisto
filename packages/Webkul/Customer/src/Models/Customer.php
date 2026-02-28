@@ -22,6 +22,8 @@ use Webkul\Sales\Models\OrderProxy;
 use Webkul\Shop\Mail\Customer\ResetPasswordNotification;
 use Spatie\LaravelPasskeys\Models\Concerns\HasPasskeys;
 use Spatie\LaravelPasskeys\Models\Concerns\InteractsWithPasskeys;
+use Webkul\Customer\Models\CustomerBalanceProxy;
+use Webkul\Customer\Services\ExchangeRateService;
 
 class Customer extends Authenticatable implements CustomerContract, HasPasskeys
 {
@@ -294,6 +296,34 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     public function credits()
     {
         return $this->hasMany(CustomerTransactionProxy::modelClass(), 'customer_id');
+    }
+
+    /**
+     * Get all native crypto balances of a customer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function balances()
+    {
+        return $this->hasMany(CustomerBalanceProxy::modelClass(), 'customer_id');
+    }
+
+    /**
+     * Calculate the total fiat value of all native crypto balances based on live exchange rates.
+     *
+     * @return float
+     */
+    public function getTotalFiatBalance(): float
+    {
+        $totalFiat = 0.0;
+        $exchangeRateService = app(ExchangeRateService::class);
+
+        foreach ($this->balances as $balance) {
+            $rate = $exchangeRateService->getRate($balance->currency_code);
+            $totalFiat += ($balance->amount * $rate);
+        }
+
+        return $totalFiat;
     }
 
     /**
