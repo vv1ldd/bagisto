@@ -86,6 +86,9 @@
             border: none !important;
             box-shadow: none !important;
             margin: 0 !important;
+            padding: 0 0 2px 0 !important;
+            height: auto !important;
+            line-height: normal !important;
             color: #71717a !important;
             font-size: 15px !important;
             appearance: none;
@@ -102,8 +105,8 @@
             display: none !important;
         }
 
-        .iti { width: 100%; justify-content: flex-end; }
-        .iti__flag-container { z-index: 10 !important; cursor: pointer !important; }
+        .iti { width: 100%; display: flex; justify-content: flex-end; align-items: center; }
+        .iti__flag-container { position: relative !important; z-index: 10 !important; cursor: pointer !important; padding-right: 8px !important; }
         .iti--container { z-index: 99999 !important; }
         .iti__country-list {
             z-index: 99999 !important;
