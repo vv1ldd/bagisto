@@ -24,9 +24,10 @@ class BlockchainSyncService
             }
         }
 
-        // Cross-network TON auto-verification:
+        // Cross-network TON auto-verification + auto-creation:
         // TON and USDT_TON share the same wallet address on the TON blockchain.
-        // If one is verified, automatically verify sibling TON networks with the same address.
+        // If one is registered and verified, automatically ensure the sibling network
+        // also has a verified record — creating it if it doesn't exist.
         $tonNetworks = ['ton', 'usdt_ton'];
         $allTonAddresses = $customer->crypto_addresses()
             ->whereIn('network', $tonNetworks)
@@ -34,17 +35,34 @@ class BlockchainSyncService
             ->groupBy('address');
 
         foreach ($allTonAddresses as $walletAddress => $rows) {
-            $hasVerified = $rows->whereNotNull('verified_at')->isNotEmpty();
-            if ($hasVerified) {
-                foreach ($rows->whereNull('verified_at') as $unverifiedRow) {
+            $verifiedRow = $rows->whereNotNull('verified_at')->first();
+            if (!$verifiedRow) {
+                continue;
+            }
+
+            $existingNetworks = $rows->pluck('network')->toArray();
+
+            foreach ($tonNetworks as $siblingNetwork) {
+                if (in_array($siblingNetwork, $existingNetworks)) {
+                    // Exists — just make sure it's verified
+                    $siblingRow = $rows->where('network', $siblingNetwork)->whereNull('verified_at')->first();
+                    if ($siblingRow) {
+                        $siblingRow->update(['verified_at' => now(), 'is_active' => true]);
+                        Log::info("Cross-verified {$siblingNetwork} {$walletAddress} via sibling.");
+                    }
+                } else {
+                    // Doesn't exist — auto-create it as verified
                     try {
-                        $unverifiedRow->update([
-                            'verified_at' => now(),
+                        $customer->crypto_addresses()->create([
+                            'network' => $siblingNetwork,
+                            'address' => $walletAddress,
                             'is_active' => true,
+                            'verified_at' => now(),
+                            'verification_amount' => $verifiedRow->verification_amount,
                         ]);
-                        Log::info("Cross-verified {$unverifiedRow->network} address {$walletAddress} via sibling TON network.");
+                        Log::info("Auto-created verified {$siblingNetwork} address {$walletAddress}.");
                     } catch (\Exception $e) {
-                        Log::error("Cross-verify failed: " . $e->getMessage());
+                        Log::error("Auto-create {$siblingNetwork} failed: " . $e->getMessage());
                     }
                 }
             }
