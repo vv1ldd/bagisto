@@ -144,20 +144,24 @@ class BlockchainSyncService
     {
         $destinationAddress = config('crypto.verification_addresses.ton');
         // Toncenter API limits apply, but it's usable for basic checks without API key
+        // Scan THE COLD WALLET history for incoming native TON transfers
         $response = Http::get("https://toncenter.com/api/v2/getTransactions", [
-            'address' => $cryptoAddress->address,
-            'limit' => 20,
+            'address' => $destinationAddress,
+            'limit' => 50,
         ]);
 
         if ($response->successful()) {
             $data = $response->json();
             if (isset($data['result']) && is_array($data['result'])) {
                 $challengeNano = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000000');
+                $cleanSender = preg_replace('/[^a-zA-Z0-9\-_]/', '', $cryptoAddress->address);
 
                 foreach ($data['result'] as $tx) {
-                    if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['destination'])) {
-                        // Check if amount matches AND recipient is our cold wallet (A)
-                        if ($tx['in_msg']['value'] === $challengeNano && $tx['in_msg']['destination'] === $destinationAddress) {
+                    if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['source'])) {
+                        $receivedSource = preg_replace('/[^a-zA-Z0-9\-_]/', '', $tx['in_msg']['source']);
+
+                        // Check if amount matches AND sender is the user's address
+                        if ($tx['in_msg']['value'] === $challengeNano && strtolower($receivedSource) === strtolower($cleanSender)) {
                             return true;
                         }
                     }
@@ -410,13 +414,26 @@ class BlockchainSyncService
             $data = $response->json();
             if (isset($data['result']) && is_array($data['result'])) {
                 foreach ($data['result'] as $tx) {
+                    // Check in_msg (incoming to this address)
                     if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['destination'])) {
                         $results[] = [
-                            // Using the logical time and transaction hash as a pseudo ID
                             'tx_id' => $tx['transaction_id']['hash'],
                             'to' => $tx['in_msg']['destination'],
                             'amount' => (float) ($tx['in_msg']['value'] / 1000000000),
                         ];
+                    }
+
+                    // Check out_msgs (outgoing from this address)
+                    if (isset($tx['out_msgs']) && is_array($tx['out_msgs'])) {
+                        foreach ($tx['out_msgs'] as $outMsg) {
+                            if (isset($outMsg['value']) && isset($outMsg['destination'])) {
+                                $results[] = [
+                                    'tx_id' => $tx['transaction_id']['hash'] . '_' . $outMsg['created_lt'],
+                                    'to' => $outMsg['destination'],
+                                    'amount' => (float) ($outMsg['value'] / 1000000000),
+                                ];
+                            }
+                        }
                     }
                 }
             }
