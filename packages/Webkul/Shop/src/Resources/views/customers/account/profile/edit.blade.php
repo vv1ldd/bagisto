@@ -18,7 +18,8 @@
         </x-slot:title>
 
         <!-- Profile Edit Form -->
-        <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data" class="w-full">
+        <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data" class="w-full"
+            id="profile-edit-form">
             @include('shop::customers.account.profile.edit-form', ['customer' => $customer])
         </x-shop::form>
     </x-shop::layouts.account>

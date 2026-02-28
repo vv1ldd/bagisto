@@ -551,13 +551,7 @@
             </div>
         </div>
 
-        <div class="flex justify-center mt-4">
-            <button type="submit"
-                :disabled="!meta.valid"
-                class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100">
-                @lang('shop::app.customers.account.profile.edit.save')
-            </button>
-        </div>
+
     @endif
 
 </div>

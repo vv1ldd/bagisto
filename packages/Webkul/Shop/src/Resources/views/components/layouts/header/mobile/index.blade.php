@@ -34,8 +34,11 @@
                     <x-shop::dropdown
                         position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
                         <x-slot:toggle>
-                            <img src="{{ auth()->guard('customer')->user()?->image_url ?? bagisto_asset('images/user-placeholder.png') }}"
-                                class="h-8 w-8 cursor-pointer rounded-full shadow-sm" alt="User Profile">
+                            <button type="button"
+                                class="flex items-center justify-center h-8 w-8 rounded-full bg-zinc-100 text-zinc-500 transition active:bg-zinc-200"
+                                aria-label="Профиль">
+                                <span class="icon-profile text-[18px]"></span>
+                            </button>
                             </x-slot>
 
                             <!-- Guest Dropdown -->
