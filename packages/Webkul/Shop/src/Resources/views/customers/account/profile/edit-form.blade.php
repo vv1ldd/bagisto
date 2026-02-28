@@ -382,6 +382,28 @@
                             </div>
                         </div>
                     @endif
+
+                    @if (empty($customer->citizenship) || str_starts_with($customer->citizenship, '$2y$'))
+                        <div class="ios-row">
+                            <label class="ios-label">Гражданство <span class="text-red-500">*</span></label>
+                            <div class="ios-input-wrapper relative">
+                                <x-shop::form.control-group class="!mb-0">
+                                    <x-shop::form.control-group.control type="select" name="citizenship" rules="required"
+                                        :value="old('citizenship') ?? (str_starts_with($customer->citizenship, '$2y$') ? '' : $customer->citizenship)"
+                                        label="Гражданство">
+                                        <option value="" disabled hidden>Выберите гражданство</option>
+                                        @foreach (core()->countries() as $country)
+                                            <option value="{{ $country->name }}" {{ (($customer->citizenship ?? old('citizenship')) == $country->name) ? 'selected' : '' }}>
+                                                {{ $country->name }}
+                                            </option>
+                                        @endforeach
+                                    </x-shop::form.control-group.control>
+                                    <x-shop::form.control-group.error control-name="citizenship" />
+                                </x-shop::form.control-group>
+                                <span class="ios-arrow icon-arrow-right"></span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="flex justify-center mt-4">
@@ -543,6 +565,28 @@
                                 @endforeach
                             </x-shop::form.control-group.control>
                             <x-shop::form.control-group.error control-name="country_of_residence" />
+                        </x-shop::form.control-group>
+                        <span class="ios-arrow icon-arrow-right"></span>
+                    </div>
+                </div>
+            @endif
+
+            @if (empty($customer->citizenship) || str_starts_with($customer->citizenship, '$2y$'))
+                <div class="ios-row">
+                    <label class="ios-label">Гражданство <span class="text-red-500">*</span></label>
+                    <div class="ios-input-wrapper relative">
+                        <x-shop::form.control-group class="!mb-0">
+                            <x-shop::form.control-group.control type="select" name="citizenship" rules="required"
+                                :value="old('citizenship') ?? (str_starts_with($customer->citizenship, '$2y$') ? '' : $customer->citizenship)"
+                                label="Гражданство">
+                                <option value="" disabled hidden>Выберите гражданство</option>
+                                @foreach (core()->countries() as $country)
+                                    <option value="{{ $country->name }}" {{ (($customer->citizenship ?? old('citizenship')) == $country->name) ? 'selected' : '' }}>
+                                        {{ $country->name }}
+                                    </option>
+                                @endforeach
+                            </x-shop::form.control-group.control>
+                            <x-shop::form.control-group.error control-name="citizenship" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>

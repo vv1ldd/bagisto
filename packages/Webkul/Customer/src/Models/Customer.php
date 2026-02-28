@@ -54,6 +54,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'date_of_birth',
         'birth_city',
         'country_of_residence',
+        'citizenship',
         'email',
         'phone',
         'password',
