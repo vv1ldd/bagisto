@@ -439,13 +439,13 @@ class BlockchainSyncService
                             if (isset($action['type']) && $action['type'] === 'JettonTransfer' && isset($action['JettonTransfer'])) {
                                 $transfer = $action['JettonTransfer'];
 
-                                // Only process if the symbol is USDT, the recipient matches the destination address
-                                // and the amount matches
+                                // Only process if the symbol is USDT or USD₮ (the special Tether TON symbol),
+                                // the recipient matches the destination address and the amount matches
                                 if (
                                     isset($transfer['amount'])
                                     && isset($transfer['recipient']['address'])
                                     && isset($transfer['jetton']['symbol'])
-                                    && strtoupper($transfer['jetton']['symbol']) === 'USDT'
+                                    && (strtoupper($transfer['jetton']['symbol']) === 'USDT' || $transfer['jetton']['symbol'] === 'USD₮')
                                 ) {
                                     if (
                                         $transfer['amount'] === $challengeMicro &&
