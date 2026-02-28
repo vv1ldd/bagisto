@@ -225,13 +225,18 @@
                                         История
                                     </a>
 
-                                    @if (!$address->isVerified())
-                                        <button
-                                            onclick="showVerifyModal('{{ $address->id }}', '{{ $address->network }}', '{{ $address->verification_amount }}', '{{ $address->address }}')"
-                                            class="text-[13px] text-emerald-600 font-semibold active:opacity-50">
-                                            Верифицировать
-                                        </button>
-                                    @endif
+                                    @php
+                                        $displayAmount = $address->network === 'usdt_ton' 
+                                            ? number_format($address->verification_amount, 6, '.', '') 
+                                            : number_format($address->verification_amount, 8, '.', '');
+                                        // Remove trailing zeros for a cleaner look while keeping necessary precision
+                                        $displayAmount = rtrim(rtrim($displayAmount, '0'), '.');
+                                    @endphp
+                                    <button
+                                        onclick="showVerifyModal('{{ $address->id }}', '{{ $address->network }}', '{{ $displayAmount }}', '{{ $address->address }}')"
+                                        class="text-[13px] text-emerald-600 font-semibold active:opacity-50">
+                                        Верифицировать
+                                    </button>
 
                                     <form action="{{ route('shop.customers.account.crypto.delete', $address->id) }}"
                                         method="POST">

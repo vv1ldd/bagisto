@@ -441,18 +441,27 @@ class BlockchainSyncService
 
                                 // Only process if the symbol is USDT or USD₮ (the special Tether TON symbol),
                                 // the recipient matches the destination address and the amount matches
+                                $symbol = $transfer['jetton']['symbol'] ?? '';
+                                $receivedAmount = (string) ($transfer['amount'] ?? '0');
+                                $receivedRecipient = $transfer['recipient']['address'] ?? '';
+
+                                \Illuminate\Support\Facades\Log::info("TON USDT Verification Debug", [
+                                    'target_symbol' => 'USDT/USD₮',
+                                    'received_symbol' => $symbol,
+                                    'target_amount' => $challengeMicro,
+                                    'received_amount' => $receivedAmount,
+                                    'target_dest_hex' => $destinationAddressHex,
+                                    'target_dest_base64' => $destinationAddress,
+                                    'received_dest' => $receivedRecipient,
+                                ]);
+
                                 if (
-                                    isset($transfer['amount'])
-                                    && isset($transfer['recipient']['address'])
-                                    && isset($transfer['jetton']['symbol'])
-                                    && (strtoupper($transfer['jetton']['symbol']) === 'USDT' || $transfer['jetton']['symbol'] === 'USD₮')
+                                    ($receivedRecipient === $destinationAddress || $receivedRecipient === $destinationAddressHex)
+                                    && ($receivedAmount === $challengeMicro || (float) $receivedAmount === (float) $challengeMicro)
+                                    && (str_contains(strtoupper($symbol), 'USD'))
                                 ) {
-                                    if (
-                                        $transfer['amount'] === $challengeMicro &&
-                                        ($transfer['recipient']['address'] === $destinationAddress || $transfer['recipient']['address'] === $destinationAddressHex)
-                                    ) {
-                                        return true;
-                                    }
+                                    \Illuminate\Support\Facades\Log::info("TON USDT Verification SUCCESS");
+                                    return true;
                                 }
                             }
                         }
