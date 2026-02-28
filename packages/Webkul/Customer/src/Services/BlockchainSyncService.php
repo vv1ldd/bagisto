@@ -415,15 +415,26 @@ class BlockchainSyncService
     {
         $destinationAddress = config('crypto.verification_addresses.usdt_ton');
 
-        // Fetch hex format of the destination address from TonApi to match the event payload format
-        $destinationAddressHex = $destinationAddress;
-        $destInfoResponse = Http::get("https://tonapi.io/v2/accounts/{$destinationAddress}");
+        // Robust address cleaning: strip dashes, spaces, and other non-alphanumeric characters
+        $cleanSender = preg_replace('/[^a-zA-Z0-9]/', '', $cryptoAddress->address);
+        $cleanDest = preg_replace('/[^a-zA-Z0-9]/', '', $destinationAddress);
+
+        // Fetch hex format of the destination address to match the event payload format
+        $destinationAddressHex = $cleanDest;
+        $destInfoResponse = Http::get("https://tonapi.io/v2/accounts/{$cleanDest}");
         if ($destInfoResponse->successful() && isset($destInfoResponse->json()['address'])) {
             $destinationAddressHex = $destInfoResponse->json()['address'];
         }
 
-        // For simplicity, we query the main address for valid inbound Jetton transfers via tonapi jettons history.
-        $response = Http::get("https://tonapi.io/v2/accounts/{$cryptoAddress->address}/jettons/history", [
+        // Fetch hex format of the sender address for robust comparison
+        $senderAddressHex = $cleanSender;
+        $senderInfoResponse = Http::get("https://tonapi.io/v2/accounts/{$cleanSender}");
+        if ($senderInfoResponse->successful() && isset($senderInfoResponse->json()['address'])) {
+            $senderAddressHex = $senderInfoResponse->json()['address'];
+        }
+
+        // We query the sender's Jetton history to find the outbound transaction
+        $response = Http::get("https://tonapi.io/v2/accounts/{$cleanSender}/jettons/history", [
             'limit' => 20,
         ]);
 
@@ -439,28 +450,22 @@ class BlockchainSyncService
                             if (isset($action['type']) && $action['type'] === 'JettonTransfer' && isset($action['JettonTransfer'])) {
                                 $transfer = $action['JettonTransfer'];
 
-                                // Only process if the symbol is USDT or USD₮ (the special Tether TON symbol),
-                                // the recipient matches the destination address and the amount matches
                                 $symbol = $transfer['jetton']['symbol'] ?? '';
                                 $receivedAmount = (string) ($transfer['amount'] ?? '0');
                                 $receivedRecipient = $transfer['recipient']['address'] ?? '';
+                                $receivedSender = $transfer['sender']['address'] ?? '';
 
-                                \Illuminate\Support\Facades\Log::info("TON USDT Verification Debug", [
-                                    'target_symbol' => 'USDT/USD₮',
-                                    'received_symbol' => $symbol,
-                                    'target_amount' => $challengeMicro,
-                                    'received_amount' => $receivedAmount,
-                                    'target_dest_hex' => $destinationAddressHex,
-                                    'target_dest_base64' => $destinationAddress,
-                                    'received_dest' => $receivedRecipient,
-                                ]);
+                                // Verification criteria:
+                                // 1. Recipient must be our cold wallet (hex or original string)
+                                // 2. Sender must be the user's registered address (hex or original string)
+                                // 3. Amount must match exactly (subunit comparison)
+                                // 4. Symbol must contain USD
+                                $isRecipientMatch = ($receivedRecipient === $cleanDest || $receivedRecipient === $destinationAddressHex);
+                                $isSenderMatch = ($receivedSender === $cleanSender || $receivedSender === $senderAddressHex);
+                                $isAmountMatch = ($receivedAmount === $challengeMicro || (float) $receivedAmount === (float) $challengeMicro);
+                                $isSymbolMatch = str_contains(strtoupper($symbol), 'USD');
 
-                                if (
-                                    ($receivedRecipient === $destinationAddress || $receivedRecipient === $destinationAddressHex)
-                                    && ($receivedAmount === $challengeMicro || (float) $receivedAmount === (float) $challengeMicro)
-                                    && (str_contains(strtoupper($symbol), 'USD'))
-                                ) {
-                                    \Illuminate\Support\Facades\Log::info("TON USDT Verification SUCCESS");
+                                if ($isRecipientMatch && $isSenderMatch && $isAmountMatch && $isSymbolMatch) {
                                     return true;
                                 }
                             }
