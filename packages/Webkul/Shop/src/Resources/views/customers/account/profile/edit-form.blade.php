@@ -262,6 +262,22 @@
                             <span class="ios-arrow icon-arrow-right"></span>
                         </div>
                     </div>
+                    <div class="ios-row !flex-col !items-start !h-auto !py-3">
+                        <div class="flex items-center justify-between w-full">
+                            <label class="ios-label">Credits Alias</label>
+                            <div class="ios-input-wrapper">
+                                <x-shop::form.control-group class="!mb-0">
+                                    <x-shop::form.control-group.control type="text" name="credits_alias"
+                                        :value="old('credits_alias') ?? $customer->credits_alias" placeholder="Например: @nickname"
+                                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        :label="'Credits Alias'" />
+                                    <x-shop::form.control-group.error control-name="credits_alias" />
+                                </x-shop::form.control-group>
+                                <span class="ios-arrow icon-arrow-right"></span>
+                            </div>
+                        </div>
+                        <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
+                    </div>
 
                     @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
                         <div class="ios-row">
@@ -443,6 +459,22 @@
                     <span class="text-[15px] text-zinc-400 text-right">{{ $customer->credits_id ?? 'Генерируется...' }}</span>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
+            </div>
+            <div class="ios-row !flex-col !items-start !h-auto !py-3">
+                <div class="flex items-center justify-between w-full">
+                    <label class="ios-label">Credits Alias</label>
+                    <div class="ios-input-wrapper">
+                        <x-shop::form.control-group class="!mb-0">
+                            <x-shop::form.control-group.control type="text" name="credits_alias"
+                                :value="old('credits_alias') ?? $customer->credits_alias" placeholder="Например: @nickname"
+                                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                :label="'Credits Alias'" />
+                            <x-shop::form.control-group.error control-name="credits_alias" />
+                        </x-shop::form.control-group>
+                        <span class="ios-arrow icon-arrow-right"></span>
+                    </div>
+                </div>
+                <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
             </div>
         </div>
 

@@ -74,6 +74,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'registration_ip',
         'balance',
         'credits_id',
+        'credits_alias',
     ];
 
     /**
@@ -334,11 +335,19 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
             if (!$customer->credits_id) {
                 $customer->credits_id = static::generateUniqueCreditsId();
             }
+
+            if (!$customer->credits_alias) {
+                $customer->credits_alias = static::generateUniqueCreditsAlias();
+            }
         });
 
         static::saving(function ($customer) {
             if (!$customer->credits_id) {
                 $customer->credits_id = static::generateUniqueCreditsId();
+            }
+
+            if (!$customer->credits_alias) {
+                $customer->credits_alias = static::generateUniqueCreditsAlias();
             }
         });
     }
@@ -353,6 +362,18 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         } while (static::where('credits_id', $id)->exists());
 
         return $id;
+    }
+
+    /**
+     * Generate a unique credits alias.
+     */
+    public static function generateUniqueCreditsAlias(): string
+    {
+        do {
+            $alias = 'u_' . strtolower(bin2hex(random_bytes(5)));
+        } while (static::where('credits_alias', $alias)->exists());
+
+        return $alias;
     }
 
     /**
