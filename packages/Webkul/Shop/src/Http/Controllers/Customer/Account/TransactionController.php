@@ -25,9 +25,9 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $transactions = $this->customerTransactionRepository->where([
-            'customer_id' => auth()->guard('customer')->id(),
-        ])->latest()->paginate(10);
+        $transactions = $this->customerTransactionRepository->scopeQuery(function ($query) {
+            return $query->where('customer_id', auth()->guard('customer')->id())->latest();
+        })->paginate(10);
 
         return view('shop::customers.account.transactions.index', compact('transactions'));
     }
