@@ -35,6 +35,36 @@
         @endpush
 
         <div class="pb-8 pt-2 ios-page">
+
+            {{-- Balances Overview --}}
+            <div class="ios-group-title">Ваш Баланс</div>
+            <div
+                class="ios-group mb-6 p-4 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white rounded-2xl shadow-md border border-zinc-700">
+                <div class="flex flex-col gap-2 relative z-10">
+                    <div class="text-[13px] text-zinc-400 font-medium uppercase tracking-wider">Общая покупательная
+                        способность</div>
+                    <div class="text-3xl font-bold font-mono tracking-tight drop-shadow-sm">
+                        {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
+                    </div>
+
+                    @if(auth()->guard('customer')->user()->balances->count() > 0)
+                        <div class="mt-3 pt-3 border-t border-zinc-700/50 flex flex-col gap-2">
+                            <div class="text-[11px] text-zinc-500 uppercase tracking-wider">Крипто-активы:</div>
+                            @foreach(auth()->guard('customer')->user()->balances as $balance)
+                                <div class="flex justify-between items-center text-[14px]">
+                                    <span class="text-zinc-300 font-medium uppercase">{{ $balance->currency_code }}</span>
+                                    <span
+                                        class="font-mono text-zinc-100">{{ rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.') }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="mt-2 text-[12px] text-zinc-400">Пополните баланс криптовалютой для совершения покупок.
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             {{-- Recharge Section --}}
             <div class="ios-group-title">Пополнение баланса</div>
             <div class="ios-group mb-6 p-4">
@@ -49,7 +79,8 @@
                         <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">Bitcoin (BTC)</div>
                         <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
                             onclick="navigator.clipboard.writeText(this.innerText)">
-                            {{ config('crypto.verification_addresses.bitcoin') }}</div>
+                            {{ config('crypto.verification_addresses.bitcoin') }}
+                        </div>
                     </div>
 
                     <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
@@ -57,7 +88,26 @@
                         </div>
                         <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
                             onclick="navigator.clipboard.writeText(this.innerText)">
-                            {{ config('crypto.verification_addresses.ethereum') }}</div>
+                            {{ config('crypto.verification_addresses.ethereum') }}
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
+                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">TON (The Open Network)
+                        </div>
+                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
+                            onclick="navigator.clipboard.writeText(this.innerText)">
+                            {{ config('crypto.verification_addresses.ton') }}
+                        </div>
+                    </div>
+
+                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
+                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">USDT (сеть TON)
+                        </div>
+                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
+                            onclick="navigator.clipboard.writeText(this.innerText)">
+                            {{ config('crypto.verification_addresses.usdt_ton') }}
+                        </div>
                     </div>
                 </div>
 

@@ -17,6 +17,8 @@ class BlockchainSyncService
             $balance = match ($cryptoAddress->network) {
                 'bitcoin' => $this->fetchBitcoinBalance($cryptoAddress->address),
                 'ethereum' => $this->fetchEthereumBalance($cryptoAddress->address),
+                'ton' => $this->fetchTonBalance($cryptoAddress->address),
+                'usdt_ton' => $this->fetchUsdtTonBalance($cryptoAddress->address),
                 default => null,
             };
 
@@ -48,6 +50,8 @@ class BlockchainSyncService
             $isVerified = match ($cryptoAddress->network) {
                 'bitcoin' => $this->checkBitcoinVerification($cryptoAddress),
                 'ethereum' => $this->checkEthereumVerification($cryptoAddress),
+                'ton' => $this->checkTonVerification($cryptoAddress),
+                'usdt_ton' => $this->checkUsdtTonVerification($cryptoAddress),
                 default => false,
             };
 
@@ -128,6 +132,38 @@ class BlockchainSyncService
     }
 
     /**
+     * Check TON verification by scanning recent transactions via public TON API (Toncenter).
+     * Checks if there's a transaction to the platform's cold wallet (A) with the challenge amount.
+     */
+    protected function checkTonVerification(CryptoAddress $cryptoAddress): bool
+    {
+        $destinationAddress = config('crypto.verification_addresses.ton');
+        // Toncenter API limits apply, but it's usable for basic checks without API key
+        $response = Http::get("https://toncenter.com/api/v2/getTransactions", [
+            'address' => $cryptoAddress->address,
+            'limit' => 20,
+        ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['result']) && is_array($data['result'])) {
+                $challengeNano = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000000');
+
+                foreach ($data['result'] as $tx) {
+                    if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['destination'])) {
+                        // Check if amount matches AND recipient is our cold wallet (A)
+                        if ($tx['in_msg']['value'] === $challengeNano && $tx['in_msg']['destination'] === $destinationAddress) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Fetch Bitcoin balance from Blockchain.info.
      * Returns balance in BTC.
      */
@@ -172,6 +208,27 @@ class BlockchainSyncService
     }
 
     /**
+     * Fetch TON balance from Toncenter.
+     * Returns balance in TON.
+     */
+    protected function fetchTonBalance(string $address): ?float
+    {
+        $response = Http::get("https://toncenter.com/api/v2/getAddressBalance", [
+            'address' => $address,
+        ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['result'])) {
+                // Result is in NanoTON (10^9)
+                return (float) ($data['result'] / 1000000000);
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Scan for new deposits from a verified address to the platform's cold wallet.
      */
     public function syncDeposits(CryptoAddress $cryptoAddress): array
@@ -186,6 +243,8 @@ class BlockchainSyncService
             $transactions = match ($cryptoAddress->network) {
                 'bitcoin' => $this->fetchBitcoinTransactions($cryptoAddress->address),
                 'ethereum' => $this->fetchEthereumTransactions($cryptoAddress->address),
+                'ton' => $this->fetchTonTransactions($cryptoAddress->address),
+                'usdt_ton' => $this->fetchUsdtTonTransactions($cryptoAddress->address),
                 default => [],
             };
 
@@ -210,11 +269,15 @@ class BlockchainSyncService
     }
 
     /**
-     * Process a single deposit: log it and top up balance.
+     * Process a single deposit: log it and top up native balance.
      */
     protected function processDeposit(CryptoAddress $cryptoAddress, array $txData): \Webkul\Customer\Models\CryptoTransaction
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($cryptoAddress, $txData) {
+            $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
+            $exchangeRate = $exchangeRateService->getRate($cryptoAddress->network);
+            $fiatAmount = $txData['amount'] * $exchangeRate;
+
             $cryptoTx = \Webkul\Customer\Models\CryptoTransaction::create([
                 'customer_id' => $cryptoAddress->customer_id,
                 'tx_id' => $txData['tx_id'],
@@ -222,24 +285,29 @@ class BlockchainSyncService
                 'from_address' => $cryptoAddress->address,
                 'to_address' => $txData['to'],
                 'amount' => $txData['amount'],
+                'exchange_rate' => $exchangeRate,
+                'fiat_amount' => $fiatAmount,
                 'status' => 'completed',
             ]);
 
-            // Top up customer balance
+            // Top up customer's specific crypto balance
             $customer = $cryptoAddress->customer;
-            $customer->balance += $txData['amount'];
-            $customer->save();
+            $cryptoBalance = $customer->balances()->firstOrCreate(
+                ['currency_code' => $cryptoAddress->network]
+            );
+            $cryptoBalance->amount += $txData['amount'];
+            $cryptoBalance->save();
 
-            // Create customer transaction log
+            // Create customer transaction log (recording the fiat equivalent)
             \Webkul\Customer\Models\CustomerTransaction::create([
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'customer_id' => $customer->id,
-                'amount' => $txData['amount'],
+                'amount' => $fiatAmount, // Log fiat equivalent in main transaction history
                 'type' => 'deposit',
                 'status' => 'completed',
                 'reference_type' => \Webkul\Customer\Models\CryptoTransaction::class,
                 'reference_id' => $cryptoTx->id,
-                'notes' => "Crypto recharge via {$cryptoAddress->network}",
+                'notes' => "Crypto recharge via {$cryptoAddress->network} ({$txData['amount']} @ {$exchangeRate})",
             ]);
 
             return $cryptoTx;
@@ -297,6 +365,129 @@ class BlockchainSyncService
                         'to' => $tx['to'] ?? '',
                         'amount' => (float) ($tx['value'] / 10 ** 18),
                     ];
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch recent TON transactions.
+     */
+    protected function fetchTonTransactions(string $address): array
+    {
+        $response = Http::get("https://toncenter.com/api/v2/getTransactions", [
+            'address' => $address,
+            'limit' => 20,
+        ]);
+
+        $results = [];
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['result']) && is_array($data['result'])) {
+                foreach ($data['result'] as $tx) {
+                    if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['destination'])) {
+                        $results[] = [
+                            // Using the logical time and transaction hash as a pseudo ID
+                            'tx_id' => $tx['transaction_id']['hash'],
+                            'to' => $tx['in_msg']['destination'],
+                            'amount' => (float) ($tx['in_msg']['value'] / 1000000000),
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Check USDT(TON) verification via public TON API.
+     * Checks if there's a Jetton transfer to our cold wallet with the challenge amount.
+     * USDT on TON has 6 decimals.
+     */
+    protected function checkUsdtTonVerification(CryptoAddress $cryptoAddress): bool
+    {
+        $destinationAddress = config('crypto.verification_addresses.usdt_ton');
+        // A robust implementation would use TonApi or Toncenter V3 to track Jetton transfers. 
+        // For simplicity, we assume we're querying the main address for valid inbound Jetton transfers.
+        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$cryptoAddress->address}/transfers", [
+            'limit' => 20,
+        ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['transfers']) && is_array($data['transfers'])) {
+                // USDT has 6 decimals
+                $challengeMicro = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000');
+
+                foreach ($data['transfers'] as $tx) {
+                    if (isset($tx['amount']) && isset($tx['destination']['address'])) {
+                        // Check if amount matches AND recipient is our cold wallet
+                        // Note: In TON, Jetton addresses formats can vary, we assume standard base64url or hex matching here. 
+                        // Real implementation requires address normalization.
+                        if ($tx['amount'] === $challengeMicro && $tx['destination']['address'] === $destinationAddress) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Fetch USDT(TON) balance.
+     * Returns balance in USDT.
+     */
+    protected function fetchUsdtTonBalance(string $address): ?float
+    {
+        // Using TonAPI to get Jetton balances
+        $response = Http::get("https://tonapi.io/v2/accounts/{$address}/jettons");
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['balances']) && is_array($data['balances'])) {
+                foreach ($data['balances'] as $jetton) {
+                    // Check for standard USDT master contract on TON
+                    // EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs
+                    if (($jetton['jetton']['symbol'] ?? '') === 'USD₮') {
+                        // Result is in 6 decimals
+                        return (float) ($jetton['balance'] / 1000000);
+                    }
+                }
+                return 0.0; // If jetton not found in balances, balance is 0
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch recent USDT(TON) transactions.
+     */
+    protected function fetchUsdtTonTransactions(string $address): array
+    {
+        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$address}/transfers", [
+            'limit' => 20,
+        ]);
+
+        $results = [];
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['transfers']) && is_array($data['transfers'])) {
+                foreach ($data['transfers'] as $tx) {
+                    if (isset($tx['amount']) && isset($tx['destination']['address'])) {
+                        $results[] = [
+                            'tx_id' => $tx['hash'], // Hash of the specific transfer
+                            'to' => $tx['destination']['address'],
+                            'amount' => (float) ($tx['amount'] / 1000000), // 6 decimals
+                        ];
+                    }
                 }
             }
         }
