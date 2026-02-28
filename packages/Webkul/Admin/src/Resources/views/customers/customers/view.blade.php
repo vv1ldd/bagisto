@@ -218,6 +218,25 @@
                                     <p class="text-gray-600 dark:text-gray-300">
                                         @{{ "@lang('admin::app.customers.customers.view.group')".replace(':group_code', customer.group?.name ?? 'N/A') }}
                                     </p>
+
+                                    <!-- Added Crypto Balances Info -->
+                                    <div class="mt-4 border-t dark:border-gray-800 pt-2">
+                                        <p class="font-semibold text-gray-800 dark:text-white mb-2">Крипто Балансы</p>
+                                        <p class="text-gray-600 dark:text-gray-300 font-bold mb-2">
+                                            Всего (Fiat): @{{ Number(customer.total_fiat_balance).toFixed(2) }} {{ core()->getBaseCurrencyCode() }}
+                                        </p>
+                                        
+                                        <template v-if="customer.balances && customer.balances.length">
+                                            <div v-for="balance in customer.balances" :key="balance.id" class="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-1">
+                                                <span class="uppercase">@{{ balance.currency_code === 'usdt_ton' ? 'USDT (TON)' : balance.currency_code }}</span>
+                                                <span class="font-mono">@{{ Number(balance.amount).toFixed(8) }}</span>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <p class="text-sm text-gray-500 italic">Нет крипто-балансов</p>
+                                        </template>
+                                    </div>
+
                                 </div>
                             </x-slot:content>
                         </x-admin::accordion>

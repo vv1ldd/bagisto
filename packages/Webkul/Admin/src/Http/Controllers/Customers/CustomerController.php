@@ -249,7 +249,8 @@ class CustomerController extends Controller
      */
     public function show(int $id)
     {
-        $customer = $this->customerRepository->with(['addresses', 'group'])->findOrFail($id);
+        $customer = $this->customerRepository->with(['addresses', 'group', 'balances'])->findOrFail($id);
+        $customer->setAttribute('total_fiat_balance', $customer->getTotalFiatBalance());
 
         $groups = $this->customerGroupRepository->findWhere([['code', '<>', 'guest']]);
 
