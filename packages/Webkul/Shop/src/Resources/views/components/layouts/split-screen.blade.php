@@ -19,7 +19,7 @@
             </div>
   
             <!-- Content Area -->
-            <div class="flex flex-grow flex-col justify-center py-10">
+            <div class="flex flex-grow flex-col justify-center py-4">
                 <div class="mx-auto w-full max-w-[440px]">
                     {{ $slot }}
                 </div>
