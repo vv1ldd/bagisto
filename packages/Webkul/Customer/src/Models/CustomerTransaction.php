@@ -4,6 +4,7 @@ namespace Webkul\Customer\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Customer\Contracts\CustomerTransaction as CustomerTransactionContract;
+use Webkul\Customer\Models\CustomerProxy;
 
 class CustomerTransaction extends Model implements CustomerTransactionContract
 {
