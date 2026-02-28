@@ -47,113 +47,26 @@
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile.before') !!}
 
             <!-- user profile -->
-            <x-shop::dropdown
-                position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
-                <x-slot:toggle>
-                    <div class="flex items-center">
-                        <img src="{{ auth()->guard('customer')->user()?->image_url ?? bagisto_asset('images/user-placeholder.png') }}"
-                            class="h-9 w-9 cursor-pointer rounded-full shadow-sm hover:ring-2 hover:ring-[#7C45F5]/20 transition-all active:scale-95"
-                            alt="User Profile" tabindex="0" role="button">
+            @guest('customer')
+                <a href="{{ route('shop.customer.session.create') }}"
+                    class="flex items-center justify-center rounded-[20px] bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-5 py-2 text-[14px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97]">
+                    Войти / Регистрация
+                </a>
+            @else
+            <a href="{{ route('shop.customers.account.index') }}"
+                class="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white/70 px-4 py-2 shadow-sm transition hover:shadow-md hover:border-zinc-300 active:opacity-70 active:scale-[0.98]">
+                <div class="leading-tight text-right">
+                    <div class="text-[14px] font-bold text-zinc-900 leading-snug">
+                        {{ auth()->guard('customer')->user()->first_name }}
+                        {{ auth()->guard('customer')->user()->last_name }}
                     </div>
-                    </x-slot>
-
-                    <!-- Guest Dropdown -->
-                    @guest('customer')
-                        <x-slot:content class="!p-0 min-w-[280px] overflow-hidden">
-                            <!-- Neon Accent Indicator -->
-                            <div class="h-0.5 w-full" style="background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%);">
-                            </div>
-
-                            <div class="p-6">
-                                <div class="flex flex-col gap-3">
-                                    <p class="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.25em] ml-1 opacity-70 uppercase">
-                                        Личный кабинет
-                                    </p>
-                                    
-                                    <a href="{{ route('shop.customer.session.create') }}"
-                                        class="flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-6 py-4 text-center text-[15px] font-bold text-white shadow-xl shadow-purple-500/25 transition-all hover:shadow-purple-500/40 active:scale-[0.98]">
-                                        Войти / Регистрация
-                                    </a>
-                                </div>
-                            </div>
-                        </x-slot:content>
-                    @endguest
-
-                    <!-- Customers Dropdown -->
-                    @auth('customer')
-                        <x-slot:content class="!p-0 min-w-[300px] overflow-hidden">
-                            <!-- Neon Accent Indicator -->
-                            <div class="h-0.5 w-full" style="background: linear-gradient(90deg, #A855F7 0%, #3B82F6 100%);">
-                            </div>
-
-                            <div class="p-5">
-                                <!-- Rich Profile Card inside Dropdown -->
-                                <a href="{{ route('shop.customers.account.profile.edit') }}"
-                                    class="mb-6 flex items-center gap-4 rounded-2xl border border-white/40 bg-white/30 backdrop-blur-xl p-4 transition-all hover:bg-white/50 active:scale-[0.98] group/card shadow-[0_8px_32px_rgba(0,0,0,0.04)]">
-                                    <div class="flex-grow">
-                                        <h2
-                                            class="text-lg font-bold text-zinc-900 leading-tight group-hover/card:text-[#7C45F5] transition">
-                                            {{ auth()->guard('customer')->user()->first_name }}
-                                            {{ auth()->guard('customer')->user()->last_name }}
-                                        </h2>
-                                        <p class="text-zinc-500 text-sm mt-0.5 break-all">
-                                            {{ auth()->guard('customer')->user()->email }}
-                                        </p>
-                                    </div>
-                                    <span
-                                        class="icon-arrow-right text-xl text-zinc-300 group-hover/card:text-[#7C45F5] transition rtl:icon-arrow-left"></span>
-                                </a>
-
-                                <div class="space-y-1">
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile_dropdown.links.before') !!}
-
-                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
-                                        href="{{ route('shop.customers.account.index') }}">
-                                        <div class="shrink-0">
-                                            <img src="{{ auth()->guard('customer')->user()?->image_url ?? bagisto_asset('images/user-placeholder.png') }}"
-                                                class="h-7 w-7 rounded-full shadow-sm">
-                                        </div>
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.profile')
-                                    </a>
-
-                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
-                                        href="{{ route('shop.customers.account.orders.index') }}">
-                                        <span class="icon-orders text-xl text-zinc-400"></span>
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.orders')
-                                    </a>
-
-                                    @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
-                                        <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
-                                            href="{{ route('shop.customers.account.wishlist.index') }}">
-                                            <span class="icon-heart text-xl text-zinc-400"></span>
-                                            @lang('shop::app.components.layouts.header.desktop.bottom.wishlist')
-                                        </a>
-                                    @endif
-
-                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-zinc-700 transition hover:bg-zinc-100"
-                                        href="{{ route('shop.checkout.cart.index') }}">
-                                        <span class="icon-cart text-xl text-zinc-400"></span>
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.cart')
-                                    </a>
-
-                                    <div class="my-2 border-t border-zinc-100"></div>
-
-                                    <x-shop::form method="DELETE" action="{{ route('shop.customer.session.destroy') }}"
-                                        id="customerLogout" />
-
-                                    <a class="flex items-center gap-4 rounded-xl px-4 py-2.5 text-base font-medium text-red-500 transition hover:bg-red-50"
-                                        href="{{ route('shop.customer.session.destroy') }}"
-                                        onclick="event.preventDefault(); document.getElementById('customerLogout').submit();">
-                                        <span class="icon-arrow-right text-xl text-red-300 rtl:icon-arrow-left"></span>
-                                        @lang('shop::app.components.layouts.header.desktop.bottom.logout')
-                                    </a>
-
-                                    {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile_dropdown.links.after') !!}
-                                </div>
-                            </div>
-                        </x-slot:content>
-                    @endauth
-            </x-shop::dropdown>
+                    <div class="text-[12px] text-zinc-400 truncate max-w-[160px]">
+                        {{ auth()->guard('customer')->user()->email }}
+                    </div>
+                </div>
+                <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left shrink-0"></span>
+            </a>
+            @endauth
 
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile.after') !!}
         </div>
@@ -162,7 +75,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                            <!-- Loading State -->
+                                                                                <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -280,9 +193,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                                    'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                    'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                }">
+                                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                    }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">
