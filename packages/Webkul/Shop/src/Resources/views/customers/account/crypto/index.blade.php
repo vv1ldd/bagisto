@@ -1,4 +1,82 @@
+@push('scripts')
+    <script>
+        function showVerifyModal(id, network, amount, address) {
+            document.getElementById('verify-modal').classList.remove('hidden');
+            document.getElementById('verify-modal').classList.add('flex');
+            document.getElementById('verify-amount').innerText = amount + ' ' + (network === 'bitcoin' ? 'BTC' : 'ETH');
+            document.getElementById('verify-id').value = id;
+            
+            const destAddress = network === 'bitcoin' 
+                ? '{{ config('crypto.verification_addresses.bitcoin') }}' 
+                : '{{ config('crypto.verification_addresses.ethereum') }}';
+            
+            document.getElementById('verify-dest-address').innerText = destAddress;
+            document.getElementById('verify-dest-address-copy').onclick = () => {
+                navigator.clipboard.writeText(destAddress);
+                const originalText = document.getElementById('verify-dest-address-copy').innerText;
+                document.getElementById('verify-dest-address-copy').innerText = 'Скопировано!';
+                setTimeout(() => document.getElementById('verify-dest-address-copy').innerText = originalText, 2000);
+            };
+
+            const verifyLink = "{{ route('shop.customers.account.crypto.verify', ':id') }}".replace(':id', id);
+            document.getElementById('check-verify-btn').href = verifyLink;
+        }
+
+        function closeVerifyModal() {
+            document.getElementById('verify-modal').classList.add('hidden');
+            document.getElementById('verify-modal').classList.remove('flex');
+        }
+    </script>
+@endpush
+
 <x-shop::layouts.account>
+    {{-- Verify Modal --}}
+    <div id="verify-modal" class="hidden fixed inset-0 z-[100] items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div class="bg-white rounded-[24px] w-full max-w-[400px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div class="p-6 text-center border-b border-zinc-100">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="icon-shield text-3xl"></span>
+                </div>
+                <h3 class="text-xl font-bold text-zinc-900">Верификация адреса</h3>
+                <p class="text-sm text-zinc-500 mt-2">Докажите владение кошельком</p>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div class="bg-zinc-50 p-4 rounded-2xl border border-zinc-100">
+                    <p class="text-[13px] text-zinc-500 mb-1">Сумма платежа:</p>
+                    <p id="verify-amount" class="text-lg font-bold text-zinc-900">0.0001337 BTC</p>
+                </div>
+
+                <div class="bg-zinc-50 p-4 rounded-2xl border border-zinc-100">
+                    <p class="text-[13px] text-zinc-500 mb-1">Отправить на адрес:</p>
+                    <div class="flex items-center justify-between">
+                        <p id="verify-dest-address" class="text-[11px] font-mono font-bold text-zinc-600 break-all leading-tight max-w-[240px]">0x...</p>
+                        <button id="verify-dest-address-copy" class="text-[11px] text-[#7C45F5] font-bold">Скопировать</button>
+                    </div>
+                </div>
+
+                <div class="text-sm text-zinc-600 space-y-2 leading-relaxed">
+                    <p>1. Отправьте <b>точно указанную</b> сумму со своего кошелька на наш адрес.</p>
+                    <p>2. Эта транзакция подтвердит ваш контроль над адресом (B -> A).</p>
+                    <p>3. Нажмите "Проверить" после отправки.</p>
+                </div>
+            </div>
+
+            <div class="p-6 bg-zinc-50/50 flex flex-col gap-2">
+                <a id="check-verify-btn" href="#" 
+                    class="w-full bg-[#7C45F5] text-white font-bold py-4 rounded-2xl active:scale-[0.98] transition-all text-center">
+                    Проверить верификацию
+                </a>
+                <button onclick="closeVerifyModal()" 
+                    class="w-full text-zinc-400 font-bold py-3 active:opacity-50 transition-all">
+                    Позже
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="hidden" id="verify-id" value="">
+
     {{-- Page Title --}}
     <x-slot:title>
         Крипто Кошельки
@@ -66,6 +144,18 @@
                                         class="text-sm font-bold uppercase {{ $address->network === 'bitcoin' ? 'text-orange-500' : 'text-blue-500' }}">
                                         {{ $address->network }}
                                     </span>
+                                    
+                                    @if($address->isVerified())
+                                        <span class="flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                                            <span class="icon-checkmark text-[10px]"></span>
+                                            Верифицирован
+                                        </span>
+                                    @else
+                                        <span class="text-[11px] font-bold text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200">
+                                            Не верифицирован
+                                        </span>
+                                    @endif
+
                                     <span class="text-xs text-zinc-400">
                                         {{ $address->last_sync_at ? 'Обновлено: ' . $address->last_sync_at->diffForHumans() : 'Никогда не обновлялось' }}
                                     </span>
@@ -93,6 +183,14 @@
                                         target="_blank" class="text-[13px] text-zinc-500 font-semibold active:opacity-50">
                                         История
                                     </a>
+
+                                    @if (!$address->isVerified())
+                                        <button
+                                            onclick="showVerifyModal('{{ $address->id }}', '{{ $address->network }}', '{{ $address->verification_amount }}', '{{ $address->address }}')"
+                                            class="text-[13px] text-emerald-600 font-semibold active:opacity-50">
+                                            Верифицировать
+                                        </button>
+                                    @endif
 
                                     <form action="{{ route('shop.customers.account.crypto.delete', $address->id) }}"
                                         method="POST">

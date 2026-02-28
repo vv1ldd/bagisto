@@ -102,4 +102,23 @@ class CryptoController extends Controller
 
         return redirect()->route('shop.customers.account.crypto.index');
     }
+
+    /**
+     * Verify ownership for the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function verify($id)
+    {
+        $cryptoAddress = auth()->guard('customer')->user()->crypto_addresses()->findOrFail($id);
+
+        if ($this->syncService->verifyOwnership($cryptoAddress)) {
+            session()->flash('success', 'Адрес успешно верифицирован!');
+        } else {
+            session()->flash('error', 'Транзакция верификации не обнаружена. Пожалуйста, убедитесь, что вы отправили точную сумму.');
+        }
+
+        return redirect()->route('shop.customers.account.crypto.index');
+    }
 }

@@ -186,10 +186,16 @@
 
                     @foreach($cryptoAddresses as $address)
                         <div class="wallet-item">
-                            <span
-                                class="network-tag {{ $address->network === 'bitcoin' ? 'text-orange-500' : 'text-blue-500' }}">
-                                {{ $address->network }}
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="network-tag {{ $address->network === 'bitcoin' ? 'text-orange-500' : 'text-blue-500' }}">
+                                    {{ $address->network }}
+                                </span>
+                                
+                                @if($address->isVerified())
+                                    <span class="icon-checkmark text-[10px] text-emerald-500 bg-emerald-50 p-1 rounded-full border border-emerald-100" title="Верифицированный адрес"></span>
+                                @endif
+                            </div>
                             <div class="address-text" id="addr-{{ $address->id }}">
                                 {{ $address->address }}
                             </div>

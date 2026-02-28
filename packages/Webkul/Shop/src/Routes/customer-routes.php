@@ -245,6 +245,8 @@ Route::prefix('customer')->group(function () {
 
                 Route::get('sync/{id}', 'sync')->name('shop.customers.account.crypto.sync');
 
+                Route::get('verify/{id}', 'verify')->name('shop.customers.account.crypto.verify');
+
                 Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
             });
         });
