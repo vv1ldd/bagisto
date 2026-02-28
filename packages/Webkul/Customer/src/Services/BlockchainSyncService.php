@@ -435,11 +435,19 @@ class BlockchainSyncService
         return $results;
     }
 
-    protected function fetchTonTransactions(string $address): array
+    protected function fetchTonTransactions(string $userAddress): array
     {
-        // Use TonAPI for more consistent address formatting (Raw HEX)
-        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$address}/transactions", [
-            'limit' => 30,
+        // IMPORTANT: We scan the COLD WALLET for incoming transfers from the user.
+        // This is the same approach used for USDT verification and is reliable.
+        // Scanning the user's wallet via TonAPI fails because UQ/EQ addresses with
+        // dashes (e.g. UQDolrO5cIlq-RSkft...) are rejected by TonAPI's URL parser.
+        $coldWallet = config('crypto.verification_addresses.ton');
+
+        // Normalize cold wallet address for TonAPI URL (strip non-alphanumeric except dash for EQ/UQ)
+        $cleanCold = urlencode($coldWallet);
+
+        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$cleanCold}/transactions", [
+            'limit' => 100,
         ]);
 
         $results = [];
@@ -448,33 +456,39 @@ class BlockchainSyncService
             $data = $response->json();
             $transactions = $data['transactions'] ?? [];
 
+            // Get the raw HEX of the user's address for matching
+            $userHex = $this->getTonHexAddress($userAddress) ?? $userAddress;
+
             foreach ($transactions as $tx) {
-                // Incoming to user wallet (could be a test/return, usually not a deposit we care about for shop refill)
-                if (isset($tx['in_msg']['value']) && isset($tx['in_msg']['destination']['address'])) {
-                    $results[] = [
-                        'tx_id' => $tx['hash'],
-                        'to' => $tx['in_msg']['destination']['address'],
-                        'amount' => (float) (($tx['in_msg']['value'] ?? 0) / 1000000000),
-                    ];
+                $inMsg = $tx['in_msg'] ?? null;
+                if (!$inMsg || !isset($inMsg['value']) || !isset($inMsg['source']['address'])) {
+                    continue;
                 }
 
-                // Outgoing from user wallet (This is how they deposit to the SHOP)
-                if (isset($tx['out_msgs']) && is_array($tx['out_msgs'])) {
-                    foreach ($tx['out_msgs'] as $outMsg) {
-                        if (isset($outMsg['value']) && isset($outMsg['destination']['address'])) {
-                            $results[] = [
-                                'tx_id' => $tx['hash'] . '_' . ($outMsg['created_lt'] ?? microtime(true)),
-                                'to' => $outMsg['destination']['address'],
-                                'amount' => (float) (($outMsg['value'] ?? 0) / 1000000000),
-                            ];
-                        }
-                    }
+                $srcAddress = $inMsg['source']['address'];
+                $value = (int) ($inMsg['value'] ?? 0);
+
+                // Only process transfers that came FROM the user's verified address
+                if (!$this->isSameTonAddress($srcAddress, $userHex) && !$this->isSameTonAddress($srcAddress, $userAddress)) {
+                    continue;
                 }
+
+                // Skip dust / fee-only transactions (less than 0.001 TON)
+                if ($value < 1000000) {
+                    continue;
+                }
+
+                $results[] = [
+                    'tx_id' => $tx['hash'],
+                    'to' => $coldWallet,  // destination is always our cold wallet
+                    'amount' => (float) ($value / 1000000000),
+                ];
             }
         }
 
         return $results;
     }
+
 
     /**
      * Check USDT(TON) verification via public TON API.
