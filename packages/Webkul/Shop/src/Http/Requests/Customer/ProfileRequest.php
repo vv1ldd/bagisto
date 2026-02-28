@@ -41,6 +41,8 @@ class ProfileRequest extends FormRequest
             'phone' => ['nullable', new PhoneNumber, 'unique:customers,phone,' . $id],
             'subscribed_to_news_letter' => 'nullable',
             'is_complete_registration' => 'boolean|nullable',
+            'country_of_residence' => 'nullable|string',
+            'citizenship' => 'nullable|string',
         ];
     }
 
@@ -60,6 +62,8 @@ class ProfileRequest extends FormRequest
             'birth_city' => trans('shop::app.customers.account.profile.edit.birth-city'),
             'email' => trans('shop::app.customers.signup.email'),
             'phone' => trans('shop::app.customers.signup.phone'),
+            'country_of_residence' => 'Страна резиденции',
+            'citizenship' => 'Гражданство',
         ];
     }
 }

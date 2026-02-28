@@ -124,10 +124,21 @@ class CustomerController extends Controller
         }
 
         if (!empty($data['birth_city'])) {
-            // Trim for consistency
             $data['birth_city'] = trim($data['birth_city']);
         } else {
             unset($data['birth_city']);
+        }
+
+        if (!empty($data['country_of_residence'])) {
+            $data['country_of_residence'] = trim($data['country_of_residence']);
+        } else {
+            unset($data['country_of_residence']);
+        }
+
+        if (!empty($data['citizenship'])) {
+            $data['citizenship'] = trim($data['citizenship']);
+        } else {
+            unset($data['citizenship']);
         }
 
         $data['subscribed_to_news_letter'] = isset($data['subscribed_to_news_letter']);
