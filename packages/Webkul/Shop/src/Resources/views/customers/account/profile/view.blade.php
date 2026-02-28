@@ -182,7 +182,7 @@
 
             @if($cryptoAddresses->count() > 0)
                 <div class="wallets-section">
-                    <h2 class="section-title">Крипто Кошельки</h2>
+                    <h2 class="section-title">Крипто Адреса</h2>
 
                     @foreach($cryptoAddresses as $address)
                         <div class="wallet-item">

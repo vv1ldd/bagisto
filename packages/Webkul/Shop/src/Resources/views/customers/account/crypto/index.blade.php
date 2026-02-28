@@ -79,7 +79,7 @@
 
     {{-- Page Title --}}
     <x-slot:title>
-        Крипто Кошельки
+        Крипто Адреса
         </x-slot>
 
         {{-- Breadcrumbs --}}
@@ -89,7 +89,7 @@
 
         <div class="flex-auto ios-page">
             <div class="ios-header">
-                <h1 class="ios-title">Крипто Кошельки</h1>
+                <h1 class="ios-title">Крипто Адреса</h1>
             </div>
 
             {{-- Add New Address Form --}}
