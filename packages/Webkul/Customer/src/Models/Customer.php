@@ -307,6 +307,16 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     }
 
     /**
+     * Get all crypto transactions of a customer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function crypto_transactions()
+    {
+        return $this->hasMany(CryptoTransactionProxy::modelClass(), 'customer_id');
+    }
+
+    /**
      * Get the customer's subscription.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne

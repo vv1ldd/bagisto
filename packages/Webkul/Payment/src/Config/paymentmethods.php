@@ -18,4 +18,13 @@ return [
         'active' => true,
         'sort' => 2,
     ],
+
+    'credits' => [
+        'code' => 'credits',
+        'title' => 'Баланс Credits',
+        'description' => 'Оплата с вашего внутреннего счета (Credits)',
+        'class' => 'Webkul\Payment\Payment\Credits',
+        'active' => true,
+        'sort' => 0,
+    ],
 ];

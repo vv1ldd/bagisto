@@ -54,6 +54,30 @@ class OrderRepository extends Repository
 
             $order->payment()->create($data['payment']);
 
+            // Handle Credits Balance Deduction
+            if ($data['payment']['method'] === 'credits') {
+                $customer = $order->customer;
+
+                if (!$customer || $customer->balance < $order->base_grand_total) {
+                    throw new \Exception('Insufficient credits balance.');
+                }
+
+                $customer->balance -= $order->base_grand_total;
+                $customer->save();
+
+                // Log the purchase transaction
+                \Webkul\Customer\Models\CustomerTransaction::create([
+                    'uuid' => \Illuminate\Support\Str::uuid(),
+                    'customer_id' => $customer->id,
+                    'amount' => $order->base_grand_total,
+                    'type' => 'purchase',
+                    'status' => 'completed',
+                    'reference_type' => get_class($order),
+                    'reference_id' => $order->id,
+                    'notes' => "Purchase for Order #{$order->increment_id}",
+                ]);
+            }
+
             if (isset($data['shipping_address'])) {
                 $order->addresses()->create($data['shipping_address']);
             }
@@ -65,7 +89,7 @@ class OrderRepository extends Repository
 
                 $orderItem = $this->orderItemRepository->create(array_merge($item, ['order_id' => $order->id]));
 
-                if (! empty($item['children'])) {
+                if (!empty($item['children'])) {
                     foreach ($item['children'] as $child) {
                         $this->orderItemRepository->create(array_merge($child, ['order_id' => $order->id, 'parent_id' => $orderItem->id]));
                     }
@@ -87,7 +111,7 @@ class OrderRepository extends Repository
 
             /* storing log for errors */
             Log::error(
-                'OrderRepository:createOrderIfNotThenRetry: '.$e->getMessage(),
+                'OrderRepository:createOrderIfNotThenRetry: ' . $e->getMessage(),
                 ['data' => $data]
             );
 
@@ -123,14 +147,14 @@ class OrderRepository extends Repository
         $order = $this->resolveOrderInstance($orderOrId);
 
         /* check wether order can be cancelled or not */
-        if (! $order->canCancel()) {
+        if (!$order->canCancel()) {
             return false;
         }
 
         Event::dispatch('sales.order.cancel.before', $order);
 
         foreach ($order->items as $item) {
-            if (! $item->qty_to_cancel) {
+            if (!$item->qty_to_cancel) {
                 continue;
             }
 
@@ -198,7 +222,7 @@ class OrderRepository extends Repository
             $totalQtyOrdered += $item->qty_ordered;
             $totalQtyInvoiced += $item->qty_invoiced;
 
-            if (! $item->isStockable()) {
+            if (!$item->isStockable()) {
                 $totalQtyShipped += $item->qty_invoiced;
             } else {
                 $totalQtyShipped += $item->qty_shipped;
@@ -297,7 +321,7 @@ class OrderRepository extends Repository
     {
         Event::dispatch('sales.order.update-status.before', $order);
 
-        if (! empty($orderState)) {
+        if (!empty($orderState)) {
             $status = $orderState;
         } else {
             $status = Order::STATUS_PROCESSING;

@@ -26,6 +26,13 @@ class CustomerServiceProvider extends ServiceProvider
         $this->app['validator']->extend('captcha', function ($attribute, $value, $parameters) {
             return Captcha::getFacadeRoot()->validateResponse($value);
         });
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \Webkul\Customer\Console\Commands\SyncCryptoBalances::class,
+                \Webkul\Customer\Console\Commands\ProcessRecharge::class,
+            ]);
+        }
     }
 
     /**

@@ -35,6 +35,39 @@
         @endpush
 
         <div class="pb-8 pt-2 ios-page">
+            {{-- Recharge Section --}}
+            <div class="ios-group-title">Пополнение баланса</div>
+            <div class="ios-group mb-6 p-4">
+                <p class="text-[14px] text-zinc-600 mb-4 leading-relaxed">
+                    Чтобы пополнить Credits, отправьте любую сумму с вашего **верифицированного** кошелька на адрес
+                    ниже.
+                    Средства будут зачислены автоматически после подтверждения в сети.
+                </p>
+
+                <div class="flex flex-col gap-3">
+                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
+                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">Bitcoin (BTC)</div>
+                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
+                            onclick="navigator.clipboard.writeText(this.innerText)">
+                            {{ config('crypto.verification_addresses.bitcoin') }}</div>
+                    </div>
+
+                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
+                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">Ethereum (ETH / USDT ERC20)
+                        </div>
+                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
+                            onclick="navigator.clipboard.writeText(this.innerText)">
+                            {{ config('crypto.verification_addresses.ethereum') }}</div>
+                    </div>
+                </div>
+
+                <p class="text-[12px] text-zinc-400 mt-4 italic">
+                    * Убедитесь, что ваш адрес верифицирован в <a
+                        href="{{ route('shop.customers.account.profile.edit') }}"
+                        class="text-zinc-900 underline">профиле</a>.
+                </p>
+            </div>
+
             {{-- Transfer Form --}}
             <div class="ios-group-title">Перевести Credits</div>
             <div class="ios-group mb-6">

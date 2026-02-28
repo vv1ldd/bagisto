@@ -170,4 +170,137 @@ class BlockchainSyncService
 
         return null;
     }
+
+    /**
+     * Scan for new deposits from a verified address to the platform's cold wallet.
+     */
+    public function syncDeposits(CryptoAddress $cryptoAddress): array
+    {
+        if (!$cryptoAddress->isVerified()) {
+            return [];
+        }
+
+        $newTransactions = [];
+
+        try {
+            $transactions = match ($cryptoAddress->network) {
+                'bitcoin' => $this->fetchBitcoinTransactions($cryptoAddress->address),
+                'ethereum' => $this->fetchEthereumTransactions($cryptoAddress->address),
+                default => [],
+            };
+
+            $destinationAddress = strtolower(config("crypto.verification_addresses.{$cryptoAddress->network}"));
+
+            foreach ($transactions as $tx) {
+                // Skip if already processed
+                if (\Webkul\Customer\Models\CryptoTransaction::where('tx_id', $tx['tx_id'])->exists()) {
+                    continue;
+                }
+
+                // Check if it's going to our cold wallet
+                if (strtolower($tx['to']) === $destinationAddress) {
+                    $newTransactions[] = $this->processDeposit($cryptoAddress, $tx);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to sync deposits for {$cryptoAddress->network} address {$cryptoAddress->address}: " . $e->getMessage());
+        }
+
+        return $newTransactions;
+    }
+
+    /**
+     * Process a single deposit: log it and top up balance.
+     */
+    protected function processDeposit(CryptoAddress $cryptoAddress, array $txData): \Webkul\Customer\Models\CryptoTransaction
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($cryptoAddress, $txData) {
+            $cryptoTx = \Webkul\Customer\Models\CryptoTransaction::create([
+                'customer_id' => $cryptoAddress->customer_id,
+                'tx_id' => $txData['tx_id'],
+                'network' => $cryptoAddress->network,
+                'from_address' => $cryptoAddress->address,
+                'to_address' => $txData['to'],
+                'amount' => $txData['amount'],
+                'status' => 'completed',
+            ]);
+
+            // Top up customer balance
+            $customer = $cryptoAddress->customer;
+            $customer->balance += $txData['amount'];
+            $customer->save();
+
+            // Create customer transaction log
+            \Webkul\Customer\Models\CustomerTransaction::create([
+                'uuid' => \Illuminate\Support\Str::uuid(),
+                'customer_id' => $customer->id,
+                'amount' => $txData['amount'],
+                'type' => 'deposit',
+                'status' => 'completed',
+                'reference_type' => \Webkul\Customer\Models\CryptoTransaction::class,
+                'reference_id' => $cryptoTx->id,
+                'notes' => "Crypto recharge via {$cryptoAddress->network}",
+            ]);
+
+            return $cryptoTx;
+        });
+    }
+
+    /**
+     * Fetch recent Bitcoin transactions.
+     */
+    protected function fetchBitcoinTransactions(string $address): array
+    {
+        $response = Http::get("https://blockchain.info/rawaddr/{$address}");
+        $results = [];
+
+        if ($response->successful()) {
+            $data = $response->json();
+            foreach ($data['txs'] ?? [] as $tx) {
+                foreach ($tx['out'] ?? [] as $output) {
+                    $results[] = [
+                        'tx_id' => $tx['hash'],
+                        'to' => $output['addr'] ?? '',
+                        'amount' => (float) ($output['value'] / 100000000),
+                    ];
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Fetch recent Ethereum transactions.
+     */
+    protected function fetchEthereumTransactions(string $address): array
+    {
+        $response = Http::get("https://api.etherscan.io/api", [
+            'module' => 'account',
+            'action' => 'txlist',
+            'address' => $address,
+            'startblock' => 0,
+            'endblock' => 99999999,
+            'page' => 1,
+            'offset' => 20,
+            'sort' => 'desc',
+        ]);
+
+        $results = [];
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['result']) && is_array($data['result'])) {
+                foreach ($data['result'] as $tx) {
+                    $results[] = [
+                        'tx_id' => $tx['hash'],
+                        'to' => $tx['to'] ?? '',
+                        'amount' => (float) ($tx['value'] / 10 ** 18),
+                    ];
+                }
+            }
+        }
+
+        return $results;
+    }
 }
