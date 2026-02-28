@@ -73,10 +73,10 @@ Breadcrumbs::for('wishlist', function (BreadcrumbTrail $trail) {
     $trail->push(trans('shop::app.layouts.wishlist'), route('shop.customers.account.wishlist.index'));
 });
 
-// Home > My Account > Transactions
-Breadcrumbs::for('transactions', function (BreadcrumbTrail $trail) {
+// Home > My Account > Credits
+Breadcrumbs::for('credits', function (BreadcrumbTrail $trail) {
     $trail->parent('account');
-    $trail->push('Transactions', route('shop.customers.account.transactions.index'));
+    $trail->push('Начисления', route('shop.customers.account.credits.index'));
 });
 
 // Home > Cart

@@ -285,13 +285,13 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     }
 
     /**
-     * Get all transactions of a customer.
+     * Get all credits of a customer.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function transactions()
+    public function credits()
     {
-        return $this->hasMany(CustomerTransaction::class, 'customer_id');
+        return $this->hasMany(CustomerTransactionProxy::modelClass(), 'customer_id');
     }
 
     /**

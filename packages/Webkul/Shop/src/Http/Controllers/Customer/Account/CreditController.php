@@ -4,7 +4,7 @@ namespace Webkul\Shop\Http\Controllers\Customer\Account;
 
 use Webkul\Shop\Http\Controllers\Controller;
 
-class TransactionController extends Controller
+class CreditController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,10 +14,10 @@ class TransactionController extends Controller
     public function index()
     {
         $transactions = auth()->guard('customer')->user()
-            ->transactions()
+            ->credits()
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-        return view('shop::customers.account.transactions.index', compact('transactions'));
+        return view('shop::customers.account.credits.index', compact('transactions'));
     }
 }

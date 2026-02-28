@@ -1,16 +1,16 @@
 <x-shop::layouts.account>
     <!-- Page Title -->
     <x-slot:title>
-        История транзакций
+        История начислений
         </x-slot>
 
         @section('breadcrumbs')
-        <x-shop::breadcrumbs name="transactions" />
+        <x-shop::breadcrumbs name="credits" />
         @endSection
 
         @push('styles')
             <style>
-                .transaction-row {
+                .credit-row {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
@@ -19,7 +19,7 @@
                     transition: background-color 0.15s;
                 }
 
-                .transaction-row:last-child {
+                .credit-row:last-child {
                     border-bottom: none;
                 }
 
@@ -42,7 +42,7 @@
                 @if ($transactions->count() > 0)
                     <div class="flex flex-col">
                         @foreach ($transactions as $transaction)
-                            <div class="transaction-row">
+                            <div class="credit-row">
                                 <div class="flex flex-col gap-1">
                                     <div class="flex items-center gap-2">
                                         <span class="text-[15px] font-bold text-zinc-900 capitalize">

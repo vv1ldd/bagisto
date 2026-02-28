@@ -139,9 +139,9 @@ Route::prefix('customer')->group(function () {
             Route::get('wishlist', [WishlistController::class, 'index'])->name('shop.customers.account.wishlist.index');
 
             /**
-             * Transactions.
+             * Credits (formerly Transactions).
              */
-            Route::get('transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\TransactionController::class, 'index'])->name('shop.customers.account.transactions.index');
+            Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
 
             /**
              * Profile.
