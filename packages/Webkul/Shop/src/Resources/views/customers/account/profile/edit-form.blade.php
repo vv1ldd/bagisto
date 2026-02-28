@@ -364,12 +364,18 @@
                     @if (empty($customer->country_of_residence) || str_starts_with($customer->country_of_residence, '$2y$'))
                         <div class="ios-row">
                             <label class="ios-label">Страна резиденции <span class="text-red-500">*</span></label>
-                            <div class="ios-input-wrapper">
+                            <div class="ios-input-wrapper relative">
                                 <x-shop::form.control-group class="!mb-0">
-                                    <x-shop::form.control-group.control type="text" name="country_of_residence" rules="required"
+                                    <x-shop::form.control-group.control type="select" name="country_of_residence" rules="required"
                                         :value="old('country_of_residence') ?? (str_starts_with($customer->country_of_residence, '$2y$') ? '' : $customer->country_of_residence)"
-                                        placeholder="Например: Россия" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                        label="Страна резиденции" />
+                                        label="Страна резиденции">
+                                        <option value="" disabled hidden>Выберите страну</option>
+                                        @foreach (core()->countries() as $country)
+                                            <option value="{{ $country->name }}" {{ (($customer->country_of_residence ?? old('country_of_residence')) == $country->name) ? 'selected' : '' }}>
+                                                {{ $country->name }}
+                                            </option>
+                                        @endforeach
+                                    </x-shop::form.control-group.control>
                                     <x-shop::form.control-group.error control-name="country_of_residence" />
                                 </x-shop::form.control-group>
                                 <span class="ios-arrow icon-arrow-right"></span>
@@ -524,12 +530,18 @@
             @if (empty($customer->country_of_residence) || str_starts_with($customer->country_of_residence, '$2y$'))
                 <div class="ios-row">
                     <label class="ios-label">Страна резиденции <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper">
+                    <div class="ios-input-wrapper relative">
                         <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.control type="text" name="country_of_residence" rules="required"
+                            <x-shop::form.control-group.control type="select" name="country_of_residence" rules="required"
                                 :value="old('country_of_residence') ?? (str_starts_with($customer->country_of_residence, '$2y$') ? '' : $customer->country_of_residence)"
-                                placeholder="Например: Россия" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                label="Страна резиденции" />
+                                label="Страна резиденции">
+                                <option value="" disabled hidden>Выберите страну</option>
+                                @foreach (core()->countries() as $country)
+                                    <option value="{{ $country->name }}" {{ (($customer->country_of_residence ?? old('country_of_residence')) == $country->name) ? 'selected' : '' }}>
+                                        {{ $country->name }}
+                                    </option>
+                                @endforeach
+                            </x-shop::form.control-group.control>
                             <x-shop::form.control-group.error control-name="country_of_residence" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
