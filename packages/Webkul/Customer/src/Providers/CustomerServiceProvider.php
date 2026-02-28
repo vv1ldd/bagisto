@@ -32,6 +32,11 @@ class CustomerServiceProvider extends ServiceProvider
                 \Webkul\Customer\Console\Commands\SyncCryptoBalances::class,
                 \Webkul\Customer\Console\Commands\ProcessRecharge::class,
             ]);
+
+            $this->callAfterResolving(\Illuminate\Console\Scheduling\Schedule::class, function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+                // Scan verified addresses for new deposits every minute
+                $schedule->command('crypto:process-recharge')->everyMinute();
+            });
         }
     }
 
