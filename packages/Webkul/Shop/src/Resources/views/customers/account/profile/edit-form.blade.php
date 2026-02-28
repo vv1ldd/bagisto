@@ -353,11 +353,27 @@
                             </div>
                         </div>
                     @endif
+
+                    @if (empty($customer->country_of_residence) || str_starts_with($customer->country_of_residence, '$2y$'))
+                        <div class="ios-row">
+                            <label class="ios-label">Страна резиденции <span class="text-red-500">*</span></label>
+                            <div class="ios-input-wrapper">
+                                <x-shop::form.control-group class="!mb-0">
+                                    <x-shop::form.control-group.control type="text" name="country_of_residence" rules="required"
+                                        :value="old('country_of_residence') ?? (str_starts_with($customer->country_of_residence, '$2y$') ? '' : $customer->country_of_residence)"
+                                        placeholder="Например: Россия" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        label="Страна резиденции" />
+                                    <x-shop::form.control-group.error control-name="country_of_residence" />
+                                </x-shop::form.control-group>
+                                <span class="ios-arrow icon-arrow-right"></span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="flex justify-center mt-4">
                     <button type="submit"
-                        class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-xl shadow-purple-500/25 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98]">
+                        class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98]">
                         @lang('shop::app.customers.account.profile.edit.save')
                     </button>
                 </div>
@@ -492,6 +508,22 @@
                                 placeholder="Например: Москва" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                 :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
                             <x-shop::form.control-group.error control-name="birth_city" />
+                        </x-shop::form.control-group>
+                        <span class="ios-arrow icon-arrow-right"></span>
+                    </div>
+                </div>
+            @endif
+
+            @if (empty($customer->country_of_residence) || str_starts_with($customer->country_of_residence, '$2y$'))
+                <div class="ios-row">
+                    <label class="ios-label">Страна резиденции <span class="text-red-500">*</span></label>
+                    <div class="ios-input-wrapper">
+                        <x-shop::form.control-group class="!mb-0">
+                            <x-shop::form.control-group.control type="text" name="country_of_residence" rules="required"
+                                :value="old('country_of_residence') ?? (str_starts_with($customer->country_of_residence, '$2y$') ? '' : $customer->country_of_residence)"
+                                placeholder="Например: Россия" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                label="Страна резиденции" />
+                            <x-shop::form.control-group.error control-name="country_of_residence" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
