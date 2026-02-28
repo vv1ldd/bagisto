@@ -132,6 +132,17 @@
             -webkit-appearance: none !important;
         }
 
+        /* Hide browser contact/credential autofill icon */
+        input::-webkit-contacts-auto-fill-button,
+        input::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            display: none !important;
+            pointer-events: none;
+            height: 0;
+            width: 0;
+            margin: 0;
+        }
+
         .ios-input-wrapper input[type="date"],
         .ios-input-wrapper input[type="date"]:focus,
         .ios-input-wrapper input[type="date"]:hover {
