@@ -243,6 +243,7 @@
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="text" name="username" rules="required"
                                     :value="old('username') ?? $customer->username" placeholder="Имя пользователя"
+                                    autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                     :label="trans('shop::app.customers.account.profile.edit.username')" />
                                 <x-shop::form.control-group.error control-name="username" />
                             </x-shop::form.control-group>
@@ -255,7 +256,8 @@
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="text" name="first_name" rules="required"
                                     :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
-                                    placeholder="Имя" :label="trans('shop::app.customers.account.profile.edit.first-name')" />
+                                    placeholder="Имя" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                    :label="trans('shop::app.customers.account.profile.edit.first-name')" />
                                 <x-shop::form.control-group.error control-name="first_name" />
                             </x-shop::form.control-group>
                             <span class="ios-arrow icon-arrow-right"></span>
@@ -267,6 +269,7 @@
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="text" name="last_name" rules="required"
                                     :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
+                                    autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                     :label="trans('shop::app.customers.account.profile.edit.last-name')" />
                                 <x-shop::form.control-group.error control-name="last_name" />
                             </x-shop::form.control-group>
@@ -331,7 +334,7 @@
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
                                         :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
-                                        placeholder="Например: Москва"
+                                        placeholder="Например: Москва" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                         :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
                                     <x-shop::form.control-group.error control-name="birth_city" />
                                 </x-shop::form.control-group>
@@ -360,6 +363,7 @@
                     <x-shop::form.control-group class="!mb-0">
                         <x-shop::form.control-group.control type="text" name="username" rules="required"
                             :value="old('username') ?? $customer->username" placeholder="Имя пользователя"
+                            autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                             :label="trans('shop::app.customers.account.profile.edit.username')" />
                         <x-shop::form.control-group.error control-name="username" />
                     </x-shop::form.control-group>
@@ -372,7 +376,8 @@
                     <x-shop::form.control-group class="!mb-0">
                         <x-shop::form.control-group.control type="text" name="first_name" rules="required"
                             :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
-                            placeholder="Имя" :label="trans('shop::app.customers.account.profile.edit.first-name')" />
+                            placeholder="Имя" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            :label="trans('shop::app.customers.account.profile.edit.first-name')" />
                         <x-shop::form.control-group.error control-name="first_name" />
                     </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
@@ -384,6 +389,7 @@
                     <x-shop::form.control-group class="!mb-0">
                         <x-shop::form.control-group.control type="text" name="last_name" rules="required"
                             :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
+                            autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                             :label="trans('shop::app.customers.account.profile.edit.last-name')" />
                         <x-shop::form.control-group.error control-name="last_name" />
                     </x-shop::form.control-group>
@@ -472,7 +478,7 @@
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
                                 :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
-                                placeholder="Например: Москва"
+                                placeholder="Например: Москва" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                 :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
                             <x-shop::form.control-group.error control-name="birth_city" />
                         </x-shop::form.control-group>
