@@ -21,5 +21,7 @@ class ModuleServiceProvider extends CoreModuleServiceProvider
         \Webkul\Customer\Models\CustomerLoginLog::class,
         \Webkul\Customer\Models\CustomerTransaction::class,
         \Webkul\Customer\Models\CryptoAddress::class,
+        \Webkul\Customer\Models\CryptoTransaction::class,
+        \Webkul\Customer\Models\CustomerBalance::class,
     ];
 }
