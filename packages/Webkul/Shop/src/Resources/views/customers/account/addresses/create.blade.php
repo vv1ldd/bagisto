@@ -287,7 +287,6 @@
                                     type="text"
                                     name="phone"
                                     rules="required|phone"
-                                    v-phone
                                     :value="old('phone')"
                                     :label="trans('shop::app.customers.account.addresses.create.phone')"
                                     :placeholder="trans('shop::app.customers.account.addresses.create.phone')"

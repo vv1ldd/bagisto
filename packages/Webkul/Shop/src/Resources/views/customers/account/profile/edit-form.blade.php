@@ -79,53 +79,7 @@
             outline: none !important;
         }
 
-        .ios-input-wrapper input[name="phone"] {
-            width: 100%;
-            text-align: right !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            margin: 0 !important;
-            padding: 0 0 2px 0 !important;
-            height: auto !important;
-            line-height: normal !important;
-            color: #71717a !important;
-            font-size: 15px !important;
-            appearance: none;
-        }
 
-        .ios-input-wrapper input:focus::placeholder {
-            color: transparent !important;
-        }
-        .ios-input-wrapper input:focus::-webkit-input-placeholder {
-            color: transparent !important;
-        }
-
-        .ios-input-wrapper p.text-red-500 {
-            display: none !important;
-        }
-
-        .iti { width: 100%; display: flex; justify-content: flex-end; align-items: center; }
-        .iti__flag-container { position: relative !important; z-index: 10 !important; cursor: pointer !important; padding-right: 8px !important; }
-        .iti--container { z-index: 99999 !important; }
-        .iti__country-list {
-            z-index: 99999 !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
-            border: 1px solid #e4e4e7 !important;
-            background-color: #fff !important;
-        }
-        .iti__search-input {
-            margin-top: 5px !important;
-            margin-bottom: 5px !important;
-            border: 1px solid #e4e4e7 !important;
-            border-radius: 8px !important;
-            padding: 8px 12px !important;
-            width: calc(100% - 20px) !important;
-            margin-left: 10px !important;
-            margin-right: 10px !important;
-            box-sizing: border-box !important;
-        }
 
         input::-webkit-calendar-picker-indicator,
         input::-webkit-inner-spin-button,
@@ -467,7 +421,7 @@
                 <label class="ios-label">@lang('shop::app.customers.account.profile.edit.phone') <span class="text-red-500">*</span></label>
                 <div class="ios-input-wrapper">
                     <x-shop::form.control-group class="!mb-0">
-                        <x-shop::form.control-group.control type="text" name="phone" rules="required|phone" v-phone
+                        <x-shop::form.control-group.control type="text" name="phone" rules="required|phone"
                             :value="old('phone') ?? $customer->phone" placeholder="Телефон"
                             :label="trans('shop::app.customers.account.profile.edit.phone')" />
                         <x-shop::form.control-group.error control-name="phone" />

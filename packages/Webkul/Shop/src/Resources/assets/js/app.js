@@ -148,7 +148,6 @@ import Emitter from "./plugins/emitter";
 import Shop from "./plugins/shop";
 import VeeValidate from "./plugins/vee-validate";
 import Flatpickr from "./plugins/flatpickr";
-import intlTelInput from "./plugins/intlTelInput";
 
 [
     Axios,
@@ -156,7 +155,6 @@ import intlTelInput from "./plugins/intlTelInput";
     Shop,
     VeeValidate,
     Flatpickr,
-    intlTelInput,
 ].forEach((plugin) => app.use(plugin));
 
 /**
