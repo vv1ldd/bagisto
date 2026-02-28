@@ -147,6 +147,39 @@
                 </a>
             @endauth
 
+            @if($recentTransfers->count() > 0)
+                <div class="wallets-section mt-10">
+                    <button onclick="toggleActivity()" class="flex items-center justify-between w-full mb-4 group">
+                        <h2 class="section-title mb-0">Последняя активность</h2>
+                        <span id="activity-chevron" class="icon-arrow-down text-[#a1a1aa] transition-transform"></span>
+                    </button>
+                    
+                    <div id="activity-list" class="hidden space-y-3">
+                        @foreach($recentTransfers as $transfer)
+                            @php 
+                                $senderAlias = $transfer->metadata['sender_alias'] ?? 'Unknown';
+                            @endphp
+                            <div class="flex items-center justify-between p-3 bg-[#f8fafc] rounded-xl border border-[#f1f5f9]">
+                                <div class="text-left">
+                                    <div class="text-[13px] font-semibold text-zinc-900">
+                                        Входящий перевод от 
+                                        <a href="{{ route('shop.alias_profile.index', ['alias' => $senderAlias]) }}" class="text-[#7C45F5]">
+                                            @ {{ $senderAlias }}
+                                        </a>
+                                    </div>
+                                    <div class="text-[11px] text-zinc-400">
+                                        {{ $transfer->created_at->diffForHumans() }}
+                                    </div>
+                                </div>
+                                <div class="text-[14px] font-bold text-emerald-500">
+                                    +{{ number_format($transfer->amount, 0) }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             @if($cryptoAddresses->count() > 0)
                 <div class="wallets-section">
                     <h2 class="section-title">Крипто Кошельки</h2>
@@ -176,6 +209,19 @@
 
     @push('scripts')
         <script>
+            function toggleActivity() {
+                const list = document.getElementById('activity-list');
+                const chevron = document.getElementById('activity-chevron');
+                
+                if (list.classList.contains('hidden')) {
+                    list.classList.remove('hidden');
+                    chevron.style.transform = 'rotate(180deg)';
+                } else {
+                    list.classList.add('hidden');
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+
             function copyToClipboard(text, element) {
                 navigator.clipboard.writeText(text).then(() => {
                     const originalText = element.innerText;

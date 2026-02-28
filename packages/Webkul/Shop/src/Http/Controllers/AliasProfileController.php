@@ -37,6 +37,12 @@ class AliasProfileController extends Controller
 
         $cryptoAddresses = $customer->crypto_addresses()->where('is_active', 1)->get();
 
-        return view('shop::customers.account.profile.view', compact('customer', 'cryptoAddresses'));
+        $recentTransfers = $customer->credits()
+            ->where('type', 'transfer_credit')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('shop::customers.account.profile.view', compact('customer', 'cryptoAddresses', 'recentTransfers'));
     }
 }

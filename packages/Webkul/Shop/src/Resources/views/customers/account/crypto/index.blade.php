@@ -89,6 +89,11 @@
                                         Обновить
                                     </a>
 
+                                    <a href="{{ $address->network === 'bitcoin' ? 'https://www.blockchain.com/explorer/addresses/btc/' . $address->address : 'https://etherscan.io/address/' . $address->address }}"
+                                        target="_blank" class="text-[13px] text-zinc-500 font-semibold active:opacity-50">
+                                        История
+                                    </a>
+
                                     <form action="{{ route('shop.customers.account.crypto.delete', $address->id) }}"
                                         method="POST">
                                         @csrf
