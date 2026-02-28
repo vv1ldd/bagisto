@@ -2,7 +2,7 @@
 
 namespace Webkul\Customer\Models;
 
-use Webkul\Core\Models\ModelProxy;
+use Konekt\Concord\Proxies\ModelProxy;
 
 class CustomerBalanceProxy extends ModelProxy
 {
