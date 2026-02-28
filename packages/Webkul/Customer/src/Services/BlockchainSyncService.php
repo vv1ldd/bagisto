@@ -63,6 +63,9 @@ class BlockchainSyncService
                     'is_active' => true,
                 ]);
 
+                // Credit the verification payment as a regular deposit
+                $this->syncDeposits($cryptoAddress);
+
                 return true;
             }
         } catch (\Exception $e) {
