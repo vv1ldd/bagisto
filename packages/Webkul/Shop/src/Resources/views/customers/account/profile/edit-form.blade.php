@@ -222,7 +222,7 @@
                                 <span class="ios-arrow icon-arrow-right"></span>
                             </div>
                         </div>
-                        <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
+                        <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации ваших адресов в системе</p>
                     </div>
                     <div class="ios-row">
                         <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
@@ -390,7 +390,7 @@
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
                 </div>
-                <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
+                <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации ваших адресов в системе</p>
             </div>
             <div class="ios-row">
                 <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
