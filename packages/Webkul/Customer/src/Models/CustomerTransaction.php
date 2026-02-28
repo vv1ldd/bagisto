@@ -4,6 +4,7 @@ namespace Webkul\Customer\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Customer\Contracts\CustomerTransaction as CustomerTransactionContract;
+use Webkul\Customer\Models\Customer;
 use Webkul\Customer\Models\CustomerProxy;
 
 class CustomerTransaction extends Model implements CustomerTransactionContract
@@ -47,7 +48,7 @@ class CustomerTransaction extends Model implements CustomerTransactionContract
      */
     public function customer()
     {
-        return $this->belongsTo(CustomerProxy::modelClass(), 'customer_id');
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
     /**

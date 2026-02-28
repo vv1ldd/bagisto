@@ -13,6 +13,7 @@ use Webkul\Checkout\Models\CartProxy;
 use Webkul\Core\Models\ChannelProxy;
 use Webkul\Core\Models\SubscribersListProxy;
 use Webkul\Customer\Contracts\Customer as CustomerContract;
+use Webkul\Customer\Models\CustomerTransaction;
 use Webkul\Customer\Models\CustomerTransactionProxy;
 use Webkul\Customer\Database\Factories\CustomerFactory;
 use Webkul\Product\Models\ProductReviewProxy;
@@ -290,7 +291,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
      */
     public function transactions()
     {
-        return $this->hasMany(CustomerTransactionProxy::modelClass(), 'customer_id');
+        return $this->hasMany(CustomerTransaction::class, 'customer_id');
     }
 
     /**
