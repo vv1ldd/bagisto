@@ -36,13 +36,7 @@ return [
         'icon' => 'icon-orders',
         'sort' => 4,
     ],
-    [
-        'key' => 'account.credits',
-        'name' => 'Начисления',
-        'route' => 'shop.customers.account.credits.index',
-        'icon' => 'icon-sales',
-        'sort' => 5,
-    ],
+
     [
         'key' => 'account.reviews',
         'name' => 'shop::app.layouts.reviews',
