@@ -192,7 +192,7 @@ class BlockchainSyncService
             $data = $response->json();
             $transactions = $data['transactions'] ?? [];
 
-            $challengeNano = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000000');
+            // Convert user's address to raw hex for comparison with TonAPI output
             $senderHex = $this->getTonHexAddress($cryptoAddress->address) ?? $cryptoAddress->address;
 
             foreach ($transactions as $tx) {
@@ -202,12 +202,14 @@ class BlockchainSyncService
                 }
 
                 $srcAddress = $inMsg['source']['address'];
-                $receivedNano = (string) ($inMsg['value'] ?? '0');
+                $value = (int) ($inMsg['value'] ?? 0);
 
+                // Accept any TON transfer ≥ 0.001 from the user's address.
+                // The act of sending itself proves address ownership.
                 $isSender = $this->isSameTonAddress($srcAddress, $senderHex)
                     || $this->isSameTonAddress($srcAddress, $cryptoAddress->address);
 
-                if ($receivedNano === $challengeNano && $isSender) {
+                if ($isSender && $value >= 1000000) {
                     return true;
                 }
             }
@@ -215,6 +217,7 @@ class BlockchainSyncService
 
         return false;
     }
+
 
     /**
      * Fetch Bitcoin balance from Blockchain.info.
