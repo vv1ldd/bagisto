@@ -79,6 +79,12 @@ Breadcrumbs::for('credits', function (BreadcrumbTrail $trail) {
     $trail->push('Начисления', route('shop.customers.account.credits.index'));
 });
 
+// Home > My Account > Crypto Wallets
+Breadcrumbs::for('crypto', function (BreadcrumbTrail $trail) {
+    $trail->parent('account');
+    $trail->push('Крипто Кошельки', route('shop.customers.account.crypto.index'));
+});
+
 // Home > Cart
 Breadcrumbs::for('cart', function (BreadcrumbTrail $trail) {
     $trail->parent('home');

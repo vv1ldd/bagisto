@@ -6,7 +6,7 @@
 
         {{-- Breadcrumbs --}}
         @section('breadcrumbs')
-            <x-shop::breadcrumbs name="shop.customers.account.crypto.index"></x-shop::breadcrumbs>
+            <x-shop::breadcrumbs name="crypto"></x-shop::breadcrumbs>
         @endsection
 
         <div class="flex-auto ios-page">
