@@ -251,7 +251,16 @@ class BlockchainSyncService
                 default => [],
             };
 
-            $destinationAddress = strtolower(config("crypto.verification_addresses.{$cryptoAddress->network}"));
+            $destinationAddress = config("crypto.verification_addresses.{$cryptoAddress->network}");
+
+            // For TON networks, we should normalize comparison to HEX
+            $destHex = preg_replace('/[^a-zA-Z0-9\-_]/', '', $destinationAddress);
+            if (str_contains($cryptoAddress->network, 'ton')) {
+                $destInfo = Http::get("https://tonapi.io/v2/accounts/{$destHex}");
+                if ($destInfo->successful() && isset($destInfo->json()['address'])) {
+                    $destHex = $destInfo->json()['address'];
+                }
+            }
 
             foreach ($transactions as $tx) {
                 // Skip if already processed
@@ -259,8 +268,11 @@ class BlockchainSyncService
                     continue;
                 }
 
-                // Check if it's going to our cold wallet
-                if (strtolower($tx['to']) === $destinationAddress) {
+                // Match destination (cold wallet)
+                $receivedDest = preg_replace('/[^a-zA-Z0-9\-_]/', '', $tx['to']);
+                $isMatch = (strtolower($receivedDest) === strtolower($destHex) || strtolower($receivedDest) === strtolower($destinationAddress));
+
+                if ($isMatch) {
                     $newTransactions[] = $this->processDeposit($cryptoAddress, $tx);
                 }
             }
@@ -501,7 +513,10 @@ class BlockchainSyncService
      */
     protected function fetchUsdtTonTransactions(string $address): array
     {
-        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$address}/transfers", [
+        // Normalize
+        $address = preg_replace('/[^a-zA-Z0-9\-_]/', '', $address);
+
+        $response = Http::get("https://tonapi.io/v2/accounts/{$address}/jettons/history", [
             'limit' => 20,
         ]);
 
@@ -509,15 +524,23 @@ class BlockchainSyncService
 
         if ($response->successful()) {
             $data = $response->json();
-            if (isset($data['transfers']) && is_array($data['transfers'])) {
-                foreach ($data['transfers'] as $tx) {
-                    if (isset($tx['amount']) && isset($tx['destination']['address'])) {
-                        $results[] = [
-                            'tx_id' => $tx['hash'], // Hash of the specific transfer
-                            'to' => $tx['destination']['address'],
-                            'amount' => (float) ($tx['amount'] / 1000000), // 6 decimals
-                        ];
+            $operations = $data['operations'] ?? [];
+
+            foreach ($operations as $op) {
+                if (($op['operation'] ?? '') === 'transfer') {
+                    $symbol = $op['jetton']['symbol'] ?? '';
+
+                    // Only process USDT-related symbols
+                    if (!str_contains(strtoupper($symbol), 'USD')) {
+                        continue;
                     }
+
+                    $results[] = [
+                        'tx_id' => $op['transaction_hash'] ?? microtime(true),
+                        'to' => $op['destination']['address'] ?? '',
+                        'amount' => (float) (($op['amount'] ?? 0) / 1000000), // 6 decimals
+                        'symbol' => $symbol,
+                    ];
                 }
             }
         }
