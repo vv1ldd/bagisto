@@ -82,10 +82,6 @@
         Крипто Адреса
         </x-slot>
 
-        {{-- Breadcrumbs --}}
-        @section('breadcrumbs')
-            <x-shop::breadcrumbs name="crypto"></x-shop::breadcrumbs>
-        @endsection
 
         <div class="flex-auto ios-page">
             <div class="ios-header">

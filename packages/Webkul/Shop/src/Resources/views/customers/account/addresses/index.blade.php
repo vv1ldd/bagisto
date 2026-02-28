@@ -4,12 +4,6 @@
         @lang('shop::app.customers.account.addresses.index.add-address')
         </x-slot>
 
-        <!-- Breadcrumbs -->
-        @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
-        @section('breadcrumbs')
-        <x-shop::breadcrumbs name="addresses" />
-        @endSection
-        @endif
 
 
 
@@ -138,7 +132,8 @@
                     <img class="w-24 h-24 opacity-20 mb-4" src="{{ bagisto_asset('images/no-address.png') }}"
                         alt="Empty Address">
                     <p class="text-[15px] font-medium text-zinc-500">
-                        @lang('shop::app.customers.account.addresses.index.empty-address')</p>
+                        @lang('shop::app.customers.account.addresses.index.empty-address')
+                    </p>
                 </div>
             @endif
         </div>

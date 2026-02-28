@@ -4,9 +4,6 @@
         История начислений
         </x-slot>
 
-        @section('breadcrumbs')
-        <x-shop::breadcrumbs name="credits" />
-        @endSection
 
         @push('styles')
             <style>

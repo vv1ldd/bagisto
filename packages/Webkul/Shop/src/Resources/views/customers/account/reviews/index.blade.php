@@ -4,12 +4,6 @@
         @lang('shop::app.customers.account.reviews.title')
         </x-slot>
 
-        <!-- Breadcrumbs -->
-        @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
-        @section('breadcrumbs')
-        <x-shop::breadcrumbs name="reviews" />
-        @endSection
-        @endif
 
 
 
