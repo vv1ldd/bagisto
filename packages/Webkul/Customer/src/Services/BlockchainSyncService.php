@@ -415,61 +415,52 @@ class BlockchainSyncService
     {
         $destinationAddress = config('crypto.verification_addresses.usdt_ton');
 
-        // Robust address cleaning: strip dashes, spaces, and other non-alphanumeric characters
-        $cleanSender = preg_replace('/[^a-zA-Z0-9]/', '', $cryptoAddress->address);
-        $cleanDest = preg_replace('/[^a-zA-Z0-9]/', '', $destinationAddress);
+        // Normalize: trim and keep alphanumeric + dash + underscore (Ledger format)
+        $cleanSender = preg_replace('/[^a-zA-Z0-9\-_]/', '', $cryptoAddress->address);
+        $cleanDest = preg_replace('/[^a-zA-Z0-9\-_]/', '', $destinationAddress);
 
-        // Fetch hex format of the destination address to match the event payload format
-        $destinationAddressHex = $cleanDest;
-        $destInfoResponse = Http::get("https://tonapi.io/v2/accounts/{$cleanDest}");
-        if ($destInfoResponse->successful() && isset($destInfoResponse->json()['address'])) {
-            $destinationAddressHex = $destInfoResponse->json()['address'];
+        // Fetch HEX for both to ensure robust comparison
+        $senderHex = $cleanSender;
+        $senderInfo = Http::get("https://tonapi.io/v2/accounts/{$cleanSender}");
+        if ($senderInfo->successful() && isset($senderInfo->json()['address'])) {
+            $senderHex = $senderInfo->json()['address'];
         }
 
-        // Fetch hex format of the sender address for robust comparison
-        $senderAddressHex = $cleanSender;
-        $senderInfoResponse = Http::get("https://tonapi.io/v2/accounts/{$cleanSender}");
-        if ($senderInfoResponse->successful() && isset($senderInfoResponse->json()['address'])) {
-            $senderAddressHex = $senderInfoResponse->json()['address'];
+        $destHex = $cleanDest;
+        $destInfo = Http::get("https://tonapi.io/v2/accounts/{$cleanDest}");
+        if ($destInfo->successful() && isset($destInfo->json()['address'])) {
+            $destHex = $destInfo->json()['address'];
         }
 
-        // We query the sender's Jetton history to find the outbound transaction
-        $response = Http::get("https://tonapi.io/v2/accounts/{$cleanSender}/jettons/history", [
-            'limit' => 20,
+        // Query the COLD WALLET history for incoming Jetton transfers
+        // The endpoint /accounts/{address}/jettons/history returns an "operations" key
+        $response = Http::get("https://tonapi.io/v2/accounts/{$cleanDest}/jettons/history", [
+            'limit' => 35,
         ]);
 
         if ($response->successful()) {
             $data = $response->json();
-            if (isset($data['events']) && is_array($data['events'])) {
-                // USDT has 6 decimals
-                $challengeMicro = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000');
+            $operations = $data['operations'] ?? [];
 
-                foreach ($data['events'] as $event) {
-                    if (isset($event['actions']) && is_array($event['actions'])) {
-                        foreach ($event['actions'] as $action) {
-                            if (isset($action['type']) && $action['type'] === 'JettonTransfer' && isset($action['JettonTransfer'])) {
-                                $transfer = $action['JettonTransfer'];
+            // USDT has 6 decimals
+            $challengeMicro = (string) bcmul((string) $cryptoAddress->verification_amount, '1000000');
 
-                                $symbol = $transfer['jetton']['symbol'] ?? '';
-                                $receivedAmount = (string) ($transfer['amount'] ?? '0');
-                                $receivedRecipient = $transfer['recipient']['address'] ?? '';
-                                $receivedSender = $transfer['sender']['address'] ?? '';
+            foreach ($operations as $op) {
+                if (($op['operation'] ?? '') === 'transfer') {
+                    $source = $op['source']['address'] ?? '';
+                    $amount = (string) ($op['amount'] ?? '0');
+                    $symbol = $op['jetton']['symbol'] ?? '';
 
-                                // Verification criteria:
-                                // 1. Recipient must be our cold wallet (hex or original string)
-                                // 2. Sender must be the user's registered address (hex or original string)
-                                // 3. Amount must match exactly (subunit comparison)
-                                // 4. Symbol must contain USD
-                                $isRecipientMatch = ($receivedRecipient === $cleanDest || $receivedRecipient === $destinationAddressHex);
-                                $isSenderMatch = ($receivedSender === $cleanSender || $receivedSender === $senderAddressHex);
-                                $isAmountMatch = ($receivedAmount === $challengeMicro || (float) $receivedAmount === (float) $challengeMicro);
-                                $isSymbolMatch = str_contains(strtoupper($symbol), 'USD');
+                    // Match criteria:
+                    // 1. Source matches sender (hex or original string)
+                    // 2. Amount matches (subunit comparison)
+                    // 3. Symbol contains USD (USDT / USD₮)
+                    $isSourceMatch = ($source === $cleanSender || $source === $senderHex);
+                    $isAmountMatch = ($amount === $challengeMicro || (float) $amount === (float) $challengeMicro);
+                    $isSymbolMatch = str_contains(strtoupper($symbol), 'USD');
 
-                                if ($isRecipientMatch && $isSenderMatch && $isAmountMatch && $isSymbolMatch) {
-                                    return true;
-                                }
-                            }
-                        }
+                    if ($isSourceMatch && $isAmountMatch && $isSymbolMatch) {
+                        return true;
                     }
                 }
             }
