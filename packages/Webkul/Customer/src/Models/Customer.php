@@ -335,6 +335,12 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
                 $customer->credits_id = static::generateUniqueCreditsId();
             }
         });
+
+        static::saving(function ($customer) {
+            if (!$customer->credits_id) {
+                $customer->credits_id = static::generateUniqueCreditsId();
+            }
+        });
     }
 
     /**
