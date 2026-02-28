@@ -210,8 +210,9 @@ class BlockchainSyncService
         $destinationAddress = config('crypto.verification_addresses.ton');
 
         // Use TonAPI scanning the COLD WALLET — same proven approach as USDT verification
-        $cleanDest = urlencode($destinationAddress);
-        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$cleanDest}/transactions", [
+        // TonAPI only accepts raw hex format (0:hexhash), convert locally
+        $coldWalletRaw = $this->tonAddressToRaw($destinationAddress) ?? urlencode($destinationAddress);
+        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$coldWalletRaw}/transactions", [
             'limit' => 100,
         ]);
 
@@ -486,10 +487,11 @@ class BlockchainSyncService
         // dashes (e.g. UQDolrO5cIlq-RSkft...) are rejected by TonAPI's URL parser.
         $coldWallet = config('crypto.verification_addresses.ton');
 
-        // Normalize cold wallet address for TonAPI URL (strip non-alphanumeric except dash for EQ/UQ)
-        $cleanCold = urlencode($coldWallet);
+        // TonAPI only accepts raw hex format (0:hexhash), NOT UQ/EQ addresses.
+        // Use local base64url decoding to convert without any API call.
+        $coldWalletRaw = $this->tonAddressToRaw($coldWallet) ?? urlencode($coldWallet);
 
-        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$cleanCold}/transactions", [
+        $response = Http::get("https://tonapi.io/v2/blockchain/accounts/{$coldWalletRaw}/transactions", [
             'limit' => 100,
         ]);
 
