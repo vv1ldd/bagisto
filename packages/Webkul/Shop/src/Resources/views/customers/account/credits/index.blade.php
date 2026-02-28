@@ -43,20 +43,47 @@
                 <div class="flex flex-col gap-2 relative z-10">
                     <div class="text-[13px] text-zinc-400 font-medium uppercase tracking-wider">Общая покупательная
                         способность</div>
-                    <div class="text-3xl font-bold font-mono tracking-tight drop-shadow-sm">
+                    <div class="text-3xl font-bold font-mono text-white tracking-tight drop-shadow-sm">
                         {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
                     </div>
 
-                    @if(auth()->guard('customer')->user()->balances->count() > 0)
+                    @php
+                        $user = auth()->guard('customer')->user();
+                        $balances = $user->balances;
+                        $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
+                        $networkLabels = [
+                            'ton' => ['label' => 'TON', 'symbol' => '◎'],
+                            'usdt_ton' => ['label' => 'USDT', 'symbol' => '₮'],
+                            'bitcoin' => ['label' => 'BTC', 'symbol' => '₿'],
+                            'ethereum' => ['label' => 'ETH', 'symbol' => 'Ξ'],
+                            'dash' => ['label' => 'DASH', 'symbol' => 'D'],
+                        ];
+                    @endphp
+
+                    @if($balances->count() > 0)
                         <div class="mt-3 pt-3 border-t border-zinc-700/50 flex flex-col gap-2">
-                            <div class="text-[11px] text-zinc-500 uppercase tracking-wider">Крипто-активы:</div>
-                            @foreach(auth()->guard('customer')->user()->balances as $balance)
-                                <div class="flex justify-between items-center text-[14px]">
-                                    <span class="text-zinc-300 font-medium uppercase">
-                                        {{ $balance->currency_code === 'usdt_ton' ? 'USDT' : $balance->currency_code }}
-                                    </span>
-                                    <span
-                                        class="font-mono text-zinc-100">{{ rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.') }}</span>
+                            <div class="text-[11px] text-zinc-500 uppercase tracking-wider mb-1">Крипто-активы</div>
+                            @foreach($balances as $balance)
+                                @php
+                                    $meta = $networkLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?'];
+                                    $rate = $exchangeRateService->getRate($balance->currency_code);
+                                    $fiat = $balance->amount * $rate;
+                                    $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
+                                @endphp
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="w-7 h-7 rounded-full bg-zinc-700/60 flex items-center justify-center text-[13px] text-zinc-200 font-bold">
+                                            {{ $meta['symbol'] }}
+                                        </span>
+                                        <span class="text-[14px] text-zinc-200 font-semibold">{{ $meta['label'] }}</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-[14px] font-mono text-white font-medium">{{ $amount }}</div>
+                                        @if($fiat > 0)
+                                            <div class="text-[11px] text-zinc-400">≈ {{ core()->formatPrice($fiat) }}</div>
+                                        @endif
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
