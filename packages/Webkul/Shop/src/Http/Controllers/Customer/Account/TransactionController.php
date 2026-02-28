@@ -3,21 +3,9 @@
 namespace Webkul\Shop\Http\Controllers\Customer\Account;
 
 use Webkul\Shop\Http\Controllers\Controller;
-use Webkul\Customer\Repositories\CustomerTransactionRepository;
 
 class TransactionController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @param  \Webkul\Customer\Repositories\CustomerTransactionRepository  $customerTransactionRepository
-     * @return void
-     */
-    public function __construct(
-        protected CustomerTransactionRepository $customerTransactionRepository
-    ) {
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -25,9 +13,10 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $transactions = $this->customerTransactionRepository->scopeQuery(function ($query) {
-            return $query->where('customer_id', auth()->guard('customer')->id())->latest();
-        })->paginate(10);
+        $transactions = auth()->guard('customer')->user()
+            ->transactions()
+            ->orderBy('id', 'desc')
+            ->paginate(10);
 
         return view('shop::customers.account.transactions.index', compact('transactions'));
     }
