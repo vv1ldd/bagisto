@@ -5,7 +5,7 @@
 
 @if ($isCompleteRegistration)
     <x-shop::layouts.split-screen :title="$pageTitle">
-        <div class="w-full">
+        <div class="ios-settings-wrapper mx-auto w-full">
             @include('shop::customers.account.passkeys.index-form', ['customer' => $customer])
         </div>
     </x-shop::layouts.split-screen>
