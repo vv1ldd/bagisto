@@ -5,7 +5,9 @@
 
 @if ($isCompleteRegistration)
     <x-shop::layouts.split-screen :title="$pageTitle">
-        @include('shop::customers.account.passkeys.index-form', ['customer' => $customer])
+        <div class="w-full">
+            @include('shop::customers.account.passkeys.index-form', ['customer' => $customer])
+        </div>
     </x-shop::layouts.split-screen>
 @else
     <x-shop::layouts.account :show-back="true" :show-profile-card="true" :has-header="true" :has-footer="true"
