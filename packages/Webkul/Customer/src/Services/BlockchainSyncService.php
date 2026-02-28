@@ -19,6 +19,7 @@ class BlockchainSyncService
                 'ethereum' => $this->fetchEthereumBalance($cryptoAddress->address),
                 'ton' => $this->fetchTonBalance($cryptoAddress->address),
                 'usdt_ton' => $this->fetchUsdtTonBalance($cryptoAddress->address),
+                'dash' => $this->fetchDashBalance($cryptoAddress->address),
                 default => null,
             };
 
@@ -52,6 +53,7 @@ class BlockchainSyncService
                 'ethereum' => $this->checkEthereumVerification($cryptoAddress),
                 'ton' => $this->checkTonVerification($cryptoAddress),
                 'usdt_ton' => $this->checkUsdtTonVerification($cryptoAddress),
+                'dash' => $this->checkDashVerification($cryptoAddress),
                 default => false,
             };
 
@@ -245,6 +247,7 @@ class BlockchainSyncService
                 'ethereum' => $this->fetchEthereumTransactions($cryptoAddress->address),
                 'ton' => $this->fetchTonTransactions($cryptoAddress->address),
                 'usdt_ton' => $this->fetchUsdtTonTransactions($cryptoAddress->address),
+                'dash' => $this->fetchDashTransactions($cryptoAddress->address),
                 default => [],
             };
 
@@ -486,6 +489,73 @@ class BlockchainSyncService
                             'tx_id' => $tx['hash'], // Hash of the specific transfer
                             'to' => $tx['destination']['address'],
                             'amount' => (float) ($tx['amount'] / 1000000), // 6 decimals
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * Check DASH verification by scanning recent transactions via BlockCypher API.
+     */
+    protected function checkDashVerification(CryptoAddress $cryptoAddress): bool
+    {
+        $destinationAddress = config('crypto.verification_addresses.dash');
+        $response = Http::get("https://api.blockcypher.com/v1/dash/main/addrs/{$cryptoAddress->address}/full");
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $challengeDuffs = (int) round($cryptoAddress->verification_amount * 100000000);
+
+            foreach ($data['txs'] ?? [] as $tx) {
+                foreach ($tx['outputs'] ?? [] as $output) {
+                    if ((int) $output['value'] === $challengeDuffs && in_array($destinationAddress, $output['addresses'] ?? [])) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Fetch DASH balance via BlockCypher API.
+     * Returns balance in DASH.
+     */
+    protected function fetchDashBalance(string $address): ?float
+    {
+        $response = Http::get("https://api.blockcypher.com/v1/dash/main/addrs/{$address}/balance");
+
+        if ($response->successful()) {
+            $data = $response->json();
+            // result is in Duffs (10^8)
+            return (float) ($data['balance'] / 100000000);
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch recent DASH transactions via BlockCypher API.
+     */
+    protected function fetchDashTransactions(string $address): array
+    {
+        $response = Http::get("https://api.blockcypher.com/v1/dash/main/addrs/{$address}/full");
+        $results = [];
+
+        if ($response->successful()) {
+            $data = $response->json();
+            foreach ($data['txs'] ?? [] as $tx) {
+                foreach ($tx['outputs'] ?? [] as $output) {
+                    foreach ($output['addresses'] ?? [] as $outAddress) {
+                        $results[] = [
+                            'tx_id' => $tx['hash'],
+                            'to' => $outAddress,
+                            'amount' => (float) ($output['value'] / 100000000),
                         ];
                     }
                 }

@@ -109,6 +109,15 @@
                             {{ config('crypto.verification_addresses.usdt_ton') }}
                         </div>
                     </div>
+
+                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
+                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">Dash (DASH)
+                        </div>
+                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
+                            onclick="navigator.clipboard.writeText(this.innerText)">
+                            {{ config('crypto.verification_addresses.dash') }}
+                        </div>
+                    </div>
                 </div>
 
                 <p class="text-[12px] text-zinc-400 mt-4 italic">
