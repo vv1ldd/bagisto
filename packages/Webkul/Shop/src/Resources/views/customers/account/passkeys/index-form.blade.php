@@ -30,13 +30,12 @@
 
                                 <a href="{{ route('shop.customers.account.profile.complete_registration_success') }}"
                                     class="flex w-full items-center justify-center rounded-full bg-white/60 px-8 py-3 text-[14px] font-medium text-[#4A1D96] transition-all hover:bg-white focus:ring-2 focus:ring-[#7C45F5] border border-[#7C45F5]/10">
-                                    Продолжить с почтой (Magic Link)
+                                    Пропустить этот шаг
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-
             @else
                 <!-- Original Profile Settings View -->
                 <div class="px-8 max-md:px-5 mt-4 w-full max-w-[800px] mx-auto">
@@ -107,7 +106,6 @@
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
                 </div>
             @endif
-        </div>
         @push('scripts')
             <script>
                 window.startPasskeyRegistration = async function () {
