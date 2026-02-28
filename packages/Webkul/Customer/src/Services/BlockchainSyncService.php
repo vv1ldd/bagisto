@@ -57,7 +57,7 @@ class BlockchainSyncService
             // Rate-limit: only sync if last sync was more than 5 minutes ago
             if (
                 $cryptoAddress->last_sync_at &&
-                now()->diffInMinutes($cryptoAddress->last_sync_at) < 5
+                now()->diffInMinutes($cryptoAddress->last_sync_at) < 1
             ) {
                 continue;
             }
