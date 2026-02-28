@@ -255,6 +255,13 @@
                             <span class="ios-arrow icon-arrow-right"></span>
                         </div>
                     </div>
+                    <div class="ios-row">
+                        <label class="ios-label">Credits ID</label>
+                        <div class="ios-input-wrapper justify-end">
+                            <span class="text-[15px] text-zinc-400 text-right">{{ $customer->credits_id ?? 'Генерируется...' }}</span>
+                            <span class="ios-arrow icon-arrow-right"></span>
+                        </div>
+                    </div>
 
                     @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
                         <div class="ios-row">
@@ -427,6 +434,13 @@
                     <span class="text-[15px] text-zinc-400 text-right truncate max-w-[200px]">
                         {{ $customer->default_address ? ($customer->default_address->address . ', ' . $customer->default_address->city) : 'Настроить' }}
                     </span>
+                    <span class="ios-arrow icon-arrow-right"></span>
+                </div>
+            </div>
+            <div class="ios-row">
+                <label class="ios-label">Credits ID</label>
+                <div class="ios-input-wrapper justify-end">
+                    <span class="text-[15px] text-zinc-400 text-right">{{ $customer->credits_id ?? 'Генерируется...' }}</span>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
             </div>

@@ -73,6 +73,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'verification_code',
         'registration_ip',
         'balance',
+        'credits_id',
     ];
 
     /**
@@ -322,5 +323,29 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     protected static function newFactory()
     {
         return CustomerFactory::new();
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::creating(function ($customer) {
+            if (!$customer->credits_id) {
+                $customer->credits_id = static::generateUniqueCreditsId();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique credits ID.
+     */
+    public static function generateUniqueCreditsId(): string
+    {
+        do {
+            $id = 'M-' . strtoupper(bin2hex(random_bytes(5)));
+        } while (static::where('credits_id', $id)->exists());
+
+        return $id;
     }
 }

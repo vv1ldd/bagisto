@@ -1,4 +1,20 @@
 <div class="flex flex-col w-full">
+    @php
+        $customer = auth()->guard('customer')->user();
+    @endphp
+
+    @if ($customer?->credits_id)
+        <div class="ios-nav-group !mb-6">
+            <div class="ios-nav-row !py-3 bg-zinc-50/50">
+                <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
+                    Credits ID
+                </span>
+                <span class="text-sm font-mono text-zinc-900 bg-white px-2 py-1 rounded border border-zinc-200">
+                    {{ $customer->credits_id }}
+                </span>
+            </div>
+        </div>
+    @endif
     @foreach (menu()->getItems('customer') as $menuItem)
         @if ($menuItem->haveChildren())
             <div class="glass-card !bg-white/40 mb-6 overflow-hidden rounded-2xl">
