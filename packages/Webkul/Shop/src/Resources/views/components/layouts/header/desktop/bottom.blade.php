@@ -63,6 +63,9 @@
                     <div class="text-[12px] text-zinc-400 truncate max-w-[160px]">
                         {{ auth()->guard('customer')->user()->email }}
                     </div>
+                    <div class="text-[12px] font-bold text-[#7C45F5] mt-0.5">
+                        Баланс: {{ core()->formatPrice(auth()->guard('customer')->user()->balance) }}
+                    </div>
                 </div>
                 <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left shrink-0"></span>
             </a>
@@ -75,7 +78,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                                <!-- Loading State -->
+                                                                                    <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -193,9 +196,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                    }">
+                                                                                                            'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                            'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                        }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">

@@ -37,6 +37,13 @@ return [
         'sort' => 4,
     ],
     [
+        'key' => 'account.transactions',
+        'name' => 'Transactions',
+        'route' => 'shop.customers.account.transactions.index',
+        'icon' => 'icon-sales',
+        'sort' => 5,
+    ],
+    [
         'key' => 'account.reviews',
         'name' => 'shop::app.layouts.reviews',
         'route' => 'shop.customers.account.reviews.index',
