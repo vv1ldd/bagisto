@@ -208,18 +208,21 @@
 
                 <div class="ios-group w-full !mb-3 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm !rounded-[24px] overflow-hidden">
                     {{-- Fields for registration mode --}}
-                    <div class="ios-row">
-                        <label class="ios-label">@lang('shop::app.customers.account.profile.edit.username') <span class="text-red-500">*</span></label>
-                        <div class="ios-input-wrapper">
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.control type="text" name="username" rules="required"
-                                    :value="old('username') ?? $customer->username" placeholder="Имя пользователя"
-                                    autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                    :label="trans('shop::app.customers.account.profile.edit.username')" />
-                                <x-shop::form.control-group.error control-name="username" />
-                            </x-shop::form.control-group>
-                            <span class="ios-arrow icon-arrow-right"></span>
+                    <div class="ios-row !flex-col !items-start !h-auto !py-3">
+                        <div class="flex items-center justify-between w-full">
+                            <label class="ios-label">Алиас <span class="text-red-500">*</span></label>
+                            <div class="ios-input-wrapper">
+                                <x-shop::form.control-group class="!mb-0">
+                                    <x-shop::form.control-group.control type="text" name="username" rules="required"
+                                        :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
+                                        autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        label="Алиас" />
+                                    <x-shop::form.control-group.error control-name="username" />
+                                </x-shop::form.control-group>
+                                <span class="ios-arrow icon-arrow-right"></span>
+                            </div>
                         </div>
+                        <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
                     </div>
                     <div class="ios-row">
                         <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
@@ -254,29 +257,6 @@
                             <span class="text-[15px] text-zinc-400 text-right">{{ $customer->email }}</span>
                             <span class="ios-arrow icon-arrow-right"></span>
                         </div>
-                    </div>
-                    <div class="ios-row">
-                        <label class="ios-label">Credits ID</label>
-                        <div class="ios-input-wrapper justify-end">
-                            <span class="text-[15px] text-zinc-400 text-right">{{ $customer->credits_id ?? 'Генерируется...' }}</span>
-                            <span class="ios-arrow icon-arrow-right"></span>
-                        </div>
-                    </div>
-                    <div class="ios-row !flex-col !items-start !h-auto !py-3">
-                        <div class="flex items-center justify-between w-full">
-                            <label class="ios-label">Credits Alias</label>
-                            <div class="ios-input-wrapper">
-                                <x-shop::form.control-group class="!mb-0">
-                                    <x-shop::form.control-group.control type="text" name="credits_alias"
-                                        :value="old('credits_alias') ?? $customer->credits_alias" placeholder="Например: @nickname"
-                                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                        :label="'Credits Alias'" />
-                                    <x-shop::form.control-group.error control-name="credits_alias" />
-                                </x-shop::form.control-group>
-                                <span class="ios-arrow icon-arrow-right"></span>
-                            </div>
-                        </div>
-                        <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
                     </div>
 
                     @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
@@ -396,18 +376,21 @@
         {{-- Normal profile edit mode --}}
         <!-- Group 1: Contact Info -->
         <div class="ios-group">
-            <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.username') <span class="text-red-500">*</span></label>
-                <div class="ios-input-wrapper">
-                    <x-shop::form.control-group class="!mb-0">
-                        <x-shop::form.control-group.control type="text" name="username" rules="required"
-                            :value="old('username') ?? $customer->username" placeholder="Имя пользователя"
-                            autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                            :label="trans('shop::app.customers.account.profile.edit.username')" />
-                        <x-shop::form.control-group.error control-name="username" />
-                    </x-shop::form.control-group>
-                    <span class="ios-arrow icon-arrow-right"></span>
+            <div class="ios-row !flex-col !items-start !h-auto !py-3">
+                <div class="flex items-center justify-between w-full">
+                    <label class="ios-label">Алиас <span class="text-red-500">*</span></label>
+                    <div class="ios-input-wrapper">
+                        <x-shop::form.control-group class="!mb-0">
+                            <x-shop::form.control-group.control type="text" name="username" rules="required"
+                                :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
+                                autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                label="Алиас" />
+                            <x-shop::form.control-group.error control-name="username" />
+                        </x-shop::form.control-group>
+                        <span class="ios-arrow icon-arrow-right"></span>
+                    </div>
                 </div>
+                <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
             </div>
             <div class="ios-row">
                 <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
@@ -452,29 +435,6 @@
                     </span>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
-            </div>
-            <div class="ios-row">
-                <label class="ios-label">Credits ID</label>
-                <div class="ios-input-wrapper justify-end">
-                    <span class="text-[15px] text-zinc-400 text-right">{{ $customer->credits_id ?? 'Генерируется...' }}</span>
-                    <span class="ios-arrow icon-arrow-right"></span>
-                </div>
-            </div>
-            <div class="ios-row !flex-col !items-start !h-auto !py-3">
-                <div class="flex items-center justify-between w-full">
-                    <label class="ios-label">Credits Alias</label>
-                    <div class="ios-input-wrapper">
-                        <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.control type="text" name="credits_alias"
-                                :value="old('credits_alias') ?? $customer->credits_alias" placeholder="Например: @nickname"
-                                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                :label="'Credits Alias'" />
-                            <x-shop::form.control-group.error control-name="credits_alias" />
-                        </x-shop::form.control-group>
-                        <span class="ios-arrow icon-arrow-right"></span>
-                    </div>
-                </div>
-                <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации вашего счета.</p>
             </div>
         </div>
 

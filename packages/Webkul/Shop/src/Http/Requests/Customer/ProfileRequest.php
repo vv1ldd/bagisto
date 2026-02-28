@@ -43,7 +43,6 @@ class ProfileRequest extends FormRequest
             'is_complete_registration' => 'boolean|nullable',
             'country_of_residence' => 'nullable|string',
             'citizenship' => 'nullable|string',
-            'credits_alias' => ['nullable', 'unique:customers,credits_alias,' . $id, 'max:255', 'regex:/^[a-z0-9_.]+$/'],
         ];
     }
 
@@ -57,7 +56,7 @@ class ProfileRequest extends FormRequest
         return [
             'first_name' => trans('shop::app.customers.signup.first-name'),
             'last_name' => trans('shop::app.customers.signup.last-name'),
-            'username' => trans('shop::app.customers.account.profile.username'),
+            'username' => 'Алиас',
             'gender' => trans('shop::app.customers.account.profile.edit.gender'),
             'date_of_birth' => trans('shop::app.customers.account.profile.edit.dob'),
             'birth_city' => trans('shop::app.customers.account.profile.edit.birth-city'),

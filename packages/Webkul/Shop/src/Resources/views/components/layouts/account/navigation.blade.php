@@ -3,15 +3,15 @@
         $customer = auth()->guard('customer')->user();
     @endphp
 
-    @if ($customer?->credits_alias || $customer?->credits_id)
+    @if ($customer?->username)
         <div class="ios-nav-group !mb-6">
             <div class="ios-nav-row !py-3 bg-zinc-50/50"
                 onclick="window.location.href='{{ route('shop.customers.account.credits.index') }}'">
                 <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
-                    Credits ID
+                    Алиас
                 </span>
                 <span class="text-sm font-mono text-zinc-900 bg-white px-2 py-1 rounded border border-zinc-200">
-                    {{ $customer->credits_alias ? '@' . $customer->credits_alias : $customer->credits_id }}
+                    @ {{ $customer->username }}
                 </span>
             </div>
             <a href="{{ route('shop.customers.account.crypto.index') }}" class="ios-nav-row">

@@ -20,7 +20,7 @@ class RecipientLookupService
         // Check if it's an alias (starts with @)
         if (str_starts_with($identifier, '@')) {
             $alias = ltrim($identifier, '@');
-            return Customer::where('credits_alias', $alias)->first();
+            return Customer::where('username', $alias)->first();
         }
 
         // Check if it's a Credits ID (e.g., M-A1B2C3D4E5)
@@ -29,6 +29,6 @@ class RecipientLookupService
         }
 
         // Fallback: try direct alias lookup without @
-        return Customer::where('credits_alias', $identifier)->first();
+        return Customer::where('username', $identifier)->first();
     }
 }
