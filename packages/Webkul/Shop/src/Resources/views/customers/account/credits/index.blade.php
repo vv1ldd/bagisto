@@ -52,7 +52,9 @@
                             <div class="text-[11px] text-zinc-500 uppercase tracking-wider">Крипто-активы:</div>
                             @foreach(auth()->guard('customer')->user()->balances as $balance)
                                 <div class="flex justify-between items-center text-[14px]">
-                                    <span class="text-zinc-300 font-medium uppercase">{{ $balance->currency_code }}</span>
+                                    <span class="text-zinc-300 font-medium uppercase">
+                                        {{ $balance->currency_code === 'usdt_ton' ? 'USDT' : $balance->currency_code }}
+                                    </span>
                                     <span
                                         class="font-mono text-zinc-100">{{ rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.') }}</span>
                                 </div>

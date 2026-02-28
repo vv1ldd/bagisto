@@ -316,6 +316,10 @@ class BlockchainSyncService
             $cryptoBalance->amount += $txData['amount'];
             $cryptoBalance->save();
 
+            // Update main balance field with fiat equivalent for compatibility
+            $customer->balance += $fiatAmount;
+            $customer->save();
+
             // Create customer transaction log (recording the fiat equivalent)
             \Webkul\Customer\Models\CustomerTransaction::create([
                 'uuid' => \Illuminate\Support\Str::uuid(),

@@ -44,7 +44,7 @@
                         {{ auth()->guard('customer')->user()->email }}
                     </div>
                     <div class="text-[11px] font-bold text-[#7C45F5] mt-0.5">
-                        {{ core()->formatPrice(auth()->guard('customer')->user()->balance) }}
+                        {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
                     </div>
                 </div>
                 <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left shrink-0"></span>
