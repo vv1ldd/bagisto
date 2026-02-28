@@ -77,11 +77,11 @@
 
                                 <div class="text-right">
                                     <div
-                                        class="text-[16px] {{ $transaction->amount > 0 ? 'amount-positive' : 'amount-negative' }}">
-                                        {{ $transaction->amount > 0 ? '+' : '' }}{{ core()->formatPrice($transaction->amount) }}
+                                        class="text-[16px] {{ (float) $transaction->amount > 0 ? 'amount-positive' : 'amount-negative' }}">
+                                        {{ (float) $transaction->amount > 0 ? '+' : '' }}{{ core()->formatPrice($transaction->amount) }}
                                     </div>
                                     <div class="text-[11px] text-zinc-400 font-mono mt-1">
-                                        ID: {{ substr($transaction->uuid, 0, 8) }}
+                                        ID: {{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}
                                     </div>
                                 </div>
                             </div>
