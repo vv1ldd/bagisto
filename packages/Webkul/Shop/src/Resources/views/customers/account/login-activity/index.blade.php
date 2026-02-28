@@ -12,10 +12,7 @@
         @endif
 
         <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5">
-            <div class="mb-10">
-                <h2 class="text-2xl font-bold text-zinc-900 mb-6">
-                    @lang('shop::app.customers.account.login-activity.title')
-                </h2>
+            <div class="mb-10 mt-6">
 
                 <!-- Active Sessions Section -->
                 @if (count($activeSessions))
@@ -28,20 +25,29 @@
                                 <div class="ios-nav-row !block py-5">
                                     <div class="flex justify-between items-center w-full">
                                         <div class="flex-grow">
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-medium text-zinc-900">
+                                            <div class="flex items-center gap-3 mb-1.5">
+                                                <span class="text-[15px] font-semibold text-zinc-900 leading-none">
                                                     {{ $session->ip_address }}
                                                 </span>
                                                 @if ($isCurrent)
                                                     <span
-                                                        class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] uppercase font-bold rounded-full">@lang('shop::app.customers.account.login-activity.current')</span>
+                                                        class="text-[10px] font-bold uppercase tracking-wider text-zinc-900 bg-transparent leading-none">
+                                                        @lang('shop::app.customers.account.login-activity.current')
+                                                    </span>
                                                 @endif
                                             </div>
-                                            <p class="text-sm text-zinc-500 mt-1 max-w-[300px] truncate"
+
+                                            @if($session->location)
+                                                <p class="text-sm text-zinc-600 mb-1">
+                                                    {{ $session->location }}
+                                                </p>
+                                            @endif
+
+                                            <p class="text-sm text-zinc-500 max-w-[300px] truncate"
                                                 title="{{ $session->user_agent }}">
                                                 {{ $session->device_name }} • {{ $session->browser }}
                                             </p>
-                                            <p class="text-[12px] text-zinc-400 mt-1">
+                                            <p class="text-[12px] text-zinc-400 mt-2">
                                                 @lang('shop::app.customers.account.login-activity.last-activity'):
                                                 {{ core()->formatDate($session->last_active_at ?: $session->created_at, 'd M Y H:i') }}
                                             </p>
@@ -68,22 +74,31 @@
 
                 <!-- Login History Section -->
                 <div>
-                    <h3 class="text-lg font-semibold text-zinc-800 mb-4">
+                    <h3 class="text-[17px] font-bold text-zinc-900 mb-4 px-1">
                         @lang('shop::app.customers.account.login-activity.login-history')
                     </h3>
                     @if ($loginHistory->count())
                         <div class="ios-nav-group !bg-white">
                             @foreach ($loginHistory as $log)
-                                <div class="ios-nav-row !block py-4">
+                                <div class="ios-nav-row !block py-5">
                                     <div class="flex justify-between items-center w-full">
                                         <div>
-                                            <p class="font-medium text-zinc-900">{{ $log->ip_address }}</p>
-                                            <p class="text-sm text-zinc-600 mt-0.5">
+                                            <p class="text-[15px] font-semibold text-zinc-900 mb-1.5 leading-none">
+                                                {{ $log->ip_address }}
+                                            </p>
+
+                                            @if($log->location)
+                                                <p class="text-sm text-zinc-600 mb-1">
+                                                    {{ $log->location }}
+                                                </p>
+                                            @endif
+
+                                            <p class="text-sm text-zinc-500">
                                                 {{ $log->device_name ?: 'Неизвестное устройство' }} • {{ $log->browser }}
                                             </p>
                                         </div>
-                                        <div class="text-right">
-                                            <p class="text-sm text-zinc-500">
+                                        <div class="text-right self-end">
+                                            <p class="text-[13px] text-zinc-500">
                                                 {{ core()->formatDate($log->created_at, 'd M Y H:i') }}
                                             </p>
                                         </div>
@@ -92,10 +107,10 @@
                             @endforeach
                         </div>
 
-                        <div class="mt-4 flex justify-between items-center">
+                        <div class="mt-4 flex justify-between items-center px-1">
                             @if (!request()->has('all') && $loginHistory->count() >= 3)
                                 <a href="{{ route('shop.customers.account.login_activity.index', ['all' => 1]) }}"
-                                    class="text-sm font-medium text-[#7C45F5] hover:underline">
+                                    class="text-[14px] font-medium text-[#7C45F5] hover:underline">
                                     @lang('shop::app.customers.account.login-activity.view-all-history')
                                 </a>
                             @endif
@@ -107,8 +122,9 @@
                             @endif
                         </div>
                     @else
-                        <div class="glass-card !bg-white/40 p-10 text-center rounded-3xl">
-                            <p class="text-zinc-500">@lang('shop::app.customers.account.login-activity.empty-history').</p>
+                        <div class="bg-zinc-50/50 p-10 text-center rounded-3xl border border-zinc-100">
+                            <p class="text-[15px] text-zinc-500">
+                                @lang('shop::app.customers.account.login-activity.empty-history').</p>
                         </div>
                     @endif
                 </div>
