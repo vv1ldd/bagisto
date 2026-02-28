@@ -354,4 +354,12 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
 
         return $id;
     }
+
+    /**
+     * Get the total amount of credits (balance) in the system across all customers.
+     */
+    public static function getTotalSystemCredits(): float
+    {
+        return (float) static::sum('balance');
+    }
 }
