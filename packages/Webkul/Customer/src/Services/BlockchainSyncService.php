@@ -24,6 +24,32 @@ class BlockchainSyncService
             }
         }
 
+        // Cross-network TON auto-verification:
+        // TON and USDT_TON share the same wallet address on the TON blockchain.
+        // If one is verified, automatically verify sibling TON networks with the same address.
+        $tonNetworks = ['ton', 'usdt_ton'];
+        $allTonAddresses = $customer->crypto_addresses()
+            ->whereIn('network', $tonNetworks)
+            ->get()
+            ->groupBy('address');
+
+        foreach ($allTonAddresses as $walletAddress => $rows) {
+            $hasVerified = $rows->whereNotNull('verified_at')->isNotEmpty();
+            if ($hasVerified) {
+                foreach ($rows->whereNull('verified_at') as $unverifiedRow) {
+                    try {
+                        $unverifiedRow->update([
+                            'verified_at' => now(),
+                            'is_active' => true,
+                        ]);
+                        Log::info("Cross-verified {$unverifiedRow->network} address {$walletAddress} via sibling TON network.");
+                    } catch (\Exception $e) {
+                        Log::error("Cross-verify failed: " . $e->getMessage());
+                    }
+                }
+            }
+        }
+
         // Then: sync deposits for all verified addresses
         $addresses = $customer->crypto_addresses()->whereNotNull('verified_at')->get();
 
@@ -44,6 +70,7 @@ class BlockchainSyncService
             }
         }
     }
+
 
 
     /**
