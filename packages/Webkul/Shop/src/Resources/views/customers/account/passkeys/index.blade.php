@@ -2,8 +2,11 @@
     $isCompleteRegistration = isset($isCompleteRegistration) && $isCompleteRegistration;
 @endphp
 
-<x-shop::layouts.account :show-back="!$isCompleteRegistration" :show-profile-card="!$isCompleteRegistration"
-    :has-header="!$isCompleteRegistration" :has-footer="!$isCompleteRegistration">
+@if ($isCompleteRegistration)
+    <x-shop::layouts.split-screen title="Добавление Passkey">
+@else
+    <x-shop::layouts.account :show-back="true" :show-profile-card="true" :has-header="true" :has-footer="true">
+@endif
     <!-- Page Title -->
     <x-slot:title>
         @if (isset($isCompleteRegistration) && $isCompleteRegistration)
@@ -20,18 +23,10 @@
         @endSection
         @endif
 
-        <div class="w-full flex flex-col items-center">
             @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                <div class="w-full max-w-[460px] mx-auto z-10 relative">
-                    <!-- Site Logo -->
-                    <div class="flex justify-center mb-3">
-                        <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg', 'shop') }}" alt="{{ config('app.name') }}" class="h-8 md:h-10 object-contain max-w-[200px]">
-                    </div>
+                <div class="w-full relative z-10">
 
-                    <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-7 flex flex-col items-center text-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
-                        <!-- Decorative background elements -->
-                        <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
-                        <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
+
 
                         <h3 class="text-[#4A1D96] text-[26px] md:text-3xl font-extrabold mb-2 tracking-tight leading-tight">Быстрый вход</h3>
 
@@ -264,4 +259,8 @@
                 };
             </script>
         @endpush
-</x-shop::layouts.account>
+@if ($isCompleteRegistration)
+    </x-shop::layouts.split-screen>
+@else
+    </x-shop::layouts.account>
+@endif

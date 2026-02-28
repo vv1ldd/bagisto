@@ -2,12 +2,17 @@
     $isCompleteRegistration = isset($isCompleteRegistration) && $isCompleteRegistration;
 @endphp
 
-<x-shop::layouts.account
-    :show-back="!$isCompleteRegistration"
-    :show-profile-card="!$isCompleteRegistration"
-    :has-header="!$isCompleteRegistration"
-    :has-footer="!$isCompleteRegistration"
->
+@if ($isCompleteRegistration)
+    <x-shop::layouts.split-screen title="Продолжение регистрации">
+@else
+    <x-shop::layouts.account
+        :show-back="true"
+        :show-profile-card="true"
+        :has-header="true"
+        :has-footer="true"
+        :title="trans('shop::app.customers.account.profile.edit.edit-profile')"
+    >
+@endif
     <!-- Page Title -->
     <x-slot:title>
         @if (isset($isCompleteRegistration) && $isCompleteRegistration)
@@ -29,14 +34,8 @@
             {!! view_render_event('bagisto.shop.customers.account.profile.edit.before', ['customer' => $customer]) !!}
 
             <!-- Profile Edit Form -->
-            <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data" class="w-full">
                 @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                     <input type="hidden" name="is_complete_registration" value="1">
-                    
-                    <!-- Site Logo -->
-                    <div class="flex justify-center mb-3 w-full max-w-[540px] mx-auto">
-                        <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg', 'shop') }}" alt="{{ config('app.name') }}" class="h-8 md:h-10 object-contain max-w-[200px]">
-                    </div>
                 @endif
 
                 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.before', ['customer' => $customer]) !!}
@@ -346,7 +345,7 @@
                     </style>
                 @endpush
 
-                <div class="ios-settings-wrapper max-w-[460px] mx-auto w-full">
+                <div class="ios-settings-wrapper mx-auto w-full">
                     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
                         <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-7 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
                             <!-- Decorative background elements -->
@@ -576,4 +575,8 @@
             {!! view_render_event('bagisto.shop.customers.account.profile.edit.after', ['customer' => $customer]) !!}
 
         </div>
-</x-shop::layouts.account>
+@if ($isCompleteRegistration)
+    </x-shop::layouts.split-screen>
+@else
+    </x-shop::layouts.account>
+@endif
