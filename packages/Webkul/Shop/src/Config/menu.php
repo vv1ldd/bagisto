@@ -10,14 +10,16 @@ return [
     ],
     [
         'key' => 'account.profile',
-        'name' => 'shop::app.layouts.header.mobile.profile',
-        'route' => 'shop.customers.account.profile.index',
+        'name' => 'shop::app.layouts.profile',
+        'route' => 'shop.customers.account.profile.edit',
+        'icon' => 'icon-users',
         'sort' => 1,
     ],
     [
         'key' => 'account.crypto',
         'name' => 'shop::app.layouts.crypto-wallets',
         'route' => 'shop.customers.account.crypto.index',
+        'icon' => 'icon-wallet',
         'sort' => 2,
     ],
     [
@@ -25,23 +27,22 @@ return [
         'name' => 'shop::app.layouts.passkeys',
         'route' => 'shop.customers.account.passkeys.index',
         'icon' => 'icon-security',
-        'sort' => 2,
+        'sort' => 3,
     ],
     [
         'key' => 'account.login_activity',
         'name' => 'shop::app.layouts.login-activity',
         'route' => 'shop.customers.account.login_activity.index',
         'icon' => 'icon-activity',
-        'sort' => 3,
+        'sort' => 4,
     ],
     [
         'key' => 'account.orders',
         'name' => 'shop::app.layouts.orders',
         'route' => 'shop.customers.account.orders.index',
         'icon' => 'icon-orders',
-        'sort' => 4,
+        'sort' => 5,
     ],
-
     [
         'key' => 'account.reviews',
         'name' => 'shop::app.layouts.reviews',
