@@ -1,6 +1,56 @@
 @push('scripts')
     <script>
-        function copyToClipboard(text, btnEl) {
+        // ─── Network auto-detection ────────────────────────────────────────────────
+        const NETWORKS = {
+            bitcoin:  { label: 'Bitcoin',     sub: 'BTC',          symbol: '₿', color: '#F7931A' },
+            ethereum: { label: 'Ethereum',    sub: 'ETH / ERC20',  symbol: 'Ξ', color: '#627EEA' },
+            ton:      { label: 'TON + USDT',  sub: 'TON сеть',     symbol: '◎', color: '#0098EA' },
+            dash:     { label: 'Dash',        sub: 'DASH',         symbol: 'D', color: '#1c75bc' },
+        };
+
+        function detectNetwork(addr) {
+            addr = addr.trim();
+            if (!addr) return null;
+            // Bitcoin: legacy (1/3) or bech32 (bc1)
+            if (/^(1|3)[1-9A-HJ-NP-Za-km-z]{25,34}$/.test(addr) || /^bc1[a-z0-9]{6,87}$/.test(addr)) return 'bitcoin';
+            // Ethereum: 0x + 40 hex chars
+            if (/^0x[0-9a-fA-F]{40}$/.test(addr)) return 'ethereum';
+            // TON: UQ/EQ friendly format or raw 0:hex — covers TON + USDT_TON
+            if (/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(addr) || /^0:[0-9a-fA-F]{64}$/.test(addr)) return 'ton';
+            // Dash: starts with X, 34 chars
+            if (/^X[1-9A-HJ-NP-Za-km-z]{33}$/.test(addr)) return 'dash';
+            return null;
+        }
+
+        function detectNetworkFromAddress(addr) {
+            const badge    = document.getElementById('network-badge');
+            const unknown  = document.getElementById('network-unknown');
+            const netInput = document.getElementById('detected-network');
+            const addBtn   = document.getElementById('add-btn');
+
+            const network = detectNetwork(addr);
+
+            badge.classList.add('hidden');
+            unknown.classList.add('hidden');
+            netInput.value = '';
+            addBtn.disabled = true;
+
+            if (!addr.trim()) return;
+
+            if (network) {
+                const meta = NETWORKS[network];
+                document.getElementById('network-badge-icon').textContent  = meta.symbol;
+                document.getElementById('network-badge-icon').style.background = meta.color;
+                document.getElementById('network-badge-label').textContent = meta.label;
+                document.getElementById('network-badge-sub').textContent   = meta.sub;
+                badge.classList.remove('hidden');
+                netInput.value = network;
+                addBtn.disabled = false;
+            } else {
+                unknown.classList.remove('hidden');
+            }
+        }
+
             navigator.clipboard.writeText(text).then(() => {
                 const original = btnEl.innerHTML;
                 btnEl.innerHTML = '<span class="text-emerald-400 text-[11px] font-bold">✓ Скопировано</span>';
@@ -146,38 +196,43 @@
                 <x-shop::form :action="route('shop.customers.account.crypto.store')">
                     <div class="p-5 flex flex-col gap-4">
 
-                        {{-- Network selector styled --}}
-                        <div>
-                            <label
-                                class="block text-[12px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Сеть</label>
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.control type="select" name="network" rules="required"
-                                    :label="'Сеть'"
-                                    class="!rounded-xl !border-zinc-200 !text-[14px] !text-zinc-800 !py-3 !px-4 focus:!border-violet-400 focus:!ring-2 focus:!ring-violet-100">
-                                    <option value="bitcoin">₿ Bitcoin (BTC)</option>
-                                    <option value="ethereum">Ξ Ethereum (ETH / ERC20)</option>
-                                    <option value="ton">◎ TON</option>
-                                    <option value="usdt_ton">₮ USDT (сеть TON)</option>
-                                    <option value="dash">D Dash (DASH)</option>
-                                </x-shop::form.control-group.control>
-                            </x-shop::form.control-group>
-                        </div>
+                        {{-- Hidden network input populated by JS --}}
+                        <input type="hidden" name="network" id="detected-network" value="">
 
-                        {{-- Address input --}}
+                        {{-- Address input with auto-detect --}}
                         <div>
-                            <label
-                                class="block text-[12px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Адрес
-                                кошелька</label>
+                            <label class="block text-[12px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+                                Адрес кошелька
+                            </label>
                             <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.control type="text" name="address" rules="required"
-                                    placeholder="Введите адрес кошелька" :label="'Адрес'"
-                                    class="!rounded-xl !border-zinc-200 !text-[13px] font-mono !py-3 !px-4 focus:!border-violet-400 focus:!ring-2 focus:!ring-violet-100" />
+                                <x-shop::form.control-group.control
+                                    type="text" name="address" id="address-input" rules="required"
+                                    placeholder="Вставьте адрес кошелька…" :label="'Адрес'"
+                                    class="!rounded-xl !border-zinc-200 !text-[13px] font-mono !py-3 !px-4 focus:!border-violet-400 focus:!ring-2 focus:!ring-violet-100"
+                                    oninput="detectNetworkFromAddress(this.value)" />
                                 <x-shop::form.control-group.error control-name="address" />
                             </x-shop::form.control-group>
+
+                            {{-- Detected network badge --}}
+                            <div id="network-badge" class="hidden mt-3 flex items-center gap-2">
+                                <span id="network-badge-icon"
+                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[14px] font-bold"></span>
+                                <div>
+                                    <div id="network-badge-label" class="text-[14px] font-bold text-zinc-800"></div>
+                                    <div id="network-badge-sub" class="text-[11px] text-zinc-400"></div>
+                                </div>
+                                <span id="network-badge-ok"
+                                    class="ml-auto text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+                                    ✓ Обнаружена
+                                </span>
+                            </div>
+                            <div id="network-unknown" class="hidden mt-3 text-[13px] text-red-400 font-medium">
+                                ✗ Не удалось определить сеть. Проверьте адрес.
+                            </div>
                         </div>
 
-                        <button type="submit"
-                            class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-violet-200 active:scale-[0.98] transition-all text-[15px]">
+                        <button type="submit" id="add-btn" disabled
+                            class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-violet-200 active:scale-[0.98] transition-all text-[15px] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
                             + Добавить адрес
                         </button>
                     </div>
