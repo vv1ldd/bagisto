@@ -44,7 +44,8 @@ class ProductController extends Controller
         protected ProductInventoryRepository $productInventoryRepository,
         protected ProductRepository $productRepository,
         protected CustomerRepository $customerRepository,
-    ) {}
+    ) {
+    }
 
     /**
      * Display a listing of the resource.
@@ -97,7 +98,7 @@ class ProductController extends Controller
 
         if (
             ProductType::hasVariants(request()->input('type'))
-            && ! request()->has('super_attributes')
+            && !request()->has('super_attributes')
         ) {
             $configurableFamily = $this->attributeFamilyRepository
                 ->find(request()->input('attribute_family_id'));
@@ -154,6 +155,18 @@ class ProductController extends Controller
         $product = $this->productRepository->update($request->all(), $id);
 
         Event::dispatch('catalog.product.update.after', $product);
+
+        // Persist is_digital boolean attribute if it exists
+        $isDigitalAttr = app(\Webkul\Attribute\Repositories\AttributeRepository::class)
+            ->findOneByField('code', 'is_digital');
+
+        if ($isDigitalAttr) {
+            $this->productAttributeValueRepository->saveValues(
+                ['is_digital' => $request->boolean('is_digital')],
+                $product,
+                collect([$isDigitalAttr])
+            );
+        }
 
         session()->flash('success', trans('admin::app.catalog.products.update-success'));
 
