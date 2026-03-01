@@ -37,7 +37,14 @@
         <div class="pb-8 pt-2 ios-page">
 
             {{-- Balances Overview --}}
-            <div class="ios-group-title">Ваш Баланс</div>
+            <div class="flex items-center justify-between mb-1">
+                <div class="ios-group-title !mb-0">Ваш Баланс</div>
+                <button onclick="document.getElementById('wallet-add-section').scrollIntoView({behavior:'smooth'});selNet?selNet(null):null;"
+                    onclick="document.getElementById('wallet-add-section').scrollIntoView({behavior:'smooth'})"
+                    class="text-[13px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-4 py-1.5 rounded-full active:scale-95 transition-all">
+                    + Пополнить
+                </button>
+            </div>
             <div
                 class="ios-group mb-6 p-4 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white rounded-2xl shadow-md border border-zinc-700">
                 <div class="flex flex-col gap-2 relative z-10">
@@ -275,7 +282,7 @@
             <input type="hidden" id="verify-id-hidden" value="">
 
             {{-- Add Wallet Form --}}
-            <div class="ios-group-title">Мои кошельки</div>
+            <div id="wallet-add-section" class="ios-group-title">Мои кошельки</div>
             <div class="rounded-[20px] border border-zinc-100 bg-white mb-4 overflow-hidden shadow-sm">
                 <x-shop::form :action="route('shop.customers.account.crypto.store')">
                     <input type="hidden" name="network" id="wallet-net-input" value="">
