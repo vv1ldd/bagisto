@@ -28,6 +28,8 @@ class CreditController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-        return view('shop::customers.account.credits.index', compact('transactions'));
+        $addresses = $customer->crypto_addresses()->orderBy('created_at', 'asc')->get();
+
+        return view('shop::customers.account.credits.index', compact('transactions', 'addresses'));
     }
 }
