@@ -192,8 +192,14 @@
                 <div class="space-y-3">
                     @foreach($addresses as $address)
                         @php
-                            $nm = ['bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623'], 'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF'], 'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF'], 'usdt_ton' => ['USDT (TON)', 'USDT', '₮', '#26A17B', '#4DBFA0'], 'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0']];
-                            $m = $nm[$address->network] ?? [strtoupper($address->network), strtoupper($address->network), '?', '#aaa', '#ccc'];
+                            $nm = [
+                                'bitcoin'  => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC'],
+                                'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH'],
+                                'ton'      => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON'],
+                                'usdt_ton' => ['USDT (TON)', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON'],
+                                'dash'     => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH']
+                            ];
+                            $m = $nm[$address->network] ?? [strtoupper($address->network), strtoupper($address->network), '?', '#aaa', '#ccc', strtoupper($address->network)];
                             $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
                             $exp = ['bitcoin' => 'https://www.blockchain.com/explorer/addresses/btc/', 'ethereum' => 'https://etherscan.io/address/', 'ton' => 'https://tonviewer.com/', 'usdt_ton' => 'https://tonviewer.com/', 'dash' => 'https://insight.dash.org/insight/address/'];
                             $expLink = ($exp[$address->network] ?? '#') . $address->address;
@@ -238,7 +244,7 @@
                                     </div>
 
                                     <div class="flex items-center gap-2 mt-0.5">
-                                        <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $m[1] }} &gt; {{ $address->address }}</code>
+                                        <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $m[5] }} &gt; {{ $m[1] }} &gt; {{ $address->address }}</code>
                                         <div class="flex items-center gap-1.5 shrink-0">
                                             <button onclick="copyAddr('{{ $address->address }}', this)"
                                                 class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
