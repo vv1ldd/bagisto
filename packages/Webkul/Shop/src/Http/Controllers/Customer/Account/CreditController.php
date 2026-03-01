@@ -44,7 +44,7 @@ class CreditController extends Controller
 
         $verifiedAddresses = $customer
             ->crypto_addresses()
-            ->where('verified', true)
+            ->whereNotNull('verified_at')
             ->orderBy('network')
             ->get();
 
