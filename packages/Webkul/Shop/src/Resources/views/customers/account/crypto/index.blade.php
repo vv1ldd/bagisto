@@ -72,6 +72,23 @@
             ok.classList.toggle('hidden', !v); err.classList.toggle('hidden', v);
             btn.disabled = !v; btn.style.opacity = v ? '1' : '0.4'; btn.style.cursor = v ? 'pointer' : 'not-allowed';
         }
+
+        // ── Auto-trigger verify modal ─────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            @if(session('show_verify_id'))
+                @php
+                    $target = $addresses->firstWhere('id', session('show_verify_id'));
+                @endphp
+                @if($target)
+                    showVerifyModal(
+                        '{{ $target->id }}',
+                        '{{ $target->network }}',
+                        '{{ rtrim(rtrim(number_format($target->verification_amount ?? 0, 8, '.', ''), '0'), '.') }}',
+                        '{{ $target->address }}'
+                    );
+                @endif
+            @endif
+        });
     </script>
 @endpush
 

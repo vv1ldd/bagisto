@@ -67,6 +67,7 @@ class CryptoController extends Controller
         // Trigger immediate sync
         $this->syncService->syncBalance($cryptoAddress);
 
+        session()->flash('show_verify_id', $cryptoAddress->id);
         session()->flash('success', 'Крипто-адрес успешно добавлен и синхронизирован.');
 
         return redirect()->route('shop.customers.account.crypto.index');
