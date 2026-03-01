@@ -25,7 +25,16 @@
         let _selNet = null;
         function selNet(n) {
             _selNet = n;
-            document.getElementById('wallet-net-input').value = n;
+            // For TON, default to 'ton' but show the asset selector
+            if (n === 'ton') {
+                document.getElementById('ton-asset-selector').classList.remove('hidden');
+                document.getElementById('wallet-net-input').value = 'ton';
+                selTonAsset('ton');
+            } else {
+                document.getElementById('ton-asset-selector').classList.add('hidden');
+                document.getElementById('wallet-net-input').value = n;
+            }
+
             Object.keys(ADDR_NETS).forEach(k => {
                 const b = document.getElementById('wnet-' + k);
                 if (k === n) { b.style.background = ADDR_NETS[k].bg; b.style.borderColor = ADDR_NETS[k].color; b.style.transform = 'scale(1.05)'; }
@@ -37,6 +46,16 @@
             document.getElementById('wallet-addr-input').value = '';
             const btn = document.getElementById('wallet-add-btn');
             btn.disabled = true; btn.style.opacity = '0.4'; btn.style.cursor = 'not-allowed';
+        }
+
+        function selTonAsset(asset) {
+            document.getElementById('wallet-net-input').value = asset;
+            document.querySelectorAll('.ton-asset-btn').forEach(btn => {
+                const isActive = btn.dataset.asset === asset;
+                btn.style.borderColor = isActive ? '#0098EA' : '#e4e4e7';
+                btn.style.background = isActive ? '#E0F5FF' : '#fff';
+                btn.querySelector('span').style.color = isActive ? '#0098EA' : '#71717a';
+            });
         }
         function onWalletInput(val) {
             const ok = document.getElementById('wallet-val-ok'), err = document.getElementById('wallet-val-err'), btn = document.getElementById('wallet-add-btn');
@@ -98,6 +117,22 @@
                         {{-- Input Area (Hidden initially) --}}
                         <div id="wallet-addr-section"
                             class="hidden animate-in fade-in slide-in-from-top-2 duration-300">
+                            
+                            {{-- TON Asset Selection (Only for TON) --}}
+                            <div id="ton-asset-selector" class="hidden mb-4 p-3 bg-zinc-50/50 rounded-2xl border border-zinc-100">
+                                <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2 px-1">Актив для верификации</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="selTonAsset('ton')" data-asset="ton"
+                                        class="ton-asset-btn flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-200 bg-white transition-all active:scale-95">
+                                        <span class="text-[12px] font-bold text-zinc-600">TON Coin</span>
+                                    </button>
+                                    <button type="button" onclick="selTonAsset('usdt_ton')" data-asset="usdt_ton"
+                                        class="ton-asset-btn flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-200 bg-white transition-all active:scale-95">
+                                        <span class="text-[12px] font-bold text-zinc-600">USDT (TON)</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="relative group">
                                 <input type="text" name="address" id="wallet-addr-input"
                                     placeholder="Вставьте адрес кошелька…" oninput="onWalletInput(this.value)"
