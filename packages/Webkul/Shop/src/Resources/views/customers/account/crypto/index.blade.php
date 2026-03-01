@@ -167,99 +167,106 @@
                         @endphp
 
                         <div
-                            class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden hover:shadow-md hover:border-violet-100 transition-all">
-                            {{-- Card Header: Icon, Name, Balance, Status --}}
-                            <div class="flex items-center justify-between p-3 gap-3">
-                                <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[14px] font-bold shadow-sm shrink-0"
+                            class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden hover:shadow-md hover:border-violet-100 transition-all p-3">
+                            <div class="flex items-center gap-4">
+                                {{-- Left: Icon with Sticker Badge --}}
+                                <div class="relative shrink-0">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[16px] font-bold shadow-sm"
                                         style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">
                                         {{ $m[2] }}
                                     </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center gap-2 leading-none">
-                                            <div class="flex items-center gap-1.5 min-w-0">
-                                                <span class="text-[14px] font-bold text-zinc-900 truncate cursor-pointer hover:text-violet-600 transition-colors"
-                                                      onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
-                                                    {{ $address->alias ?: $m[0] }}
-                                                </span>
-                                                
-                                                @if($address->isVerified())
-                                                    <div class="text-blue-500 shrink-0" title="Верифицирован">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
-                                                        </svg>
-                                                    </div>
-                                                @endif
-
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-300 cursor-pointer hover:text-violet-400" viewBox="0 0 20 20" fill="currentColor"
-                                                     onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
-                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    
+                                    @if($address->isVerified())
+                                        <div class="absolute -top-1.5 -left-1.5 bg-white rounded-full p-0.5 shadow-sm border border-zinc-50 z-10">
+                                            <div class="text-blue-500">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
                                                 </svg>
                                             </div>
+                                        </div>
+                                    @endif
+                                </div>
 
-                                            <form id="update-alias-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.update_alias', $address->id) }}" method="POST" class="hidden">
-                                                @csrf
-                                                <input type="hidden" name="alias" value="">
-                                            </form>
-                                            
-                                            <span class="text-[14px] font-bold font-mono text-zinc-900 shrink-0">
+                                {{-- Middle: Info Stack --}}
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 group/alias">
+                                        <span class="text-[15px] font-bold text-zinc-900 truncate hover:text-violet-600 transition-colors cursor-pointer"
+                                              onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
+                                            {{ $address->alias ?: $m[0] }}
+                                        </span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-300 cursor-pointer hover:text-violet-400 opacity-0 group-hover/alias:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor"
+                                             onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                        <form id="update-alias-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.update_alias', $address->id) }}" method="POST" class="hidden">
+                                            @csrf
+                                            <input type="hidden" name="alias" value="">
+                                        </form>
+                                    </div>
+
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $address->address }}</code>
+                                        <div class="flex items-center gap-1.5 shrink-0">
+                                            <button onclick="copyAddr('{{ $address->address }}', this)"
+                                                class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                                    <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
+                                                </svg>
+                                            </button>
+                                            <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                                    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 mt-1.5">
+                                        <div class="flex items-baseline gap-1.5 leading-none">
+                                            <span class="text-[14px] font-bold font-mono text-zinc-900">
                                                 {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
                                             </span>
-                                            <span class="text-[10px] font-bold text-zinc-400 uppercase shrink-0">{{ $m[1] }}</span>
+                                            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ $m[1] }}</span>
                                         </div>
-                                        <div class="flex items-center gap-2 mt-1 min-w-0">
-                                            @if($address->last_sync_at)
-                                                <div class="text-[9px] text-zinc-400 font-medium leading-none truncate">
-                                                    {{ $address->last_sync_at->diffForHumans() }}
-                                                </div>
-                                                <div class="w-0.5 h-0.5 rounded-full bg-zinc-200 shrink-0"></div>
-                                            @endif
+
+                                        <div class="flex items-center gap-2 shrink-0">
                                             <a href="{{ route('shop.customers.account.crypto.sync', $address->id) }}"
-                                                class="text-[9px] text-emerald-600 font-bold hover:underline leading-none shrink-0">Обновить баланс</a>
+                                               class="group/refresh text-zinc-300 hover:text-emerald-500 transition-all active:rotate-180" title="Обновить баланс">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 group-hover/refresh:rotate-90 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                                    <path d="M3 3v5h5"/>
+                                                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                                                    <path d="M16 16h5v5"/>
+                                                </svg>
+                                            </a>
+
+                                            @if($address->last_sync_at)
+                                                <span class="text-[10px] text-zinc-300 font-medium">{{ $address->last_sync_at->diffForHumans() }}</span>
+                                            @endif
+
+                                            @if(!$address->isVerified())
+                                                <button onclick="showVerifyModal('{{ $address->id }}','{{ $address->network }}','{{ $dAmt }}','{{ $address->address }}')"
+                                                        class="text-[10px] text-emerald-600 font-bold hover:underline ml-1">Верифицировать</button>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
+
+                                {{-- Right: Actions --}}
+                                <div class="shrink-0 pl-2">
+                                    <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST">
+                                        @csrf @method('DELETE')
+                                        <button type="button" 
+                                            onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
+                                            class="w-9 h-9 rounded-xl flex items-center justify-center bg-zinc-50 hover:bg-red-50 text-red-400 hover:text-red-500 transition-all border border-zinc-100 hover:border-red-100 active:scale-95 group/del">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 group-hover/del:scale-110 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
-                            </div>
-                            </div>
-
-                            {{-- Address Row (Tight) --}}
-                            <div class="px-3 pb-2 flex items-center gap-2">
-                                <code class="text-[10px] font-mono text-zinc-400 truncate select-all opacity-80">{{ $address->address }}</code>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <button onclick="copyAddr('{{ $address->address }}', this)"
-                                        class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-                                            <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
-                                        </svg>
-                                    </button>
-                                    <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-                                        </svg>
-                                    </a>
-                                </div>
-                            </div>
-
-                            {{-- Actions Row (Minimal) --}}
-                            <div class="flex items-center border-t border-zinc-50 bg-zinc-50/30 px-3 py-1.5 gap-3">
-                                @if(!$address->isVerified())
-                                    <button
-                                        onclick="showVerifyModal('{{ $address->id }}','{{ $address->network }}','{{ $dAmt }}','{{ $address->address }}')"
-                                        class="text-[10px] text-emerald-600 font-bold hover:underline">Проверить верификацию</button>
-                                @endif
-
-                                <div class="flex-1"></div>
-                                <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST">
-                                    @csrf @method('DELETE')
-                                    <button type="button" 
-                                        onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
-                                        class="px-2.5 py-1 rounded-lg bg-zinc-100/50 hover:bg-red-50 text-red-400 hover:text-red-500 text-[10px] font-bold transition-all border border-zinc-100/50 hover:border-red-100 active:scale-95">
-                                        Удалить
-                                    </button>
-                                </form>
                             </div>
                         </div>
                     @endforeach
