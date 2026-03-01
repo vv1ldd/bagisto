@@ -132,13 +132,17 @@
         if (!val || !selectedNetwork) {
             okEl.classList.add('hidden');
             errEl.classList.add('hidden');
+            addBtn.style.opacity = '0.4';
+            addBtn.style.cursor  = 'not-allowed';
             addBtn.disabled = true;
             return;
         }
         const isValid = NETS[selectedNetwork].validate(val);
         okEl.classList.toggle('hidden', !isValid);
         errEl.classList.toggle('hidden', isValid);
-        addBtn.disabled = !isValid;
+        addBtn.disabled       = !isValid;
+        addBtn.style.opacity  = isValid ? '1' : '0.4';
+        addBtn.style.cursor   = isValid ? 'pointer' : 'not-allowed';
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -330,8 +334,9 @@
                             </div>
 
                             {{-- Step 3: Submit --}}
-                            <button type="submit" id="add-btn" disabled
-                                class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-violet-200 active:scale-[0.98] transition-all text-[15px] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none mt-1">
+                            <button type="submit" id="add-btn"
+                                style="background: linear-gradient(135deg, #7c3aed, #4f46e5); opacity: 0.4; cursor: not-allowed;"
+                                class="w-full text-white font-bold py-3.5 rounded-xl shadow-md active:scale-[0.98] transition-all text-[15px] mt-1 w-full block">
                                 + Добавить адрес
                             </button>
                         </div>
