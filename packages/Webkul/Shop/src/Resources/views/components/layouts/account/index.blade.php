@@ -116,14 +116,23 @@
                         <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl"
                             style="max-width: 600px;">
 
-                            @if ($showBack)
-                                <!-- Drill-Down Header: Minimal iOS style -->
-                                <div class="flex items-center justify-between px-8 pt-6 pb-2 max-md:px-5 max-md:pt-5 max-md:pb-2">
-                                    <a href="{{ $backLink ?? route('shop.customers.account.index') }}"
-                                        class="flex items-center gap-1.5 text-zinc-400 font-semibold text-[14px] transition hover:text-zinc-700 active:opacity-50">
-                                        <span class="text-[18px] leading-none">←</span>
-                                        <span>{{ $backText ?? trans('shop::app.customers.account.navigation.back') }}</span>
-                                    </a>
+                            @if ($showBack || isset($title))
+                                <!-- Drill-Down Header: Minimal circular back button -->
+                                <div class="flex items-center gap-3 px-8 pt-6 pb-2 max-md:px-5 max-md:pt-5 max-md:pb-2">
+                                    @if ($showBack)
+                                        <a href="{{ $backLink ?? route('shop.customers.account.index') }}"
+                                            class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                            </svg>
+                                        </a>
+                                    @endif
+
+                                    @if (isset($title))
+                                        <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
+                                    @endif
+
+                                    <div class="flex-1"></div>
 
                                     @if (request()->routeIs('shop.customers.account.profile.edit'))
                                         <button type="submit" form="profile-edit-form"

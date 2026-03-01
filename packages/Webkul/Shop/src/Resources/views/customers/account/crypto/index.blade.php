@@ -85,8 +85,7 @@
     </script>
 @endpush
 
-<x-shop::layouts.account>
-    <x-slot:title>@lang('shop::app.layouts.crypto-wallets')</x-slot>
+<x-shop::layouts.account :title="trans('shop::app.layouts.crypto-wallets')">
 
 
 

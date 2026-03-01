@@ -31,18 +31,6 @@
         @endpush
 
         <div class="pb-8 pt-2 ios-page">
-            {{-- Header --}}
-            <div class="flex items-center gap-3 mb-6 px-1">
-                <a href="{{ route('shop.customers.account.credits.index') }}"
-                    class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </a>
-                <h1 class="text-[20px] font-bold text-zinc-900">История транзакций</h1>
-            </div>
-
             {{-- Transactions List --}}
             <div class="bg-white overflow-hidden rounded-[24px] shadow-md">
                 @if ($transactions->count() > 0)
