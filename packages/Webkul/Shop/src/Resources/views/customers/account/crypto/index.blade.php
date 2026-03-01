@@ -6,7 +6,7 @@
         function copyAddr(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
                 const orig = btn.innerHTML;
-                btn.innerHTML = '<span class="text-emerald-500 text-[11px] font-bold">✓ Скопировано</span>';
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-emerald-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>';
                 setTimeout(() => btn.innerHTML = orig, 2000);
             });
         }
@@ -204,9 +204,16 @@
                             </div>
 
                             {{-- Address Row (Tight) --}}
-                            <div class="px-3 pb-2 flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
-                                    <code class="text-[10px] font-mono text-zinc-400 truncate select-all opacity-80">{{ $address->address }}</code>
+                            <div class="px-3 pb-2 flex items-center gap-2">
+                                <code class="text-[10px] font-mono text-zinc-400 truncate select-all opacity-80">{{ $address->address }}</code>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <button onclick="copyAddr('{{ $address->address }}', this)"
+                                        class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                            <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
+                                        </svg>
+                                    </button>
                                     <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
@@ -214,8 +221,6 @@
                                         </svg>
                                     </a>
                                 </div>
-                                <button onclick="copyAddr('{{ $address->address }}', this)"
-                                    class="shrink-0 text-[10px] font-bold text-violet-500 hover:text-violet-700 transition-colors">Копировать</button>
                             </div>
 
                             {{-- Actions Row (Minimal) --}}
