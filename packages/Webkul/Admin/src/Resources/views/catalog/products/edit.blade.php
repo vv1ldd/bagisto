@@ -249,6 +249,26 @@
                             @includeIf($view)
                         @endforeach
                     @elseif (! $isSingleColumn)
+                        {{-- Digital Product Toggle --}}
+                        @php $isDigitalAttr = app('Webkul\Attribute\Repositories\AttributeRepository')->findOneByField('code', 'is_digital'); @endphp
+                        @if ($isDigitalAttr)
+                        <div class="box-shadow relative rounded bg-white p-4 dark:bg-gray-900">
+                            <p class="mb-4 text-base font-semibold text-gray-800 dark:text-white">Доставка</p>
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    Цифровой товар
+                                </x-admin::form.control-group.label>
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    name="is_digital"
+                                    :value="1"
+                                    :checked="(boolean) $product->is_digital"
+                                />
+                                <x-admin::form.control-group.hint>Если включено — шаг доставки на чекауте скрывается</x-admin::form.control-group.hint>
+                            </x-admin::form.control-group>
+                        </div>
+                        @endif
+
                         <!-- Channels View Blade File -->
                         @include('admin::catalog.products.edit.channels')
 
@@ -276,6 +296,26 @@
                             @foreach ($product->getTypeInstance()->getAdditionalViews() as $view)
                                 @includeIf($view)
                             @endforeach
+                        @endif
+
+                        {{-- Digital Product Toggle --}}
+                        @php $isDigitalAttr = $isDigitalAttr ?? app('Webkul\Attribute\Repositories\AttributeRepository')->findOneByField('code', 'is_digital'); @endphp
+                        @if ($isDigitalAttr)
+                        <div class="box-shadow relative rounded bg-white p-4 dark:bg-gray-900">
+                            <p class="mb-4 text-base font-semibold text-gray-800 dark:text-white">Доставка</p>
+                            <x-admin::form.control-group>
+                                <x-admin::form.control-group.label>
+                                    Цифровой товар
+                                </x-admin::form.control-group.label>
+                                <x-admin::form.control-group.control
+                                    type="switch"
+                                    name="is_digital"
+                                    :value="1"
+                                    :checked="(boolean) $product->is_digital"
+                                />
+                                <x-admin::form.control-group.hint>Если включено — шаг доставки на чекауте скрывается</x-admin::form.control-group.hint>
+                            </x-admin::form.control-group>
+                        </div>
                         @endif
 
                         <!-- Channels View Blade File -->
