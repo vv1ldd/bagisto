@@ -103,89 +103,6 @@
 
         <div class="flex-auto pb-10 pt-2 ios-page">
 
-            {{-- Add Wallet Trigger Button --}}
-            <div id="add-wallet-trigger" class="mb-6">
-                <button type="button" onclick="toggleAddWallet(true)" 
-                    class="w-full py-4 rounded-[24px] border-2 border-dashed border-zinc-100 bg-zinc-50/10 text-zinc-400 hover:text-violet-500 hover:border-violet-200 hover:bg-violet-50/30 transition-all font-bold flex items-center justify-center gap-2 group active:scale-[0.98]">
-                    <div class="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center group-hover:bg-violet-100 group-hover:text-violet-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
-                        </svg>
-                    </div>
-                    Добавить новый кошелек
-                </button>
-            </div>
-
-            {{-- Add Wallet Form Wrapper --}}
-            <div id="add-wallet-wrapper" class="hidden rounded-[20px] border border-zinc-100 bg-white mb-6 overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300 relative">
-                <x-shop::form :action="route('shop.customers.account.crypto.store')">
-                    <input type="hidden" name="network" id="wallet-net-input" value="">
-                    <div class="p-4 space-y-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Выберите сеть</p>
-                            <button type="button" onclick="toggleAddWallet(false)" class="text-zinc-300 hover:text-zinc-500 transition-colors p-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                        {{-- Network Picker (Compact) --}}
-                        <div class="grid grid-cols-4 gap-2">
-                            @foreach(['bitcoin' => ['₿', 'BTC', '#F7931A'], 'ethereum' => ['Ξ', 'ETH', '#627EEA'], 'ton' => ['◎', 'TON', '#0098EA'], 'dash' => ['D', 'DASH', '#1c75bc']] as $net => $m)
-                                <button type="button" id="wnet-{{ $net }}" onclick="selNet('{{ $net }}')"
-                                    class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border-2 border-zinc-50 transition-all duration-200 hover:bg-zinc-50 active:scale-95 group">
-                                    <span
-                                        class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[16px] font-bold mb-1 shadow-sm transition-transform group-hover:scale-110"
-                                        style="background:linear-gradient(135deg, {{ $m[2] }}, {{ $m[2] }}dd)">{{ $m[0] }}</span>
-                                    <span
-                                        class="text-[9px] font-bold text-zinc-500 uppercase tracking-tight">{{ $m[1] }}</span>
-                                </button>
-                            @endforeach
-                        </div>
-
-                        {{-- Input Area (Hidden initially) --}}
-                        <div id="wallet-addr-section"
-                            class="hidden animate-in fade-in slide-in-from-top-2 duration-300">
-                            
-                            {{-- TON Asset Selection (Only for TON) --}}
-                            <div id="ton-asset-selector" class="hidden mb-4 p-3 bg-zinc-50/50 rounded-2xl border border-zinc-100">
-                                <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2 px-1">Актив для верификации</p>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <button type="button" onclick="selTonAsset('ton')" data-asset="ton"
-                                        class="ton-asset-btn flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-200 bg-white transition-all active:scale-95">
-                                        <span class="text-[12px] font-bold text-zinc-600">TON Coin</span>
-                                    </button>
-                                    <button type="button" onclick="selTonAsset('usdt_ton')" data-asset="usdt_ton"
-                                        class="ton-asset-btn flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-200 bg-white transition-all active:scale-95">
-                                        <span class="text-[12px] font-bold text-zinc-600">USDT (TON)</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <input type="text" name="alias" placeholder="Название кошелька (необязательно)"
-                                    class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[12px] py-3 pl-4 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
-                            </div>
-
-                            <div class="relative group w-full">
-                                <input type="text" name="address" id="wallet-addr-input"
-                                    placeholder="Вставьте адрес кошелька…" oninput="onWalletInput(this.value)"
-                                    class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[12px] font-mono py-3.5 pl-4 pr-14 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                                    <div id="wallet-val-ok" class="hidden text-emerald-500 font-bold text-[16px]">✓</div>
-                                    <div id="wallet-val-err" class="hidden text-red-500 font-bold text-[16px]">✗</div>
-                                </div>
-                            </div>
-
-                            <button type="submit" id="wallet-add-btn"
-                                style="background:linear-gradient(135deg,#7c3aed,#4f46e5);opacity:0.4;cursor:not-allowed;"
-                                class="w-full text-white font-bold py-3.5 rounded-xl text-[14px] mt-3 shadow-lg shadow-violet-100 active:scale-[0.98] transition-all">
-                                + Добавить кошелёк
-                            </button>
-                        </div>
-                    </div>
-                </x-shop::form>
-            </div>
 
             {{-- Address Cards (Compact & Elegant) --}}
             @if(!$addresses->isEmpty())
@@ -314,9 +231,74 @@
                 <div class="flex flex-col items-center justify-center py-20 text-center">
                     <div class="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mb-4 text-3xl">👛</div>
                     <p class="text-zinc-500 font-semibold text-[15px]">У вас пока нет кошельков</p>
-                    <p class="text-zinc-400 text-[13px] mt-1">Добавьте адрес выше, чтобы начать</p>
+                    <p class="text-zinc-400 text-[13px] mt-1">Нажмите кнопку ниже, чтобы добавить первый адрес</p>
                 </div>
             @endif
+
+            {{-- Add Wallet Trigger Button (Moved to Bottom) --}}
+            <div id="add-wallet-trigger" class="mt-6 mb-6">
+                <button type="button" onclick="toggleAddWallet(true)" 
+                    class="w-full py-4 rounded-[24px] border-2 border-dashed border-zinc-100 bg-zinc-50/10 text-zinc-400 hover:text-violet-500 hover:border-violet-200 hover:bg-violet-50/30 transition-all font-bold flex items-center justify-center gap-2 group active:scale-[0.98]">
+                    <div class="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center group-hover:bg-violet-100 group-hover:text-violet-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    Добавить новый кошелек
+                </button>
+            </div>
+
+            {{-- Add Wallet Form Wrapper (Moved to Bottom) --}}
+            <div id="add-wallet-wrapper" class="hidden rounded-[20px] border border-zinc-100 bg-white mt-6 mb-6 overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300 relative">
+                <x-shop::form :action="route('shop.customers.account.crypto.store')">
+                    <input type="hidden" name="network" id="wallet-net-input" value="">
+                    <div class="p-4 space-y-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Выберите сеть</p>
+                            <button type="button" onclick="toggleAddWallet(false)" class="text-zinc-300 hover:text-zinc-500 transition-colors p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        {{-- Network Picker (Compact) --}}
+                        <div class="grid grid-cols-4 gap-2">
+                            @foreach(['bitcoin' => ['₿', 'BTC', '#F7931A'], 'ethereum' => ['Ξ', 'ETH', '#627EEA'], 'ton' => ['◎', 'TON', '#0098EA'], 'dash' => ['D', 'DASH', '#1c75bc']] as $net => $m)
+                                <button type="button" id="wnet-{{ $net }}" onclick="selNet('{{ $net }}')"
+                                    class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border-2 border-zinc-50 transition-all duration-200 hover:bg-zinc-50 active:scale-95 group">
+                                    <span
+                                        class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[16px] font-bold mb-1 shadow-sm transition-transform group-hover:scale-110"
+                                        style="background:linear-gradient(135deg, {{ $m[2] }}, {{ $m[2] }}dd)">{{ $m[0] }}</span>
+                                    <span
+                                        class="text-[10px] font-bold text-zinc-400 group-hover:text-zinc-600 transition-colors uppercase tracking-tight">{{ $m[1] }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+
+                        {{-- Final Fields --}}
+                        <div id="wallet-fields" class="hidden space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <input type="text" name="alias" placeholder="Название кошелька (необязательно)"
+                                class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[13px] py-3.5 px-4 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
+
+                            <div class="relative group w-full">
+                                <input type="text" name="address" id="wallet-addr-input"
+                                    placeholder="Вставьте адрес кошелька…" oninput="onWalletInput(this.value)"
+                                    class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[12px] font-mono py-3.5 pl-4 pr-14 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <div id="wallet-val-ok" class="hidden text-emerald-500 font-bold text-[16px]">✓</div>
+                                    <div id="wallet-val-err" class="hidden text-red-500 font-bold text-[16px]">✗</div>
+                                </div>
+                            </div>
+
+                            <button type="submit" id="wallet-add-btn"
+                                style="background:linear-gradient(135deg,#7c3aed,#4f46e5);opacity:0.4;cursor:not-allowed;"
+                                class="w-full text-white font-bold py-3.5 rounded-xl text-[14px] mt-3 shadow-lg shadow-violet-100 active:scale-[0.98] transition-all">
+                                + Добавить кошелёк
+                            </button>
+                        </div>
+                    </div>
+                </x-shop::form>
+            </div>
         </div>
 
         <script>
