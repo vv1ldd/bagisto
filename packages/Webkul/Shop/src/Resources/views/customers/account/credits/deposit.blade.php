@@ -102,7 +102,7 @@
                         <p class="text-[13px] text-zinc-400 mt-1">Для пополнения необходимо сначала добавить и
                             верифицировать свой кошелёк.</p>
                     </div>
-                    <a href="{{ route('shop.customers.account.credits.index') }}#wallet-add-section"
+                    <a href="{{ route('shop.customers.account.crypto.index') }}#wallet-add-section"
                         style="background:linear-gradient(135deg,#7c3aed,#4f46e5)"
                         class="text-white font-bold px-6 py-3 rounded-2xl text-[15px] shadow-lg shadow-violet-200 active:scale-95 transition-all">
                         + Добавить кошелёк
@@ -131,7 +131,7 @@
                         @endforeach
 
                         {{-- Manage Wallets Button --}}
-                        <a href="{{ route('shop.customers.account.credits.index') }}#wallet-add-section"
+                        <a href="{{ route('shop.customers.account.crypto.index') }}#wallet-add-section"
                             class="bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200 flex items-center gap-4 px-4 py-4 hover:border-violet-300 hover:bg-zinc-50 transition-all active:scale-[0.98] mt-2">
                             <span
                                 class="w-10 h-10 rounded-xl flex items-center justify-center bg-zinc-200/50 text-zinc-500 text-[20px] font-light shrink-0">+</span>

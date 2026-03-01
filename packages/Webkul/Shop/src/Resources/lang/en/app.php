@@ -504,6 +504,7 @@ return [
         ],
 
         'layouts' => [
+            'crypto-wallets' => 'My Wallets',
             'header' => [
                 'desktop' => [
                     'top' => [

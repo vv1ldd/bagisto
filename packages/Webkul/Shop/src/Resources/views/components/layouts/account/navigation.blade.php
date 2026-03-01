@@ -14,13 +14,6 @@
                     @ {{ $customer->username }}
                 </span>
             </div>
-            <a href="{{ route('shop.customers.account.crypto.index') }}" class="ios-nav-row">
-                <span
-                    class="ios-nav-label {{ request()->routeIs('shop.customers.account.crypto.index') ? 'font-semibold text-[#7C45F5]' : '' }}">
-                    Крипто Адреса
-                </span>
-                <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left"></span>
-            </a>
         </div>
     @endif
     @foreach (menu()->getItems('customer') as $menuItem)

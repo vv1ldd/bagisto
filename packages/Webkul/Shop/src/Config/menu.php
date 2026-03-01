@@ -10,10 +10,15 @@ return [
     ],
     [
         'key' => 'account.profile',
-        'name' => 'shop::app.layouts.profile',
-        'route' => 'shop.customers.account.profile.edit',
-        'icon' => 'icon-users',
+        'name' => 'shop::app.layouts.header.mobile.profile',
+        'route' => 'shop.customers.account.profile.index',
         'sort' => 1,
+    ],
+    [
+        'key' => 'account.crypto',
+        'name' => 'shop::app.layouts.crypto-wallets',
+        'route' => 'shop.customers.account.crypto.index',
+        'sort' => 2,
     ],
     [
         'key' => 'account.passkeys',
