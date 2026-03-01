@@ -32,17 +32,12 @@
 
         <div class="pb-8 pt-2 ios-page">
             {{-- Header with Deposit Link --}}
-            <div class="flex items-center justify-between mb-4 px-1">
-                <div class="ios-group-title !mb-0">Meanly Pay</div>
-                <a href="{{ route('shop.customers.account.credits.deposit') }}"
-                    class="text-[13px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-4 py-2 rounded-full active:scale-95 transition-all shadow-sm">
-                    + Пополнить
-                </a>
-            </div>
+            {{-- Header (Titles removed as per request) --}}
+            <div class="mb-4"></div>
 
             {{-- Total Balance Card (Premium Light Theme) --}}
             <div
-                class="ios-group mb-8 p-6 bg-white rounded-[24px] shadow-sm border border-zinc-100 relative overflow-hidden">
+                class="ios-group mb-8 p-6 bg-white rounded-[24px] shadow-md relative overflow-hidden">
                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5 rounded-full blur-3xl"></div>
 
                 <div class="flex flex-col gap-2 relative z-10">
@@ -59,6 +54,13 @@
                         {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
                     </div>
 
+                    <div class="mt-4">
+                        <a href="{{ route('shop.customers.account.credits.deposit') }}"
+                            class="inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3 rounded-2xl active:scale-95 transition-all shadow-lg shadow-zinc-100">
+                            + Пополнить
+                        </a>
+                    </div>
+
                     @php
                         $user = auth()->guard('customer')->user();
                         $balances = $user->balances;
@@ -73,7 +75,7 @@
                     @endphp
 
                     @if($balances->count() > 0)
-                        <div class="mt-6 pt-5 border-t border-zinc-50 flex flex-col gap-4">
+                        <div class="mt-8 pt-6 border-t border-zinc-50 flex flex-col gap-5">
                             <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Крипто-активы</div>
 
                             <div class="grid grid-cols-1 gap-3">
@@ -85,7 +87,7 @@
                                         $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
                                     @endphp
                                     <div
-                                        class="flex justify-between items-center group bg-zinc-50/50 p-2.5 rounded-2xl border border-transparent hover:border-zinc-100 hover:bg-white transition-all shadow-sm">
+                                        class="flex justify-between items-center group bg-zinc-50/50 p-3 rounded-2xl hover:bg-white transition-all shadow-sm">
                                         <div class="flex items-center gap-3">
                                             <span
                                                 class="w-10 h-10 rounded-xl flex items-center justify-center text-[16px] text-white font-bold transition-transform group-hover:scale-110 shadow-sm"
@@ -111,7 +113,7 @@
                         </div>
                     @else
                         <div
-                            class="mt-4 p-4 rounded-xl bg-zinc-50 border border-zinc-100 text-[12px] text-zinc-500 leading-relaxed italic">
+                            class="mt-4 p-5 rounded-xl bg-zinc-50 text-[12px] text-zinc-500 leading-relaxed italic">
                             У вас пока нет активных балансов. Пополните счет криптовалютой, чтобы совершать покупки и
                             расчеты.
                         </div>
@@ -125,7 +127,7 @@
                 <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{{ $transactions->total() }}
                     всего</span>
             </div>
-            <div class="bg-white overflow-hidden rounded-[24px] shadow-sm border border-zinc-100">
+            <div class="bg-white overflow-hidden rounded-[24px] shadow-md border-zinc-100">
                 @if ($transactions->count() > 0)
                     <div class="flex flex-col divide-y divide-zinc-50">
                         @foreach ($transactions as $transaction)
