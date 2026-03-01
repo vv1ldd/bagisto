@@ -2,109 +2,163 @@
     {{-- Page Title --}}
     <x-slot:title>
         Пополнение баланса
-        </x-slot>
+    </x-slot>
 
-        <div class="max-w-lg mx-auto px-4 py-6">
+    <div class="max-w-lg mx-auto px-4 py-6" x-data="{ selectedNetwork: null }">
 
-            {{-- Back --}}
-            <a href="{{ route('shop.customers.account.credits.index') }}"
-                class="inline-flex items-center gap-2 text-[13px] text-zinc-400 font-semibold mb-5 hover:text-zinc-700 transition-colors">
-                ← Назад к балансу
-            </a>
+        {{-- Back --}}
+        <a href="{{ route('shop.customers.account.credits.index') }}"
+            class="inline-flex items-center gap-2 text-[13px] text-zinc-400 font-semibold mb-5 hover:text-zinc-700 transition-colors">
+            ← Назад к балансу
+        </a>
 
-            {{-- Page title --}}
-            <div class="mb-6">
-                <h1 class="text-[22px] font-bold text-zinc-900">Пополнение Credits</h1>
-                <p class="text-[13px] text-zinc-400 mt-1">Отправьте крипто с верифицированного кошелька</p>
-            </div>
-
-            @if($verifiedAddresses->isEmpty())
-                {{-- No verified addresses --}}
-                <div
-                    class="bg-white rounded-2xl border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
-                    <div class="w-16 h-16 rounded-full bg-violet-50 flex items-center justify-center text-3xl">🔐</div>
-                    <div>
-                        <p class="text-[16px] font-bold text-zinc-800">Нет верифицированных кошельков</p>
-                        <p class="text-[13px] text-zinc-400 mt-1">Добавьте и верифицируйте адрес,<br>чтобы принимать
-                            депозиты</p>
-                    </div>
-                    <a href="{{ route('shop.customers.account.credits.index') }}#wallet-add-section"
-                        style="background:linear-gradient(135deg,#7c3aed,#4f46e5)"
-                        class="text-white font-bold px-6 py-3 rounded-2xl text-[15px] shadow-lg shadow-violet-200 active:scale-95 transition-all">
-                        + Добавить кошелёк
-                    </a>
-                </div>
-            @else
-                {{-- Instruction --}}
-                <div class="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3 mb-5">
-                    <p class="text-[13px] text-amber-700 leading-relaxed">
-                        ⚠️ Отправьте <strong>точную сумму верификации</strong> с вашего верифицированного кошелька на адрес
-                        ниже.
-                        Точность суммы — фактор верификации. Средства зачислятся автоматически после подтверждения в сети.
-                    </p>
-                </div>
-
-                {{-- Verified addresses --}}
-                @php
-                    $meta = [
-                        'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#FDB953'],
-                        'ethereum' => ['Ethereum / USDT ERC20', 'ETH', 'Ξ', '#627EEA', '#8FA4EF'],
-                        'ton' => ['TON', 'TON', '💎', '#0098EA', '#33BFFF'],
-                        'usdt_ton' => ['USDT (сеть TON)', 'USDT', '₮', '#26A17B', '#4DBFA0'],
-                        'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0'],
-                    ];
-                @endphp
-
-                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Верифицированные адреса</p>
-
-                <div class="flex flex-col gap-3">
-                    @foreach($verifiedAddresses as $va)
-                        @php $vm = $meta[$va->network] ?? [strtoupper($va->network), strtoupper($va->network), '?', '#888', '#aaa']; @endphp
-                        <div class="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden">
-                            {{-- Network header --}}
-                            <div class="flex items-center gap-3 px-4 py-3"
-                                style="background:linear-gradient(135deg,{{ $vm[3] }}18,{{ $vm[4] }}12)">
-                                <span
-                                    class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[16px] font-bold shrink-0"
-                                    style="background:linear-gradient(135deg,{{ $vm[3] }},{{ $vm[4] }})">{{ $vm[2] }}</span>
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-[13px] font-bold text-zinc-900">{{ $vm[0] }}</div>
-                                    <div class="text-[11px] font-mono text-zinc-400 truncate">{{ $va->address }}</div>
-                                </div>
-                                <button onclick="copyAddr('{{ $va->address }}', this)"
-                                    class="shrink-0 text-[11px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-3 py-1.5 rounded-xl active:scale-95 transition-all">
-                                    Копировать
-                                </button>
-                            </div>
-                            {{-- Balance --}}
-                            <div class="flex items-center justify-between px-4 py-2 bg-zinc-50/60 border-t border-zinc-100">
-                                <span class="text-[11px] text-zinc-400 uppercase tracking-wide">Баланс</span>
-                                <span class="text-[13px] font-bold font-mono text-zinc-800">
-                                    {{ rtrim(rtrim(number_format($va->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                    {{ $vm[1] }}
-                                </span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-
-                {{-- Add more --}}
-                <a href="{{ route('shop.customers.account.credits.index') }}#wallet-add-section"
-                    class="block text-center text-[13px] text-violet-500 font-semibold mt-4 py-2 active:opacity-60 transition-all">
-                    + Добавить ещё кошелёк
-                </a>
-            @endif
+        {{-- Page title --}}
+        <div class="mb-6">
+            <h1 class="text-[22px] font-bold text-zinc-900">Пополнение Credits</h1>
+            <p class="text-[13px] text-zinc-400 mt-1">Выберите валюту и получите адрес для пополнения</p>
         </div>
 
-        @push('scripts')
-            <script>
-                function copyAddr(text, btn) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        const orig = btn.innerHTML;
-                        btn.innerHTML = '<span class="text-emerald-500">✓ Скопировано</span>';
-                        setTimeout(() => btn.innerHTML = orig, 2000);
-                    });
-                }
-            </script>
-        @endpush
+        @php
+            $networks = [
+                'bitcoin'  => [
+                    'name'    => 'Bitcoin',
+                    'symbol'  => 'BTC',
+                    'icon'    => '₿',
+                    'color'   => '#F7931A',
+                    'color2'  => '#FDB953',
+                    'address' => config('crypto.verification_addresses.bitcoin')
+                ],
+                'ethereum' => [
+                    'name'    => 'Ethereum / USDT ERC20',
+                    'symbol'  => 'ETH',
+                    'icon'    => 'Ξ',
+                    'color'   => '#627EEA',
+                    'color2'  => '#8FA4EF',
+                    'address' => config('crypto.verification_addresses.ethereum')
+                ],
+                'ton'      => [
+                    'name'    => 'TON',
+                    'symbol'  => 'TON',
+                    'icon'    => '💎',
+                    'color'   => '#0098EA',
+                    'color2'  => '#33BFFF',
+                    'address' => config('crypto.verification_addresses.ton')
+                ],
+                'usdt_ton' => [
+                    'name'    => 'USDT (сеть TON)',
+                    'symbol'  => 'USDT',
+                    'icon'    => '₮',
+                    'color'   => '#26A17B',
+                    'color2'  => '#4DBFA0',
+                    'address' => config('crypto.verification_addresses.usdt_ton')
+                ],
+                'dash'     => [
+                    'name'    => 'Dash',
+                    'symbol'  => 'DASH',
+                    'icon'    => 'D',
+                    'color'   => '#1c75bc',
+                    'color2'  => '#4DA3E0',
+                    'address' => config('crypto.verification_addresses.dash')
+                ],
+            ];
+        @endphp
+
+        {{-- Network Selection --}}
+        <div x-show="!selectedNetwork">
+            <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Выберите валюту</p>
+            <div class="flex flex-col gap-3">
+                @foreach($networks as $key => $net)
+                    <button @click="selectedNetwork = '{{ $key }}'"
+                        class="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden flex items-center gap-4 px-4 py-4 hover:border-violet-200 transition-all active:scale-[0.98]">
+                        <span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[18px] font-bold shrink-0"
+                            style="background:linear-gradient(135deg,{{ $net['color'] }},{{ $net['color2'] }})">{{ $net['icon'] }}</span>
+                        <div class="text-left flex-1">
+                            <div class="text-[15px] font-bold text-zinc-900">{{ $net['name'] }}</div>
+                            <div class="text-[12px] text-zinc-400">{{ $net['symbol'] }}</div>
+                        </div>
+                        <span class="text-zinc-300">→</span>
+                    </button>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Deposit Details --}}
+        <div x-show="selectedNetwork" x-cloak>
+            @foreach($networks as $key => $net)
+                <div x-show="selectedNetwork === '{{ $key }}'">
+                    {{-- Selected Header --}}
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-[20px] font-bold shrink-0"
+                            style="background:linear-gradient(135deg,{{ $net['color'] }},{{ $net['color2'] }})">{{ $net['icon'] }}</span>
+                        <div class="flex-1">
+                            <h2 class="text-[18px] font-bold text-zinc-900">{{ $net['name'] }}</h2>
+                            <button @click="selectedNetwork = null" class="text-[13px] text-violet-500 font-medium">← Изменить валюту</button>
+                        </div>
+                    </div>
+
+                    {{-- Instruction --}}
+                    <div class="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-4 mb-6">
+                        <p class="text-[13px] text-amber-800 leading-relaxed font-medium mb-2">
+                            ⚠️ ВАЖНО: Отправляйте средства ТОЛЬКО с ваших верифицированных кошельков.
+                        </p>
+                        <p class="text-[12px] text-amber-700 leading-relaxed">
+                            Для зачисления необходимо отправить <strong>точную сумму верификации</strong> (небольшая дробная добавочная сумма). 
+                            Это является фактором верификации платежа.
+                        </p>
+                    </div>
+
+                    {{-- Cold Wallet Address --}}
+                    <div class="bg-zinc-900 rounded-2xl p-5 shadow-inner mb-6">
+                        <div class="text-[11px] text-zinc-500 uppercase font-bold tracking-widest mb-2">Адрес для пополнения ({{ $net['symbol'] }})</div>
+                        <div class="text-[15px] font-mono text-white break-all mb-4 select-all">{{ $net['address'] }}</div>
+                        <button onclick="copyAddr('{{ $net['address'] }}', this)"
+                            class="w-full bg-white/10 hover:bg-white/20 text-white text-[13px] font-bold py-3 rounded-xl transition-all active:scale-[0.98]">
+                            Копировать адрес
+                        </button>
+                    </div>
+
+                    {{-- User's Wallets Reminder --}}
+                    @php
+                        $userWallets = $verifiedAddresses->where('network', $key);
+                    @endphp
+                    
+                    @if($userWallets->isNotEmpty())
+                        <div class="mt-8">
+                            <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Ваши верифицированные кошельки {{ $net['symbol'] }}</p>
+                            <div class="flex flex-col gap-2 opacity-60">
+                                @foreach($userWallets as $uw)
+                                    <div class="bg-zinc-50 rounded-xl px-3 py-2 border border-zinc-100 text-[12px] font-mono text-zinc-500 truncate">
+                                        {{ $uw->address }}
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <div class="mt-8 bg-zinc-50 rounded-2xl p-5 border border-dashed border-zinc-200 text-center">
+                            <p class="text-[13px] text-zinc-500 mb-3">У вас нет верифицированных кошельков в этой сети</p>
+                            <a href="{{ route('shop.customers.account.credits.index') }}#wallet-add-section"
+                                class="text-[13px] text-violet-600 font-bold hover:underline">+ Добавить кошелёк</a>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+    </div>
+
+    @push('scripts')
+    <script>
+    function copyAddr(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            const orig = btn.innerHTML;
+            btn.innerHTML = '✓ Скопировано';
+            setTimeout(() => btn.innerHTML = orig, 2000);
+        });
+    }
+    </script>
+    @endpush
+    
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </x-shop::layouts.account>
