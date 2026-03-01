@@ -142,6 +142,7 @@ Route::prefix('customer')->group(function () {
              * Credits (formerly Transactions).
              */
             Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
+            Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
 
             /**
              * Profile.

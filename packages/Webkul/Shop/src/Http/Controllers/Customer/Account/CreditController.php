@@ -32,4 +32,22 @@ class CreditController extends Controller
 
         return view('shop::customers.account.credits.index', compact('transactions', 'addresses'));
     }
+
+    /**
+     * Dedicated deposit page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function deposit()
+    {
+        $customer = auth()->guard('customer')->user();
+
+        $verifiedAddresses = $customer
+            ->crypto_addresses()
+            ->where('verified', true)
+            ->orderBy('network')
+            ->get();
+
+        return view('shop::customers.account.credits.deposit', compact('verifiedAddresses'));
+    }
 }

@@ -39,10 +39,10 @@
             {{-- Balances Overview --}}
             <div class="flex items-center justify-between mb-1">
                 <div class="ios-group-title !mb-0">Ваш Баланс</div>
-                <button onclick="document.getElementById('deposit-modal').classList.remove('hidden');document.getElementById('deposit-modal').classList.add('flex');"
+                <a href="{{ route('shop.customers.account.credits.deposit') }}"
                     class="text-[13px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-4 py-1.5 rounded-full active:scale-95 transition-all">
                     + Пополнить
-                </button>
+                </a>
             </div>
 
             {{-- Deposit Modal --}}
