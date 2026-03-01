@@ -156,15 +156,23 @@ class ProductController extends Controller
 
         Event::dispatch('catalog.product.update.after', $product);
 
-        // Persist is_digital boolean attribute if it exists
+        // Persist is_digital boolean attribute directly (bypasses attribute family group requirement)
         $isDigitalAttr = app(\Webkul\Attribute\Repositories\AttributeRepository::class)
             ->findOneByField('code', 'is_digital');
 
         if ($isDigitalAttr) {
-            $this->productAttributeValueRepository->saveValues(
-                ['is_digital' => $request->boolean('is_digital')],
-                $product,
-                collect([$isDigitalAttr])
+            $productId = $product->id;
+            $attributeId = $isDigitalAttr->id;
+
+            \Illuminate\Support\Facades\DB::table('product_attribute_values')->updateOrInsert(
+                ['unique_id' => "{$productId}|{$attributeId}"],
+                [
+                    'product_id' => $productId,
+                    'attribute_id' => $attributeId,
+                    'boolean_value' => $request->boolean('is_digital') ? 1 : 0,
+                    'channel' => null,
+                    'locale' => null,
+                ]
             );
         }
 
