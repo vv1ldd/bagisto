@@ -82,6 +82,18 @@
                 @endif
             @endif
         });
+
+        function toggleAddWallet(show) {
+            const wrapper = document.getElementById('add-wallet-wrapper');
+            const trigger = document.getElementById('add-wallet-trigger');
+            if (show) {
+                wrapper.classList.remove('hidden');
+                trigger.classList.add('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+                trigger.classList.remove('hidden');
+            }
+        }
     </script>
 @endpush
 
@@ -91,10 +103,32 @@
 
         <div class="flex-auto pb-10 pt-2 ios-page">
 
-            <div class="rounded-[20px] border border-zinc-100 bg-white mb-6 overflow-hidden shadow-sm">
+            {{-- Add Wallet Trigger Button --}}
+            <div id="add-wallet-trigger" class="mb-6">
+                <button type="button" onclick="toggleAddWallet(true)" 
+                    class="w-full py-4 rounded-[24px] border-2 border-dashed border-zinc-100 bg-zinc-50/10 text-zinc-400 hover:text-violet-500 hover:border-violet-200 hover:bg-violet-50/30 transition-all font-bold flex items-center justify-center gap-2 group active:scale-[0.98]">
+                    <div class="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center group-hover:bg-violet-100 group-hover:text-violet-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    Добавить новый кошелек
+                </button>
+            </div>
+
+            {{-- Add Wallet Form Wrapper --}}
+            <div id="add-wallet-wrapper" class="hidden rounded-[20px] border border-zinc-100 bg-white mb-6 overflow-hidden shadow-sm animate-in fade-in zoom-in-95 duration-300 relative">
                 <x-shop::form :action="route('shop.customers.account.crypto.store')">
                     <input type="hidden" name="network" id="wallet-net-input" value="">
                     <div class="p-4 space-y-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-1">Выберите сеть</p>
+                            <button type="button" onclick="toggleAddWallet(false)" class="text-zinc-300 hover:text-zinc-500 transition-colors p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                         {{-- Network Picker (Compact) --}}
                         <div class="grid grid-cols-4 gap-2">
                             @foreach(['bitcoin' => ['₿', 'BTC', '#F7931A'], 'ethereum' => ['Ξ', 'ETH', '#627EEA'], 'ton' => ['◎', 'TON', '#0098EA'], 'dash' => ['D', 'DASH', '#1c75bc']] as $net => $m)
