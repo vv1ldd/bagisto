@@ -132,20 +132,18 @@
                                         {{ $m[2] }}
                                     </div>
                                     
-                                    @if($address->isVerified())
-                                        <div class="absolute -top-1.5 -left-1.5 bg-white rounded-full p-0.5 shadow-sm border border-zinc-50 z-10">
-                                            <div class="text-blue-500">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    @endif
                                 </div>
 
                                 {{-- Middle: Info Stack --}}
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2 group/alias">
+                                    <div class="flex items-center gap-1.5 group/alias">
+                                        @if($address->isVerified())
+                                            <div class="text-[#0095f6] shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
+                                                </svg>
+                                            </div>
+                                        @endif
                                         <span class="text-[15px] font-bold text-zinc-900 truncate hover:text-violet-600 transition-colors cursor-pointer"
                                               onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
                                             {{ $address->alias ?: $m[0] }}
