@@ -23,12 +23,24 @@ class CreditController extends Controller
         // Trigger on-demand deposit sync (rate-limited internally to 5 min per address)
         $this->syncService->syncCustomerDeposits($customer);
 
+        return view('shop::customers.account.credits.index');
+    }
+
+    /**
+     * Display transaction history.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function transactions()
+    {
+        $customer = auth()->guard('customer')->user();
+
         $transactions = $customer
             ->credits()
             ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->paginate(15);
 
-        return view('shop::customers.account.credits.index', compact('transactions'));
+        return view('shop::customers.account.credits.transactions', compact('transactions'));
     }
 
     /**
