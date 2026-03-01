@@ -1,6 +1,6 @@
 <x-shop::layouts.account>
     <x-slot:title>
-        Баланс и история
+        Meanly Pay
         </x-slot>
 
         @push('styles')
@@ -33,7 +33,7 @@
         <div class="pb-8 pt-2 ios-page">
             {{-- Header with Deposit Link --}}
             <div class="flex items-center justify-between mb-4 px-1">
-                <div class="ios-group-title !mb-0">Ваш Баланс</div>
+                <div class="ios-group-title !mb-0">Meanly Pay</div>
                 <a href="{{ route('shop.customers.account.credits.deposit') }}"
                     class="text-[13px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-4 py-2 rounded-full active:scale-95 transition-all shadow-sm">
                     + Пополнить
@@ -46,8 +46,12 @@
                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-500/10 rounded-full blur-3xl"></div>
 
                 <div class="flex flex-col gap-2 relative z-10">
-                    <div class="text-[12px] text-zinc-400 font-bold uppercase tracking-[0.1em] opacity-80">Общая
-                        покупательная способность</div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-[12px] text-zinc-400 font-bold uppercase tracking-[0.1em] opacity-80">Общая покупательная способность</div>
+                        <div class="text-[12px] font-mono text-white/60 bg-white/5 px-2 py-0.5 rounded border border-white/10 italic">
+                            @ {{ auth()->guard('customer')->user()->username }}
+                        </div>
+                    </div>
                     <div class="text-3xl font-bold font-mono text-white tracking-tight">
                         {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
                     </div>
