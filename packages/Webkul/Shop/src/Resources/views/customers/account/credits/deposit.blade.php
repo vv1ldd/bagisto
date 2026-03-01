@@ -133,7 +133,8 @@
                         {{-- Manage Wallets Button --}}
                         <a href="{{ route('shop.customers.account.credits.index') }}#wallet-add-section"
                             class="bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200 flex items-center gap-4 px-4 py-4 hover:border-violet-300 hover:bg-zinc-50 transition-all active:scale-[0.98] mt-2">
-                            <span class="w-10 h-10 rounded-xl flex items-center justify-center bg-zinc-200/50 text-zinc-500 text-[20px] font-light shrink-0">+</span>
+                            <span
+                                class="w-10 h-10 rounded-xl flex items-center justify-center bg-zinc-200/50 text-zinc-500 text-[20px] font-light shrink-0">+</span>
                             <div class="text-left flex-1">
                                 <div class="text-[15px] font-bold text-zinc-900">Добавить кошелёк</div>
                                 <div class="text-[12px] text-zinc-400">Управление и верификация адресов</div>
@@ -167,13 +168,13 @@
                                 </button>
                             @endforeach
                         </div>
-                        @endforeach
                     @endforeach
 
                     {{-- Manage Wallets Button --}}
                     <a href="{{ route('shop.customers.account.credits.index') }}#wallet-add-section"
                         class="bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200 flex items-center gap-4 px-4 py-4 hover:border-violet-300 hover:bg-zinc-50 transition-all active:scale-[0.98] mt-2">
-                        <span class="w-10 h-10 rounded-xl flex items-center justify-center bg-zinc-200/50 text-zinc-500 text-[20px] font-light shrink-0">+</span>
+                        <span
+                            class="w-10 h-10 rounded-xl flex items-center justify-center bg-zinc-200/50 text-zinc-500 text-[20px] font-light shrink-0">+</span>
                         <div class="text-left flex-1">
                             <div class="text-[15px] font-bold text-zinc-900">Добавить кошелёк</div>
                             <div class="text-[12px] text-zinc-400">Управление и верификация адресов</div>
