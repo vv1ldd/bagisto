@@ -1,62 +1,156 @@
 @push('scripts')
     <script>
-        // ─── Network auto-detection ────────────────────────────────────────────────
-        const NETWORKS = {
-            bitcoin:  { label: 'Bitcoin',     sub: 'BTC',          symbol: '₿', color: '#F7931A' },
-            ethereum: { label: 'Ethereum',    sub: 'ETH / ERC20',  symbol: 'Ξ', color: '#627EEA' },
-            ton:      { label: 'TON + USDT',  sub: 'TON сеть',     symbol: '◎', color: '#0098EA' },
-            dash:     { label: 'Dash',        sub: 'DASH',         symbol: 'D', color: '#1c75bc' },
-        };
+    // ═══════════════════════════════════════════════════════════════════════
+    // CRYPTO ADDRESS VALIDATORS — per-network checksum verification
+    // ═══════════════════════════════════════════════════════════════════════
 
-        function detectNetwork(addr) {
-            addr = addr.trim();
-            if (!addr) return null;
-            // Bitcoin: legacy (1/3) or bech32 (bc1)
-            if (/^(1|3)[1-9A-HJ-NP-Za-km-z]{25,34}$/.test(addr) || /^bc1[a-z0-9]{6,87}$/.test(addr)) return 'bitcoin';
-            // Ethereum: 0x + 40 hex chars
-            if (/^0x[0-9a-fA-F]{40}$/.test(addr)) return 'ethereum';
-            // TON: UQ/EQ friendly format or raw 0:hex — covers TON + USDT_TON
-            if (/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(addr) || /^0:[0-9a-fA-F]{64}$/.test(addr)) return 'ton';
-            // Dash: starts with X, 34 chars
-            if (/^X[1-9A-HJ-NP-Za-km-z]{33}$/.test(addr)) return 'dash';
-            return null;
-        }
-
-        function detectNetworkFromAddress(addr) {
-            const badge    = document.getElementById('network-badge');
-            const unknown  = document.getElementById('network-unknown');
-            const netInput = document.getElementById('detected-network');
-            const addBtn   = document.getElementById('add-btn');
-
-            const network = detectNetwork(addr);
-
-            badge.classList.add('hidden');
-            unknown.classList.add('hidden');
-            netInput.value = '';
-            addBtn.disabled = true;
-
-            if (!addr.trim()) return;
-
-            if (network) {
-                const meta = NETWORKS[network];
-                document.getElementById('network-badge-icon').textContent  = meta.symbol;
-                document.getElementById('network-badge-icon').style.background = meta.color;
-                document.getElementById('network-badge-label').textContent = meta.label;
-                document.getElementById('network-badge-sub').textContent   = meta.sub;
-                badge.classList.remove('hidden');
-                netInput.value = network;
-                addBtn.disabled = false;
-            } else {
-                unknown.classList.remove('hidden');
+    // ── Tiny SHA-256 (browser crypto-free, synchronous) ──────────────────
+    const SHA256 = (() => {
+        const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+        function hash(msg) {
+            let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+            msg=Array.from(msg);
+            const l=msg.length*8;
+            msg.push(0x80);
+            while((msg.length%64)!==56)msg.push(0);
+            for(let i=7;i>=0;i--)msg.push((l/(2**(i*8)))&0xFF);
+            for(let c=0;c<msg.length;c+=64){
+                const W=[];
+                for(let i=0;i<16;i++)W[i]=(msg[c+i*4]<<24)|(msg[c+i*4+1]<<16)|(msg[c+i*4+2]<<8)|msg[c+i*4+3];
+                for(let i=16;i<64;i++){const s0=((W[i-15]>>>7)|(W[i-15]<<25))^((W[i-15]>>>18)|(W[i-15]<<14))^(W[i-15]>>>3);const s1=((W[i-2]>>>17)|(W[i-2]<<15))^((W[i-2]>>>19)|(W[i-2]<<13))^(W[i-2]>>>10);W[i]=(W[i-16]+s0+W[i-7]+s1)>>>0;}
+                let[a,b,d,e,f,g,h,i]=[...H,H[6],H[7]];
+                for(let j=0;j<64;j++){const S1=((f>>>6)|(f<<26))^((f>>>11)|(f<<21))^((f>>>25)|(f<<7));const ch=(f&g)^(~f&h);const t1=(i+S1+ch+K[j]+W[j])>>>0;const S0=((a>>>2)|(a<<30))^((a>>>13)|(a<<19))^((a>>>22)|(a<<10));const maj=(a&b)^(a&d)^(b&d);const t2=(S0+maj)>>>0;i=h;h=g;g=f;f=(e+t1)>>>0;e=d;d=b;b=a;a=(t1+t2)>>>0;}
+                H=[H[0]+a,H[1]+b,H[2]+d,H[3]+e,H[4]+f,H[5]+g,H[6]+h,H[7]+i].map(v=>v>>>0);
             }
+            return H.map(v=>v.toString(16).padStart(8,'0')).join('');
         }
+        return { hash };
+    })();
 
-            navigator.clipboard.writeText(text).then(() => {
-                const original = btnEl.innerHTML;
-                btnEl.innerHTML = '<span class="text-emerald-400 text-[11px] font-bold">✓ Скопировано</span>';
-                setTimeout(() => btnEl.innerHTML = original, 2000);
-            });
+    // ── Base58 decode → Uint8Array ────────────────────────────────────────
+    function base58Decode(s) {
+        const ALPHA='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        let n=0n;
+        for(const c of s){const i=ALPHA.indexOf(c);if(i<0)return null;n=n*58n+BigInt(i);}
+        let hex=n.toString(16);
+        if(hex.length%2)hex='0'+hex;
+        const bytes=hex.match(/../g).map(h=>parseInt(h,16));
+        const leading=s.match(/^1*/)[0].length;
+        return [...Array(leading).fill(0),...bytes];
+    }
+
+    // ── Bitcoin & Dash — Base58Check ─────────────────────────────────────
+    function validateBase58Check(addr) {
+        const bytes=base58Decode(addr);
+        if(!bytes||bytes.length<5)return false;
+        const payload=bytes.slice(0,-4);
+        const checksum=bytes.slice(-4);
+        const h1=SHA256.hash(payload);
+        const h2=SHA256.hash(h1.match(/../g).map(h=>parseInt(h,16)));
+        return h2.slice(0,8)===checksum.map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    function validateBitcoin(addr) {
+        if(/^bc1[a-z0-9]{6,87}$/.test(addr))return true; // bech32 — format only
+        if(!/^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/.test(addr))return false;
+        return validateBase58Check(addr);
+    }
+    function validateDash(addr) {
+        if(!/^X[1-9A-HJ-NP-Za-km-z]{33}$/.test(addr))return false;
+        return validateBase58Check(addr);
+    }
+
+    // ── Ethereum — EIP-55 format + length ────────────────────────────────
+    function validateEthereum(addr) {
+        return /^0x[0-9a-fA-F]{40}$/.test(addr);
+    }
+
+    // ── TON — CRC16-CCITT checksum (base64url decode) ────────────────────
+    function crc16(data) {
+        let crc=0;
+        for(const b of data){crc^=(b<<8);for(let i=0;i<8;i++)crc=(crc&0x8000)?((crc<<1)^0x1021):(crc<<1);}
+        return crc&0xFFFF;
+    }
+    function validateTon(addr) {
+        addr=addr.trim();
+        if(/^0:[0-9a-fA-F]{64}$/.test(addr))return true; // raw hex — valid
+        if(!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(addr))return false;
+        const b64=addr.replace(/-/g,'+').replace(/_/g,'/');
+        let bin;
+        try{bin=atob(b64);}catch{return false;}
+        if(bin.length!==36)return false;
+        const data=Array.from(bin.slice(0,34)).map(c=>c.charCodeAt(0));
+        const check=[bin.charCodeAt(34),bin.charCodeAt(35)];
+        const expected=crc16(data);
+        return check[0]===((expected>>8)&0xFF)&&check[1]===(expected&0xFF);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // NETWORK DEFINITIONS
+    // ═══════════════════════════════════════════════════════════════════════
+    const NETS = {
+        bitcoin:  {label:'Bitcoin',  ticker:'BTC',  symbol:'₿', color:'#F7931A', bgLight:'#FFF7ED', validate:validateBitcoin},
+        ethereum: {label:'Ethereum', ticker:'ETH',  symbol:'Ξ', color:'#627EEA', bgLight:'#EEF2FF', validate:validateEthereum},
+        ton:      {label:'TON + USDT',ticker:'TON', symbol:'◎', color:'#0098EA', bgLight:'#E0F5FF', validate:validateTon},
+        dash:     {label:'Dash',     ticker:'DASH', symbol:'D', color:'#1c75bc', bgLight:'#EFF6FF', validate:validateDash},
+    };
+
+    let selectedNetwork = null;
+
+    function selectNetwork(network) {
+        selectedNetwork = network;
+        document.getElementById('detected-network').value = network;
+        // Update picker button styles
+        Object.keys(NETS).forEach(n => {
+            const btn = document.getElementById('net-btn-' + n);
+            if (n === network) {
+                btn.style.background = NETS[n].bgLight;
+                btn.style.borderColor = NETS[n].color;
+                btn.style.transform = 'scale(1.05)';
+            } else {
+                btn.style.background = '';
+                btn.style.borderColor = '#e4e4e7';
+                btn.style.transform = '';
+            }
+        });
+        // Show address input section
+        const section = document.getElementById('address-section');
+        section.classList.remove('hidden');
+        section.querySelector('input').focus();
+        // Reset validation state
+        document.getElementById('val-ok').classList.add('hidden');
+        document.getElementById('val-err').classList.add('hidden');
+        document.getElementById('addr-input').value = '';
+        document.getElementById('add-btn').disabled = true;
+    }
+
+    function onAddressInput(val) {
+        const okEl  = document.getElementById('val-ok');
+        const errEl = document.getElementById('val-err');
+        const addBtn = document.getElementById('add-btn');
+        val = val.trim();
+        if (!val || !selectedNetwork) {
+            okEl.classList.add('hidden');
+            errEl.classList.add('hidden');
+            addBtn.disabled = true;
+            return;
         }
+        const isValid = NETS[selectedNetwork].validate(val);
+        okEl.classList.toggle('hidden', !isValid);
+        errEl.classList.toggle('hidden', isValid);
+        addBtn.disabled = !isValid;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // COPY TO CLIPBOARD
+    // ═══════════════════════════════════════════════════════════════════════
+    function copyToClipboard(text, btnEl) {
+        navigator.clipboard.writeText(text).then(() => {
+            const original = btnEl.innerHTML;
+            btnEl.innerHTML = '<span class="text-emerald-400 text-[11px] font-bold">✓ Скопировано</span>';
+            setTimeout(() => btnEl.innerHTML = original, 2000);
+        });
+    }
 
         function showVerifyModal(id, network, amount, address) {
             document.getElementById('verify-modal').classList.remove('hidden');
@@ -191,50 +285,57 @@
         <div class="flex-auto pb-10 pt-2 ios-page">
 
             {{-- Add Address Form --}}
-            <div class="ios-group-title">Добавить адрес</div>
+            <div class="ios-group-title">Добавить кошелёк</div>
             <div class="rounded-[20px] border border-zinc-100 bg-white mb-6 overflow-hidden shadow-sm">
                 <x-shop::form :action="route('shop.customers.account.crypto.store')">
-                    <div class="p-5 flex flex-col gap-4">
+                    <input type="hidden" name="network" id="detected-network" value="">
 
-                        {{-- Hidden network input populated by JS --}}
-                        <input type="hidden" name="network" id="detected-network" value="">
+                    <div class="p-5 flex flex-col gap-5">
 
-                        {{-- Address input with auto-detect --}}
+                        {{-- Step 1: Network picker icons --}}
                         <div>
-                            <label class="block text-[12px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-                                Адрес кошелька
-                            </label>
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.control
-                                    type="text" name="address" id="address-input" rules="required"
-                                    placeholder="Вставьте адрес кошелька…" :label="'Адрес'"
-                                    class="!rounded-xl !border-zinc-200 !text-[13px] font-mono !py-3 !px-4 focus:!border-violet-400 focus:!ring-2 focus:!ring-violet-100"
-                                    oninput="detectNetworkFromAddress(this.value)" />
-                                <x-shop::form.control-group.error control-name="address" />
-                            </x-shop::form.control-group>
-
-                            {{-- Detected network badge --}}
-                            <div id="network-badge" class="hidden mt-3 flex items-center gap-2">
-                                <span id="network-badge-icon"
-                                    class="w-7 h-7 rounded-lg flex items-center justify-center text-white text-[14px] font-bold"></span>
-                                <div>
-                                    <div id="network-badge-label" class="text-[14px] font-bold text-zinc-800"></div>
-                                    <div id="network-badge-sub" class="text-[11px] text-zinc-400"></div>
-                                </div>
-                                <span id="network-badge-ok"
-                                    class="ml-auto text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
-                                    ✓ Обнаружена
-                                </span>
-                            </div>
-                            <div id="network-unknown" class="hidden mt-3 text-[13px] text-red-400 font-medium">
-                                ✗ Не удалось определить сеть. Проверьте адрес.
+                            <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">1. Выберите сеть</div>
+                            <div class="grid grid-cols-4 gap-3">
+                                @foreach(['bitcoin' => ['₿','Bitcoin','BTC','#F7931A'], 'ethereum' => ['Ξ','Ethereum','ETH','#627EEA'], 'ton' => ['◎','TON + USDT','TON','#0098EA'], 'dash' => ['D','Dash','DASH','#1c75bc']] as $net => $m)
+                                    <button type="button" id="net-btn-{{ $net }}"
+                                        onclick="selectNetwork('{{ $net }}')"
+                                        class="flex flex-col items-center gap-1.5 py-3 px-2 rounded-2xl border-2 border-zinc-200 transition-all duration-150 active:scale-95">
+                                        <span class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[20px] font-bold"
+                                            style="background:{{ $m[3] }}">{{ $m[0] }}</span>
+                                        <span class="text-[11px] font-bold text-zinc-700 leading-none text-center">{{ $m[2] }}</span>
+                                    </button>
+                                @endforeach
                             </div>
                         </div>
 
-                        <button type="submit" id="add-btn" disabled
-                            class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-violet-200 active:scale-[0.98] transition-all text-[15px] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
-                            + Добавить адрес
-                        </button>
+                        {{-- Step 2: Address input (hidden until network selected) --}}
+                        <div id="address-section" class="hidden flex flex-col gap-3">
+                            <div class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">2. Введите адрес</div>
+                            <div class="relative">
+                                <input type="text" name="address" id="addr-input"
+                                    placeholder="Вставьте адрес кошелька…"
+                                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                    oninput="onAddressInput(this.value)"
+                                    class="w-full rounded-xl border-2 border-zinc-200 text-[13px] font-mono py-3 px-4 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100 transition-all pr-10" />
+                            </div>
+
+                            {{-- Validation feedback --}}
+                            <div id="val-ok" class="hidden flex items-center gap-2 text-[13px] font-semibold text-emerald-600">
+                                <span class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-[11px]">✓</span>
+                                Адрес корректен — контрольная сумма совпадает
+                            </div>
+                            <div id="val-err" class="hidden flex items-center gap-2 text-[13px] font-semibold text-red-500">
+                                <span class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center text-[11px]">✗</span>
+                                Неверный адрес — проверьте правильность
+                            </div>
+
+                            {{-- Step 3: Submit --}}
+                            <button type="submit" id="add-btn" disabled
+                                class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-violet-200 active:scale-[0.98] transition-all text-[15px] disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none mt-1">
+                                + Добавить адрес
+                            </button>
+                        </div>
+
                     </div>
                 </x-shop::form>
             </div>
