@@ -39,12 +39,113 @@
             {{-- Balances Overview --}}
             <div class="flex items-center justify-between mb-1">
                 <div class="ios-group-title !mb-0">Ваш Баланс</div>
-                <button onclick="document.getElementById('wallet-add-section').scrollIntoView({behavior:'smooth'});selNet?selNet(null):null;"
-                    onclick="document.getElementById('wallet-add-section').scrollIntoView({behavior:'smooth'})"
+                <button onclick="document.getElementById('deposit-modal').classList.remove('hidden');document.getElementById('deposit-modal').classList.add('flex');"
                     class="text-[13px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-4 py-1.5 rounded-full active:scale-95 transition-all">
                     + Пополнить
                 </button>
             </div>
+
+            {{-- Deposit Modal --}}
+            @php
+                $verifiedAddresses = $addresses->filter(fn($a) => $a->isVerified());
+                $depositNetMeta = [
+                    'bitcoin'  => ['Bitcoin',    'BTC',  '₿', '#F7931A', '#F5A623'],
+                    'ethereum' => ['Ethereum',   'ETH',  'Ξ', '#627EEA', '#8A9FEF'],
+                    'ton'      => ['TON',         'TON', '◎', '#0098EA', '#33BFFF'],
+                    'usdt_ton' => ['USDT (TON)', 'USDT', '₮', '#26A17B', '#4DBFA0'],
+                    'dash'     => ['Dash',       'DASH', 'D', '#1c75bc', '#4DA3E0'],
+                ];
+            @endphp
+            <div id="deposit-modal"
+                class="hidden fixed inset-0 z-[300] items-end justify-center bg-black/50 backdrop-blur-sm"
+                onclick="if(event.target===this){this.classList.add('hidden');this.classList.remove('flex');}">
+                <div class="bg-white w-full max-w-lg rounded-t-[28px] pb-safe shadow-2xl"
+                    style="max-height:85vh;overflow-y:auto;">
+
+                    {{-- Handle --}}
+                    <div class="flex justify-center pt-3 pb-1">
+                        <div class="w-10 h-1 bg-zinc-200 rounded-full"></div>
+                    </div>
+
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
+                        <div>
+                            <h2 class="text-[18px] font-bold text-zinc-900">Пополнение</h2>
+                            <p class="text-[13px] text-zinc-400 mt-0.5">Отправьте крипто с верифицированного кошелька</p>
+                        </div>
+                        <button onclick="document.getElementById('deposit-modal').classList.add('hidden');document.getElementById('deposit-modal').classList.remove('flex');"
+                            class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 text-lg font-bold active:bg-zinc-200">✕</button>
+                    </div>
+
+                    <div class="px-5 py-4 flex flex-col gap-3">
+                        @if($verifiedAddresses->isEmpty())
+                            {{-- No verified addresses —→ CTA to add --}}
+                            <div class="flex flex-col items-center text-center gap-4 py-6">
+                                <div class="w-16 h-16 rounded-full bg-violet-50 flex items-center justify-center text-3xl">🔐</div>
+                                <div>
+                                    <p class="text-[16px] font-bold text-zinc-800">Нет верифицированных кошельков</p>
+                                    <p class="text-[13px] text-zinc-400 mt-1">Добавьте и верифицируйте адрес,<br>чтобы принимать депозиты</p>
+                                </div>
+                                <button
+                                    onclick="document.getElementById('deposit-modal').classList.add('hidden');document.getElementById('deposit-modal').classList.remove('flex');setTimeout(()=>{document.getElementById('wallet-add-section').scrollIntoView({behavior:'smooth'});},200);"
+                                    style="background:linear-gradient(135deg,#7c3aed,#4f46e5)"
+                                    class="text-white font-bold px-6 py-3 rounded-2xl text-[15px] shadow-lg shadow-violet-200 active:scale-95 transition-all">
+                                    + Добавить кошелёк
+                                </button>
+                            </div>
+                        @else
+                            <p class="text-[12px] text-zinc-400 uppercase font-bold tracking-wider">Верифицированные адреса</p>
+                            @foreach($verifiedAddresses as $va)
+                                @php
+                                    $vm = $depositNetMeta[$va->network] ?? [strtoupper($va->network), strtoupper($va->network), '?', '#aaa', '#ccc'];
+                                @endphp
+                                <div class="rounded-2xl border border-zinc-100 overflow-hidden shadow-sm">
+                                    {{-- Network header --}}
+                                    <div class="flex items-center gap-3 px-4 py-3" style="background:linear-gradient(135deg,{{ $vm[3] }}18,{{ $vm[4] }}12)">
+                                        <span class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-[16px] font-bold shrink-0"
+                                            style="background:linear-gradient(135deg,{{ $vm[3] }},{{ $vm[4] }})">{{ $vm[2] }}</span>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-[13px] font-bold text-zinc-900">{{ $vm[0] }}</div>
+                                            <div class="text-[11px] font-mono text-zinc-400 truncate">{{ $va->address }}</div>
+                                        </div>
+                                        <button onclick="copyDepAddr('{{ $va->address }}',this)"
+                                            class="shrink-0 text-[11px] font-bold text-violet-600 bg-violet-50 border border-violet-100 px-3 py-1.5 rounded-xl transition-all active:scale-95">
+                                            Копировать
+                                        </button>
+                                    </div>
+                                    {{-- Balance row --}}
+                                    <div class="flex items-center justify-between px-4 py-2 bg-zinc-50/60 border-t border-zinc-100">
+                                        <span class="text-[11px] text-zinc-400 uppercase tracking-wide">Баланс</span>
+                                        <span class="text-[13px] font-bold font-mono text-zinc-800">
+                                            {{ rtrim(rtrim(number_format($va->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                            {{ $vm[1] }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+
+                            <button
+                                onclick="document.getElementById('deposit-modal').classList.add('hidden');document.getElementById('deposit-modal').classList.remove('flex');setTimeout(()=>{document.getElementById('wallet-add-section').scrollIntoView({behavior:'smooth'});},200);"
+                                class="text-[13px] text-violet-500 font-semibold text-center py-2 active:opacity-60 transition-all">
+                                + Добавить ещё кошелёк
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            @push('scripts')
+            <script>
+            function copyDepAddr(text, btn) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const o = btn.innerText;
+                    btn.innerText = '✓ Скопировано';
+                    setTimeout(() => btn.innerText = o, 2000);
+                });
+            }
+            </script>
+            @endpush
+
             <div
                 class="ios-group mb-6 p-4 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white rounded-2xl shadow-md border border-zinc-700">
                 <div class="flex flex-col gap-2 relative z-10">
