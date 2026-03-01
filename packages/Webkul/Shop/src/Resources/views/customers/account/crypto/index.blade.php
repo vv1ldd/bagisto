@@ -129,13 +129,13 @@
                                 </div>
                             </div>
 
-                            <div class="relative group">
+                            <div class="relative group w-full">
                                 <input type="text" name="address" id="wallet-addr-input"
                                     placeholder="Вставьте адрес кошелька…" oninput="onWalletInput(this.value)"
                                     class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[12px] font-mono py-3.5 pl-4 pr-14 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                                    <div id="wallet-val-ok" class="hidden text-emerald-500 font-bold">✓</div>
-                                    <div id="wallet-val-err" class="hidden text-red-500 font-bold">✗</div>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <div id="wallet-val-ok" class="hidden text-emerald-500 font-bold text-[16px]">✓</div>
+                                    <div id="wallet-val-err" class="hidden text-red-500 font-bold text-[16px]">✗</div>
                                 </div>
                             </div>
 
@@ -178,14 +178,15 @@
                                             </span>
                                             <span class="text-[10px] font-bold text-zinc-400 uppercase">{{ $m[1] }}</span>
                                         </div>
-                                        <div class="flex items-center gap-2 mt-1">
+                                        <div class="flex items-center gap-2 mt-1 min-w-0">
                                             @if($address->last_sync_at)
-                                                <div class="text-[9px] text-zinc-400 font-medium leading-none">
+                                                <div class="text-[9px] text-zinc-400 font-medium leading-none truncate">
                                                     {{ $address->last_sync_at->diffForHumans() }}
                                                 </div>
+                                                <div class="w-0.5 h-0.5 rounded-full bg-zinc-200 shrink-0"></div>
                                             @endif
                                             <a href="{{ route('shop.customers.account.crypto.sync', $address->id) }}"
-                                                class="text-[9px] text-emerald-600 font-bold hover:underline leading-none">Обновить баланс</a>
+                                                class="text-[9px] text-emerald-600 font-bold hover:underline leading-none shrink-0">Обновить баланс</a>
                                         </div>
                                     </div>
                                 </div>
