@@ -91,6 +91,8 @@ class Review
 
         $totalReviews = $this->getTotalReviews($product);
 
+        $percentage = [];
+
         for ($i = 5; $i >= 1; $i--) {
             if (!$reviews->isEmpty()) {
                 foreach ($reviews as $review) {
@@ -106,6 +108,7 @@ class Review
         }
 
         return $percentage;
+
     }
 
     /**
