@@ -132,10 +132,10 @@
                             <div class="relative group">
                                 <input type="text" name="address" id="wallet-addr-input"
                                     placeholder="Вставьте адрес кошелька…" oninput="onWalletInput(this.value)"
-                                    class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[12px] font-mono py-3.5 pl-4 pr-12 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center">
-                                    <div id="wallet-val-ok" class="hidden text-emerald-500">✓</div>
-                                    <div id="wallet-val-err" class="hidden text-red-400">✗</div>
+                                    class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[12px] font-mono py-3.5 pl-4 pr-14 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                    <div id="wallet-val-ok" class="hidden text-emerald-500 font-bold">✓</div>
+                                    <div id="wallet-val-err" class="hidden text-red-500 font-bold">✗</div>
                                 </div>
                             </div>
 
@@ -171,18 +171,22 @@
                                         {{ $m[2] }}
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="flex items-baseline gap-1.5">
+                                        <div class="flex items-baseline gap-1.5 leading-none">
                                             <span class="text-[13px] font-bold text-zinc-900 truncate">{{ $m[0] }}</span>
                                             <span class="text-[13px] font-bold font-mono text-zinc-900">
                                                 {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
                                             </span>
                                             <span class="text-[10px] font-bold text-zinc-400 uppercase">{{ $m[1] }}</span>
                                         </div>
-                                        @if($address->last_sync_at)
-                                            <div class="text-[9px] text-zinc-400 font-medium leading-none mt-0.5">
-                                                {{ $address->last_sync_at->diffForHumans() }}
-                                            </div>
-                                        @endif
+                                        <div class="flex items-center gap-2 mt-1">
+                                            @if($address->last_sync_at)
+                                                <div class="text-[9px] text-zinc-400 font-medium leading-none">
+                                                    {{ $address->last_sync_at->diffForHumans() }}
+                                                </div>
+                                            @endif
+                                            <a href="{{ route('shop.customers.account.crypto.sync', $address->id) }}"
+                                                class="text-[9px] text-emerald-600 font-bold hover:underline leading-none">Обновить баланс</a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="shrink-0">
@@ -199,25 +203,28 @@
                             </div>
 
                             {{-- Address Row (Tight) --}}
-                            <div class="px-3 pb-2 flex items-center justify-between gap-2">
-                                <code class="text-[10px] font-mono text-zinc-400 truncate flex-1 select-all opacity-80">{{ $address->address }}</code>
+                            <div class="px-3 pb-2 flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-1.5 min-w-0 flex-1">
+                                    <code class="text-[10px] font-mono text-zinc-400 truncate select-all opacity-80">{{ $address->address }}</code>
+                                    <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                        </svg>
+                                    </a>
+                                </div>
                                 <button onclick="copyAddr('{{ $address->address }}', this)"
                                     class="shrink-0 text-[10px] font-bold text-violet-500 hover:text-violet-700 transition-colors">Копировать</button>
                             </div>
 
                             {{-- Actions Row (Minimal) --}}
                             <div class="flex items-center border-t border-zinc-50 bg-zinc-50/30 px-3 py-1.5 gap-3">
-                                <a href="{{ route('shop.customers.account.crypto.sync', $address->id) }}"
-                                    class="text-[10px] text-violet-600 font-bold hover:underline">Обновить</a>
-                                <div class="w-1 h-1 rounded-full bg-zinc-200"></div>
-                                <a href="{{ $expLink }}" target="_blank"
-                                    class="text-[10px] text-zinc-400 font-bold hover:underline">Эксплорер</a>
-
                                 @if(!$address->isVerified())
-                                    <div class="w-1 h-1 rounded-full bg-zinc-200"></div>
                                     <button
                                         onclick="showVerifyModal('{{ $address->id }}','{{ $address->network }}','{{ $dAmt }}','{{ $address->address }}')"
-                                        class="text-[10px] text-emerald-600 font-bold hover:underline">Верифицировать</button>
+                                        class="text-[10px] text-emerald-600 font-bold hover:underline">Проверить верификацию</button>
+                                @else
+                                    <div class="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter opacity-60">Доверенный адрес</div>
                                 @endif
 
                                 <div class="flex-1"></div>
