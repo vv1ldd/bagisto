@@ -1,32 +1,6 @@
 @push('scripts')
     <script>
-        // ── Verify modal ─────────────────────────────────────────────────
-        function showVerifyModal(id, network, amount, addr) {
-            document.getElementById('verify-modal').classList.remove('hidden');
-            document.getElementById('verify-modal').classList.add('flex');
-            const syms = { bitcoin: 'BTC', ethereum: 'ETH', ton: 'TON', usdt_ton: 'USDT', dash: 'DASH' };
-            document.getElementById('verify-amount').innerText = amount + ' ' + (syms[network] || '');
-            document.getElementById('verify-id-hidden').value = id;
-            const dest = {
-                bitcoin: '{{ config('crypto.verification_addresses.bitcoin') }}',
-                ethereum: '{{ config('crypto.verification_addresses.ethereum') }}',
-                ton: '{{ config('crypto.verification_addresses.ton') }}',
-                usdt_ton: '{{ config('crypto.verification_addresses.usdt_ton') }}',
-                dash: '{{ config('crypto.verification_addresses.dash') }}'
-            };
-            document.getElementById('verify-dest').innerText = dest[network] || '';
-            document.getElementById('verify-dest-copy').onclick = () => {
-                navigator.clipboard.writeText(dest[network] || '');
-                const b = document.getElementById('verify-dest-copy');
-                b.innerText = '✓'; setTimeout(() => b.innerText = 'Копировать', 2000);
-            };
-            document.getElementById('verify-link').href =
-                "{{ route('shop.customers.account.crypto.verify', ':id') }}".replace(':id', id);
-        }
-        function closeVerifyModal() {
-            document.getElementById('verify-modal').classList.add('hidden');
-            document.getElementById('verify-modal').classList.remove('flex');
-        }
+
 
         // ── Clipboard ────────────────────────────────────────────────────
         function copyAddr(text, btn) {
@@ -95,63 +69,7 @@
 <x-shop::layouts.account>
     <x-slot:title>@lang('shop::app.layouts.crypto-wallets')</x-slot>
 
-        {{-- Verify Modal (Fixed Styling) --}}
-        <div id="verify-modal"
-            class="hidden fixed inset-0 z-[200] items-center justify-center p-4"
-            style="background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
-            <div class="bg-white rounded-[28px] w-full max-w-[400px] overflow-hidden shadow-2xl border border-white/20">
-                {{-- Header with Fixed Gradient --}}
-                <div class="p-8 text-center" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);">
-                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20">
-                        <span class="icon-shield text-white text-3xl"></span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-1">Верификация</h3>
-                    <p class="text-violet-100/90 text-[14px]">Докажите владение кошельком</p>
-                </div>
 
-                {{-- Body --}}
-                <div class="p-6 space-y-4">
-                    <div class="bg-violet-50/50 border border-violet-100 p-4 rounded-2xl">
-                        <p class="text-[12px] text-violet-600 font-bold mb-1 uppercase tracking-widest">Сумма подтверждения</p>
-                        <p id="verify-amount" class="text-2xl font-bold text-zinc-900 font-mono leading-none">—</p>
-                    </div>
-
-                    <div class="bg-zinc-50 border border-zinc-100 p-4 rounded-2xl">
-                        <div class="flex items-start justify-between gap-3">
-                            <div class="min-w-0 flex-1">
-                                <p class="text-[12px] text-zinc-400 font-bold mb-1 uppercase tracking-widest">Куда отправить</p>
-                                <p id="verify-dest" class="text-[11px] font-mono font-bold text-zinc-700 break-all leading-tight">—</p>
-                            </div>
-                            <button id="verify-dest-copy"
-                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-white border border-zinc-200 px-3 py-2 rounded-xl active:scale-95 transition-all shadow-sm">Копировать</button>
-                        </div>
-                    </div>
-
-                    <div class="text-[13px] text-zinc-500 space-y-2 leading-relaxed bg-zinc-50/50 rounded-2xl p-4 border border-zinc-100">
-                        <div class="flex gap-2">
-                            <span class="font-bold text-violet-600">1.</span>
-                            <p>Отправьте <b class="text-zinc-900">ровно указанную</b> сумму со своего кошелька.</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <span class="font-bold text-violet-600">2.</span>
-                            <p>После отправки нажмите кнопку «Проверить» ниже.</p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Actions with Fixed Gradient --}}
-                <div class="px-6 pb-8 flex flex-col gap-3">
-                    <a id="verify-link" href="#"
-                        class="w-full text-center text-white font-bold py-4 rounded-2xl shadow-lg active:scale-[0.98] transition-all"
-                        style="background: linear-gradient(to right, #7c3aed, #4f46e5); box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);">
-                        Проверить транзакцию
-                    </a>
-                    <button onclick="closeVerifyModal()"
-                        class="w-full text-zinc-400 hover:text-zinc-600 font-bold py-2 text-[14px] transition-colors">Сделаю позже</button>
-                </div>
-            </div>
-        </div>
-        <input type="hidden" id="verify-id-hidden" value="">
 
         <div class="flex-auto pb-10 pt-2 ios-page">
             {{-- Add Wallet Form (Compact) --}}
