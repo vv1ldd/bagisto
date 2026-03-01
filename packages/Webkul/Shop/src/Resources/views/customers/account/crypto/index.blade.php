@@ -177,12 +177,22 @@
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2 leading-none">
-                                            <div class="flex items-center gap-1.5 min-w-0" 
-                                                 onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
-                                                <span class="text-[14px] font-bold text-zinc-900 truncate cursor-pointer hover:text-violet-600 transition-colors">
+                                            <div class="flex items-center gap-1.5 min-w-0">
+                                                <span class="text-[14px] font-bold text-zinc-900 truncate cursor-pointer hover:text-violet-600 transition-colors"
+                                                      onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
                                                     {{ $address->alias ?: $m[0] }}
                                                 </span>
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-300 cursor-pointer hover:text-violet-400" viewBox="0 0 20 20" fill="currentColor">
+                                                
+                                                @if($address->isVerified())
+                                                    <div class="text-blue-500 shrink-0" title="Верифицирован">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
+                                                        </svg>
+                                                    </div>
+                                                @endif
+
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-300 cursor-pointer hover:text-violet-400" viewBox="0 0 20 20" fill="currentColor"
+                                                     onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
                                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                                 </svg>
                                             </div>
@@ -209,17 +219,8 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="shrink-0">
-                                    @if($address->isVerified())
-                                        <div class="bg-emerald-50 text-emerald-600 p-1 rounded-full border border-emerald-100" title="Верифицирован">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                                        </div>
-                                    @else
-                                        <div class="bg-zinc-50 text-zinc-300 p-1 rounded-full border border-zinc-100" title="Не верифицирован">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                                        </div>
-                                    @endif
                                 </div>
+                            </div>
                             </div>
 
                             {{-- Address Row (Tight) --}}
@@ -248,15 +249,16 @@
                                     <button
                                         onclick="showVerifyModal('{{ $address->id }}','{{ $address->network }}','{{ $dAmt }}','{{ $address->address }}')"
                                         class="text-[10px] text-emerald-600 font-bold hover:underline">Проверить верификацию</button>
-                                @else
-                                    <div class="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter opacity-60">Доверенный адрес</div>
                                 @endif
 
                                 <div class="flex-1"></div>
-                                <form action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST">
+                                <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST">
                                     @csrf @method('DELETE')
-                                    <button type="submit" onclick="return confirm('Удалить адрес?')"
-                                        class="text-[10px] text-red-400 font-bold hover:underline">Удалить</button>
+                                    <button type="button" 
+                                        onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
+                                        class="px-2.5 py-1 rounded-lg bg-zinc-100/50 hover:bg-red-50 text-red-400 hover:text-red-500 text-[10px] font-bold transition-all border border-zinc-100/50 hover:border-red-100 active:scale-95">
+                                        Удалить
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -270,4 +272,15 @@
                 </div>
             @endif
         </div>
+
+        <script>
+            function confirmWalletDeletion(id, expected) {
+                const input = prompt(`Для удаления кошелька введите его название или адрес:\n"${expected}"`);
+                if (input === expected) {
+                    document.getElementById(`delete-wallet-form-${id}`).submit();
+                } else if (input !== null) {
+                    alert('Неправильное подтверждение. Удаление отменено.');
+                }
+            }
+        </script>
 </x-shop::layouts.account>
