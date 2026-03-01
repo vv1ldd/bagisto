@@ -40,19 +40,22 @@
                 </a>
             </div>
 
-            {{-- Total Balance Card --}}
+            {{-- Total Balance Card (Premium Light Theme) --}}
             <div
-                class="ios-group mb-8 p-6 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white rounded-[24px] shadow-xl border border-zinc-700 relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-500/10 rounded-full blur-3xl"></div>
+                class="ios-group mb-8 p-6 bg-white rounded-[24px] shadow-sm border border-zinc-100 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5 rounded-full blur-3xl"></div>
 
                 <div class="flex flex-col gap-2 relative z-10">
                     <div class="flex items-center justify-between">
-                        <div class="text-[12px] text-zinc-400 font-bold uppercase tracking-[0.1em] opacity-80">Общая покупательная способность</div>
-                        <div class="text-[12px] font-mono text-white/60 bg-white/5 px-2 py-0.5 rounded border border-white/10 italic">
+                        <div class="text-[12px] text-zinc-500 font-bold uppercase tracking-[0.1em] opacity-80">Общая
+                            покупательная способность</div>
+                        <div
+                            class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold">
                             @ {{ auth()->guard('customer')->user()->username }}
                         </div>
                     </div>
-                    <div class="text-3xl font-bold font-mono text-white tracking-tight">
+
+                    <div class="text-3xl font-bold font-mono text-zinc-900 tracking-tight mt-1">
                         {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
                     </div>
 
@@ -70,37 +73,45 @@
                     @endphp
 
                     @if($balances->count() > 0)
-                        <div class="mt-4 pt-4 border-t border-white/10 flex flex-col gap-3">
-                            <div class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Крипто-активы</div>
-                            @foreach($balances as $balance)
-                                @php
-                                    $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888'];
-                                    $rate = $exchangeRateService->getRate($balance->currency_code);
-                                    $fiat = $balance->amount * $rate;
-                                    $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
-                                @endphp
-                                <div class="flex justify-between items-center group">
-                                    <div class="flex items-center gap-3">
-                                        <span
-                                            class="w-8 h-8 rounded-xl flex items-center justify-center text-[14px] text-white font-bold transition-transform group-hover:scale-110 shadow-sm"
-                                            style="background: {{ $m['color'] }}">
-                                            {{ $m['symbol'] }}
-                                        </span>
-                                        <span class="text-[14px] text-zinc-200 font-bold">{{ $m['label'] }}</span>
+                        <div class="mt-6 pt-5 border-t border-zinc-50 flex flex-col gap-4">
+                            <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Крипто-активы</div>
+
+                            <div class="grid grid-cols-1 gap-3">
+                                @foreach($balances as $balance)
+                                    @php
+                                        $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888'];
+                                        $rate = $exchangeRateService->getRate($balance->currency_code);
+                                        $fiat = $balance->amount * $rate;
+                                        $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
+                                    @endphp
+                                    <div
+                                        class="flex justify-between items-center group bg-zinc-50/50 p-2.5 rounded-2xl border border-transparent hover:border-zinc-100 hover:bg-white transition-all shadow-sm">
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="w-10 h-10 rounded-xl flex items-center justify-center text-[16px] text-white font-bold transition-transform group-hover:scale-110 shadow-sm"
+                                                style="background: {{ $m['color'] }}">
+                                                {{ $m['symbol'] }}
+                                            </span>
+                                            <div>
+                                                <div class="text-[14px] text-zinc-900 font-bold leading-tight">{{ $m['label'] }}
+                                                </div>
+                                                @if($fiat > 0)
+                                                    <div class="text-[11px] text-zinc-500 font-medium">≈
+                                                        {{ core()->formatPrice($fiat) }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-[15px] font-bold font-mono text-zinc-900 leading-none">
+                                                {{ $amount }}</div>
+                                        </div>
                                     </div>
-                                    <div class="text-right">
-                                        <div class="text-[15px] font-bold font-mono text-white leading-none">{{ $amount }}</div>
-                                        @if($fiat > 0)
-                                            <div class="text-[11px] text-zinc-400 font-medium mt-1">≈
-                                                {{ core()->formatPrice($fiat) }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
                     @else
                         <div
-                            class="mt-4 p-4 rounded-xl bg-white/5 border border-white/5 text-[12px] text-zinc-400 leading-relaxed italic">
+                            class="mt-4 p-4 rounded-xl bg-zinc-50 border border-zinc-100 text-[12px] text-zinc-500 leading-relaxed italic">
                             У вас пока нет активных балансов. Пополните счет криптовалютой, чтобы совершать покупки и
                             расчеты.
                         </div>
