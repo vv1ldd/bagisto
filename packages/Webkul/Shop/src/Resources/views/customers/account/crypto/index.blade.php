@@ -238,7 +238,7 @@
                                     </div>
 
                                     <div class="flex items-center gap-2 mt-0.5">
-                                        <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $address->address }}</code>
+                                        <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $m[1] }} &gt; {{ $address->address }}</code>
                                         <div class="flex items-center gap-1.5 shrink-0">
                                             <button onclick="copyAddr('{{ $address->address }}', this)"
                                                 class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
