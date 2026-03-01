@@ -264,7 +264,7 @@
                                     :value="1"
                                     :checked="(boolean) $product->is_digital"
                                 />
-                                <x-admin::form.control-group.hint>Если включено — шаг доставки на чекауте скрывается</x-admin::form.control-group.hint>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Если включено — шаг доставки на чекауте скрывается</p>
                             </x-admin::form.control-group>
                         </div>
                         @endif
@@ -313,7 +313,7 @@
                                     :value="1"
                                     :checked="(boolean) $product->is_digital"
                                 />
-                                <x-admin::form.control-group.hint>Если включено — шаг доставки на чекауте скрывается</x-admin::form.control-group.hint>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Если включено — шаг доставки на чекауте скрывается</p>
                             </x-admin::form.control-group>
                         </div>
                         @endif
