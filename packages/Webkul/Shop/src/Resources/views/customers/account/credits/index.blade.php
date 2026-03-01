@@ -202,68 +202,6 @@
                 </div>
             </div>
 
-            {{-- Recharge Section --}}
-            <div class="ios-group-title">Пополнение баланса</div>
-            <div class="ios-group mb-6 p-4">
-                <p class="text-[14px] text-zinc-600 mb-4 leading-relaxed">
-                    Чтобы пополнить Credits, отправьте <strong>точную сумму верификации</strong> с вашего
-                    <strong>верифицированного</strong> кошелька на адрес ниже.
-                    Точность суммы является фактором верификации — средства зачислятся автоматически после подтверждения в сети.
-                </p>
-
-                <div class="flex flex-col gap-3">
-                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
-                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">Bitcoin (BTC)</div>
-                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
-                            onclick="navigator.clipboard.writeText(this.innerText)">
-                            {{ config('crypto.verification_addresses.bitcoin') }}
-                        </div>
-                    </div>
-
-                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
-                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">Ethereum (ETH / USDT ERC20)
-                        </div>
-                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
-                            onclick="navigator.clipboard.writeText(this.innerText)">
-                            {{ config('crypto.verification_addresses.ethereum') }}
-                        </div>
-                    </div>
-
-                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
-                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">TON (The Open Network)
-                        </div>
-                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
-                            onclick="navigator.clipboard.writeText(this.innerText)">
-                            {{ config('crypto.verification_addresses.ton') }}
-                        </div>
-                    </div>
-
-                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
-                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">USDT (сеть TON)
-                        </div>
-                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
-                            onclick="navigator.clipboard.writeText(this.innerText)">
-                            {{ config('crypto.verification_addresses.usdt_ton') }}
-                        </div>
-                    </div>
-
-                    <div class="bg-zinc-50 rounded-xl p-3 border border-zinc-100">
-                        <div class="text-[11px] text-zinc-400 uppercase font-bold mb-1">Dash (DASH)
-                        </div>
-                        <div class="text-[13px] font-mono text-zinc-800 break-all select-all cursor-pointer"
-                            onclick="navigator.clipboard.writeText(this.innerText)">
-                            {{ config('crypto.verification_addresses.dash') }}
-                        </div>
-                    </div>
-                </div>
-
-                <p class="text-[12px] text-zinc-400 mt-4 italic">
-                    * Убедитесь, что ваш адрес верифицирован в <a
-                        href="{{ route('shop.customers.account.profile.edit') }}"
-                        class="text-zinc-900 underline">профиле</a>.
-                </p>
-            </div>
-
 
             {{-- ═══════════════════════════════════════════════════════════════ --}}
             {{-- CRYPTO WALLETS SECTION --}}
