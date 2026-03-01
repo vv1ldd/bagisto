@@ -91,11 +91,7 @@
 
 
         <div class="flex-auto pb-10 pt-2 ios-page">
-            {{-- Add Wallet Form (Compact) --}}
-            <div id="wallet-add-section" class="ios-group-title flex items-center justify-between">
-                <span>Мои кошельки</span>
-                <span class="text-[10px] font-medium text-zinc-400 uppercase tracking-widest">Новый адрес</span>
-            </div>
+
             <div class="rounded-[20px] border border-zinc-100 bg-white mb-6 overflow-hidden shadow-sm">
                 <x-shop::form :action="route('shop.customers.account.crypto.store')">
                     <input type="hidden" name="network" id="wallet-net-input" value="">
@@ -167,81 +163,68 @@
 
                         <div
                             class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden hover:shadow-md hover:border-violet-100 transition-all">
-                            {{-- Card Header --}}
-                            <div class="flex items-center justify-between p-3.5 pb-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[18px] font-bold shadow-sm"
+                            {{-- Card Header: Icon, Name, Balance, Status --}}
+                            <div class="flex items-center justify-between p-3 gap-3">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[14px] font-bold shadow-sm shrink-0"
                                         style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">
                                         {{ $m[2] }}
                                     </div>
-                                    <div>
-                                        <div class="text-[14px] font-bold text-zinc-900 leading-none">{{ $m[0] }}</div>
-                                        <div class="text-[11px] text-zinc-400 mt-1 uppercase tracking-wider font-medium">
-                                            {{ $m[1] }}</div>
+                                    <div class="min-w-0">
+                                        <div class="flex items-baseline gap-1.5">
+                                            <span class="text-[13px] font-bold text-zinc-900 truncate">{{ $m[0] }}</span>
+                                            <span class="text-[13px] font-bold font-mono text-zinc-900">
+                                                {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                            </span>
+                                            <span class="text-[10px] font-bold text-zinc-400 uppercase">{{ $m[1] }}</span>
+                                        </div>
+                                        @if($address->last_sync_at)
+                                            <div class="text-[9px] text-zinc-400 font-medium leading-none mt-0.5">
+                                                {{ $address->last_sync_at->diffForHumans() }}
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="text-right">
+                                <div class="shrink-0">
                                     @if($address->isVerified())
-                                        <div
-                                            class="flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">
-                                            <span class="text-[12px]">✓</span> Верифицирован
+                                        <div class="bg-emerald-50 text-emerald-600 p-1 rounded-full border border-emerald-100" title="Верифицирован">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
                                         </div>
                                     @else
-                                        <div
-                                            class="text-[11px] font-bold text-zinc-400 bg-zinc-50 px-2 py-0.5 rounded-lg border border-zinc-100">
-                                            Не верифицирован
+                                        <div class="bg-zinc-50 text-zinc-300 p-1 rounded-full border border-zinc-100" title="Не верифицирован">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                                         </div>
                                     @endif
                                 </div>
                             </div>
 
-                            {{-- Address Row --}}
-                            <div
-                                class="px-3.5 py-2.5 mx-3.5 bg-zinc-50/80 rounded-xl border border-zinc-100/50 flex items-center justify-between gap-3">
-                                <code
-                                    class="text-[11px] font-mono text-zinc-500 truncate flex-1 leading-none select-all">{{ $address->address }}</code>
+                            {{-- Address Row (Tight) --}}
+                            <div class="px-3 pb-2 flex items-center justify-between gap-2">
+                                <code class="text-[10px] font-mono text-zinc-400 truncate flex-1 select-all opacity-80">{{ $address->address }}</code>
                                 <button onclick="copyAddr('{{ $address->address }}', this)"
-                                    class="shrink-0 text-[10px] font-bold text-violet-600 hover:text-violet-700 active:scale-90 transition-all">
-                                    Копировать
-                                </button>
+                                    class="shrink-0 text-[10px] font-bold text-violet-500 hover:text-violet-700 transition-colors">Копировать</button>
                             </div>
 
-                            {{-- Balance and Footer --}}
-                            <div class="flex items-center justify-between p-3.5 pt-2 mt-1">
-                                <div class="flex items-baseline gap-1.5">
-                                    <span class="text-[16px] font-bold font-mono text-zinc-900 leading-none">
-                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                    </span>
-                                    <span class="text-[11px] font-bold text-zinc-400">{{ $m[1] }}</span>
-                                </div>
-
-                                @if($address->last_sync_at)
-                                    <span class="text-[10px] text-zinc-400 font-medium">
-                                        {{ $address->last_sync_at->diffForHumans() }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            {{-- Hidden Actions Row --}}
-                            <div class="flex items-center border-t border-zinc-50 bg-zinc-50/30 px-3.5 py-1.5 gap-3">
+                            {{-- Actions Row (Minimal) --}}
+                            <div class="flex items-center border-t border-zinc-50 bg-zinc-50/30 px-3 py-1.5 gap-3">
                                 <a href="{{ route('shop.customers.account.crypto.sync', $address->id) }}"
-                                    class="text-[11px] text-violet-600 font-bold hover:underline">Обновить</a>
+                                    class="text-[10px] text-violet-600 font-bold hover:underline">Обновить</a>
                                 <div class="w-1 h-1 rounded-full bg-zinc-200"></div>
                                 <a href="{{ $expLink }}" target="_blank"
-                                    class="text-[11px] text-zinc-400 font-bold hover:underline">Эксплорер</a>
+                                    class="text-[10px] text-zinc-400 font-bold hover:underline">Эксплорер</a>
 
                                 @if(!$address->isVerified())
                                     <div class="w-1 h-1 rounded-full bg-zinc-200"></div>
                                     <button
                                         onclick="showVerifyModal('{{ $address->id }}','{{ $address->network }}','{{ $dAmt }}','{{ $address->address }}')"
-                                        class="text-[11px] text-emerald-600 font-bold hover:underline">Верифицировать</button>
+                                        class="text-[10px] text-emerald-600 font-bold hover:underline">Верифицировать</button>
                                 @endif
 
                                 <div class="flex-1"></div>
                                 <form action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST">
                                     @csrf @method('DELETE')
                                     <button type="submit" onclick="return confirm('Удалить адрес?')"
-                                        class="text-[11px] text-red-400 font-bold hover:underline">Удалить</button>
+                                        class="text-[10px] text-red-400 font-bold hover:underline">Удалить</button>
                                 </form>
                             </div>
                         </div>
