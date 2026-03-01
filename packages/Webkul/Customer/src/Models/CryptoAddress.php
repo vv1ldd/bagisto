@@ -21,6 +21,7 @@ class CryptoAddress extends Model implements CryptoAddressContract
      */
     protected $fillable = [
         'customer_id',
+        'alias',
         'network',
         'address',
         'balance',

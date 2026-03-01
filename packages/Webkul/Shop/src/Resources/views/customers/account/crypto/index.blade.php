@@ -129,6 +129,11 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3">
+                                <input type="text" name="alias" placeholder="Название кошелька (необязательно)"
+                                    class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[12px] py-3 pl-4 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
+                            </div>
+
                             <div class="relative group w-full">
                                 <input type="text" name="address" id="wallet-addr-input"
                                     placeholder="Вставьте адрес кошелька…" oninput="onWalletInput(this.value)"
@@ -170,13 +175,27 @@
                                         style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">
                                         {{ $m[2] }}
                                     </div>
-                                    <div class="min-w-0">
-                                        <div class="flex items-baseline gap-1.5 leading-none">
-                                            <span class="text-[13px] font-bold text-zinc-900 truncate">{{ $m[0] }}</span>
-                                            <span class="text-[13px] font-bold font-mono text-zinc-900">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2 leading-none">
+                                            <div class="flex items-center gap-1.5 min-w-0" 
+                                                 onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
+                                                <span class="text-[14px] font-bold text-zinc-900 truncate cursor-pointer hover:text-violet-600 transition-colors">
+                                                    {{ $address->alias ?: $m[0] }}
+                                                </span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-300 cursor-pointer hover:text-violet-400" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                </svg>
+                                            </div>
+
+                                            <form id="update-alias-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.update_alias', $address->id) }}" method="POST" class="hidden">
+                                                @csrf
+                                                <input type="hidden" name="alias" value="">
+                                            </form>
+                                            
+                                            <span class="text-[14px] font-bold font-mono text-zinc-900 shrink-0">
                                                 {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
                                             </span>
-                                            <span class="text-[10px] font-bold text-zinc-400 uppercase">{{ $m[1] }}</span>
+                                            <span class="text-[10px] font-bold text-zinc-400 uppercase shrink-0">{{ $m[1] }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 mt-1 min-w-0">
                                             @if($address->last_sync_at)

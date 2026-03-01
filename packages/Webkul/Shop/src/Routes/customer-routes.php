@@ -249,6 +249,7 @@ Route::prefix('customer')->group(function () {
 
                 Route::get('verify/{id}', 'verify')->name('shop.customers.account.crypto.verify');
 
+                Route::post('update-alias/{id}', 'updateAlias')->name('shop.customers.account.crypto.update_alias');
                 Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
             });
         });

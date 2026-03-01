@@ -45,6 +45,7 @@ class CryptoController extends Controller
         $request->validate([
             'network' => 'required|in:bitcoin,ethereum,ton,usdt_ton,dash',
             'address' => 'required|string',
+            'alias' => 'nullable|string|max:255',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -62,6 +63,7 @@ class CryptoController extends Controller
         $cryptoAddress = $customer->crypto_addresses()->create([
             'network' => $request->network,
             'address' => $request->address,
+            'alias' => $request->alias,
         ]);
 
         // Trigger immediate sync
@@ -69,6 +71,29 @@ class CryptoController extends Controller
 
         session()->flash('show_verify_id', $cryptoAddress->id);
         session()->flash('success', 'Крипто-адрес успешно добавлен и синхронизирован.');
+
+        return redirect()->route('shop.customers.account.crypto.index');
+    }
+
+    /**
+     * Update alias for the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateAlias(Request $request, $id)
+    {
+        $request->validate([
+            'alias' => 'nullable|string|max:255',
+        ]);
+
+        $cryptoAddress = auth()->guard('customer')->user()->crypto_addresses()->findOrFail($id);
+
+        $cryptoAddress->update([
+            'alias' => $request->alias,
+        ]);
+
+        session()->flash('success', 'Название кошелька обновлено.');
 
         return redirect()->route('shop.customers.account.crypto.index');
     }
