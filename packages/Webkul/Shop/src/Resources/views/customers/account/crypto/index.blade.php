@@ -1,18 +1,22 @@
 @push('scripts')
     <script>
+        function copyToClipboard(text, btnEl) {
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btnEl.innerHTML;
+                btnEl.innerHTML = '<span class="text-emerald-400 text-[11px] font-bold">✓ Скопировано</span>';
+                setTimeout(() => btnEl.innerHTML = original, 2000);
+            });
+        }
+
         function showVerifyModal(id, network, amount, address) {
             document.getElementById('verify-modal').classList.remove('hidden');
             document.getElementById('verify-modal').classList.add('flex');
             const currencySymbols = {
-                bitcoin: 'BTC',
-                ethereum: 'ETH',
-                ton: 'TON',
-                usdt_ton: 'USDT',
-                dash: 'DASH'
+                bitcoin: 'BTC', ethereum: 'ETH', ton: 'TON', usdt_ton: 'USDT', dash: 'DASH'
             };
             document.getElementById('verify-amount').innerText = amount + ' ' + (currencySymbols[network] || '');
             document.getElementById('verify-id').value = id;
-            
+
             const destAddresses = {
                 bitcoin: '{{ config('crypto.verification_addresses.bitcoin') }}',
                 ethereum: '{{ config('crypto.verification_addresses.ethereum') }}',
@@ -21,15 +25,13 @@
                 dash: '{{ config('crypto.verification_addresses.dash') }}'
             };
             const destAddress = destAddresses[network];
-            
             document.getElementById('verify-dest-address').innerText = destAddress;
             document.getElementById('verify-dest-address-copy').onclick = () => {
                 navigator.clipboard.writeText(destAddress);
-                const originalText = document.getElementById('verify-dest-address-copy').innerText;
-                document.getElementById('verify-dest-address-copy').innerText = 'Скопировано!';
-                setTimeout(() => document.getElementById('verify-dest-address-copy').innerText = originalText, 2000);
+                const btn = document.getElementById('verify-dest-address-copy');
+                btn.innerText = '✓';
+                setTimeout(() => btn.innerText = 'Копировать', 2000);
             };
-
             const verifyLink = "{{ route('shop.customers.account.crypto.verify', ':id') }}".replace(':id', id);
             document.getElementById('check-verify-btn').href = verifyLink;
         }
@@ -43,220 +45,259 @@
 
 <x-shop::layouts.account>
     {{-- Verify Modal --}}
-    <div id="verify-modal" class="hidden fixed inset-0 z-[100] items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div class="bg-white rounded-[24px] w-full max-w-[400px] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div class="p-6 text-center border-b border-zinc-100">
-                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="icon-shield text-3xl"></span>
+    <div id="verify-modal"
+        class="hidden fixed inset-0 z-[100] items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+        <div class="bg-white rounded-[28px] w-full max-w-[400px] overflow-hidden shadow-2xl">
+            <div class="bg-gradient-to-br from-violet-600 to-indigo-600 p-6 text-center">
+                <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                    <span class="icon-shield text-white text-2xl"></span>
                 </div>
-                <h3 class="text-xl font-bold text-zinc-900">Верификация адреса</h3>
-                <p class="text-sm text-zinc-500 mt-2">Докажите владение кошельком</p>
+                <h3 class="text-xl font-bold text-white">Верификация</h3>
+                <p class="text-violet-200 text-sm mt-1">Докажите владение кошельком</p>
             </div>
 
-            <div class="p-6 space-y-4">
-                <div class="bg-zinc-50 p-4 rounded-2xl border border-zinc-100">
-                    <p class="text-[13px] text-zinc-500 mb-1">Сумма платежа:</p>
-                    <p id="verify-amount" class="text-lg font-bold text-zinc-900">0.0001337 BTC</p>
+            <div class="p-6 space-y-3">
+                <div class="bg-violet-50 border border-violet-100 p-4 rounded-2xl">
+                    <p class="text-[12px] text-violet-500 font-medium mb-1 uppercase tracking-wide">Сумма платежа</p>
+                    <p id="verify-amount" class="text-xl font-bold text-violet-900 font-mono">—</p>
                 </div>
 
-                <div class="bg-zinc-50 p-4 rounded-2xl border border-zinc-100">
-                    <p class="text-[13px] text-zinc-500 mb-1">Отправить на адрес:</p>
-                    <div class="flex items-center justify-between">
-                        <p id="verify-dest-address" class="text-[11px] font-mono font-bold text-zinc-600 break-all leading-tight max-w-[240px]">0x...</p>
-                        <button id="verify-dest-address-copy" class="text-[11px] text-[#7C45F5] font-bold">Скопировать</button>
+                <div class="bg-zinc-50 border border-zinc-100 p-4 rounded-2xl">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <p class="text-[12px] text-zinc-400 font-medium mb-1 uppercase tracking-wide">Отправить на
+                                адрес</p>
+                            <p id="verify-dest-address"
+                                class="text-[12px] font-mono font-bold text-zinc-700 break-all leading-relaxed">—</p>
+                        </div>
+                        <button id="verify-dest-address-copy"
+                            class="shrink-0 text-[11px] text-violet-600 font-bold bg-violet-50 border border-violet-100 px-3 py-1.5 rounded-xl mt-1 active:scale-95 transition-all">
+                            Копировать
+                        </button>
                     </div>
                 </div>
 
-                <div class="text-sm text-zinc-600 space-y-2 leading-relaxed">
-                    <p>1. Отправьте <b>точно указанную</b> сумму со своего кошелька на наш адрес.</p>
-                    <p>2. Эта транзакция подтвердит ваш контроль над адресом (B -> A).</p>
-                    <p>3. Нажмите "Проверить" после отправки.</p>
+                <div
+                    class="text-[13px] text-zinc-500 space-y-1.5 leading-relaxed bg-zinc-50 rounded-2xl p-4 border border-zinc-100">
+                    <p>1. Отправьте <b class="text-zinc-700">точно указанную</b> сумму на наш адрес.</p>
+                    <p>2. Это докажет контроль над вашим кошельком.</p>
+                    <p>3. Нажмите «Проверить» после отправки.</p>
                 </div>
             </div>
 
-            <div class="p-6 bg-zinc-50/50 flex flex-col gap-2">
-                <a id="check-verify-btn" href="#" 
-                    class="w-full bg-[#7C45F5] text-white font-bold py-4 rounded-2xl active:scale-[0.98] transition-all text-center">
+            <div class="px-6 pb-6 flex flex-col gap-2">
+                <a id="check-verify-btn" href="#"
+                    class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-4 rounded-2xl active:scale-[0.98] transition-all text-center shadow-lg shadow-violet-200">
                     Проверить верификацию
                 </a>
-                <button onclick="closeVerifyModal()" 
-                    class="w-full text-zinc-400 font-bold py-3 active:opacity-50 transition-all">
+                <button onclick="closeVerifyModal()"
+                    class="w-full text-zinc-400 font-semibold py-3 active:opacity-50 transition-all text-[14px]">
                     Позже
                 </button>
             </div>
         </div>
     </div>
-    
+
     <input type="hidden" id="verify-id" value="">
 
-    {{-- Page Title --}}
-    <x-slot:title>
-        Крипто Адреса
-        </x-slot>
+    <x-slot:title>Крипто Адреса</x-slot>
 
+        @push('styles')
+            <style>
+                .net-card {
+                    background: white;
+                    border-radius: 20px;
+                    border: 1.5px solid #f0f0f3;
+                    overflow: hidden;
+                    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+                    margin-bottom: 12px;
+                    transition: box-shadow 0.2s;
+                }
 
-        <div class="flex-auto ios-page">
-            <div class="ios-header">
-                <h1 class="ios-title">Крипто Адреса</h1>
-            </div>
+                .net-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    padding: 3px 10px;
+                    border-radius: 999px;
+                }
 
-            {{-- Add New Address Form --}}
-            <div class="ios-group-title">Добавить новый адрес</div>
-            <div class="ios-group">
+                .verified-badge {
+                    background: #ecfdf5;
+                    color: #059669;
+                    border: 1px solid #a7f3d0;
+                }
+
+                .unverified-badge {
+                    background: #f4f4f5;
+                    color: #71717a;
+                    border: 1px solid #e4e4e7;
+                }
+            </style>
+        @endpush
+
+        <div class="flex-auto pb-10 pt-2 ios-page">
+
+            {{-- Add Address Form --}}
+            <div class="ios-group-title">Добавить адрес</div>
+            <div class="rounded-[20px] border border-zinc-100 bg-white mb-6 overflow-hidden shadow-sm">
                 <x-shop::form :action="route('shop.customers.account.crypto.store')">
-                    <div class="ios-row">
-                        <label class="ios-label">Сеть</label>
-                        <div class="ios-input-wrapper">
+                    <div class="p-5 flex flex-col gap-4">
+
+                        {{-- Network selector styled --}}
+                        <div>
+                            <label
+                                class="block text-[12px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Сеть</label>
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="select" name="network" rules="required"
-                                    :label="'Сеть'" class="!p-[10px] !text-[14px]">
-                                    <option value="bitcoin">Bitcoin (BTC)</option>
-                                    <option value="ethereum">Ethereum (ETH / ERC20)</option>
-                                    <option value="ton">TON</option>
-                                    <option value="usdt_ton">Tether (USDT на TON)</option>
-                                    <option value="dash">DASH</option>
+                                    :label="'Сеть'"
+                                    class="!rounded-xl !border-zinc-200 !text-[14px] !text-zinc-800 !py-3 !px-4 focus:!border-violet-400 focus:!ring-2 focus:!ring-violet-100">
+                                    <option value="bitcoin">₿ Bitcoin (BTC)</option>
+                                    <option value="ethereum">Ξ Ethereum (ETH / ERC20)</option>
+                                    <option value="ton">◎ TON</option>
+                                    <option value="usdt_ton">₮ USDT (сеть TON)</option>
+                                    <option value="dash">D Dash (DASH)</option>
                                 </x-shop::form.control-group.control>
                             </x-shop::form.control-group>
                         </div>
-                    </div>
 
-                    <div class="ios-row">
-                        <label class="ios-label">Адрес</label>
-                        <div class="ios-input-wrapper">
-                            <x-shop::form.control-group class="!mb-0 w-full">
+                        {{-- Address input --}}
+                        <div>
+                            <label
+                                class="block text-[12px] font-semibold text-zinc-400 uppercase tracking-wider mb-2">Адрес
+                                кошелька</label>
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="text" name="address" rules="required"
-                                    placeholder="Введите ваш адрес" :label="'Адрес'" />
+                                    placeholder="Введите адрес кошелька" :label="'Адрес'"
+                                    class="!rounded-xl !border-zinc-200 !text-[13px] font-mono !py-3 !px-4 focus:!border-violet-400 focus:!ring-2 focus:!ring-violet-100" />
                                 <x-shop::form.control-group.error control-name="address" />
                             </x-shop::form.control-group>
                         </div>
-                    </div>
 
-                    <div class="p-4 bg-white">
-                        <button type="submit" class="ios-button-primary w-full !rounded-xl !py-3">
-                            Добавить Адрес
+                        <button type="submit"
+                            class="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-violet-200 active:scale-[0.98] transition-all text-[15px]">
+                            + Добавить адрес
                         </button>
                     </div>
                 </x-shop::form>
             </div>
 
-            {{-- Linked Addresses List --}}
+            {{-- Addresses List --}}
             <div class="ios-group-title">Ваши адреса</div>
-            <div class="ios-group">
-                @if ($addresses->isEmpty())
-                    <div class="p-8 text-center text-zinc-400">
-                        У вас пока нет привязанных крипто-адресов.
-                    </div>
-                @else
-                    @foreach ($addresses as $address)
-                        <div class="ios-row !h-auto !py-4">
-                            <div class="flex flex-col gap-1 flex-1 overflow-hidden mr-2">
-                                <div class="flex items-center gap-2">
-                                    @php
-                                        $networkColors = [
-                                            'bitcoin' => 'text-orange-500',
-                                            'ethereum' => 'text-blue-500',
-                                            'ton' => 'text-cyan-500',
-                                            'usdt_ton' => 'text-emerald-500',
-                                            'dash' => 'text-blue-600',
-                                        ];
-                                        $color = $networkColors[$address->network] ?? 'text-gray-500';
-                                    @endphp
-                                    <span
-                                        class="text-sm font-bold uppercase {{ $color }}">
-                                        {{ $address->network === 'usdt_ton' ? 'USDT (TON)' : $address->network }}
-                                    </span>
-                                    
-                                    @if($address->isVerified())
-                                        <span class="flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
-                                            <span class="icon-checkmark text-[10px]"></span>
-                                            Верифицирован
-                                        </span>
-                                    @else
-                                        <span class="text-[11px] font-bold text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-full border border-zinc-200">
-                                            Не верифицирован
-                                        </span>
-                                    @endif
 
-                                    <span class="text-xs text-zinc-400">
-                                        {{ $address->last_sync_at ? 'Обновлено: ' . $address->last_sync_at->diffForHumans() : 'Никогда не обновлялось' }}
-                                    </span>
+            @if ($addresses->isEmpty())
+                <div class="flex flex-col items-center justify-center py-16 text-center">
+                    <div
+                        class="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mb-4 border border-zinc-100">
+                        <span class="text-3xl">🔐</span>
+                    </div>
+                    <p class="text-zinc-500 font-semibold text-[15px]">Нет привязанных адресов</p>
+                    <p class="text-zinc-400 text-[13px] mt-1">Добавьте кошелёк выше, чтобы получать депозиты</p>
+                </div>
+            @else
+                @foreach ($addresses as $address)
+                    @php
+                        $networkMeta = [
+                            'bitcoin' => ['label' => 'Bitcoin', 'ticker' => 'BTC', 'symbol' => '₿', 'from' => '#F7931A', 'to' => '#F5A623', 'text' => '#7A4100'],
+                            'ethereum' => ['label' => 'Ethereum', 'ticker' => 'ETH', 'symbol' => 'Ξ', 'from' => '#627EEA', 'to' => '#8A9FEF', 'text' => '#1E3A8A'],
+                            'ton' => ['label' => 'TON', 'ticker' => 'TON', 'symbol' => '◎', 'from' => '#0098EA', 'to' => '#33BFFF', 'text' => '#0c4a6e'],
+                            'usdt_ton' => ['label' => 'USDT (TON)', 'ticker' => 'USDT', 'symbol' => '₮', 'from' => '#26A17B', 'to' => '#4DBFA0', 'text' => '#064E3B'],
+                            'dash' => ['label' => 'Dash', 'ticker' => 'DASH', 'symbol' => 'D', 'from' => '#1c75bc', 'to' => '#4DA3E0', 'text' => '#1e3a5f'],
+                        ];
+                        $meta = $networkMeta[$address->network] ?? ['label' => strtoupper($address->network), 'ticker' => '?', 'symbol' => '?', 'from' => '#aaa', 'to' => '#ccc', 'text' => '#333'];
+                        $displayAmount = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
+                        $explorerLinks = [
+                            'bitcoin' => 'https://www.blockchain.com/explorer/addresses/btc/' . $address->address,
+                            'ethereum' => 'https://etherscan.io/address/' . $address->address,
+                            'ton' => 'https://tonviewer.com/' . $address->address,
+                            'usdt_ton' => 'https://tonviewer.com/' . $address->address,
+                            'dash' => 'https://insight.dash.org/insight/address/' . $address->address,
+                        ];
+                        $explorerLink = $explorerLinks[$address->network] ?? '#';
+                    @endphp
+
+                    <div class="net-card">
+                        {{-- Card header gradient --}}
+                        <div class="flex items-center justify-between px-5 py-3"
+                            style="background: linear-gradient(135deg, {{ $meta['from'] }}18, {{ $meta['to'] }}12);">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-white text-[17px]"
+                                    style="background: linear-gradient(135deg, {{ $meta['from'] }}, {{ $meta['to'] }});">
+                                    {{ $meta['symbol'] }}
                                 </div>
-                                <span class="text-[13px] font-mono text-zinc-600 truncate bg-zinc-50 px-2 py-1 rounded"
-                                    title="{{ $address->address }}">
-                                    {{ $address->address }}
-                                </span>
+                                <div>
+                                    <div class="text-[14px] font-bold text-zinc-900">{{ $meta['label'] }}</div>
+                                    <div class="text-[11px] text-zinc-400">{{ $meta['ticker'] }}</div>
+                                </div>
                             </div>
 
-                            <div class="flex flex-col items-end gap-2">
-                                <span class="text-[17px] font-bold text-zinc-900 leading-none">
-                                    {{ number_format($address->balance, 8) }}
-                                    @php
-                                        $symbols = [
-                                            'bitcoin' => 'BTC',
-                                            'ethereum' => 'ETH',
-                                            'ton' => 'TON',
-                                            'usdt_ton' => 'USDT',
-                                            'dash' => 'DASH',
-                                        ];
-                                        $symbol = $symbols[$address->network] ?? '';
-                                    @endphp
-                                    <span
-                                        class="text-[12px] uppercase text-zinc-400">{{ $symbol }}</span>
-                                </span>
-
-                                <div class="flex gap-4">
-                                    <a href="{{ route('shop.customers.account.crypto.sync', $address->id) }}"
-                                        class="text-[13px] text-[#7C45F5] font-semibold active:opacity-50">
-                                        Обновить
-                                    </a>
-
-                                    @php
-                                        $explorerLinks = [
-                                            'bitcoin' => 'https://www.blockchain.com/explorer/addresses/btc/' . $address->address,
-                                            'ethereum' => 'https://etherscan.io/address/' . $address->address,
-                                            'ton' => 'https://tonviewer.com/' . $address->address,
-                                            'usdt_ton' => 'https://tonviewer.com/' . $address->address,
-                                            'dash' => 'https://insight.dash.org/insight/address/' . $address->address,
-                                        ];
-                                        $explorerLink = $explorerLinks[$address->network] ?? '#';
-                                    @endphp
-                                    <a href="{{ $explorerLink }}"
-                                        target="_blank" class="text-[13px] text-zinc-500 font-semibold active:opacity-50">
-                                        История
-                                    </a>
-
-                                    @php
-                                        $displayAmount = $address->network === 'usdt_ton' 
-                                            ? number_format($address->verification_amount, 6, '.', '') 
-                                            : number_format($address->verification_amount, 8, '.', '');
-                                        // Remove trailing zeros for a cleaner look while keeping necessary precision
-                                        $displayAmount = rtrim(rtrim($displayAmount, '0'), '.');
-                                    @endphp
-                                    <button
-                                        onclick="showVerifyModal('{{ $address->id }}', '{{ $address->network }}', '{{ $displayAmount }}', '{{ $address->address }}')"
-                                        class="text-[13px] text-emerald-600 font-semibold active:opacity-50">
-                                        Верифицировать
-                                    </button>
-
-                                    <form action="{{ route('shop.customers.account.crypto.delete', $address->id) }}"
-                                        method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-[13px] text-red-500 font-semibold active:opacity-50"
-                                            onclick="return confirm('Вы уверены, что хотите удалить этот адрес?')">
-                                            Удалить
-                                        </button>
-                                    </form>
-                                </div>
+                            <div class="flex items-center gap-2">
+                                @if($address->isVerified())
+                                    <span class="net-badge verified-badge">
+                                        <span class="icon-checkmark text-[9px]"></span> Верифицирован
+                                    </span>
+                                @else
+                                    <span class="net-badge unverified-badge">Не верифицирован</span>
+                                @endif
                             </div>
                         </div>
-                    @endforeach
-                @endif
-            </div>
 
-            <p class="px-6 py-4 text-[12px] text-zinc-400 text-center leading-tight">
-                Балансы автоматически синхронизируются с блокчейн-обозревателями. Это может занять несколько минут после
-                совершения транзакции.
+                        {{-- Address row --}}
+                        <div class="px-5 py-3 border-t border-zinc-50 flex items-center justify-between gap-3">
+                            <span class="text-[12px] font-mono text-zinc-500 truncate flex-1">{{ $address->address }}</span>
+                            <button onclick="copyToClipboard('{{ $address->address }}', this)"
+                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-violet-50 border border-violet-100 px-3 py-1.5 rounded-xl active:scale-95 transition-all">
+                                <span>Копировать</span>
+                            </button>
+                        </div>
+
+                        {{-- Balance row --}}
+                        <div class="px-5 py-3 border-t border-zinc-50 flex items-end justify-between">
+                            <div>
+                                <div class="text-[11px] text-zinc-400 uppercase tracking-wider mb-0.5">Баланс</div>
+                                <div class="text-[22px] font-bold font-mono text-zinc-900 leading-none">
+                                    {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                    <span class="text-[13px] text-zinc-400 font-semibold">{{ $meta['ticker'] }}</span>
+                                </div>
+                            </div>
+                            @if($address->last_sync_at)
+                                <div class="text-[11px] text-zinc-300">{{ $address->last_sync_at->diffForHumans() }}</div>
+                            @endif
+                        </div>
+
+                        {{-- Actions --}}
+                        <div class="px-5 py-3 border-t border-zinc-100 flex items-center gap-5 bg-zinc-50/50">
+                            <a href="{{ route('shop.customers.account.crypto.sync', $address->id) }}"
+                                class="text-[13px] text-violet-600 font-semibold active:opacity-50 transition-all">
+                                ↻ Обновить
+                            </a>
+                            <a href="{{ $explorerLink }}" target="_blank"
+                                class="text-[13px] text-zinc-400 font-semibold active:opacity-50 transition-all">
+                                ↗ Эксплорер
+                            </a>
+                            <button
+                                onclick="showVerifyModal('{{ $address->id }}', '{{ $address->network }}', '{{ $displayAmount }}', '{{ $address->address }}')"
+                                class="text-[13px] text-emerald-600 font-semibold active:opacity-50 transition-all">
+                                ✓ Верифицировать
+                            </button>
+                            <form action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
+                                class="ml-auto">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" onclick="return confirm('Удалить этот адрес?')"
+                                    class="text-[13px] text-red-400 font-semibold active:opacity-50 transition-all">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+
+            <p class="px-4 py-4 text-[12px] text-zinc-300 text-center leading-tight">
+                Балансы синхронизируются автоматически. Депозиты появляются в течение нескольких минут.
             </p>
         </div>
 </x-shop::layouts.account>
