@@ -167,223 +167,149 @@
                 </button>
             </div>
 
-            {{-- Step: Selection --}}
-            <div id="step-selection"
-                class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
-                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Откуда будете пополнять?
-                </p>
-                <div class="flex flex-col gap-3">
-                    @foreach($verifiedAddresses as $address)
-                        @php
-                            $nm = ['bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC'], 'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH'], 'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON'], 'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH']];
-                            $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network)];
-                            $netMap = ['ton' => ['chain' => 'ton'], 'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'], 'bitcoin' => ['chain' => 'btc'], 'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'], 'dash' => ['chain' => 'dash']];
-                            $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
-                            $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
-                            if (isset($nmData['token']))
-                                $parts[] = $nmData['token'];
-                            if ($address->alias)
-                                $parts[] = $address->alias;
-                            $fullAlias = implode('.', $parts);
-                        @endphp
-                        <div onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')"
-                            class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden hover:shadow-md hover:border-violet-100 transition-all p-3 cursor-pointer text-left">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[16px] font-bold shadow-sm shrink-0"
-                                    style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">{{ $m[2] }}</div>
-            {{-- Step: Details --}}
-            <div id="step-details"
-                class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
-                @foreach($verifiedAddresses as $address)
-                    <div id="details-wallet-{{ $address->id }}" class="hidden wallet-details-view">
-                        @php
-                            $asset = $allAssets[$address->network] ?? null;
-                            if (!$asset)
-                                continue;
-                            $netMap = ['ton' => ['chain' => 'ton'], 'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'], 'bitcoin' => ['chain' => 'btc'], 'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'], 'dash' => ['chain' => 'dash']];
-                            $parts = ["@" . $user->username, $netMap[$address->network]['chain'] ?? $address->network];
-                            if (isset($netMap[$address->network]['token']))
-                                $parts[] = $netMap[$address->network]['token'];
-                            if ($address->alias)
-                                $parts[] = $address->alias;
-                            $fullAlias = implode('.', $parts);
-                        @endphp
-                        <div class="mb-4 text-center">
-                            <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Средства
-                                зачисляются только с этого кошелька:</p>
-                            <div class="bg-zinc-50 rounded-2xl border border-zinc-100 p-4">
-                                <span class="text-[14px] font-bold text-zinc-900 block mb-1">{{ $fullAlias }}</span>
-                                <code class="text-[11px] font-mono text-zinc-400 break-all">{{ $address->address }}</code>
+            {{-- Step: Management (Combined Deposit & Management) --}}
+            <div id="step-management" class="hidden space-y-4">
+                @foreach($allAddresses as $address)
+                    @php
+                        $nm = [
+                            'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
+                            'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
+                            'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
+                            'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
+                            'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/']
+                        ];
+                        $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
+                        
+                        $netMap = [
+                            'ton' => ['chain' => 'ton'],
+                            'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
+                            'bitcoin' => ['chain' => 'btc'],
+                            'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
+                            'dash' => ['chain' => 'dash']
+                        ];
+                        $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
+                        
+                        $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
+                        if (isset($nmData['token'])) $parts[] = $nmData['token'];
+                        if ($address->alias) $parts[] = $address->alias;
+                        $fullAlias = implode('.', $parts);
+
+                        $explorerUrl = $m[6] . $address->address;
+                        $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
+                        
+                        // Style attributes based on coin
+                        $coinColor = $m[3];
+                    @endphp
+                    
+                    <div class="bg-white rounded-[4px] shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
+                        {{-- Clickable Area for Deposit --}}
+                        <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="flex-1 flex gap-5 p-6 min-w-0 text-left cursor-pointer">
+                            {{-- Icon Column --}}
+                            <div class="relative shrink-0">
+                                <div class="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center text-white text-[22px] font-bold shadow-sm" style="background: {{ $coinColor }}">
+                                    {{ $m[2] }}
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex flex-col items-center my-4 opacity-30">
-                            <div class="w-px h-6 border-l border-dashed border-zinc-400"></div>
-                            <div class="text-zinc-400 text-xl">↓</div>
-                        </div>
-                        <div class="bg-zinc-900 rounded-3xl p-6 shadow-xl flex flex-col items-center">
-                            <div class="text-[11px] text-zinc-500 uppercase font-bold tracking-widest mb-4">Адрес для
-                                пополнения ({{ $asset['symbol'] }})</div>
-                            <div class="bg-white p-3 rounded-2xl mb-5"><img
-                                    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($asset['address']) }}"
-                                    alt="QR" class="w-32 h-32 block"></div>
-                            <div class="text-[13px] font-mono text-white break-all mb-5 text-center px-2 select-all">
-                                {{ $asset['address'] }}</div>
-                            <button onclick="copyAddr('{{ $asset['address'] }}', this)"
-                                class="w-full bg-white/10 text-white text-[13px] font-bold py-3.5 rounded-xl border border-white/5 active:bg-white/20 transition-all font-mono">COPY
-                                ADDR</button>
-                        </div>
-                        <div class="bg-violet-50 border border-violet-100 rounded-2xl p-4 mt-8 flex gap-3">
-                            <span class="text-xl">⚠️</span>
-                            <p class="text-[12px] text-violet-700 leading-tight"><b>Важно:</b> пополняйте баланс строго с
-                                верифицированного кошелька выше. Другие адреса не будут распознаны системой.</p>
+
+                            {{-- Main Content Column --}}
+                            <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                                {{-- Header: Verified Icon + Alias --}}
+                                <div class="flex items-center gap-1.5 min-w-0">
+                                    @if($address->isVerified())
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
+                                        </svg>
+                                    @endif
+                                    <span class="text-[18px] font-bold text-black truncate tracking-tight">{{ $fullAlias }}</span>
+                                </div>
+
+                                {{-- Network Breadcrumbs + Address (Premium View) --}}
+                                <div class="flex items-center gap-2 text-[12px] font-bold text-zinc-400 uppercase tracking-tight">
+                                    <span class="shrink-0">{{ $m[5] }}</span>
+                                    <span class="shrink-0 text-zinc-200">›</span>
+                                    <span class="shrink-0">{{ $m[1] }}</span>
+                                    <span class="shrink-0 text-zinc-200">›</span>
+                                    <div class="flex items-center gap-1.5 min-w-0 pr-2">
+                                        <code class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
+                                    </div>
+                                </div>
+
+                                {{-- Balance + Sync Status --}}
+                                <div class="flex items-center gap-3 mt-0.5">
+                                    <span class="text-[16px] font-bold font-mono text-black">
+                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                        <span class="text-[12px] text-zinc-400 font-bold uppercase ml-1">{{ $m[1] }}</span>
+                                    </span>
+                                    <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        @if($address->updated_at)
+                                            {{ $address->updated_at->diffForHumans() }}
+                                        @else
+                                            не синхронизирован
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </button>
+
+                        {{-- Action Column (Delete) --}}
+                        <div class="shrink-0 flex items-center pr-6">
+                            <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="button" onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')" 
+                                    class="w-[42px] h-[42px] rounded-[16px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @endforeach
+
+                <button onclick="goToAddWallet()" class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3">
+                    <span class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
+                    <span class="text-[15px]">Добавить новый кошелек</span>
+                </button>
             </div>
 
-            {{-- Step: Management (Combined Deposit & Management) --}}
-        <div id="step-management" class="hidden space-y-4">
-            @foreach($allAddresses as $address)
-                @php
-                    $nm = [
-                        'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
-                        'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
-                        'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
-                        'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
-                        'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/']
-                    ];
-                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
-                    
-                    $netMap = [
-                        'ton' => ['chain' => 'ton'],
-                        'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
-                        'bitcoin' => ['chain' => 'btc'],
-                        'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
-                        'dash' => ['chain' => 'dash']
-                    ];
-                    $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
-                    
-                    $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
-                    if (isset($nmData['token'])) $parts[] = $nmData['token'];
-                    if ($address->alias) $parts[] = $address->alias;
-                    $fullAlias = implode('.', $parts);
-
-                    $explorerUrl = $m[6] . $address->address;
-                    $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
-                    
-                    // Style attributes based on coin
-                    $coinColor = $m[3];
-                @endphp
-                
-                <div class="bg-white rounded-[4px] shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
-                    {{-- Clickable Area for Deposit --}}
-                    <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="flex-1 flex gap-5 p-6 min-w-0 text-left cursor-pointer">
-                        {{-- Icon Column --}}
-                        <div class="relative shrink-0">
-                            <div class="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center text-white text-[22px] font-bold shadow-sm" style="background: {{ $coinColor }}">
-                                {{ $m[2] }}
-                            </div>
-                        </div>
-
-                        {{-- Main Content Column --}}
-                        <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-                            {{-- Header: Verified Icon + Alias --}}
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                @if($address->isVerified())
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
-                                    </svg>
-                                @endif
-                                <span class="text-[18px] font-bold text-black truncate tracking-tight">{{ $fullAlias }}</span>
-                            </div>
-
-                            {{-- Network Breadcrumbs + Address (Premium View) --}}
-                            <div class="flex items-center gap-2 text-[12px] font-bold text-zinc-400 uppercase tracking-tight">
-                                <span class="shrink-0">{{ $m[5] }}</span>
-                                <span class="shrink-0 text-zinc-200">›</span>
-                                <span class="shrink-0">{{ $m[1] }}</span>
-                                <span class="shrink-0 text-zinc-200">›</span>
-                                <div class="flex items-center gap-1.5 min-w-0 pr-2">
-                                    <code class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
-                                </div>
-                            </div>
-
-                            {{-- Balance + Sync Status --}}
-                            <div class="flex items-center gap-3 mt-0.5">
-                                <span class="text-[16px] font-bold font-mono text-black">
-                                    {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                    <span class="text-[12px] text-zinc-400 font-bold uppercase ml-1">{{ $m[1] }}</span>
-                                </span>
-                                <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                    @if($address->updated_at)
-                                        {{ $address->updated_at->diffForHumans() }}
-                                    @else
-                                        не синхронизирован
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </button>
-
-                    {{-- Action Column (Delete) --}}
-                    <div class="shrink-0 flex items-center pr-6">
-                        <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST" class="inline">
-                            @csrf @method('DELETE')
-                            <button type="button" onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')" 
-                                class="w-[42px] h-[42px] rounded-[16px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @endforeach
-
-            <button onclick="goToAddWallet()" class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
-                <span class="text-[15px]">Добавить новый кошелек</span>
-            </button>
-        </div>
-
             {{-- Step: Deposit Details --}}
-        <div id="step-details" class="hidden">
-            @foreach($allAddresses as $address)
-                @php
-                    $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
-                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
-                @endphp
-                <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden space-y-4">
-                    <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden relative">
-                        <div class="p-8 text-center space-y-6">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($address->address) }}"
-                                alt="QR Code" class="w-48 h-48 mx-auto rounded-3xl shadow-sm p-2 bg-white border border-zinc-100" />
-                            <div class="space-y-2">
-                                <p class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest">Адрес пополнения
-                                    ({{ $m[0] }})</p>
-                                <div class="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 relative group cursor-pointer hover:bg-violet-50 hover:border-violet-100 transition-all"
-                                    onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
-                                    <code
-                                        class="font-mono text-[14px] text-zinc-800 break-all block pb-6">{{ $address->address }}</code>
-                                    <div
-                                        class="absolute bottom-3 right-4 flex items-center gap-1.5 text-violet-500 font-bold text-[11px] uppercase tracking-wider">
-                                        <span class="copy-txt">Скопировать</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                        </svg>
+            <div id="step-details" class="hidden">
+                @foreach($allAddresses as $address)
+                    @php
+                        $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
+                        $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
+                    @endphp
+                    <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden space-y-4">
+                        <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden relative">
+                            <div class="p-8 text-center space-y-6">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($address->address) }}"
+                                    alt="QR Code" class="w-48 h-48 mx-auto rounded-3xl shadow-sm p-2 bg-white border border-zinc-100" />
+                                <div class="space-y-2">
+                                    <p class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest">Адрес пополнения
+                                        ({{ $m[0] }})</p>
+                                    <div class="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 relative group cursor-pointer hover:bg-violet-50 hover:border-violet-100 transition-all"
+                                        onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
+                                        <code
+                                            class="font-mono text-[14px] text-zinc-800 break-all block pb-6">{{ $address->address }}</code>
+                                        <div
+                                            class="absolute bottom-3 right-4 flex items-center gap-1.5 text-violet-500 font-bold text-[11px] uppercase tracking-wider">
+                                            <span class="copy-txt">Скопировать</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
-        </div>
+                @endforeach
+            </div>
 
         {{-- Step: Add Wallet --}}
         <div id="step-add-wallet" class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-6 md:p-8">
