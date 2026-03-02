@@ -85,7 +85,7 @@
             @endphp
 
                 <div id="step-empty"
-                    class="bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
+                    class="{{ $verifiedAddresses->isEmpty() ? '' : 'hidden' }} bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
                     <div class="w-16 h-16 rounded-full bg-violet-50 flex items-center justify-center text-3xl">🔐</div>
                     <div>
                         <p class="text-[16px] font-bold text-zinc-800">Нет верифицированных кошельков</p>
@@ -98,10 +98,10 @@
                         + Добавить кошелёк
                     </button>
                 </div>
-            @else
+
                 {{-- Wallet Selection (Flat List) --}}
                 <div id="step-selection"
-                    class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
+                    class="{{ $verifiedAddresses->isEmpty() ? 'hidden' : '' }} bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
                     <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Откуда будете
                         пополнять?
                     </p>
@@ -487,7 +487,6 @@
                                     </form>
                             </div>
                         @endforeach
-                    @endif
                     <button type="button" onclick="goToAddWallet()"
                         class="w-full py-4 mt-2 rounded-[24px] border border-dashed border-zinc-200 bg-zinc-50/10 text-zinc-400 hover:text-violet-500 hover:border-violet-200 hover:bg-violet-50/30 transition-all font-bold flex items-center justify-center gap-2 group active:scale-[0.98]">
                         + Добавить новый кошелек
