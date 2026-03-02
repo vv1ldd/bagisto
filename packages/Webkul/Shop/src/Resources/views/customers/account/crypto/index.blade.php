@@ -314,8 +314,6 @@
                                 </div>
                             </div>
 
-                            <input type="text" name="alias" placeholder="Название кошелька (необязательно)"
-                                class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[13px] py-3.5 px-4 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
 
                             <div class="relative group w-full">
                                 <input type="text" name="address" id="wallet-addr-input"
