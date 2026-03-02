@@ -143,6 +143,21 @@
 
                                         <div class="flex items-center gap-2 mt-0.5">
                                             <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $m[5] }} &gt; {{ $m[1] }} &gt; {{ $address->address }}</code>
+                                            <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
+                                                <button onclick="copyAddr('{{ $address->address }}', this)"
+                                                    class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                                        <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
+                                                    </svg>
+                                                </button>
+                                                <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                                    </svg>
+                                                </a>
+                                            </div>
                                         </div>
 
                                         <div class="flex items-center gap-3 mt-1.5">
@@ -247,8 +262,27 @@
                                                 </span>
                                             </div>
 
+                                            @php
+                                                $exp = ['bitcoin' => 'https://www.blockchain.com/explorer/addresses/btc/', 'ethereum' => 'https://etherscan.io/address/', 'ton' => 'https://tonviewer.com/', 'usdt_ton' => 'https://tonviewer.com/', 'dash' => 'https://insight.dash.org/insight/address/'];
+                                                $expLink = ($exp[$address->network] ?? '#') . $address->address;
+                                            @endphp
                                             <div class="flex items-center gap-2 mt-0.5">
                                                 <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $asset['symbol'] }} &gt; {{ $address->address }}</code>
+                                                <div class="flex items-center gap-1.5 shrink-0">
+                                                    <button onclick="copyAddr('{{ $address->address }}', this)"
+                                                        class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                                            <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
+                                                        </svg>
+                                                    </button>
+                                                    <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                                        </svg>
+                                                    </a>
+                                                </div>
                                             </div>
 
                                             <div class="flex items-center gap-3 mt-1.5">
