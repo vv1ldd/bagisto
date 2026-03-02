@@ -1,4 +1,4 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :back-link="url()->previous(route('shop.customers.account.credits.index'))">
     <x-slot:title>
         История транзакций
         </x-slot>

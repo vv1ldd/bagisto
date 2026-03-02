@@ -1,4 +1,4 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :back-link="url()->previous(route('shop.customers.account.index'))">
     <x-slot:title>
         Meanly Pay
         </x-slot>

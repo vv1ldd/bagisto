@@ -97,7 +97,7 @@
     </script>
 @endpush
 
-<x-shop::layouts.account :title="trans('shop::app.layouts.crypto-wallets')">
+<x-shop::layouts.account :back-link="url()->previous(route('shop.customers.account.index'))" :title="trans('shop::app.layouts.crypto-wallets')">
 
 
 
