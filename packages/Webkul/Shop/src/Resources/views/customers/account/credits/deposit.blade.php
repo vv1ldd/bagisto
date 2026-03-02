@@ -78,7 +78,7 @@
                 @if($verifiedAddresses->isEmpty())
                     {{-- No verified addresses --}}
                     <div
-                        class="bg-white rounded-2xl border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
+                        class="bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
                         <div class="w-16 h-16 rounded-full bg-violet-50 flex items-center justify-center text-3xl">🔐</div>
                         <div>
                             <p class="text-[16px] font-bold text-zinc-800">Нет верифицированных кошельков</p>
