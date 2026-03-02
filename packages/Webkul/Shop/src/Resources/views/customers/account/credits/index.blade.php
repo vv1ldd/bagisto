@@ -191,33 +191,6 @@
                             <div class="flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[16px] font-bold shadow-sm shrink-0"
                                     style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">{{ $m[2] }}</div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-1.5 truncate">
-                                        <div class="text-[#0095f6] shrink-0"><svg xmlns="http://www.w3.org/2000/svg"
-                                                class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                                <path
-                                                    d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
-                                            </svg></div>
-                                        <span class="text-[14px] font-bold text-zinc-900 truncate">{{ $fullAlias }}</span>
-                                    </div>
-                                    <code
-                                        class="text-[10px] font-mono text-zinc-400 truncate block mt-0.5">{{ $address->address }}</code>
-                                </div>
-                                <span class="text-zinc-300">→</span>
-                            </div>
-                        </div>
-                    @endforeach
-                    <button onclick="goToManagement()"
-                        class="w-full bg-zinc-50/50 rounded-2xl border border-dashed border-zinc-200 flex items-center gap-4 px-4 py-4 hover:border-violet-300 hover:bg-zinc-50 transition-all active:scale-[0.98] mt-2 group/manage text-left">
-                        <span
-                            class="w-10 h-10 rounded-xl flex items-center justify-center bg-zinc-200/50 text-zinc-500 text-[24px] shrink-0 group-hover/manage:bg-violet-100 group-hover/manage:text-violet-600 transition-colors">+</span>
-                        <div class="flex-1">
-                            <div class="text-[15px] font-bold text-zinc-900">Управление кошельками</div>
-                        </div>
-                    </button>
-                </div>
-            </div>
-
             {{-- Step: Details --}}
             <div id="step-details"
                 class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
@@ -268,158 +241,151 @@
                 @endforeach
             </div>
 
-            {{-- Step: Management --}}
-            <div id="step-management" class="hidden space-y-4">
-                @foreach($allAddresses as $address)
-                    @php
-                        $nm = [
-                            'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
-                            'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
-                            'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
-                            'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
-                            'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/']
-                        ];
-                        $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
+            {{-- Step: Management (Combined Deposit & Management) --}}
+        <div id="step-management" class="hidden space-y-4">
+            @foreach($allAddresses as $address)
+                @php
+                    $nm = [
+                        'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
+                        'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
+                        'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
+                        'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
+                        'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/']
+                    ];
+                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
+                    
+                    $netMap = [
+                        'ton' => ['chain' => 'ton'],
+                        'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
+                        'bitcoin' => ['chain' => 'btc'],
+                        'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
+                        'dash' => ['chain' => 'dash']
+                    ];
+                    $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
+                    
+                    $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
+                    if (isset($nmData['token'])) $parts[] = $nmData['token'];
+                    if ($address->alias) $parts[] = $address->alias;
+                    $fullAlias = implode('.', $parts);
 
-                        $netMap = [
-                            'ton' => ['chain' => 'ton'],
-                            'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
-                            'bitcoin' => ['chain' => 'btc'],
-                            'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
-                            'dash' => ['chain' => 'dash']
-                        ];
-                        $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
-
-                        $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
-                        if (isset($nmData['token']))
-                            $parts[] = $nmData['token'];
-                        if ($address->alias)
-                            $parts[] = $address->alias;
-                        $fullAlias = implode('.', $parts);
-
-                        $explorerUrl = $m[6] . $address->address;
-                        $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
-                    @endphp
-
-                    <div
-                        class="bg-white rounded-[28px] border border-zinc-100 shadow-sm p-5 hover:shadow-md transition-all group/card overflow-hidden">
-                        <div class="flex gap-4">
-                            {{-- Icon Column --}}
-                            <div class="relative shrink-0">
-                                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-[20px] font-bold shadow-sm"
-                                    style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">
-                                    {{ $m[2] }}
-                                </div>
+                    $explorerUrl = $m[6] . $address->address;
+                    $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
+                    
+                    // Style attributes based on coin
+                    $coinColor = $m[3];
+                @endphp
+                
+                <div class="bg-white rounded-[4px] shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
+                    {{-- Clickable Area for Deposit --}}
+                    <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="flex-1 flex gap-5 p-6 min-w-0 text-left cursor-pointer">
+                        {{-- Icon Column --}}
+                        <div class="relative shrink-0">
+                            <div class="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center text-white text-[22px] font-bold shadow-sm" style="background: {{ $coinColor }}">
+                                {{ $m[2] }}
                             </div>
+                        </div>
 
-                            {{-- Main Content Column --}}
-                            <div class="flex-1 min-w-0 flex flex-col gap-1">
-                                {{-- Header: Verified Icon + Alias --}}
-                                <div class="flex items-center gap-1.5 min-w-0">
-                                    @if($address->isVerified())
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-black shrink-0"
-                                            viewBox="0 0 24 24" fill="currentColor">
-                                            <path
-                                                d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
-                                        </svg>
-                                    @endif
-                                    <span class="text-[16px] font-bold text-zinc-900 truncate">{{ $fullAlias }}</span>
-                                </div>
-
-                                {{-- Network Breadcrumbs + Address (Premium View) --}}
-                                <div
-                                    class="flex items-center gap-2 text-[11px] font-bold text-zinc-400 uppercase tracking-tight">
-                                    <span class="shrink-0">{{ $m[5] }}</span>
-                                    <span class="shrink-0 text-zinc-200">›</span>
-                                    <span class="shrink-0">{{ $m[1] }}</span>
-                                    <span class="shrink-0 text-zinc-200">›</span>
-                                    <div class="flex items-center gap-1.5 min-w-0 pr-2">
-                                        <code
-                                            class="font-mono text-[11px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
-                                        <div
-                                            class="flex items-center gap-1 shrink-0 opacity-0 group-hover/card:opacity-100 transition-opacity">
-                                            <button onclick="copyAddr('{{ $address->address }}', this)"
-                                                class="p-1 hover:text-violet-500 transition-colors">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                                                </svg>
-                                            </button>
-                                            <a href="{{ $explorerUrl }}" target="_blank"
-                                                class="p-1 hover:text-violet-500 transition-colors">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- Balance + Sync Status --}}
-                                <div class="flex items-center gap-3 mt-1">
-                                    <span class="text-[17px] font-bold font-mono text-zinc-900">
-                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                        <span
-                                            class="text-[11px] text-zinc-400 font-bold uppercase ml-0.5">{{ $m[1] }}</span>
-                                    </span>
-                                    <div class="flex items-center gap-1 text-[11px] font-bold text-zinc-400 opacity-60">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        @if($address->updated_at)
-                                            {{ $address->updated_at->diffForHumans() }}
-                                        @else
-                                            не синхронизирован
-                                        @endif
-                                    </div>
-                                </div>
-
-                                @if(!$address->isVerified())
-                                    <div class="mt-2">
-                                        <button
-                                            onclick="showVerifyModal('{{ $address->id }}','{{ $address->network }}','{{ $dAmt }}','{{ $address->address }}')"
-                                            class="text-[11px] text-emerald-600 font-bold px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100 hover:bg-emerald-100 transition-colors uppercase tracking-wider">
-                                            ВЕРИФИЦИРОВАТЬ
-                                        </button>
-                                    </div>
+                        {{-- Main Content Column --}}
+                        <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                            {{-- Header: Verified Icon + Alias --}}
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                @if($address->isVerified())
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
+                                    </svg>
                                 @endif
+                                <span class="text-[18px] font-bold text-black truncate tracking-tight">{{ $fullAlias }}</span>
                             </div>
 
-                            {{-- Action Column --}}
-                            <div class="shrink-0 flex items-center">
-                                <form id="delete-wallet-form-{{ $address->id }}"
-                                    action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
-                                    class="inline">
-                                    @csrf @method('DELETE')
-                                    <button type="button"
-                                        onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
-                                        class="w-10 h-10 rounded-2xl flex items-center justify-center bg-zinc-50 text-zinc-400 border border-zinc-100 transition-all hover:bg-red-50 hover:border-red-100 hover:text-red-500 shadow-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
+                            {{-- Network Breadcrumbs + Address (Premium View) --}}
+                            <div class="flex items-center gap-2 text-[12px] font-bold text-zinc-400 uppercase tracking-tight">
+                                <span class="shrink-0">{{ $m[5] }}</span>
+                                <span class="shrink-0 text-zinc-200">›</span>
+                                <span class="shrink-0">{{ $m[1] }}</span>
+                                <span class="shrink-0 text-zinc-200">›</span>
+                                <div class="flex items-center gap-1.5 min-w-0 pr-2">
+                                    <code class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
+                                </div>
+                            </div>
+
+                            {{-- Balance + Sync Status --}}
+                            <div class="flex items-center gap-3 mt-0.5">
+                                <span class="text-[16px] font-bold font-mono text-black">
+                                    {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                    <span class="text-[12px] text-zinc-400 font-bold uppercase ml-1">{{ $m[1] }}</span>
+                                </span>
+                                <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    @if($address->updated_at)
+                                        {{ $address->updated_at->diffForHumans() }}
+                                    @else
+                                        не синхронизирован
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </button>
+
+                    {{-- Action Column (Delete) --}}
+                    <div class="shrink-0 flex items-center pr-6">
+                        <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST" class="inline">
+                            @csrf @method('DELETE')
+                            <button type="button" onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')" 
+                                class="w-[42px] h-[42px] rounded-[16px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
+
+            <button onclick="goToAddWallet()" class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
+                <span class="text-[15px]">Добавить новый кошелек</span>
+            </button>
+        </div>
+
+            {{-- Step: Deposit Details --}}
+        <div id="step-details" class="hidden">
+            @foreach($allAddresses as $address)
+                @php
+                    $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
+                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
+                @endphp
+                <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden space-y-4">
+                    <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden relative">
+                        <div class="p-8 text-center space-y-6">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($address->address) }}"
+                                alt="QR Code" class="w-48 h-48 mx-auto rounded-3xl shadow-sm p-2 bg-white border border-zinc-100" />
+                            <div class="space-y-2">
+                                <p class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest">Адрес пополнения
+                                    ({{ $m[0] }})</p>
+                                <div class="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 relative group cursor-pointer hover:bg-violet-50 hover:border-violet-100 transition-all"
+                                    onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
+                                    <code
+                                        class="font-mono text-[14px] text-zinc-800 break-all block pb-6">{{ $address->address }}</code>
+                                    <div
+                                        class="absolute bottom-3 right-4 flex items-center gap-1.5 text-violet-500 font-bold text-[11px] uppercase tracking-wider">
+                                        <span class="copy-txt">Скопировать</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                                         </svg>
-                                    </button>
-                                </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                </div>
+            @endforeach
+        </div>
 
-                <button onclick="goToAddWallet()"
-                    class="w-full py-5 mt-2 rounded-[28px] border border-dashed border-zinc-200 bg-zinc-50/20 text-zinc-400 font-bold hover:border-violet-300 hover:bg-white hover:text-violet-500 transition-all group flex items-center justify-center gap-3">
-                    <span
-                        class="w-8 h-8 rounded-xl bg-zinc-100 flex items-center justify-center text-[20px] group-hover:bg-violet-100 transition-colors">+</span>
-                    Добавить новый кошелек
-                </button>
-            </div>
-
-            {{-- Step: Add Wallet --}}
+        {{-- Step: Add Wallet --}}
         <div id="step-add-wallet" class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-6 md:p-8">
             <x-shop::form :action="route('shop.customers.account.crypto.store')">
                 <input type="hidden" name="network" id="wallet-net-input" value="">
@@ -476,7 +442,7 @@
                 const initialTitle = "Meanly Pay";
 
                 function switchStep(newStep) {
-                    ['step-dashboard', 'step-transactions', 'step-selection', 'step-details', 'step-management', 'step-add-wallet', 'step-empty'].forEach(id => {
+                    ['step-dashboard', 'step-transactions', 'step-details', 'step-management', 'step-add-wallet', 'step-empty'].forEach(id => {
                         const el = document.getElementById(id);
                         if (el) el.classList.add('hidden');
                     });
@@ -500,7 +466,7 @@
                         backLink.style.display = 'none';
                         backBtn.style.display = 'flex';
                         if (currentStep === 'transactions') titleEl.innerText = "История";
-                        if (currentStep === 'selection' || currentStep === 'empty') titleEl.innerText = "Пополнение";
+                        if (currentStep === 'empty') titleEl.innerText = "Кошельки";
                         if (currentStep === 'details') titleEl.innerText = "Детали пополнения";
                         if (currentStep === 'management') titleEl.innerText = "Кошельки";
                         if (currentStep === 'add-wallet') titleEl.innerText = "Новый кошелек";
@@ -509,16 +475,22 @@
 
                 function handleStepBack() {
                     if (currentStep === 'transactions') switchStep('dashboard');
-                    else if (currentStep === 'selection' || currentStep === 'empty') switchStep('dashboard');
-                    else if (currentStep === 'details') switchStep('selection');
-                    else if (currentStep === 'management') switchStep(@json($verifiedAddresses->isEmpty() ? 'empty' : 'selection'));
+                    else if (currentStep === 'empty') switchStep('dashboard');
+                    else if (currentStep === 'details') switchStep('management');
+                    else if (currentStep === 'management') switchStep('dashboard');
                     else if (currentStep === 'add-wallet') switchStep('management');
                 }
 
-                function goToDeposit() { switchStep(@json($verifiedAddresses->isEmpty() ? 'empty' : 'selection')); }
+                function goToDeposit() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
                 function goToManagement() { switchStep('management'); }
                 function goToAddWallet() { switchStep('add-wallet'); }
                 function selectAsset(assetKey, walletId) {
+                    // Check if wallet is verified, ideally this should be handled better, but simple check for now
+                    const form = document.getElementById('delete-wallet-form-' + walletId);
+                    if(form && !form.closest('div.bg-white').querySelector('svg[viewBox="0 0 24 24"]')) {
+                        alert('Сначала верифицируйте кошелек для пополнения.');
+                        return;
+                    }
                     switchStep('details');
                     document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
                     const target = document.getElementById('details-wallet-' + walletId);
