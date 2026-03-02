@@ -89,34 +89,38 @@
                         @foreach($verifiedAddresses as $address)
                             @php
                                 $nm = [
-                                    'bitcoin'  => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC'],
+                                    'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC'],
                                     'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH'],
-                                    'ton'      => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON'],
+                                    'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON'],
                                     'usdt_ton' => ['USDT (TON)', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON'],
-                                    'dash'     => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH']
+                                    'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH']
                                 ];
                                 $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network)];
-                                
+
                                 $username = auth()->guard('customer')->user()->username;
                                 $netMap = [
-                                    'ton'      => ['chain' => 'ton'],
+                                    'ton' => ['chain' => 'ton'],
                                     'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
-                                    'bitcoin'  => ['chain' => 'btc'],
+                                    'bitcoin' => ['chain' => 'btc'],
                                     'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
-                                    'dash'     => ['chain' => 'dash']
+                                    'dash' => ['chain' => 'dash']
                                 ];
                                 $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
-                                
+
                                 $parts = ["@{$username}"];
                                 $parts[] = $nmData['chain'] ?? $address->network;
-                                if (isset($nmData['token'])) $parts[] = $nmData['token'];
-                                if ($address->alias) $parts[] = $address->alias;
-                                
+                                if (isset($nmData['token']))
+                                    $parts[] = $nmData['token'];
+                                if ($address->alias)
+                                    $parts[] = $address->alias;
+
                                 $fullAlias = implode('.', $parts);
+                                $exp = ['bitcoin' => 'https://www.blockchain.com/explorer/addresses/btc/', 'ethereum' => 'https://etherscan.io/address/', 'ton' => 'https://tonviewer.com/', 'usdt_ton' => 'https://tonviewer.com/', 'dash' => 'https://insight.dash.org/insight/address/'];
+                                $expLink = ($exp[$address->network] ?? '#') . $address->address;
                             @endphp
 
                             <div onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')"
-                                 class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden hover:shadow-md hover:border-violet-100 transition-all p-3 cursor-pointer text-left">
+                                class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden hover:shadow-md hover:border-violet-100 transition-all p-3 cursor-pointer text-left">
                                 <div class="flex items-center gap-4">
                                     {{-- Left: Icon --}}
                                     <div class="relative shrink-0">
@@ -131,8 +135,10 @@
                                         <div class="flex items-center gap-1.5 group/alias">
                                             @if($address->isVerified())
                                                 <div class="text-[#0095f6] shrink-0">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                                        <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
+                                                        fill="currentColor">
+                                                        <path
+                                                            d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
                                                     </svg>
                                                 </div>
                                             @endif
@@ -142,19 +148,29 @@
                                         </div>
 
                                         <div class="flex items-center gap-2 mt-0.5">
-                                            <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $m[5] }} &gt; {{ $m[1] }} &gt; {{ $address->address }}</code>
+                                            <code
+                                                class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $m[5] }} &gt; {{ $m[1] }} &gt; {{ $address->address }}</code>
                                             <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
                                                 <button onclick="copyAddr('{{ $address->address }}', this)"
-                                                    class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-                                                        <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
+                                                    class="text-zinc-300 hover:text-violet-500 transition-colors"
+                                                    title="Копировать адрес">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path
+                                                            d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                                        <path
+                                                            d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
                                                     </svg>
                                                 </button>
-                                                <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                                                        <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                                <a href="{{ $expLink }}" target="_blank"
+                                                    class="text-zinc-300 hover:text-violet-500 transition-colors"
+                                                    title="Открыть в эксплорере">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5"
+                                                        viewBox="0 0 20 20" fill="currentColor">
+                                                        <path
+                                                            d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                                        <path
+                                                            d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
                                                     </svg>
                                                 </a>
                                             </div>
@@ -165,7 +181,8 @@
                                                 <span class="text-[14px] font-bold font-mono text-zinc-900">
                                                     {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
                                                 </span>
-                                                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ $m[1] }}</span>
+                                                <span
+                                                    class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ $m[1] }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -215,6 +232,8 @@
                                     $parts[] = $address->alias;
 
                                 $fullAlias = implode('.', $parts);
+                                $exp = ['bitcoin' => 'https://www.blockchain.com/explorer/addresses/btc/', 'ethereum' => 'https://etherscan.io/address/', 'ton' => 'https://tonviewer.com/', 'usdt_ton' => 'https://tonviewer.com/', 'dash' => 'https://insight.dash.org/insight/address/'];
+                                $expLink = ($exp[$address->network] ?? '#') . $address->address;
                             @endphp
 
                             {{-- Header --}}
@@ -235,9 +254,11 @@
 
                             {{-- Source Section (Visual Flow) --}}
                             <div class="mb-4">
-                                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Отправляйте средства только с этого кошелька:</p>
-                                
-                                <div class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden p-3 text-left">
+                                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Отправляйте
+                                    средства только с этого кошелька:</p>
+
+                                <div
+                                    class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden p-3 text-left">
                                     <div class="flex items-center gap-4">
                                         {{-- Left: Icon --}}
                                         <div class="relative shrink-0">
@@ -252,8 +273,10 @@
                                             <div class="flex items-center gap-1.5 group/alias">
                                                 @if($address->isVerified())
                                                     <div class="text-[#0095f6] shrink-0">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
+                                                            fill="currentColor">
+                                                            <path
+                                                                d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
                                                         </svg>
                                                     </div>
                                                 @endif
@@ -267,19 +290,29 @@
                                                 $expLink = ($exp[$address->network] ?? '#') . $address->address;
                                             @endphp
                                             <div class="flex items-center gap-2 mt-0.5">
-                                                <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $asset['symbol'] }} &gt; {{ $address->address }}</code>
+                                                <code
+                                                    class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $asset['symbol'] }} &gt; {{ $address->address }}</code>
                                                 <div class="flex items-center gap-1.5 shrink-0">
                                                     <button onclick="copyAddr('{{ $address->address }}', this)"
-                                                        class="text-zinc-300 hover:text-violet-500 transition-colors" title="Копировать адрес">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-                                                            <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
+                                                        class="text-zinc-300 hover:text-violet-500 transition-colors"
+                                                        title="Копировать адрес">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5"
+                                                            viewBox="0 0 20 20" fill="currentColor">
+                                                            <path
+                                                                d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                                            <path
+                                                                d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5a2 2 0 012-2h6a2 2 0 00-2-2H5z" />
                                                         </svg>
                                                     </button>
-                                                    <a href="{{ $expLink }}" target="_blank" class="text-zinc-300 hover:text-violet-500 transition-colors" title="Открыть в эксплорере">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-                                                            <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                                                    <a href="{{ $expLink }}" target="_blank"
+                                                        class="text-zinc-300 hover:text-violet-500 transition-colors"
+                                                        title="Открыть в эксплорере">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5"
+                                                            viewBox="0 0 20 20" fill="currentColor">
+                                                            <path
+                                                                d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                                                            <path
+                                                                d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
                                                         </svg>
                                                     </a>
                                                 </div>
@@ -290,7 +323,8 @@
                                                     <span class="text-[14px] font-bold font-mono text-zinc-900">
                                                         {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
                                                     </span>
-                                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ $asset['symbol'] }}</span>
+                                                    <span
+                                                        class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ $asset['symbol'] }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -311,17 +345,19 @@
                             </div>
 
                             {{-- Cold Wallet Address (Destination) --}}
-                            <div class="bg-zinc-900 rounded-3xl p-6 shadow-xl mb-6 ring-1 ring-white/10 flex flex-col items-center">
-                                <div class="text-[11px] text-zinc-500 uppercase font-bold tracking-widest mb-4">Адрес для пополнения ({{ $asset['symbol'] }})</div>
-                                
+                            <div
+                                class="bg-zinc-900 rounded-3xl p-6 shadow-xl mb-6 ring-1 ring-white/10 flex flex-col items-center">
+                                <div class="text-[11px] text-zinc-500 uppercase font-bold tracking-widest mb-4">Адрес для
+                                    пополнения ({{ $asset['symbol'] }})</div>
+
                                 {{-- QR Code --}}
                                 <div class="bg-white p-3 rounded-2xl mb-5 shadow-inner">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($asset['address']) }}" 
-                                         alt="QR Code" 
-                                         class="w-[150px] h-[150px] block">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($asset['address']) }}"
+                                        alt="QR Code" class="w-[150px] h-[150px] block">
                                 </div>
 
-                                <div class="text-[14px] font-mono text-white break-all mb-5 select-all text-center leading-relaxed font-medium px-2">
+                                <div
+                                    class="text-[14px] font-mono text-white break-all mb-5 select-all text-center leading-relaxed font-medium px-2">
                                     {{ $asset['address'] }}
                                 </div>
                                 <button onclick="copyAddr('{{ $asset['address'] }}', this)"
