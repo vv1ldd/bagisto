@@ -420,54 +420,52 @@
             </div>
 
             {{-- Step: Add Wallet --}}
-            <div id="step-add-wallet"
-                class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-6 md:p-8">
-                <x-shop::form :action="route('shop.customers.account.crypto.store')">
-                    <input type="hidden" name="network" id="wallet-net-input" value="">
-                    <div class="space-y-6">
-                        <div>
-                            <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">1. Сеть</p>
-                            <div class="grid grid-cols-4 gap-2">
-                                @foreach(['bitcoin' => ['₿', 'BTC', '#F7931A'], 'ethereum' => ['Ξ', 'ETH', '#627EEA'], 'ton' => ['◎', 'TON', '#0098EA'], 'dash' => ['D', 'DASH', '#1c75bc']] as $net => $m)
-                                    <button type="button" id="wnet-{{ $net }}" onclick="selNet('{{ $net }}')"
-                                        class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border-2 border-zinc-50 transition-all group">
-                                        <span
-                                            class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[16px] font-bold mb-1 shadow-sm"
-                                            style="background:linear-gradient(135deg, {{ $m[2] }}, {{ $m[2] }}dd)">{{ $m[0] }}</span>
-                                        <span
-                                            class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{{ $m[1] }}</span>
-                                    </button>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div id="wallet-addr-section" class="hidden space-y-6">
-                            <div id="ton-asset-selector"
-                                class="hidden p-3 bg-zinc-50/50 rounded-2xl border border-zinc-100">
-                                <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">2. Актив
-                                </p>
-                                <div class="grid grid-cols-2 gap-2">
-                                    @foreach(['ton' => 'TON Coin', 'usdt_ton' => 'USDT (TON)'] as $asset => $label)
-                                        <button type="button" onclick="selTonAsset('{{ $asset }}')"
-                                            data-asset="{{ $asset }}"
-                                            class="ton-asset-btn flex items-center justify-center gap-2 py-3 rounded-xl border border-zinc-200 bg-white font-bold text-[13px] text-zinc-600 transition-all">{{ $label }}</button>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">3. Адрес
-                                </p>
-                                <input type="text" name="address" id="wallet-addr-input" placeholder="Вставьте адрес…"
-                                    oninput="onWalletInput(this.value)"
-                                    class="w-full rounded-2xl border-zinc-100 bg-zinc-50 font-mono py-4 pl-5 focus:bg-white transition-all shadow-inner placeholder-zinc-300" />
-                            </div>
-                            <button type="submit" id="wallet-add-btn"
-                                style="background:linear-gradient(135deg,#7c3aed,#4f46e5);opacity:0.4;cursor:not-allowed;"
-                                class="w-full text-white font-bold py-4 rounded-2xl shadow-lg transition-all">+ Добавить
-                                кошелек</button>
+        <div id="step-add-wallet" class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-6 md:p-8">
+            <x-shop::form :action="route('shop.customers.account.crypto.store')">
+                <input type="hidden" name="network" id="wallet-net-input" value="">
+                
+                <div class="space-y-6">
+                    {{-- 1. Asset/Coin Selection --}}
+                    <div>
+                        <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">1. Монета</p>
+                        <div class="grid grid-cols-5 gap-2">
+                            @foreach([
+                                'btc' => ['₿', 'BTC', '#F7931A'], 
+                                'eth' => ['Ξ', 'ETH', '#627EEA'], 
+                                'usdt' => ['₮', 'USDT', '#26A17B'],
+                                'ton' => ['◎', 'TON', '#0098EA'], 
+                                'dash' => ['D', 'DASH', '#1c75bc']
+                            ] as $coin => $m)
+                                <button type="button" id="coin-{{ $coin }}" onclick="selCoin('{{ $coin }}')" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border-2 border-zinc-50 transition-all group bg-white">
+                                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[16px] font-bold mb-1 shadow-sm" style="background:linear-gradient(135deg, {{ $m[2] }}, {{ $m[2] }}dd)">{{ $m[0] }}</span>
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{{ $m[1] }}</span>
+                                </button>
+                            @endforeach
                         </div>
                     </div>
-                </x-shop::form>
-            </div>
+
+                    {{-- 2. Network Selection (Dynamic) --}}
+                    <div id="wallet-network-section" class="hidden">
+                        <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">2. Сеть</p>
+                        <div id="network-options-container" class="grid grid-cols-2 gap-2">
+                            {{-- Populated by JS --}}
+                        </div>
+                    </div>
+
+                    {{-- 3. Address Input --}}
+                    <div id="wallet-addr-section" class="hidden space-y-6">
+                        <div>
+                            <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">3. Адрес</p>
+                            <input type="text" name="address" id="wallet-addr-input" placeholder="Вставьте адрес…" oninput="onWalletInput(this.value)" class="w-full rounded-2xl border-zinc-100 bg-zinc-50 font-mono py-4 pl-5 focus:bg-white transition-all shadow-inner placeholder-zinc-300 text-zinc-800" />
+                        </div>
+                        
+                        <div class="pt-2"> {{-- Added padding top to separate button from input --}}
+                            <button type="submit" id="wallet-add-btn" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);opacity:0.4;cursor:not-allowed;" class="w-full text-white font-bold py-4 rounded-2xl shadow-lg transition-all">+ Добавить кошелек</button>
+                        </div>
+                    </div>
+                </div>
+            </x-shop::form>
+        </div>
         </div>
 
         @push('scripts')
@@ -539,39 +537,89 @@
                 function _crc16(d) { let c = 0; for (const b of d) { c ^= (b << 8); for (let i = 0; i < 8; i++)c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1); } return c & 0xFFFF; }
 
                 const ADDR_NETS = {
-                    bitcoin: { validate: a => { if (/^bc1[a-z0-9]{6,87}$/.test(a)) return true; if (!/^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/.test(a)) return false; return _b58chk(a); }, bg: '#FFF7ED', color: '#F7931A' },
-                    ethereum: { validate: a => /^0x[0-9a-fA-F]{40}$/.test(a), bg: '#EEF2FF', color: '#627EEA' },
-                    ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E0F5FF', color: '#0098EA' },
-                    dash: { validate: a => { if (!/^X[1-9A-HJ-NP-Za-km-z]{33}$/.test(a)) return false; return _b58chk(a); }, bg: '#EFF6FF', color: '#1c75bc' }
-                };
+                bitcoin: { validate: a => { if (/^bc1[a-z0-9]{6,87}$/.test(a)) return true; if (!/^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/.test(a)) return false; return _b58chk(a); }, bg: '#FFF7ED', color: '#F7931A' },
+                ethereum: { validate: a => /^0x[0-9a-fA-F]{40}$/.test(a), bg: '#EEF2FF', color: '#627EEA' },
+                ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E0F5FF', color: '#0098EA' },
+                usdt_ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E6F6F1', color: '#26A17B' },
+                dash: { validate: a => { if (!/^X[1-9A-HJ-NP-Za-km-z]{33}$/.test(a)) return false; return _b58chk(a); }, bg: '#EFF6FF', color: '#1c75bc' }
+            };
 
-                let _selNet = null;
-                function selNet(net) {
-                    _selNet = net;
-                    document.getElementById('wallet-net-input').value = net;
-                    document.getElementById('ton-asset-selector').classList.toggle('hidden', net !== 'ton');
-                    document.getElementById('wallet-addr-section').classList.remove('hidden');
-                    document.querySelectorAll('[id^="wnet-"]').forEach(b => {
-                        b.style.borderColor = b.id === 'wnet-' + net ? ADDR_NETS[net].color : '#f4f4f5';
-                        b.style.background = b.id === 'wnet-' + net ? ADDR_NETS[net].bg : '#fff';
-                    });
-                    onWalletInput('');
+            const COIN_NETWORKS = {
+                'btc': [{ id: 'bitcoin', label: 'Bitcoin (BTC)' }],
+                'eth': [{ id: 'ethereum', label: 'Ethereum (ERC20)' }],
+                'usdt': [{ id: 'usdt_ton', label: 'TON Network' }],
+                'ton': [{ id: 'ton', label: 'TON Network' }],
+                'dash': [{ id: 'dash', label: 'Dash' }]
+            };
+
+            const COIN_COLORS = {
+                'btc': { bg: '#FFF7ED', border: '#F7931A' },
+                'eth': { bg: '#EEF2FF', border: '#627EEA' },
+                'usdt': { bg: '#E6F6F1', border: '#26A17B' },
+                'ton': { bg: '#E0F5FF', border: '#0098EA' },
+                'dash': { bg: '#EFF6FF', border: '#1c75bc' }
+            };
+
+            let _selCoin = null;
+            let _selNet = null;
+
+            function selCoin(coin) {
+                _selCoin = coin;
+                document.querySelectorAll('[id^="coin-"]').forEach(b => {
+                    const isSelected = b.id === 'coin-' + coin;
+                    b.style.borderColor = isSelected ? COIN_COLORS[coin].border : '#f4f4f5';
+                    b.style.background = isSelected ? COIN_COLORS[coin].bg : '#fff';
+                });
+
+                const nets = COIN_NETWORKS[coin];
+                const container = document.getElementById('network-options-container');
+                container.innerHTML = '';
+                
+                nets.forEach(net => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'network-btn flex items-center justify-center gap-2 py-3 rounded-xl border-2 transition-all font-bold text-[13px] text-zinc-500 border-zinc-100 bg-white';
+                    btn.innerText = net.label;
+                    btn.onclick = () => selActualNet(net.id, btn, coin);
+                    container.appendChild(btn);
+                });
+
+                document.getElementById('wallet-network-section').classList.remove('hidden');
+                document.getElementById('wallet-addr-section').classList.add('hidden');
+                document.getElementById('wallet-net-input').value = '';
+                _selNet = null;
+                onWalletInput('');
+                
+                if (nets.length === 1) {
+                    container.firstChild.click();
                 }
-                function selTonAsset(asset) {
-                    document.getElementById('wallet-net-input').value = asset;
-                    document.querySelectorAll('.ton-asset-btn').forEach(btn => {
-                        const active = btn.dataset.asset === asset;
-                        btn.style.borderColor = active ? '#0098EA' : '#e4e4e7';
-                        btn.style.background = active ? '#E0F5FF' : '#fff';
-                    });
-                }
-                function onWalletInput(val) {
-                    const v = _selNet ? ADDR_NETS[_selNet].validate(val.trim()) : false;
-                    const btn = document.getElementById('wallet-add-btn');
-                    btn.disabled = !v;
-                    btn.style.opacity = v ? '1' : '0.4';
-                    btn.style.cursor = v ? 'pointer' : 'not-allowed';
-                }
+            }
+
+            function selActualNet(netId, btnEl, coin) {
+                _selNet = netId;
+                document.getElementById('wallet-net-input').value = netId;
+                
+                document.querySelectorAll('.network-btn').forEach(b => {
+                    b.style.borderColor = '#f4f4f5';
+                    b.style.background = '#fff';
+                    b.style.color = '#71717a';
+                });
+                
+                btnEl.style.borderColor = COIN_COLORS[coin].border;
+                btnEl.style.background = COIN_COLORS[coin].bg;
+                btnEl.style.color = '#18181b';
+
+                document.getElementById('wallet-addr-section').classList.remove('hidden');
+                onWalletInput(document.getElementById('wallet-addr-input').value);
+            }
+
+            function onWalletInput(val) {
+                const v = _selNet ? ADDR_NETS[_selNet].validate(val.trim()) : false;
+                const btn = document.getElementById('wallet-add-btn');
+                btn.disabled = !v;
+                btn.style.opacity = v ? '1' : '0.4';
+                btn.style.cursor = v ? 'pointer' : 'not-allowed';
+            }
                 function confirmWalletDeletion(id, expected) { if (prompt(`Введите "${expected}" для удаления:`) === expected) document.getElementById(`delete-wallet-form-${id}`).submit(); }
 
                 document.addEventListener('DOMContentLoaded', () => {
