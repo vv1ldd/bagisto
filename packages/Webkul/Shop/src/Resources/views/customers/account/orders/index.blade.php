@@ -16,8 +16,8 @@
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    padding: 14px 20px;
-                    border-bottom: 1px solid #f4f4f5;
+                    padding: 16px 24px;
+                    border-bottom: 1px solid #f3f4f6;
                     text-decoration: none;
                     transition: background-color 0.15s;
                 }

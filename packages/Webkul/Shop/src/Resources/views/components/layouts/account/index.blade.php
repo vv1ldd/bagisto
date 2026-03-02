@@ -123,7 +123,7 @@
                                             @if (!isset($backLink))
                                                 onclick="if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) { window.history.back(); return false; }"
                                             @endif
-                                            class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform">
+                                            class="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                             </svg>
@@ -148,7 +148,7 @@
                                 </div>
                             @endif
 
-                            <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl">
+                            <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 overflow-hidden mb-8 rounded-2xl">
                                 <!-- Page Content -->
                                 <div class="flex-1">
                                     {{ $slot }}
