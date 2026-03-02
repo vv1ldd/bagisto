@@ -274,7 +274,23 @@
                         </div>
 
                         {{-- Final Fields --}}
-                        <div id="wallet-fields" class="hidden space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div id="wallet-addr-section" class="hidden space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            
+                            {{-- TON Asset Selection (Only for TON) --}}
+                            <div id="ton-asset-selector" class="hidden mb-4 p-3 bg-zinc-50/50 rounded-2xl border border-zinc-100">
+                                <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2 px-1">Актив для верификации</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="selTonAsset('ton')" data-asset="ton"
+                                        class="ton-asset-btn flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-200 bg-white transition-all active:scale-95">
+                                        <span class="text-[12px] font-bold text-zinc-600">TON Coin</span>
+                                    </button>
+                                    <button type="button" onclick="selTonAsset('usdt_ton')" data-asset="usdt_ton"
+                                        class="ton-asset-btn flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-200 bg-white transition-all active:scale-95">
+                                        <span class="text-[12px] font-bold text-zinc-600">USDT (TON)</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <input type="text" name="alias" placeholder="Название кошелька (необязательно)"
                                 class="w-full rounded-xl border-zinc-100 bg-zinc-50/50 text-[13px] py-3.5 px-4 placeholder-zinc-400 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-50 focus:bg-white transition-all" />
 
