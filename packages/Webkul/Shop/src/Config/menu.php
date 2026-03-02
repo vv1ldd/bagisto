@@ -16,13 +16,6 @@ return [
         'sort' => 1,
     ],
     [
-        'key' => 'account.crypto',
-        'name' => 'shop::app.layouts.crypto-wallets',
-        'route' => 'shop.customers.account.crypto.index',
-        'icon' => 'icon-wallet',
-        'sort' => 2,
-    ],
-    [
         'key' => 'account.passkeys',
         'name' => 'shop::app.layouts.passkeys',
         'route' => 'shop.customers.account.passkeys.index',
