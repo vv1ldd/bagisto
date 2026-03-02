@@ -12,6 +12,7 @@ use Spatie\LaravelPasskeys\Actions\StorePasskeyAction;
 use Spatie\LaravelPasskeys\Actions\FindPasskeyToAuthenticateAction;
 use Spatie\LaravelPasskeys\Http\Requests\AuthenticateUsingPasskeysRequest;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Webkul\Customer\Repositories\CustomerTrustedDeviceRepository;
 
@@ -25,6 +26,26 @@ class PasskeyController extends Controller
         $customer = Auth::guard('customer')->user();
 
         return view('shop::customers.account.passkeys.index', compact('customer'));
+    }
+
+    /**
+     * Store or update the customer's PIN code.
+     */
+    public function storePin(Request $request)
+    {
+        $request->validate([
+            'pin_code' => ['required', 'string', 'regex:/^[0-9]{4,6}$/'],
+        ]);
+
+        $customer = Auth::guard('customer')->user();
+
+        // Hash the pin code for security
+        $customer->pin_code = Hash::make($request->pin_code);
+        $customer->save();
+
+        session()->flash('success', 'ПИН-код успешно сохранен.');
+
+        return redirect()->back();
     }
 
     /**

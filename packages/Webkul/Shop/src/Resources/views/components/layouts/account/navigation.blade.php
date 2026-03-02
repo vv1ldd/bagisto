@@ -3,19 +3,18 @@
         $customer = auth()->guard('customer')->user();
     @endphp
 
-    @if ($customer?->username)
         <div class="ios-nav-group !mb-6">
             @php
-                $hasPasskey = $customer->passkeys()->exists();
+                $hasAuthMethod = $customer && ($customer->hasPasskeys() || $customer->pin_code);
             @endphp
             <div class="ios-nav-row !py-3 bg-zinc-50/50 cursor-pointer"
-                onclick="{{ $hasPasskey ? 'handleMeanlyPayPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'' }}">
+                onclick="window.location.href='{{ $hasAuthMethod ? route('shop.customers.account.credits.index') : route('shop.customers.account.passkeys.index') }}'">
                 <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
                     Meanly Pay
                 </span>
                 <span class="flex items-center gap-2">
-                    @if(!$hasPasskey)
-                        {{-- Indicate to user that passkey setup is required --}}
+                    @if(!$hasAuthMethod)
+                        {{-- Indicate to user that passkey/pin setup is required --}}
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

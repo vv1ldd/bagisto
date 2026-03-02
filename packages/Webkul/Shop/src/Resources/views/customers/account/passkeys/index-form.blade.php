@@ -102,6 +102,77 @@
                         </div>
                     </div>
 
+                    </div>
+
+                    <!-- PIN Code Section -->
+                    <div class="mt-8">
+                        <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
+                            Резервный ПИН-код
+                        </h3>
+
+                        <div class="bg-zinc-50 border border-zinc-100 rounded-[20px] overflow-hidden">
+                            @if ($customer->pin_code)
+                                <div class="px-5 py-6 text-center bg-white/50">
+                                    <div class="inline-flex justify-center items-center w-12 h-12 rounded-full bg-green-100 text-green-600 mb-3">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-[15px] font-medium text-zinc-900 mb-1">ПИН-код установлен</p>
+                                    <p class="text-xs text-zinc-500 mb-4">Вы можете использовать его для входа в Meanly Pay, если Passkey недоступен.</p>
+                                    
+                                    <button type="button" onclick="document.getElementById('pin-setup-modal').classList.remove('hidden')" class="text-sm font-medium text-[#7C45F5] hover:text-[#6534d4] underline-offset-4 hover:underline">
+                                        Изменить ПИН-код
+                                    </button>
+                                </div>
+                            @else
+                                <div class="px-5 py-6 text-center bg-white/50">
+                                    <div class="inline-flex justify-center items-center w-12 h-12 rounded-full bg-orange-100 text-orange-500 mb-3">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-[15px] font-medium text-zinc-900 mb-1">ПИН-код не задан</p>
+                                    <p class="text-xs text-zinc-500 mb-4 max-w-sm mx-auto">Установите 4 или 6-значный ПИН-код в качестве резервного способа авторизации в Meanly Pay.</p>
+                                </div>
+                                <div class="p-5 bg-white/50 border-t border-zinc-100">
+                                    <button type="button" onclick="document.getElementById('pin-setup-modal').classList.remove('hidden')"
+                                        class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50">
+                                        <span class="icon-add text-lg"></span>
+                                        <span>Создать ПИН-код</span>
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- PIN Setup Modal -->
+                    <div id="pin-setup-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden relative" onclick="event.stopPropagation()">
+                            <div class="p-6">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h3 class="text-xl font-bold text-zinc-900">{{ $customer->pin_code ? 'Изменение ПИН-кода' : 'Новый ПИН-код' }}</h3>
+                                    <button type="button" onclick="document.getElementById('pin-setup-modal').classList.add('hidden')" class="text-zinc-400 hover:text-zinc-600 transition">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
+                                
+                                <form action="{{ route('shop.customers.account.passkeys.pin.store') }}" method="POST" class="flex flex-col gap-4">
+                                    @csrf
+                                    <div>
+                                        <label class="block text-sm font-medium text-zinc-700 mb-2">Введите 4 или 6 цифр</label>
+                                        <input type="password" name="pin_code" id="pin_code_input" inputmode="numeric" pattern="[0-9]{4,6}" autocomplete="off" maxlength="6" class="w-full text-center tracking-[1em] text-3xl font-mono py-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-[#7C45F5]/50 focus:border-[#7C45F5] outline-none transition" required placeholder="••••">
+                                        <p class="text-xs text-zinc-500 mt-2 text-center">ПИН-код должен содержать только цифры (от 4 до 6 символов).</p>
+                                    </div>
+                                    <div class="mt-4 flex gap-3">
+                                        <button type="button" onclick="document.getElementById('pin-setup-modal').classList.add('hidden')" class="flex-1 py-3.5 px-4 bg-zinc-100 text-zinc-700 font-medium rounded-xl hover:bg-zinc-200 transition">Отмена</button>
+                                        <button type="submit" class="flex-1 py-3.5 px-4 bg-[#7C45F5] text-white font-medium rounded-xl hover:bg-[#6534d4] transition shadow-lg shadow-[#7C45F5]/20">Сохранить</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.before') !!}
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
                 </div>

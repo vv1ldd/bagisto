@@ -77,6 +77,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'balance',
         'credits_id',
         'credits_alias',
+        'pin_code',
     ];
 
     /**
@@ -88,6 +89,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'password',
         'api_token',
         'remember_token',
+        'pin_code',
     ];
 
     /**
