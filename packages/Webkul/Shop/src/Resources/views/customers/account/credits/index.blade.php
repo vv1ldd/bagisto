@@ -291,30 +291,46 @@
                         $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
                         $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
                     @endphp
-                    <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden space-y-4">
-                        <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden relative">
-                            <div class="p-8 text-center space-y-6">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($address->address) }}"
-                                    alt="QR Code" class="w-48 h-48 mx-auto rounded-3xl shadow-sm p-2 bg-white border border-zinc-100" />
-                                <div class="space-y-2">
-                                    <p class="text-[12px] font-bold text-zinc-400 uppercase tracking-widest">Адрес пополнения
-                                        ({{ $m[0] }})</p>
-                                    <div class="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 relative group cursor-pointer hover:bg-violet-50 hover:border-violet-100 transition-all"
-                                        onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
-                                        <code
-                                            class="font-mono text-[14px] text-zinc-800 break-all block pb-6">{{ $address->address }}</code>
-                                        <div
-                                            class="absolute bottom-3 right-4 flex items-center gap-1.5 text-violet-500 font-bold text-[11px] uppercase tracking-wider">
-                                            <span class="copy-txt">Скопировать</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                                            </svg>
-                                        </div>
+                    <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
+                        <div class="bg-white rounded-[32px] shadow-sm overflow-hidden p-6 md:p-8 flex flex-col items-center">
+                            
+                            {{-- QR Code Section --}}
+                            <div class="relative inline-block mt-4 mb-2">
+                                <div class="border border-zinc-100 rounded-[32px] p-6 pb-8 bg-white shadow-sm inline-block">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($address->address) }}"
+                                        alt="QR Code" class="w-56 h-56 mx-auto" />
+                                </div>
+                                {{-- Floated Label --}}
+                                <div class="absolute -bottom-3 left-0 right-0 flex justify-center">
+                                    <div class="bg-white px-4 py-1.5 text-[11px] font-black text-zinc-400 uppercase tracking-[0.15em]">
+                                        Адрес пополнения ({{ $m[0] }})
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- Address Copy Section --}}
+                            <div class="w-full max-w-sm mt-8 bg-zinc-50 rounded-[28px] p-6 text-center cursor-pointer active:scale-95 transition-all group"
+                                onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
+                                <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
+                                    {{ $address->address }}
+                                </code>
+                                <div class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
+                                    <span class="copy-txt">Скопировать</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {{-- Verification Warning --}}
+                            <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50 rounded-2xl flex gap-3 text-left">
+                                <span class="text-lg">⚠️</span>
+                                <p class="text-[12px] text-violet-700 leading-snug">
+                                    <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы система смогла автоматически зачислить платеж.
+                                </p>
+                            </div>
+
                         </div>
                     </div>
                 @endforeach
