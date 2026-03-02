@@ -58,6 +58,11 @@ class CreditController extends Controller
             ->orderBy('network')
             ->get();
 
-        return view('shop::customers.account.credits.deposit', compact('verifiedAddresses'));
+        $allAddresses = $customer
+            ->crypto_addresses()
+            ->orderBy('network')
+            ->get();
+
+        return view('shop::customers.account.credits.deposit', compact('verifiedAddresses', 'allAddresses'));
     }
 }
