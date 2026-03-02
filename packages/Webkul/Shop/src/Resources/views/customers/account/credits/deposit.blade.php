@@ -23,7 +23,6 @@
             </button>
             <h1 id="page-title" class="text-[22px] font-bold text-zinc-900 leading-none">Пополнение баланса</h1>
         </div>
-            <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
 
                 @php
                     $allAssets = [
@@ -389,8 +388,7 @@
                             </div>
                         @endforeach
                     </div>
-                @endif
-            </div>
+@endif
 
             @push('scripts')
                 <script>
