@@ -235,11 +235,17 @@
                             </div>
 
                             {{-- Cold Wallet Address (Destination) --}}
-                            <div class="bg-zinc-900 rounded-2xl p-5 shadow-xl mb-6 ring-1 ring-white/10">
-                                <div class="text-[11px] text-zinc-500 uppercase font-bold tracking-widest mb-2">Адрес для
-                                    пополнения ({{ $asset['symbol'] }})</div>
-                                <div
-                                    class="text-[15px] font-mono text-white break-words mb-4 select-all text-center leading-relaxed font-medium">
+                            <div class="bg-zinc-900 rounded-3xl p-6 shadow-xl mb-6 ring-1 ring-white/10 flex flex-col items-center">
+                                <div class="text-[11px] text-zinc-500 uppercase font-bold tracking-widest mb-4">Адрес для пополнения ({{ $asset['symbol'] }})</div>
+                                
+                                {{-- QR Code --}}
+                                <div class="bg-white p-3 rounded-2xl mb-5 shadow-inner">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($asset['address']) }}" 
+                                         alt="QR Code" 
+                                         class="w-[150px] h-[150px] block">
+                                </div>
+
+                                <div class="text-[14px] font-mono text-white break-all mb-5 select-all text-center leading-relaxed font-medium px-2">
                                     {{ $asset['address'] }}
                                 </div>
                                 <button onclick="copyAddr('{{ $asset['address'] }}', this)"
