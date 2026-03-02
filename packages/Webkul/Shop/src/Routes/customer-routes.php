@@ -141,12 +141,31 @@ Route::prefix('customer')->group(function () {
              */
             Route::get('wishlist', [WishlistController::class, 'index'])->name('shop.customers.account.wishlist.index');
 
-            /**
-             * Credits (formerly Transactions).
-             */
-            Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
-            Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
-            Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
+            // Protected Meanly Pay routes (Credits & Crypto)
+            Route::middleware('meanly_pay_auth')->group(function () {
+                /**
+                 * Credits.
+                 */
+                Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
+                Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
+                Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
+
+                Route::controller(TransferController::class)->prefix('credits')->group(function () {
+                    Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
+                });
+
+                /**
+                 * Crypto Wallets.
+                 */
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->prefix('crypto')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.crypto.index');
+                    Route::post('create', 'store')->name('shop.customers.account.crypto.store');
+                    Route::get('sync/{id}', 'sync')->name('shop.customers.account.crypto.sync');
+                    Route::get('verify/{id}', 'verify')->name('shop.customers.account.crypto.verify');
+                    Route::post('update-alias/{id}', 'updateAlias')->name('shop.customers.account.crypto.update_alias');
+                    Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
+                });
+            }); // End of meanly_pay_auth middleware group
 
             /**
              * Profile.
@@ -162,7 +181,6 @@ Route::prefix('customer')->group(function () {
                     Route::get('complete-registration-passkey', 'completeRegistrationPasskey')->name('shop.customers.account.profile.complete_registration_passkey');
 
                     Route::get('complete-registration-success', 'completeRegistrationSuccess')->name('shop.customers.account.profile.complete_registration_success');
-
 
                     Route::post('edit', 'update')->name('shop.customers.account.profile.update');
 
@@ -180,93 +198,54 @@ Route::prefix('customer')->group(function () {
                 Route::post('verify-passkey', 'verifyPasskey')->name('shop.customers.account.meanly_pay.verify_passkey');
             });
 
-            // Protected Meanly Pay routes (Credits & Crypto)
-            Route::middleware('meanly_pay_auth')->group(function () {
-                // Credits Transfer
-                Route::controller(TransferController::class)->prefix('credits')->group(function () {
-                    Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
-                });
+            /**
+             * GDPR.
+             */
+            Route::controller(GDPRController::class)->prefix('gdpr')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.gdpr.index');
+                Route::post('', 'store')->name('shop.customers.account.gdpr.store');
+                Route::get('pdf-view', 'pdfView')->name('shop.customers.account.gdpr.pdf-view');
+                Route::get('html-view', 'htmlView')->name('shop.customers.account.gdpr.html-view');
+                Route::post('revoke/{id}', 'revoke')->name('shop.customers.account.gdpr.revoke');
+            });
 
-                /**
-                 * GDPR.
-                 */
-                Route::controller(GDPRController::class)->prefix('gdpr')->group(function () {
-                    Route::get('', 'index')->name('shop.customers.account.gdpr.index');
+            /**
+             * Cookie consent.
+             */
+            Route::get('your-cookie-consent-preferences', [GDPRController::class, 'cookieConsent'])
+                ->name('shop.customers.gdpr.cookie-consent');
 
-                    Route::post('', 'store')->name('shop.customers.account.gdpr.store');
+            /**
+             * Addresses.
+             */
+            Route::controller(AddressController::class)->prefix('addresses')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.addresses.index');
+                Route::get('create', 'create')->name('shop.customers.account.addresses.create');
+                Route::post('create', 'store')->name('shop.customers.account.addresses.store');
+                Route::get('edit/{id}', 'edit')->name('shop.customers.account.addresses.edit');
+                Route::put('edit/{id}', 'update')->name('shop.customers.account.addresses.update');
+                Route::patch('edit/{id}', 'makeDefault')->name('shop.customers.account.addresses.update.default');
+                Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.addresses.delete');
+            });
 
-                    Route::get('pdf-view', 'pdfView')->name('shop.customers.account.gdpr.pdf-view');
+            /**
+             * Orders.
+             */
+            Route::controller(OrderController::class)->prefix('orders')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.orders.index');
+                Route::get('view/{id}', 'view')->name('shop.customers.account.orders.view');
+                Route::get('reorder/{id}', 'reorder')->name('shop.customers.account.orders.reorder');
+                Route::post('cancel/{id}', 'cancel')->name('shop.customers.account.orders.cancel');
+                Route::get('print/Invoice/{id}', 'printInvoice')->name('shop.customers.account.orders.print-invoice');
+            });
 
-                    Route::get('html-view', 'htmlView')->name('shop.customers.account.gdpr.html-view');
-
-                    Route::post('revoke/{id}', 'revoke')->name('shop.customers.account.gdpr.revoke');
-                });
-
-                /**
-                 * Cookie consent.
-                 */
-                Route::get('your-cookie-consent-preferences', [GDPRController::class, 'cookieConsent'])
-                    ->name('shop.customers.gdpr.cookie-consent');
-
-                /**
-                 * Addresses.
-                 */
-                Route::controller(AddressController::class)->prefix('addresses')->group(function () {
-                    Route::get('', 'index')->name('shop.customers.account.addresses.index');
-
-                    Route::get('create', 'create')->name('shop.customers.account.addresses.create');
-
-                    Route::post('create', 'store')->name('shop.customers.account.addresses.store');
-
-                    Route::get('edit/{id}', 'edit')->name('shop.customers.account.addresses.edit');
-
-                    Route::put('edit/{id}', 'update')->name('shop.customers.account.addresses.update');
-
-                    Route::patch('edit/{id}', 'makeDefault')->name('shop.customers.account.addresses.update.default');
-
-                    Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.addresses.delete');
-                });
-
-                /**
-                 * Orders.
-                 */
-                Route::controller(OrderController::class)->prefix('orders')->group(function () {
-                    Route::get('', 'index')->name('shop.customers.account.orders.index');
-
-                    Route::get('view/{id}', 'view')->name('shop.customers.account.orders.view');
-
-                    Route::get('reorder/{id}', 'reorder')->name('shop.customers.account.orders.reorder');
-
-                    Route::post('cancel/{id}', 'cancel')->name('shop.customers.account.orders.cancel');
-
-                    Route::get('print/Invoice/{id}', 'printInvoice')->name('shop.customers.account.orders.print-invoice');
-                });
-
-                /**
-                 * Downloadable products.
-                 */
-                Route::controller(DownloadableProductController::class)->prefix('downloadable-products')->group(function () {
-                    Route::get('', 'index')->name('shop.customers.account.downloadable_products.index');
-
-                    Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
-                });
-                /**
-                 * Crypto Wallets.
-                 */
-                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->prefix('crypto')->group(function () {
-                    Route::get('', 'index')->name('shop.customers.account.crypto.index');
-
-                    Route::post('create', 'store')->name('shop.customers.account.crypto.store');
-
-                    Route::get('sync/{id}', 'sync')->name('shop.customers.account.crypto.sync');
-
-                    Route::get('verify/{id}', 'verify')->name('shop.customers.account.crypto.verify');
-
-                    Route::post('update-alias/{id}', 'updateAlias')->name('shop.customers.account.crypto.update_alias');
-                    Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
-                });
-
-            }); // End of meanly_pay_auth middleware group
+            /**
+             * Downloadable products.
+             */
+            Route::controller(DownloadableProductController::class)->prefix('downloadable-products')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.downloadable_products.index');
+                Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
+            });
         });
     });
 });
