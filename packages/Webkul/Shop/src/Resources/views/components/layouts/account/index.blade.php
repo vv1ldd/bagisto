@@ -4,6 +4,7 @@
     'backText' => null,
     'hasHeader' => true,
     'hasFooter' => true,
+    'isCardless' => false,
 ])
 
 <x-shop::layouts :has-header="$hasHeader" :has-feature="false" :has-footer="$hasFooter">
@@ -115,7 +116,7 @@
                         <!-- Main Content Pane (Drill-Down View) -->
                         <div class="flex flex-col w-full" style="max-width: 600px;">
                             
-                            @if ($showBack || isset($title))
+                            @if ($showBack || (isset($title) && !empty((string)$title)))
                                 <!-- Drill-Down Header: Positioned above the card -->
                                 <div class="flex items-center gap-3 px-5 pt-0 pb-4 mt-2">
                                     @if ($showBack)
@@ -130,7 +131,7 @@
                                         </a>
                                     @endif
 
-                                    @if (isset($title))
+                                    @if (isset($title) && !empty((string)$title))
                                         <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
                                     @endif
 
