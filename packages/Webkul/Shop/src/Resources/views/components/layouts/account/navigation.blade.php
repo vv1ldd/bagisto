@@ -3,6 +3,7 @@
         $customer = auth()->guard('customer')->user();
     @endphp
 
+    @if ($customer?->username)
         <div class="ios-nav-group !mb-6">
             @php
                 $hasAuthMethod = $customer && ($customer->hasPasskeys() || $customer->pin_code);
