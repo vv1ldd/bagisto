@@ -160,10 +160,10 @@
 
                                                 $parts = ["@{$username}"];
                                                 $parts[] = $nmData['chain'] ?? $uw->network;
-                                                if ($uw->alias)
-                                                    $parts[] = $uw->alias;
                                                 if (isset($nmData['token']))
                                                     $parts[] = $nmData['token'];
+                                                if ($uw->alias)
+                                                    $parts[] = $uw->alias;
 
                                                 $fullAlias = implode('.', $parts);
                                             @endphp

@@ -162,8 +162,8 @@
                                             
                                             $parts = ["@{$username}"];
                                             $parts[] = $nmData['chain'] ?? $address->network;
-                                            if ($address->alias) $parts[] = $address->alias;
                                             if (isset($nmData['token'])) $parts[] = $nmData['token'];
+                                            if ($address->alias) $parts[] = $address->alias;
                                             
                                             $fullAlias = implode('.', $parts);
                                         @endphp
