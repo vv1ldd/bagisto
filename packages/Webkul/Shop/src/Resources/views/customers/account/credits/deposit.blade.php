@@ -89,51 +89,74 @@
                         @foreach($verifiedAddresses as $address)
                             @php
                                 $nm = [
-                                    'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623'],
-                                    'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF'],
-                                    'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF'],
-                                    'usdt_ton' => ['USDT (TON)', 'USDT', '₮', '#26A17B', '#4DBFA0'],
-                                    'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0']
+                                    'bitcoin'  => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC'],
+                                    'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH'],
+                                    'ton'      => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON'],
+                                    'usdt_ton' => ['USDT (TON)', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON'],
+                                    'dash'     => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH']
                                 ];
-                                $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
-
+                                $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network)];
+                                
                                 $username = auth()->guard('customer')->user()->username;
                                 $netMap = [
-                                    'ton' => ['chain' => 'ton'],
+                                    'ton'      => ['chain' => 'ton'],
                                     'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
-                                    'bitcoin' => ['chain' => 'btc'],
+                                    'bitcoin'  => ['chain' => 'btc'],
                                     'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
-                                    'dash' => ['chain' => 'dash']
+                                    'dash'     => ['chain' => 'dash']
                                 ];
                                 $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
-
+                                
                                 $parts = ["@{$username}"];
                                 $parts[] = $nmData['chain'] ?? $address->network;
-                                if (isset($nmData['token']))
-                                    $parts[] = $nmData['token'];
-                                if ($address->alias)
-                                    $parts[] = $address->alias;
-
+                                if (isset($nmData['token'])) $parts[] = $nmData['token'];
+                                if ($address->alias) $parts[] = $address->alias;
+                                
                                 $fullAlias = implode('.', $parts);
                             @endphp
 
-                            <button onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')"
-                                class="bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden flex items-center gap-4 px-4 py-4 hover:border-violet-200 transition-all active:scale-[0.98] text-left">
-                                <span
-                                    class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[18px] font-bold shrink-0"
-                                    style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">{{ $m[2] }}</span>
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-[14px] font-bold text-zinc-900 truncate">{{ $fullAlias }}</div>
-                                    <div class="flex items-center gap-1.5 leading-none mt-0.5">
-                                        <span class="text-[12px] font-bold font-mono text-zinc-500">
-                                            {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                        </span>
-                                        <span
-                                            class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ $m[1] }}</span>
+                            <div onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')"
+                                 class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden hover:shadow-md hover:border-violet-100 transition-all p-3 cursor-pointer text-left">
+                                <div class="flex items-center gap-4">
+                                    {{-- Left: Icon --}}
+                                    <div class="relative shrink-0">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[16px] font-bold shadow-sm"
+                                            style="background:linear-gradient(135deg,{{ $m[3] }},{{ $m[4] }})">
+                                            {{ $m[2] }}
+                                        </div>
                                     </div>
+
+                                    {{-- Middle: Info Stack --}}
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-1.5 group/alias">
+                                            @if($address->isVerified())
+                                                <div class="text-[#0095f6] shrink-0">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                            <span class="text-[14px] font-bold text-zinc-900 truncate">
+                                                {{ $fullAlias }}
+                                            </span>
+                                        </div>
+
+                                        <div class="flex items-center gap-2 mt-0.5">
+                                            <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $m[5] }} &gt; {{ $m[1] }} &gt; {{ $address->address }}</code>
+                                        </div>
+
+                                        <div class="flex items-center gap-3 mt-1.5">
+                                            <div class="flex items-baseline gap-1.5 leading-none">
+                                                <span class="text-[14px] font-bold font-mono text-zinc-900">
+                                                    {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                                </span>
+                                                <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ $m[1] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-zinc-300">→</span>
                                 </div>
-                                <span class="text-zinc-300">→</span>
-                            </button>
+                            </div>
                         @endforeach
 
                         {{-- Manage Wallets Button --}}
@@ -197,27 +220,46 @@
 
                             {{-- Source Section (Visual Flow) --}}
                             <div class="mb-4">
-                                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Отправляйте
-                                    средства только с этого кошелька:</p>
-                                <div class="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 flex items-center gap-3">
-                                    <div
-                                        class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-zinc-400 shadow-sm border border-zinc-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
-                                            fill="currentColor">
-                                            <path d="M21 18H3V6h18v12zM5 8v8h14V8H5zm2 2h10v2H7v-2zm0 4h7v2H7v-2z" />
-                                        </svg>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="text-[14px] font-bold text-zinc-900 truncate">{{ $fullAlias }}</div>
-                                        <div class="text-[11px] font-mono text-zinc-400 truncate">{{ $address->address }}</div>
-                                    </div>
-                                    <div class="text-emerald-500">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20"
-                                            fill="currentColor">
-                                            <path fill-rule="evenodd"
-                                                d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                clip-rule="evenodd" />
-                                        </svg>
+                                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Отправляйте средства только с этого кошелька:</p>
+                                
+                                <div class="group relative bg-white rounded-2xl border border-zinc-100 shadow-sm overflow-hidden p-3 text-left">
+                                    <div class="flex items-center gap-4">
+                                        {{-- Left: Icon --}}
+                                        <div class="relative shrink-0">
+                                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-[16px] font-bold shadow-sm"
+                                                style="background:linear-gradient(135deg,{{ $asset['color'] }},{{ $asset['color2'] }})">
+                                                {{ $asset['icon'] }}
+                                            </div>
+                                        </div>
+
+                                        {{-- Middle: Info Stack --}}
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-1.5 group/alias">
+                                                @if($address->isVerified())
+                                                    <div class="text-[#0095f6] shrink-0">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                                                            <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z"/>
+                                                        </svg>
+                                                    </div>
+                                                @endif
+                                                <span class="text-[14px] font-bold text-zinc-900 truncate">
+                                                    {{ $fullAlias }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex items-center gap-2 mt-0.5">
+                                                <code class="text-[11px] font-mono text-zinc-400 truncate select-all">{{ $asset['symbol'] }} &gt; {{ $address->address }}</code>
+                                            </div>
+
+                                            <div class="flex items-center gap-3 mt-1.5">
+                                                <div class="flex items-baseline gap-1.5 leading-none">
+                                                    <span class="text-[14px] font-bold font-mono text-zinc-900">
+                                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                                    </span>
+                                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ $asset['symbol'] }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
