@@ -159,9 +159,12 @@
                                                 'dash'     => ['chain' => 'dash']
                                             ];
                                             $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
-                                            $parts = ["@{$username}", "+" . ($nmData['chain'] ?? $address->network)];
+                                            
+                                            $parts = ["@{$username}"];
+                                            $parts[] = $nmData['chain'] ?? $address->network;
                                             if ($address->alias) $parts[] = $address->alias;
-                                            if (isset($nmData['token'])) $parts[] = "+" . $nmData['token'];
+                                            if (isset($nmData['token'])) $parts[] = $nmData['token'];
+                                            
                                             $fullAlias = implode('.', $parts);
                                         @endphp
                                         <span class="text-[14px] font-bold text-zinc-900 truncate hover:text-violet-600 transition-colors cursor-pointer"

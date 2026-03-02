@@ -157,11 +157,14 @@
                                                     'dash' => ['chain' => 'dash']
                                                 ];
                                                 $nmData = $netMap[$uw->network] ?? ['chain' => $uw->network];
-                                                $parts = ["@{$username}", "+" . ($nmData['chain'] ?? $uw->network)];
+
+                                                $parts = ["@{$username}"];
+                                                $parts[] = $nmData['chain'] ?? $uw->network;
                                                 if ($uw->alias)
                                                     $parts[] = $uw->alias;
                                                 if (isset($nmData['token']))
-                                                    $parts[] = "+" . $nmData['token'];
+                                                    $parts[] = $nmData['token'];
+
                                                 $fullAlias = implode('.', $parts);
                                             @endphp
                                             <div class="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 flex items-center gap-3">
