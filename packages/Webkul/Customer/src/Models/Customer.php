@@ -239,6 +239,16 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     }
 
     /**
+     * Check if the customer has any passkeys configured.
+     *
+     * @return bool
+     */
+    public function hasPasskeys(): bool
+    {
+        return $this->passkeys()->exists();
+    }
+
+    /**
      * Get inactive cart instance of a customer.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
