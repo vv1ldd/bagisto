@@ -4,10 +4,6 @@
         Meanly Pay Умный Кошелек
         </x-slot>
 
-        <!-- Breadcrumbs -->
-        @section('breadcrumbs')
-            <x-shop::breadcrumbs name="meanly_pay"></x-shop::breadcrumbs>
-        @endsection
 
         <div
             class="flex-auto overflow-hidden rounded-2xl bg-white shadow-lg border border-gray-100 dark:border-gray-800 dark:bg-gray-900 mx-auto max-w-md mt-10 p-8 text-center max-sm:-mx-4 max-sm:rounded-none max-sm:border-none">
