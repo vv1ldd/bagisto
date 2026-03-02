@@ -569,7 +569,7 @@
                 _selCoin = coin;
                 
                 // Update Coin Buttons
-                document.querySelectorAll('[id^="coin-"]').forEach(b => {
+                document.querySelectorAll('button[id^="coin-"]').forEach(b => {
                     const id = b.id.replace('coin-', '');
                     const isSelected = id === coin;
                     const color = COIN_COLORS[id];
