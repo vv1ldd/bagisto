@@ -112,7 +112,7 @@
             <!-- Sidebar Navigation -->
             <x-shop::layouts.sidebar />
 
-            <div id="content-push-wrapper" class="flex flex-col min-h-screen bg-white transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform shadow-[0_0_80px_rgba(0,0,0,0.02)] px-0 md:px-0">
+            <div id="content-push-wrapper" class="flex flex-col min-h-screen bg-transparent transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform shadow-[0_0_80px_rgba(0,0,0,0.02)] px-0 md:px-0">
                 <!-- Flash Message Blade Component -->
                 <x-shop::flash-group />
 
