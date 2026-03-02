@@ -121,7 +121,9 @@
                                 <div class="flex items-center gap-3 px-8 pt-6 pb-2 max-md:px-5 max-md:pt-5 max-md:pb-2">
                                     @if ($showBack)
                                         <a href="{{ $backLink ?? route('shop.customers.account.index') }}"
-                                            onclick="if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) { window.history.back(); return false; }"
+                                            @if (!isset($backLink))
+                                                onclick="if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) { window.history.back(); return false; }"
+                                            @endif
                                             class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />

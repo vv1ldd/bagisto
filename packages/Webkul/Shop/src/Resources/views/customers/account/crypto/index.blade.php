@@ -97,7 +97,12 @@
     </script>
 @endpush
 
-<x-shop::layouts.account :back-link="url()->previous(route('shop.customers.account.index'))" :title="trans('shop::app.layouts.crypto-wallets')">
+@php
+    $prev = url()->previous();
+    $backLink = str_contains($prev, '/credits/deposit') ? $prev : route('shop.customers.account.credits.index');
+@endphp
+
+<x-shop::layouts.account :back-link="$backLink" :title="trans('shop::app.layouts.crypto-wallets')">
 
 
 
