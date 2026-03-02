@@ -146,7 +146,7 @@
                                         @endif
                                         <span class="text-[15px] font-bold text-zinc-900 truncate hover:text-violet-600 transition-colors cursor-pointer"
                                               onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
-                                            {{ $address->alias ?: $m[0] }}
+                                            @ {{ auth()->guard('customer')->user()->username }}.{{ $address->alias ?: $m[0] }}
                                         </span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-300 cursor-pointer hover:text-violet-400 opacity-0 group-hover/alias:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor"
                                              onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
