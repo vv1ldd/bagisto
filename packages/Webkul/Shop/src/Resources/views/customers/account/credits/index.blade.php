@@ -169,6 +169,8 @@
 
             {{-- Step: Management (Combined Deposit & Management) --}}
             <div id="step-management" class="hidden space-y-4">
+                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3 px-2">Выберите кошелек для пополнения
+                </p>
                 @foreach($allAddresses as $address)
                     @php
                         $nm = [
@@ -201,9 +203,9 @@
                         $coinColor = $m[3];
                     @endphp
                     
-                    <div class="bg-white rounded-[4px] shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
+                    <div class="bg-white rounded-3xl shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
                         {{-- Clickable Area for Deposit --}}
-                        <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="flex-1 flex gap-5 p-6 min-w-0 text-left cursor-pointer">
+                        <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="flex-1 flex gap-4 p-6 min-w-0 text-left cursor-pointer items-center">
                             {{-- Icon Column --}}
                             <div class="relative shrink-0">
                                 <div class="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center text-white text-[22px] font-bold shadow-sm" style="background: {{ $coinColor }}">
@@ -252,10 +254,17 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            {{-- Selection Indicator --}}
+                            <div class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-violet-500 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
                         </button>
 
                         {{-- Action Column (Delete) --}}
-                        <div class="shrink-0 flex items-center pr-6">
+                        <div class="shrink-0 flex items-center pr-8 pl-2 border-l border-zinc-50 ml-2">
                             <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')" 
@@ -394,7 +403,7 @@
                         if (currentStep === 'transactions') titleEl.innerText = "История";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
                         if (currentStep === 'details') titleEl.innerText = "Детали пополнения";
-                        if (currentStep === 'management') titleEl.innerText = "Кошельки";
+                        if (currentStep === 'management') titleEl.innerText = "Кошельки для пополнения";
                         if (currentStep === 'add-wallet') titleEl.innerText = "Новый кошелек";
                     }
                 }
