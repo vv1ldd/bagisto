@@ -7,10 +7,6 @@
         <div class="max-w-lg mx-auto px-4 py-6">
 
             {{-- Page title --}}
-            <div class="mb-6">
-                <h1 class="text-[22px] font-bold text-zinc-900">Пополнение Credits</h1>
-                <p class="text-[13px] text-zinc-400 mt-1">Выберите сеть и валюту для пополнения</p>
-            </div>
 
             @php
                 $groups = [
@@ -205,14 +201,13 @@
                                 </div>
 
                                 {{-- Instruction --}}
-                                <div class="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-4 mb-6">
-                                    <p class="text-[13px] text-amber-800 leading-relaxed font-medium mb-2">
+                                <div class="bg-violet-50 border border-violet-100 rounded-2xl px-4 py-4 mb-6">
+                                    <p class="text-[13px] text-violet-800 leading-relaxed font-medium mb-1">
                                         ⚠️ ВАЖНО: Отправляйте средства ТОЛЬКО с ваших верифицированных кошельков.
                                     </p>
-                                    <p class="text-[12px] text-amber-700 leading-relaxed">
-                                        Для зачисления необходимо отправить <strong>точную сумму верификации</strong> (с дробным
-                                        хвостом).
-                                        Это является фактором верификации платежа.
+                                    <p class="text-[12px] text-violet-700 leading-relaxed">
+                                        Вы можете отправить <strong>любую сумму</strong>. Средства будут зачислены на ваш баланс
+                                        автоматически.
                                     </p>
                                 </div>
 
