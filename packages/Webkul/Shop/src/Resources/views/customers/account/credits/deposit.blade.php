@@ -7,16 +7,22 @@
         <div class="max-w-lg mx-auto px-4 py-12">
             {{-- Top Navigation & Title (Truly Outside the Tile) --}}
             <div class="flex items-center gap-4 mb-8">
-                <a id="page-back-link" href="{{ route('shop.customers.account.credits.index') }}"
-                    class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </a>
-                <h1 id="page-title" class="text-[22px] font-bold text-zinc-900 leading-none">Пополнение баланса</h1>
-            </div>
+            {{-- Initial state: Real Link to Balance --}}
+            <a id="page-back-link" href="{{ route('shop.customers.account.credits.index') }}" 
+               class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </a>
+            {{-- Step 2 state: Button that doesn't trigger global nav --}}
+            <button id="step-back-btn" onclick="backToSelection()" style="display: none;"
+               class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <h1 id="page-title" class="text-[22px] font-bold text-zinc-900 leading-none">Пополнение баланса</h1>
+        </div>
             <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
 
                 @php
@@ -396,10 +402,9 @@
                         document.getElementById('step-details').classList.remove('hidden');
 
                         // Update Top Header
-                        document.getElementById('page-title').innerText = "Детали пополнения";
-                        const backBtn = document.getElementById('page-back-link');
-                        backBtn.href = "javascript:void(0)";
-                        backBtn.onclick = function (e) { e.preventDefault(); backToSelection(); };
+                document.getElementById('page-title').innerText = "Детали пополнения";
+                document.getElementById('page-back-link').style.display = 'none';
+                document.getElementById('step-back-btn').style.display = 'flex';
 
                         // Hide all wallet details
                         document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
@@ -413,10 +418,9 @@
                         document.getElementById('step-selection').classList.remove('hidden');
 
                         // Restore Top Header
-                        document.getElementById('page-title').innerText = initialTitle;
-                        const backBtn = document.getElementById('page-back-link');
-                        backBtn.href = initialBackUrl;
-                        backBtn.onclick = null;
+                document.getElementById('page-title').innerText = initialTitle;
+                document.getElementById('page-back-link').style.display = 'flex';
+                document.getElementById('step-back-btn').style.display = 'none';
                     }
 
                     function copyAddr(text, btn) {
