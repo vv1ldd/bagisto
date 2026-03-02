@@ -436,9 +436,11 @@
                                 'ton' => ['◎', 'TON', '#0098EA'], 
                                 'dash' => ['D', 'DASH', '#1c75bc']
                             ] as $coin => $m)
-                                <button type="button" id="coin-{{ $coin }}" onclick="selCoin('{{ $coin }}')" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl border-2 border-zinc-50 transition-all group bg-white">
-                                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[16px] font-bold mb-1 shadow-sm" style="background:linear-gradient(135deg, {{ $m[2] }}, {{ $m[2] }}dd)">{{ $m[0] }}</span>
-                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{{ $m[1] }}</span>
+                                <button type="button" id="coin-{{ $coin }}" onclick="selCoin('{{ $coin }}')" class="flex flex-col items-center justify-center p-3 rounded-[16px] border border-zinc-100 transition-all group bg-white hover:bg-zinc-50 relative overflow-hidden">
+                                    <div id="coin-icon-{{ $coin }}" class="w-8 h-8 rounded-[12px] flex items-center justify-center text-white text-[15px] font-bold mb-1.5 shadow-sm transition-all" style="background: {{ $m[2] }}">
+                                        {{ $m[0] }}
+                                    </div>
+                                    <span id="coin-label-{{ $coin }}" class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter transition-all">{{ $m[1] }}</span>
                                 </button>
                             @endforeach
                         </div>
@@ -553,11 +555,11 @@
             };
 
             const COIN_COLORS = {
-                'btc': { bg: '#FFF7ED', border: '#F7931A' },
-                'eth': { bg: '#EEF2FF', border: '#627EEA' },
-                'usdt': { bg: '#E6F6F1', border: '#26A17B' },
-                'ton': { bg: '#E0F5FF', border: '#0098EA' },
-                'dash': { bg: '#EFF6FF', border: '#1c75bc' }
+                'btc': '#F7931A',
+                'eth': '#627EEA',
+                'usdt': '#26A17B',
+                'ton': '#0098EA',
+                'dash': '#1c75bc'
             };
 
             let _selCoin = null;
@@ -565,10 +567,28 @@
 
             function selCoin(coin) {
                 _selCoin = coin;
+                
+                // Update Coin Buttons
                 document.querySelectorAll('[id^="coin-"]').forEach(b => {
-                    const isSelected = b.id === 'coin-' + coin;
-                    b.style.borderColor = isSelected ? COIN_COLORS[coin].border : '#f4f4f5';
-                    b.style.background = isSelected ? COIN_COLORS[coin].bg : '#fff';
+                    const id = b.id.replace('coin-', '');
+                    const isSelected = id === coin;
+                    const color = COIN_COLORS[id];
+                    
+                    if (isSelected) {
+                        b.style.borderColor = color;
+                        b.style.borderWidth = '1.5px'; // slightly thicker border
+                        b.classList.remove('bg-white');
+                        b.classList.add('bg-zinc-50/30'); // slight tint
+                        
+                        document.getElementById('coin-label-' + id).style.color = color;
+                    } else {
+                        b.style.borderColor = '#f4f4f5'; // zinc-100
+                        b.style.borderWidth = '1px';
+                        b.classList.add('bg-white');
+                        b.classList.remove('bg-zinc-50/30');
+                        
+                        document.getElementById('coin-label-' + id).style.color = '#a1a1aa'; // zinc-400
+                    }
                 });
 
                 const nets = COIN_NETWORKS[coin];
@@ -578,7 +598,7 @@
                 nets.forEach(net => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'network-btn flex items-center justify-center gap-2 py-3 rounded-xl border-2 transition-all font-bold text-[13px] text-zinc-500 border-zinc-100 bg-white';
+                    btn.className = 'network-btn flex items-center justify-center p-3 rounded-[16px] border border-zinc-100 bg-white transition-all font-bold text-[13px] text-zinc-900';
                     btn.innerText = net.label;
                     btn.onclick = () => selActualNet(net.id, btn, coin);
                     container.appendChild(btn);
@@ -600,14 +620,29 @@
                 document.getElementById('wallet-net-input').value = netId;
                 
                 document.querySelectorAll('.network-btn').forEach(b => {
-                    b.style.borderColor = '#f4f4f5';
-                    b.style.background = '#fff';
-                    b.style.color = '#71717a';
+                    b.style.borderColor = '#f4f4f5'; // zinc-100
+                    b.style.borderWidth = '1px';
+                    b.classList.remove('bg-[#E6F6F1]'); // ensure we remove any specific bg class if we add them later
+                    b.style.background = '#ffffff';
                 });
                 
-                btnEl.style.borderColor = COIN_COLORS[coin].border;
-                btnEl.style.background = COIN_COLORS[coin].bg;
-                btnEl.style.color = '#18181b';
+                // Specifically map the green background for USDT as shown in screenshot
+                const color = COIN_COLORS[coin];
+                btnEl.style.borderColor = color;
+                btnEl.style.borderWidth = '1.5px';
+                
+                // If it's the green usdt color, match the screenshot's green tint background
+                if (color === '#26A17B') {
+                    btnEl.style.background = '#E6F6F1';
+                } else if (color === '#0098EA') {
+                     btnEl.style.background = '#E0F5FF';
+                } else if (color === '#F7931A') {
+                     btnEl.style.background = '#FFF7ED';
+                } else if (color === '#627EEA') {
+                     btnEl.style.background = '#EEF2FF';
+                } else {
+                     btnEl.style.background = '#f8fafc'; // light gray fallback
+                }
 
                 document.getElementById('wallet-addr-section').classList.remove('hidden');
                 onWalletInput(document.getElementById('wallet-addr-input').value);
