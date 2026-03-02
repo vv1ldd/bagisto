@@ -144,19 +144,45 @@
 
                             @if($userWallets->isNotEmpty())
                                 <div class="mb-4">
-                                    <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Отправляйте средства только отсюда:</p>
+                                    <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Отправляйте
+                                        средства только отсюда:</p>
                                     <div class="flex flex-col gap-2">
                                         @foreach($userWallets as $uw)
+                                            @php
+                                                $netMap = [
+                                                    'ton' => ['chain' => 'ton'],
+                                                    'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
+                                                    'bitcoin' => ['chain' => 'btc'],
+                                                    'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
+                                                    'dash' => ['chain' => 'dash']
+                                                ];
+                                                $nmData = $netMap[$uw->network] ?? ['chain' => $uw->network];
+                                                $parts = ["@{$username}", "+" . ($nmData['chain'] ?? $uw->network)];
+                                                if ($uw->alias)
+                                                    $parts[] = $uw->alias;
+                                                if (isset($nmData['token']))
+                                                    $parts[] = "+" . $nmData['token'];
+                                                $fullAlias = implode('.', $parts);
+                                            @endphp
                                             <div class="bg-zinc-50 rounded-2xl p-4 border border-zinc-100 flex items-center gap-3">
-                                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-zinc-400 shadow-sm border border-zinc-50">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M21 18H3V6h18v12zM5 8v8h14V8H5zm2 2h10v2H7v-2zm0 4h7v2H7v-2z" /></svg>
+                                                <div
+                                                    class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-zinc-400 shadow-sm border border-zinc-50">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
+                                                        fill="currentColor">
+                                                        <path d="M21 18H3V6h18v12zM5 8v8h14V8H5zm2 2h10v2H7v-2zm0 4h7v2H7v-2z" />
+                                                    </svg>
                                                 </div>
                                                 <div class="flex-1 min-w-0">
-                                                    <div class="text-[14px] font-bold text-zinc-900 truncate">@ {{ $username }}.{{ $uw->alias ?: $asset['symbol'] }}</div>
+                                                    <div class="text-[14px] font-bold text-zinc-900 truncate">{{ $fullAlias }}</div>
                                                     <div class="text-[11px] font-mono text-zinc-400 truncate">{{ $uw->address }}</div>
                                                 </div>
                                                 <div class="text-emerald-500">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20"
+                                                        fill="currentColor">
+                                                        <path fill-rule="evenodd"
+                                                            d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                                            clip-rule="evenodd" />
+                                                    </svg>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -168,8 +194,10 @@
                             <div class="flex flex-col items-center my-4 opacity-30">
                                 <div class="w-px h-6 border-l border-dashed border-zinc-400"></div>
                                 <div class="text-zinc-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7-7-7m14-8l-7 7-7-7" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 14l-7 7-7-7m14-8l-7 7-7-7" />
                                     </svg>
                                 </div>
                             </div>
@@ -197,7 +225,8 @@
                                             Отправляйте средства ТОЛЬКО с ваших верифицированных кошельков.
                                         </p>
                                         <p class="text-[12px] text-violet-700 leading-relaxed">
-                                            Вы можете отправить <strong>любую сумму</strong>. Средства будут зачислены на ваш баланс автоматически в течение нескольких минут.
+                                            Вы можете отправить <strong>любую сумму</strong>. Средства будут зачислены на ваш
+                                            баланс автоматически в течение нескольких минут.
                                         </p>
                                     </div>
                                 </div>

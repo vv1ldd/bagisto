@@ -149,9 +149,24 @@
                                                 </svg>
                                             </div>
                                         @endif
-                                        <span class="text-[15px] font-bold text-zinc-900 truncate hover:text-violet-600 transition-colors cursor-pointer"
+                                        @php
+                                            $username = auth()->guard('customer')->user()->username;
+                                            $netMap = [
+                                                'ton'      => ['chain' => 'ton'],
+                                                'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
+                                                'bitcoin'  => ['chain' => 'btc'],
+                                                'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
+                                                'dash'     => ['chain' => 'dash']
+                                            ];
+                                            $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
+                                            $parts = ["@{$username}", "+" . ($nmData['chain'] ?? $address->network)];
+                                            if ($address->alias) $parts[] = $address->alias;
+                                            if (isset($nmData['token'])) $parts[] = "+" . $nmData['token'];
+                                            $fullAlias = implode('.', $parts);
+                                        @endphp
+                                        <span class="text-[14px] font-bold text-zinc-900 truncate hover:text-violet-600 transition-colors cursor-pointer"
                                               onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
-                                            @ {{ auth()->guard('customer')->user()->username }}.{{ $address->alias ?: $m[0] }}
+                                            {{ $fullAlias }}
                                         </span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-zinc-300 cursor-pointer hover:text-violet-400 opacity-0 group-hover/alias:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor"
                                              onclick="const newAlias = prompt('Введите новое название кошелька', '{{ $address->alias ?? '' }}'); if (newAlias !== null) { document.getElementById('update-alias-form-{{ $address->id }}').querySelector('input[name=alias]').value = newAlias; document.getElementById('update-alias-form-{{ $address->id }}').submit(); }">
