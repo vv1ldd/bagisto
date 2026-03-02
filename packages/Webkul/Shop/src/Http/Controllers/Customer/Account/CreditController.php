@@ -20,37 +20,8 @@ class CreditController extends Controller
     {
         $customer = auth()->guard('customer')->user();
 
-        // Trigger on-demand deposit sync (rate-limited internally to 5 min per address)
+        // Trigger on-demand deposit sync (rate-limited internally)
         $this->syncService->syncCustomerDeposits($customer);
-
-        return view('shop::customers.account.credits.index');
-    }
-
-    /**
-     * Display transaction history.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function transactions()
-    {
-        $customer = auth()->guard('customer')->user();
-
-        $transactions = $customer
-            ->credits()
-            ->orderBy('id', 'desc')
-            ->paginate(15);
-
-        return view('shop::customers.account.credits.transactions', compact('transactions'));
-    }
-
-    /**
-     * Dedicated deposit page.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function deposit()
-    {
-        $customer = auth()->guard('customer')->user();
 
         $verifiedAddresses = $customer
             ->crypto_addresses()
@@ -63,6 +34,27 @@ class CreditController extends Controller
             ->orderBy('network')
             ->get();
 
-        return view('shop::customers.account.credits.deposit', compact('verifiedAddresses', 'allAddresses'));
+        $transactions = $customer
+            ->credits()
+            ->orderBy('id', 'desc')
+            ->paginate(20);
+
+        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions'));
+    }
+
+    /**
+     * Redirect to unified index with transactions step.
+     */
+    public function transactions()
+    {
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'transactions']);
+    }
+
+    /**
+     * Redirect to unified index with deposit step.
+     */
+    public function deposit()
+    {
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'deposit']);
     }
 }
