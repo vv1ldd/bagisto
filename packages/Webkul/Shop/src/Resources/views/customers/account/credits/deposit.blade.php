@@ -1,77 +1,71 @@
-<x-shop::layouts.account :back-link="route('shop.customers.account.credits.index')" back-text="Назад к балансу">
+<x-shop::layouts.account :has-header="false">
     {{-- Page Title Slot (Meta) --}}
     <x-slot:title>
         Пополнение баланса
-    </x-slot>
+        </x-slot>
 
-    <div class="max-w-lg mx-auto px-4 py-8">
-        {{-- Top Navigation & Title (Outside the Tile) --}}
-        <div class="flex items-center gap-4 mb-6">
-            <a id="page-back-link" href="{{ route('shop.customers.account.credits.index') }}" 
-               class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-            </a>
-            <h1 id="page-title" class="text-[20px] font-bold text-zinc-900 leading-none">Пополнение баланса</h1>
-        </div>
+        <div class="max-w-lg mx-auto px-4 py-12">
+            {{-- Top Navigation & Title (Truly Outside the Tile) --}}
+            <div class="flex items-center gap-4 mb-8">
+                <a id="page-back-link" href="{{ route('shop.customers.account.credits.index') }}"
+                    class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </a>
+                <h1 id="page-title" class="text-[22px] font-bold text-zinc-900 leading-none">Пополнение баланса</h1>
+            </div>
 
-        <div class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
+            'network' => 'TON Network',
+            'color' => '#0098EA',
+            'color2' => '#33BFFF',
+            'address' => config('crypto.verification_addresses.ton')
+            ],
+            'usdt_ton' => [
+            'name' => 'USDT (TON)',
+            'symbol' => 'USDT',
+            'icon' => '₮',
+            'network' => 'TON Network',
+            'color' => '#0098EA',
+            'color2' => '#33BFFF',
+            'address' => config('crypto.verification_addresses.usdt_ton')
+            ],
+            'bitcoin' => [
+            'name' => 'Bitcoin',
+            'symbol' => 'BTC',
+            'icon' => '₿',
+            'network' => 'Bitcoin',
+            'color' => '#F7931A',
+            'color2' => '#FDB953',
+            'address' => config('crypto.verification_addresses.bitcoin')
+            ],
+            'ethereum' => [
+            'name' => 'Ethereum / USDT ERC20',
+            'symbol' => 'ETH',
+            'icon' => 'Ξ',
+            'network' => 'Ethereum',
+            'color' => '#627EEA',
+            'color2' => '#8FA4EF',
+            'address' => config('crypto.verification_addresses.ethereum')
+            ],
+            'dash' => [
+            'name' => 'Dash',
+            'symbol' => 'DASH',
+            'icon' => 'D',
+            'network' => 'Dash',
+            'color' => '#1c75bc',
+            'color2' => '#4DA3E0',
+            'address' => config('crypto.verification_addresses.dash')
+            ],
+            ];
 
-            @php
-                $allAssets = [
-                    'ton' => [
-                        'name' => 'TON (Native)',
-                        'symbol' => 'TON',
-                        'icon' => '💎',
-                        'network' => 'TON Network',
-                        'color' => '#0098EA',
-                        'color2' => '#33BFFF',
-                        'address' => config('crypto.verification_addresses.ton')
-                    ],
-                    'usdt_ton' => [
-                        'name' => 'USDT (TON)',
-                        'symbol' => 'USDT',
-                        'icon' => '₮',
-                        'network' => 'TON Network',
-                        'color' => '#0098EA',
-                        'color2' => '#33BFFF',
-                        'address' => config('crypto.verification_addresses.usdt_ton')
-                    ],
-                    'bitcoin' => [
-                        'name' => 'Bitcoin',
-                        'symbol' => 'BTC',
-                        'icon' => '₿',
-                        'network' => 'Bitcoin',
-                        'color' => '#F7931A',
-                        'color2' => '#FDB953',
-                        'address' => config('crypto.verification_addresses.bitcoin')
-                    ],
-                    'ethereum' => [
-                        'name' => 'Ethereum / USDT ERC20',
-                        'symbol' => 'ETH',
-                        'icon' => 'Ξ',
-                        'network' => 'Ethereum',
-                        'color' => '#627EEA',
-                        'color2' => '#8FA4EF',
-                        'address' => config('crypto.verification_addresses.ethereum')
-                    ],
-                    'dash' => [
-                        'name' => 'Dash',
-                        'symbol' => 'DASH',
-                        'icon' => 'D',
-                        'network' => 'Dash',
-                        'color' => '#1c75bc',
-                        'color2' => '#4DA3E0',
-                        'address' => config('crypto.verification_addresses.dash')
-                    ],
-                ];
-
-                // Filter to only verified assets
-                $verifiedNetworkKeys = $verifiedAddresses->pluck('network')->unique()->toArray();
-                $verifiedAssets = array_filter($allAssets, function ($key) use ($verifiedNetworkKeys) {
-                    return in_array($key, $verifiedNetworkKeys);
-                }, ARRAY_FILTER_USE_KEY);
+            // Filter to only verified assets
+            $verifiedNetworkKeys = $verifiedAddresses->pluck('network')->unique()->toArray();
+            $verifiedAssets = array_filter($allAssets, function ($key) use ($verifiedNetworkKeys) {
+            return in_array($key, $verifiedNetworkKeys);
+            }, ARRAY_FILTER_USE_KEY);
             @endphp
 
             @if($verifiedAddresses->isEmpty())
@@ -92,7 +86,8 @@
                 </div>
             @else
                 {{-- Wallet Selection (Flat List) --}}
-                <div id="step-selection">
+                <div id="step-selection"
+                    class="bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
                     <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3">Откуда будете пополнять?
                     </p>
                     <div class="flex flex-col gap-3">
@@ -216,7 +211,8 @@
                 </div>
 
                 {{-- Step 2: Final Deposit Details --}}
-                <div id="step-details" class="hidden">
+                <div id="step-details"
+                    class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm overflow-hidden p-6 md:p-8">
                     @foreach($verifiedAddresses as $address)
                         <div id="details-wallet-{{ $address->id }}" class="hidden wallet-details-view">
                             @php
@@ -379,50 +375,48 @@
                     @endforeach
                 </div>
             @endif
-
         </div>
-    </div>
 
-    @push('scripts')
-        <script>
-            const initialTitle = "Пополнение баланса";
-            const initialBackUrl = "{{ route('shop.customers.account.credits.index') }}";
+        @push('scripts')
+            <script>
+                const initialTitle = "Пополнение баланса";
+                const initialBackUrl = "{{ route('shop.customers.account.credits.index') }}";
 
-            function selectAsset(assetKey, walletId) {
-                document.getElementById('step-selection').classList.add('hidden');
-                document.getElementById('step-details').classList.remove('hidden');
-                
-                // Update Top Header
-                document.getElementById('page-title').innerText = "Детали пополнения";
-                const backBtn = document.getElementById('page-back-link');
-                backBtn.href = "javascript:void(0)";
-                backBtn.onclick = function(e) { e.preventDefault(); backToSelection(); };
+                function selectAsset(assetKey, walletId) {
+                    document.getElementById('step-selection').classList.add('hidden');
+                    document.getElementById('step-details').classList.remove('hidden');
 
-                // Hide all wallet details
-                document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
-                // Show selected wallet details
-                const target = document.getElementById('details-wallet-' + walletId);
-                if (target) target.classList.remove('hidden');
-            }
+                    // Update Top Header
+                    document.getElementById('page-title').innerText = "Детали пополнения";
+                    const backBtn = document.getElementById('page-back-link');
+                    backBtn.href = "javascript:void(0)";
+                    backBtn.onclick = function (e) { e.preventDefault(); backToSelection(); };
 
-            function backToSelection() {
-                document.getElementById('step-details').classList.add('hidden');
-                document.getElementById('step-selection').classList.remove('hidden');
+                    // Hide all wallet details
+                    document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
+                    // Show selected wallet details
+                    const target = document.getElementById('details-wallet-' + walletId);
+                    if (target) target.classList.remove('hidden');
+                }
 
-                // Restore Top Header
-                document.getElementById('page-title').innerText = initialTitle;
-                const backBtn = document.getElementById('page-back-link');
-                backBtn.href = initialBackUrl;
-                backBtn.onclick = null;
-            }
+                function backToSelection() {
+                    document.getElementById('step-details').classList.add('hidden');
+                    document.getElementById('step-selection').classList.remove('hidden');
 
-            function copyAddr(text, btn) {
-                navigator.clipboard.writeText(text).then(() => {
-                    const orig = btn.innerHTML;
-                    btn.innerHTML = '✓ Скопировано';
-                    setTimeout(() => btn.innerHTML = orig, 2000);
-                });
-            }
-        </script>
-    @endpush
+                    // Restore Top Header
+                    document.getElementById('page-title').innerText = initialTitle;
+                    const backBtn = document.getElementById('page-back-link');
+                    backBtn.href = initialBackUrl;
+                    backBtn.onclick = null;
+                }
+
+                function copyAddr(text, btn) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        const orig = btn.innerHTML;
+                        btn.innerHTML = '✓ Скопировано';
+                        setTimeout(() => btn.innerHTML = orig, 2000);
+                    });
+                }
+            </script>
+        @endpush
 </x-shop::layouts.account>
