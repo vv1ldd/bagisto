@@ -62,8 +62,23 @@
                         ];
                     @endphp
 
-                    <div class="text-4xl font-bold font-mono text-zinc-900 tracking-tight mt-1">
-                        {{ core()->formatPrice($user->getTotalFiatBalance()) }}
+                    <div class="flex items-center justify-between mt-1">
+                        <div class="text-4xl font-bold font-mono text-zinc-900 tracking-tight">
+                            {{ core()->formatPrice($user->getTotalFiatBalance()) }}
+                        </div>
+                        <a href="{{ route('shop.customers.account.credits.transactions') }}"
+                            class="flex flex-col items-center gap-1 group">
+                            <div
+                                class="w-10 h-10 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <span
+                                class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
+                        </a>
                     </div>
 
                     @if($balances->count() > 0)
@@ -99,30 +114,5 @@
                 </div>
             </div>
 
-            {{-- Transactions History Navigation --}}
-            <div class="mt-8">
-                <a href="{{ route('shop.customers.account.credits.transactions') }}"
-                    class="ios-group flex items-center justify-between p-5 bg-white rounded-[24px] shadow-sm hover:shadow-md active:scale-[0.98] transition-all group">
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                        </div>
-                        <div class="text-left">
-                            <div class="text-[15px] font-bold text-zinc-900 leading-tight">История транзакций</div>
-                            <div class="text-[11px] text-zinc-400 font-medium">Посмотреть все движения по счету</div>
-                        </div>
-                    </div>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 h-5 text-zinc-300 group-hover:text-violet-400 transition-all transform group-hover:translate-x-1"
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
         </div>
 </x-shop::layouts.account>
