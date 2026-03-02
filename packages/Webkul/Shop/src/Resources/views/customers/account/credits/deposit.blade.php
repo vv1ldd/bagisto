@@ -236,20 +236,15 @@
                                 $expLink = ($exp[$address->network] ?? '#') . $address->address;
                             @endphp
 
-                            {{-- Header --}}
-                            <div class="flex items-center gap-3 mb-6">
-                                <span
-                                    class="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-[22px] font-bold shrink-0"
-                                    style="background:linear-gradient(135deg,{{ $asset['color'] }},{{ $asset['color2'] }})">{{ $asset['icon'] }}</span>
-                                <div class="flex-1">
-                                    <h2 class="text-[18px] font-bold text-zinc-900">{{ $asset['name'] }}</h2>
-                                    <div class="flex gap-3 mt-1">
-                                        <button onclick="backToSelection()"
-                                            class="text-[13px] text-violet-500 font-medium hover:underline">
-                                            ← Выбрать другой кошелек
-                                        </button>
-                                    </div>
-                                </div>
+                            {{-- Navigation Back --}}
+                            <div class="mb-4">
+                                <button onclick="backToSelection()"
+                                    class="text-[13px] text-zinc-400 font-medium hover:text-violet-500 transition-colors flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                    </svg>
+                                    Выбрать другой кошелек
+                                </button>
                             </div>
 
                             {{-- Source Section (Visual Flow) --}}
