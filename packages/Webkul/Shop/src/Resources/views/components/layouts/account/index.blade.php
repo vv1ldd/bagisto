@@ -113,12 +113,11 @@
                         </div>
                     @else
                         <!-- Main Content Pane (Drill-Down View) -->
-                        <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl"
-                            style="max-width: 600px;">
-
+                        <div class="flex flex-col w-full" style="max-width: 600px;">
+                            
                             @if ($showBack || isset($title))
-                                <!-- Drill-Down Header: Minimal circular back button -->
-                                <div class="flex items-center gap-3 px-8 pt-6 pb-2 max-md:px-5 max-md:pt-5 max-md:pb-2">
+                                <!-- Drill-Down Header: Positioned above the card -->
+                                <div class="flex items-center gap-3 px-5 pt-0 pb-4 mt-2">
                                     @if ($showBack)
                                         <a href="{{ $backLink ?? route('shop.customers.account.index') }}"
                                             @if (!isset($backLink))
@@ -137,7 +136,9 @@
 
                                     <div class="flex-1"></div>
 
-                                    @if (request()->routeIs('shop.customers.account.profile.edit'))
+                                    @if (isset($headerActions))
+                                        {{ $headerActions }}
+                                    @elseif (request()->routeIs('shop.customers.account.profile.edit'))
                                         <button type="submit" form="profile-edit-form"
                                             class="text-[#007AFF] font-semibold text-[17px] transition active:opacity-50 disabled:opacity-30 disabled:cursor-not-allowed"
                                             id="profile-save-header-btn">
@@ -147,9 +148,11 @@
                                 </div>
                             @endif
 
-                            <!-- Page Content -->
-                            <div class="flex-1">
-                                {{ $slot }}
+                            <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl">
+                                <!-- Page Content -->
+                                <div class="flex-1">
+                                    {{ $slot }}
+                                </div>
                             </div>
                         </div>
                     @endif

@@ -14,71 +14,41 @@
     @endSection
 
     
+    <x-slot:headerActions>
+        <div class="flex gap-4 items-center">
+            {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.before', ['order' => $order]) !!}
+
+            @if ($order->canReorder() && core()->getConfigData('sales.order_settings.reorder.shop'))
+                <a href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
+                   class="text-[#007AFF] font-semibold text-[16px] transition active:opacity-50">
+                    @lang('shop::app.customers.account.orders.view.reorder-btn-title')
+                </a>
+            @endif
+
+            {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.after', ['order' => $order]) !!}
+
+            {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.before', ['order' => $order]) !!}
+
+            @if ($order->canCancel())
+                <form method="POST" ref="cancelOrderForm" action="{{ route('shop.customers.account.orders.cancel', $order->id) }}">
+                    @csrf
+                </form>
+
+                <a class="text-red-500 font-semibold text-[16px] transition active:opacity-50"
+                   href="javascript:void(0);"
+                   @click="$emitter.emit('open-confirm-modal', {
+                        message: '@lang('shop::app.customers.account.orders.view.cancel-confirm-msg')',
+                        agree: () => { $refs['cancelOrderForm'].submit() }
+                   })">
+                    @lang('shop::app.customers.account.orders.view.cancel-btn-title')
+                </a>
+            @endif
+
+            {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.after', ['order' => $order]) !!}
+        </div>
+    </x-slot:headerActions>
 
     <div class="flex-auto p-8 max-md:p-5 pt-4">
-
-        <!-- Cancel and Reorder buttons -->
-        <div class="flex items-center justify-between">
-            <div class="max-md:flex max-md:items-center">
-                <!-- Back Button For mobile view -->
-                <a
-                    class="grid md:hidden"
-                    href="{{ route('shop.customers.account.orders.index') }}"
-                >
-                    <span class="icon-arrow-left rtl:icon-arrow-right text-2xl"></span>
-                </a>
-
-                <h2 class="text-2xl font-medium max-md:text-xl max-sm:text-base ltr:ml-2.5 md:ltr:ml-0 rtl:mr-2.5 md:rtl:mr-0">
-                    @lang('shop::app.customers.account.orders.view.page-title', ['order_id' => $order->increment_id])
-                </h2>
-            </div>
-
-            <div class="flex gap-1.5">
-                {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.before', ['order' => $order]) !!}
-
-                @if (
-                    $order->canReorder()
-                    && core()->getConfigData('sales.order_settings.reorder.shop')
-                )
-                    <a
-                        href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
-                        class="secondary-button border-zinc-200 px-5 py-3 font-normal max-md:hidden"
-                    >
-                        @lang('shop::app.customers.account.orders.view.reorder-btn-title')
-                    </a>
-                @endif
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.after', ['order' => $order]) !!}
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.before', ['order' => $order]) !!}
-
-                @if ($order->canCancel())
-                    <form
-                        method="POST"
-                        ref="cancelOrderForm"
-                        action="{{ route('shop.customers.account.orders.cancel', $order->id) }}"
-                    >
-                        @csrf
-                    </form>
-
-                    <a
-                        class="secondary-button border-zinc-200 px-5 py-3 font-normal max-md:hidden"
-                        href="javascript:void(0);"
-                        @click="$emitter.emit('open-confirm-modal', {
-                            message: '@lang('shop::app.customers.account.orders.view.cancel-confirm-msg')',
-
-                            agree: () => {
-                                this.$refs['cancelOrderForm'].submit()
-                            }
-                        })"
-                    >
-                        @lang('shop::app.customers.account.orders.view.cancel-btn-title')
-                    </a>
-                @endif
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.after', ['order' => $order]) !!}
-            </div>
-        </div>
 
         {!! view_render_event('bagisto.shop.customers.account.orders.view.before', ['order' => $order]) !!}
 
