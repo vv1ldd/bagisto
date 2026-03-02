@@ -1,4 +1,7 @@
 <?php
+/**
+ * Meanly Pay customer routes.
+ */
 
 use Illuminate\Support\Facades\Route;
 use Webkul\Core\Http\Middleware\NoCacheMiddleware;
