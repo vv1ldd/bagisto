@@ -8,21 +8,22 @@
 
         .ios-group {
             background-color: #fff;
-            border: 1px solid #e4e4e7;
+            border: 1px solid #f3f4f6;
             border-radius: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
         }
 
         .ios-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 16px;
-            min-height: 40px;
-            border-bottom: 1px solid #f4f4f5;
+            padding: 12px 20px;
+            min-height: 52px;
+            border-bottom: 1px solid #f3f4f6;
             position: relative;
-            transition: padding 0.2s ease;
+            transition: background-color 0.2s ease;
         }
 
         .ios-row:first-child {
@@ -31,13 +32,15 @@
         }
 
         .ios-row:last-child {
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
             border-bottom: none;
         }
 
+        .ios-row:active {
+            background-color: #f9fafb;
+        }
+
         .ios-label {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 500;
             color: #18181b;
             margin: 0;

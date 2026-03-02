@@ -148,12 +148,16 @@
                                 </div>
                             @endif
 
-                            <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 overflow-hidden mb-8 rounded-2xl">
-                                <!-- Page Content -->
-                                <div class="flex-1">
-                                    {{ $slot }}
+                            @if ($isCardless)
+                                {{ $slot }}
+                            @else
+                                <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 overflow-hidden mb-8 rounded-2xl">
+                                    <!-- Page Content -->
+                                    <div class="flex-1">
+                                        {{ $slot }}
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                         </div>
                     @endif
                 @endif
