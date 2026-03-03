@@ -28,7 +28,6 @@
 .glass-card:hover {
     background: var(--glass-bg-hover);
     border-color: rgba(255, 255, 255, 0.6);
-    transform: translateY(-2px);
 }
 
 .glass-header {
