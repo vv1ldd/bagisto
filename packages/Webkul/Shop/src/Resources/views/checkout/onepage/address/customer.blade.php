@@ -10,183 +10,181 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-checkout-address-customer-template">
-                        <template v-if="isLoading">
-                            <!-- Billing Address Shimmer -->
-                            <x-shop::shimmer.checkout.onepage.address />
-                        </template>
+                            <template v-if="isLoading">
+                                <!-- Billing Address Shimmer -->
+                                <x-shop::shimmer.checkout.onepage.address />
+                            </template>
 
-                        <template v-else>
-                        <template v-else>
-                            <!-- Unified User View -->
-                            <div v-if="! activeAddressForm">
-                                <!-- Profile Card -->
-                                <div class="mb-8">
-                                    <div class="p-6 rounded-2xl border border-zinc-200 bg-white/50 backdrop-blur-sm shadow-sm relative overflow-hidden group">
-                                        <div class="absolute inset-0 bg-gradient-to-br from-transparent to-zinc-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <template v-else>
+                                <!-- Unified User View -->
+                                <div v-if="! activeAddressForm">
+                                    <!-- Profile Card -->
+                                    <div class="mb-8">
+                                        <div class="p-6 rounded-2xl border border-zinc-200 bg-white/50 backdrop-blur-sm shadow-sm relative overflow-hidden group">
+                                            <div class="absolute inset-0 bg-gradient-to-br from-transparent to-zinc-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                                        <div class="relative flex items-center justify-between">
-                                            <div class="flex items-center gap-6">
-                                                <div class="w-16 h-16 rounded-full bg-navyBlue flex items-center justify-center text-white text-2xl font-bold">
-                                                    @{{ cart.billing_address?.first_name?.[0] || '{{ auth()->guard('customer')->user()?->first_name[0] ?? "U" }}' }}
-                                                </div>
+                                            <div class="relative flex items-center justify-between">
+                                                <div class="flex items-center gap-6">
+                                                    <div class="w-16 h-16 rounded-full bg-navyBlue flex items-center justify-center text-white text-2xl font-bold">
+                                                        @{{ cart.billing_address?.first_name?.[0] || '{{ auth()->guard('customer')->user()?->first_name[0] ?? "U" }}' }}
+                                                    </div>
 
-                                                <div>
-                                                    <p class="text-lg font-semibold text-navyBlue">
-                                                        @{{ (cart.billing_address?.first_name || '{{ auth()->guard('customer')->user()?->first_name ?? "" }}') + ' ' + (cart.billing_address?.last_name || '{{ auth()->guard('customer')->user()?->last_name ?? "" }}') }}
-                                                    </p>
-                                                    <p class="text-sm text-zinc-500 mt-1">
-                                                        @{{ cart.billing_address?.email || '{{ auth()->guard('customer')->user()?->email ?? "" }}' }}
-                                                    </p>
-                                                    <p class="text-xs text-zinc-400 mt-2 flex items-center gap-1">
-                                                        <span class="icon-checkout-address text-base"></span>
-                                                        @{{ cart.billing_address?.country || '{{ auth()->guard('customer')->user()?->country_of_residence ?? "" }}' }}
-                                                        <template v-if="cart.billing_address?.phone || '{{ auth()->guard('customer')->user()?->phone ?? "" }}'">
-                                                            • @{{ cart.billing_address?.phone || '{{ auth()->guard('customer')->user()?->phone ?? "" }}' }}
-                                                        </template>
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <span 
-                                                class="icon-edit text-2xl cursor-pointer text-zinc-400 hover:text-navyBlue transition-colors"
-                                                @click="activeAddressForm = 'billing'; selectedAddressForEdit = cart.billing_address || undefined"
-                                                title="Изменить данные"
-                                            ></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Shipping Address Section (Physical Goods) -->
-                                <div v-if="cart.have_stockable_items" class="mb-8">
-                                    <div class="flex items-center justify-between mb-4">
-                                        <h3 class="text-xl font-medium text-navyBlue">
-                                            @lang('shop::app.checkout.onepage.address.shipping-address')
-                                        </h3>
-
-                                        <button 
-                                            class="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
-                                            @click="activeAddressForm = 'shipping'; selectedAddressForEdit = null"
-                                        >
-                                            + @lang('shop::app.checkout.onepage.address.add-new-address')
-                                        </button>
-                                    </div>
-
-                                    <!-- Shipping Address List -->
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div 
-                                            v-for="address in customerSavedAddresses.shipping"
-                                            :key="address.id"
-                                            class="relative p-5 rounded-xl border cursor-pointer transition-all duration-300 group"
-                                            :class="[selectedAddresses.shipping_address_id == address.id ? 'border-purple-500 bg-purple-50/30 ring-1 ring-purple-500' : 'border-zinc-200 hover:border-zinc-300']"
-                                            @click="selectedAddresses.shipping_address_id = address.id"
-                                        >
-                                            <div class="flex justify-between items-start mb-2">
-                                                <p class="font-medium text-navyBlue">@{{ address.first_name }} @{{ address.last_name }}</p>
-                                                <div class="flex gap-2">
-                                                    <span 
-                                                        class="icon-edit text-xl text-zinc-400 hover:text-navyBlue opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        @click.stop="selectedAddressForEdit = address; activeAddressForm = 'shipping'"
-                                                    ></span>
-                                                    <div 
-                                                        class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
-                                                        :class="[selectedAddresses.shipping_address_id == address.id ? 'border-purple-600 bg-purple-600' : 'border-zinc-300']"
-                                                    >
-                                                        <div v-if="selectedAddresses.shipping_address_id == address.id" class="w-2 h-2 rounded-full bg-white"></div>
+                                                    <div>
+                                                        <p class="text-lg font-semibold text-navyBlue">
+                                                            @{{ (cart.billing_address?.first_name || '{{ auth()->guard('customer')->user()?->first_name ?? "" }}') + ' ' + (cart.billing_address?.last_name || '{{ auth()->guard('customer')->user()?->last_name ?? "" }}') }}
+                                                        </p>
+                                                        <p class="text-sm text-zinc-500 mt-1">
+                                                            @{{ cart.billing_address?.email || '{{ auth()->guard('customer')->user()?->email ?? "" }}' }}
+                                                        </p>
+                                                        <p class="text-xs text-zinc-400 mt-2 flex items-center gap-1">
+                                                            <span class="icon-checkout-address text-base"></span>
+                                                            @{{ cart.billing_address?.country || '{{ auth()->guard('customer')->user()?->country_of_residence ?? "" }}' }}
+                                                            <template v-if="cart.billing_address?.phone || '{{ auth()->guard('customer')->user()?->phone ?? "" }}'">
+                                                                • @{{ cart.billing_address?.phone || '{{ auth()->guard('customer')->user()?->phone ?? "" }}' }}
+                                                            </template>
+                                                        </p>
                                                     </div>
                                                 </div>
+
+                                                <span 
+                                                    class="icon-edit text-2xl cursor-pointer text-zinc-400 hover:text-navyBlue transition-colors"
+                                                    @click="activeAddressForm = 'billing'; selectedAddressForEdit = cart.billing_address || undefined"
+                                                    title="Изменить данные"
+                                                ></span>
                                             </div>
-                                            <p class="text-sm text-zinc-500 leading-relaxed">
-                                                @{{ address.address.join(', ') }}<br>
-                                                @{{ address.city }}, @{{ address.state }}<br>
-                                                @{{ address.country }}, @{{ address.postcode }}
-                                            </p>
                                         </div>
+                                    </div>
+
+                                    <!-- Shipping Address Section (Physical Goods) -->
+                                    <div v-if="cart.have_stockable_items" class="mb-8">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h3 class="text-xl font-medium text-navyBlue">
+                                                @lang('shop::app.checkout.onepage.address.shipping-address')
+                                            </h3>
+
+                                            <button 
+                                                class="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
+                                                @click="activeAddressForm = 'shipping'; selectedAddressForEdit = null"
+                                            >
+                                                + @lang('shop::app.checkout.onepage.address.add-new-address')
+                                            </button>
+                                        </div>
+
+                                        <!-- Shipping Address List -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div 
+                                                v-for="address in customerSavedAddresses.shipping"
+                                                :key="address.id"
+                                                class="relative p-5 rounded-xl border cursor-pointer transition-all duration-300 group"
+                                                :class="[selectedAddresses.shipping_address_id == address.id ? 'border-purple-500 bg-purple-50/30 ring-1 ring-purple-500' : 'border-zinc-200 hover:border-zinc-300']"
+                                                @click="selectedAddresses.shipping_address_id = address.id"
+                                            >
+                                                <div class="flex justify-between items-start mb-2">
+                                                    <p class="font-medium text-navyBlue">@{{ address.first_name }} @{{ address.last_name }}</p>
+                                                    <div class="flex gap-2">
+                                                        <span 
+                                                            class="icon-edit text-xl text-zinc-400 hover:text-navyBlue opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            @click.stop="selectedAddressForEdit = address; activeAddressForm = 'shipping'"
+                                                        ></span>
+                                                        <div 
+                                                            class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
+                                                            :class="[selectedAddresses.shipping_address_id == address.id ? 'border-purple-600 bg-purple-600' : 'border-zinc-300']"
+                                                        >
+                                                            <div v-if="selectedAddresses.shipping_address_id == address.id" class="w-2 h-2 rounded-full bg-white"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <p class="text-sm text-zinc-500 leading-relaxed">
+                                                    @{{ address.address.join(', ') }}<br>
+                                                    @{{ address.city }}, @{{ address.state }}<br>
+                                                    @{{ address.country }}, @{{ address.postcode }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Button -->
+                                    <div class="mt-8 flex justify-end">
+                                        <x-shop::button
+                                            class="primary-button rounded-2xl px-12 py-4 text-lg shadow-lg hover:shadow-xl transition-all"
+                                            ::title="cart.have_stockable_items ? '{{ trans('shop::app.checkout.onepage.address.proceed') }}' : '{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
+                                            ::loading="isStoring"
+                                            ::disabled="isStoring || (cart.have_stockable_items && !selectedAddresses.shipping_address_id)"
+                                            @click="proceedWithUnifiedCard"
+                                        />
                                     </div>
                                 </div>
 
-                                <!-- Action Button -->
-                                <div class="mt-8 flex justify-end">
-                                    <x-shop::button
-                                        class="primary-button rounded-2xl px-12 py-4 text-lg shadow-lg hover:shadow-xl transition-all"
-                                        ::title="cart.have_stockable_items ? '{{ trans('shop::app.checkout.onepage.address.proceed') }}' : '{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
-                                        ::loading="isStoring"
-                                        ::disabled="isStoring || (cart.have_stockable_items && !selectedAddresses.shipping_address_id)"
-                                        @click="proceedWithUnifiedCard"
-                                    />
-                                </div>
-                            </div>
+                                <!-- Create/Edit Address Form -->
+                                <template v-else>
+                                    <x-shop::form
+                                        v-slot="{ meta, errors, handleSubmit }"
+                                        as="div"
+                                    >
+                                        <form @submit="handleSubmit($event, updateOrCreateAddress)">
+                                            <!-- Billing Address Header -->
+                                            <div class="mb-4 flex items-center justify-between">
+                                                <h2 class="text-xl font-medium max-md:text-base max-sm:font-normal" v-if="cart.have_stockable_items">
+                                                    <template v-if="activeAddressForm == 'billing'">
+                                                        @lang('shop::app.checkout.onepage.address.billing-address')
+                                                    </template>
 
-                            <!-- Create/Edit Address Form -->
-                            <template v-else>
-                                <x-shop::form
-                                    v-slot="{ meta, errors, handleSubmit }"
-                                    as="div"
-                                >
-                                    <form @submit="handleSubmit($event, updateOrCreateAddress)">
-                                        <!-- Billing Address Header -->
-                                        <div class="mb-4 flex items-center justify-between">
-                                            <h2 class="text-xl font-medium max-md:text-base max-sm:font-normal" v-if="cart.have_stockable_items">
-                                                <template v-if="activeAddressForm == 'billing'">
-                                                    @lang('shop::app.checkout.onepage.address.billing-address')
-                                                </template>
+                                                    <template v-else>
+                                                        @lang('shop::app.checkout.onepage.address.shipping-address')
+                                                    </template>
+                                                </h2>
 
-                                                <template v-else>
-                                                    @lang('shop::app.checkout.onepage.address.shipping-address')
-                                                </template>
-                                            </h2>
+                                                <span
+                                                    class="flex cursor-pointer justify-end"
+                                                    v-show="customerSavedAddresses.billing.length && ['billing', 'shipping'].includes(activeAddressForm) && cart.have_stockable_items"
+                                                    @click="selectedAddressForEdit = null; activeAddressForm = null"
+                                                >
+                                                    <span class="icon-arrow-left text-2xl max-md:hidden"></span>
 
-                                            <span
-                                                class="flex cursor-pointer justify-end"
-                                                v-show="customerSavedAddresses.billing.length && ['billing', 'shipping'].includes(activeAddressForm) && cart.have_stockable_items"
-                                                @click="selectedAddressForEdit = null; activeAddressForm = null"
-                                            >
-                                                <span class="icon-arrow-left text-2xl max-md:hidden"></span>
+                                                    @lang('shop::app.checkout.onepage.address.back')
+                                                </span>
+                                            </div>
 
-                                                @lang('shop::app.checkout.onepage.address.back')
-                                            </span>
-                                        </div>
+                                            <!-- Address Form Vue Component -->
+                                            <v-checkout-address-form
+                                                :control-name="activeAddressForm"
+                                                :address="selectedAddressForEdit || undefined"
+                                                :cart="cart"
+                                            ></v-checkout-address-form>
 
-                                        <!-- Address Form Vue Component -->
-                                        <v-checkout-address-form
-                                            :control-name="activeAddressForm"
-                                            :address="selectedAddressForEdit || undefined"
-                                            :cart="cart"
-                                        ></v-checkout-address-form>
+                                            <!-- Save Address to Address Book Checkbox -->
+                                            <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5" v-if="cart.have_stockable_items">
+                                                <x-shop::form.control-group.control
+                                                    type="checkbox"
+                                                    ::name="activeAddressForm + '.save_address'"
+                                                    id="save_address"
+                                                    for="save_address"
+                                                    value="1"
+                                                    v-model="saveAddress"
+                                                    @change="saveAddress = ! saveAddress"
+                                                />
 
-                                        <!-- Save Address to Address Book Checkbox -->
-                                        <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5" v-if="cart.have_stockable_items">
-                                            <x-shop::form.control-group.control
-                                                type="checkbox"
-                                                ::name="activeAddressForm + '.save_address'"
-                                                id="save_address"
-                                                for="save_address"
-                                                value="1"
-                                                v-model="saveAddress"
-                                                @change="saveAddress = ! saveAddress"
-                                            />
+                                                <label
+                                                    class="cursor-pointer select-none text-base text-zinc-500 max-md:text-sm max-sm:text-xs ltr:pl-0 rtl:pr-0"
+                                                    for="save_address"
+                                                >
+                                                    @lang('shop::app.checkout.onepage.address.save-address')
+                                                </label>
+                                            </x-shop::form.control-group>
 
-                                            <label
-                                                class="cursor-pointer select-none text-base text-zinc-500 max-md:text-sm max-sm:text-xs ltr:pl-0 rtl:pr-0"
-                                                for="save_address"
-                                            >
-                                                @lang('shop::app.checkout.onepage.address.save-address')
-                                            </label>
-                                        </x-shop::form.control-group>
-
-                                        <!-- Save Button -->
-                                        <div class="mt-4 flex justify-end">
-                                            <x-shop::button
-                                                class="primary-button rounded-2xl px-11 py-3 max-md:rounded-lg max-sm:w-full max-sm:max-w-full max-sm:py-1.5"
-                                                ::title="cart.have_stockable_items ? '{{ trans('shop::app.checkout.onepage.address.save') }}' : '{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
-                                                ::loading="isStoring"
-                                                ::disabled="isStoring"
-                                            />
-                                        </div>
-                                    </form>
-                                </x-shop::form>
-                            </template>
-                        </template>
-                    </script>
+                                            <!-- Save Button -->
+                                            <div class="mt-4 flex justify-end">
+                                                <x-shop::button
+                                                    class="primary-button rounded-2xl px-11 py-3 max-md:rounded-lg max-sm:w-full max-sm:max-w-full max-sm:py-1.5"
+                                                    ::title="cart.have_stockable_items ? '{{ trans('shop::app.checkout.onepage.address.save') }}' : '{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
+                                                    ::loading="isStoring"
+                                                    ::disabled="isStoring"
+                                                />
+                                            </div>
+                                        </form>
+                                    </x-shop::form>
+                                </template>
+                        </script>
 
     <script type="module">
         app.component('v-checkout-address-customer', {
