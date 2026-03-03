@@ -23,7 +23,8 @@ class OnepageController extends APIController
     public function __construct(
         protected OrderRepository $orderRepository,
         protected CustomerRepository $customerRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Return cart summary.
@@ -43,8 +44,8 @@ class OnepageController extends APIController
         $params = $cartAddressRequest->all();
 
         if (
-            ! auth()->guard('customer')->check()
-            && ! Cart::getCart()->hasGuestCheckoutItems()
+            !auth()->guard('customer')->check()
+            && !Cart::getCart()->hasGuestCheckoutItems()
         ) {
             return new JsonResource([
                 'redirect' => true,
@@ -61,12 +62,24 @@ class OnepageController extends APIController
 
         Cart::saveAddresses($params);
 
+        if ($cart = Cart::getCart()) {
+            if (!empty($params['billing']['is_gift'])) {
+                $additional = $cart->additional ?? [];
+
+                $additional['is_gift'] = true;
+                $additional['gift_email'] = $params['billing']['gift_email'] ?? null;
+
+                $cart->additional = $additional;
+                $cart->save();
+            }
+        }
+
         $cart = Cart::getCart();
 
         Cart::collectTotals();
 
         if ($cart->haveStockableItems()) {
-            if (! $rates = Shipping::collectRates()) {
+            if (!$rates = Shipping::collectRates()) {
                 return new JsonResource([
                     'redirect' => true,
                     'redirect_url' => route('shop.checkout.cart.index'),
@@ -98,8 +111,8 @@ class OnepageController extends APIController
 
         if (
             Cart::hasError()
-            || ! $validatedData['shipping_method']
-            || ! Cart::saveShippingMethod($validatedData['shipping_method'])
+            || !$validatedData['shipping_method']
+            || !Cart::saveShippingMethod($validatedData['shipping_method'])
         ) {
             return response()->json([
                 'redirect_url' => route('shop.checkout.cart.index'),
@@ -124,8 +137,8 @@ class OnepageController extends APIController
 
         if (
             Cart::hasError()
-            || ! $validatedData['payment']
-            || ! Cart::savePaymentMethod($validatedData['payment'])
+            || !$validatedData['payment']
+            || !Cart::savePaymentMethod($validatedData['payment'])
         ) {
             return response()->json([
                 'redirect_url' => route('shop.checkout.cart.index'),
@@ -206,31 +219,31 @@ class OnepageController extends APIController
 
         if (
             auth()->guard('customer')->user()
-            && ! auth()->guard('customer')->user()->status
+            && !auth()->guard('customer')->user()->status
         ) {
             throw new \Exception(trans('shop::app.checkout.cart.inactive-account-message'));
         }
 
-        if (! Cart::haveMinimumOrderAmount()) {
+        if (!Cart::haveMinimumOrderAmount()) {
             throw new \Exception(trans('shop::app.checkout.cart.minimum-order-message', ['amount' => core()->currency($minimumOrderAmount)]));
         }
 
-        if ($cart->haveStockableItems() && ! $cart->shipping_address) {
+        if ($cart->haveStockableItems() && !$cart->shipping_address) {
             throw new \Exception(trans('shop::app.checkout.onepage.address.check-shipping-address'));
         }
 
-        if (! $cart->billing_address) {
+        if (!$cart->billing_address) {
             throw new \Exception(trans('shop::app.checkout.onepage.address.check-billing-address'));
         }
 
         if (
             $cart->haveStockableItems()
-            && ! $cart->selected_shipping_rate
+            && !$cart->selected_shipping_rate
         ) {
             throw new \Exception(trans('shop::app.checkout.cart.specify-shipping-method'));
         }
 
-        if (! $cart->payment) {
+        if (!$cart->payment) {
             throw new \Exception(trans('shop::app.checkout.cart.specify-payment-method'));
         }
     }

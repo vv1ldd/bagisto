@@ -1056,6 +1056,8 @@ return [
                 'telephone' => 'Telephone',
                 'title' => 'Address',
                 'vat-id' => 'Vat ID',
+                'is-gift' => 'This is a gift',
+                'gift-email' => 'Recipient Email',
             ],
 
             'index' => [
