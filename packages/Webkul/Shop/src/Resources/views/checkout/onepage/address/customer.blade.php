@@ -76,7 +76,6 @@
                                                                                     title="Изменить данные"
                                                                                 ></span>
                                                                             </div>
-                                                                        </div>
                                                                     </div>
 
                                                                     <!-- Organizations Section (B2B Mode) -->
