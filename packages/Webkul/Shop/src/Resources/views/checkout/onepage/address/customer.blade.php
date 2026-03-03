@@ -18,8 +18,37 @@
                                             <template v-else>
                                                 <!-- Unified User View -->
                                                 <div v-if="! activeAddressForm">
-                                                    <!-- Profile Card -->
-                                                    <div class="mb-8">
+                                                    <!-- B2B Toggle -->
+                                                    <div class="mb-6 flex justify-center">
+                                                        <div class="flex p-1 bg-zinc-100/80 rounded-2xl relative w-full max-w-[400px]">
+                                                            <div 
+                                                                class="absolute top-1 bottom-1 transition-all duration-300 bg-white rounded-xl shadow-sm border border-zinc-200"
+                                                                :style="{
+                                                                    left: isB2B ? 'calc(50% + 2px)' : '4px',
+                                                                    width: 'calc(50% - 6px)'
+                                                                }"
+                                                            ></div>
+                                                            
+                                                            <button 
+                                                                class="flex-1 py-3 text-sm font-medium transition-colors relative z-10"
+                                                                :class="[isB2B ? 'text-zinc-500' : 'text-navyBlue']"
+                                                                @click="isB2B = false"
+                                                            >
+                                                                Частное лицо
+                                                            </button>
+                                                            
+                                                            <button 
+                                                                class="flex-1 py-3 text-sm font-medium transition-colors relative z-10"
+                                                                :class="[isB2B ? 'text-navyBlue' : 'text-zinc-500']"
+                                                                @click="isB2B = true"
+                                                            >
+                                                                Юридическое лицо
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Profile Card (Individual Mode) -->
+                                                    <div v-if="! isB2B" class="mb-8">
                                                         <div class="p-6 rounded-2xl border border-zinc-200 bg-white/50 backdrop-blur-sm shadow-sm relative overflow-hidden group">
                                                             <div class="absolute inset-0 bg-gradient-to-br from-transparent to-zinc-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -51,6 +80,121 @@
                                                                     @click="activeAddressForm = 'billing'; selectedAddressForEdit = cart.billing_address || undefined"
                                                                     title="Изменить данные"
                                                                 ></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Organizations Section (B2B Mode) -->
+                                                    <div v-if="isB2B" class="mb-8 animate-[fadeIn_0.3s_ease-out]">
+                                                        <div class="flex items-center justify-between mb-4">
+                                                            <h3 class="text-xl font-medium text-navyBlue">
+                                                                Ваши компании
+                                                            </h3>
+
+                                                            <button 
+                                                                class="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors flex items-center gap-1"
+                                                                @click="isAddingOrganization = true"
+                                                            >
+                                                                <span class="icon-plus text-lg"></span>
+                                                                Добавить компанию
+                                                            </button>
+                                                        </div>
+
+                                                        <!-- Organization List -->
+                                                        <div v-if="organizations.length" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div 
+                                                                v-for="org in organizations"
+                                                                :key="org.id"
+                                                                class="relative p-5 rounded-xl border border-zinc-200 hover:border-zinc-300 bg-white cursor-pointer transition-all duration-300 group shadow-sm"
+                                                                :class="[selectedOrgId == org.id ? 'border-purple-500 bg-purple-50/10 ring-1 ring-purple-500 shadow-md' : '']"
+                                                                @click="selectedOrgId = org.id"
+                                                            >
+                                                                <div class="flex justify-between items-start mb-2">
+                                                                    <div class="flex items-center gap-3">
+                                                                        <div class="w-10 h-10 rounded-lg bg-zinc-100 flex items-center justify-center">
+                                                                            <span class="icon-checkout-address text-navyBlue text-xl"></span>
+                                                                        </div>
+                                                                        <p class="font-semibold text-navyBlue">@{{ org.name }}</p>
+                                                                    </div>
+                                                                    
+                                                                    <div 
+                                                                        class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
+                                                                        :class="[selectedOrgId == org.id ? 'border-purple-600 bg-purple-600' : 'border-zinc-300']"
+                                                                    >
+                                                                        <div v-if="selectedOrgId == org.id" class="w-2 h-2 rounded-full bg-white"></div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <div class="mt-4 space-y-1.5">
+                                                                    <p class="text-xs text-zinc-400 uppercase tracking-wider font-semibold">Реквизиты</p>
+                                                                    <p class="text-sm text-zinc-600">ИНН: @{{ org.inn }} <span v-if="org.kpp" class="ml-2">КПП: @{{ org.kpp }}</span></p>
+                                                                    <p v-if="org.address" class="text-sm text-zinc-600 truncate">@{{ org.address }}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Empty State -->
+                                                        <div v-else class="p-8 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center text-center bg-zinc-50/50">
+                                                            <div class="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-4 text-zinc-400">
+                                                                <span class="icon-checkout-address text-3xl"></span>
+                                                            </div>
+                                                            <p class="text-zinc-500 max-w-[300px]">У вас пока не добавлено ни одной организации.</p>
+                                                            <button 
+                                                                class="mt-4 text-purple-600 font-medium hover:text-purple-700"
+                                                                @click="isAddingOrganization = true"
+                                                            >
+                                                                + Добавить первую компанию
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Add Organization Form -->
+                                                    <div v-if="isAddingOrganization" class="mb-8 p-6 rounded-2xl border border-zinc-200 bg-white shadow-sm animate-[slideDown_0.3s_ease-out]">
+                                                        <div class="flex items-center justify-between mb-6">
+                                                            <h3 class="text-xl font-medium text-navyBlue">Новая компания</h3>
+                                                            <button @click="isAddingOrganization = false" class="text-zinc-400 hover:text-zinc-600">
+                                                                <span class="icon-dismiss text-2xl"></span>
+                                                            </button>
+                                                        </div>
+
+                                                        <div class="space-y-4">
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <label class="block text-sm font-medium text-zinc-700 mb-1">Название организации *</label>
+                                                                    <input v-model="newOrganization.name" type="text" class="w-full p-3 rounded-xl border border-zinc-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all" placeholder="ООО 'Ромашка'">
+                                                                </div>
+                                                                <div>
+                                                                    <label class="block text-sm font-medium text-zinc-700 mb-1">ИНН *</label>
+                                                                    <input v-model="newOrganization.inn" type="text" class="w-full p-3 rounded-xl border border-zinc-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all" placeholder="7701234567">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                <div>
+                                                                    <label class="block text-sm font-medium text-zinc-700 mb-1">КПП (необязательно)</label>
+                                                                    <input v-model="newOrganization.kpp" type="text" class="w-full p-3 rounded-xl border border-zinc-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all" placeholder="770101001">
+                                                                </div>
+                                                                <div>
+                                                                    <label class="block text-sm font-medium text-zinc-700 mb-1">Юридический адрес</label>
+                                                                    <input v-model="newOrganization.address" type="text" class="w-full p-3 rounded-xl border border-zinc-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all" placeholder="г. Москва, ул. Ленина, д. 1">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="flex justify-end gap-3 mt-6">
+                                                                <button 
+                                                                    @click="isAddingOrganization = false"
+                                                                    class="px-6 py-2 rounded-xl text-zinc-600 hover:bg-zinc-100 transition-colors"
+                                                                >
+                                                                    Отмена
+                                                                </button>
+                                                                <button 
+                                                                    @click="createOrganization"
+                                                                    class="px-8 py-2 rounded-xl bg-navyBlue text-white hover:bg-navyBlue/90 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                                                                    :disabled="isStoring"
+                                                                >
+                                                                    <template v-if="isStoring">Сохранение...</template>
+                                                                    <template v-else>Сохранить</template>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -218,6 +362,21 @@
                     isLoading: true,
 
                     isStoring: false,
+
+                    isB2B: false,
+
+                    organizations: [],
+
+                    selectedOrgId: null,
+
+                    isAddingOrganization: false,
+
+                    newOrganization: {
+                        name: '',
+                        inn: '',
+                        kpp: '',
+                        address: '',
+                    },
                 }
             },
 
@@ -259,6 +418,8 @@
 
             mounted() {
                 this.getCustomerSavedAddresses();
+
+                this.getOrganizations();
             },
 
             methods: {
@@ -281,6 +442,56 @@
                         })
                         .finally(() => {
                             this.isLoading = false;
+                        });
+                },
+
+                getOrganizations() {
+                    this.$axios.get('{{ route('shop.api.customers.account.organizations.index') }}')
+                        .then(response => {
+                            this.organizations = response.data.data;
+
+                            if (this.organizations.length) {
+                                this.selectedOrgId = this.organizations[0].id;
+                                this.isB2B = true;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Failed to fetch organizations:', error);
+                        });
+                },
+
+                createOrganization() {
+                    if (! this.newOrganization.name || ! this.newOrganization.inn) {
+                        this.$emitter.emit('add-flash', {
+                            type: 'error',
+                            message: 'Пожалуйста, заполните название и ИНН'
+                        });
+                        return;
+                    }
+
+                    this.isStoring = true;
+
+                    this.$axios.post('{{ route('shop.api.customers.account.organizations.store') }}', this.newOrganization)
+                        .then(response => {
+                            this.organizations.push(response.data.data);
+                            this.selectedOrgId = response.data.data.id;
+                            this.isAddingOrganization = false;
+                            this.newOrganization = { name: '', inn: '', kpp: '', address: '' };
+
+                            this.$emitter.emit('add-flash', {
+                                type: 'success',
+                                message: response.data.message
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Failed to create organization:', error);
+                            this.$emitter.emit('add-flash', {
+                                type: 'error',
+                                message: 'Ошибка при сохранении организации'
+                            });
+                        })
+                        .finally(() => {
+                            this.isStoring = false;
                         });
                 },
 
@@ -510,18 +721,30 @@
                 },
 
                 proceedWithUnifiedCard() {
+                    const selectedOrg = this.isB2B ? this.organizations.find(o => o.id == this.selectedOrgId) : null;
+
+                    if (this.isB2B && ! selectedOrg) {
+                        this.$emitter.emit('add-flash', {
+                            type: 'error',
+                            message: 'Пожалуйста, выберите организацию'
+                        });
+                        return;
+                    }
+
                     this.isStoring = true;
 
                     let payload = {
                         billing: {
-                            first_name: this.firstName,
-                            last_name: this.lastName,
+                            first_name: this.isB2B ? selectedOrg.name : this.firstName,
+                            last_name: this.isB2B ? '(B2B)' : this.lastName,
                             email: this.customerEmail,
+                            company_name: this.isB2B ? selectedOrg.name : '',
+                            vat_id: this.isB2B ? selectedOrg.inn : '',
                             country: this.customerCountry,
                             phone: this.customerPhone,
-                            address: ['Digital'],
-                            city: 'Digital',
-                            state: 'Digital',
+                            address: [this.isB2B ? `ИНН: ${selectedOrg.inn}${selectedOrg.kpp ? ', КПП: ' + selectedOrg.kpp : ''}` : 'Digital'],
+                            city: this.isB2B ? (selectedOrg.address || 'B2B') : 'Digital',
+                            state: this.isB2B ? 'B2B' : 'Digital',
                             postcode: '000000',
                             use_for_shipping: !!this.cart.have_stockable_items
                         },
@@ -536,6 +759,12 @@
                             ...selectedShipping,
                             use_for_shipping: true
                         };
+
+                        if (this.isB2B) {
+                            payload.billing.company_name = selectedOrg.name;
+                            payload.billing.vat_id = selectedOrg.inn;
+                            payload.billing.address = [`ИНН: ${selectedOrg.inn}${selectedOrg.kpp ? ', КПП: ' + selectedOrg.kpp : ''}`, ...selectedShipping.address];
+                        }
 
                         payload.shipping = selectedShipping;
                     }

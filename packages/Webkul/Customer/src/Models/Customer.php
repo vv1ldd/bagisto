@@ -176,6 +176,16 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     }
 
     /**
+     * Get the customer organizations.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function organizations()
+    {
+        return $this->hasMany(OrganizationProxy::modelClass(), 'customer_id');
+    }
+
+    /**
      * Get default customer address that owns the customer.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
