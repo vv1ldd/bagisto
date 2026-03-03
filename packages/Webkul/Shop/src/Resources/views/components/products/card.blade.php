@@ -4,7 +4,7 @@
 @pushOnce('scripts')
 <script type="text/x-template" id="v-product-card-template">
         <!-- Grid Card -->
-<div class="group w-full rounded-2xl border border-zinc-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#7C45F5]/40 hover:shadow-xl relative flex flex-col overflow-hidden isolate"
+<div class="group w-full rounded-2xl border border-white/40 bg-white/40 backdrop-blur-3xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#7C45F5]/40 hover:shadow-xl relative flex flex-col overflow-hidden isolate"
     style="isolation: isolate;" v-if="mode != 'list'">
     <!-- Image Container -->
     <div class="relative aspect-square w-full overflow-hidden bg-zinc-100 p-2">
@@ -66,7 +66,7 @@
     </div>
 
     <!-- Content Area -->
-    <div class="flex flex-1 flex-col justify-between p-3 bg-white">
+    <div class="flex flex-1 flex-col justify-between p-3 bg-transparent">
         <div class="mb-2">
             {!! view_render_event('bagisto.shop.components.products.card.name.before') !!}
             <h2
