@@ -18,18 +18,17 @@
             </div>
 
             <div class="block rounded-xl p-5">
-                <div class="shimmer mb-3 h-14 w-14 rounded-full"></div>
 
                 <p class="shimmer h-6 w-40"></p>
-                
+
                 <p class="shimmer mt-4 h-6 w-full"></p>
             </div>
         </div>
 
         <!-- Single card addredd -->
-        <div class="flex max-w-[414px] items-center justify-center rounded-xl border border-zinc-200 p-5 max-sm:flex-wrap">
+        <div
+            class="flex max-w-[414px] items-center justify-center rounded-xl border border-zinc-200 p-5 max-sm:flex-wrap">
             <div class="flex items-center gap-x-2.5">
-                <span class="shimmer h-14 w-14 rounded-full"></span>
 
                 <p class="shimmer h-6 w-36"></p>
             </div>
