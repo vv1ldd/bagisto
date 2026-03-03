@@ -61,7 +61,12 @@
                             class="text-[17px] font-bold text-zinc-900 tracking-tight leading-tight truncate group-hover/card:text-[#7C45F5] transition">
                             {{ $customer->first_name }} {{ $customer->last_name }}
                         </h2>
-                        <p class="text-zinc-500 text-[13px] leading-tight mt-1 truncate">
+                        @if ($customer->username)
+                            <p class="text-[11px] font-mono font-bold text-zinc-400 mt-0.5 uppercase tracking-wider">
+                                @ {{ $customer->username }}
+                            </p>
+                        @endif
+                        <p class="text-zinc-500 text-[13px] leading-tight {{ $customer->username ? 'mt-0.5' : 'mt-1' }} truncate">
                             {{ $customer->email }}
                         </p>
                     </div>
