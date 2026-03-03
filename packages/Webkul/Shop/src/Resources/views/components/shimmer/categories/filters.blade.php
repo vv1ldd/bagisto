@@ -1,5 +1,5 @@
 <div
-    class="sticky top-0 z-[100] flex items-center gap-4 overflow-x-auto border-b border-zinc-100 bg-white py-3 no-scrollbar px-4 md:px-0">
+    class="sticky top-0 z-[100] flex items-center gap-4 overflow-x-auto border-b border-white/10 bg-white/10 backdrop-blur-2xl py-3 no-scrollbar px-4 md:px-0">
     {{-- Search Shimmer --}}
     <div class="flex-shrink-0 min-w-[180px] md:min-w-[240px]">
         <div class="shimmer h-[40px] w-full rounded-full"></div>
