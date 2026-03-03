@@ -34,18 +34,10 @@
                 </a>
             @else
             <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center gap-2 rounded-2xl bg-white/80 p-1 pr-3 shadow-sm transition active:opacity-70 active:scale-[0.98] glass-card text-[#7C45F5]">
-                <div
-                    class="flex items-center bg-white px-2 py-1 rounded border border-zinc-200 shadow-sm mr-2 text-zinc-900">
-                    <span class="text-[11px] font-mono font-bold whitespace-nowrap">
-                        @ {{ auth()->guard('customer')->user()->username }}
-                    </span>
-                </div>
-                <div class="flex flex-col justify-center">
-                    <span class="text-[11px] font-bold leading-none">
-                        {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
-                    </span>
-                </div>
+                class="flex items-center bg-white px-3 py-1.5 rounded-2xl border border-zinc-200 shadow-sm transition active:scale-[0.98]">
+                <span class="text-[13px] font-mono text-zinc-900 font-bold whitespace-nowrap">
+                    @ {{ auth()->guard('customer')->user()->username }}
+                </span>
             </a>
             @endauth
         </div>
