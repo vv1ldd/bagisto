@@ -7,9 +7,10 @@
         <div class="ios-nav-group !mb-6">
             @php
                 $hasPasskey = $customer->passkeys()->exists();
+                $isUnlocked = session('logged_in_via_passkey');
             @endphp
             <div class="ios-nav-row !py-3 bg-zinc-50/50 cursor-pointer"
-                onclick="{{ $hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'' }}">
+                onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'') }}">
                 <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
                     Meanly Wallet
                 </span>
@@ -21,16 +22,22 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
+                    @elseif ($isUnlocked)
+                        {{-- Unlocked Lock Icon --}}
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                        </svg>
                     @else
+                        {{-- Locked Lock Icon --}}
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-zinc-300" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     @endif
-                    <span class="text-sm font-mono text-zinc-900 bg-white px-2 py-1 rounded border border-zinc-200">
-                        @ {{ $customer->username }}
-                    </span>
+                    <span class="icon-arrow-right text-zinc-200 text-lg ml-0.5"></span>
                 </span>
             </div>
         </div>
