@@ -225,7 +225,6 @@
                                 <span class="ios-arrow icon-arrow-right"></span>
                             </div>
                         </div>
-                        <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации ваших адресов в системе</p>
                     </div>
                     <div class="ios-row">
                         <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
@@ -393,7 +392,6 @@
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
                 </div>
-                <p class="text-[12px] text-zinc-400 mt-1 leading-tight">Этот псевдоним можно изменить. Он используется для идентификации ваших адресов в системе</p>
             </div>
             <div class="ios-row">
                 <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
@@ -558,6 +556,14 @@
                     <span class="ios-slider"></span>
                 </label>
             </div>
+        </div>
+
+        <div class="flex justify-center mt-4">
+            <button type="submit"
+                :disabled="!meta.valid"
+                class="flex w-full items-center justify-center gap-3 rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100">
+                @lang('shop::app.customers.account.profile.edit.save')
+            </button>
         </div>
 
 

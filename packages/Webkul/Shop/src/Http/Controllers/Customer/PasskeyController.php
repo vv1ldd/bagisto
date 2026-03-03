@@ -204,7 +204,7 @@ class PasskeyController extends Controller
             $currentUser = Auth::guard('customer')->user();
 
             if ($currentUser && $currentUser->id === $user->id) {
-                // User is already logged in, this is likely a step-up authentication (e.g. for Meanly Pay)
+                // User is already logged in, this is likely a step-up authentication (e.g. for Meanly Wallet)
                 Log::info('Passkey step-up authentication successful, skipping redundant login log', ['user_id' => $user->id]);
             } else {
                 // Initial login or switching users

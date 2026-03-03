@@ -139,12 +139,6 @@
 
                                     @if (isset($headerActions))
                                         {{ $headerActions }}
-                                    @elseif (request()->routeIs('shop.customers.account.profile.edit'))
-                                        <button type="submit" form="profile-edit-form"
-                                            class="text-[#007AFF] font-semibold text-[17px] transition active:opacity-50 disabled:opacity-30 disabled:cursor-not-allowed"
-                                            id="profile-save-header-btn">
-                                            @lang('shop::app.customers.account.profile.edit.save')
-                                        </button>
                                     @endif
                                 </div>
                             @endif

@@ -9,9 +9,9 @@
                 $hasPasskey = $customer->passkeys()->exists();
             @endphp
             <div class="ios-nav-row !py-3 bg-zinc-50/50 cursor-pointer"
-                onclick="{{ $hasPasskey ? 'handleMeanlyPayPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'' }}">
+                onclick="{{ $hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'' }}">
                 <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
-                    Meanly Pay
+                    Meanly Wallet
                 </span>
                 <span class="flex items-center gap-2">
                     @if(!$hasPasskey)
@@ -89,10 +89,10 @@
             return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
         }
 
-        window.handleMeanlyPayPasskey = async function (el) {
+        window.handleMeanlyWalletPasskey = async function (el) {
             if (el && el.classList.contains('opacity-50')) return; // prevent double click
 
-            console.log('[Passkey] handleMeanlyPayPasskey started');
+            console.log('[Passkey] handleMeanlyWalletPasskey started');
 
             if (!window.PublicKeyCredential) {
                 console.error('[Passkey] PublicKeyCredential not supported');

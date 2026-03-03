@@ -1,7 +1,7 @@
 <x-shop::layouts.account :has-header="false">
     <x-slot:title>
-        Meanly Pay
-        </x-slot>
+        Meanly Wallet
+    </x-slot>
 
         <div class="max-w-lg mx-auto px-4 py-12">
             {{-- Top Navigation & Title (Truly Outside the Tile) --}}
@@ -22,7 +22,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
-                <h1 id="page-title" class="text-[22px] font-bold text-zinc-900 leading-none">Meanly Pay</h1>
+                <h1 id="page-title" class="text-[22px] font-bold text-zinc-900 leading-none">Meanly Wallet</h1>
             </div>
 
             @php
@@ -390,7 +390,7 @@
         @push('scripts')
             <script>
                 let currentStep = 'dashboard';
-                const initialTitle = "Meanly Pay";
+                const initialTitle = "Meanly Wallet";
 
                 function switchStep(newStep) {
                     ['step-dashboard', 'step-transactions', 'step-details', 'step-management', 'step-add-wallet', 'step-empty'].forEach(id => {
