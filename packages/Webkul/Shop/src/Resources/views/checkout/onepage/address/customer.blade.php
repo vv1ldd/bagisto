@@ -18,69 +18,52 @@
                                                             <template v-else>
                                                                 <!-- Unified User View -->
                                                                 <div v-if="! activeAddressForm">
-                                                                    <!-- B2B Toggle -->
-                                                                    <div class="mb-6 flex justify-center">
-                                                                        <div class="flex p-1 bg-zinc-100/80 rounded-2xl relative w-full max-w-[400px]">
-                                                                            <div 
-                                                                                class="absolute top-1 bottom-1 transition-all duration-300 bg-white rounded-xl shadow-sm border border-zinc-200"
-                                                                                :style="{
-                                                                                    left: isB2B ? 'calc(50% + 2px)' : '4px',
-                                                                                    width: 'calc(50% - 6px)'
-                                                                                }"
-                                                                            ></div>
+                                                                    <!-- Individual Profile Card -->
+                                                                    <div 
+                                                                        class="p-6 rounded-2xl border transition-all duration-300 group cursor-pointer overflow-hidden relative mb-4"
+                                                                        :class="[selectedOrgId === null ? 'border-purple-500 bg-purple-50/10 ring-1 ring-purple-500 shadow-md' : 'border-zinc-200 hover:border-zinc-300 bg-white/50 shadow-sm']"
+                                                                        @click="selectedOrgId = null; isB2B = false"
+                                                                    >
+                                                                        <div class="absolute inset-0 bg-gradient-to-br from-transparent to-purple-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                                                                            <button 
-                                                                                class="flex-1 py-3 text-sm font-medium transition-colors relative z-10"
-                                                                                :class="[isB2B ? 'text-zinc-500' : 'text-navyBlue']"
-                                                                                @click="isB2B = false"
-                                                                            >
-                                                                                Частное лицо
-                                                                            </button>
+                                                                        <div class="relative flex items-center justify-between">
+                                                                            <div class="min-w-0">
+                                                                                <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-1">Частное лицо</p>
+                                                                                <p class="text-lg font-semibold transition-colors duration-300" :class="[selectedOrgId === null ? 'text-purple-700' : 'text-navyBlue']">
+                                                                                    @{{ customerFullName }}
+                                                                                </p>
+                                                                                <p class="text-sm text-zinc-500 mt-1">
+                                                                                    @{{ customerEmail }}
+                                                                                </p>
+                                                                                <p class="text-xs text-zinc-400 mt-2 flex items-center gap-1">
+                                                                                    <span class="icon-checkout-address text-base"></span>
+                                                                                    @{{ customerCountry }}
+                                                                                    <template v-if="customerPhone">
+                                                                                        • @{{ customerPhone }}
+                                                                                    </template>
+                                                                                </p>
+                                                                            </div>
 
-                                                                            <button 
-                                                                                class="flex-1 py-3 text-sm font-medium transition-colors relative z-10"
-                                                                                :class="[isB2B ? 'text-navyBlue' : 'text-zinc-500']"
-                                                                                @click="isB2B = true"
-                                                                            >
-                                                                                Юридическое лицо
-                                                                            </button>
+                                                                            <div class="shrink-0 flex items-center gap-4">
+                                                                                <span 
+                                                                                    class="icon-edit text-2xl text-zinc-400 hover:text-navyBlue transition-colors"
+                                                                                    @click.stop="activeAddressForm = 'billing'; selectedAddressForEdit = cart.billing_address || undefined"
+                                                                                    title="Изменить данные"
+                                                                                ></span>
+
+                                                                                <div 
+                                                                                    class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                                                                                    :class="[selectedOrgId === null ? 'border-purple-600 bg-purple-600 scale-110' : 'border-zinc-300 group-hover:border-zinc-400']"
+                                                                                >
+                                                                                    <div v-if="selectedOrgId === null" class="w-2.5 h-2.5 rounded-full bg-white"></div>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
 
-                                                                    <!-- Profile Card (Individual Mode) -->
-                                                                    <div v-if="! isB2B" class="mb-8">
-                                                                        <div class="p-6 rounded-2xl border border-zinc-200 bg-white/50 backdrop-blur-sm shadow-sm relative overflow-hidden group">
-                                                                            <div class="absolute inset-0 bg-gradient-to-br from-transparent to-zinc-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                                                                            <div class="relative flex items-center justify-between">
-                                                                                <div>
-                                                                                    <p class="text-lg font-semibold text-navyBlue">
-                                                                                        @{{ customerFullName }}
-                                                                                    </p>
-                                                                                        <p class="text-sm text-zinc-500 mt-1">
-                                                                                            @{{ customerEmail }}
-                                                                                        </p>
-                                                                                        <p class="text-xs text-zinc-400 mt-2 flex items-center gap-1">
-                                                                                            <span class="icon-checkout-address text-base"></span>
-                                                                                            @{{ customerCountry }}
-                                                                                            <template v-if="customerPhone">
-                                                                                                • @{{ customerPhone }}
-                                                                                            </template>
-                                                                                        </p>
-                                                                                    </div>
-                                                                                </div>
-
-                                                                                <span 
-                                                                                    class="icon-edit text-2xl cursor-pointer text-zinc-400 hover:text-navyBlue transition-colors"
-                                                                                    @click="activeAddressForm = 'billing'; selectedAddressForEdit = cart.billing_address || undefined"
-                                                                                    title="Изменить данные"
-                                                                                ></span>
-                                                                            </div>
-                                                                    </div>
-
-                                                                    <!-- Organizations Section (B2B Mode) -->
-                                                                    <div v-if="isB2B" class="mb-8 animate-[fadeIn_0.3s_ease-out]">
-                                                                        <div class="flex items-center justify-between mb-4">
+                                                                    <!-- Organizations Section -->
+                                                                    <div v-if="organizations.length" class="mb-8 animate-[fadeIn_0.3s_ease-out]">
+                                                                        <div class="flex items-center justify-between mb-4 mt-8">
                                                                             <h3 class="text-xl font-medium text-navyBlue">
                                                                                 Ваши компании
                                                                             </h3>
@@ -95,13 +78,13 @@
                                                                         </div>
 
                                                                         <!-- Organization List -->
-                                                                        <div v-if="organizations.length" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                                             <div 
                                                                                 v-for="org in organizations"
                                                                                 :key="org.id"
                                                                                 class="relative p-6 rounded-2xl border transition-all duration-300 group cursor-pointer overflow-hidden"
                                                                                 :class="[selectedOrgId == org.id ? 'border-purple-500 bg-purple-50/10 ring-1 ring-purple-500 shadow-md' : 'border-zinc-200 hover:border-zinc-300 bg-white/50 shadow-sm']"
-                                                                                @click="selectedOrgId = org.id"
+                                                                                @click="selectedOrgId = org.id; isB2B = true"
                                                                             >
                                                                                 <div class="absolute inset-0 bg-gradient-to-br from-transparent to-purple-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -130,8 +113,8 @@
                                                                                 </p>
                                                                             </div>
                                                                         </div>
-
-                                                                        <!-- Empty State -->
+                                                                    </div>
+     <!-- Empty State -->
                                                                         <div v-else class="p-8 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center text-center bg-zinc-50/50">
                                                                             <div class="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-4 text-zinc-400">
                                                                                 <span class="icon-checkout-address text-3xl"></span>
