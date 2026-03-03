@@ -1047,7 +1047,7 @@ return [
             ],
 
             'summary' => [
-                'cart-summary' => 'Сводка корзины',
+                'cart-summary' => 'Содержимое заказа',
                 'delivery-charges' => 'Стоимость доставки',
                 'delivery-charges-excl-tax' => 'Стоимость доставки (без учета налога)',
                 'delivery-charges-incl-tax' => 'Стоимость доставки (с учетом налога)',
@@ -1127,7 +1127,7 @@ return [
             ],
 
             'summary' => [
-                'cart-summary' => 'Сводка корзины',
+                'cart-summary' => 'Содержимое заказа',
                 'delivery-charges' => 'Стоимость доставки',
                 'delivery-charges-excl-tax' => 'Стоимость доставки (без учета налога)',
                 'delivery-charges-incl-tax' => 'Стоимость доставки (с учетом налога)',
