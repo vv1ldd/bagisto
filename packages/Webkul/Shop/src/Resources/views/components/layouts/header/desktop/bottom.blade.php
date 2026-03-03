@@ -54,7 +54,7 @@
                 </a>
             @else
             <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center gap-2.5 rounded-full border border-zinc-200 bg-white/80 p-1 pr-4 shadow-sm transition hover:shadow-md hover:border-zinc-300 active:opacity-70 active:scale-[0.98] glass-card !border-white/50">
+                class="flex items-center gap-2.5 rounded-2xl border border-zinc-200 bg-white/80 p-1 pr-4 shadow-sm transition hover:shadow-md hover:border-zinc-300 active:opacity-70 active:scale-[0.98] glass-card !border-white/50">
                 <div class="flex items-center bg-white px-2 py-1 rounded border border-zinc-200 shadow-sm">
                     <span class="text-[12px] font-mono text-zinc-900 font-bold whitespace-nowrap">
                         @ {{ auth()->guard('customer')->user()->username }}

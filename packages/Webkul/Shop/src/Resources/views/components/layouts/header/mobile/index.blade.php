@@ -34,7 +34,7 @@
                 </a>
             @else
             <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center gap-2 rounded-full border border-zinc-200 bg-white/80 p-1 pr-3 shadow-sm transition active:opacity-70 active:scale-[0.98] glass-card !border-white/50 text-[#7C45F5]">
+                class="flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white/80 p-1 pr-3 shadow-sm transition active:opacity-70 active:scale-[0.98] glass-card !border-white/50 text-[#7C45F5]">
                 <div
                     class="flex items-center bg-white px-2 py-1 rounded border border-zinc-200 shadow-sm mr-2 text-zinc-900">
                     <span class="text-[11px] font-mono font-bold whitespace-nowrap">
