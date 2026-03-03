@@ -34,20 +34,20 @@
                 </a>
             @else
             <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white/70 px-3 py-2 shadow-sm transition active:opacity-70 active:scale-[0.98]">
-                <div class="leading-tight text-right">
-                    <div class="text-[13px] font-bold text-zinc-900 leading-snug">
-                        {{ auth()->guard('customer')->user()->first_name }}
-                        {{ auth()->guard('customer')->user()->last_name }}
-                    </div>
-                    <div class="text-[11px] text-zinc-400 truncate max-w-[130px]">
-                        {{ auth()->guard('customer')->user()->email }}
-                    </div>
-                    <div class="text-[11px] font-bold text-[#7C45F5] mt-0.5">
-                        {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
-                    </div>
+                class="flex items-center gap-2 rounded-full border border-zinc-200 bg-white/80 p-1 pr-3 shadow-sm transition active:opacity-70 active:scale-[0.98] glass-card !border-white/50 text-[#7C45F5]">
+                <div
+                    class="w-8 h-8 rounded-full bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center text-white shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                 </div>
-                <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left shrink-0"></span>
+                <div class="flex flex-col justify-center">
+                    <span class="text-[11px] font-bold leading-none">
+                        {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
+                    </span>
+                </div>
             </a>
             @endauth
         </div>

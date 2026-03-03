@@ -54,20 +54,20 @@
                 </a>
             @else
             <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white/70 px-4 py-2 shadow-sm transition hover:shadow-md hover:border-zinc-300 active:opacity-70 active:scale-[0.98]">
-                <div class="leading-tight text-right">
-                    <div class="text-[14px] font-bold text-zinc-900 leading-snug">
-                        {{ auth()->guard('customer')->user()->first_name }}
-                        {{ auth()->guard('customer')->user()->last_name }}
-                    </div>
-                    <div class="text-[12px] text-zinc-400 truncate max-w-[160px]">
-                        {{ auth()->guard('customer')->user()->email }}
-                    </div>
-                    <div class="text-[12px] font-bold text-[#7C45F5] mt-0.5">
-                        Баланс: {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
-                    </div>
+                class="flex items-center gap-2.5 rounded-full border border-zinc-200 bg-white/80 p-1 pr-4 shadow-sm transition hover:shadow-md hover:border-zinc-300 active:opacity-70 active:scale-[0.98] glass-card !border-white/50">
+                <div
+                    class="w-9 h-9 rounded-full bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center text-white shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                 </div>
-                <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left shrink-0"></span>
+                <div class="flex flex-col justify-center">
+                    <span class="text-[12px] font-bold text-[#7C45F5] leading-none">
+                        {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
+                    </span>
+                </div>
             </a>
             @endauth
 
@@ -78,7 +78,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                                        <!-- Loading State -->
+                                                                                            <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -196,9 +196,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                                                'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                            }">
+                                                                                                                    'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                                    'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                                }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">
