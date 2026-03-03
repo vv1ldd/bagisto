@@ -12,6 +12,9 @@ use Webkul\Sales\Transformers\OrderResource;
 use Webkul\Shipping\Facades\Shipping;
 use Webkul\Shop\Http\Requests\CartAddressRequest;
 use Webkul\Shop\Http\Resources\CartResource;
+use Illuminate\Support\Facades\Mail;
+use Webkul\Shop\Mail\Customer\OtpNotification;
+use Illuminate\Http\Request;
 
 class OnepageController extends APIController
 {
@@ -37,6 +40,66 @@ class OnepageController extends APIController
     }
 
     /**
+     * Send OTP to customer email.
+     */
+    public function sendOtp(Request $request): JsonResource
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->input('email');
+        $otp = (string) rand(100000, 999999);
+
+        session([
+            'checkout_otp_email' => $email,
+            'checkout_otp_code' => $otp,
+            'checkout_otp_verified' => false,
+        ]);
+
+        try {
+            Mail::queue(new OtpNotification($email, $otp));
+
+            return new JsonResource([
+                'success' => true,
+                'message' => 'Код отправлен на вашу почту.',
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResource([
+                'success' => false,
+                'message' => 'Не удалось отправить код. Пожалуйста, попробуйте позже.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Verify OTP code.
+     */
+    public function verifyOtp(Request $request): JsonResource
+    {
+        $request->validate([
+            'code' => 'required|string|size:6',
+        ]);
+
+        $storedEmail = session('checkout_otp_email');
+        $storedOtp = session('checkout_otp_code');
+
+        if ($request->input('code') === $storedOtp) {
+            session(['checkout_otp_verified' => true]);
+
+            return new JsonResource([
+                'success' => true,
+                'message' => 'Email успешно подтвержден.',
+            ]);
+        }
+
+        return new JsonResource([
+            'success' => false,
+            'message' => 'Неверный код. Пожалуйста, проверьте и попробуйте снова.',
+        ], 422);
+    }
+
+    /**
      * Store address.
      */
     public function storeAddress(CartAddressRequest $cartAddressRequest): JsonResource
@@ -50,6 +113,16 @@ class OnepageController extends APIController
             return new JsonResource([
                 'redirect' => true,
                 'data' => route('shop.customer.session.index'),
+            ]);
+        }
+
+        if (
+            !auth()->guard('customer')->check()
+            && !session('checkout_otp_verified')
+        ) {
+            return new JsonResource([
+                'error' => true,
+                'message' => 'Необходимо подтвердить Email через OTP.',
             ]);
         }
 
