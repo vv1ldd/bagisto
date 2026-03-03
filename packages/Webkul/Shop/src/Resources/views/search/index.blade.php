@@ -33,7 +33,7 @@ $searchInstead = $suggestion ? $query : null;
                     <p class="mt-1 text-sm text-gray-600" v-pre>
                         {{ trans('shop::app.search.suggest') }}
 
-                        <button type="submit" class="text-blue-600 hover:text-blue-800 hover:underline"
+                        <button type="submit" class="text-[#7C45F5] hover:text-[#6c39e0] hover:underline"
                             aria-label="{{ trans('shop::app.components.layouts.header.desktop.bottom.submit') }}">
                             {{ $searchInstead }}
                         </button>
@@ -49,109 +49,109 @@ $searchInstead = $suggestion ? $query : null;
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-search-template">
-                                            <div class="container px-[60px] max-lg:px-8 max-sm:px-4">
-                                        <div class="md:mt-10">
-                                            <!-- Filter bar (all screens) -->
-                                            <div>
-                                                @include('shop::categories.filters')
-                                            </div>
+                                                <div class="container px-[60px] max-lg:px-8 max-sm:px-4">
+                                            <div class="md:mt-10">
+                                                <!-- Filter bar (all screens) -->
+                                                <div>
+                                                    @include('shop::categories.filters')
+                                                </div>
 
 
-                                            <!-- Product List Card Container -->
-                                            <div
-                                                class="mt-8 grid grid-cols-1 gap-6"
-                                                v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
-                                            >
-                                                <!-- Product Card Shimmer Effect -->
-                                                <template v-if="isLoading">
-                                                    <x-shop::shimmer.products.cards.list count="12" />
-                                                </template>
-
-                                                <!-- Product Card Listing -->
-                                                <template v-else>
-                                                    <template v-if="products.length">
-                                                        <x-shop::products.card
-                                                            ::mode="'list'"
-                                                            v-for="product in products"
-                                                        />
+                                                <!-- Product List Card Container -->
+                                                <div
+                                                    class="mt-8 grid grid-cols-1 gap-6"
+                                                    v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
+                                                >
+                                                    <!-- Product Card Shimmer Effect -->
+                                                    <template v-if="isLoading">
+                                                        <x-shop::shimmer.products.cards.list count="12" />
                                                     </template>
 
-                                                    <!-- Empty Products Container -->
+                                                    <!-- Product Card Listing -->
                                                     <template v-else>
-                                                        <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                            <img
-                                                                class="max-sm:h-[100px] max-sm:w-[100px]"
-                                                                src="{{ bagisto_asset('images/thank-you.png') }}"
-                                                                alt="Empty result"
-                                                                loading="lazy"
-                                                                decoding="async"
-                                                            />
-
-                                                            <p
-                                                                class="text-xl max-sm:text-sm"
-                                                                role="heading"
-                                                            >
-                                                                @lang('shop::app.categories.view.empty')
-                                                            </p>
-                                                        </div>
-                                                    </template>
-                                                </template>
-                                            </div>
-
-                                            <!-- Product Grid Card Container -->
-                                            <div v-else>
-                                                <!-- Product Card Shimmer Effect -->
-                                                <template v-if="isLoading">
-                                                    <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:gap-x-3 max-sm:mt-5 max-sm:justify-items-center max-sm:gap-y-4">
-                                                        <x-shop::shimmer.products.cards.grid count="12" />
-                                                    </div>
-                                                </template>
-
-                                                <!-- Product Card Listing -->
-                                                <template v-else>
-                                                    <template v-if="products.length">
-                                                        <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:mt-5 max-md:justify-items-center max-md:gap-x-3 max-md:gap-y-4">
+                                                        <template v-if="products.length">
                                                             <x-shop::products.card
-                                                                ::mode="'grid'"
+                                                                ::mode="'list'"
                                                                 v-for="product in products"
-                                                                :navigation-link="route('shop.search.index')"
                                                             />
+                                                        </template>
+
+                                                        <!-- Empty Products Container -->
+                                                        <template v-else>
+                                                            <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
+                                                                <img
+                                                                    class="max-sm:h-[100px] max-sm:w-[100px]"
+                                                                    src="{{ bagisto_asset('images/thank-you.png') }}"
+                                                                    alt="Empty result"
+                                                                    loading="lazy"
+                                                                    decoding="async"
+                                                                />
+
+                                                                <p
+                                                                    class="text-xl max-sm:text-sm"
+                                                                    role="heading"
+                                                                >
+                                                                    @lang('shop::app.categories.view.empty')
+                                                                </p>
+                                                            </div>
+                                                        </template>
+                                                    </template>
+                                                </div>
+
+                                                <!-- Product Grid Card Container -->
+                                                <div v-else>
+                                                    <!-- Product Card Shimmer Effect -->
+                                                    <template v-if="isLoading">
+                                                        <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:gap-x-3 max-sm:mt-5 max-sm:justify-items-center max-sm:gap-y-4">
+                                                            <x-shop::shimmer.products.cards.grid count="12" />
                                                         </div>
                                                     </template>
 
-                                                    <!-- Empty Products Container -->
+                                                    <!-- Product Card Listing -->
                                                     <template v-else>
-                                                        <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                            <img
-                                                                class="max-sm:h-[100px] max-sm:w-[100px]"
-                                                                src="{{ bagisto_asset('images/thank-you.png') }}"
-                                                                alt="Empty result"
-                                                                loading="lazy"
-                                                                decoding="async"
-                                                            />
+                                                        <template v-if="products.length">
+                                                            <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:mt-5 max-md:justify-items-center max-md:gap-x-3 max-md:gap-y-4">
+                                                                <x-shop::products.card
+                                                                    ::mode="'grid'"
+                                                                    v-for="product in products"
+                                                                    :navigation-link="route('shop.search.index')"
+                                                                />
+                                                            </div>
+                                                        </template>
 
-                                                            <p
-                                                                class="text-xl max-sm:text-sm"
-                                                                role="heading"
-                                                            >
-                                                                @lang('shop::app.categories.view.empty')
-                                                            </p>
-                                                        </div>
+                                                        <!-- Empty Products Container -->
+                                                        <template v-else>
+                                                            <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
+                                                                <img
+                                                                    class="max-sm:h-[100px] max-sm:w-[100px]"
+                                                                    src="{{ bagisto_asset('images/thank-you.png') }}"
+                                                                    alt="Empty result"
+                                                                    loading="lazy"
+                                                                    decoding="async"
+                                                                />
+
+                                                                <p
+                                                                    class="text-xl max-sm:text-sm"
+                                                                    role="heading"
+                                                                >
+                                                                    @lang('shop::app.categories.view.empty')
+                                                                </p>
+                                                            </div>
+                                                        </template>
                                                     </template>
-                                                </template>
-                                            </div>
+                                                </div>
 
-                                            <!-- Load More Button -->
-                                            <button
-                                                class="secondary-button mx-auto mt-[60px] block w-max rounded-2xl px-11 py-3 text-center text-base max-md:rounded-lg max-md:text-sm max-sm:mt-7 max-sm:px-7 max-sm:py-2"
-                                                @click="loadMoreProducts"
-                                                v-if="links.next"
-                                            >
-                                                @lang('shop::app.categories.view.load-more')
-                                            </button>
+                                                <!-- Load More Button -->
+                                                <button
+                                                    class="secondary-button mx-auto mt-[60px] block w-max rounded-2xl px-11 py-3 text-center text-base max-md:rounded-lg max-md:text-sm max-sm:mt-7 max-sm:px-7 max-sm:py-2"
+                                                    @click="loadMoreProducts"
+                                                    v-if="links.next"
+                                                >
+                                                    @lang('shop::app.categories.view.load-more')
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                            </script>
+                                </script>
 
             <script type="module">
                 app.component('v-search', {
