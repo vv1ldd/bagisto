@@ -21,7 +21,7 @@
                     </a>
 
                     <!-- Register -->
-                    <a href="{{ route('shop.customer.register.index') }}?return_to=checkout" 
+                    <a href="{{ route('shop.customers.register.index') }}?return_to=checkout" 
                        class="p-6 rounded-2xl border border-zinc-200 hover:border-navyBlue hover:bg-navyBlue/5 transition-all group">
                         <span class="icon-plus text-4xl text-zinc-400 group-hover:text-navyBlue mb-4 block"></span>
                         <p class="font-medium text-navyBlue">@lang('shop::app.checkout.onepage.address.register')</p>
@@ -217,7 +217,7 @@
                     this.isSendingOtp = true;
                     this.otpError = '';
 
-                    this.$axios.post('{{ route('shop.api.checkout.onepage.send_otp') }}', {
+                    this.$axios.post('{{ route('shop.checkout.onepage.send_otp') }}', {
                         email: this.email
                     })
                     .then(response => {
@@ -235,7 +235,7 @@
                     this.isVerifyingOtp = true;
                     this.otpError = '';
 
-                    this.$axios.post('{{ route('shop.api.checkout.onepage.verify_otp') }}', {
+                    this.$axios.post('{{ route('shop.checkout.onepage.verify_otp') }}', {
                         email: this.email,
                         otp: this.otp
                     })
