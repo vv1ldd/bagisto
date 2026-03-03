@@ -269,7 +269,7 @@
 
                             this.initializeAddresses('shipping', structuredClone(response.data.data));
 
-                            if (!this.customerSavedAddresses.billing.length || !this.cart.have_stockable_items) {
+                            if (!this.customerSavedAddresses.billing.length) {
                                 this.activeAddressForm = 'billing';
                             }
                         })
@@ -516,11 +516,11 @@
 
                     let payload = {
                         billing: {
-                            first_name: '{{ auth()->guard('customer')->user()?->first_name ?? "" }}',
-                            last_name: '{{ auth()->guard('customer')->user()?->last_name ?? "" }}',
-                            email: '{{ auth()->guard('customer')->user()?->email ?? "" }}',
-                            country: '{{ auth()->guard('customer')->user()?->country_of_residence ?? "" }}',
-                            phone: '{{ auth()->guard('customer')->user()?->phone ?? "" }}',
+                            first_name: this.firstName,
+                            last_name: this.lastName,
+                            email: this.customerEmail,
+                            country: this.customerCountry,
+                            phone: this.customerPhone,
                             address: ['Digital'],
                             city: 'Digital',
                             state: 'Digital',
