@@ -36,12 +36,10 @@
             <a href="{{ route('shop.customers.account.index') }}"
                 class="flex items-center gap-2 rounded-full border border-zinc-200 bg-white/80 p-1 pr-3 shadow-sm transition active:opacity-70 active:scale-[0.98] glass-card !border-white/50 text-[#7C45F5]">
                 <div
-                    class="w-8 h-8 rounded-full bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center text-white shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                    class="flex items-center bg-white px-2 py-1 rounded border border-zinc-200 shadow-sm mr-2 text-zinc-900">
+                    <span class="text-[11px] font-mono font-bold whitespace-nowrap">
+                        @ {{ auth()->guard('customer')->user()->username }}
+                    </span>
                 </div>
                 <div class="flex flex-col justify-center">
                     <span class="text-[11px] font-bold leading-none">

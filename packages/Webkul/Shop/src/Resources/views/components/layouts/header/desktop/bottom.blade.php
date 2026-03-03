@@ -55,13 +55,10 @@
             @else
             <a href="{{ route('shop.customers.account.index') }}"
                 class="flex items-center gap-2.5 rounded-full border border-zinc-200 bg-white/80 p-1 pr-4 shadow-sm transition hover:shadow-md hover:border-zinc-300 active:opacity-70 active:scale-[0.98] glass-card !border-white/50">
-                <div
-                    class="w-9 h-9 rounded-full bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center text-white shadow-inner">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                <div class="flex items-center bg-white px-2 py-1 rounded border border-zinc-200 shadow-sm">
+                    <span class="text-[12px] font-mono text-zinc-900 font-bold whitespace-nowrap">
+                        @ {{ auth()->guard('customer')->user()->username }}
+                    </span>
                 </div>
                 <div class="flex flex-col justify-center">
                     <span class="text-[12px] font-bold text-[#7C45F5] leading-none">
