@@ -114,7 +114,7 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-     <!-- Empty State -->
+                                                                    <!-- Empty State -->
                                                                         <div v-else class="p-8 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center text-center bg-zinc-50/50">
                                                                             <div class="w-16 h-16 rounded-full bg-zinc-100 flex items-center justify-center mb-4 text-zinc-400">
                                                                                 <span class="icon-checkout-address text-3xl"></span>
@@ -127,7 +127,6 @@
                                                                                 + Добавить первую компанию
                                                                             </button>
                                                                         </div>
-                                                                    </div>
 
                                                                     <!-- Add Organization Form -->
                                                                     <div v-if="isAddingOrganization" class="mb-8 p-6 rounded-2xl border border-zinc-200 bg-white shadow-sm animate-[slideDown_0.3s_ease-out]">
