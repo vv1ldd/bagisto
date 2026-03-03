@@ -241,6 +241,23 @@ Route::prefix('customer')->group(function () {
                 Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
             });
             /**
+             * Organizations.
+             */
+            Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\OrganizationController::class)->prefix('organizations')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.organizations.index');
+
+                Route::get('create', 'create')->name('shop.customers.account.organizations.create');
+
+                Route::post('create', 'store')->name('shop.customers.account.organizations.store');
+
+                Route::get('edit/{id}', 'edit')->name('shop.customers.account.organizations.edit');
+
+                Route::put('edit/{id}', 'update')->name('shop.customers.account.organizations.update');
+
+                Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.organizations.delete');
+            });
+
+            /**
              * Crypto Wallets.
              */
             Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->prefix('crypto')->group(function () {

@@ -16,6 +16,13 @@ return [
         'sort' => 1,
     ],
     [
+        'key' => 'account.organizations',
+        'name' => 'shop::app.layouts.b2b',
+        'route' => 'shop.customers.account.organizations.index',
+        'icon' => 'icon-dashboard',
+        'sort' => 2,
+    ],
+    [
         'key' => 'account.passkeys',
         'name' => 'shop::app.layouts.passkeys',
         'route' => 'shop.customers.account.passkeys.index',
