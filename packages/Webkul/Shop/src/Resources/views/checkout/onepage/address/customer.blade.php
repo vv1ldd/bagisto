@@ -17,7 +17,7 @@
 
             <template v-else>
                 <!-- Saved Addresses -->
-                <template v-if="! activeAddressForm && customerSavedAddresses.billing.length">
+                <template v-if="! activeAddressForm && customerSavedAddresses.billing.length && cart.have_stockable_items">
                     <x-shop::form
                         v-slot="{ meta, errors, handleSubmit }"
                         as="div"
@@ -270,7 +270,7 @@
 
                                 <span
                                     class="flex cursor-pointer justify-end"
-                                    v-show="customerSavedAddresses.billing.length && ['billing', 'shipping'].includes(activeAddressForm)"
+                                    v-show="customerSavedAddresses.billing.length && ['billing', 'shipping'].includes(activeAddressForm) && cart.have_stockable_items"
                                     @click="selectedAddressForEdit = null; activeAddressForm = null"
                                 >
                                     <span class="icon-arrow-left text-2xl max-md:hidden"></span>
@@ -375,7 +375,7 @@
 
                             this.initializeAddresses('shipping', structuredClone(response.data.data));
 
-                            if (!this.customerSavedAddresses.billing.length) {
+                            if (!this.customerSavedAddresses.billing.length || !this.cart.have_stockable_items) {
                                 this.activeAddressForm = 'billing';
                             }
 
