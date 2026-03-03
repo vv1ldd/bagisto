@@ -34,7 +34,7 @@
                 </a>
             @else
             <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center bg-white px-3 py-1.5 rounded-2xl border border-zinc-200 shadow-sm transition active:scale-[0.98]">
+                class="flex items-center bg-white px-3 h-[29px] rounded-2xl border border-zinc-200 shadow-sm transition active:scale-[0.98]">
                 <span class="text-[13px] font-mono text-zinc-900 font-bold whitespace-nowrap">
                     @ {{ auth()->guard('customer')->user()->username }}
                 </span>
