@@ -38,7 +38,7 @@
                                 >
                                     <!-- Actions -->
                                     <div class="absolute top-5 flex gap-2 ltr:right-5 rtl:left-5">
-                                        <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5">
+                                        <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5" v-if="cart.have_stockable_items">
                                             <x-shop::form.control-group.control
                                                 type="radio"
                                                 name="billing.id"
@@ -158,7 +158,7 @@
                                         >
                                             <!-- Actions -->
                                             <div class="absolute top-5 flex gap-5 ltr:right-5 rtl:left-5">
-                                                <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5">
+                                                <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5" v-if="cart.have_stockable_items">
                                                     <x-shop::form.control-group.control
                                                         type="radio"
                                                         name="shipping.id"
@@ -258,7 +258,7 @@
                         <form @submit="handleSubmit($event, updateOrCreateAddress)">
                             <!-- Billing Address Header -->
                             <div class="mb-4 flex items-center justify-between">
-                                <h2 class="text-xl font-medium max-md:text-base max-sm:font-normal">
+                                <h2 class="text-xl font-medium max-md:text-base max-sm:font-normal" v-if="cart.have_stockable_items">
                                     <template v-if="activeAddressForm == 'billing'">
                                         @lang('shop::app.checkout.onepage.address.billing-address')
                                     </template>
@@ -287,7 +287,7 @@
                             ></v-checkout-address-form>
 
                             <!-- Save Address to Address Book Checkbox -->
-                            <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5">
+                            <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5" v-if="cart.have_stockable_items">
                                 <x-shop::form.control-group.control
                                     type="checkbox"
                                     ::name="activeAddressForm + '.save_address'"
@@ -310,7 +310,7 @@
                             <div class="mt-4 flex justify-end">
                                 <x-shop::button
                                     class="primary-button rounded-2xl px-11 py-3 max-md:rounded-lg max-sm:w-full max-sm:max-w-full max-sm:py-1.5"
-                                    :title="trans('shop::app.checkout.onepage.address.save')"
+                                    :title="cart.have_stockable_items ? trans('shop::app.checkout.onepage.address.save') : trans('shop::app.checkout.onepage.address.proceed')"
                                     ::loading="isStoring"
                                     ::disabled="isStoring"
                                 />
