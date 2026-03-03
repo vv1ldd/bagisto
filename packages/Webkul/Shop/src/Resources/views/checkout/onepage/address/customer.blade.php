@@ -269,9 +269,7 @@
 
                             this.initializeAddresses('shipping', structuredClone(response.data.data));
 
-                            if (!this.customerSavedAddresses.billing.length) {
-                                this.activeAddressForm = 'billing';
-                            }
+
                         })
                         .catch((error) => {
                             console.error('Failed to fetch addresses:', error);
