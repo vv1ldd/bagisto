@@ -141,13 +141,16 @@ Route::prefix('customer')->group(function () {
             /**
              * Credits (formerly Transactions).
              */
-            Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
-            Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
-            Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
+            Route::group(['middleware' => ['passkey.timeout']], function () {
+                Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
+                Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
+                Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
 
-            /**
-             * Profile.
-             */
+                // Credits Transfer
+                Route::controller(TransferController::class)->prefix('credits')->group(function () {
+                    Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
+                });
+            });
             Route::controller(CustomerController::class)->group(function () {
                 Route::prefix('profile')->group(function () {
                     Route::get('edit', 'edit')->name('shop.customers.account.profile.edit');

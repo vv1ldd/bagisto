@@ -217,6 +217,7 @@ class PasskeyController extends Controller
             }
 
             session()->put('logged_in_via_passkey', true);
+            session()->put('passkey_unlocked_at', now()->timestamp);
             session()->put('current_session_passkey_id', $passkey->id); // Track current passkey
             Cookie::queue('current_device_passkey_id', $passkey->id, 60 * 24 * 365); // Track device via cookie
 
