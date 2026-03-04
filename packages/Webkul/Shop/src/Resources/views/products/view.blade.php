@@ -88,7 +88,7 @@
 
                                                     <div class="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row gap-10 items-start">
                                                         <!-- Left Column: Product Card & Description -->
-                                                        <div class="flex-1 min-w-0 space-y-6 w-full">
+                                                        <div class="flex-1 min-w-0 space-y-12 w-full">
                                                             <!-- Header with Back Button -->
                                                             <div class="flex items-center gap-4 mb-4">
                                                                 <a href="javascript:history.back()" 
@@ -188,9 +188,15 @@
                                                                 @endif
                                                             </div>
 
-                                                            <!-- Description Display -->
-                                                            <div class="bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-white/40 max-sm:p-6 text-zinc-600 leading-relaxed text-lg max-sm:text-sm prose prose-zinc max-w-none w-full">
-                                                                {!! $product->description !!}
+                                                            <!-- Description Section -->
+                                                            <div class="space-y-4">
+                                                                <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 pl-2">
+                                                                    О товаре
+                                                                </h2>
+                                                                
+                                                                <div class="bg-white/40 backdrop-blur-md rounded-[32px] p-10 border border-white/60 shadow-sm max-sm:p-6 text-zinc-700 leading-relaxed text-[17px] max-sm:text-sm prose prose-zinc max-w-none w-full">
+                                                                    {!! $product->description !!}
+                                                                </div>
                                                             </div>
 
                                                             <!-- Hidden Original Elements for Compatibility -->
