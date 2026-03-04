@@ -9,8 +9,8 @@
         {!! view_render_event('bagisto.shop.checkout.onepage.summary.item_image.before') !!}
 
         <div class="relative">
-            <img class="h-20 w-20 rounded-xl border border-zinc-100 object-cover shadow-sm transition-transform hover:scale-105"
-                :src="item.base_image.small_image_url" :alt="item.name" width="80" height="80" />
+            <img class="h-16 w-16 rounded-xl border border-zinc-100 object-cover shadow-sm transition-transform hover:scale-105"
+                :src="item.base_image.small_image_url" :alt="item.name" width="64" height="64" />
 
             <div
                 class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#7C45F5] text-[10px] font-bold text-white shadow-sm">
@@ -122,11 +122,11 @@
     <!-- Cart Grand Total -->
     {!! view_render_event('bagisto.shop.checkout.onepage.summary.grand_total.before') !!}
 
-    <div class="mt-2 pt-6 border-t border-zinc-100 flex items-center justify-between">
-        <p class="text-lg font-bold text-zinc-900">
+    <div class="mt-2 pt-4 border-t border-zinc-100 flex items-center justify-between">
+        <p class="text-base font-bold text-zinc-900">
             @lang('shop::app.checkout.onepage.summary.grand-total')
         </p>
-        <p class="text-2xl font-black text-[#7C45F5]">
+        <p class="text-xl font-black text-[#7C45F5]">
             @{{ cart.formatted_grand_total }}
         </p>
     </div>
