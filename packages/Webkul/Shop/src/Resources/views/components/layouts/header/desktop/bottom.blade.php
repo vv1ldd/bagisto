@@ -53,19 +53,19 @@
                     Войти / Регистрация
                 </a>
             @else
-            <div
-                class="flex items-center gap-3 rounded-full bg-white/40 p-1 pr-4 backdrop-blur-md border border-white/60">
                 <div
-                    class="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-xs uppercase">
-                    {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
+                    class="flex items-center gap-3 rounded-full bg-white/40 p-1 pr-4 backdrop-blur-md border border-white/60">
+                    <div
+                        class="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-xs uppercase">
+                        {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
+                    </div>
+                    <a href="{{ route('shop.customers.account.index') }}"
+                        class="text-sm font-medium text-zinc-700 hover:text-[#7C45F5] transition-colors">
+                        @
+                        {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
+                    </a>
                 </div>
-                <a href="{{ route('shop.customers.account.index') }}"
-                    class="text-sm font-medium text-zinc-700 hover:text-[#7C45F5] transition-colors">
-                    @
-                    {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
-                </a>
-            </div>
-            @endauth
+            @endguest
 
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile.after') !!}
         </div>
@@ -74,7 +74,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                                                                <!-- Loading State -->
+                                                                                                                    <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -193,9 +193,9 @@
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300"
                                 :class="{
-                                                                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                                                    }">
+                                                                                                                                            'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                                                            'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                                                        }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">
@@ -340,16 +340,16 @@
 
         app.component('v-header-cart', {
             template: `
-                    <a :href="'{{ route('shop.checkout.cart.index') }}'" 
-                       v-if="cart && cart.items.length > 0"
-                       class="flex items-center justify-center relative w-10 h-10 rounded-full border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 transition-all group"
-                    >
-                        <span class="icon-cart text-xl text-zinc-600 group-hover:text-[#7C45F5]"></span>
-                        <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7C45F5] text-[10px] font-black text-white shadow-sm">
-                            @{{ cart.items.length }}
-                        </span>
-                    </a>
-                `,
+                        <a :href="'{{ route('shop.checkout.cart.index') }}'" 
+                           v-if="cart && cart.items.length > 0"
+                           class="flex items-center justify-center relative w-10 h-10 rounded-full border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 transition-all group"
+                        >
+                            <span class="icon-cart text-xl text-zinc-600 group-hover:text-[#7C45F5]"></span>
+                            <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7C45F5] text-[10px] font-black text-white shadow-sm">
+                                @{{ cart.items.length }}
+                            </span>
+                        </a>
+                    `,
             data() {
                 return {
                     cart: null,
