@@ -193,6 +193,7 @@
                                                                             @endif
                                                                         </div>
                                                                     </div>
+                                                                        </div> <!-- Added to close card 107 -->
 
                                                                         <!-- Description Section -->
                                                                         <div class="space-y-4">
@@ -215,8 +216,6 @@
                                                                             @include('shop::products.view.types.downloadable')
                                                                             @include('shop::products.view.types.booking')
                                                                         </div>
-                                                                    </div>
-
                                                                     </div>
                                                                 </div>
                                                             </form>
