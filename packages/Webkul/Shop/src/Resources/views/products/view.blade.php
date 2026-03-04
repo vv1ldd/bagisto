@@ -20,8 +20,8 @@
 
 @if (core()->getConfigData('catalog.rich_snippets.products.enable'))
     <script type="application/ld+json">
-                        {!! app('Webkul\Product\Helpers\SEO')->getProductJsonLd($product) !!}
-                    </script>
+                            {!! app('Webkul\Product\Helpers\SEO')->getProductJsonLd($product) !!}
+                        </script>
 @endif
 
 <?php $productBaseImage = product_image()->getProductBaseImage($product); ?>
@@ -74,127 +74,127 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-product-template">
-                            <x-shop::form
-                                v-slot="{ meta, errors, handleSubmit }"
-                                as="div"
-                            >
-                                <form
-                                    ref="formData"
-                                    @submit="handleSubmit($event, addToCart)"
+                                <x-shop::form
+                                    v-slot="{ meta, errors, handleSubmit }"
+                                    as="div"
                                 >
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <input type="hidden" name="is_buy_now" v-model="is_buy_now">
-                                    <input type="hidden" name="quantity" v-model="qty">
+                                    <form
+                                        ref="formData"
+                                        @submit="handleSubmit($event, addToCart)"
+                                    >
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="is_buy_now" v-model="is_buy_now">
+                                        <input type="hidden" name="quantity" v-model="qty">
 
-                                    <div class="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row gap-10 items-start">
-                                        <!-- Left Column: Product Card & Description -->
-                                        <div class="flex-1 min-w-0 space-y-8 w-full">
-                                            <!-- Compact Product Info Section -->
-                                            <div class="flex items-start gap-6 bg-white/40 backdrop-blur-md rounded-3xl p-6 border border-white/60 shadow-sm w-full max-sm:gap-4 max-sm:p-4 max-sm:rounded-2xl">
-                                                <div class="w-32 h-32 shrink-0 bg-white rounded-2xl border border-zinc-100 p-2 shadow-sm max-sm:w-24 max-sm:h-24">
-                                                    <img src="{{ $productBaseImage['small_image_url'] }}" 
-                                                         class="w-full h-full object-contain" 
-                                                         alt="{{ $product->name }}">
+                                        <div class="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row gap-10 items-start">
+                                            <!-- Left Column: Product Card & Description -->
+                                            <div class="flex-1 min-w-0 space-y-8 w-full">
+                                                <!-- Compact Product Info Section -->
+                                                <div class="flex items-start gap-6 bg-white/40 backdrop-blur-md rounded-3xl p-6 border border-white/60 shadow-sm w-full max-sm:gap-4 max-sm:p-4 max-sm:rounded-2xl">
+                                                    <div class="w-32 h-32 shrink-0 bg-white rounded-2xl border border-zinc-100 p-2 shadow-sm max-sm:w-24 max-sm:h-24">
+                                                        <img src="{{ $productBaseImage['small_image_url'] }}" 
+                                                             class="w-full h-full object-contain" 
+                                                             alt="{{ $product->name }}">
+                                                    </div>
+
+                                                    <div class="flex flex-col justify-center">
+                                                        <h1 class="text-2xl font-black text-zinc-900 uppercase tracking-tight max-sm:text-lg">
+                                                            {{ $product->name }}
+                                                        </h1>
+                                                        <div class="mt-2 text-2xl font-black text-[#7C45F5] max-sm:text-xl">
+                                                            {!! $product->getTypeInstance()->getPriceHtml() !!}
+                                                        </div>
+
+                                                        <!-- Quantity Selector -->
+                                                        <div class="mt-4 flex items-center bg-zinc-100 rounded-xl p-1 w-fit border border-zinc-200">
+                                                            <button 
+                                                                type="button"
+                                                                class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95 disabled:opacity-30"
+                                                                @click="decreaseQty"
+                                                                :disabled="qty <= 1"
+                                                            >
+                                                                <span class="icon-line text-lg"></span>
+                                                            </button>
+
+                                                            <input 
+                                                                type="text" 
+                                                                class="w-12 text-center bg-transparent border-none font-black text-zinc-900 focus:ring-0" 
+                                                                v-model="qty"
+                                                                readonly
+                                                            >
+
+                                                            <button 
+                                                                type="button"
+                                                                class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95"
+                                                                @click="increaseQty"
+                                                            >
+                                                                <span class="icon-plus text-lg"></span>
+                                                            </button>
+                                                        </div>
+
+                                                        <!-- Action Buttons -->
+                                                        <div class="mt-4 flex gap-3 max-sm:flex-col max-sm:gap-2">
+                                                            <button
+                                                                type="button"
+                                                                class="flex-1 bg-white border-2 border-[#7C45F5] text-[#7C45F5] px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                :disabled="isStoring.addToCart"
+                                                                @click="is_buy_now = 0; addToCart()"
+                                                            >
+                                                                <span v-if="!isStoring.addToCart" class="icon-cart text-lg"></span>
+                                                                <span v-else class="icon-spinner animate-spin text-lg"></span>
+                                                                В корзину
+                                                            </button>
+
+                                                            <button
+                                                                type="button"
+                                                                class="flex-1 bg-[#7C45F5] text-white px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_8px_16px_-4px_rgba(124,69,245,0.3)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                :disabled="isStoring.buyNow"
+                                                                @click="is_buy_now = 1; addToCart()"
+                                                            >
+                                                                <span v-if="!isStoring.buyNow" class="icon-payment text-lg"></span>
+                                                                <span v-else class="icon-spinner animate-spin text-lg"></span>
+                                                                Купить сейчас
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
+                                                        <div
+                                                            class="ml-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-white shadow-sm text-lg transition-all hover:scale-110 active:scale-95"
+                                                            :class="isWishlist ? 'icon-heart-fill text-red-600' : 'icon-heart text-zinc-400'"
+                                                            @click="addToWishlist"
+                                                        ></div>
+                                                    @endif
                                                 </div>
 
-                                                <div class="flex flex-col justify-center">
-                                                    <h1 class="text-2xl font-black text-zinc-900 uppercase tracking-tight max-sm:text-lg">
-                                                        {{ $product->name }}
-                                                    </h1>
-                                                    <div class="mt-2 text-2xl font-black text-[#7C45F5] max-sm:text-xl">
-                                                        {!! $product->getTypeInstance()->getPriceHtml() !!}
-                                                    </div>
-
-                                                    <!-- Quantity Selector -->
-                                                    <div class="mt-4 flex items-center bg-zinc-100 rounded-xl p-1 w-fit border border-zinc-200">
-                                                        <button 
-                                                            type="button"
-                                                            class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95 disabled:opacity-30"
-                                                            @click="decreaseQty"
-                                                            :disabled="qty <= 1"
-                                                        >
-                                                            <span class="icon-line text-lg"></span>
-                                                        </button>
-
-                                                        <input 
-                                                            type="text" 
-                                                            class="w-12 text-center bg-transparent border-none font-black text-zinc-900 focus:ring-0" 
-                                                            v-model="qty"
-                                                            readonly
-                                                        >
-
-                                                        <button 
-                                                            type="button"
-                                                            class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95"
-                                                            @click="increaseQty"
-                                                        >
-                                                            <span class="icon-plus text-lg"></span>
-                                                        </button>
-                                                    </div>
-
-                                                    <!-- Action Buttons -->
-                                                    <div class="mt-4 flex gap-3 max-sm:flex-col max-sm:gap-2">
-                                                        <button
-                                                            type="button"
-                                                            class="flex-1 bg-white border-2 border-[#7C45F5] text-[#7C45F5] px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
-                                                            :disabled="isStoring.addToCart"
-                                                            @click="is_buy_now = 0; addToCart()"
-                                                        >
-                                                            <span v-if="!isStoring.addToCart" class="icon-cart text-lg"></span>
-                                                            <span v-else class="icon-spinner animate-spin text-lg"></span>
-                                                            В корзину
-                                                        </button>
-
-                                                        <button
-                                                            type="button"
-                                                            class="flex-1 bg-[#7C45F5] text-white px-6 py-2.5 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_8px_16px_-4px_rgba(124,69,245,0.3)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
-                                                            :disabled="isStoring.buyNow"
-                                                            @click="is_buy_now = 1; addToCart()"
-                                                        >
-                                                            <span v-if="!isStoring.buyNow" class="icon-payment text-lg"></span>
-                                                            <span v-else class="icon-spinner animate-spin text-lg"></span>
-                                                            Купить сейчас
-                                                        </button>
-                                                    </div>
+                                                <!-- Description Display -->
+                                                <div class="bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-white/40 max-sm:p-6 text-zinc-600 leading-relaxed text-lg max-sm:text-sm prose prose-zinc max-w-none w-full">
+                                                    {!! $product->description !!}
                                                 </div>
 
-                                                @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
-                                                    <div
-                                                        class="ml-auto flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-white shadow-sm text-lg transition-all hover:scale-110 active:scale-95"
-                                                        :class="isWishlist ? 'icon-heart-fill text-red-600' : 'icon-heart text-zinc-400'"
-                                                        @click="addToWishlist"
-                                                    ></div>
-                                                @endif
+                                                <!-- Hidden Original Elements for Compatibility -->
+                                                <div class="hidden">
+                                                    @include('shop::products.view.gallery')
+                                                    @include('shop::products.view.types.simple')
+                                                    @include('shop::products.view.types.configurable')
+                                                    @include('shop::products.view.types.grouped')
+                                                    @include('shop::products.view.types.bundle')
+                                                    @include('shop::products.view.types.downloadable')
+                                                    @include('shop::products.view.types.booking')
+                                                </div>
                                             </div>
 
-                                            <!-- Description Display -->
-                                            <div class="bg-white/30 backdrop-blur-sm rounded-3xl p-8 border border-white/40 max-sm:p-6 text-zinc-600 leading-relaxed text-lg max-sm:text-sm prose prose-zinc max-w-none w-full">
-                                                {!! $product->description !!}
-                                            </div>
-
-                                            <!-- Hidden Original Elements for Compatibility -->
-                                            <div class="hidden">
-                                                @include('shop::products.view.gallery')
-                                                @include('shop::products.view.types.simple')
-                                                @include('shop::products.view.types.configurable')
-                                                @include('shop::products.view.types.grouped')
-                                                @include('shop::products.view.types.bundle')
-                                                @include('shop::products.view.types.downloadable')
-                                                @include('shop::products.view.types.booking')
+                                            <!-- Right Column: Direct Checkout Flow -->
+                                            <div class="w-full lg:w-[450px] lg:shrink-0 lg:sticky lg:top-24">
+                                                <v-direct-checkout
+                                                    ref="directCheckout"
+                                                    :product-id="{{ $product->id }}"
+                                                ></v-direct-checkout>
                                             </div>
                                         </div>
-
-                                        <!-- Right Column: Direct Checkout Flow -->
-                                        <div class="w-full lg:w-[450px] lg:shrink-0 lg:sticky lg:top-24">
-                                            <v-direct-checkout
-                                                ref="directCheckout"
-                                                :product-id="{{ $product->id }}"
-                                            ></v-direct-checkout>
-                                        </div>
-                                    </div>
-                                </form>
-                            </x-shop::form>
-                        </script>
+                                    </form>
+                                </x-shop::form>
+                            </script>
 
             <script type="module">
                 app.component('v-product', {
@@ -215,8 +215,11 @@
 
                     mounted() {
                         this.checkWishlistStatus();
-                        // Silent add to cart on load
-                        this.silentAddToCart();
+
+                        // Initialize checkout data without adding to cart
+                        if (this.$refs.directCheckout) {
+                            this.$refs.directCheckout.initCheckout();
+                        }
                     },
 
                     methods: {
@@ -249,20 +252,6 @@
                                 .catch(error => {
                                     this.isStoring[operation] = false;
                                     this.$emitter.emit('add-flash', { type: 'warning', message: error.response.data.message });
-                                });
-                        },
-
-                        silentAddToCart() {
-                            let formData = new FormData();
-                            formData.append('product_id', "{{ $product->id }}");
-                            formData.append('quantity', 1);
-
-                            this.$axios.post('{{ route("shop.api.checkout.cart.store") }}', formData)
-                                .then(response => {
-                                    this.$emitter.emit('update-mini-cart', response.data.data);
-                                    if (this.$refs.directCheckout) {
-                                        this.$refs.directCheckout.initCheckout();
-                                    }
                                 });
                         },
 
