@@ -21,10 +21,10 @@ return [
 
     'credits' => [
         'code' => 'credits',
-        'title' => 'Баланс Credits',
-        'description' => 'Оплата с вашего внутреннего счета (Credits)',
+        'title' => 'Wallet',
+        'description' => 'Оплата кошельком',
         'class' => 'Webkul\Payment\Payment\Credits',
         'active' => true,
-        'sort' => 0,
+        'sort' => 1,
     ],
 ];

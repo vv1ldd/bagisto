@@ -56,7 +56,8 @@
             <a href="{{ route('shop.customers.account.index') }}"
                 class="flex items-center bg-white px-3 h-[29px] rounded-2xl border border-zinc-200 shadow-sm transition hover:shadow-md active:scale-[0.98]">
                 <span class="text-[14px] font-mono text-zinc-900 font-bold whitespace-nowrap">
-                    @ {{ auth()->guard('customer')->user()->username }}
+                    @
+                    {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
                 </span>
             </a>
             @endauth
@@ -68,7 +69,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                                                <!-- Loading State -->
+                                                                                                    <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -186,9 +187,9 @@
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                                    }">
+                                                                                                                            'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                                            'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                                        }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">
