@@ -104,9 +104,9 @@
                                                                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
                                                                                         <!-- LEFT: Product Image -->
-                                                                                        <div class="relative bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden flex items-center justify-center" style="min-height:320px">
-                                                                                            <img src="{{ $productBaseImage['large_image_url'] }}"
-                                                                                                 class="w-full h-full object-contain p-6 max-h-[420px]"
+                                                                                        <div class="relative bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden flex items-center justify-center" style="height:420px">
+                                                                                            <img src="{{ $productBaseImage['medium_image_url'] }}"
+                                                                                                 class="w-full h-full object-contain p-6"
                                                                                                  alt="{{ $product->name }}">
                                                                                             @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
                                                                                                 <div

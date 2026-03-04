@@ -58,6 +58,8 @@ module.exports = {
         {
             pattern: /^grid-cols-(1|2|3|4|5|6)$/,
         },
+        // Responsive grid variants (pattern doesn't work for variants in Tailwind v3)
+        'md:grid-cols-1', 'md:grid-cols-2', 'md:grid-cols-3', 'md:grid-cols-4',
         {
             pattern: /^(max-sm|max-md|max-lg|max-1060|max-1180):grid-cols-(1|2|3|4|5|6)$/,
             variants: ['max-sm', 'max-md', 'max-lg', 'max-1060', 'max-1180'],

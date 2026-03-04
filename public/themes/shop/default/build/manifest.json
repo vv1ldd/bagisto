@@ -14,16 +14,8 @@
     "file": "assets/vue-Mf5lPYt2.js",
     "name": "vue"
   },
-  "node_modules/intl-tel-input/build/img/flags.webp": {
-    "file": "assets/flags-D1ZsmaPP.webp",
-    "src": "node_modules/intl-tel-input/build/img/flags.webp"
-  },
-  "node_modules/intl-tel-input/build/img/flags@2x.webp": {
-    "file": "assets/flags@2x-CK7NHWq8.webp",
-    "src": "node_modules/intl-tel-input/build/img/flags@2x.webp"
-  },
   "src/Resources/assets/css/app.css": {
-    "file": "assets/app-By_fYzjl.css",
+    "file": "assets/app-DbuFPXKv.css",
     "src": "src/Resources/assets/css/app.css",
     "isEntry": true
   },
@@ -104,7 +96,7 @@
     "src": "src/Resources/assets/images/wishlist.png"
   },
   "src/Resources/assets/js/app.js": {
-    "file": "assets/app-B0q4e26F.js",
+    "file": "assets/app-BsauBH_j.js",
     "name": "app",
     "src": "src/Resources/assets/js/app.js",
     "isEntry": true,
@@ -114,11 +106,7 @@
       "_veeValidate-D1OGalzA.js"
     ],
     "css": [
-      "assets/app-BOvo_RZC.css"
-    ],
-    "assets": [
-      "assets/flags-D1ZsmaPP.webp",
-      "assets/flags@2x-CK7NHWq8.webp"
+      "assets/app-DsP8OK1c.css"
     ]
   }
 }
