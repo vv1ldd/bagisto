@@ -25,19 +25,16 @@
 
         <!-- Right Navigation -->
         <div class="flex items-center">
-            @guest('customer')
-                <a href="{{ route('shop.customer.session.create') }}"
-                    class="flex items-center justify-center rounded-[20px] bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-5 py-2 text-[14px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all active:scale-[0.97]">
-                    Войти
+            <v-header-cart></v-header-cart>
+
+            @auth('customer')
+                <a href="{{ route('shop.customers.account.index') }}"
+                    class="flex items-center bg-white px-3 h-[29px] rounded-2xl border border-zinc-200 shadow-sm transition active:scale-[0.98]">
+                    <span class="text-[13px] font-mono text-zinc-900 font-bold whitespace-nowrap">
+                        @
+                        {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
+                    </span>
                 </a>
-            @else
-            <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center bg-white px-3 h-[29px] rounded-2xl border border-zinc-200 shadow-sm transition active:scale-[0.98]">
-                <span class="text-[13px] font-mono text-zinc-900 font-bold whitespace-nowrap">
-                    @
-                    {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
-                </span>
-            </a>
             @endauth
         </div>
     </div>

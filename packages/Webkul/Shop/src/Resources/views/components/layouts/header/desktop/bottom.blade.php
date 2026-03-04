@@ -41,6 +41,9 @@
 
 
 
+            <!-- header cart -->
+            <v-header-cart></v-header-cart>
+
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile.before') !!}
 
             <!-- user profile -->
@@ -71,7 +74,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                                                            <!-- Loading State -->
+                                                                                                                <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -190,9 +193,9 @@
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300"
                                 :class="{
-                                                                                                                                    'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                                    'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                                                }">
+                                                                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                                                    }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">
@@ -259,8 +262,8 @@
 
     <script type="module">
         app.component('v-desktop-category', {
+            // ... (keep template and data)
             template: '#v-desktop-category-template',
-
             data() {
                 return {
                     isLoading: true,
@@ -271,28 +274,21 @@
                     currentParentCategory: null
                 }
             },
-
             mounted() {
                 this.initCategories();
             },
-
             methods: {
                 initCategories() {
                     try {
                         const stored = localStorage.getItem('categories');
-
                         if (stored) {
                             this.categories = JSON.parse(stored);
                             this.isLoading = false;
-
                             return;
                         }
-
                     } catch (e) { }
-
                     this.getCategories();
                 },
-
                 getCategories() {
                     this.$axios.get("{{ route('shop.api.categories.tree', ['show_in_header' => 1]) }}")
                         .then(response => {
@@ -304,10 +300,8 @@
                             console.log(error);
                         });
                 },
-
                 pairCategoryChildren(category) {
                     if (!category.children) return [];
-
                     return category.children.reduce((result, value, index, array) => {
                         if (index % 2 === 0) {
                             result.push(array.slice(index, index + 2));
@@ -315,39 +309,67 @@
                         return result;
                     }, []);
                 },
-
                 toggleCategoryDrawer() {
                     this.isDrawerActive = !this.isDrawerActive;
                     if (this.isDrawerActive) {
                         this.currentViewLevel = 'main';
                     }
                 },
-
                 onDrawerToggle(event) {
                     this.isDrawerActive = event.isActive;
                 },
-
                 onDrawerClose(event) {
                     this.isDrawerActive = false;
                 },
-
                 showThirdLevel(secondLevelCategory, parentCategory, event) {
                     if (secondLevelCategory.children && secondLevelCategory.children.length) {
                         this.currentSecondLevelCategory = secondLevelCategory;
                         this.currentParentCategory = parentCategory;
                         this.currentViewLevel = 'third';
-
                         if (event) {
                             event.preventDefault();
                             event.stopPropagation();
                         }
                     }
                 },
-
                 goBackToMainView() {
                     this.currentViewLevel = 'main';
                 }
             },
+        });
+
+        app.component('v-header-cart', {
+            template: `
+                    <a :href="'{{ route('shop.checkout.cart.index') }}'" 
+                       v-if="cart && cart.items.length > 0"
+                       class="flex items-center justify-center relative w-10 h-10 rounded-full border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 transition-all group"
+                    >
+                        <span class="icon-cart text-xl text-zinc-600 group-hover:text-[#7C45F5]"></span>
+                        <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7C45F5] text-[10px] font-black text-white shadow-sm">
+                            @{{ cart.items.length }}
+                        </span>
+                    </a>
+                `,
+            data() {
+                return {
+                    cart: null,
+                }
+            },
+            mounted() {
+                this.getCart();
+                this.$emitter.on('update-mini-cart', (cart) => {
+                    this.cart = cart;
+                });
+            },
+            methods: {
+                getCart() {
+                    this.$axios.get("{{ route('shop.api.checkout.cart.index') }}")
+                        .then(response => {
+                            this.cart = response.data.data;
+                        })
+                        .catch(error => { });
+                }
+            }
         });
     </script>
 @endPushOnce
