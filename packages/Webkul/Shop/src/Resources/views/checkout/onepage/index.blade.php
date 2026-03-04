@@ -47,11 +47,11 @@
                         <div
                             class="flex items-center gap-3 rounded-full bg-white/40 p-1 pr-4 backdrop-blur-md border border-white/60">
                             <div
-                                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-xs">
-                                {{ substr(auth()->guard('customer')->user()->first_name, 0, 1) }}
+                                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-xs uppercase">
+                                {{ substr(auth()->guard('customer')->user()->credits_alias, 0, 1) }}
                             </div>
-                            <span
-                                class="text-sm font-medium text-zinc-700">{{ auth()->guard('customer')->user()->first_name }}</span>
+                            <span class="text-sm font-medium text-zinc-700">@
+                                {{ auth()->guard('customer')->user()->credits_alias }}</span>
                         </div>
                     @endguest
                 </div>
@@ -71,83 +71,83 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-checkout-template">
-                            <template v-if="! cart">
-                                <!-- Shimmer Effect -->
-                                <x-shop::shimmer.checkout.onepage />
-                            </template>
+                                <template v-if="! cart">
+                                    <!-- Shimmer Effect -->
+                                    <x-shop::shimmer.checkout.onepage />
+                                </template>
 
-                            <template v-else>
-                                <div class="grid grid-cols-[1fr_auto] gap-8 max-lg:grid-cols-[1fr] max-md:gap-5">
-                                    <!-- Included Checkout Summary Blade File For Mobile view -->
-                                    <div class="hidden max-md:block">
-                                        @include('shop::checkout.onepage.summary')
-                                    </div>
-
-                                    <div
-                                        class="overflow-y-auto max-md:grid max-md:gap-4"
-                                        id="steps-container"
-                                    >
-                                        <!-- Included Addresses Blade File -->
-                                        <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
-                                            @include('shop::checkout.onepage.address')
-                                        </template>
-
-                                        <!-- Included Shipping Methods Blade File -->
-                                        <template v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)">
-                                            @include('shop::checkout.onepage.shipping')
-                                        </template>
-
-                                        <!-- Included Payment Methods Blade File -->
-                                        <template v-if="['payment', 'review'].includes(currentStep)">
-                                            @include('shop::checkout.onepage.payment')
-                                        </template>
-                                    </div>
-
-                                    <!-- Included Checkout Summary Blade File For Desktop view -->
-                                    <div class="sticky top-8 block h-max w-[442px] max-w-full max-lg:w-auto max-lg:max-w-[442px] ltr:pl-8 max-lg:ltr:pl-0 rtl:pr-8 max-lg:rtl:pr-0">
-                                        <div class="block max-md:hidden bg-white/40 backdrop-blur-3xl border border-white/40 rounded-2xl p-6 shadow-sm">
+                                <template v-else>
+                                    <div class="grid grid-cols-[1fr_auto] gap-8 max-lg:grid-cols-[1fr] max-md:gap-5">
+                                        <!-- Included Checkout Summary Blade File For Mobile view -->
+                                        <div class="hidden max-md:block">
                                             @include('shop::checkout.onepage.summary')
                                         </div>
 
                                         <div
-                                            class="flex flex-col gap-4 mt-8"
-                                            v-if="canPlaceOrder"
+                                            class="overflow-y-auto max-md:grid max-md:gap-4"
+                                            id="steps-container"
                                         >
-                                            <template v-if="cart.payment_method == 'paypal_smart_button'">
-                                                {!! view_render_event('bagisto.shop.checkout.onepage.summary.paypal_smart_button.before') !!}
-
-                                                <!-- Paypal Smart Button Vue Component -->
-                                                <v-paypal-smart-button></v-paypal-smart-button>
-
-                                                {!! view_render_event('bagisto.shop.checkout.onepage.summary.paypal_smart_button.after') !!}
+                                            <!-- Included Addresses Blade File -->
+                                            <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
+                                                @include('shop::checkout.onepage.address')
                                             </template>
 
-                                            <template v-else>
-                                                <button
-                                                    type="button"
-                                                    class="primary-button flex w-full items-center justify-center rounded-full bg-[#7C45F5] py-5 text-lg font-black text-white shadow-[0_10px_20px_-5px_rgba(124,69,245,0.4)] transition-all hover:bg-[#6b35e4] hover:shadow-[0_15px_30px_-5px_rgba(124,69,245,0.5)] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
-                                                    :disabled="isPlacingOrder"
-                                                    @click="placeOrder"
-                                                >
-                                                    <span v-if="!isPlacingOrder">@lang('shop::app.checkout.onepage.summary.place-order')</span>
-                                                    <span v-else class="flex items-center gap-2">
-                                                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                        </svg>
-                                                        Обработка...
-                                                    </span>
-                                                </button>
+                                            <!-- Included Shipping Methods Blade File -->
+                                            <template v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)">
+                                                @include('shop::checkout.onepage.shipping')
+                                            </template>
 
-                                                <p class="text-center text-[10px] font-medium text-zinc-400">
-                                                    Нажимая на кнопку, вы соглашаетесь с <a href="#" class="underline hover:text-[#7C45F5]">условиями обслуживания</a>
-                                                </p>
+                                            <!-- Included Payment Methods Blade File -->
+                                            <template v-if="['payment', 'review'].includes(currentStep)">
+                                                @include('shop::checkout.onepage.payment')
                                             </template>
                                         </div>
+
+                                        <!-- Included Checkout Summary Blade File For Desktop view -->
+                                        <div class="sticky top-8 block h-max w-[442px] max-w-full max-lg:w-auto max-lg:max-w-[442px] ltr:pl-8 max-lg:ltr:pl-0 rtl:pr-8 max-lg:rtl:pr-0">
+                                            <div class="block max-md:hidden bg-white/40 backdrop-blur-3xl border border-white/40 rounded-2xl p-6 shadow-sm">
+                                                @include('shop::checkout.onepage.summary')
+                                            </div>
+
+                                            <div
+                                                class="flex flex-col gap-4 mt-8"
+                                                v-if="canPlaceOrder"
+                                            >
+                                                <template v-if="cart.payment_method == 'paypal_smart_button'">
+                                                    {!! view_render_event('bagisto.shop.checkout.onepage.summary.paypal_smart_button.before') !!}
+
+                                                    <!-- Paypal Smart Button Vue Component -->
+                                                    <v-paypal-smart-button></v-paypal-smart-button>
+
+                                                    {!! view_render_event('bagisto.shop.checkout.onepage.summary.paypal_smart_button.after') !!}
+                                                </template>
+
+                                                <template v-else>
+                                                    <button
+                                                        type="button"
+                                                        class="primary-button flex w-full items-center justify-center rounded-full bg-[#7C45F5] py-5 text-lg font-black text-white shadow-[0_10px_20px_-5px_rgba(124,69,245,0.4)] transition-all hover:bg-[#6b35e4] hover:shadow-[0_15px_30px_-5px_rgba(124,69,245,0.5)] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+                                                        :disabled="isPlacingOrder"
+                                                        @click="placeOrder"
+                                                    >
+                                                        <span v-if="!isPlacingOrder">@lang('shop::app.checkout.onepage.summary.place-order')</span>
+                                                        <span v-else class="flex items-center gap-2">
+                                                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
+                                                            Обработка...
+                                                        </span>
+                                                    </button>
+
+                                                    <p class="text-center text-[10px] font-medium text-zinc-400">
+                                                        Нажимая на кнопку, вы соглашаетесь с <a href="#" class="underline hover:text-[#7C45F5]">условиями обслуживания</a>
+                                                    </p>
+                                                </template>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </template>
-                        </script>
+                                </template>
+                            </script>
 
             <script type="module">
                 app.component('v-checkout', {
