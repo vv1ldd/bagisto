@@ -20,8 +20,8 @@
 
 @if (core()->getConfigData('catalog.rich_snippets.products.enable'))
     <script type="application/ld+json">
-                                                                        {!! app('Webkul\Product\Helpers\SEO')->getProductJsonLd($product) !!}
-                                                                    </script>
+                                                                            {!! app('Webkul\Product\Helpers\SEO')->getProductJsonLd($product) !!}
+                                                                        </script>
 @endif
 
 <?php $productBaseImage = product_image()->getProductBaseImage($product); ?>
@@ -74,153 +74,153 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-product-template">
-                                                                            <x-shop::form
-                                                                                v-slot="{ meta, errors, handleSubmit }"
-                                                                                as="div"
-                                                                            >
-                                                                                <form
-                                                                                    ref="formData"
-                                                                                    @submit="handleSubmit($event, addToCart)"
+                                                                                <x-shop::form
+                                                                                    v-slot="{ meta, errors, handleSubmit }"
+                                                                                    as="div"
                                                                                 >
-                                                                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                                                                    <input type="hidden" name="is_buy_now" v-model="is_buy_now">
-                                                                                    <input type="hidden" name="quantity" v-model="qty">
+                                                                                    <form
+                                                                                        ref="formData"
+                                                                                        @submit="handleSubmit($event, addToCart)"
+                                                                                    >
+                                                                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                                                                        <input type="hidden" name="is_buy_now" v-model="is_buy_now">
+                                                                                        <input type="hidden" name="quantity" v-model="qty">
 
-                                                                                    <div class="w-full max-w-5xl mx-auto px-4 lg:px-6 space-y-8 pt-6">
-                                                                                        <!-- Back + Title -->
-                                                                                        <div class="flex items-center gap-3">
-                                                                                            <a href="javascript:history.back()"
-                                                                                               class="shrink-0 w-9 h-9 rounded-full bg-white/60 backdrop-blur-md border border-white/70 flex items-center justify-center text-zinc-700 active:scale-95 transition-all shadow-sm hover:bg-white">
-                                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
-                                                                                                </svg>
-                                                                                            </a>
-                                                                                            <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tight leading-tight max-sm:text-base">
-                                                                                                {{ $product->name }}
-                                                                                            </h1>
-                                                                                        </div>
-
-                                                                                        <!-- Single Card: Image + Info -->
-                                                                                        <div class="bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden" style="display:flex; flex-direction:row; align-items:stretch;">
-
-                                                                                            <!-- LEFT: Product Image -->
-                                                                                            <div class="relative flex-shrink-0 flex items-center justify-center bg-zinc-50" style="width:260px; min-width:260px; border-right:1px solid #f4f4f5;">
-                                                                                                <img src="{{ $productBaseImage['medium_image_url'] }}"
-                                                                                                     class="w-full h-full object-contain p-5"
-                                                                                                     style="max-height:260px;"
-                                                                                                     alt="{{ $product->name }}">
+                                                                                        <div class="w-full max-w-5xl mx-auto px-4 lg:px-6 space-y-8 pt-6">
+                                                                                            <!-- Back + Title -->
+                                                                                            <div class="flex items-center gap-3">
+                                                                                                <a href="javascript:history.back()"
+                                                                                                   class="shrink-0 w-9 h-9 rounded-full bg-white/60 backdrop-blur-md border border-white/70 flex items-center justify-center text-zinc-700 active:scale-95 transition-all shadow-sm hover:bg-white">
+                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                                                                                                    </svg>
+                                                                                                </a>
+                                                                                                <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tight leading-tight max-sm:text-base">
+                                                                                                    {{ $product->name }}
+                                                                                                </h1>
                                                                                             </div>
 
-                                                                                            <!-- RIGHT: Info, Price, Buttons -->
-                                                                                            <div class="flex flex-col gap-4 p-6 flex-1" style="position:relative;">
-                                                                                                @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
-                                                                                                    <div
-                                                                                                        class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-zinc-100 bg-zinc-50 text-lg transition-all hover:scale-110 active:scale-95"
-                                                                                                        style="position:absolute; top:16px; right:16px;"
-                                                                                                        :class="isWishlist ? 'icon-heart-fill text-red-500' : 'icon-heart text-zinc-400'"
-                                                                                                        @click="addToWishlist"
-                                                                                                    ></div>
-                                                                                                @endif
-                                                                                                <!-- Attributes / Brand -->
-                                                                                                @if ($attributeData->count())
-                                                                                                    <div class="flex flex-wrap gap-2">
-                                                                                                        @foreach ($attributeData as $attribute)
-                                                                                                            <div class="flex items-center gap-1.5 bg-zinc-50 border border-zinc-100 rounded-lg px-2.5 py-1">
-                                                                                                                <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ $attribute['label'] }}:</span>
-                                                                                                                <span class="text-[10px] font-black text-zinc-900 uppercase tracking-tight">{{ $attribute['value'] }}</span>
-                                                                                                            </div>
-                                                                                                        @endforeach
-                                                                                                    </div>
-                                                                                                @endif
+                                                                                            <!-- Single Card: Image + Info -->
+                                                                                            <div class="bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden" style="display:flex; flex-direction:row; align-items:stretch;">
 
-                                                                                                <!-- Price -->
-                                                                                                <div>
-                                                                                                    {!! $product->getTypeInstance()->getPriceHtml() !!}
+                                                                                                <!-- LEFT: Product Image -->
+                                                                                                <div class="relative flex-shrink-0 flex items-center justify-center bg-zinc-50" style="width:260px; min-width:260px; border-right:1px solid #f4f4f5;">
+                                                                                                    <img src="{{ $productBaseImage['medium_image_url'] }}"
+                                                                                                         class="w-full h-full object-contain p-5"
+                                                                                                         style="max-height:260px;"
+                                                                                                         alt="{{ $product->name }}">
                                                                                                 </div>
 
-                                                                                                <!-- Divider -->
-                                                                                                <div class="border-t border-zinc-100"></div>
+                                                                                                <!-- RIGHT: Info, Price, Buttons -->
+                                                                                                <div class="flex flex-col gap-4 p-6 flex-1" style="position:relative;">
+                                                                                                    @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
+                                                                                                        <div
+                                                                                                            class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border border-zinc-100 bg-zinc-50 text-lg transition-all hover:scale-110 active:scale-95"
+                                                                                                            style="position:absolute; top:16px; right:16px;"
+                                                                                                            :class="isWishlist ? 'icon-heart-fill text-red-500' : 'icon-heart text-zinc-400'"
+                                                                                                            @click="addToWishlist"
+                                                                                                        ></div>
+                                                                                                    @endif
+                                                                                                    <!-- Attributes / Brand -->
+                                                                                                    @if ($attributeData->count())
+                                                                                                        <div class="flex flex-wrap gap-2">
+                                                                                                            @foreach ($attributeData as $attribute)
+                                                                                                                <div class="flex items-center gap-1.5 bg-zinc-50 border border-zinc-100 rounded-lg px-2.5 py-1">
+                                                                                                                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{{ $attribute['label'] }}:</span>
+                                                                                                                    <span class="text-[10px] font-black text-zinc-900 uppercase tracking-tight">{{ $attribute['value'] }}</span>
+                                                                                                                </div>
+                                                                                                            @endforeach
+                                                                                                        </div>
+                                                                                                    @endif
 
-                                                                                                <!-- Quantity Selector -->
-                                                                                                <div>
-                                                                                                    <p class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Количество</p>
-                                                                                                    <div class="flex items-center bg-zinc-100 rounded-xl p-1 border border-zinc-200 w-fit">
+                                                                                                    <!-- Price -->
+                                                                                                    <div class="text-3xl">
+                                                                                                        {!! $product->getTypeInstance()->getPriceHtml() !!}
+                                                                                                    </div>
+
+                                                                                                    <!-- Divider -->
+                                                                                                    <div class="border-t border-zinc-100"></div>
+
+                                                                                                    <!-- Quantity Selector -->
+                                                                                                    <div>
+                                                                                                        <p class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-2">Количество</p>
+                                                                                                        <div class="flex items-center bg-zinc-100 rounded-xl p-1 border border-zinc-200 w-fit">
+                                                                                                            <button
+                                                                                                                type="button"
+                                                                                                                class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95 disabled:opacity-30"
+                                                                                                                @click="decreaseQty"
+                                                                                                                :disabled="qty <= 1"
+                                                                                                            >
+                                                                                                                <span class="icon-line text-base"></span>
+                                                                                                            </button>
+                                                                                                            <input
+                                                                                                                type="text"
+                                                                                                                class="w-10 text-center bg-transparent border-none font-black text-zinc-900 focus:ring-0 text-sm"
+                                                                                                                v-model="qty"
+                                                                                                                readonly
+                                                                                                            >
+                                                                                                            <button
+                                                                                                                type="button"
+                                                                                                                class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95"
+                                                                                                                @click="increaseQty"
+                                                                                                            >
+                                                                                                                <span class="icon-plus text-base"></span>
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                    </div>
+
+                                                                                                    <!-- Buttons -->
+                                                                                                    <div class="flex flex-col gap-3 mt-auto">
+                                                                                                        <!-- Buy Now -->
                                                                                                         <button
                                                                                                             type="button"
-                                                                                                            class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95 disabled:opacity-30"
-                                                                                                            @click="decreaseQty"
-                                                                                                            :disabled="qty <= 1"
+                                                                                                            class="w-full bg-[#7C45F5] text-white py-2 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_6px_16px_-4px_rgba(124,69,245,0.4)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                                                            :disabled="isStoring.buyNow"
+                                                                                                            @click="is_buy_now = 1; addToCart()"
                                                                                                         >
-                                                                                                            <span class="icon-line text-base"></span>
+                                                                                                            <span v-if="!isStoring.buyNow" class="icon-payment text-sm"></span>
+                                                                                                            <span v-else class="icon-spinner animate-spin text-sm"></span>
+                                                                                                            Купить сейчас
                                                                                                         </button>
-                                                                                                        <input
-                                                                                                            type="text"
-                                                                                                            class="w-10 text-center bg-transparent border-none font-black text-zinc-900 focus:ring-0 text-sm"
-                                                                                                            v-model="qty"
-                                                                                                            readonly
-                                                                                                        >
+                                                                                                        <!-- Add to Cart -->
                                                                                                         <button
                                                                                                             type="button"
-                                                                                                            class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white transition-all active:scale-95"
-                                                                                                            @click="increaseQty"
+                                                                                                            class="w-full bg-white border border-[#7C45F5] text-[#7C45F5] px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                                                            :disabled="isStoring.addToCart"
+                                                                                                            @click="is_buy_now = 0; addToCart()"
                                                                                                         >
-                                                                                                            <span class="icon-plus text-base"></span>
+                                                                                                            <span v-if="!isStoring.addToCart" class="icon-cart text-sm"></span>
+                                                                                                            <span v-else class="icon-spinner animate-spin text-sm"></span>
+                                                                                                            В корзину
                                                                                                         </button>
                                                                                                     </div>
                                                                                                 </div>
+                                                                                            </div>
 
-                                                                                                <!-- Buttons -->
-                                                                                                <div class="flex flex-col gap-3 mt-auto">
-                                                                                                    <!-- Buy Now -->
-                                                                                                    <button
-                                                                                                        type="button"
-                                                                                                        class="w-full bg-[#7C45F5] text-white py-2 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_6px_16px_-4px_rgba(124,69,245,0.4)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
-                                                                                                        :disabled="isStoring.buyNow"
-                                                                                                        @click="is_buy_now = 1; addToCart()"
-                                                                                                    >
-                                                                                                        <span v-if="!isStoring.buyNow" class="icon-payment text-sm"></span>
-                                                                                                        <span v-else class="icon-spinner animate-spin text-sm"></span>
-                                                                                                        Купить сейчас
-                                                                                                    </button>
-                                                                                                    <!-- Add to Cart -->
-                                                                                                    <button
-                                                                                                        type="button"
-                                                                                                        class="w-full bg-white border border-[#7C45F5] text-[#7C45F5] px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
-                                                                                                        :disabled="isStoring.addToCart"
-                                                                                                        @click="is_buy_now = 0; addToCart()"
-                                                                                                    >
-                                                                                                        <span v-if="!isStoring.addToCart" class="icon-cart text-sm"></span>
-                                                                                                        <span v-else class="icon-spinner animate-spin text-sm"></span>
-                                                                                                        В корзину
-                                                                                                    </button>
+                                                                                            <!-- Description Section (full width below) -->
+                                                                                            @if ($product->description)
+                                                                                                <div class="space-y-3">
+                                                                                                    <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 pl-1">О товаре</h2>
+                                                                                                    <div class="bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-white/70 shadow-sm text-zinc-700 leading-relaxed text-base max-sm:text-sm prose prose-zinc max-w-none w-full">
+                                                                                                        {!! $product->description !!}
+                                                                                                    </div>
                                                                                                 </div>
+                                                                                            @endif
+
+                                                                                            <!-- Hidden Original Elements for Compatibility -->
+                                                                                            <div class="hidden">
+                                                                                                @include('shop::products.view.gallery')
+                                                                                                @include('shop::products.view.types.simple')
+                                                                                                @include('shop::products.view.types.configurable')
+                                                                                                @include('shop::products.view.types.grouped')
+                                                                                                @include('shop::products.view.types.bundle')
+                                                                                                @include('shop::products.view.types.downloadable')
+                                                                                                @include('shop::products.view.types.booking')
                                                                                             </div>
                                                                                         </div>
-
-                                                                                        <!-- Description Section (full width below) -->
-                                                                                        @if ($product->description)
-                                                                                            <div class="space-y-3">
-                                                                                                <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 pl-1">О товаре</h2>
-                                                                                                <div class="bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-white/70 shadow-sm text-zinc-700 leading-relaxed text-base max-sm:text-sm prose prose-zinc max-w-none w-full">
-                                                                                                    {!! $product->description !!}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        @endif
-
-                                                                                        <!-- Hidden Original Elements for Compatibility -->
-                                                                                        <div class="hidden">
-                                                                                            @include('shop::products.view.gallery')
-                                                                                            @include('shop::products.view.types.simple')
-                                                                                            @include('shop::products.view.types.configurable')
-                                                                                            @include('shop::products.view.types.grouped')
-                                                                                            @include('shop::products.view.types.bundle')
-                                                                                            @include('shop::products.view.types.downloadable')
-                                                                                            @include('shop::products.view.types.booking')
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </form>
-                                                                            </x-shop::form>
-                                                                        </script>
+                                                                                    </form>
+                                                                                </x-shop::form>
+                                                                            </script>
 
             <script type="module">
                 app.component('v-product', {
