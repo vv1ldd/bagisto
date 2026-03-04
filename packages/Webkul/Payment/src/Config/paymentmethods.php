@@ -6,7 +6,7 @@ return [
         'title' => 'Cash On Delivery',
         'description' => 'Cash On Delivery',
         'class' => 'Webkul\Payment\Payment\CashOnDelivery',
-        'active' => true,
+        'active' => false,
         'sort' => 1,
     ],
 
@@ -15,7 +15,7 @@ return [
         'title' => 'Money Transfer',
         'description' => 'Money Transfer',
         'class' => 'Webkul\Payment\Payment\MoneyTransfer',
-        'active' => true,
+        'active' => false,
         'sort' => 2,
     ],
 
