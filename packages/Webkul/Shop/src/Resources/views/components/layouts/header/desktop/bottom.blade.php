@@ -1,7 +1,6 @@
 {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.before') !!}
 
-<div
-    class="flex min-h-[64px] w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] max-1180:px-8">
+<div class="flex min-h-[64px] w-full justify-between px-8 max-sm:px-4 mx-auto max-w-7xl">
     <!--
         This section will provide categories for the first, second, and third levels. If
         additional levels are required, users can customize them according to their needs.
@@ -11,10 +10,8 @@
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
 
-        <a href="{{ route('shop.home.index') }}"
-            aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.bagisto')">
-            <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}" width="131"
-                height="29" alt="{{ config('app.name') }}">
+        <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2" aria-label="Meanly">
+            <span class="text-[28px] font-black tracking-tighter text-[#7C45F5]">MEANLY</span>
         </a>
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.after') !!}
@@ -53,13 +50,14 @@
                     Войти / Регистрация
                 </a>
             @else
-            <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center bg-white px-3 h-[29px] rounded-2xl border border-zinc-200 shadow-sm transition hover:shadow-md active:scale-[0.98]">
-                <span class="text-[14px] font-mono text-zinc-900 font-bold whitespace-nowrap">
-                    @
-                    {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
-                </span>
-            </a>
+            <div class="flex items-center gap-3 rounded-full bg-white/40 p-1 pr-4 backdrop-blur-md border border-white/60">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-xs uppercase">
+                    {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
+                </div>
+                <a href="{{ route('shop.customers.account.index') }}" class="text-sm font-medium text-zinc-700 hover:text-[#7C45F5] transition-colors">
+                    @ {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
+                </a>
+            </div>
             @endauth
 
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile.after') !!}
@@ -69,7 +67,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                                                    <!-- Loading State -->
+                                                                                                        <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -81,10 +79,10 @@
     <!-- Default category layout -->
     <div class="flex items-center"
         v-else-if="'{{ core()->getConfigData('general.design.categories.category_view') }}' !== 'sidebar'">
-        <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue"
+        <div class="group relative flex h-[64px] items-center"
             v-for="category in categories">
             <span>
-                <a :href="category.url" class="inline-block px-5 uppercase">
+                <a :href="category.url" class="inline-block px-4 text-sm font-semibold uppercase tracking-wider text-zinc-600 transition-colors hover:text-[#7C45F5]">
                     @{{ category.name }}
                 </a>
             </span>
@@ -186,10 +184,11 @@
                         <!-- Wrapper with transition effects -->
                         <div class="relative h-full overflow-hidden">
                             <!-- Sliding container -->
-                            <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                                                            'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                            'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                                        }">
+                            <div class="flex h-full transition-transform duration-300"
+                                :class="{
+                                                                                                                                'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                                                'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                                            }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">

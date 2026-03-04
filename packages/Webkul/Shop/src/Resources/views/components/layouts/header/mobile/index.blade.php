@@ -8,7 +8,7 @@
     $showWishlist = (bool) core()->getConfigData('customer.settings.wishlist.wishlist_option');
 @endphp
 
-<div class="flex flex-wrap gap-4 px-4 pt-4 pb-3 shadow-none lg:hidden glass-header border-none !bg-transparent">
+<div class="flex flex-wrap gap-4 px-8 py-4 max-sm:px-4 shadow-none lg:hidden !bg-transparent">
     <div class="flex items-center justify-between w-full">
         <!-- Left Navigation -->
         <div class="flex items-center gap-x-5">
@@ -16,10 +16,8 @@
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.before') !!}
 
-            <a href="{{ route('shop.home.index') }}" class="max-h-[30px]"
-                aria-label="@lang('shop::app.components.layouts.header.mobile.bagisto')">
-                <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                    alt="{{ config('app.name') }}" width="131" height="29">
+            <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2" aria-label="Meanly">
+                <span class="text-[24px] font-black tracking-tighter text-[#7C45F5]">MEANLY</span>
             </a>
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.after') !!}
