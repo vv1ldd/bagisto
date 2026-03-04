@@ -47,8 +47,7 @@ class Credits extends Payment
             return false;
         }
 
-        // Available only if customer has enough total fiat equivalent balance
-        return $customer->getTotalFiatBalance() >= $cart->base_grand_total;
+        return (bool) $customer;
     }
 
     /**
