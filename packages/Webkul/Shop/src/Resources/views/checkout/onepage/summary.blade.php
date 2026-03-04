@@ -1,5 +1,5 @@
 <!-- Header -->
-<h1 class="text-xl font-bold text-zinc-800 max-md:text-lg">
+<h1 class="text-xl font-bold text-zinc-800 max-md:hidden">
     @lang('shop::app.checkout.onepage.summary.cart-summary')
 </h1>
 
@@ -11,11 +11,6 @@
         <div class="relative">
             <img class="h-16 w-16 rounded-xl border border-zinc-100 object-cover shadow-sm transition-transform hover:scale-105"
                 :src="item.base_image.small_image_url" :alt="item.name" width="64" height="64" />
-
-            <div
-                class="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#7C45F5] text-[10px] font-bold text-white shadow-sm">
-                @{{ item.quantity }}
-            </div>
         </div>
 
         {!! view_render_event('bagisto.shop.checkout.onepage.summary.item_image.after') !!}
@@ -31,6 +26,7 @@
 
             <div class="mt-1 flex items-center justify-between">
                 <p class="text-xs font-medium text-zinc-500">
+                    <span class="font-bold text-[#7C45F5]">@{{ item.quantity }} x</span>
                     <template v-if="displayTax.prices == 'including_tax'">
                         @{{ item.formatted_price_incl_tax }}
                     </template>
