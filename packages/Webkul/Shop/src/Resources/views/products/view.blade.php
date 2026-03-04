@@ -86,7 +86,7 @@
                                                                                 <input type="hidden" name="is_buy_now" v-model="is_buy_now">
                                                                                 <input type="hidden" name="quantity" v-model="qty">
 
-                                                                                <div class="w-full max-w-5xl mx-auto px-4 lg:px-6 space-y-8">
+                                                                                <div class="w-full max-w-5xl mx-auto px-4 lg:px-6 space-y-8 pt-6">
                                                                                     <!-- Back + Title -->
                                                                                     <div class="flex items-center gap-3">
                                                                                         <a href="javascript:history.back()"
