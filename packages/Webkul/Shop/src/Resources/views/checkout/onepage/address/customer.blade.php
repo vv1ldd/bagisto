@@ -98,7 +98,6 @@
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
-                                                                                </div>
 
                                                                                 <!-- Shipping Address Section (Physical Goods) -->
                                                                                 <div v-if="cart.have_stockable_items" class="mb-8">
