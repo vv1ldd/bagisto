@@ -26,12 +26,20 @@ class Credits extends Payment
 
     /**
      * Check if payment method is available.
+     * Falls back to PHP config default if no DB record exists.
      *
      * @return bool
      */
     public function isAvailable()
     {
-        if (!$this->getConfigData('active')) {
+        // Check DB config; fall back to PHP config default (true)
+        $active = $this->getConfigData('active');
+
+        if ($active === null) {
+            $active = config('payment_methods.credits.active', true);
+        }
+
+        if (!$active) {
             return false;
         }
 
@@ -47,11 +55,11 @@ class Credits extends Payment
             return false;
         }
 
-        return (bool) $customer;
+        return true;
     }
 
     /**
-     * Returns payment method image.
+     * Returns payment method image — Meanly Pay branded logo.
      *
      * @return string
      */
@@ -59,6 +67,16 @@ class Credits extends Payment
     {
         $url = $this->getConfigData('image');
 
-        return $url ? Storage::url($url) : bagisto_asset('images/money-transfer.png', 'shop');
+        return $url
+            ? Storage::url($url)
+            : bagisto_asset('images/meanly-wallet.svg', 'shop');
+    }
+
+    /**
+     * Payment method title.
+     */
+    public function getTitle()
+    {
+        return $this->getConfigData('title') ?: 'Meanly Pay';
     }
 }
