@@ -1,99 +1,62 @@
 <!-- SEO Meta Content -->
 @push('meta')
-    <meta name="description" content="@lang('shop::app.checkout.cart.index.cart')"/>
+<meta name="description" content="@lang('shop::app.checkout.cart.index.cart')" />
 
-    <meta name="keywords" content="@lang('shop::app.checkout.cart.index.cart')"/>
+<meta name="keywords" content="@lang('shop::app.checkout.cart.index.cart')" />
 @endPush
 
-<x-shop::layouts
-    :has-header="false"
-    :has-feature="false"
-    :has-footer="false"
->
+<x-shop::layouts :has-feature="false" :has-footer="false">
     <!-- Page Title -->
     <x-slot:title>
         @lang('shop::app.checkout.cart.index.cart')
-    </x-slot>
+        </x-slot>
 
-    {!! view_render_event('bagisto.shop.checkout.cart.header.before') !!}
 
-    <!-- Page Header -->
-    <div class="flex flex-wrap">
-        <div class="flex w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] py-4 max-lg:px-8 max-md:px-4">
-            <div class="flex items-center gap-x-14 max-[1180px]:gap-x-9">
-                {!! view_render_event('bagisto.shop.checkout.cart.logo.before') !!}
+        {!! view_render_event('bagisto.shop.checkout.cart.header.after') !!}
 
-                <a
-                    href="{{ route('shop.home.index') }}"
-                    class="flex min-h-[30px]"
-                    aria-label="@lang('shop::app.checkout.cart.index.bagisto')"
-                >
-                    <img
-                        src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                        alt="{{ config('app.name') }}"
-                        width="131"
-                        height="29"
-                    >
-                </a>
+        <div class="flex-auto">
+            <div class="container px-[60px] max-lg:px-8 max-md:px-4">
 
-                {!! view_render_event('bagisto.shop.checkout.cart.logo.after') !!}
+                {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.before') !!}
+
+                <!-- Breadcrumbs -->
+                @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
+                    <x-shop::breadcrumbs name="cart" />
+                @endif
+
+                {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.after') !!}
+
+                @php
+                    $errors = \Webkul\Checkout\Facades\Cart::getErrors();
+                @endphp
+
+                @if (!empty($errors) && $errors['error_code'] === 'MINIMUM_ORDER_AMOUNT')
+                    <div
+                        class="mt-5 w-full gap-12 rounded-lg bg-[#FFF3CD] px-5 py-3 text-[#383D41] max-sm:px-3 max-sm:py-2 max-sm:text-sm">
+                        {{ $errors['message'] }}: {{ $errors['amount'] }}
+                    </div>
+                @endif
+
+                <v-cart ref="vCart">
+                    <!-- Cart Shimmer Effect -->
+                    <x-shop::shimmer.checkout.cart :count="3" />
+                </v-cart>
             </div>
-
-            @guest('customer')
-                @include('shop::checkout.login')
-            @endguest
         </div>
-    </div>
 
-    {!! view_render_event('bagisto.shop.checkout.cart.header.after') !!}
+        @if (core()->getConfigData('sales.checkout.shopping_cart.cross_sell'))
+            {!! view_render_event('bagisto.shop.checkout.cart.cross_sell_carousel.before') !!}
 
-    <div class="flex-auto">
-        <div class="container px-[60px] max-lg:px-8 max-md:px-4">
+            <!-- Cross-sell Product Carousal -->
+            <x-shop::products.carousel :title="trans('shop::app.checkout.cart.index.cross-sell.title')"
+                :src="route('shop.api.checkout.cart.cross-sell.index')">
+            </x-shop::products.carousel>
 
-            {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.before') !!}
+            {!! view_render_event('bagisto.shop.checkout.cart.cross_sell_carousel.after') !!}
+        @endif
 
-            <!-- Breadcrumbs -->
-            @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
-                <x-shop::breadcrumbs name="cart" />
-            @endif
-
-            {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.after') !!}
-
-            @php
-                $errors = \Webkul\Checkout\Facades\Cart::getErrors();
-            @endphp
-
-            @if (! empty($errors) && $errors['error_code'] === 'MINIMUM_ORDER_AMOUNT')
-                <div class="mt-5 w-full gap-12 rounded-lg bg-[#FFF3CD] px-5 py-3 text-[#383D41] max-sm:px-3 max-sm:py-2 max-sm:text-sm">
-                    {{ $errors['message'] }}: {{ $errors['amount'] }}
-                </div>
-            @endif
-
-            <v-cart ref="vCart">
-                <!-- Cart Shimmer Effect -->
-                <x-shop::shimmer.checkout.cart :count="3" />
-            </v-cart>
-        </div>
-    </div>
-
-    @if (core()->getConfigData('sales.checkout.shopping_cart.cross_sell'))
-        {!! view_render_event('bagisto.shop.checkout.cart.cross_sell_carousel.before') !!}
-
-        <!-- Cross-sell Product Carousal -->
-        <x-shop::products.carousel
-            :title="trans('shop::app.checkout.cart.index.cross-sell.title')"
-            :src="route('shop.api.checkout.cart.cross-sell.index')"
-        >
-        </x-shop::products.carousel>
-
-        {!! view_render_event('bagisto.shop.checkout.cart.cross_sell_carousel.after') !!}
-    @endif
-
-    @pushOnce('scripts')
-        <script
-            type="text/x-template"
-            id="v-cart-template"
-        >
+        @pushOnce('scripts')
+        <script type="text/x-template" id="v-cart-template">
             <div>
                 <!-- Cart Shimmer Effect -->
                 <template v-if="isLoading">
@@ -455,7 +418,7 @@
                 template: '#v-cart-template',
 
                 data() {
-                    return  {
+                    return {
                         cart: [],
 
                         allSelected: false,
@@ -500,7 +463,7 @@
                                     this.$emitter.emit('add-flash', { type: 'info', message: response.data.message });
                                 }
                             })
-                            .catch(error => {});
+                            .catch(error => { });
                     },
 
                     setCart(cart) {
@@ -546,16 +509,16 @@
                         this.$emitter.emit('open-confirm-modal', {
                             agree: () => {
                                 this.$axios.post('{{ route('shop.api.checkout.cart.destroy') }}', {
-                                        '_method': 'DELETE',
-                                        'cart_item_id': itemId,
-                                    })
+                                    '_method': 'DELETE',
+                                    'cart_item_id': itemId,
+                                })
                                     .then(response => {
                                         this.cart = response.data.data;
 
                                         this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
 
                                     })
-                                    .catch(error => {});
+                                    .catch(error => { });
                             }
                         });
                     },
@@ -566,18 +529,18 @@
                                 const selectedItemsIds = this.cart.items.flatMap(item => item.selected ? item.id : []);
 
                                 this.$axios.post('{{ route('shop.api.checkout.cart.destroy_selected') }}', {
-                                        '_method': 'DELETE',
-                                        'ids': selectedItemsIds,
-                                    })
+                                    '_method': 'DELETE',
+                                    'ids': selectedItemsIds,
+                                })
                                     .then(response => {
                                         this.cart = response.data.data;
 
-                                        this.$emitter.emit('update-mini-cart', response.data.data );
+                                        this.$emitter.emit('update-mini-cart', response.data.data);
 
                                         this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
 
                                     })
-                                    .catch(error => {});
+                                    .catch(error => { });
                             }
                         });
                     },
@@ -590,23 +553,23 @@
                                 const selectedItemsQty = this.cart.items.filter(item => item.selected).map(item => this.applied.quantity[item.id] ?? item.quantity);
 
                                 this.$axios.post('{{ route('shop.api.checkout.cart.move_to_wishlist') }}', {
-                                        'ids': selectedItemsIds,
-                                        'qty': selectedItemsQty
-                                    })
+                                    'ids': selectedItemsIds,
+                                    'qty': selectedItemsQty
+                                })
                                     .then(response => {
                                         this.cart = response.data.data;
 
-                                        this.$emitter.emit('update-mini-cart', response.data.data );
+                                        this.$emitter.emit('update-mini-cart', response.data.data);
 
                                         this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
 
                                     })
-                                    .catch(error => {});
+                                    .catch(error => { });
                             }
                         });
                     },
                 }
             });
         </script>
-    @endpushOnce
+        @endpushOnce
 </x-shop::layouts>
