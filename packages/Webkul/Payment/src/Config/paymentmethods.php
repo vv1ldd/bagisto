@@ -21,7 +21,7 @@ return [
 
     'credits' => [
         'code' => 'credits',
-        'title' => 'Wallet',
+        'title' => 'Meanly Wallet',
         'description' => 'Оплата кошельком',
         'class' => 'Webkul\Payment\Payment\Credits',
         'active' => true,
