@@ -135,7 +135,7 @@
                                                                                                     @endif
 
                                                                                                     <!-- Price -->
-                                                                                                    <div class="text-2xl">
+                                                                                                    <div class="text-xl">
                                                                                                         {!! $product->getTypeInstance()->getPriceHtml() !!}
                                                                                                     </div>
 
