@@ -265,7 +265,8 @@
                         @include('shop::checkout.cart.summary')
 
                         {!! view_render_event('bagisto.shop.checkout.cart.summary.after') !!}
-                    </div>
+                        </div><!-- end flex-1 left col -->
+                    </div><!-- end v-if items wrapper -->
 
                     <!-- Empty Cart Section -->
                     <div
