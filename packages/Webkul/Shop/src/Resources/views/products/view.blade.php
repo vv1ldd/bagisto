@@ -166,6 +166,14 @@
                                                                                                     <!-- Divider -->
                                                                                                     <div class="border-t border-zinc-100"></div>
 
+                                                                                                    @if (in_array($product->type, ['downloadable', 'virtual']))
+                                                                                                        <!-- Digital delivery badge -->
+                                                                                                        <div class="flex items-center gap-2 rounded-lg border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-3 py-2">
+                                                                                                            <span class="text-[#7C45F5] text-sm">✉</span>
+                                                                                                            <p class="text-[10px] font-semibold text-[#7C45F5] leading-tight">Цифровой товар — пришлём на e-mail после оплаты</p>
+                                                                                                        </div>
+                                                                                                    @endif
+
                                                                                                     <!-- Quantity Selector -->
                                                                                                     <div class="flex items-center gap-3">
                                                                                                         <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Кол-во</p>
