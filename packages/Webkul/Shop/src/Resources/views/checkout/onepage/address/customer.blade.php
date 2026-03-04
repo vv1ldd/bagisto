@@ -22,7 +22,7 @@
                                                                                                             <div 
                                                                                                                 class="p-4 rounded-2xl border transition-all duration-300 group cursor-pointer overflow-hidden relative mb-4 max-w-md mx-auto"
                                                                                                                 :class="[selectedOrgId === null ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
-                                                                                                                @click="selectedOrgId = null; isB2B = false"
+                                                                                                                @click="selectedOrgId = null; isB2B = false; if ($parent.$options.name == 'v-direct-checkout') proceedWithUnifiedCard()"
                                                                                                             >
                                                                                                                 <div class="absolute inset-0 bg-gradient-to-br from-transparent to-[#7C45F5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -68,7 +68,7 @@
                                                                                                                         :key="org.id"
                                                                                                                         class="relative p-4 rounded-2xl border transition-all duration-300 group cursor-pointer overflow-hidden"
                                                                                                                         :class="[selectedOrgId == org.id ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
-                                                                                                                        @click="selectedOrgId = org.id; isB2B = true"
+                                                                                                                        @click="selectedOrgId = org.id; isB2B = true; if ($parent.$options.name == 'v-direct-checkout') proceedWithUnifiedCard()"
                                                                                                                     >
                                                                                                                         <div class="absolute inset-0 bg-gradient-to-br from-transparent to-[#7C45F5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -150,13 +150,13 @@
                                                                                                             </div>
 
                                                                                                             <!-- Action Button -->
-                                                                                                            <div class="mt-12 flex justify-center">
+                                                                                                            <div class="mt-12 flex justify-center" v-if="$parent.$options.name != 'v-direct-checkout'">
                                                                                                                 <x-shop::button
                                                                                                                     class="primary-button group relative flex items-center gap-3 overflow-hidden rounded-full bg-gradient-to-r from-[#7C45F5] to-[#9263f7] px-12 py-4 text-base font-bold transition-all hover:shadow-[0_8px_25px_rgb(124,69,245,0.4)] active:scale-95 disabled:opacity-50"
                                                                                                                     ::title="'{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
                                                                                                                     ::loading="isStoring"
                                                                                                                     ::disabled="isStoring || (cart.have_stockable_items && !selectedAddresses.shipping_address_id)"
-                                                                                                                    @click="proceedWithUnifiedCard"
+                                                                                                                    @click="if ($parent.$options.name == 'v-direct-checkout') proceedWithUnifiedCard() : proceedWithUnifiedCard()"
                                                                                                                 />
                                                                                                             </div>
                                                                                                         </div>
@@ -199,7 +199,7 @@
                                                                                                                     ></v-checkout-address-form>
 
                                                                                                                     <!-- Save Address to Address Book Checkbox -->
-                                                                                                                    <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5" v-if="cart.have_stockable_items">
+                                                                                                                    <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5" v-if="cart.have_stockable_items && $parent.$options.name != 'v-direct-checkout'">
                                                                                                                         <x-shop::form.control-group.control
                                                                                                                             type="checkbox"
                                                                                                                             ::name="activeAddressForm + '.save_address'"
@@ -219,7 +219,7 @@
                                                                                                                     </x-shop::form.control-group>
 
                                                                                                                     <!-- Save Button -->
-                                                                                                                    <div class="mt-4 flex justify-end">
+                                                                                                                    <div class="mt-4 flex justify-end" v-if="$parent.$options.name != 'v-direct-checkout'">
                                                                                                                         <x-shop::button
                                                                                                                             class="primary-button rounded-2xl px-11 py-3 max-md:rounded-lg max-sm:w-full max-sm:max-w-full max-sm:py-1.5"
                                                                                                                             ::title="cart.have_stockable_items ? '{{ trans('shop::app.checkout.onepage.address.save') }}' : '{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
