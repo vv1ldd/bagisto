@@ -100,13 +100,14 @@
                                                                                         </h1>
                                                                                     </div>
 
-                                                                                    <!-- 2-Column: Image | Info -->
-                                                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                                                                    <!-- Single Card: Image + Info -->
+                                                                                    <div class="bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden flex flex-col md:flex-row gap-0">
 
                                                                                         <!-- LEFT: Product Image -->
-                                                                                        <div class="relative bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden flex items-center justify-center" style="height:420px">
+                                                                                        <div class="relative flex-shrink-0 flex items-center justify-center bg-zinc-50 border-b md:border-b-0 md:border-r border-zinc-100" style="width:260px; min-height:260px;">
                                                                                             <img src="{{ $productBaseImage['medium_image_url'] }}"
-                                                                                                 class="w-full h-full object-contain p-6"
+                                                                                                 class="w-full h-full object-contain p-5"
+                                                                                                 style="max-height:260px;"
                                                                                                  alt="{{ $product->name }}">
                                                                                             @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
                                                                                                 <div
@@ -118,7 +119,7 @@
                                                                                         </div>
 
                                                                                         <!-- RIGHT: Info, Price, Buttons -->
-                                                                                        <div class="bg-white rounded-3xl border border-zinc-100 shadow-md p-6 flex flex-col gap-5">
+                                                                                        <div class="flex flex-col gap-4 p-6 flex-1">
                                                                                             <!-- Attributes / Brand -->
                                                                                             @if ($attributeData->count())
                                                                                                 <div class="flex flex-wrap gap-2">
@@ -132,7 +133,7 @@
                                                                                             @endif
 
                                                                                             <!-- Price -->
-                                                                                            <div class="text-4xl font-black font-mono text-zinc-900 tracking-tight max-sm:text-3xl">
+                                                                                            <div class="text-3xl font-black font-mono text-zinc-900 tracking-tight max-sm:text-2xl">
                                                                                                 {!! $product->getTypeInstance()->getPriceHtml() !!}
                                                                                             </div>
 
@@ -172,7 +173,7 @@
                                                                                                 <!-- Buy Now -->
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="w-full bg-[#7C45F5] text-white h-13 py-3 rounded-xl font-black text-base uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_8px_20px_-4px_rgba(124,69,245,0.35)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                                                    class="w-full bg-[#7C45F5] text-white py-3 rounded-xl font-black text-base uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_8px_20px_-4px_rgba(124,69,245,0.35)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                                                                                                     :disabled="isStoring.buyNow"
                                                                                                     @click="is_buy_now = 1; addToCart()"
                                                                                                 >
@@ -183,7 +184,7 @@
                                                                                                 <!-- Add to Cart -->
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="w-full bg-white border-2 border-[#7C45F5] text-[#7C45F5] h-11 px-4 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                                                                                    class="w-full bg-white border-2 border-[#7C45F5] text-[#7C45F5] px-4 py-2.5 rounded-xl font-black text-sm uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                                                                                                     :disabled="isStoring.addToCart"
                                                                                                     @click="is_buy_now = 0; addToCart()"
                                                                                                 >
