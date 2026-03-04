@@ -172,6 +172,16 @@ class OnepageController extends APIController
     }
 
     /**
+     * Return supported payment methods.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function paymentMethods()
+    {
+        return response()->json(Payment::getSupportedPaymentMethods());
+    }
+
+    /**
      * Store shipping method.
      *
      * @return \Illuminate\Http\Response

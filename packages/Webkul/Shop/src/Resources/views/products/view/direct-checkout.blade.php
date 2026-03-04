@@ -68,7 +68,7 @@
 
                 // Listen for address selection to refresh payment methods
                 this.$emitter.on('after-address-save', (data) => {
-                    this.paymentMethods = data;
+                    this.paymentMethods = data.payment_methods;
                     if (this.cart) {
                         this.getCart(); // Refresh cart to get updated totals if any
                     }
@@ -97,7 +97,7 @@
                 fetchPaymentMethods() {
                     this.$axios.get("{{ route('shop.checkout.onepage.payment_methods.index') }}")
                         .then(response => {
-                            this.paymentMethods = response.data.paymentMethods;
+                            this.paymentMethods = response.data.payment_methods;
                         });
                 },
                 placeOrder() {
