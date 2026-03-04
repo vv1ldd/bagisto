@@ -66,16 +66,16 @@
                 <!-- Cart Information -->
                 <template v-else>
                     <div
-                        class="mt-8 flex flex-wrap gap-20 pb-8 max-1060:flex-col max-md:mt-0 max-md:gap-[30px] max-md:pb-0"
+                        class="mt-4 flex flex-wrap gap-8 pb-8 max-1060:flex-col"
                         v-if="cart?.items?.length"
                     >
-                        <div class="flex flex-1 flex-col gap-6 max-md:gap-5">
+                        <div class="flex flex-1 flex-col gap-4">
+                            <!-- Cart items card -->
+                            <div class="rounded-2xl border border-zinc-100 bg-white shadow-sm overflow-hidden">
 
-                            {!! view_render_event('bagisto.shop.checkout.cart.cart_mass_actions.before') !!}
-
-                            <!-- Cart Mass Action Container -->
-                            <div class="flex items-center justify-between border-b border-zinc-200 pb-2.5 max-md:py-2.5">
-                                <div class="flex select-none items-center">
+                                <!-- Header -->
+                                <div class="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100">
+                                    <div class="flex select-none items-center gap-2">
                                     <input
                                         type="checkbox"
                                         id="select-all"
@@ -131,14 +131,15 @@
 
                             {!! view_render_event('bagisto.shop.checkout.cart.item.listing.before') !!}
 
-                            <!-- Cart Item Listing Container -->
-                            <div
-                                class="grid gap-y-6"
-                                v-for="item in cart?.items"
-                            >
-                                <div class="flex justify-between gap-x-2.5 border-b border-zinc-200 pb-5">
-                                    <div class="flex gap-x-5">
-                                        <div class="mt-11 select-none max-md:mt-9 max-sm:mt-7">
+                                <!-- Cart Item Listing -->
+                                <div
+                                    class="px-5 divide-y divide-zinc-100"
+                                    v-for="item in cart?.items"
+                                    :key="item.id"
+                                >
+                                <div class="flex gap-4 py-4">
+                                    <!-- Checkbox -->
+                                    <div class="mt-[3px] select-none">
                                             <input
                                                 type="checkbox"
                                                 :id="'item_' + item.id"
@@ -156,230 +157,107 @@
                                             ></label>
                                         </div>
 
-                                        {!! view_render_event('bagisto.shop.checkout.cart.item_image.before') !!}
+                                    <!-- Product image -->
+                                    {!! view_render_event('bagisto.shop.checkout.cart.item_image.before') !!}
+                                    <a :href="`{{ route('shop.product_or_category.index', '') }}/${item.product_url_key}`" class="flex-shrink-0">
+                                        <x-shop::media.images.lazy
+                                            class="h-20 w-20 rounded-xl object-cover"
+                                            ::src="item.base_image.small_image_url"
+                                            ::alt="item.name"
+                                            width="80"
+                                            height="80"
+                                            ::key="item.id"
+                                            ::index="item.id"
+                                        />
+                                    </a>
+                                    {!! view_render_event('bagisto.shop.checkout.cart.item_image.after') !!}
 
-                                        <!-- Cart Item Image -->
+                                    <!-- Item info -->
+                                    <div class="flex flex-1 flex-col gap-1 min-w-0">
+                                        {!! view_render_event('bagisto.shop.checkout.cart.item_name.before') !!}
                                         <a :href="`{{ route('shop.product_or_category.index', '') }}/${item.product_url_key}`">
-                                            <x-shop::media.images.lazy
-                                                class="h-[110px] max-w-[110px] rounded-xl max-md:h-20 max-md:max-w-20"
-                                                ::src="item.base_image.small_image_url"
-                                                ::alt="item.name"
-                                                width="110"
-                                                height="110"
-                                                ::key="item.id"
-                                                ::index="item.id"
-                                            />
+                                            <p class="text-sm font-semibold leading-snug text-zinc-800 line-clamp-2">@{{ item.name }}</p>
                                         </a>
+                                        {!! view_render_event('bagisto.shop.checkout.cart.item_name.after') !!}
 
-                                        {!! view_render_event('bagisto.shop.checkout.cart.item_image.after') !!}
-
-                                        <!-- Cart Item Options Container -->
-                                        <div class="grid place-content-start gap-y-2.5 max-md:gap-y-0">
-                                            {!! view_render_event('bagisto.shop.checkout.cart.item_name.before') !!}
-
-                                            <a :href="`{{ route('shop.product_or_category.index', '') }}/${item.product_url_key}`">
-                                                <p class="text-base font-medium max-sm:text-sm">
-                                                    @{{ item.name }}
-                                                </p>
-                                            </a>
-
-                                            {!! view_render_event('bagisto.shop.checkout.cart.item_name.after') !!}
-
-                                            {!! view_render_event('bagisto.shop.checkout.cart.item_details.before') !!}
-
-                                            <!-- Cart Item Options Container -->
-                                            <div
-                                                class="grid select-none gap-x-2.5 gap-y-1.5"
-                                                v-if="item.options.length"
+                                        {!! view_render_event('bagisto.shop.checkout.cart.item_details.before') !!}
+                                        <!-- Options -->
+                                        <div class="flex flex-col gap-0.5" v-if="item.options.length">
+                                            <p
+                                                class="flex cursor-pointer items-center gap-1 text-xs text-zinc-400"
+                                                @click="item.option_show = !item.option_show"
                                             >
-                                                <!-- Details Toggler -->
-                                                <div class="">
-                                                    <p
-                                                        class="flex cursor-pointer items-center gap-x-4 text-base max-md:gap-x-1.5 max-sm:text-xs"
-                                                        @click="item.option_show = ! item.option_show"
-                                                    >
-                                                        @lang('shop::app.checkout.cart.index.see-details')
-
-                                                        <span
-                                                            class="text-2xl max-md:text-lg"
-                                                            :class="{'icon-arrow-up': item.option_show, 'icon-arrow-down': ! item.option_show}"
-                                                        ></span>
+                                                @lang('shop::app.checkout.cart.index.see-details')
+                                                <span class="text-sm" :class="{'icon-arrow-up': item.option_show, 'icon-arrow-down': !item.option_show}"></span>
+                                            </p>
+                                            <div class="grid gap-1" v-show="item.option_show">
+                                                <template v-for="attribute in item.options">
+                                                    <p class="text-xs text-zinc-500">
+                                                        @{{ attribute.attribute_name }}: <span class="font-medium">@{{ attribute.option_label }}</span>
                                                     </p>
-                                                </div>
-
-                                                <!-- Option Details -->
-                                                <div
-                                                    class="grid gap-2"
-                                                    v-show="item.option_show"
-                                                >
-                                                    <template v-for="attribute in item.options">
-                                                        <div class="max-md:grid max-md:gap-0.5">
-                                                            <p class="text-sm font-medium text-zinc-500 max-md:font-normal max-sm:text-xs">
-                                                                @{{ attribute.attribute_name + ':' }}
-                                                            </p>
-
-                                                            <p class="text-sm max-sm:text-xs">
-                                                                <template v-if="attribute?.attribute_type === 'file'">
-                                                                    <a
-                                                                        :href="attribute.file_url"
-                                                                        class="text-blue-700"
-                                                                        target="_blank"
-                                                                        :download="attribute.file_name"
-                                                                    >
-                                                                        @{{ attribute.file_name }}
-                                                                    </a>
-                                                                </template>
-
-                                                                <template v-else>
-                                                                    @{{ attribute.option_label }}
-                                                                </template>
-                                                            </p>
-                                                        </div>
-                                                    </template>
-                                                </div>
+                                                </template>
                                             </div>
+                                        </div>
+                                        {!! view_render_event('bagisto.shop.checkout.cart.item_details.after') !!}
 
-                                            {!! view_render_event('bagisto.shop.checkout.cart.item_details.after') !!}
+                                        <!-- Bottom row: qty + price + remove -->
+                                        <div class="mt-2 flex items-center gap-4 flex-wrap">
+                                            {!! view_render_event('bagisto.shop.checkout.cart.quantity_changer.before') !!}
+                                            <x-shop::quantity-changer
+                                                v-if="item.can_change_qty"
+                                                class="flex max-w-max items-center gap-x-2 rounded-full border border-zinc-200 px-3 py-1 text-sm"
+                                                name="quantity"
+                                                ::value="item?.quantity"
+                                                @change="setItemQuantity(item.id, $event)"
+                                            />
+                                            {!! view_render_event('bagisto.shop.checkout.cart.quantity_changer.after') !!}
 
                                             {!! view_render_event('bagisto.shop.checkout.cart.formatted_total.before') !!}
-
-                                            <div class="md:hidden">
-                                                <p class="text-lg font-semibold max-md:text-sm">
-                                                    <template v-if="displayTax.prices == 'including_tax'">
-                                                            @{{ item.formatted_total_incl_tax }}
-                                                    </template>
-
-                                                    <template v-else-if="displayTax.prices == 'both'">
-
-                                                        @{{ item.formatted_total_incl_tax }}
-                                                        <span class="text-xs font-normal">
-                                                            @lang('shopTheme::app.checkout.cart.index.excl-tax')
-                                                            <span class="font-medium">@{{ item.formatted_total }}</span>
-                                                        </span>
-
-                                                    </template>
-
-                                                    <template v-else>
-                                                            @{{ item.formatted_total }}
-                                                    </template>
-                                                </p>
-
-                                                <span
-                                                    class="cursor-pointer text-base text-blue-700 max-md:hidden"
-                                                    role="button"
-                                                    tabindex="0"
-                                                    @click="removeItem(item.id)"
-                                                >
-                                                    @lang('shop::app.checkout.cart.index.remove')
-                                                </span>
-                                            </div>
-
+                                            <p class="ml-auto text-sm font-semibold text-zinc-800">
+                                                <template v-if="displayTax.prices == 'including_tax'">@{{ item.formatted_total_incl_tax }}</template>
+                                                <template v-else>@{{ item.formatted_total }}</template>
+                                            </p>
                                             {!! view_render_event('bagisto.shop.checkout.cart.formatted_total.after') !!}
 
-                                            {!! view_render_event('bagisto.shop.checkout.cart.quantity_changer.before') !!}
-
-                                            <div class="flex items-center gap-2.5 max-md:mt-2.5">
-                                                <x-shop::quantity-changer
-                                                    v-if="item.can_change_qty"
-                                                    class="flex max-w-max items-center gap-x-2.5 rounded-[54px] border border-navyBlue px-3.5 py-1.5 max-md:gap-x-1.5 max-md:px-1 max-md:py-0.5"
-                                                    name="quantity"
-                                                    ::value="item?.quantity"
-                                                    @change="setItemQuantity(item.id, $event)"
-                                                />
-
-                                                <!-- For Mobile view Remove Button -->
-                                                <span
-                                                    class="hidden cursor-pointer text-sm text-blue-700 max-md:block"
-                                                    role="button"
-                                                    tabindex="0"
-                                                    @click="removeItem(item.id)"
-                                                >
-                                                    @lang('shop::app.checkout.cart.index.remove')
-                                                </span>
-                                            </div>
-
-                                            {!! view_render_event('bagisto.shop.checkout.cart.quantity_changer.after') !!}
+                                            {!! view_render_event('bagisto.shop.checkout.cart.remove_button.before') !!}
+                                            <button
+                                                type="button"
+                                                class="text-xs text-zinc-400 hover:text-red-500 transition-colors"
+                                                @click="removeItem(item.id)"
+                                            >
+                                                @lang('shop::app.checkout.cart.index.remove')
+                                            </button>
+                                            {!! view_render_event('bagisto.shop.checkout.cart.remove_button.after') !!}
                                         </div>
                                     </div>
-
-                                    <div class="text-right max-md:hidden">
-                                        {!! view_render_event('bagisto.shop.checkout.cart.total.before') !!}
-
-                                        <template v-if="displayTax.prices == 'including_tax'">
-                                            <p class="text-lg font-semibold">
-                                                @{{ item.formatted_total_incl_tax }}
-                                            </p>
-                                        </template>
-
-                                        <template v-else-if="displayTax.prices == 'both'">
-                                            <p class="flex flex-col text-lg font-semibold">
-                                                @{{ item.formatted_total_incl_tax }}
-
-                                                <span class="text-xs font-normal">
-                                                    @lang('shop::app.checkout.cart.index.excl-tax')
-
-                                                    <span class="font-medium">@{{ item.formatted_total }}</span>
-                                                </span>
-                                            </p>
-                                        </template>
-
-                                        <template v-else>
-                                            <p class="text-lg font-semibold">
-                                                @{{ item.formatted_total }}
-                                            </p>
-                                        </template>
-
-                                        {!! view_render_event('bagisto.shop.checkout.cart.total.after') !!}
-
-                                        {!! view_render_event('bagisto.shop.checkout.cart.remove_button.before') !!}
-
-                                        <!-- Cart Item Remove Button -->
-                                        <span
-                                            class="cursor-pointer text-base text-blue-700"
-                                            role="button"
-                                            tabindex="0"
-                                            @click="removeItem(item.id)"
-                                        >
-                                            @lang('shop::app.checkout.cart.index.remove')
-                                        </span>
-
-                                        {!! view_render_event('bagisto.shop.checkout.cart.remove_button.after') !!}
-                                    </div>
                                 </div>
-                            </div>
+                                </div>
 
                             {!! view_render_event('bagisto.shop.checkout.cart.item.listing.after') !!}
 
-                            {!! view_render_event('bagisto.shop.checkout.cart.controls.before') !!}
+                            </div><!-- end card -->
 
-                            <!-- Cart Item Actions -->
-                            <div class="flex flex-wrap justify-end gap-8 max-md:justify-between max-md:gap-5">
+                            <!-- Footer actions -->
+                            <div class="flex justify-end gap-3">
                                 {!! view_render_event('bagisto.shop.checkout.cart.continue_shopping.before') !!}
-
                                 <a
-                                    class="secondary-button max-h-14 rounded-2xl max-md:rounded-lg max-md:px-6 max-md:py-3 max-md:text-sm max-sm:py-2"
+                                    class="secondary-button rounded-xl px-5 py-2.5 text-sm"
                                     href="{{ route('shop.home.index') }}"
                                 >
                                     @lang('shop::app.checkout.cart.index.continue-shopping')
                                 </a>
-
                                 {!! view_render_event('bagisto.shop.checkout.cart.continue_shopping.after') !!}
 
                                 {!! view_render_event('bagisto.shop.checkout.cart.update_cart.before') !!}
-
                                 <x-shop::button
-                                    class="secondary-button max-h-14 rounded-2xl max-md:rounded-lg max-md:px-6 max-md:py-3 max-md:text-sm max-sm:py-2"
+                                    class="secondary-button rounded-xl px-5 py-2.5 text-sm"
                                     :title="trans('shop::app.checkout.cart.index.update-cart')"
                                     ::loading="isStoring"
                                     ::disabled="isStoring"
                                     @click="update()"
                                 />
-
                                 {!! view_render_event('bagisto.shop.checkout.cart.update_cart.after') !!}
                             </div>
-
-                            {!! view_render_event('bagisto.shop.checkout.cart.controls.after') !!}
-                        </div>
 
                         {!! view_render_event('bagisto.shop.checkout.cart.summary.before') !!}
 
