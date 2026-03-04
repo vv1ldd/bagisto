@@ -60,6 +60,8 @@ module.exports = {
         },
         // Responsive grid variants (pattern doesn't work for variants in Tailwind v3)
         'md:grid-cols-1', 'md:grid-cols-2', 'md:grid-cols-3', 'md:grid-cols-4',
+        // Flex row/col responsive variants used in x-template blocks
+        'md:flex-row', 'md:flex-col', 'md:border-r', 'md:border-b-0', 'md:border-r-0',
         {
             pattern: /^(max-sm|max-md|max-lg|max-1060|max-1180):grid-cols-(1|2|3|4|5|6)$/,
             variants: ['max-sm', 'max-md', 'max-lg', 'max-1060', 'max-1180'],

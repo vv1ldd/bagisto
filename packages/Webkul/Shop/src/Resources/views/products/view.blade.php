@@ -101,10 +101,10 @@
                                                                                     </div>
 
                                                                                     <!-- Single Card: Image + Info -->
-                                                                                    <div class="bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden flex flex-col md:flex-row gap-0">
+                                                                                    <div class="bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden" style="display:flex; flex-direction:row; align-items:stretch;">
 
                                                                                         <!-- LEFT: Product Image -->
-                                                                                        <div class="relative flex-shrink-0 flex items-center justify-center bg-zinc-50 border-b md:border-b-0 md:border-r border-zinc-100" style="width:260px; min-height:260px;">
+                                                                                        <div class="relative flex-shrink-0 flex items-center justify-center bg-zinc-50" style="width:260px; min-width:260px; border-right:1px solid #f4f4f5;">
                                                                                             <img src="{{ $productBaseImage['medium_image_url'] }}"
                                                                                                  class="w-full h-full object-contain p-5"
                                                                                                  style="max-height:260px;"
