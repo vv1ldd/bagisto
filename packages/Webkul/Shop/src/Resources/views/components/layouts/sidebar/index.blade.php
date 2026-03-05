@@ -199,7 +199,7 @@
             </transition>
 
             <aside 
-                class="sidebar-container fixed top-0 bottom-0 left-0 z-[1000] w-[320px] max-md:w-[85%] bg-[#F8F7FF] shadow-[0_0_60px_rgba(0,0,0,0.05)] transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] -translate-x-full border-r border-[#E8E4FF]"
+                class="sidebar-container fixed top-0 bottom-0 left-0 z-[1000] w-[320px] max-md:w-[85%] bg-[#F8F7FF] shadow-[0_0_60px_rgba(0,0,0,0.05)] -translate-x-full border-r border-[#E8E4FF]"
                 :class="{ 'translate-x-0': isOpen }"
             >
                 <slot></slot>
@@ -207,7 +207,7 @@
 
             <div 
                 v-if="isOpen"
-                class="fixed inset-0 z-[999] bg-black/5 backdrop-blur-[2px] transition-opacity duration-500"
+                class="fixed inset-0 z-[999] bg-black/5 backdrop-blur-[2px]"
                 @click="close"
             ></div>
         </div>
@@ -247,6 +247,7 @@
                 if (this.isOpen) {
                     const shiftWidth = window.innerWidth <= 767 ? '85%' : '320px';
 
+                    wrapper.style.transition = 'none';
                     wrapper.style.transform = `translateX(${shiftWidth}) scale(0.985)`;
                     wrapper.style.borderRadius = '32px';
                     wrapper.style.overflow = 'hidden';
@@ -254,6 +255,7 @@
                     document.body.style.overflow = 'hidden';
                     document.body.style.backgroundColor = '#F0EFFF';
                 } else {
+                    wrapper.style.transition = 'none';
                     wrapper.style.transform = 'translateX(0) scale(1)';
                     wrapper.style.borderRadius = '0';
                     wrapper.style.boxShadow = 'none';
