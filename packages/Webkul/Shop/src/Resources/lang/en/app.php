@@ -1178,6 +1178,7 @@ return [
 
     'layouts' => [
         'address' => 'Address',
+        'b2b' => 'My Organizations',
         'downloadable-products' => 'Downloadable Products',
         'gdpr-request' => 'GDPR Data Request',
         'my-account' => 'My Account',

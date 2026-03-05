@@ -1231,6 +1231,7 @@ return [
 
     'layouts' => [
         'address' => 'Адрес',
+        'b2b' => 'Мои организации',
         'downloadable-products' => 'Загружаемые товары',
         'gdpr-request' => 'Запрос данных GDPR',
         'my-account' => 'Мой профиль',
