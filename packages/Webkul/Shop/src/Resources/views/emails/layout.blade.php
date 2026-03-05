@@ -26,12 +26,8 @@
                         <!-- Email Header -->
                         <div style="margin-bottom: 40px; text-align: left;">
                             <a href="{{ route('shop.home.index') }}" style="text-decoration: none;">
-                                @if ($logo = core()->getCurrentChannel()->logo_url)
-                                    <img src="{{ url($logo) }}" alt="{{ config('app.name') }}" style="height: 36px;" />
-                                @else
-                                    <img src="{{ url(bagisto_asset('images/logo.svg', 'shop')) }}" alt="{{ config('app.name') }}"
-                                        style="height: 36px;" />
-                                @endif
+                                <span
+                                    style="font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -1.5px; color: #7C45F5; text-decoration: none; text-transform: uppercase;">MEANLY</span>
                             </a>
                         </div>
 
@@ -48,7 +44,7 @@
                             <p style="font-size: 14px; color: #64748B; line-height: 1.5;">
                                 @php $contactEmail = core()->getContactEmailDetails()['email'] ?: 'support@meanly.ru'; @endphp
                                 @lang('shop::app.emails.thanks', [
-                                    'link'  => 'mailto:' . $contactEmail,
+                                    'link' => 'mailto:' . $contactEmail,
                                     'email' => $contactEmail,
                                     'style' => 'color: #7E22CE; text-decoration: none; font-weight: 600;'
                                 ])

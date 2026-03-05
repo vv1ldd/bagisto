@@ -12,9 +12,10 @@
         <div class="flex w-full flex-col min-h-screen px-8 pt-8 pb-4 md:px-10 md:pt-10 md:pb-6 lg:px-20 lg:pt-12 lg:pb-10 md:w-1/2 overflow-y-auto">
             <!-- Header/Logo -->
             <div class="mb-4 flex items-center justify-between">
-                <a href="{{ route('shop.home.index') }}">
-                    <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                        alt="{{ config('app.name') }}" width="120" class="h-auto">
+                <a href="{{ route('shop.home.index') }}"
+                    class="flex items-center gap-2"
+                    aria-label="@lang('shop::app.customers.login-form.bagisto')">
+                    <span class="text-2xl font-black tracking-tighter text-[#7C45F5] uppercase">MEANLY</span>
                 </a>
             </div>
   

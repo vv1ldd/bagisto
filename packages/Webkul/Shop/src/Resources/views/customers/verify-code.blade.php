@@ -9,10 +9,9 @@
                 class="flex w-full flex-col min-h-[100dvh] px-6 pt-8 pb-4 md:px-10 md:pt-16 md:pb-10 lg:px-20 lg:pt-20 lg:pb-20 md:w-1/2">
                 <!-- Header/Logo -->
                 <div class="mb-12 flex items-center justify-between">
-                    <a href="{{ route('shop.home.index') }}"
+                    <a href="{{ route('shop.home.index') }}" class="flex items-center justify-center gap-2"
                         aria-label="@lang('shop::app.customers.login-form.bagisto')">
-                        <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                            alt="{{ config('app.name') }}" width="120" class="h-auto">
+                        <span class="text-2xl font-black tracking-tighter text-[#7C45F5] uppercase">MEANLY</span>
                     </a>
                 </div>
 
@@ -89,27 +88,27 @@
                                                 class="absolute inset-0 h-full w-full cursor-default opacity-0" type="tel"
                                                 name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
                                                 autofocus oninput="
-                                                                                                this.value = this.value.replace(/\D/g, '');
-                                                                                                const val = this.value;
-                                                                                                for(let i=0; i<6; i++) {
-                                                                                                    const charEl = document.getElementById('otp-char-' + i);
-                                                                                                    const cellEl = document.getElementById('otp-cell-' + i);
-                                                                                                    if (val[i]) {
-                                                                                                        charEl.textContent = val[i];
-                                                                                                        charEl.classList.remove('text-zinc-300');
-                                                                                                        charEl.classList.add('text-zinc-800');
-                                                                                                        cellEl.classList.add('border-[#7C45F5]', 'bg-[#7C45F5]/5');
-                                                                                                        cellEl.classList.remove('border-zinc-200', 'bg-zinc-50');
-                                                                                                    } else {
-                                                                                                        charEl.textContent = '_';
-                                                                                                        charEl.classList.add('text-zinc-300');
-                                                                                                        charEl.classList.remove('text-zinc-800');
-                                                                                                        cellEl.classList.remove('border-[#7C45F5]', 'bg-[#7C45F5]/5');
-                                                                                                        cellEl.classList.add('border-zinc-200', 'bg-zinc-50');
+                                                                                                    this.value = this.value.replace(/\D/g, '');
+                                                                                                    const val = this.value;
+                                                                                                    for(let i=0; i<6; i++) {
+                                                                                                        const charEl = document.getElementById('otp-char-' + i);
+                                                                                                        const cellEl = document.getElementById('otp-cell-' + i);
+                                                                                                        if (val[i]) {
+                                                                                                            charEl.textContent = val[i];
+                                                                                                            charEl.classList.remove('text-zinc-300');
+                                                                                                            charEl.classList.add('text-zinc-800');
+                                                                                                            cellEl.classList.add('border-[#7C45F5]', 'bg-[#7C45F5]/5');
+                                                                                                            cellEl.classList.remove('border-zinc-200', 'bg-zinc-50');
+                                                                                                        } else {
+                                                                                                            charEl.textContent = '_';
+                                                                                                            charEl.classList.add('text-zinc-300');
+                                                                                                            charEl.classList.remove('text-zinc-800');
+                                                                                                            cellEl.classList.remove('border-[#7C45F5]', 'bg-[#7C45F5]/5');
+                                                                                                            cellEl.classList.add('border-zinc-200', 'bg-zinc-50');
+                                                                                                        }
                                                                                                     }
-                                                                                                }
-                                                                                                if(val.length === 6) this.form.submit();
-                                                                                            " />
+                                                                                                    if(val.length === 6) this.form.submit();
+                                                                                                " />
                                         </div>
                                     </div>
 

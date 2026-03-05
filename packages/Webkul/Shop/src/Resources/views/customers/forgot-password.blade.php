@@ -14,10 +14,9 @@
                 class="flex w-full flex-col min-h-screen px-8 pt-12 pb-6 md:px-10 md:pt-16 md:pb-10 lg:px-20 lg:pt-20 lg:pb-20 md:w-1/2">
                 <!-- Header/Logo -->
                 <div class="mb-12 flex items-center justify-between">
-                    <a href="{{ route('shop.home.index') }}"
-                        aria-label="@lang('shop::app.customers.forgot-password.bagisto')">
-                        <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                            alt="{{ config('app.name') }}" width="120" class="h-auto">
+                    <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2"
+                        aria-label="@lang('shop::app.customers.login-form.bagisto')">
+                        <span class="text-2xl font-black tracking-tighter text-[#7C45F5] uppercase">MEANLY</span>
                     </a>
 
                     <a href="{{ route('shop.customer.session.index') }}"
