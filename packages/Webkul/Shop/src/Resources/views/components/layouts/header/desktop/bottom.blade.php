@@ -10,8 +10,10 @@
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
 
-        <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2" aria-label="Meanly">
-            <span class="text-2xl font-black tracking-tighter text-[#7C45F5]">MEANLY</span>
+        <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2"
+            aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
+            <span
+                class="text-2xl font-black tracking-tighter text-[#7C45F5]">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
         </a>
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.after') !!}
@@ -77,7 +79,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-                                                                                                                        <!-- Loading State -->
+                                                                                                                            <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
 
@@ -196,9 +198,9 @@
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300"
                                 :class="{
-                                                                                                                                                'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                                                'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                                                            }">
+                                                                                                                                                    'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                                                                    'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                                                                }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">
@@ -343,16 +345,16 @@
 
         app.component('v-header-cart', {
             template: `
-                            <a :href="'{{ route('shop.checkout.cart.index') }}'" 
-                               v-if="cart && cart.items.length > 0"
-                               class="flex items-center justify-center relative w-10 h-10 rounded-full border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 transition-all group"
-                            >
-                                <span class="icon-cart text-xl text-zinc-600 group-hover:text-[#7C45F5]"></span>
-                                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7C45F5] text-[10px] font-black text-white shadow-sm">
-                                    @{{ cart.items.length }}
-                                </span>
-                            </a>
-                        `,
+                                <a :href="'{{ route('shop.checkout.cart.index') }}'" 
+                                   v-if="cart && cart.items.length > 0"
+                                   class="flex items-center justify-center relative w-10 h-10 rounded-full border border-zinc-200 bg-white shadow-sm hover:bg-zinc-50 transition-all group"
+                                >
+                                    <span class="icon-cart text-xl text-zinc-600 group-hover:text-[#7C45F5]"></span>
+                                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7C45F5] text-[10px] font-black text-white shadow-sm">
+                                        @{{ cart.items.length }}
+                                    </span>
+                                </a>
+                            `,
             data() {
                 return {
                     cart: null,

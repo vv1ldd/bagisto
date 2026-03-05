@@ -11,7 +11,8 @@
                 <div class="mb-8 flex items-center justify-between">
                     <a href="{{ route('shop.home.index') }}" class="flex items-center justify-center gap-2"
                         aria-label="@lang('shop::app.customers.login-form.bagisto')">
-                        <span class="text-2xl font-black tracking-tighter text-[#7C45F5] uppercase">MEANLY</span>
+                        <span
+                            class="text-2xl font-black tracking-tighter text-[#7C45F5] uppercase">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
                     </a>
                 </div>
 

@@ -27,7 +27,7 @@
                         <div style="margin-bottom: 40px; text-align: left;">
                             <a href="{{ route('shop.home.index') }}" style="text-decoration: none;">
                                 <span
-                                    style="font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -1.5px; color: #7C45F5; text-decoration: none; text-transform: uppercase;">MEANLY</span>
+                                    style="font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -1.5px; color: #7C45F5; text-decoration: none; text-transform: uppercase;">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
                             </a>
                         </div>
 

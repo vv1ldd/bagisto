@@ -16,7 +16,8 @@
 			<!-- Logo -->
 			<div class="mb-12">
 				<a href="{{ route('shop.home.index') }}" class="flex items-center gap-2">
-					<span class="text-[32px] font-black tracking-tighter text-[#7C45F5]">MEANLY</span>
+					<span
+						class="text-[32px] font-black tracking-tighter text-[#7C45F5]">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
 				</a>
 			</div>
 

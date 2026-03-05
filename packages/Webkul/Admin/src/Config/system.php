@@ -258,6 +258,21 @@ return [
         ],
     ],
     [
+        'key' => 'general.design.shop_logo',
+        'name' => 'Логотип магазина',
+        'info' => 'Текст, отображаемый в качестве логотипа магазина в заголовке и на страницах',
+        'sort' => 2,
+        'fields' => [
+            [
+                'name' => 'logo_text',
+                'title' => 'Текст логотипа',
+                'type' => 'text',
+                'default' => 'MEANLY',
+                'channel_based' => false,
+            ],
+        ],
+    ],
+    [
         'key' => 'general.design.categories',
         'name' => 'admin::app.configuration.index.general.design.menu-category.title',
         'info' => 'admin::app.configuration.index.general.design.menu-category.info',

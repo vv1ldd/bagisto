@@ -16,7 +16,7 @@
             <div class="flex items-center justify-between mb-6">
                 <a href="{{ route('shop.home.index') }}" class="group flex items-center gap-2">
                     <span
-                        class="text-2xl font-black tracking-tighter text-[#7C45F5] transition-transform group-hover:scale-105">MEANLY</span>
+                        class="text-2xl font-black tracking-tighter text-[#7C45F5] transition-transform group-hover:scale-105">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
                 </a>
 
                 @guest('customer')
@@ -43,82 +43,82 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-checkout-template">
-                                    <template v-if="! cart">
-                                        <x-shop::shimmer.checkout.onepage />
-                                    </template>
+                                        <template v-if="! cart">
+                                            <x-shop::shimmer.checkout.onepage />
+                                        </template>
 
-                                    <template v-else>
-                                        <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
-                                            <!-- Steps Column (LEFT) -->
-                                            <div class="space-y-6" id="steps-container">
-                                                <!-- Mobile Order Summary -->
-                                                <div class="lg:hidden">
-                                                    <div class="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-6 shadow-sm mb-6 overflow-hidden">
-                                                        <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/20">
-                                                            <h3 class="text-lg font-black text-zinc-800 uppercase tracking-tight">Ваш заказ</h3>
-                                                            <div class="px-3 py-1 bg-[#7C45F5] rounded-full text-white text-[10px] font-black uppercase">
-                                                                @{{ cart.items.length }} поз.
+                                        <template v-else>
+                                            <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
+                                                <!-- Steps Column (LEFT) -->
+                                                <div class="space-y-6" id="steps-container">
+                                                    <!-- Mobile Order Summary -->
+                                                    <div class="lg:hidden">
+                                                        <div class="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-6 shadow-sm mb-6 overflow-hidden">
+                                                            <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/20">
+                                                                <h3 class="text-lg font-black text-zinc-800 uppercase tracking-tight">Ваш заказ</h3>
+                                                                <div class="px-3 py-1 bg-[#7C45F5] rounded-full text-white text-[10px] font-black uppercase">
+                                                                    @{{ cart.items.length }} поз.
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                                                                @include('shop::checkout.onepage.summary')
                                                             </div>
                                                         </div>
+                                                    </div>
 
-                                                        <div class="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
-                                                            @include('shop::checkout.onepage.summary')
+                                                    <div class="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-2 shadow-sm overflow-hidden">
+                                                        <!-- Address -->
+                                                        <div class="p-4 sm:p-6 border-b border-white/40" data-step="address">
+                                                            <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
+                                                                @include('shop::checkout.onepage.address')
+                                                            </template>
+                                                        </div>
+
+                                                        <!-- Shipping -->
+                                                        <div v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)" class="p-4 sm:p-6 border-b border-white/40" data-step="shipping">
+                                                            @include('shop::checkout.onepage.shipping')
+                                                        </div>
+
+                                                        <!-- Payment -->
+                                                        <div v-if="['payment', 'review'].includes(currentStep)" class="p-4 sm:p-6" data-step="payment">
+                                                            @include('shop::checkout.onepage.payment')
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div class="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-2 shadow-sm overflow-hidden">
-                                                    <!-- Address -->
-                                                    <div class="p-4 sm:p-6 border-b border-white/40" data-step="address">
-                                                        <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
-                                                            @include('shop::checkout.onepage.address')
-                                                        </template>
-                                                    </div>
+                                                <!-- Sidebar Column (RIGHT) -->
+                                                <div class="hidden lg:block sticky top-8 space-y-4">
+                                                    <div class="bg-white/60 backdrop-blur-3xl border border-white/80 rounded-[32px] p-6 shadow-xl shadow-zinc-200/50">
+                                                        @include('shop::checkout.onepage.summary')
 
-                                                    <!-- Shipping -->
-                                                    <div v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)" class="p-4 sm:p-6 border-b border-white/40" data-step="shipping">
-                                                        @include('shop::checkout.onepage.shipping')
-                                                    </div>
+                                                        <div class="mt-8 space-y-4" v-if="canPlaceOrder">
+                                                            <button
+                                                                type="button"
+                                                                class="w-full rounded-2xl bg-[#7C45F5] py-4 text-base font-black text-white shadow-[0_10px_20px_-5px_rgba(124,69,245,0.4)] transition-all hover:bg-[#6b35e4] hover:shadow-[0_15px_30px_-5px_rgba(124,69,245,0.5)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
+                                                                :disabled="isPlacingOrder"
+                                                                @click="placeOrder"
+                                                            >
+                                                                <span v-if="!isPlacingOrder">
+                                                                    <template v-if="cart.payment_method == 'credits'">Оплатить с Wallet</template>
+                                                                    <template v-else>@lang('shop::app.checkout.onepage.summary.place-order')</template>
+                                                                </span>
+                                                                <svg v-else class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                </svg>
+                                                            </button>
 
-                                                    <!-- Payment -->
-                                                    <div v-if="['payment', 'review'].includes(currentStep)" class="p-4 sm:p-6" data-step="payment">
-                                                        @include('shop::checkout.onepage.payment')
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Sidebar Column (RIGHT) -->
-                                            <div class="hidden lg:block sticky top-8 space-y-4">
-                                                <div class="bg-white/60 backdrop-blur-3xl border border-white/80 rounded-[32px] p-6 shadow-xl shadow-zinc-200/50">
-                                                    @include('shop::checkout.onepage.summary')
-
-                                                    <div class="mt-8 space-y-4" v-if="canPlaceOrder">
-                                                        <button
-                                                            type="button"
-                                                            class="w-full rounded-2xl bg-[#7C45F5] py-4 text-base font-black text-white shadow-[0_10px_20px_-5px_rgba(124,69,245,0.4)] transition-all hover:bg-[#6b35e4] hover:shadow-[0_15px_30px_-5px_rgba(124,69,245,0.5)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
-                                                            :disabled="isPlacingOrder"
-                                                            @click="placeOrder"
-                                                        >
-                                                            <span v-if="!isPlacingOrder">
-                                                                <template v-if="cart.payment_method == 'credits'">Оплатить с Wallet</template>
-                                                                <template v-else>@lang('shop::app.checkout.onepage.summary.place-order')</template>
-                                                            </span>
-                                                            <svg v-else class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                            </svg>
-                                                        </button>
-
-                                                        <p class="text-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
-                                                            Нажимая "Оплатить", вы принимаете <br/> 
-                                                            <a href="#" class="underline hover:text-[#7C45F5] transition-colors">условиями обслуживания</a>
-                                                        </p>
+                                                            <p class="text-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
+                                                                Нажимая "Оплатить", вы принимаете <br/> 
+                                                                <a href="#" class="underline hover:text-[#7C45F5] transition-colors">условиями обслуживания</a>
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </template>
-                                </script>
+                                        </template>
+                                    </script>
 
             <script type="module">
                 app.component('v-checkout', {

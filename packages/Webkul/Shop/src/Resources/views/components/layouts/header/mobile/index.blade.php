@@ -16,8 +16,10 @@
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.before') !!}
 
-            <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2" aria-label="Meanly">
-                <span class="text-2xl font-black tracking-tighter text-[#7C45F5]">MEANLY</span>
+            <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2"
+                aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
+                <span
+                    class="text-2xl font-black tracking-tighter text-[#7C45F5]">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
             </a>
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.after') !!}
