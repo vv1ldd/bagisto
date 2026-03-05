@@ -67,9 +67,15 @@ class Credits extends Payment
     {
         $url = $this->getConfigData('image');
 
-        return $url
-            ? Storage::url($url)
-            : bagisto_asset('images/meanly-wallet.svg', 'shop');
+        if ($url) {
+            return Storage::url($url);
+        }
+
+        try {
+            return bagisto_asset('images/money-transfer.png', 'shop');
+        } catch (\Throwable $e) {
+            return '';
+        }
     }
 
     /**
