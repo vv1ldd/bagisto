@@ -87,16 +87,9 @@
 
                                         {{-- Register suggestion shown when email not found --}}
                                         @if($errors->has('email') && str_contains($errors->first('email'), 'не найден'))
-                                            <div
-                                                class="mt-3 flex flex-col gap-2 rounded-2xl bg-zinc-50 border border-zinc-100 p-4">
-                                                <p class="text-[13px] text-zinc-600">Впервые на меанли? Создайте аккаунт и
-                                                    получите кэшбек с каждой покупки.</p>
-                                                <a href="{{ route('shop.customers.register.index') }}"
-                                                    class="inline-flex items-center justify-center rounded-full bg-zinc-900 px-6 py-3 text-[14px] font-bold text-white transition hover:bg-zinc-700">
-                                                    Создать аккаунт
-                                                </a>
-                                            </div>
+                                            <p class="mt-2 text-[12px] text-zinc-400">Нет аккаунта с этой почтой — воспользуйтесь кнопкой «Создать аккаунт» ниже.</p>
                                         @endif
+
                                     </x-shop::form.control-group>
 
                                     <button
