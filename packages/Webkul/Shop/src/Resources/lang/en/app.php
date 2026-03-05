@@ -191,6 +191,40 @@ return [
                 ],
             ],
 
+            'organizations' => [
+                'index' => [
+                    'add-organization' => 'Add Organization',
+                    'create-success' => 'Organization added successfully.',
+                    'delete' => 'Delete',
+                    'delete-success' => 'Organization deleted successfully',
+                    'edit' => 'Edit',
+                    'edit-success' => 'Organization updated successfully.',
+                    'empty-organization' => 'You have not added an organization to your account yet.',
+                    'title' => 'Organizations',
+                    'update-success' => 'Organization updated successfully.',
+                ],
+
+                'create' => [
+                    'add-organization' => 'Add Organization',
+                    'name' => 'Organization Name',
+                    'inn' => 'INN',
+                    'kpp' => 'KPP',
+                    'address' => 'Legal Address',
+                    'save' => 'Save',
+                    'title' => 'Organization',
+                ],
+
+                'edit' => [
+                    'edit' => 'Edit',
+                    'name' => 'Organization Name',
+                    'inn' => 'INN',
+                    'kpp' => 'KPP',
+                    'address' => 'Legal Address',
+                    'title' => 'Organization',
+                    'update-btn' => 'Update',
+                ],
+            ],
+
             'orders' => [
                 'action' => 'Action',
                 'action-view' => 'View',
