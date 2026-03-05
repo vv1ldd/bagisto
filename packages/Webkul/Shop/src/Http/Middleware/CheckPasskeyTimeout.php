@@ -25,12 +25,16 @@ class CheckPasskeyTimeout
                 session()->forget(['logged_in_via_passkey', 'passkey_unlocked_at']);
 
                 if ($request->expectsJson()) {
-                    return response()->json(['message' => 'Wallet session expired.'], 403);
+                    return response()->json([
+                        'message' => 'Wallet session expired.',
+                        'session_expired' => true,
+                    ], 403);
                 }
 
-                session()->flash('info', 'Сессия кошелька истекла. Пожалуйста, разблокируйте его снова.');
+                // For web: redirect back to wallet page with a flag so JS can re-trigger passkey
+                session()->flash('wallet_session_expired', true);
 
-                return redirect()->route('shop.customers.account.index');
+                return redirect()->route('shop.customers.account.credits.index');
             }
 
             // Update timestamp for sliding window (activity based)

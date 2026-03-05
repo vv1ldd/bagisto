@@ -630,7 +630,38 @@
                             setTimeout(() => showVerifyModal('{{ $target->id }}', '{{ $target->network }}', '{{ rtrim(rtrim(number_format($target->verification_amount ?? 0, 8, '.', ''), '0'), '.') }}', '{{ $target->address }}'), 500);
                         @endif
                     @endif
+
+                    {{-- Auto re-trigger passkey if wallet session expired --}}
+                    @if(session('wallet_session_expired'))
+                        setTimeout(() => {
+                            if (typeof window.handleMeanlyWalletPasskey === 'function') {
+                                window.handleMeanlyWalletPasskey(null);
+                            }
+                        }, 300);
+                    @endif
                 });
+
+                {{-- Intercept fetch calls that return session_expired: true --}}
+                (function() {
+                    const _origFetch = window.fetch;
+                    window.fetch = async function(...args) {
+                        const response = await _origFetch(...args);
+                        if (response.status === 403) {
+                            const clone = response.clone();
+                            try {
+                                const data = await clone.json();
+                                if (data && data.session_expired) {
+                                    console.log('[Wallet] Session expired — re-triggering passkey');
+                                    if (typeof window.handleMeanlyWalletPasskey === 'function') {
+                                        window.handleMeanlyWalletPasskey(null);
+                                    }
+                                }
+                            } catch (_) {}
+                        }
+                        return response;
+                    };
+                })();
             </script>
         @endpush
+
 </x-shop::layouts.account>
