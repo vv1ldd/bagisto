@@ -6,13 +6,13 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-customer-edit-template">
-            <!-- Customer Edit Button -->
-            @if (bouncer()->hasPermission('customers.customers.edit'))
-                <div class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline"
-                    @click="$refs.customerEditModal.toggle()">
-                    @lang('admin::app.customers.customers.view.edit.edit-btn')
-                </div>
-            @endif
+                <!-- Customer Edit Button -->
+                @if (bouncer()->hasPermission('customers.customers.edit'))
+                    <div class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline"
+                        @click="$refs.customerEditModal.toggle()">
+                        @lang('admin::app.customers.customers.view.edit.edit-btn')
+                    </div>
+                @endif
 
     {!! view_render_event('bagisto.admin.customers.customers.view.edit.edit_form_controls.before', ['customer' => $customer]) !!}
 
@@ -147,7 +147,7 @@
                             </x-admin::form.control-group>
                         </div>
 
-                        <div class="flex gap-60 max-sm:flex-wrap">
+                        <div class="flex flex-wrap gap-6 max-sm:flex-wrap">
                             <!-- Customer Status -->
                             <x-admin::form.control-group class="!mb-0">
                                 <x-admin::form.control-group.label>
