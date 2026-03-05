@@ -53,7 +53,13 @@
                 <div class="flex flex-col gap-2 relative z-10">
                     {{-- Row 1: label + badges --}}
                     <div class="flex items-start justify-between gap-2">
-                        <div class="text-[12px] text-zinc-500 font-bold uppercase tracking-[0.1em] opacity-80">Общая<br>покупательная способность</div>
+                        <div class="text-[12px] text-zinc-500 font-bold uppercase tracking-[0.1em] opacity-80">
+                            @if($user->is_investor)
+                                Общая<br>покупательная способность
+                            @else
+                                Баланс
+                            @endif
+                        </div>
                         <div class="flex items-center gap-1.5 flex-wrap justify-end">
                             <div class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold whitespace-nowrap">
                                 @ {{ $user->username }}
@@ -97,8 +103,6 @@
                                 </div>
                             @endforeach
                         </div>
-                    @else
-                        <div class="mt-4 text-[13px] text-zinc-400 italic">Нет активных балансов</div>
                     @endif
 
                     <div class="mt-8">
@@ -116,6 +120,14 @@
                                 <p class="text-[11px] text-zinc-400 text-center">Методы пополнения пока недоступны</p>
                             </div>
                         @endif
+                    </div>
+
+                    {{-- Cashback Info --}}
+                    <div class="mt-6 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex gap-3">
+                        <div class="text-xl">💸</div>
+                        <div class="text-[12px] text-emerald-800 leading-snug">
+                            Мы начисляем кэшбек за покупки на баланс вашего кошелька.
+                        </div>
                     </div>
                 </div>
             </div>
