@@ -21,7 +21,7 @@ class Credits extends Payment
      */
     public function getRedirectUrl()
     {
-        return route('shop.checkout.success');
+        return route('shop.checkout.onepage.success');
     }
 
     /**

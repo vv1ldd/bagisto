@@ -120,6 +120,10 @@ class OrderRepository extends Repository
                     'reference_id' => $order->id,
                     'notes' => 'Purchase for Order #' . $order->increment_id . ' | ' . implode(', ', $deductionLog),
                 ]);
+
+                // Payment is immediate — mark order as paid (processing = ожидает выполнения)
+                $order->status = Order::STATUS_PROCESSING;
+                $order->save();
             }
 
             if (isset($data['shipping_address'])) {
