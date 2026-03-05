@@ -51,21 +51,22 @@
                 class="ios-group p-6 bg-white rounded-[32px] shadow-md relative overflow-hidden active:scale-[0.99] transition-transform">
                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5 rounded-full blur-3xl"></div>
                 <div class="flex flex-col gap-2 relative z-10">
-                    <div class="flex items-center justify-between">
-                        <div class="text-[12px] text-zinc-500 font-bold uppercase tracking-[0.1em] opacity-80">Общая
-                            покупательная способность</div>
-                    <div class="flex items-center justify-between mt-1">
-                        <div class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold">
-                            @ {{ $user->username }}
-                        </div>
-                        @if($user->is_investor)
-                            <div class="text-[11px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200 tracking-wide">
-                                💎 Инвестор
+                    {{-- Row 1: label + badges --}}
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="text-[12px] text-zinc-500 font-bold uppercase tracking-[0.1em] opacity-80">Общая<br>покупательная способность</div>
+                        <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                            <div class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold whitespace-nowrap">
+                                @ {{ $user->username }}
                             </div>
-                        @endif
-                    </div>
+                            @if($user->is_investor)
+                                <div class="text-[11px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200 tracking-wide whitespace-nowrap">
+                                    💎 Инвестор
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
+                    {{-- Row 2: balance + история --}}
                     <div class="flex items-center justify-between mt-1">
                         <div class="text-4xl font-bold font-mono text-zinc-900 tracking-tight">
                             {{ core()->formatPrice($user->getTotalFiatBalance()) }}
