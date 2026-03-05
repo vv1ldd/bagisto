@@ -97,16 +97,19 @@
             </div>
         </div>
     </v-header-switcher>
+
+    {{-- Teleport target for catalog filters/toolbar --}}
+    <div id="header-toolbar-teleport-target"></div>
 </header>
 
 {!! view_render_event('bagisto.shop.layout.header.after') !!}
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-header-switcher-template">
-                            <v-desktop-header v-if="isDesktop"></v-desktop-header>
+                                <v-desktop-header v-if="isDesktop"></v-desktop-header>
 
-                            <v-mobile-header v-else></v-mobile-header>
-                        </script>
+                                <v-mobile-header v-else></v-mobile-header>
+                            </script>
 
     <script type="module">
         app.component('v-header-switcher', {
@@ -145,10 +148,10 @@
     </script>
 
     <script type="text/x-template" id="v-desktop-header-template">
-                            <x-shop::layouts.header.desktop />
-                        </script>
+                                <x-shop::layouts.header.desktop />
+                            </script>
 
     <script type="text/x-template" id="v-mobile-header-template">
-                            <x-shop::layouts.header.mobile />
-                        </script>
+                                <x-shop::layouts.header.mobile />
+                            </script>
 @endPushOnce
