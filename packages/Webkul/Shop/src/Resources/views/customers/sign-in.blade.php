@@ -67,10 +67,11 @@
                                 </button>
                             </div>
 
-                            <!-- Magic Link Email Form (Hidden by default) -->
-                            <div id="email-login-form-container" class="hidden flex-col gap-4">
+                            {{-- Magic Link Email Form (Hidden by default, auto-shown on errors) --}}
+                            <div id="email-login-form-container"
+                                class="{{ $errors->any() ? 'flex' : 'hidden' }} flex-col gap-4">
                                 <x-shop::form :action="route('shop.customer.session.email')">
-                                    <x-shop::form.control-group class="mb-4">
+                                    <x-shop::form.control-group class="mb-2">
                                         <x-shop::form.control-group.label
                                             class="required !text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
                                             @lang('shop::app.customers.login-form.email')
@@ -83,6 +84,19 @@
                                             placeholder="email@example.com" />
 
                                         <x-shop::form.control-group.error control-name="email" />
+
+                                        {{-- Register suggestion shown when email not found --}}
+                                        @if($errors->has('email') && str_contains($errors->first('email'), 'не найден'))
+                                            <div
+                                                class="mt-3 flex flex-col gap-2 rounded-2xl bg-zinc-50 border border-zinc-100 p-4">
+                                                <p class="text-[13px] text-zinc-600">Впервые на меанли? Создайте аккаунт и
+                                                    получите кэшбек с каждой покупки.</p>
+                                                <a href="{{ route('shop.customers.register.index') }}"
+                                                    class="inline-flex items-center justify-center rounded-full bg-zinc-900 px-6 py-3 text-[14px] font-bold text-white transition hover:bg-zinc-700">
+                                                    Создать аккаунт
+                                                </a>
+                                            </div>
+                                        @endif
                                     </x-shop::form.control-group>
 
                                     <button
