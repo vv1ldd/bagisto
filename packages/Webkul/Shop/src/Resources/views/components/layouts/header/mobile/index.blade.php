@@ -42,7 +42,13 @@
                         @endif
                     </span>
                 </a>
+            @else
+                <a href="{{ route('shop.customer.session.index') }}"
+                    class="flex items-center justify-center rounded-full bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-4 py-2 text-[13px] font-bold text-white shadow-md shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97] whitespace-nowrap">
+                    Войти
+                </a>
             @endauth
+
         </div>
     </div>
 
