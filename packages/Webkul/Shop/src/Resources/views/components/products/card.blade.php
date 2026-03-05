@@ -78,35 +78,35 @@
             {!! view_render_event('bagisto.shop.components.products.card.name.after') !!}
         </div>
 
-        <div class="mt-auto flex items-end justify-between">
-            {!! view_render_event('bagisto.shop.components.products.card.price.before') !!}
-            <div class="text-sm font-black tracking-tight text-[#7C45F5] [&>del]:text-[10px] [&>del]:font-normal [&>del]:text-zinc-400 [&>del]:opacity-80"
-                v-html="product.price_html">
+        <div class="mt-auto">
+            <div class="flex items-center justify-between">
+                {!! view_render_event('bagisto.shop.components.products.card.price.before') !!}
+                <div class="text-sm font-black tracking-tight text-[#7C45F5] [&>del]:text-[10px] [&>del]:font-normal [&>del]:text-zinc-400 [&>del]:opacity-80"
+                    v-html="product.price_html">
+                </div>
+                {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
             </div>
-            {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
 
             <!-- Buy Now & Add to Cart -->
             @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
-                <div class="flex gap-2">
+                <div class="flex flex-col gap-2 w-full mt-3">
                     {!! view_render_event('bagisto.shop.components.products.card.buy_now.before') !!}
                     <button
-                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C45F5] text-white transition-all hover:bg-[#6c39e0] disabled:opacity-50"
-                        :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(true)"
-                        title="@lang('shop::app.components.products.card.buy-now')"
-                        aria-label="@lang('shop::app.components.products.card.buy-now')">
-                        <span class="icon-checkout text-lg" v-if="!isAddingToCart"></span>
-                        <span class="icon-spinner animate-spin text-lg" v-else></span>
+                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#7C45F5] py-2.5 text-center text-[13px] font-bold text-white transition-all hover:bg-[#6c39e0] active:scale-[0.98] disabled:opacity-50"
+                        :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(true)">
+                        <span class="icon-checkout text-base" v-if="!isAddingToCart"></span>
+                        <span class="icon-spinner animate-spin text-base" v-else></span>
+                        @lang('shop::app.components.products.card.buy-now')
                     </button>
                     {!! view_render_event('bagisto.shop.components.products.card.buy_now.after') !!}
 
                     {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
                     <button
-                        class="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white transition-all hover:bg-[#7C45F5] disabled:opacity-50 disabled:hover:bg-zinc-900"
-                        :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(false)"
-                        title="@lang('shop::app.components.products.card.add-to-cart')"
-                        aria-label="@lang('shop::app.components.products.card.add-to-cart')">
-                        <span class="icon-cart text-lg" v-if="!isAddingToCart"></span>
-                        <span class="icon-spinner animate-spin text-lg" v-else></span>
+                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 py-2.5 text-center text-[13px] font-bold text-white transition-all hover:bg-[#7C45F5] border border-zinc-900 hover:border-[#7C45F5] active:scale-[0.98] disabled:opacity-50 disabled:hover:bg-zinc-900 disabled:hover:border-zinc-900"
+                        :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(false)">
+                        <span class="icon-cart text-base" v-if="!isAddingToCart"></span>
+                        <span class="icon-spinner animate-spin text-base" v-else></span>
+                        @lang('shop::app.components.products.card.add-to-cart')
                     </button>
                     {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.after') !!}
                 </div>
