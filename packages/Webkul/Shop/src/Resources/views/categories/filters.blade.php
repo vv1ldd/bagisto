@@ -48,15 +48,15 @@
                                                 >
                                                     <form action="{{ route('shop.search.index') }}" class="relative group">
                                                         <span class="absolute top-1/2 -translate-y-1/2 text-zinc-400 group-hover:text-[#7C45F5] transition-colors"
-                                                            :class="isTeleportTargetAvailable ? 'icon-search left-2 text-base' : 'icon-search left-3 text-lg'"
+                                                            :class="isTeleportTargetAvailable ? 'icon-search left-2.5 text-base' : 'icon-search left-4 text-lg'"
                                                         ></span>
                                                         <input
                                                             type="text"
                                                             name="query"
                                                             value="{{ request('query') }}"
-                                                            placeholder="@lang('shop::app.components.layouts.header.desktop.bottom.search-text')"
+                                                            placeholder="Поиск..."
                                                             class="block w-full rounded-xl border border-zinc-200 bg-zinc-50 py-2.5 pl-11 pr-4 text-sm font-medium text-zinc-700 transition-all focus:border-[#7C45F5] focus:bg-white focus:outline-none shadow-sm"
-                                                            :class="isTeleportTargetAvailable ? 'py-1 pl-9 pr-2 text-[13px]' : 'py-1.5 pl-9 pr-4 text-sm font-medium'"
+                                                            :class="isTeleportTargetAvailable ? 'py-1 pl-9 pr-2 text-[13px]' : 'py-1.5 pl-10 pr-4 text-sm font-medium'"
                                                             minlength="{{ core()->getConfigData('catalog.products.search.min_query_length') }}"
                                                             maxlength="{{ core()->getConfigData('catalog.products.search.max_query_length') }}"
                                                             required
@@ -375,7 +375,7 @@
                             if (s.value === 'created_at-desc') s.title = 'По новинкам';
                             return s;
                         }),
-                    currentSort: '{{ $toolbar->getOrder($params ?? [])['value'] }}',
+                    currentSort: '{{ $toolbar->getOrder($params ?? [])['value'] }}' || 'created_at-desc',
 
                     // Display mode
                     currentMode: '{{ $toolbar->getMode($params ?? []) }}',
@@ -389,7 +389,8 @@
 
             computed: {
                 hasAppliedFilters() {
-                    return Object.values(this.filters.applied).some(v => v && (Array.isArray(v) ? v.length > 0 : !!v));
+                    const hasFilters = Object.values(this.filters.applied).some(v => v && (Array.isArray(v) ? v.length > 0 : !!v));
+                    return hasFilters || this.currentSort !== 'created_at-desc';
                 },
 
                 sortLabel() {
@@ -491,9 +492,9 @@
                 clear() {
                     this.filters.applied = {};
 
-                    // Reset sorting to price ascending
-                    this.currentSort = 'price-asc';
-                    this.updateUrl('sort', 'price-asc');
+                    // Reset sorting to newest
+                    this.currentSort = 'created_at-desc';
+                    this.updateUrl('sort', 'created_at-desc');
 
                     // Reset child filter items
                     const items = this.$refs.filterItemComponent;

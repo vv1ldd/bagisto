@@ -42,7 +42,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-desktop-category-template">
-        <!-- Loading State -->
+            <!-- Loading State -->
     <div class="flex items-center gap-5" v-if="isLoading">
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
         <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
@@ -158,8 +158,7 @@
                             <form action="{{ route('shop.search.index') }}" class="relative group">
                                 <span
                                     class="icon-search absolute left-3 top-1/2 -translate-y-1/2 text-lg text-zinc-400 group-hover:text-[#7C45F5] transition-colors"></span>
-                                <input type="text" name="query" value="{{ request('query') }}"
-                                    placeholder="Поиск товаров..."
+                                <input type="text" name="query" value="{{ request('query') }}" placeholder="Поиск..."
                                     class="w-full rounded-xl border border-zinc-200 bg-zinc-50 py-2.5 pl-10 pr-4 text-sm font-medium text-zinc-700 transition-all focus:border-[#7C45F5] focus:bg-white focus:outline-none shadow-sm"
                                     minlength="{{ core()->getConfigData('catalog.products.search.min_query_length') }}"
                                     maxlength="{{ core()->getConfigData('catalog.products.search.max_query_length') }}"
@@ -175,9 +174,9 @@
                             <!-- Sliding container -->
                             <div class="flex h-full transition-transform duration-300"
                                 :class="{
-                                                                                                                                                                                                    'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                                                                                                    'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                                                                                                                }">
+                                                                                                                                                                                                        'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
+                                                                                                                                                                                                        'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
+                                                                                                                                                                                                    }">
                                 <!-- First level view -->
                                 <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
                                     <div class="py-4">
@@ -321,43 +320,43 @@
 
         app.component('v-header-nav', {
             template: `
-                    <div class="flex items-center gap-3">
-                        @guest('customer')
-                            <a href="{{ route('shop.customer.session.create') }}"
-                                class="flex items-center justify-center rounded-[24px] bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-6 py-2.5 text-[14px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97]">
-                                Войти / Регистрация
-                            </a>
-                        @else
-                            <div class="flex items-center gap-3 rounded-full bg-white/40 p-1 pr-6 backdrop-blur-md border border-white/60 shadow-sm">
-                                {{-- Unified Avatar/Cart Icon --}}
-                                <a :href="'{{ route('shop.checkout.cart.index') }}'" class="relative group">
-                                    <template v-if="cart && cart.items.length > 0">
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#7C45F5] text-white shadow-md transition-all group-hover:scale-110 active:scale-95">
-                                            <span class="icon-cart text-xl"></span>
-                                            <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
-                                                @{{ cart.items.length }}
-                                            </span>
-                                        </div>
-                                    </template>
-                                    <template v-else>
-                                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-sm uppercase shadow-sm">
-                                            {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
-                                        </div>
-                                    </template>
+                        <div class="flex items-center gap-3">
+                            @guest('customer')
+                                <a href="{{ route('shop.customer.session.create') }}"
+                                    class="flex items-center justify-center rounded-[24px] bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-6 py-2.5 text-[14px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97]">
+                                    Войти / Регистрация
                                 </a>
+                            @else
+                                <div class="flex items-center gap-3 rounded-full bg-white/40 p-1 pr-6 backdrop-blur-md border border-white/60 shadow-sm leading-none">
+                                    {{-- Unified Avatar/Cart Icon --}}
+                                    <a :href="'{{ route('shop.checkout.cart.index') }}'" class="relative group">
+                                        <template v-if="cart && cart.items.length > 0">
+                                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C45F5] text-white shadow-md transition-all group-hover:scale-110 active:scale-95 leading-none">
+                                                <span class="icon-cart text-lg"></span>
+                                                <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-white text-[9px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
+                                                    @{{ cart.items.length }}
+                                                </span>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-xs uppercase shadow-sm leading-none">
+                                                {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
+                                            </div>
+                                        </template>
+                                    </a>
 
-                                <a href="{{ route('shop.customers.account.index') }}"
-                                    class="text-[14px] font-semibold text-zinc-700 hover:text-[#7C45F5] transition-colors flex items-center gap-1">
-                                    @
-                                    {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
-                                    @if(auth()->guard('customer')->user()->is_investor)
-                                        <span title="Инвестор" class="text-[14px] leading-none">💎</span>
-                                    @endif
-                                </a>
-                            </div>
-                        @endguest
-                    </div>
-                `,
+                                    <a href="{{ route('shop.customers.account.index') }}"
+                                        class="text-[14px] font-semibold text-zinc-700 hover:text-[#7C45F5] transition-colors flex items-center gap-1">
+                                        @
+                                        {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
+                                        @if(auth()->guard('customer')->user()->is_investor)
+                                            <span title="Инвестор" class="text-[14px] leading-none">💎</span>
+                                        @endif
+                                    </a>
+                                </div>
+                            @endguest
+                        </div>
+                    `,
 
             data() {
                 return {
