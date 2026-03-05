@@ -129,9 +129,14 @@
                                         {{ $transaction->created_at->format('d.m.Y — H:i') }}</div>
                                 </div>
                                 <div class="text-right shrink-0">
-                                    <div
-                                        class="text-[16px] font-bold font-mono {{ (float) $transaction->amount > 0 ? 'text-emerald-500' : 'text-red-500' }}">
-                                        {{ (float) $transaction->amount > 0 ? '+' : '' }}{{ core()->formatPrice($transaction->amount) }}
+                                    @php
+                                        $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
+                                        $isDebit = in_array($transaction->type, $debitTypes);
+                                        $sign = $isDebit ? '-' : '+';
+                                        $colorClass = $isDebit ? 'text-red-500' : 'text-emerald-500';
+                                    @endphp
+                                    <div class="text-[16px] font-bold font-mono {{ $colorClass }}">
+                                        {{ $sign }}{{ core()->formatPrice($transaction->amount) }}
                                     </div>
                                     <div class="text-[10px] text-zinc-400 font-mono mt-0.5 uppercase tracking-tighter">
                                         #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
