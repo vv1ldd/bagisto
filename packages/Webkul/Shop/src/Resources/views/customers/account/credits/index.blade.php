@@ -54,10 +54,16 @@
                     <div class="flex items-center justify-between">
                         <div class="text-[12px] text-zinc-500 font-bold uppercase tracking-[0.1em] opacity-80">Общая
                             покупательная способность</div>
-                        <div
-                            class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold">
+                    <div class="flex items-center justify-between mt-1">
+                        <div class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold">
                             @ {{ $user->username }}
                         </div>
+                        @if($user->is_investor)
+                            <div class="text-[11px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200 tracking-wide">
+                                💎 Инвестор
+                            </div>
+                        @endif
+                    </div>
                     </div>
 
                     <div class="flex items-center justify-between mt-1">

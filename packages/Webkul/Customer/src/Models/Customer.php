@@ -44,6 +44,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     protected $casts = [
         'subscribed_to_news_letter' => 'boolean',
         'balance' => 'decimal:4',
+        'is_investor' => 'boolean',
     ];
 
     /**
@@ -71,6 +72,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'status',
         'is_verified',
         'is_suspended',
+        'is_investor',
         'last_login_ip',
         'verification_code',
         'registration_ip',
