@@ -15,13 +15,14 @@ class Credits extends Payment
     protected $code = 'credits';
 
     /**
-     * Get redirect url.
+     * No external redirect — order is created directly in storeOrder().
+     * Return empty so Payment::getRedirectUrl() check is falsy.
      *
      * @return string
      */
-    public function getRedirectUrl()
+    public function getRedirectUrl(): string
     {
-        return route('shop.checkout.onepage.success');
+        return '';
     }
 
     /**
