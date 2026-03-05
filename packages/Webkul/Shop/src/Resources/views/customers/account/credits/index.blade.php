@@ -122,13 +122,15 @@
                         @endif
                     </div>
 
-                    {{-- Cashback Info --}}
+                    {{-- Cashback Info (only for non-investors) --}}
+                    @if(!auth()->guard('customer')->user()->is_investor)
                     <div class="mt-6 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex gap-3">
                         <div class="text-xl">💸</div>
                         <div class="text-[12px] text-emerald-800 leading-snug">
                             Мы начисляем кэшбек за покупки на баланс вашего кошелька.
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
 
