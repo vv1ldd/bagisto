@@ -11,7 +11,7 @@
         <!-- Desktop Header Shimmer -->
         <div class="flex flex-wrap max-lg:hidden">
             <div
-                class="flex h-[88px] w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] max-1180:px-8">
+                class="flex h-[72px] w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] max-1180:px-8">
                 <!-- Left Navigation Section -->
                 <div class="flex items-center gap-x-10 max-[1180px]:gap-x-5">
                     <!-- Logo Shimmer -->
@@ -58,7 +58,7 @@
         </div>
 
         <!-- Mobile Header Shimmer -->
-        <div class="flex flex-wrap gap-4 px-4 pb-4 pt-6 shadow-sm lg:hidden">
+        <div class="flex h-[72px] flex-wrap items-center gap-4 px-4 shadow-sm lg:hidden">
             <div class="flex w-full items-center justify-between">
                 <!-- Left Navigation -->
                 <div class="flex items-center gap-x-1.5">
@@ -105,10 +105,10 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-header-switcher-template">
-                                        <v-desktop-header v-if="isDesktop"></v-desktop-header>
+                                            <v-desktop-header v-if="isDesktop"></v-desktop-header>
 
-                                        <v-mobile-header v-else></v-mobile-header>
-                                    </script>
+                                            <v-mobile-header v-else></v-mobile-header>
+                                        </script>
 
     <script type="module">
         app.component('v-header-switcher', {
@@ -147,10 +147,10 @@
     </script>
 
     <script type="text/x-template" id="v-desktop-header-template">
-                                        <x-shop::layouts.header.desktop />
-                                    </script>
+                                            <x-shop::layouts.header.desktop />
+                                        </script>
 
     <script type="text/x-template" id="v-mobile-header-template">
-                                        <x-shop::layouts.header.mobile />
-                                    </script>
+                                            <x-shop::layouts.header.mobile />
+                                        </script>
 @endPushOnce

@@ -8,7 +8,7 @@
     $showWishlist = (bool) core()->getConfigData('customer.settings.wishlist.wishlist_option');
 @endphp
 
-<div class="flex flex-wrap gap-4 px-8 py-4 max-sm:px-4 shadow-none lg:hidden !bg-transparent">
+<div class="flex h-[72px] items-center gap-4 px-8 max-sm:px-4 shadow-none lg:hidden !bg-transparent">
     <div class="flex items-center justify-between w-full">
         <!-- Left Navigation -->
         <div class="flex items-center gap-x-5">
