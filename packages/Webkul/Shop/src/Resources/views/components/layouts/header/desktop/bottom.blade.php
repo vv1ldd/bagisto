@@ -2,7 +2,7 @@
     $showCategories = true; // Always allow categories to show, toolbar will teleport next to them if available
 @endphp
 
-<div class="flex min-h-[88px] w-full items-center justify-between px-8 max-sm:px-4 mx-auto max-w-7xl gap-4">
+<div class="flex h-[88px] w-full items-center justify-between px-8 max-sm:px-4 mx-auto max-w-7xl gap-4">
     {{-- LEFT: Logo & Categories --}}
     <div class="flex items-center gap-x-10 max-[1180px]:gap-x-5 flex-shrink-0">
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
