@@ -251,6 +251,14 @@ class OnepageController extends APIController
 
         Cart::collectTotals();
 
+        $cart = Cart::getCart();
+
+        // For digital-only carts auto-save billing from customer profile if not set.
+        if ($cart && !$cart->haveStockableItems() && !$cart->billing_address) {
+            $this->autoSaveBillingFromProfile();
+            $cart = Cart::getCart();
+        }
+
         try {
             $this->validateOrder();
         } catch (\Exception $e) {
@@ -279,6 +287,34 @@ class OnepageController extends APIController
         return new JsonResource([
             'redirect' => true,
             'redirect_url' => route('shop.checkout.onepage.success'),
+        ]);
+    }
+
+    /**
+     * Auto-save a minimal billing address from the authenticated customer's profile.
+     * Used for digital orders where no address entry is needed.
+     */
+    protected function autoSaveBillingFromProfile(): void
+    {
+        $customer = auth()->guard('customer')->user();
+
+        if (!$customer) {
+            return;
+        }
+
+        Cart::saveAddresses([
+            'billing' => [
+                'first_name' => $customer->first_name ?: ($customer->username ?? 'Customer'),
+                'last_name' => $customer->last_name ?: '-',
+                'email' => $customer->email,
+                'address' => ['Digital'],
+                'city' => 'Digital',
+                'country' => 'RU',
+                'state' => '',
+                'postcode' => '',
+                'phone' => $customer->phone ?? '',
+                'use_for_shipping' => true,
+            ],
         ]);
     }
 
