@@ -102,10 +102,20 @@
                     @endif
 
                     <div class="mt-8">
-                        <button onclick="goToDeposit()"
-                            class="inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3 rounded-2xl active:scale-95 transition-all shadow-lg shadow-zinc-100">
-                            + Пополнить
-                        </button>
+                        @if($user->is_investor)
+                            <button onclick="goToDeposit()"
+                                class="inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3 rounded-2xl active:scale-95 transition-all shadow-lg shadow-zinc-100">
+                                + Пополнить
+                            </button>
+                        @else
+                            <div class="flex flex-col gap-1.5">
+                                <button disabled
+                                    class="inline-flex items-center justify-center text-[14px] font-bold text-zinc-400 bg-zinc-100 px-6 py-3 rounded-2xl cursor-not-allowed opacity-60">
+                                    + Пополнить
+                                </button>
+                                <p class="text-[11px] text-zinc-400 text-center">Методы пополнения пока недоступны</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -120,7 +130,7 @@
                                 <div class="flex flex-col gap-1.5 min-w-0 pr-4">
                                     <div class="flex items-center gap-2">
                                         @php
-                                            $typeLabels = ['deposit' => 'Пополнение', 'withdrawal' => 'Списание', 'purchase' => 'Оплата', 'refund' => 'Возврат', 'transfer_debit' => 'Перевод от вас', 'transfer_credit' => 'Перевод вам'];
+                                            $typeLabels = ['deposit' => 'Пополнение', 'withdrawal' => 'Списание', 'purchase' => 'Оплата', 'refund' => 'Возврат', 'transfer_debit' => 'Перевод от вас', 'transfer_credit' => 'Перевод вам', 'cashback' => '💸 Кэшбек'];
                                             $typeLabel = $typeLabels[$transaction->type] ?? $transaction->type;
                                             $statusColors = ['completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100', 'pending' => 'bg-amber-50 text-amber-600 border-amber-100', 'failed' => 'bg-red-50 text-red-600 border-red-100'];
                                             $statusClass = $statusColors[$transaction->status] ?? 'bg-zinc-50 text-zinc-500 border-zinc-100';
