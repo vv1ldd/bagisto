@@ -80,7 +80,7 @@ Route::group(['prefix' => 'api'], function () {
         Route::get('cross-sell', 'crossSellProducts')->name('shop.api.checkout.cart.cross-sell.index');
     });
 
-    Route::controller(OnepageController::class)->prefix('checkout/onepage')->group(function () {
+    Route::controller(OnepageController::class)->prefix('checkout/onepage')->middleware('customer')->group(function () {
         Route::get('summary', 'summary')->name('shop.checkout.onepage.summary');
 
         Route::post('addresses', 'storeAddress')->name('shop.checkout.onepage.addresses.store');
