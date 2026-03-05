@@ -21,6 +21,11 @@ class ExchangeRateService
         $cryptoSymbol = strtolower($cryptoSymbol);
         $fiatCurrency = strtoupper($fiatCurrency ?? core()->getBaseCurrencyCode());
 
+        // RUB is the base currency — always 1:1
+        if ($cryptoSymbol === 'rub') {
+            return 1.0;
+        }
+
         // Map internal symbols to CoinGecko API IDs
         $coinGeckoIdMap = [
             'ton' => 'the-open-network',

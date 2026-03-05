@@ -153,6 +153,39 @@ class OrderRepository extends Repository
             }
 
             Event::dispatch('checkout.order.save.after', $order);
+
+            // ─── Cashback for non-wallet payments ───────────────────────────────────
+            if ($order->customer_id && $data['payment']['method'] !== 'credits') {
+                try {
+                    $cashbackPercent = (float) config('meanly.cashback_percent', 5);
+                    if ($cashbackPercent > 0) {
+                        $cashbackAmount = round($order->base_grand_total * $cashbackPercent / 100, 2);
+
+                        // Credit RUB balance
+                        $rubBalance = \Webkul\Customer\Models\CustomerBalance::firstOrNew([
+                            'customer_id' => $order->customer_id,
+                            'currency_code' => 'RUB',
+                        ]);
+                        $rubBalance->amount = ($rubBalance->amount ?? 0) + $cashbackAmount;
+                        $rubBalance->save();
+
+                        // Log transaction
+                        \Webkul\Customer\Models\CustomerTransaction::create([
+                            'uuid' => \Illuminate\Support\Str::uuid(),
+                            'customer_id' => $order->customer_id,
+                            'amount' => $cashbackAmount,
+                            'type' => 'cashback',
+                            'status' => 'completed',
+                            'reference_type' => get_class($order),
+                            'reference_id' => $order->id,
+                            'notes' => "Кэшбек {$cashbackPercent}% с заказа #{$order->increment_id}",
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Cashback failed for order #' . $order->increment_id . ': ' . $e->getMessage());
+                }
+            }
+
         } catch (\Exception $e) {
             /* rolling back first */
             DB::rollBack();
