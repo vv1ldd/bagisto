@@ -23,7 +23,8 @@ class CartController extends APIController
     public function __construct(
         protected ProductRepository $productRepository,
         protected CartRuleCouponRepository $cartRuleCouponRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Cart.
@@ -57,7 +58,7 @@ class CartController extends APIController
         $product = $this->productRepository->with('parent')->findOrFail(request()->input('product_id'));
 
         try {
-            if (! $product->status) {
+            if (!$product->status) {
                 throw new \Exception(trans('shop::app.checkout.cart.inactive-add'));
             }
 
@@ -103,6 +104,19 @@ class CartController extends APIController
         return new JsonResource([
             'data' => new CartResource(Cart::getCart()),
             'message' => trans('shop::app.checkout.cart.success-remove'),
+        ]);
+    }
+
+    /**
+     * Method for remove all items from cart
+     */
+    public function destroyAll(): JsonResource
+    {
+        Cart::deActivateCart();
+
+        return new JsonResource([
+            'data' => null,
+            'message' => trans('shop::app.checkout.cart.index.remove-selected-success'),
         ]);
     }
 
@@ -213,7 +227,7 @@ class CartController extends APIController
             if (strlen($validatedData['code'])) {
                 $coupon = $this->cartRuleCouponRepository->findOneByField('code', $validatedData['code']);
 
-                if (! $coupon) {
+                if (!$coupon) {
                     return (new JsonResource([
                         'data' => new CartResource(Cart::getCart()),
                         'message' => trans('shop::app.checkout.coupon.invalid'),
@@ -273,7 +287,7 @@ class CartController extends APIController
     {
         $cart = Cart::getCart();
 
-        if (! $cart) {
+        if (!$cart) {
             return new JsonResource([
                 'data' => [],
             ]);

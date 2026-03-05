@@ -112,8 +112,19 @@
                                         @lang('shop::app.checkout.cart.index.remove')
                                     </span>
 
+                                    <span class="mx-2.5 border-r border-zinc-200"></span>
+
+                                    <span
+                                        class="cursor-pointer text-base text-red-600 max-sm:text-xs"
+                                        role="button"
+                                        tabindex="0"
+                                        @click="removeAllItems"
+                                    >
+                                        Очистить корзину 
+                                    </span>
+
                                     @if (auth()->guard()->check())
-                                        <span class="mx-2.5 border-r-2 border-zinc-200"></span>
+                                        <span class="mx-2.5 border-r border-zinc-200"></span>
 
                                         <span
                                             class="cursor-pointer text-base text-blue-700 max-sm:text-xs"
@@ -385,43 +396,49 @@
                     },
 
                     removeItem(itemId) {
-                        this.$emitter.emit('open-confirm-modal', {
-                            agree: () => {
-                                this.$axios.post('{{ route('shop.api.checkout.cart.destroy') }}', {
-                                    '_method': 'DELETE',
-                                    'cart_item_id': itemId,
-                                })
-                                    .then(response => {
-                                        this.cart = response.data.data;
+                        this.$axios.post('{{ route('shop.api.checkout.cart.destroy') }}', {
+                            '_method': 'DELETE',
+                            'cart_item_id': itemId,
+                        })
+                            .then(response => {
+                                this.cart = response.data.data;
 
-                                        this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
 
-                                    })
-                                    .catch(error => { });
-                            }
-                        });
+                            })
+                            .catch(error => { });
                     },
 
                     removeSelectedItems() {
-                        this.$emitter.emit('open-confirm-modal', {
-                            agree: () => {
-                                const selectedItemsIds = this.cart.items.flatMap(item => item.selected ? item.id : []);
+                        const selectedItemsIds = this.cart.items.flatMap(item => item.selected ? item.id : []);
 
-                                this.$axios.post('{{ route('shop.api.checkout.cart.destroy_selected') }}', {
-                                    '_method': 'DELETE',
-                                    'ids': selectedItemsIds,
-                                })
-                                    .then(response => {
-                                        this.cart = response.data.data;
+                        this.$axios.post('{{ route('shop.api.checkout.cart.destroy_selected') }}', {
+                            '_method': 'DELETE',
+                            'ids': selectedItemsIds,
+                        })
+                            .then(response => {
+                                this.cart = response.data.data;
 
-                                        this.$emitter.emit('update-mini-cart', response.data.data);
+                                this.$emitter.emit('update-mini-cart', response.data.data);
 
-                                        this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
 
-                                    })
-                                    .catch(error => { });
-                            }
-                        });
+                            })
+                            .catch(error => { });
+                    },
+
+                    removeAllItems() {
+                        this.$axios.post('{{ route('shop.api.checkout.cart.destroy_all') }}', {
+                            '_method': 'DELETE',
+                        })
+                            .then(response => {
+                                this.cart = null;
+
+                                this.$emitter.emit('update-mini-cart', null);
+
+                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+                            })
+                            .catch(error => { });
                     },
 
                     moveToWishlistSelectedItems() {
