@@ -29,10 +29,17 @@
 
             @auth('customer')
                 <a href="{{ route('shop.customers.account.index') }}"
-                    class="flex items-center bg-white px-3 h-[29px] rounded-2xl border border-zinc-200 shadow-sm transition active:scale-[0.98]">
-                    <span class="text-[13px] font-mono text-zinc-900 font-bold whitespace-nowrap">
+                    class="flex items-center gap-2 rounded-full bg-white/40 px-1 pr-3 py-1 backdrop-blur-md border border-white/60">
+                    <div
+                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-[10px] uppercase shrink-0">
+                        {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
+                    </div>
+                    <span class="text-[13px] font-medium text-zinc-700 flex items-center gap-1 whitespace-nowrap">
                         @
                         {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
+                        @if(auth()->guard('customer')->user()->is_investor)
+                            <span title="Инвестор" class="text-[13px] leading-none">💎</span>
+                        @endif
                     </span>
                 </a>
             @endauth
