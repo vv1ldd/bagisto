@@ -284,13 +284,9 @@
                         class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center"
                         v-else
                     >
-                        <img
-                            class="max-md:h-[100px] max-md:w-[100px]"
-                            src="{{ bagisto_asset('images/thank-you.png') }}"
-                            alt="@lang('shop::app.checkout.cart.index.empty-product')"
-                            loading="lazy"
-                            decoding="async"
-                        />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-40 h-40 text-zinc-200 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
 
                         <p
                             class="text-xl max-md:text-sm"
