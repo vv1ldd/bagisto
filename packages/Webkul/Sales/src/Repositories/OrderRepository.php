@@ -239,6 +239,15 @@ class OrderRepository extends Repository
             $this->downloadableLinkPurchasedRepository->updateStatus($item, 'expired');
         }
 
+        // Refund crypto balance if paid with Meanly Wallet (credits)
+        if (
+            $order->payment
+            && $order->payment->method === 'credits'
+            && $order->customer_id
+        ) {
+            $this->refundCreditsForOrder($order);
+        }
+
         $this->updateOrderStatus($order);
 
         Event::dispatch('sales.order.cancel.after', $order);
@@ -466,5 +475,83 @@ class OrderRepository extends Repository
         return $orderOrId instanceof Order
             ? $orderOrId
             : $this->findOrFail($orderOrId);
+    }
+
+    /**
+     * Restore crypto balances when a credits-paid order is cancelled.
+     * Parses the original purchase transaction notes to restore exact amounts.
+     *
+     * @param  \Webkul\Sales\Contracts\Order  $order
+     * @return void
+     */
+    protected function refundCreditsForOrder($order): void
+    {
+        $customer = $order->customer;
+
+        if (!$customer) {
+            return;
+        }
+
+        // Find the original purchase transaction for this order
+        $purchaseTx = \Webkul\Customer\Models\CustomerTransaction::where('customer_id', $customer->id)
+            ->where('type', 'purchase')
+            ->where('reference_id', $order->id)
+            ->first();
+
+        if (!$purchaseTx) {
+            Log::warning("refundCreditsForOrder: no purchase transaction found for order #{$order->id}");
+            return;
+        }
+
+        // Parse notes: "Purchase for Order #N | 0.00200000 TON @ 250, 0.50000000 USDT_TON @ 98"
+        $refundLog = [];
+        $totalRefundedRub = 0;
+
+        if (preg_match_all('/(\d+\.\d+)\s+(\w+)\s+@\s+([\d.]+)/', (string) $purchaseTx->notes, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $cryptoAmount = (float) $m[1];
+                $coinCode = strtolower($m[2]);
+                $rate = (float) $m[3];
+
+                if ($cryptoAmount <= 0) {
+                    continue;
+                }
+
+                // Restore the balance
+                $balance = $customer->balances()->where('currency_code', $coinCode)->first();
+
+                if ($balance) {
+                    $balance->amount += $cryptoAmount;
+                    $balance->save();
+                } else {
+                    // Create balance record if it somehow doesn't exist
+                    $customer->balances()->create([
+                        'currency_code' => $coinCode,
+                        'amount' => $cryptoAmount,
+                    ]);
+                }
+
+                $rubValue = $cryptoAmount * $rate;
+                $totalRefundedRub += $rubValue;
+                $refundLog[] = number_format($cryptoAmount, 8) . ' ' . strtoupper($coinCode) . ' @ ' . $rate;
+            }
+        }
+
+        if (empty($refundLog)) {
+            Log::warning("refundCreditsForOrder: could not parse deduction log for order #{$order->id}. Notes: {$purchaseTx->notes}");
+            return;
+        }
+
+        // Record refund transaction in wallet history
+        \Webkul\Customer\Models\CustomerTransaction::create([
+            'uuid' => \Illuminate\Support\Str::uuid(),
+            'customer_id' => $customer->id,
+            'amount' => round($totalRefundedRub, 2),
+            'type' => 'refund',
+            'status' => 'completed',
+            'reference_type' => get_class($order),
+            'reference_id' => $order->id,
+            'notes' => 'Refund for cancelled Order #' . $order->increment_id . ' | ' . implode(', ', $refundLog),
+        ]);
     }
 }
