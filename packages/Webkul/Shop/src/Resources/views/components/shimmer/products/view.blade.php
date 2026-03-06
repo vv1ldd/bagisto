@@ -1,4 +1,4 @@
-<div class="w-full max-w-[640px] mx-auto px-4 lg:px-6 space-y-6 pt-6">
+<div class="w-full max-w-[540px] mx-auto px-4 lg:px-6 space-y-6 pt-6">
     <!-- Header Shimmer (Mobile only) -->
     <div class="sm:hidden">
         <div class="shimmer h-6 w-3/4 mb-2"></div>
