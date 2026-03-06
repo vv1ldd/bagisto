@@ -18,6 +18,9 @@
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.after') !!}
     </div>
 
+    {{-- MIDDLE: Toolbar Teleport Target --}}
+    <div id="header-toolbar-teleport-target" class="flex-grow flex justify-center px-4"></div>
+
     {{-- RIGHT: Unified Navigation Section (Profile & Cart) --}}
     <div class="flex items-center gap-3 flex-shrink-0">
         <v-header-nav></v-header-nav>
