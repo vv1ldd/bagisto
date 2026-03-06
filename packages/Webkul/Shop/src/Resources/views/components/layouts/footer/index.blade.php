@@ -23,7 +23,7 @@
 
 <footer class="mt-8 bg-transparent max-sm:mt-4">
     <div class="glass-footer px-4 md:px-[60px] py-6 max-sm:px-5">
-        <div class="mx-auto flex flex-col items-center justify-center gap-6 w-full max-w-7xl">
+        <div class="mx-auto flex flex-col items-center justify-center gap-2 w-full max-w-7xl">
 
             <!-- Footer Links (Relocated to bottom) -->
             @if ($customization?->options)
@@ -47,7 +47,7 @@
 
             <!-- Ultimate Bottom Bar: Contacts - Copyright - Company -->
             <div
-                class="flex flex-wrap justify-between items-center w-full gap-y-4 max-lg:justify-center max-lg:flex-col text-[11px] font-medium text-zinc-400/80 tracking-[0.1em] uppercase mt-8 pt-6 border-t border-zinc-200/50">
+                class="flex flex-wrap justify-between items-center w-full gap-y-4 max-lg:justify-center max-lg:flex-col text-[11px] font-medium text-zinc-400/80 tracking-[0.1em] uppercase mt-4 pt-4 border-t border-zinc-200/50">
 
                 <!-- Contact Details -->
                 @if (core()->getConfigData('general.design.footer.show_footer_info'))
