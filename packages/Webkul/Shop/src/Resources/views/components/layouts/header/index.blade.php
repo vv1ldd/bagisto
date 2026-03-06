@@ -11,89 +11,27 @@
         <!-- Desktop Header Shimmer -->
         <div class="flex flex-wrap max-lg:hidden">
             <div
-                class="flex h-[72px] w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] max-1180:px-8">
-                <!-- Left Navigation Section -->
-                <div class="flex items-center gap-x-10 max-[1180px]:gap-x-5">
-                    <!-- Logo Shimmer -->
-                    <span class="shimmer block h-[29px] w-[131px] " role="presentation">
-                    </span>
+                class="flex h-[72px] w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] max-1180:px-8 items-center">
+                <!-- Logo Shimmer -->
+                <span class="shimmer block h-[29px] w-[131px] " role="presentation">
+                </span>
 
-                    <!-- Categories Shimmer -->
-                    <div class="flex items-center gap-5">
-                        <span class="shimmer h-6 w-20 " role="presentation">
-                        </span>
-
-                        <span class="shimmer h-6 w-20 " role="presentation">
-                        </span>
-
-                        <span class="shimmer h-6 w-20 " role="presentation">
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Right Navigation Section -->
-                <div class="flex items-center gap-x-9 max-[1100px]:gap-x-6 max-lg:gap-x-8">
-                    <!-- Search Bar Shimmer -->
-                    <div class="relative w-full max-w-[445px]">
-                        <span class="shimmer block h-[42px] w-[250px]  px-11 py-3" role="presentation">
-                        </span>
-                    </div>
-
-                    <!-- Right Navigation Icons Shimmer -->
-                    <div class="mt-1.5 flex gap-x-8 max-[1100px]:gap-x-6 max-lg:gap-x-8">
-                        <!-- Compare Icon Shimmer -->
-                        <span class="shimmer h-6 w-6 " role="presentation">
-                        </span>
-
-                        <!-- Cart Icon Shimmer -->
-                        <span class="shimmer h-6 w-6 " role="presentation">
-                        </span>
-
-                        <!-- Profile Icon Shimmer -->
-                        <span class="shimmer h-6 w-6 " role="presentation">
-                        </span>
-                    </div>
-                </div>
+                <!-- Profile Icon Shimmer -->
+                <span class="shimmer h-8 w-32 " role="presentation">
+                </span>
             </div>
         </div>
 
         <!-- Mobile Header Shimmer -->
-        <div class="flex h-[72px] flex-wrap items-center gap-4 px-4 shadow-sm lg:hidden">
+        <div class="flex h-[72px] flex-wrap items-center gap-4 px-4 shadow-sm lg:hidden bg-transparent">
             <div class="flex w-full items-center justify-between">
-                <!-- Left Navigation -->
-                <div class="flex items-center gap-x-1.5">
-                    <!-- Hamburger Menu Shimmer -->
-                    <span class="shimmer block h-6 w-6 " role="presentation">
-                    </span>
+                <!-- Logo Shimmer -->
+                <span class="shimmer block h-[29px] w-[131px] " role="presentation">
+                </span>
 
-                    <!-- Logo Shimmer -->
-                    <span class="shimmer block h-[29px] w-[131px] " role="presentation">
-                    </span>
-                </div>
-
-                <!-- Right Navigation Icons -->
-                <div class="flex items-center gap-x-5 max-md:gap-x-4">
-                    <!-- Compare Icon Shimmer -->
-                    <span class="shimmer block h-6 w-6 " role="presentation">
-                    </span>
-
-                    <!-- Cart Icon Shimmer -->
-                    <span class="shimmer block h-6 w-6 " role="presentation">
-                    </span>
-
-                    <!-- Profile Icon Shimmer -->
-                    <span class="shimmer block h-6 w-6 " role="presentation">
-                    </span>
-                </div>
-            </div>
-
-            <!-- Search Bar Shimmer -->
-            <div class="flex w-full items-center">
-                <div class="relative w-full">
-                    <span class="shimmer block h-[42px] w-full  px-11 py-3.5 max-md:"
-                        role="presentation">
-                    </span>
-                </div>
+                <!-- Profile Icon Shimmer -->
+                <span class="shimmer block h-8 w-32 " role="presentation">
+                </span>
             </div>
         </div>
     </v-header-switcher>
@@ -105,10 +43,10 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-header-switcher-template">
-                                            <v-desktop-header v-if="isDesktop"></v-desktop-header>
+                                                <v-desktop-header v-if="isDesktop"></v-desktop-header>
 
-                                            <v-mobile-header v-else></v-mobile-header>
-                                        </script>
+                                                <v-mobile-header v-else></v-mobile-header>
+                                            </script>
 
     <script type="module">
         app.component('v-header-switcher', {
@@ -147,10 +85,10 @@
     </script>
 
     <script type="text/x-template" id="v-desktop-header-template">
-                                            <x-shop::layouts.header.desktop />
-                                        </script>
+                                                <x-shop::layouts.header.desktop />
+                                            </script>
 
     <script type="text/x-template" id="v-mobile-header-template">
-                                            <x-shop::layouts.header.mobile />
-                                        </script>
+                                                <x-shop::layouts.header.mobile />
+                                            </script>
 @endPushOnce
