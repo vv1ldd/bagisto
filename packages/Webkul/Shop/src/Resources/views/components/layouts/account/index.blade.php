@@ -129,11 +129,11 @@
                                         @endif
 
                                         @if ($showBack)
-                                            <button type="button"
-                                                onclick="event.stopPropagation(); if (window.history.length > 1) { window.history.go(-1); } else { window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'; }"
+                                            <a id="account-close-button"
+                                                href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
                                                 class="w-8 h-8 bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
                                                 <span class="icon-cancel text-xl"></span>
-                                            </button>
+                                            </a>
                                         @endif
                                     </div>
                                 </div>
@@ -173,7 +173,7 @@
                     // Intercept all <a> clicks within the account wrapper
                     document.addEventListener('click', function (e) {
                         const link = e.target.closest('a[href]');
-                        if (!link) return;
+                        if (!link || link.id === 'account-close-button' || link.closest('#account-close-button')) return;
 
                         const href = link.getAttribute('href');
                         // Only intercept internal, non-empty, non-anchor links
