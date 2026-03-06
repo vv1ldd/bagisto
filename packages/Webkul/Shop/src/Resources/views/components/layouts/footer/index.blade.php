@@ -25,28 +25,7 @@
     @if (request()->routeIs('shop.home.index'))
         <div
             class="mx-auto flex w-full max-w-7xl justify-between gap-x-6 gap-y-8 px-4 md:px-[60px] pb-12 max-1060:flex-col-reverse max-md:gap-5 max-sm:pb-5">
-            <!-- For Desktop View -->
-            <div class="flex flex-wrap items-start gap-24 max-1180:gap-6 max-1060:hidden" v-pre>
-                @if ($customization?->options)
-                    @foreach ($customization->options as $footerLinkSection)
-                        <ul class="grid gap-5 text-sm">
-                            @php
-                                usort($footerLinkSection, function ($a, $b) {
-                                    return $a['sort_order'] - $b['sort_order'];
-                                });
-                            @endphp
-
-                            @foreach ($footerLinkSection as $link)
-                                <li>
-                                    <a href="{{ $link['url'] }}" class="text-zinc-500 hover:text-black transition-colors">
-                                        {{ $link['title'] }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endforeach
-                @endif
-            </div>
+            <div class="flex-1"></div>
 
             <!-- Contact Information -->
             <div
@@ -74,48 +53,37 @@
                     </p>
                 </div>
             </div>
-
-            <!-- For Mobile view -->
-            <x-shop::accordion :is-active="false"
-                class="hidden !w-full !border-y !border-x-0 !border-[#7C45F5]/20 !bg-transparent outline-none max-1060:block">
-                <x-slot:header class="font-medium max-md:p-2.5 max-sm:px-0 max-sm:py-3 max-sm:text-sm !bg-transparent">
-                    @lang('shop::app.components.layouts.footer.footer-content')
-                    </x-slot>
-
-                    <x-slot:content class="flex justify-between !bg-transparent !px-0 !py-4">
-                        @if ($customization?->options)
-                            @foreach ($customization->options as $footerLinkSection)
-                                <ul class="grid gap-5 text-sm" v-pre>
-                                    @php
-                                        usort($footerLinkSection, function ($a, $b) {
-                                            return $a['sort_order'] - $b['sort_order'];
-                                        });
-                                    @endphp
-
-                                    @foreach ($footerLinkSection as $link)
-                                        <li>
-                                            <a href="{{ $link['url'] }}" class="text-sm font-medium max-sm:text-xs">
-                                                {{ $link['title'] }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endforeach
-                        @endif
-                        </x-slot>
-            </x-shop::accordion>
-
         </div>
     @endif
 
-    <div class="flex justify-center glass-footer px-[60px] py-6 max-sm:px-5">
-        {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
+    <div class="glass-footer px-4 md:px-[60px] py-6 max-sm:px-5">
+        <div class="mx-auto flex flex-col items-center justify-center gap-6 w-full max-w-7xl">
+            <!-- Footer Links (Relocated to bottom) -->
+            @if ($customization?->options)
+                <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3" v-pre>
+                    @foreach ($customization->options as $footerLinkSection)
+                        @php
+                            usort($footerLinkSection, function ($a, $b) {
+                                return $a['sort_order'] - $b['sort_order'];
+                            });
+                        @endphp
 
-        <p class="text-center text-[13px] font-medium text-zinc-500 tracking-wide uppercase">
-            @lang('shop::app.components.layouts.footer.footer-text', ['current_year' => date('Y')])
-        </p>
+                        @foreach ($footerLinkSection as $link)
+                            <a href="{{ $link['url'] }}"
+                                class="text-[13px] font-medium text-zinc-500 hover:text-black tracking-wide transition-colors whitespace-nowrap">
+                                {{ $link['title'] }}
+                            </a>
+                        @endforeach
+                    @endforeach
+                </div>
+            @endif
 
-        {!! view_render_event('bagisto.shop.layout.footer.footer_text.after') !!}
+            {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
+            <p class="text-center text-[11px] font-bold text-zinc-400 tracking-[0.15em] uppercase opacity-70">
+                @lang('shop::app.components.layouts.footer.footer-text', ['current_year' => date('Y')])
+            </p>
+            {!! view_render_event('bagisto.shop.layout.footer.footer_text.after') !!}
+        </div>
     </div>
 </footer>
 
