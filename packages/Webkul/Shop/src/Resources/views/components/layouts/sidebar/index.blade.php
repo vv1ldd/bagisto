@@ -199,7 +199,7 @@
             </transition>
 
             <aside 
-                class="sidebar-container fixed top-0 bottom-0 left-0 z-[1000] w-[320px] max-md:w-[85%] bg-[#F8F7FF] shadow-[0_0_60px_rgba(0,0,0,0.05)] -translate-x-full border-r border-[#E8E4FF]"
+                class="sidebar-container fixed top-0 bottom-0 left-0 z-[1000] w-[320px] max-md:w-[85%] bg-[#F0EFFF] -translate-x-full"
                 :class="{ 'translate-x-0': isOpen }"
             >
                 <slot></slot>
