@@ -219,31 +219,20 @@
                                                                                     </div>
                                                                                 @endif
                                                                             </div>
-
-                                                                                <!-- Description Section -->
-                                                                                @if ($product->description)
-                                                                                    <div class="space-y-4">
-                                                                                        <h2 class="text-xs font-black uppercase tracking-[0.25em] text-zinc-400 pl-1">Описание</h2>
-                                                                                                    <div class="bg-white border border-zinc-100 shadow-md p-8 max-sm:p-6 text-zinc-700 leading-relaxed text-lg max-sm:text-sm prose prose-zinc max-w-none w-full">
-                                                                                                        {!! $product->description !!}
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                @endif
-
-                                                                                                                    <!-- Hidden Original Elements for Compatibility -->
-                                                                                                                    <div class="hidden">
-                                                                                                                        @include('shop::products.view.gallery')
-                                                                                                                        @include('shop::products.view.types.simple')
-                                                                                                                        @include('shop::products.view.types.configurable')
-                                                                                                                        @include('shop::products.view.types.grouped')
-                                                                                                                        @include('shop::products.view.types.bundle')
-                                                                                                                        @include('shop::products.view.types.downloadable')
-                                                                                                                        @include('shop::products.view.types.booking')
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </form>
-                                                                                                        </x-shop::form>
-                                                                                                    </script>
+                                                                            
+                                                                            <!-- Hidden Original Elements for Compatibility -->
+                                                                            <div class="hidden">
+                                                                                @include('shop::products.view.gallery')
+                                                                                @include('shop::products.view.types.simple')
+                                                                                @include('shop::products.view.types.configurable')
+                                                                                @include('shop::products.view.types.grouped')
+                                                                                @include('shop::products.view.types.bundle')
+                                                                                @include('shop::products.view.types.downloadable')
+                                                                                @include('shop::products.view.types.booking')
+                                                                            </div>
+                                                                        </form>
+                                                                    </x-shop::form>
+                                                                </script>
 
             <script type="module">
                 app.component('v-product', {
