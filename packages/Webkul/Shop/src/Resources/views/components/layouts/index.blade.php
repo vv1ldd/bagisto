@@ -79,6 +79,10 @@
         @stack('styles')
 
         <style>
+            /* Force sharp corners globally (Meanly brutalist style) */
+            * {
+                border-radius: 0 !important;
+            }
             {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
         </style>
 
