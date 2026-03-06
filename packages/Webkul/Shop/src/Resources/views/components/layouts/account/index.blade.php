@@ -118,28 +118,26 @@
                             
                             @if ($showBack || (isset($title) && !empty((string)$title)))
                                 <!-- Drill-Down Header: Positioned above the card -->
-                                <div class="flex items-center gap-3 px-5 pt-0 pb-4 mt-2">
-                                    @if ($showBack)
-                                        <a href="{{ $backLink ?? route('shop.customers.account.index') }}"
-                                            @if (!isset($backLink))
-                                                onclick="if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) { window.history.back(); return false; }"
-                                            @endif
-                                            class="w-8 h-8  bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                                            </svg>
-                                        </a>
-                                    @endif
-
+                                <div class="flex items-center justify-between gap-3 px-5 pt-0 pb-4 mt-2">
                                     @if (isset($title) && !empty((string)$title))
                                         <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
                                     @endif
 
-                                    <div class="flex-1"></div>
+                                    <div class="flex items-center gap-3">
+                                        @if (isset($headerActions))
+                                            {{ $headerActions }}
+                                        @endif
 
-                                    @if (isset($headerActions))
-                                        {{ $headerActions }}
-                                    @endif
+                                        @if ($showBack)
+                                            <a href="{{ $backLink ?? route('shop.customers.account.index') }}"
+                                                @if (!isset($backLink))
+                                                    onclick="if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) { window.history.back(); return false; }"
+                                                @endif
+                                                class="w-8 h-8 bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+                                                <span class="icon-cancel text-xl"></span>
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
                             @endif
 
