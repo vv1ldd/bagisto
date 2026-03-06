@@ -201,8 +201,6 @@
                                                                                             </div>
                                                                                         </div>
                                                                                     </Teleport>
-                                                                                </div>
-                                                                            </Teleport>
 
                                                                             {{-- MOBILE FILTER DRAWER --}}
                                                                             <x-shop::drawer
