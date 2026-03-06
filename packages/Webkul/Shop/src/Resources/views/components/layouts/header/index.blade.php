@@ -14,6 +14,11 @@
                 <!-- Logo Shimmer -->
                 <div class="shimmer block h-7 w-32" role="presentation"></div>
 
+                <!-- NEW: Toolbar Shimmer Placeholder (Matching flex-grow logic) -->
+                <div class="flex-grow flex justify-center px-4">
+                    <div class="shimmer h-9 w-full max-w-md" role="presentation"></div>
+                </div>
+
                 <!-- Profile Shimmer -->
                 <div class="shimmer h-8 w-24" role="presentation"></div>
             </div>
@@ -36,10 +41,10 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-header-switcher-template">
-                                                                <v-desktop-header v-if="isDesktop"></v-desktop-header>
+                                                                    <v-desktop-header v-if="isDesktop"></v-desktop-header>
 
-                                                                <v-mobile-header v-else></v-mobile-header>
-                                                            </script>
+                                                                    <v-mobile-header v-else></v-mobile-header>
+                                                                </script>
 
     <script type="module">
         app.component('v-header-switcher', {
@@ -78,10 +83,10 @@
     </script>
 
     <script type="text/x-template" id="v-desktop-header-template">
-                                                                <x-shop::layouts.header.desktop />
-                                                            </script>
+                                                                    <x-shop::layouts.header.desktop />
+                                                                </script>
 
     <script type="text/x-template" id="v-mobile-header-template">
-                                                                <x-shop::layouts.header.mobile />
-                                                            </script>
+                                                                    <x-shop::layouts.header.mobile />
+                                                                </script>
 @endPushOnce
