@@ -107,9 +107,8 @@
         </a>
 
         <!-- Premium Background Layer - Refined Mesh Gradient -->
-        <div class="fixed inset-0 bg-[#f8f8fa] -z-30"></div>
-        <div class="fixed inset-0 bg-gradient-to-tr from-[#7C45F5]/15 via-white to-[#FF4D6D]/10 -z-20"></div>
-        <div class="fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(124,69,245,0.08)_0%,transparent_50%),radial-gradient(circle_at_80%_80%,rgba(255,77,109,0.08)_0%,transparent_50%)] -z-10 animate-pulse duration-[10s]"></div>
+        <!-- Solid Background Layer (Matches Sidebar for Seamless integration) -->
+        <div class="fixed inset-0 bg-[#F0EFFF] -z-30"></div>
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative">

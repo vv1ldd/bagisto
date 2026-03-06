@@ -24,7 +24,7 @@
 <footer class="mt-12 bg-transparent max-sm:mt-10">
     @if (request()->routeIs('shop.home.index'))
         <div
-            class="glass-card mx-4 mb-12  overflow-hidden flex justify-between gap-x-6 gap-y-8 p-12 md:mx-[60px] max-1060:flex-col-reverse max-md:gap-5 max-md:p-8 max-sm:px-4 max-sm:py-5">
+            class="mx-auto flex w-full max-w-7xl justify-between gap-x-6 gap-y-8 px-4 md:px-[60px] pb-12 max-1060:flex-col-reverse max-md:gap-5 max-sm:pb-5">
             <!-- For Desktop View -->
             <div class="flex flex-wrap items-start gap-24 max-1180:gap-6 max-1060:hidden" v-pre>
                 @if ($customization?->options)
@@ -52,30 +52,37 @@
             <div
                 class="flex flex-col gap-5 text-sm text-zinc-500 max-w-[250px] max-1060:ml-auto max-1060:items-end max-1060:text-right">
                 <div class="grid gap-1">
-                    <a href="tel:+79334151895"
-                        class="hover:text-black transition-colors font-medium text-lg text-black block mb-1">+7 (933)
-                        415-18-95</a>
+                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95') }}"
+                        class="hover:text-black transition-colors font-medium text-lg text-black block mb-1">
+                        {{ core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95' }}
+                    </a>
                     <div class="flex flex-col gap-0.5 text-xs font-medium">
-                        <p>ПН-ВС 24ч</p>
-                        <a href="mailto:support@meanly.ru" class="hover:text-black transition-colors">support@meanly.ru</a>
+                        <p>{{ core()->getConfigData('general.design.footer.schedule') ?: 'ПН-ВС 24ч' }}</p>
+                        <a href="mailto:{{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}"
+                            class="hover:text-black transition-colors">
+                            {{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}
+                        </a>
                     </div>
                 </div>
 
                 <div class="grid gap-0.5">
-                    <p class="font-bold text-black text-xs uppercase tracking-wide">ИП АТАНИЯЗОВА ДЖЕННЕТ</p>
-                    <p class="text-[10px] opacity-80">ИНН 526217178798</p>
+                    <p class="font-bold text-black text-xs uppercase tracking-wide">
+                        {{ core()->getConfigData('general.design.footer.company_name') ?: 'ИП АТАНИЯЗОВА ДЖЕННЕТ' }}
+                    </p>
+                    <p class="text-[10px] opacity-80">
+                        ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}
+                    </p>
                 </div>
             </div>
 
             <!-- For Mobile view -->
             <x-shop::accordion :is-active="false"
-                class="hidden !w-full  !border-2 !border-[#7C45F5]/30 max-1060:block max-sm:">
-                <x-slot:header class=" font-medium max-md:p-2.5 max-sm:px-3 max-sm:py-2 max-sm:text-sm"
-                    style="background-color: rgba(124, 69, 245, 0.07);">
+                class="hidden !w-full !border-y !border-x-0 !border-[#7C45F5]/20 !bg-transparent outline-none max-1060:block">
+                <x-slot:header class="font-medium max-md:p-2.5 max-sm:px-0 max-sm:py-3 max-sm:text-sm !bg-transparent">
                     @lang('shop::app.components.layouts.footer.footer-content')
                     </x-slot>
 
-                    <x-slot:content class="flex justify-between !bg-transparent !p-4">
+                    <x-slot:content class="flex justify-between !bg-transparent !px-0 !py-4">
                         @if ($customization?->options)
                             @foreach ($customization->options as $footerLinkSection)
                                 <ul class="grid gap-5 text-sm" v-pre>
