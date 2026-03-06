@@ -27,16 +27,6 @@
                                                                         {{-- Horizontal filter bar --}}
                                                                         <template v-else>
                                                                             <Teleport to="#header-toolbar-teleport-target" :disabled="!isTeleportTargetAvailable">
-                                                                                {{-- MOBILE FULL-WIDTH DRAW TOGGLE BUTTON --}}
-                                                                                <div v-if="isMobile && isTeleportTargetAvailable" class="w-full px-4 py-3 bg-white flex items-center justify-between relative mt-16 z-20" style="padding-top: 2rem;">
-                                                                                    <button type="button" @click="isFilterDrawerOpen = true" class="w-full bg-[#F8F7FF] text-[#7C45F5] font-semibold text-[13px] py-3 flex items-center justify-center gap-2 border border-[#E8E4FF] transition-all active:bg-[#E8E4FF] shadow-sm">
-                                                                                        <span class="icon-filter text-lg"></span>
-                                                                                        <span>Фильтры и сортировка</span>
-                                                                                        <span v-if="appliedFiltersCount > 0" class="bg-[#7C45F5] text-white px-2 py-0.5 text-xs font-bold leading-none">
-                                                                                            @{{ appliedFiltersCount }}
-                                                                                        </span>
-                                                                                    </button>
-                                                                                </div>
 
                                                                                 {{-- DESKTOP (or non-teleported) HORIZONTAL TOOLBAR --}}
                                                                                 <div 
@@ -201,89 +191,6 @@
                                                                                             </div>
                                                                                         </div>
                                                                                     </Teleport>
-
-                                                                            {{-- MOBILE FILTER DRAWER --}}
-                                                                            <x-shop::drawer
-                                                                                position="left"
-                                                                                width="100%"
-                                                                                ::is-active="isFilterDrawerOpen"
-                                                                                @toggle="isFilterDrawerOpen = $event.isActive"
-                                                                            >
-                                                                                <x-slot:header>
-                                                                                    <div class="flex items-center justify-between">
-                                                                                        <span class="text-lg font-black uppercase tracking-wider text-zinc-800">Фильтры</span>
-                                                                                    </div>
-                                                                                </x-slot>
-
-                                                                                <x-slot:content>
-                                                                                    <div class="flex flex-col gap-6 py-4">
-                                                                                        {{-- Search --}}
-                                                                                        <div>
-                                                                                            <h3 class="mb-3 text-xs font-bold uppercase tracking-widest text-[#7C45F5]">Поиск</h3>
-                                                                                            <form action="{{ route('shop.search.index') }}" class="relative w-full">
-                                                                                                <span class="absolute top-1/2 -translate-y-1/2 text-zinc-400 icon-search left-4 text-lg"></span>
-                                                                                                <input
-                                                                                                    type="text"
-                                                                                                    name="query"
-                                                                                                    value="{{ request('query') }}"
-                                                                                                    placeholder="Поиск..."
-                                                                                                    class="block w-full !rounded-none border border-zinc-200 bg-zinc-50 py-3.5 pl-11 pr-4 text-sm font-medium text-zinc-700 focus:border-[#7C45F5] focus:bg-white focus:outline-none shadow-sm"
-                                                                                                    required
-                                                                                                />
-                                                                                            </form>
-                                                                                        </div>
-
-                                                                                        {{-- Sort --}}
-                                                                                        <div>
-                                                                                            <h3 class="mb-3 text-xs font-bold uppercase tracking-widest text-[#7C45F5]">Сортировка</h3>
-                                                                                            <div class="grid grid-cols-2 gap-2">
-                                                                                                <button
-                                                                                                    v-for="sort in sortOptions"
-                                                                                                    :key="sort.value"
-                                                                                                    type="button"
-                                                                                                    class="flex items-center justify-center gap-1 border font-semibold transition-all active:scale-[0.98] px-2 py-3 text-[11px] text-center"
-                                                                                                    :class="sort.value === currentSort ? 'border-[#7C45F5] bg-[#7C45F5] text-white shadow-md shadow-[#7C45F5]/20' : 'border-zinc-200 bg-white text-zinc-600'"
-                                                                                                    @click="applySort(sort.value)"
-                                                                                                >
-                                                                                                    @{{ sort.title }}
-                                                                                                </button>
-                                                                                            </div>
-                                                                                        </div>
-
-                                                                                        {{-- Filters --}}
-                                                                                        <div class="border-t border-zinc-100 pt-6">
-                                                                                            <h3 class="mb-2 text-xs font-bold uppercase tracking-widest text-[#7C45F5]">Категории</h3>
-                                                                                            <v-filter-item
-                                                                                                v-for="filter in filters.available"
-                                                                                                :key="filter.id"
-                                                                                                :filter="filter"
-                                                                                                :compact="false"
-                                                                                                @values-applied="applyFilter(filter, $event)"
-                                                                                            />
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </x-slot>
-
-                                                                                <x-slot:footer>
-                                                                                    <div class="flex items-center gap-3 p-4 bg-white border-t border-zinc-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-                                                                                        <button
-                                                                                            type="button"
-                                                                                            class="flex-1 bg-[#7C45F5] text-white font-bold py-3.5 shadow-md shadow-[#7C45F5]/30 active:scale-[0.98] transition-all text-sm"
-                                                                                            @click="isFilterDrawerOpen = false"
-                                                                                        >
-                                                                                            Показать товары
-                                                                                        </button>
-                                                                                        <button
-                                                                                            v-if="hasAppliedFilters"
-                                                                                            type="button"
-                                                                                            class="px-5 py-3.5 border border-red-200 text-red-500 font-bold active:bg-red-50 transition-all text-sm whitespace-nowrap"
-                                                                                            @click="clear()"
-                                                                                        >
-                                                                                            Сбросить
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </x-slot>
-                                                                            </x-shop::drawer>
 
                                                                         </template>
                                                                     </div>
@@ -452,7 +359,6 @@
                     isTeleportTargetAvailable: false,
                     isMobile: window.innerWidth < 768,
                     isSearchExpanded: false,
-                    isFilterDrawerOpen: false,
 
                     // Sort — taken from PHP toolbar helper so it mirrors v-toolbar
                     sortOptions: @json($toolbar->getAvailableOrders())
@@ -479,20 +385,6 @@
                 hasAppliedFilters() {
                     const hasFilters = Object.values(this.filters.applied).some(v => v && (Array.isArray(v) ? v.length > 0 : !!v));
                     return hasFilters || this.currentSort !== 'created_at-desc';
-                },
-
-                appliedFiltersCount() {
-                    let count = 0;
-                    for (const key in this.filters.applied) {
-                        const val = this.filters.applied[key];
-                        if (val && (Array.isArray(val) ? val.length > 0 : !!val)) {
-                            count += Array.isArray(val) ? val.length : 1;
-                        }
-                    }
-                    if (this.currentSort !== 'created_at-desc') {
-                        count++;
-                    }
-                    return count;
                 },
 
                 sortLabel() {
