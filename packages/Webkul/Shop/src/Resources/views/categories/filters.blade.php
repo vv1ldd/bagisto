@@ -2,15 +2,7 @@
 
 @inject('toolbar', 'Webkul\Product\Helpers\Toolbar')
 
-<!-- Horizontal Filter Bar — shown on all screen sizes (desktop + mobile) -->
-<div>
-    <v-filters @filter-applied="setFilters('filter', $event)" @filter-clear="clearFilters('filter', $event)"
-        @toolbar-applied="setFilters('toolbar', $event)">
-        <x-shop::shimmer.categories.filters />
-    </v-filters>
-</div>
-
-
+{{-- Component templates and scripts below --}}
 
 {!! view_render_event('bagisto.shop.categories.view.filters.after') !!}
 
@@ -18,249 +10,178 @@
 
     {{-- ── v-filters template ──────────────────────────────────────── --}}
     <script type="text/x-template" id="v-filters-template">
-                                                                                                            <div>
-                                                                                                                {{-- Shimmer while filter options are loading --}}
-                                                                                                                <template v-if="isLoading">
-                                                                                                                    <x-shop::shimmer.categories.filters />
-                                                                                                                </template>
+                                                                                                                <div>
+                                                                                                                    {{-- Shimmer while filter options are loading --}}
+                                                                                                                    <template v-if="isLoading">
+                                                                                                                        <x-shop::shimmer.categories.filters />
+                                                                                                                    </template>
 
-                                                                                                                {{-- Horizontal filter bar --}}
-                                                                                                <template v-else>
-                                                                                                    <Teleport to="#header-toolbar-teleport-target" :disabled="!isTeleportTargetAvailable">
-                                                                                                        {{-- HORIZONTAL TOOLBAR --}}
-                                                                                                        <div 
-                                                                                                            class="transition-all"
-                                                                                                            v-show="isMounted"
-                                                                                                            :class="[
-                                                                                                                !isTeleportTargetAvailable 
-                                                                                                                    ? 'sticky top-4 z-[100] mx-4 mb-4 border border-[#E8E4FF] bg-[#F8F7FF]/80 py-3 shadow-lg shadow-[#7C45F5]/5 backdrop-blur-xl no-scrollbar overflow-x-auto px-6' 
-                                                                                                                    : 'w-full px-0 py-0 flex items-center justify-center h-10'
-                                                                                                            ]"
-                                                                                                        >
+                                                                                                                    {{-- Horizontal filter bar --}}
+                                                                                                    <template v-else>
+                                                                                                            {{-- HORIZONTAL TOOLBAR --}}
                                                                                                             <div 
-                                                                                                                class="flex items-center flex-nowrap transition-all h-full"
-                                                                                                                :class="isTeleportTargetAvailable ? 'w-full gap-2 items-center justify-center' : 'max-w-7xl mx-auto gap-4'"
+                                                                                                                class="w-full px-0 py-0 flex items-center justify-center h-10 transition-all"
+                                                                                                                v-show="isMounted"
                                                                                                             >
-                                                                                                                {{-- SEARCH: Box-style search input --}}
                                                                                                                 <div 
-                                                                                                                    class="flex-shrink-0 transition-all flex items-center h-full"
-                                                                                                                    :class="[
-                                                                                                                        isTeleportTargetAvailable ? 'max-w-[200px]' : 'min-w-[180px] md:min-w-[240px]',
-                                                                                                                    ]"
+                                                                                                                    class="flex items-center flex-nowrap transition-all h-full w-full gap-2 items-center justify-center"
                                                                                                                 >
-                                                                                                                    <form action="{{ route('shop.search.index') }}" class="relative group w-full flex items-center h-full">
-                                                                                                                        <div class="relative w-full h-full">
-                                                                                                                            <span class="absolute top-1/2 -translate-y-1/2 text-zinc-400 group-hover:text-[#7C45F5] transition-colors"
-                                                                                                                                :class="isTeleportTargetAvailable ? 'icon-search left-3 text-base' : 'icon-search left-4 text-lg'"
-                                                                                                                            ></span>
-                                                                                                                            <input
-                                                                                                                                type="text"
-                                                                                                                                name="query"
-                                                                                                                                ref="searchInput"
-                                                                                                                                value="{{ request('query') }}"
-                                                                                                                                placeholder="Поиск..."
-                                                                                                                                class="block w-full h-full !rounded-none border border-zinc-200 bg-white font-medium text-zinc-700 transition-all focus:border-[#7C45F5] focus:outline-none focus:ring-0"
-                                                                                                                                :class="isTeleportTargetAvailable ? 'pl-11 pr-2 text-[13px]' : 'py-2 pl-12 pr-4 text-sm font-medium'"
-                                                                                                                                minlength="{{ core()->getConfigData('catalog.products.search.min_query_length') }}"
-                                                                                                                                maxlength="{{ core()->getConfigData('catalog.products.search.max_query_length') }}"
-                                                                                                                                required
-                                                                                                                            />
-                                                                                                                        </div>
-                                                                                                                    </form>
-                                                                                                                </div>
-
-                                                                                                                {{-- CENTER/RIGHT: Filters & Sort --}}
-                                                                                                                <div class="flex items-center gap-1.5 h-full">
-                                                                                                                    {{-- Attributes --}}
-                                                                                                                    <div
-                                                                                                                        class="relative h-full"
-                                                                                                                        v-for="filter in filters.available"
-                                                                                                                        :key="filter.id"
+                                                                                                                    {{-- SEARCH: Box-style search input --}}
+                                                                                                                    <div 
+                                                                                                                        class="flex-shrink-0 transition-all flex items-center h-full max-w-[200px]"
                                                                                                                     >
-                                                                                                                        <button
-                                                                                                                            type="button"
-                                                                                                                            class="flex items-center gap-1.5 border !rounded-none font-semibold transition-all active:scale-[0.98] whitespace-nowrap h-full shadow-sm"
-                                                                                                                            :class="[
-                                                                                                                                isFilterApplied(filter)
-                                                                                                                                    ? 'border-[#7C45F5] bg-[#7C45F5] text-white'
-                                                                                                                                    : 'border-zinc-200 bg-white text-zinc-600 hover:border-[#7C45F5]/30 hover:bg-white',
-                                                                                                                                isTeleportTargetAvailable ? 'px-3 text-[12px]' : 'px-4 text-sm'
-                                                                                                                            ]"
-                                                                                                                            :data-filter-id="filter.id"
-                                                                                                                            @click.stop="toggleDropdown(filter.id)"
-                                                                                                                        >
-                                                                                                                            <span>@{{ filter.name }}</span>
-                                                                                                                            <span
-                                                                                                                                class=" bg-white px-1 py-0.5 text-[10px] font-bold text-[#7C45F5] shadow-xs"
-                                                                                                                                v-if="isFilterApplied(filter)"
-                                                                                                                            >@{{ getAppliedCount(filter) }}</span>
-                                                                                                                            <span
-                                                                                                                                :class="[
-                                                                                                                                    activeDropdown === filter.id ? 'icon-arrow-up' : 'icon-arrow-down',
-                                                                                                                                    isTeleportTargetAvailable ? 'text-[10px]' : 'text-base'
-                                                                                                                                ]"
-                                                                                                                            ></span>
-                                                                                                                        </button>
-                                                                                                                        <Teleport to="body">
-                                                                                                                            <div
-                                                                                                                                v-show="activeDropdown === filter.id"
-                                                                                                                                class="fixed min-w-[220px] border border-zinc-200 bg-white shadow-xl"
-                                                                                                                                style="z-index: 9999;"
-                                                                                                                                :style="getDropdownStyle(filter.id)"
-                                                                                                                                @click.stop
-                                                                                                                            >
-                                                                                                                                <v-filter-item
-                                                                                                                                    ref="filterItemComponent"
-                                                                                                                                    :key="filter.id"
-                                                                                                                                    :filter="filter"
-                                                                                                                                    :compact="true"
-                                                                                                                                    @values-applied="applyFilter(filter, $event)"
+                                                                                                                        <form action="{{ route('shop.search.index') }}" class="relative group w-full flex items-center h-full">
+                                                                                                                            <div class="relative w-full h-full">
+                                                                                                                                <span class="absolute top-1/2 -translate-y-1/2 text-zinc-400 group-hover:text-[#7C45F5] transition-colors icon-search left-3 text-base"></span>
+                                                                                                                                <input
+                                                                                                                                    type="text"
+                                                                                                                                    name="query"
+                                                                                                                                    ref="searchInput"
+                                                                                                                                    value="{{ request('query') }}"
+                                                                                                                                    placeholder="Поиск..."
+                                                                                                                                    class="block w-full h-full !rounded-none border border-zinc-200 bg-white font-medium text-zinc-700 transition-all focus:border-[#7C45F5] focus:outline-none focus:ring-0 pl-11 pr-2 text-[13px]"
+                                                                                                                                    minlength="{{ core()->getConfigData('catalog.products.search.min_query_length') }}"
+                                                                                                                                    maxlength="{{ core()->getConfigData('catalog.products.search.max_query_length') }}"
+                                                                                                                                    required
                                                                                                                                 />
                                                                                                                             </div>
-                                                                                                                        </Teleport>
+                                                                                                                        </form>
                                                                                                                     </div>
 
-                                                                                                                    {{-- Sort Options --}}
-                                                                                                                    <div class="flex items-center gap-1.5 h-full ml-1" v-if="!isMobile">
-                                                                                                                        <button
-                                                                                                                            v-for="sort in sortOptions"
-                                                                                                                            :key="sort.value"
-                                                                                                                            type="button"
-                                                                                                                            class="flex items-center gap-1 border !rounded-none font-semibold transition-all active:scale-[0.98] whitespace-nowrap h-full shadow-sm"
-                                                                                                                            :class="[
-                                                                                                                                sort.value === currentSort
-                                                                                                                                    ? 'border-[#7C45F5] bg-[#7C45F5] text-white'
-                                                                                                                                    : 'border-zinc-200 bg-white text-zinc-500 hover:border-[#7C45F5]/30 hover:bg-white',
-                                                                                                                                isTeleportTargetAvailable ? 'px-2.5 text-[12px]' : 'px-3 text-xs'
-                                                                                                                            ]"
-                                                                                                                            @click="applySort(sort.value)"
+                                                                                                                    {{-- CENTER/RIGHT: Filters & Sort --}}
+                                                                                                                    <div class="flex items-center gap-1.5 h-full">
+                                                                                                                        {{-- Attributes --}}
+                                                                                                                        <div
+                                                                                                                            class="relative h-full"
+                                                                                                                            v-for="filter in filters.available"
+                                                                                                                            :key="filter.id"
                                                                                                                         >
-                                                                                                                            @{{ sort.title }}
+                                                                                                                            <button
+                                                                                                                                type="button"
+                                                                                                                                class="flex items-center gap-1.5 border !rounded-none font-semibold transition-all active:scale-[0.98] whitespace-nowrap h-full shadow-sm"
+                                                                                                                                :class="[
+                                                                                                                                    isFilterApplied(filter)
+                                                                                                                                        ? 'border-[#7C45F5] bg-[#7C45F5] text-white'
+                                                                                                                                        : 'border-zinc-200 bg-white text-zinc-600 hover:border-[#7C45F5]/30 hover:bg-white',
+                                                                                                                                    'px-3 text-[12px]'
+                                                                                                                                ]"
+                                                                                                                                :data-filter-id="filter.id"
+                                                                                                                                @click.stop="toggleDropdown(filter.id)"
+                                                                                                                            >
+                                                                                                                                <span>@{{ filter.name }}</span>
+                                                                                                                                <span
+                                                                                                                                    class=" bg-white px-1 py-0.5 text-[10px] font-bold text-[#7C45F5] shadow-xs"
+                                                                                                                                    v-if="isFilterApplied(filter)"
+                                                                                                                                >@{{ getAppliedCount(filter) }}</span>
+                                                                                                                                <span
+                                                                                                                                    :class="[
+                                                                                                                                        activeDropdown === filter.id ? 'icon-arrow-up' : 'icon-arrow-down',
+                                                                                                                                        'text-[10px]'
+                                                                                                                                    ]"
+                                                                                                                                ></span>
+                                                                                                                            </button>
+                                                                                                                                <div
+                                                                                                                                    v-show="activeDropdown === filter.id"
+                                                                                                                                    class="fixed min-w-[220px] border border-zinc-200 bg-white shadow-xl"
+                                                                                                                                    style="z-index: 9999;"
+                                                                                                                                    :style="getDropdownStyle(filter.id)"
+                                                                                                                                    @click.stop
+                                                                                                                                >
+                                                                                                                                    <v-filter-item
+                                                                                                                                        ref="filterItemComponent"
+                                                                                                                                        :key="filter.id"
+                                                                                                                                        :filter="filter"
+                                                                                                                                        :compact="true"
+                                                                                                                                        @values-applied="applyFilter(filter, $event)"
+                                                                                                                                    />
+                                                                                                                                </div>
+                                                                                                                            </Teleport>
+                                                                                                                        </div>
+
+                                                                                                                        {{-- Sort Options --}}
+                                                                                                                        <div class="flex items-center gap-1.5 h-full ml-1" v-if="!isMobile">
+                                                                                                                            <button
+                                                                                                                                v-for="sort in sortOptions"
+                                                                                                                                :key="sort.value"
+                                                                                                                                type="button"
+                                                                                                                                class="flex items-center gap-1 border !rounded-none font-semibold transition-all active:scale-[0.98] whitespace-nowrap h-full shadow-sm"
+                                                                                                                                :class="[
+                                                                                                                                    sort.value === currentSort
+                                                                                                                                        ? 'border-[#7C45F5] bg-[#7C45F5] text-white'
+                                                                                                                                        : 'border-zinc-200 bg-white text-zinc-500 hover:border-[#7C45F5]/30 hover:bg-white',
+                                                                                                                                    'px-2.5 text-[12px]'
+                                                                                                                                ]"
+                                                                                                                                @click="applySort(sort.value)"
+                                                                                                                            >
+                                                                                                                                @{{ sort.title }}
+                                                                                                                            </button>
+                                                                                                                        </div>
+
+                                                                                                                        {{-- Clear All: Red cross (Matching height h-10) --}}
+                                                                                                                        <button
+                                                                                                                            type="button"
+                                                                                                                            class="flex h-10 w-10 items-center justify-center border border-red-500 !rounded-none transition-all active:scale-[0.95] ml-1 bg-white"
+                                                                                                                            title="@lang('shop::app.categories.filters.clear-all')"
+                                                                                                                            :class="[
+                                                                                                                                hasAppliedFilters 
+                                                                                                                                    ? 'text-red-500 hover:bg-red-500 hover:text-white cursor-pointer opacity-100' 
+                                                                                                                                    : 'border-zinc-100 text-zinc-200 pointer-events-none opacity-0',
+                                                                                                                            ]"
+                                                                                                                            @click="clear()"
+                                                                                                                        >
+                                                                                                                            <span class="icon-cancel text-xl font-bold"></span>
                                                                                                                         </button>
                                                                                                                     </div>
-
-                                                                                                                    {{-- Clear All: Red cross (Matching height h-10) --}}
-                                                                                                                    <button
-                                                                                                                        type="button"
-                                                                                                                        class="flex h-10 w-10 items-center justify-center border border-red-500 !rounded-none transition-all active:scale-[0.95] ml-1 bg-white"
-                                                                                                                        title="@lang('shop::app.categories.filters.clear-all')"
-                                                                                                                        :class="[
-                                                                                                                            hasAppliedFilters 
-                                                                                                                                ? 'text-red-500 hover:bg-red-500 hover:text-white cursor-pointer opacity-100' 
-                                                                                                                                : 'border-zinc-100 text-zinc-200 pointer-events-none opacity-0',
-                                                                                                                        ]"
-                                                                                                                        @click="clear()"
-                                                                                                                    >
-                                                                                                                        <span class="icon-cancel text-xl font-bold"></span>
-                                                                                                                    </button>
                                                                                                                 </div>
                                                                                                             </div>
-                                                                                                        </div>
-                                                                                                    </Teleport>
-                                                                                                </template>
-                                                                                            </div>
-                                                                                        </script>
+                                                                                                    </template>
+                                                                                                </div>
+                                                                                            </script>
 
 
     {{-- ── v-filter-item template ───────────────────────────────────── --}}
     <script type="text/x-template" id="v-filter-item-template">
-                                                                                                                                                                                                                <div>
-                                                                                                                                                                                                                    {{-- COMPACT mode: inside desktop dropdown --}}
-                                                                                                                                                                                                                    <div v-if="compact">
-                                                                                                                                                                                                                        {{-- Price range --}}
-                                                                                                                                                                                                                        <div v-if="filter.type === 'price'" class="p-4">
-                                                                                                                                                                                                                            <v-price-filter
-                                                                                                                                                                                                                                :key="refreshKey"
-                                                                                                                                                                                                                                :default-price-range="appliedValues"
-                                                                                                                                                                                                                                @set-price-range="applyValue($event)"
-                                                                                                                                                                                                                            />
-                                                                                                                                                                                                                        </div>
-
-                                                                                                                                                                                                                        {{-- Checkbox / Boolean options --}}
-                                                                                                                                                                                                                        <template v-else>
-                                                                                                                                                                                                                            <div class="px-3 pt-3" v-if="filter.type !== 'boolean'">
-                                                                                                                                                                                                                                <div class="relative">
-                                                                                                                                                                                                                                    <span class="icon-search pointer-events-none absolute left-3 top-3 text-xl text-zinc-400"></span>
-                                                                                                                                                                                                                                    <input
-                                                                                                                                                                                                                                        type="text"
-                                                                                                                                                                                                                                        class="block w-full !rounded-none border border-zinc-200 py-2.5 pl-10 pr-3 text-sm"
-                                                                                                                                                                                                                                        placeholder=""
-                                                                                                                                                                                                                                        v-model="searchQuery"
-                                                                                                                                                                                                                                        v-debounce:500="searchOptions"
-                                                                                                                                                                                                                                    />
-                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                                        {{-- COMPACT mode: inside desktop dropdown --}}
+                                                                                                                                                                                                                        <div v-if="compact">
+                                                                                                                                                                                                                            {{-- Price range --}}
+                                                                                                                                                                                                                            <div v-if="filter.type === 'price'" class="p-4">
+                                                                                                                                                                                                                                <v-price-filter
+                                                                                                                                                                                                                                    :key="refreshKey"
+                                                                                                                                                                                                                                    :default-price-range="appliedValues"
+                                                                                                                                                                                                                                    @set-price-range="applyValue($event)"
+                                                                                                                                                                                                                                />
                                                                                                                                                                                                                             </div>
 
-                                                                                                                                                                                                                            <ul class="max-h-[260px] overflow-y-auto p-2">
-                                                                                                                                                                                                                                <li v-for="(option, optionIndex) in options" :key="`${filter.id}_${option.id}`">
-                                                                                                                                                                                                                                    <label class="flex cursor-pointer items-center gap-2  px-3 py-2 hover:bg-zinc-50">
-                                                                                                                                                                                                                                        <input type="checkbox" class="hidden peer" :value="option.id" v-model="appliedValues" @change="applyValue" />
-                                                                                                                                                                                                                                        <span class="icon-uncheck peer-checked:icon-check-box flex-shrink-0 text-2xl text-navyBlue peer-checked:text-navyBlue"></span>
-                                                                                                                                                                                                                                        <span class="text-sm text-zinc-700">@{{ option.name }}</span>
-                                                                                                                                                                                                                                    </label>
-                                                                                                                                                                                                                                </li>
-                                                                                                                                                                                                                                <li v-if="! options.length && ! isLoadingMore" class="px-3 py-4 text-center text-sm text-zinc-400">
-                                                                                                                                                                                                                                    @lang('shop::app.categories.filters.search.no-options-available')
-                                                                                                                                                                                                                                </li>
-                                                                                                                                                                                                                            </ul>
-
-                                                                                                                                                                                                                            <div class="border-t border-zinc-100 px-3 py-2" v-if="meta && meta.current_page < meta.last_page">
-                                                                                                                                                                                                                                <button type="button" class="w-full  py-2 text-sm text-[#7C45F5] hover:bg-[#7C45F5]/5"
-                                                                                                                                                                                                                                    @click="loadMoreOptions" :disabled="isLoadingMore">
-                                                                                                                                                                                                                                    <span v-if="isLoadingMore">@lang('shop::app.categories.filters.search.loading')</span>
-                                                                                                                                                                                                                                    <span v-else>@lang('shop::app.categories.filters.search.load-more')</span>
-                                                                                                                                                                                                                                </button>
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                        </template>
-                                                                                                                                                                                                                    </div>
-
-                                                                                                                                                                                                                    <!-- ACCORDION mode: native Vue accordion to avoid Blade-component-in-x-template issues -->
-                                                                                                                                                                                                                    <div v-if="!compact" class="border-b border-zinc-200 last:border-b-0">
-                                                                                                                                                                                                                        <!-- Accordion header -->
-                                                                                                                                                                                                                        <button
-                                                                                                                                                                                                                            type="button"
-                                                                                                                                                                                                                            class="flex w-full items-center justify-between px-0 py-3"
-                                                                                                                                                                                                                            @click="accordionOpen = !accordionOpen"
-                                                                                                                                                                                                                        >
-                                                                                                                                                                                                                            <span class="text-base font-semibold">@{{ filter.name }}</span>
-                                                                                                                                                                                                                            <span class="text-xl" :class="accordionOpen ? 'icon-arrow-up' : 'icon-arrow-down'"></span>
-                                                                                                                                                                                                                        </button>
-
-                                                                                                                                                                                                                        <!-- Accordion body -->
-                                                                                                                                                                                                                        <div v-show="accordionOpen" class="pb-4">
-                                                                                                                                                                                                                            <!-- Price range -->
-                                                                                                                                                                                                                            <div v-if="filter.type === 'price'">
-                                                                                                                                                                                                                                <v-price-filter :key="refreshKey" :default-price-range="appliedValues" @set-price-range="applyValue($event)" />
-                                                                                                                                                                                                                            </div>
-
-                                                                                                                                                                                                                            <!-- Checkbox options -->
+                                                                                                                                                                                                                            {{-- Checkbox / Boolean options --}}
                                                                                                                                                                                                                             <template v-else>
-                                                                                                                                                                                                                                <!-- Search box -->
-                                                                                                                                                                                                                                <div class="relative mb-2" v-if="filter.type !== 'boolean'">
-                                                                                                                                                                                                                                    <span class="icon-search pointer-events-none absolute left-3 top-3 text-xl text-zinc-400"></span>
-                                                                                                                                                                                                                                    <input
-                                                                                                                                                                                                                                        type="text"
-                                                                                                                                                                                                                                        class="block w-full !rounded-none border border-zinc-200 py-3 pl-10 pr-3 text-sm"
-                                                                                                                                                                                                                                        placeholder=""
-                                                                                                                                                                                                                                        v-model="searchQuery"
-                                                                                                                                                                                                                                        v-debounce:500="searchOptions"
-                                                                                                                                                                                                                                    />
+                                                                                                                                                                                                                                <div class="px-3 pt-3" v-if="filter.type !== 'boolean'">
+                                                                                                                                                                                                                                    <div class="relative">
+                                                                                                                                                                                                                                        <span class="icon-search pointer-events-none absolute left-3 top-3 text-xl text-zinc-400"></span>
+                                                                                                                                                                                                                                        <input
+                                                                                                                                                                                                                                            type="text"
+                                                                                                                                                                                                                                            class="block w-full !rounded-none border border-zinc-200 py-2.5 pl-10 pr-3 text-sm"
+                                                                                                                                                                                                                                            placeholder=""
+                                                                                                                                                                                                                                            v-model="searchQuery"
+                                                                                                                                                                                                                                            v-debounce:500="searchOptions"
+                                                                                                                                                                                                                                        />
+                                                                                                                                                                                                                                    </div>
                                                                                                                                                                                                                                 </div>
 
-                                                                                                                                                                                                                                <ul class="max-h-[260px] overflow-y-auto">
-                                                                                                                                                                                                                                    <li v-for="option in options" :key="`${filter.id}_${option.id}`">
-                                                                                                                                                                                                                                        <label class="flex cursor-pointer items-center gap-3  px-2 py-2 hover:bg-zinc-50">
+                                                                                                                                                                                                                                <ul class="max-h-[260px] overflow-y-auto p-2">
+                                                                                                                                                                                                                                    <li v-for="(option, optionIndex) in options" :key="`${filter.id}_${option.id}`">
+                                                                                                                                                                                                                                        <label class="flex cursor-pointer items-center gap-2  px-3 py-2 hover:bg-zinc-50">
                                                                                                                                                                                                                                             <input type="checkbox" class="hidden peer" :value="option.id" v-model="appliedValues" @change="applyValue" />
                                                                                                                                                                                                                                             <span class="icon-uncheck peer-checked:icon-check-box flex-shrink-0 text-2xl text-navyBlue peer-checked:text-navyBlue"></span>
                                                                                                                                                                                                                                             <span class="text-sm text-zinc-700">@{{ option.name }}</span>
                                                                                                                                                                                                                                         </label>
                                                                                                                                                                                                                                     </li>
-                                                                                                                                                                                                                                    <li v-if="!options.length && !isLoadingMore" class="py-4 text-center text-sm text-zinc-400">
+                                                                                                                                                                                                                                    <li v-if="! options.length && ! isLoadingMore" class="px-3 py-4 text-center text-sm text-zinc-400">
                                                                                                                                                                                                                                         @lang('shop::app.categories.filters.search.no-options-available')
                                                                                                                                                                                                                                     </li>
                                                                                                                                                                                                                                 </ul>
 
-                                                                                                                                                                                                                                <div class="mt-2" v-if="meta && meta.current_page < meta.last_page">
+                                                                                                                                                                                                                                <div class="border-t border-zinc-100 px-3 py-2" v-if="meta && meta.current_page < meta.last_page">
                                                                                                                                                                                                                                     <button type="button" class="w-full  py-2 text-sm text-[#7C45F5] hover:bg-[#7C45F5]/5"
                                                                                                                                                                                                                                         @click="loadMoreOptions" :disabled="isLoadingMore">
                                                                                                                                                                                                                                         <span v-if="isLoadingMore">@lang('shop::app.categories.filters.search.loading')</span>
@@ -269,47 +190,103 @@
                                                                                                                                                                                                                                 </div>
                                                                                                                                                                                                                             </template>
                                                                                                                                                                                                                         </div>
+
+                                                                                                                                                                                                                        <!-- ACCORDION mode: native Vue accordion to avoid Blade-component-in-x-template issues -->
+                                                                                                                                                                                                                        <div v-if="!compact" class="border-b border-zinc-200 last:border-b-0">
+                                                                                                                                                                                                                            <!-- Accordion header -->
+                                                                                                                                                                                                                            <button
+                                                                                                                                                                                                                                type="button"
+                                                                                                                                                                                                                                class="flex w-full items-center justify-between px-0 py-3"
+                                                                                                                                                                                                                                @click="accordionOpen = !accordionOpen"
+                                                                                                                                                                                                                            >
+                                                                                                                                                                                                                                <span class="text-base font-semibold">@{{ filter.name }}</span>
+                                                                                                                                                                                                                                <span class="text-xl" :class="accordionOpen ? 'icon-arrow-up' : 'icon-arrow-down'"></span>
+                                                                                                                                                                                                                            </button>
+
+                                                                                                                                                                                                                            <!-- Accordion body -->
+                                                                                                                                                                                                                            <div v-show="accordionOpen" class="pb-4">
+                                                                                                                                                                                                                                <!-- Price range -->
+                                                                                                                                                                                                                                <div v-if="filter.type === 'price'">
+                                                                                                                                                                                                                                    <v-price-filter :key="refreshKey" :default-price-range="appliedValues" @set-price-range="applyValue($event)" />
+                                                                                                                                                                                                                                </div>
+
+                                                                                                                                                                                                                                <!-- Checkbox options -->
+                                                                                                                                                                                                                                <template v-else>
+                                                                                                                                                                                                                                    <!-- Search box -->
+                                                                                                                                                                                                                                    <div class="relative mb-2" v-if="filter.type !== 'boolean'">
+                                                                                                                                                                                                                                        <span class="icon-search pointer-events-none absolute left-3 top-3 text-xl text-zinc-400"></span>
+                                                                                                                                                                                                                                        <input
+                                                                                                                                                                                                                                            type="text"
+                                                                                                                                                                                                                                            class="block w-full !rounded-none border border-zinc-200 py-3 pl-10 pr-3 text-sm"
+                                                                                                                                                                                                                                            placeholder=""
+                                                                                                                                                                                                                                            v-model="searchQuery"
+                                                                                                                                                                                                                                            v-debounce:500="searchOptions"
+                                                                                                                                                                                                                                        />
+                                                                                                                                                                                                                                    </div>
+
+                                                                                                                                                                                                                                    <ul class="max-h-[260px] overflow-y-auto">
+                                                                                                                                                                                                                                        <li v-for="option in options" :key="`${filter.id}_${option.id}`">
+                                                                                                                                                                                                                                            <label class="flex cursor-pointer items-center gap-3  px-2 py-2 hover:bg-zinc-50">
+                                                                                                                                                                                                                                                <input type="checkbox" class="hidden peer" :value="option.id" v-model="appliedValues" @change="applyValue" />
+                                                                                                                                                                                                                                                <span class="icon-uncheck peer-checked:icon-check-box flex-shrink-0 text-2xl text-navyBlue peer-checked:text-navyBlue"></span>
+                                                                                                                                                                                                                                                <span class="text-sm text-zinc-700">@{{ option.name }}</span>
+                                                                                                                                                                                                                                            </label>
+                                                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                                                        <li v-if="!options.length && !isLoadingMore" class="py-4 text-center text-sm text-zinc-400">
+                                                                                                                                                                                                                                            @lang('shop::app.categories.filters.search.no-options-available')
+                                                                                                                                                                                                                                        </li>
+                                                                                                                                                                                                                                    </ul>
+
+                                                                                                                                                                                                                                    <div class="mt-2" v-if="meta && meta.current_page < meta.last_page">
+                                                                                                                                                                                                                                        <button type="button" class="w-full  py-2 text-sm text-[#7C45F5] hover:bg-[#7C45F5]/5"
+                                                                                                                                                                                                                                            @click="loadMoreOptions" :disabled="isLoadingMore">
+                                                                                                                                                                                                                                            <span v-if="isLoadingMore">@lang('shop::app.categories.filters.search.loading')</span>
+                                                                                                                                                                                                                                            <span v-else>@lang('shop::app.categories.filters.search.load-more')</span>
+                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                </template>
+                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                        </div>
                                                                                                                                                                                                                     </div>
-                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                            </script>
+                                                                                                                                                                                                                </script>
 
 
     {{-- ── v-price-filter template (two inputs: от/до) ──────────────── --}}
     <script type="text/x-template" id="v-price-filter-template">
-                                                                                                                                                                                        <div class="p-1">
-                                                                                                                                                                                            <div class="flex items-center gap-2">
-                                                                                                                                                                                                <div class="flex-1">
-                                                                                                                                                                                                    <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-400">От</label>
-                                                                                                                                                                                                    <input
-                                                                                                                                                                                                        type="number"
-                                                                                                                                                                                                        class="w-full  border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
-                                                                                                                                                                                                        :placeholder="minRange"
-                                                                                                                                                                                                        v-model.number="localMin"
-                                                                                                                                                                                                        :min="0"
-                                                                                                                                                                                                        :max="localMax"
-                                                                                                                                                                                                        @change="apply"
-                                                                                                                                                                                                    />
+                                                                                                                                                                                            <div class="p-1">
+                                                                                                                                                                                                <div class="flex items-center gap-2">
+                                                                                                                                                                                                    <div class="flex-1">
+                                                                                                                                                                                                        <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-400">От</label>
+                                                                                                                                                                                                        <input
+                                                                                                                                                                                                            type="number"
+                                                                                                                                                                                                            class="w-full  border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
+                                                                                                                                                                                                            :placeholder="minRange"
+                                                                                                                                                                                                            v-model.number="localMin"
+                                                                                                                                                                                                            :min="0"
+                                                                                                                                                                                                            :max="localMax"
+                                                                                                                                                                                                            @change="apply"
+                                                                                                                                                                                                        />
+                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                    <span class="mt-5 text-zinc-400">—</span>
+                                                                                                                                                                                                    <div class="flex-1">
+                                                                                                                                                                                                        <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-400">До</label>
+                                                                                                                                                                                                        <input
+                                                                                                                                                                                                            type="number"
+                                                                                                                                                                                                            class="w-full  border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
+                                                                                                                                                                                                            :placeholder="allowedMaxPrice"
+                                                                                                                                                                                                            v-model.number="localMax"
+                                                                                                                                                                                                            :min="localMin"
+                                                                                                                                                                                                            @change="apply"
+                                                                                                                                                                                                        />
+                                                                                                                                                                                                    </div>
                                                                                                                                                                                                 </div>
-                                                                                                                                                                                                <span class="mt-5 text-zinc-400">—</span>
-                                                                                                                                                                                                <div class="flex-1">
-                                                                                                                                                                                                    <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-400">До</label>
-                                                                                                                                                                                                    <input
-                                                                                                                                                                                                        type="number"
-                                                                                                                                                                                                        class="w-full  border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
-                                                                                                                                                                                                        :placeholder="allowedMaxPrice"
-                                                                                                                                                                                                        v-model.number="localMax"
-                                                                                                                                                                                                        :min="localMin"
-                                                                                                                                                                                                        @change="apply"
-                                                                                                                                                                                                    />
-                                                                                                                                                                                                </div>
+                                                                                                                                                                                                <button
+                                                                                                                                                                                                    type="button"
+                                                                                                                                                                                                    class="mt-3 w-full  bg-[#7C45F5] py-2 text-sm font-semibold text-white transition hover:bg-[#6534d4]"
+                                                                                                                                                                                                    @click="apply"
+                                                                                                                                                                                                >Применить</button>
                                                                                                                                                                                             </div>
-                                                                                                                                                                                            <button
-                                                                                                                                                                                                type="button"
-                                                                                                                                                                                                class="mt-3 w-full  bg-[#7C45F5] py-2 text-sm font-semibold text-white transition hover:bg-[#6534d4]"
-                                                                                                                                                                                                @click="apply"
-                                                                                                                                                                                            >Применить</button>
-                                                                                                                                                                                        </div>
-                                                                                                                                                                                    </script>
+                                                                                                                                                                                        </script>
 
     <script type="module">
         window.app.component('v-filters', {
@@ -321,9 +298,8 @@
                     activeDropdown: null,
                     allFiltersOpen: false,
                     sortOpen: false,
-                    isTeleportTargetAvailable: false,
                     isMounted: false,
-                    isMobile: window.innerWidth < 768,
+                    isMobile: window.innerWidth < 1024,
                     isSearchExpanded: false,
 
                     // Sort — taken from PHP toolbar helper so it mirrors v-toolbar
@@ -367,7 +343,6 @@
 
             mounted() {
                 this.isMounted = true;
-                this.isTeleportTargetAvailable = !!document.getElementById('header-toolbar-teleport-target');
 
                 this.getFilters();
                 this.setFiltersFromUrl();
@@ -388,7 +363,7 @@
 
             methods: {
                 handleResize() {
-                    this.isMobile = window.innerWidth < 768;
+                    this.isMobile = window.innerWidth < 1024;
                 },
 
                 getDropdownStyle(filterId) {
@@ -414,22 +389,19 @@
                         });
                 },
 
-                setFiltersFromUrl() {
-                    let queryParams = new URLSearchParams(window.location.search);
-                    queryParams.forEach((value, key) => {
-                        if (key === 'sort') {
-                            this.currentSort = value;
-                        } else if (key === 'mode') {
-                            this.currentMode = value;
-                        } else if (!['limit'].includes(key)) {
-                            this.filters.applied[key] = value.split(',');
-                        }
-                    });
-                    this.$emit('filter-applied', this.filters.applied);
-                },
-
                 emitToolbar() {
                     this.$emit('toolbar-applied', {
+                        default: {
+                            sort: '{{ $toolbar->getOrder([])['value'] }}',
+                            mode: '{{ $toolbar->getMode([]) }}',
+                        },
+                        applied: {
+                            sort: this.currentSort !== '{{ $toolbar->getOrder([])['value'] }}' ? this.currentSort : undefined,
+                            mode: this.currentMode !== '{{ $toolbar->getMode([]) }}' ? this.currentMode : undefined,
+                        },
+                    });
+
+                    this.$emitter.emit('header-toolbar-applied', {
                         default: {
                             sort: '{{ $toolbar->getOrder([])['value'] }}',
                             mode: '{{ $toolbar->getMode([]) }}',
@@ -447,7 +419,9 @@
                     } else {
                         delete this.filters.applied[filter.code];
                     }
+
                     this.$emit('filter-applied', this.filters.applied);
+                    this.$emitter.emit('header-filters-applied', this.filters.applied);
                 },
 
                 clear() {
