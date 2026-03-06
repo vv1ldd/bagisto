@@ -42,9 +42,9 @@
             $now = now()->format('Y-m-d');
 
             for ($i = 1; $i <= 3; $i++) {
-                $image = core()->getConfigData("customer.login_page.scheduled_image_$i");
-                $start = core()->getConfigData("customer.login_page.scheduled_image_{$i}_start");
-                $end = core()->getConfigData("customer.login_page.scheduled_image_{$i}_end");
+                $image = core()->getConfigData("customer.settings.login_page.scheduled_image_$i");
+                $start = core()->getConfigData("customer.settings.login_page.scheduled_image_{$i}_start");
+                $end = core()->getConfigData("customer.settings.login_page.scheduled_image_{$i}_end");
 
                 if ($image && (!$start || $now >= $start) && (!$end || $now <= $end)) {
                     $bgImageUrl = \Illuminate\Support\Facades\Storage::url($image);
@@ -53,7 +53,7 @@
             }
 
             if (! $bgImageUrl) {
-                $bgConfig = core()->getConfigData('customer.login_page.background_image');
+                $bgConfig = core()->getConfigData('customer.settings.login_page.background_image');
                 
                 $bgImageUrl = $bgConfig 
                     ? \Illuminate\Support\Facades\Storage::url($bgConfig) 
