@@ -1392,8 +1392,13 @@ return [
         'system' => [
             'login-page' => [
                 'title' => 'Login Page Customization',
-                'description' => 'Manage background images for customer login and registration pages.',
+                'info' => 'Manage background images for customer login and registration pages.',
                 'background-image' => 'Background Image',
+                'scheduled-image-1' => 'Scheduled Image 1',
+                'scheduled-image-2' => 'Scheduled Image 2',
+                'scheduled-image-3' => 'Scheduled Image 3',
+                'start-date' => 'Start Date',
+                'end-date' => 'End Date',
             ],
         ],
     ],
