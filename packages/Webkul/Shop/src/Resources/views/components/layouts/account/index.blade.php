@@ -130,7 +130,7 @@
 
                                         @if ($showBack)
                                             <button type="button"
-                                                onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'; }"
+                                                onclick="event.stopPropagation(); if (window.history.length > 1) { window.history.go(-1); } else { window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'; }"
                                                 class="w-8 h-8 bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
                                                 <span class="icon-cancel text-xl"></span>
                                             </button>
