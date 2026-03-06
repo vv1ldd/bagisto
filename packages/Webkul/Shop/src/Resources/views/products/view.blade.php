@@ -86,9 +86,10 @@
                                                                                                                 <input type="hidden" name="is_buy_now" v-model="is_buy_now">
                                                                                                                 <input type="hidden" name="quantity" v-model="qty">
 
-                                                                            <div class="w-full max-w-[420px] mx-auto px-4 lg:px-6 space-y-6 pt-6">
-                                                                                <!-- Single Card: Vertical Stacked Layout -->
-                                                                                <div class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-col items-stretch">
+                                                                            <div class="w-full max-w-5xl mx-auto px-4 lg:px-6 space-y-6 pt-6 flex flex-col md:flex-row md:items-start md:gap-8 lg:gap-12">
+                                                                                
+                                                                                <!-- LEFT COLUMN: Product Card -->
+                                                                                <div class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-col items-stretch w-full md:max-w-[420px] shrink-0">
 
                                                                                     <!-- Header: Title + Heart + Cross -->
                                                                                     <div class="p-6 pb-4 max-sm:p-4 max-sm:pb-2 flex items-start justify-between gap-4 relative z-10">
@@ -170,10 +171,11 @@
                                                                                                 </button>
                                                                                             </div>
 
-                                                                                            <div class="flex items-center gap-1.5 flex-1 min-w-[140px]">
+                                                                                            <!-- Buy Buttons -->
+                                                                                            <div class="flex items-center gap-1.5 flex-1 min-w-[170px]">
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="flex-1 bg-[#7C45F5] text-white h-10 font-black text-[10px] uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-md shadow-[#7C45F5]/10 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-2"
+                                                                                                    class="flex-1 bg-[#7C45F5] text-white h-10 font-black text-[9px] uppercase tracking-widest transition-all hover:bg-[#6b35e4] shadow-md shadow-[#7C45F5]/10 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-1 whitespace-nowrap overflow-hidden"
                                                                                                     :disabled="isStoring.buyNow"
                                                                                                     @click="is_buy_now = 1; addToCart()"
                                                                                                 >
@@ -183,7 +185,7 @@
                                                                                                 </button>
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="flex-1 bg-white border-2 border-[#7C45F5] text-[#7C45F5] h-10 font-black text-[10px] uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-2"
+                                                                                                    class="flex-1 bg-white border-2 border-[#7C45F5] text-[#7C45F5] h-10 font-black text-[9px] uppercase tracking-widest transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-1 whitespace-nowrap overflow-hidden"
                                                                                                     :disabled="isStoring.addToCart"
                                                                                                     @click="is_buy_now = 0; addToCart()"
                                                                                                 >
@@ -199,13 +201,24 @@
                                                                                             @if (in_array($product->type, ['downloadable', 'virtual']))
                                                                                                 <!-- Digital delivery badge -->
                                                                                                 <div class="flex items-center justify-center text-center gap-2 border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-3 py-2.5">
-                                                                                                    <span class="text-[#7C45F5] text-sm">✉</span>
+                                                                                                    <span class="text-[#7C45F5] text-sm shrink-0">✉</span>
                                                                                                     <p class="text-[10px] font-semibold text-[#7C45F5] leading-tight">Цифровой товар — пришлём на e-mail после оплаты</p>
                                                                                                 </div>
                                                                                             @endif
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
+
+                                                                                <!-- RIGHT COLUMN: Description Section -->
+                                                                                @if ($product->description)
+                                                                                    <div class="flex flex-col gap-4 flex-1 min-w-0 md:pt-2">
+                                                                                        <h2 class="text-xs font-black uppercase tracking-[0.25em] text-zinc-400 pl-1">Описание</h2>
+                                                                                        <div class="text-zinc-700 leading-relaxed text-base max-sm:text-sm prose prose-zinc max-w-none w-full">
+                                                                                            {!! $product->description !!}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                @endif
+                                                                            </div>
 
                                                                                 <!-- Description Section -->
                                                                                 @if ($product->description)

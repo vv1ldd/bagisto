@@ -1,6 +1,8 @@
-<div class="w-full max-w-[420px] mx-auto px-4 lg:px-6 space-y-6 pt-6">
-    <!-- Main Card Shimmer -->
-    <div class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-col items-stretch">
+<div
+    class="w-full max-w-5xl mx-auto px-4 lg:px-6 space-y-6 pt-6 flex flex-col md:flex-row md:items-start md:gap-8 lg:gap-12">
+    <!-- LEFT COLUMN: Main Card Shimmer -->
+    <div
+        class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-col items-stretch w-full md:max-w-[420px] shrink-0">
 
         <!-- Header Shimmer -->
         <div class="p-6 pb-4 max-sm:p-4 max-sm:pb-2 flex items-start justify-between gap-4">
@@ -41,9 +43,13 @@
         </div>
     </div>
 
-    <!-- Description Section Shimmer -->
-    <div class="space-y-4">
-        <div class="shimmer h-6 w-32"></div>
-        <div class="shimmer h-48 w-full"></div>
+    <!-- RIGHT COLUMN: Description Section Shimmer -->
+    <div class="flex flex-col gap-4 flex-1 min-w-0 md:pt-2 w-full">
+        <div class="shimmer h-4 w-24 mb-2"></div>
+        <div class="shimmer h-4 w-full"></div>
+        <div class="shimmer h-4 w-11/12"></div>
+        <div class="shimmer h-4 w-4/5"></div>
+        <div class="shimmer h-4 w-full"></div>
+        <div class="shimmer h-4 w-2/3"></div>
     </div>
 </div>
