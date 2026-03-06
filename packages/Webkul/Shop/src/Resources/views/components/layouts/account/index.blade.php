@@ -53,7 +53,7 @@
                 .ios-nav-group {
                     background-color: #fff !important;
                     border: 1px solid #e4e4e7 !important;
-                    border-radius: 16px !important;
+                    border-radius: 0 !important;
                     margin-bottom: 24px !important;
                     overflow: hidden !important;
                     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;

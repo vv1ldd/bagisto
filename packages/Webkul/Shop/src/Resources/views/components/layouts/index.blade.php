@@ -83,6 +83,11 @@
             * {
                 border-radius: 0 !important;
             }
+            
+            /* Restore rounded corners for input fields */
+            input, textarea, select, .form-control {
+                border-radius: 8px !important;
+            }
             {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
         </style>
 
@@ -108,7 +113,7 @@
 
         <!-- Premium Background Layer - Refined Mesh Gradient -->
         <!-- Solid Background Layer (Matches Sidebar for Seamless integration) -->
-        <div class="fixed inset-0 bg-[#F0EFFF] -z-30"></div>
+        <div class="fixed inset-0 -z-30" style="background-color: #F0EFFF;"></div>
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative">
