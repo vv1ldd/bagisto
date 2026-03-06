@@ -50,19 +50,23 @@
                 class="flex flex-wrap justify-between items-center w-full gap-y-4 max-lg:justify-center max-lg:flex-col text-[11px] font-medium text-zinc-400/80 tracking-[0.1em] uppercase mt-8 pt-6 border-t border-zinc-200/50">
 
                 <!-- Contact Details -->
-                <div class="flex flex-wrap justify-center items-center gap-3">
-                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95') }}"
-                        class="hover:text-zinc-600 transition-colors">
-                        {{ core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95' }}
-                    </a>
-                    <span class="text-zinc-300">|</span>
-                    <a href="mailto:{{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}"
-                        class="hover:text-zinc-600 transition-colors">
-                        {{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}
-                    </a>
-                    <span class="text-zinc-300">|</span>
-                    <p>{{ core()->getConfigData('general.design.footer.schedule') ?: 'ПН-ВС 24ч' }}</p>
-                </div>
+                @if (core()->getConfigData('general.design.footer.show_footer_info'))
+                    <div class="flex flex-wrap justify-center items-center gap-3">
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95') }}"
+                            class="hover:text-zinc-600 transition-colors">
+                            {{ core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95' }}
+                        </a>
+                        <span class="text-zinc-300">|</span>
+                        <a href="mailto:{{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}"
+                            class="hover:text-zinc-600 transition-colors">
+                            {{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}
+                        </a>
+                        <span class="text-zinc-300">|</span>
+                        <p>{{ core()->getConfigData('general.design.footer.schedule') ?: 'ПН-ВС 24ч' }}</p>
+                    </div>
+                @else
+                    <div class="max-lg:hidden"></div>
+                @endif
 
                 <!-- Copyright -->
                 <div class="flex items-center tracking-[0.15em] max-lg:order-last max-lg:mt-2">
@@ -72,12 +76,15 @@
                 </div>
 
                 <!-- Company Info -->
-                <div class="flex flex-wrap justify-center items-center gap-3">
-                    <p>{{ core()->getConfigData('general.design.footer.company_name') ?: 'ИП АТАНИЯЗОВА ДЖЕННЕТ' }}</p>
-                    <span class="text-zinc-300">|</span>
-                    <p>ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}</p>
-                </div>
-
+                @if (core()->getConfigData('general.design.footer.show_footer_info'))
+                    <div class="flex flex-wrap justify-center items-center gap-3">
+                        <p>{{ core()->getConfigData('general.design.footer.company_name') ?: 'ИП АТАНИЯЗОВА ДЖЕННЕТ' }}</p>
+                        <span class="text-zinc-300">|</span>
+                        <p>ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}</p>
+                    </div>
+                @else
+                    <div class="max-lg:hidden"></div>
+                @endif
             </div>
         </div>
     </div>

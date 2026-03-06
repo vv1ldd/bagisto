@@ -279,6 +279,13 @@ return [
         'sort' => 3,
         'fields' => [
             [
+                'name' => 'show_footer_info',
+                'title' => 'Показывать контакты и реквизиты',
+                'type' => 'boolean',
+                'default' => true,
+                'channel_based' => true,
+            ],
+            [
                 'name' => 'phone',
                 'title' => 'Номер телефона',
                 'type' => 'text',
