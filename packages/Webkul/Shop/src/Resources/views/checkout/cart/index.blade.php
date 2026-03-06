@@ -26,6 +26,14 @@
 
                 {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.after') !!}
 
+                <div class="flex items-center gap-4 mt-6 mb-8">
+                    <button type="button" onclick="history.back()"
+                        class="flex h-[40px] w-[40px] items-center justify-center  border border-zinc-200 bg-white text-zinc-600 transition-all hover:bg-zinc-50 hover:text-[#7C45F5] shadow-sm">
+                        <span class="icon-arrow-left text-xl"></span>
+                    </button>
+                    <h1 class="text-3xl font-bold text-zinc-900">@lang('shop::app.checkout.cart.index.cart')</h1>
+                </div>
+
                 @php
                     $errors = \Webkul\Checkout\Facades\Cart::getErrors();
                 @endphp
