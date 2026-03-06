@@ -96,35 +96,41 @@ Route::prefix('customer')->group(function () {
      * Customer authenticated routes. All the below routes only be accessible
      * if customer is authenticated.
      */
-    Route::group(['middleware' => ['customer', NoCacheMiddleware::class]], function () {
-        /**
-         * Datagrid routes.
-         */
-        Route::get('datagrid/look-up', [DataGridController::class, 'lookUp'])->name('shop.customer.datagrid.look_up');
+    /**
+     * Customer authenticated routes. All the below routes only be accessible
+     * if customer is authenticated.
+     */
+    Route::group(['middleware' => ['customer']], function () {
+        Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
+            /**
+             * Datagrid routes.
+             */
+            Route::get('datagrid/look-up', [DataGridController::class, 'lookUp'])->name('shop.customer.datagrid.look_up');
 
-        /**
-         * Passkey authenticated routes.
-         */
-        Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
-            Route::get('', 'index')->name('shop.customers.account.passkeys.index');
-            Route::post('register-options', 'registerOptions')->name('passkeys.register-options');
-            Route::post('register', 'register')->name('passkeys.register');
-            Route::delete('{id}', 'destroy')->name('passkeys.destroy');
+            /**
+             * Passkey authenticated routes.
+             */
+            Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.passkeys.index');
+                Route::post('register-options', 'registerOptions')->name('passkeys.register-options');
+                Route::post('register', 'register')->name('passkeys.register');
+                Route::delete('{id}', 'destroy')->name('passkeys.destroy');
+            });
+
+            /**
+             * Login activity routes.
+             */
+            Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\LoginHistoryController::class)->prefix('login-activity')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.login_activity.index');
+                Route::delete('{id}', 'destroy')->name('shop.customers.account.login_activity.destroy');
+            });
+
+            /**
+             * Logout.
+             */
+            Route::get('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy.get');
+            Route::delete('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy');
         });
-
-        /**
-         * Login activity routes.
-         */
-        Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\LoginHistoryController::class)->prefix('login-activity')->group(function () {
-            Route::get('', 'index')->name('shop.customers.account.login_activity.index');
-            Route::delete('{id}', 'destroy')->name('shop.customers.account.login_activity.destroy');
-        });
-
-        /**
-         * Logout.
-         */
-        Route::get('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy.get');
-        Route::delete('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy');
 
         /**
          * Customer account. All the below routes are related to
