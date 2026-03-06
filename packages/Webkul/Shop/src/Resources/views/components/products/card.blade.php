@@ -56,8 +56,7 @@
         <!-- Product Ratings overlay at bottom of image -->
         {!! view_render_event('bagisto.shop.components.products.card.average_ratings.before') !!}
         <div class="absolute bottom-3 left-3 z-10" v-if="product.ratings.total || product.reviews.total">
-            <div
-                class="flex items-center gap-1  bg-black/70 px-1 py-0.5 text-[10px] text-white backdrop-blur-md">
+            <div class="flex items-center gap-1  bg-black/70 px-1 py-0.5 text-[10px] text-white backdrop-blur-md">
                 <span class="icon-star-fill text-[9px] text-amber-400"></span>
                 <span class="font-medium">@{{ product.ratings.average }}</span>
             </div>
@@ -87,9 +86,9 @@
                 {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
             </div>
 
-            <!-- Buy Now & Add to Cart -->
+            <!-- Buy Now & Add to Cart (Hidden on Mobile Grid for convenience) -->
             @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
-                <div class="flex flex-col gap-2 w-full mt-3">
+                <div class="flex flex-col gap-2 w-full mt-3 max-sm:hidden">
                     {!! view_render_event('bagisto.shop.components.products.card.buy_now.before') !!}
                     <button
                         class="flex w-full items-center justify-center gap-2  bg-[#7C45F5] py-2.5 text-center text-[13px] font-bold text-white transition-all hover:bg-[#6c39e0] active:scale-[0.98] disabled:opacity-50"
