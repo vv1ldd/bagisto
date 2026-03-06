@@ -6,36 +6,34 @@
     </div>
 @endif
 
-<header class="w-full">
+<header class="w-full sticky top-0 z-[100] min-h-[72px] bg-white border-b border-zinc-100 shadow-sm shadow-zinc-600/5">
     <v-header-switcher>
-        <!-- Desktop Header Shimmer -->
+        <!-- Desktop Header Shimmer (Matching bottom.blade.php layout) -->
         <div class="flex flex-wrap max-lg:hidden">
-            <div
-                class="flex h-[72px] w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] max-1180:px-8 items-center">
+            <div class="flex h-[72px] w-full max-w-7xl mx-auto px-4 sm:px-8 justify-between items-center">
                 <!-- Logo Shimmer -->
-                <span class="shimmer block h-[29px] w-[131px] " role="presentation">
-                </span>
+                <div class="shimmer block h-7 w-32" role="presentation"></div>
 
-                <!-- Profile Icon Shimmer -->
-                <span class="shimmer h-8 w-32 " role="presentation">
-                </span>
+                <!-- Middle Shimmer (Space for toolbar) -->
+                <div class="flex-grow flex justify-center px-4">
+                    <div class="shimmer h-8 w-64 opacity-5" role="presentation"></div>
+                </div>
+
+                <!-- Profile Shimmer -->
+                <div class="shimmer h-8 w-24" role="presentation"></div>
             </div>
         </div>
 
         <!-- Mobile Header Shimmer -->
-        <div class="flex h-[72px] flex-wrap items-center gap-4 px-4 shadow-sm lg:hidden bg-transparent">
+        <div class="flex h-[72px] flex-wrap items-center px-4 lg:hidden">
             <div class="flex w-full items-center justify-between">
                 <!-- Logo Shimmer -->
-                <span class="shimmer block h-[29px] w-[131px] " role="presentation">
-                </span>
+                <div class="shimmer block h-6 w-24" role="presentation"></div>
 
-                <!-- Profile Icon Shimmer -->
-                <span class="shimmer block h-8 w-32 " role="presentation">
-                </span>
+                <!-- Profile icon shimmer -->
+                <div class="shimmer block h-8 w-8" role="presentation"></div>
             </div>
         </div>
-    </v-header-switcher>
-
     </v-header-switcher>
 </header>
 
@@ -43,10 +41,10 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-header-switcher-template">
-                                                    <v-desktop-header v-if="isDesktop"></v-desktop-header>
+                                                        <v-desktop-header v-if="isDesktop"></v-desktop-header>
 
-                                                    <v-mobile-header v-else></v-mobile-header>
-                                                </script>
+                                                        <v-mobile-header v-else></v-mobile-header>
+                                                    </script>
 
     <script type="module">
         app.component('v-header-switcher', {
@@ -85,10 +83,10 @@
     </script>
 
     <script type="text/x-template" id="v-desktop-header-template">
-                                                    <x-shop::layouts.header.desktop />
-                                                </script>
+                                                        <x-shop::layouts.header.desktop />
+                                                    </script>
 
     <script type="text/x-template" id="v-mobile-header-template">
-                                                    <x-shop::layouts.header.mobile />
-                                                </script>
+                                                        <x-shop::layouts.header.mobile />
+                                                    </script>
 @endPushOnce
