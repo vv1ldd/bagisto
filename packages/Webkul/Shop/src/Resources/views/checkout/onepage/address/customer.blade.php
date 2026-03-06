@@ -20,7 +20,7 @@
                                                                                                                         <div v-if="! activeAddressForm">
                                                                                                                             <!-- Individual Profile Card -->
                                                                                                                             <div 
-                                                                                                                                class="p-4 rounded-2xl border transition-all duration-300 group cursor-pointer overflow-hidden relative mb-4 max-w-md mx-auto"
+                                                                                                                                class="p-4  border transition-all duration-300 group cursor-pointer overflow-hidden relative mb-4 max-w-md mx-auto"
                                                                                                                                 :class="[selectedOrgId === null ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
                                                                                                                                 @click="selectedOrgId = null; isB2B = false; $parent.$options.name == 'v-direct-checkout' && proceedWithUnifiedCard()"
                                                                                                                             >
@@ -44,7 +44,7 @@
                                                                                                                                         ></span>
 
                                                                                                                                         <div 
-                                                                                                                                            class="flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all duration-300"
+                                                                                                                                            class="flex h-6 w-6 items-center justify-center  border-2 transition-all duration-300"
                                                                                                                                             :class="[selectedOrgId === null ? 'border-[#7C45F5] bg-[#7C45F5]' : 'border-zinc-300 group-hover:border-zinc-400']"
                                                                                                                                         >
                                                                                                                                             <span v-if="selectedOrgId === null" class="icon-done text-white text-sm font-bold"></span>
@@ -66,7 +66,7 @@
                                                                                                                                     <div 
                                                                                                                                         v-for="org in organizations"
                                                                                                                                         :key="org.id"
-                                                                                                                                        class="relative p-4 rounded-2xl border transition-all duration-300 group cursor-pointer overflow-hidden"
+                                                                                                                                        class="relative p-4  border transition-all duration-300 group cursor-pointer overflow-hidden"
                                                                                                                                         :class="[selectedOrgId == org.id ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
                                                                                                                                         @click="selectedOrgId = org.id; isB2B = true; $parent.$options.name == 'v-direct-checkout' && proceedWithUnifiedCard()"
                                                                                                                                     >
@@ -76,14 +76,14 @@
                                                                                                                                             <div class="min-w-0">
                                                                                                                                                 <p class="text-sm font-bold transition-colors duration-300" :class="[selectedOrgId == org.id ? 'text-[#7C45F5]' : 'text-zinc-800']">@{{ org.name }}</p>
                                                                                                                                                 <div class="flex flex-wrap gap-2 mt-1.5">
-                                                                                                                                                    <span class="px-1.5 py-0.5 rounded-md bg-zinc-100/50 text-[9px] font-bold text-zinc-500 uppercase tracking-wider">ИНН @{{ org.inn }}</span>
-                                                                                                                                                    <span v-if="org.kpp" class="px-1.5 py-0.5 rounded-md bg-zinc-100/50 text-[9px] font-bold text-zinc-500 uppercase tracking-wider">КПП @{{ org.kpp }}</span>
+                                                                                                                                                    <span class="px-1.5 py-0.5  bg-zinc-100/50 text-[9px] font-bold text-zinc-500 uppercase tracking-wider">ИНН @{{ org.inn }}</span>
+                                                                                                                                                    <span v-if="org.kpp" class="px-1.5 py-0.5  bg-zinc-100/50 text-[9px] font-bold text-zinc-500 uppercase tracking-wider">КПП @{{ org.kpp }}</span>
                                                                                                                                                 </div>
                                                                                                                                             </div>
 
                                                                                                                                             <div class="shrink-0 ml-4">
                                                                                                                                                 <div 
-                                                                                                                                                    class="flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all duration-300"
+                                                                                                                                                    class="flex h-6 w-6 items-center justify-center  border-2 transition-all duration-300"
                                                                                                                                                     :class="[selectedOrgId == org.id ? 'border-[#7C45F5] bg-[#7C45F5]' : 'border-zinc-300 group-hover:border-zinc-400']"
                                                                                                                                                 >
                                                                                                                                                     <span v-if="selectedOrgId == org.id" class="icon-done text-white text-sm font-bold"></span>
@@ -119,7 +119,7 @@
                                                                                                                                     <div 
                                                                                                                                         v-for="address in customerSavedAddresses.shipping"
                                                                                                                                         :key="address.id"
-                                                                                                                                        class="relative p-6 rounded-2xl border cursor-pointer transition-all duration-300 group overflow-hidden"
+                                                                                                                                        class="relative p-6  border cursor-pointer transition-all duration-300 group overflow-hidden"
                                                                                                                                         :class="[selectedAddresses.shipping_address_id == address.id ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
                                                                                                                                         @click="selectedAddresses.shipping_address_id = address.id"
                                                                                                                                     >
@@ -133,7 +133,7 @@
                                                                                                                                                     @click.stop="selectedAddressForEdit = address; activeAddressForm = 'shipping'"
                                                                                                                                                 ></span>
                                                                                                                                                 <div 
-                                                                                                                                                    class="flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all duration-300"
+                                                                                                                                                    class="flex h-6 w-6 items-center justify-center  border-2 transition-all duration-300"
                                                                                                                                                     :class="[selectedAddresses.shipping_address_id == address.id ? 'border-[#7C45F5] bg-[#7C45F5]' : 'border-zinc-300 group-hover:border-zinc-400']"
                                                                                                                                                 >
                                                                                                                                                     <span v-if="selectedAddresses.shipping_address_id == address.id" class="icon-done text-white text-sm font-bold"></span>
@@ -152,7 +152,7 @@
                                                                                                                             <!-- Action Button — only for physical goods, auto-proceed for digital -->
                                                                                                                             <div class="mt-6 flex justify-center" v-if="$parent.$options.name != 'v-direct-checkout' && cart.have_stockable_items">
                                                                                                                                 <x-shop::button
-                                                                                                                                    class="primary-button group relative flex items-center gap-3 overflow-hidden rounded-full bg-gradient-to-r from-[#7C45F5] to-[#9263f7] px-12 py-4 text-base font-bold transition-all hover:shadow-[0_8px_25px_rgb(124,69,245,0.4)] active:scale-95 disabled:opacity-50"
+                                                                                                                                    class="primary-button group relative flex items-center gap-3 overflow-hidden  bg-gradient-to-r from-[#7C45F5] to-[#9263f7] px-12 py-4 text-base font-bold transition-all hover:shadow-[0_8px_25px_rgb(124,69,245,0.4)] active:scale-95 disabled:opacity-50"
                                                                                                                                     ::title="'{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
                                                                                                                                     ::loading="isStoring"
                                                                                                                                     ::disabled="isStoring || (cart.have_stockable_items && !selectedAddresses.shipping_address_id)"
@@ -221,7 +221,7 @@
                                                                                                                                     <!-- Save Button -->
                                                                                                                                     <div class="mt-4 flex justify-end" v-if="$parent.$options.name != 'v-direct-checkout'">
                                                                                                                                         <x-shop::button
-                                                                                                                                            class="primary-button rounded-2xl px-11 py-3 max-md:rounded-lg max-sm:w-full max-sm:max-w-full max-sm:py-1.5"
+                                                                                                                                            class="primary-button  px-11 py-3 max-md: max-sm:w-full max-sm:max-w-full max-sm:py-1.5"
                                                                                                                                             ::title="cart.have_stockable_items ? '{{ trans('shop::app.checkout.onepage.address.save') }}' : '{{ trans('shop::app.checkout.onepage.address.proceed') }}'"
                                                                                                                                             ::loading="isStoring"
                                                                                                                                             ::disabled="isStoring"

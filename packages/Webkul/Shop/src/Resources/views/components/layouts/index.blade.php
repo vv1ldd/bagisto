@@ -182,7 +182,7 @@
             <div v-if="isVisible" 
                 class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
                 @click.self="isVisible = false">
-                <div class="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl transition-all animate-in fade-in zoom-in duration-200">
+                <div class="w-full max-w-lg overflow-hidden  bg-white shadow-2xl transition-all animate-in fade-in zoom-in duration-200">
                     <div class="flex items-center justify-between border-b border-zinc-100 p-6">
                         <h3 class="text-xl font-dmserif text-zinc-800">Горячие клавиши</h3>
                         <button @click="isVisible = false" class="text-2xl icon-cross text-zinc-400 hover:text-zinc-600"></button>
@@ -196,13 +196,13 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Поиск по каталогу</span>
                                         <div class="flex gap-1">
-                                            <kbd class="min-w-[2.5rem] flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">⌘</kbd>
-                                            <kbd class="min-w-[2.5rem] flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">K</kbd>
+                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">⌘</kbd>
+                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">K</kbd>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Помощь по клавишам</span>
-                                        <kbd class="min-w-[2.5rem] flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">?</kbd>
+                                        <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">?</kbd>
                                     </div>
                                 </div>
                             </section>
@@ -213,25 +213,25 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Главная страница</span>
                                         <div class="flex items-center gap-1.5 font-medium text-zinc-400">
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
                                             <span class="text-xs">затем</span>
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">H</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">H</kbd>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Личный профиль</span>
                                         <div class="flex items-center gap-1.5 font-medium text-zinc-400">
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
                                             <span class="text-xs">затем</span>
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">P</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">P</kbd>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Мои заказы</span>
                                         <div class="flex items-center gap-1.5 font-medium text-zinc-400">
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
                                             <span class="text-xs">затем</span>
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">O</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">O</kbd>
                                         </div>
                                     </div>
                                 </div>
@@ -341,9 +341,9 @@
         {{-- Global Verification Modal --}}
         <div id="verify-modal"
             class="hidden fixed inset-0 z-[9999] items-center justify-center p-4 bg-black/60 backdrop-blur-xl">
-            <div class="bg-white rounded-[28px] w-full max-w-[400px] overflow-hidden shadow-2xl border border-white/20">
+            <div class="bg-white  w-full max-w-[400px] overflow-hidden shadow-2xl border border-white/20">
                 <div class="p-8 text-center" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);">
-                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20">
+                    <div class="w-16 h-16 bg-white/20  flex items-center justify-center mx-auto mb-4 border border-white/20">
                         <span class="icon-shield text-white text-3xl"></span>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-1">Верификация</h3>
@@ -351,23 +351,23 @@
                 </div>
 
                 <div class="p-6 space-y-4">
-                    <div class="bg-violet-50/50 border border-violet-100 p-4 rounded-2xl">
+                    <div class="bg-violet-50/50 border border-violet-100 p-4 ">
                         <p class="text-[12px] text-violet-600 font-bold mb-1 uppercase tracking-widest">Сумма подтверждения</p>
                         <p id="verify-amount" class="text-2xl font-bold text-zinc-900 font-mono leading-none">—</p>
                     </div>
 
-                    <div class="bg-zinc-50 border border-zinc-100 p-4 rounded-2xl">
+                    <div class="bg-zinc-50 border border-zinc-100 p-4 ">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0 flex-1">
                                 <p class="text-[12px] text-zinc-400 font-bold mb-1 uppercase tracking-widest">Куда отправить</p>
                                 <p id="verify-dest" class="text-[11px] font-mono font-bold text-zinc-700 break-all leading-tight">—</p>
                             </div>
                             <button id="verify-dest-copy"
-                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-white border border-zinc-200 px-3 py-2 rounded-xl active:scale-95 transition-all shadow-sm">Копировать</button>
+                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-white border border-zinc-200 px-3 py-2  active:scale-95 transition-all shadow-sm">Копировать</button>
                         </div>
                     </div>
 
-                    <div class="text-[13px] text-zinc-500 space-y-2 leading-relaxed bg-zinc-50/50 rounded-2xl p-4 border border-zinc-100">
+                    <div class="text-[13px] text-zinc-500 space-y-2 leading-relaxed bg-zinc-50/50  p-4 border border-zinc-100">
                         <div class="flex gap-2">
                             <span class="font-bold text-violet-600">1.</span>
                             <p>Отправьте <b class="text-zinc-900">ровно указанную</b> сумму со своего кошелька.</p>
@@ -381,7 +381,7 @@
 
                 <div class="px-6 pb-8 flex flex-col gap-3">
                     <a id="verify-link" href="#"
-                        class="w-full text-center text-white font-bold py-4 rounded-2xl shadow-lg active:scale-[0.98] transition-all"
+                        class="w-full text-center text-white font-bold py-4  shadow-lg active:scale-[0.98] transition-all"
                         style="background: linear-gradient(to right, #7c3aed, #4f46e5); box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);">
                         Проверить транзакцию
                     </a>

@@ -9,7 +9,7 @@
     height="{{ $height }}"
 >
     <x-shop::media.images.lazy
-        class="mb-4 h-[200px] w-[200px] rounded-xl max-sm:h-[100px] max-sm:w-[100px]"
+        class="mb-4 h-[200px] w-[200px]  max-sm:h-[100px] max-sm:w-[100px]"
     />
 </v-media>
 
@@ -18,10 +18,10 @@
         type="text/x-template"
         id="v-media-template"
     >
-        <div class="mb-4 flex cursor-pointer flex-col rounded-lg">
-            <div :class="{'border border-dashed border-gray-300 rounded-2xl': isDragOver }">
+        <div class="mb-4 flex cursor-pointer flex-col ">
+            <div :class="{'border border-dashed border-gray-300  isDragOver }">
                 <div
-                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center rounded-xl bg-zinc-100 hover:bg-gray-100 max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px]"
+                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center  bg-zinc-100 hover:bg-gray-100 max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px]"
                     v-if="uploadedFiles.isPicked"
                 >
                     <div 
@@ -30,7 +30,7 @@
                         @mouseleave="uploadedFiles.showDeleteButton = false"
                     >
                         <img
-                            class="rounded-xl object-cover max-md:rounded-full"
+                            class=" object-cover max-md:"
                             :src="uploadedFiles.url"
                             :class="{ 'opacity-25' : uploadedFiles.showDeleteButton }"
                             alt="Uploaded Image"
@@ -48,7 +48,7 @@
 
                 <label 
                     :for="`${$.uid}_fileInput`"
-                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl bg-zinc-100 hover:bg-gray-100 max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px] max-sm:gap-1"
+                    class="flex h-[200px] w-[200px] cursor-pointer flex-col items-center justify-center gap-2  bg-zinc-100 hover:bg-gray-100 max-md:h-36 max-md:w-36 max-sm:h-[100px] max-sm:w-[100px] max-sm:gap-1"
                     :style="{'max-width': this.width, 'max-height': this.height}"
                     v-show="! uploadedFiles.isPicked"
                     @dragover="onDragOver"
@@ -103,7 +103,7 @@
                                 <img
                                     :src="file.url"
                                     :alt="file.name"
-                                    class="max-h-12 min-w-12 rounded-xl max-sm:max-h-[60px] max-sm:min-w-[60px]"
+                                    class="max-h-12 min-w-12  max-sm:max-h-[60px] max-sm:min-w-[60px]"
                                     :class="{ 'opacity-25' : file.showDeleteButton }"
                                 >
                                 <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform opacity-0 transition-opacity group-hover:opacity-100">
@@ -125,7 +125,7 @@
                                 <video
                                     :src="file.url"
                                     :alt="file.name"
-                                    class="max-h-12 min-w-12 rounded-xl max-sm:max-h-[60px] max-sm:min-w-[60px]"
+                                    class="max-h-12 min-w-12  max-sm:max-h-[60px] max-sm:min-w-[60px]"
                                     :class="{'opacity-25' : file.showDeleteButton}"
                                 >
                                 </video>

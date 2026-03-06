@@ -9,7 +9,7 @@
         {!! view_render_event('bagisto.shop.checkout.onepage.summary.item_image.before') !!}
 
         <div class="relative">
-            <img class="h-16 w-16 rounded-xl border border-zinc-100 object-cover shadow-sm transition-transform hover:scale-105"
+            <img class="h-16 w-16  border border-zinc-100 object-cover shadow-sm transition-transform hover:scale-105"
                 :src="item.base_image.small_image_url" :alt="item.name" width="64" height="64" />
         </div>
 

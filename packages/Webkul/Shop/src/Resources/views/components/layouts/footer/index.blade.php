@@ -24,7 +24,7 @@
 <footer class="mt-12 bg-transparent max-sm:mt-10">
     @if (request()->routeIs('shop.home.index'))
         <div
-            class="glass-card mx-4 mb-12 rounded-[32px] overflow-hidden flex justify-between gap-x-6 gap-y-8 p-12 md:mx-[60px] max-1060:flex-col-reverse max-md:gap-5 max-md:p-8 max-sm:px-4 max-sm:py-5">
+            class="glass-card mx-4 mb-12  overflow-hidden flex justify-between gap-x-6 gap-y-8 p-12 md:mx-[60px] max-1060:flex-col-reverse max-md:gap-5 max-md:p-8 max-sm:px-4 max-sm:py-5">
             <!-- For Desktop View -->
             <div class="flex flex-wrap items-start gap-24 max-1180:gap-6 max-1060:hidden" v-pre>
                 @if ($customization?->options)
@@ -69,8 +69,8 @@
 
             <!-- For Mobile view -->
             <x-shop::accordion :is-active="false"
-                class="hidden !w-full rounded-xl !border-2 !border-[#7C45F5]/30 max-1060:block max-sm:rounded-lg">
-                <x-slot:header class="rounded-t-lg font-medium max-md:p-2.5 max-sm:px-3 max-sm:py-2 max-sm:text-sm"
+                class="hidden !w-full  !border-2 !border-[#7C45F5]/30 max-1060:block max-sm:">
+                <x-slot:header class=" font-medium max-md:p-2.5 max-sm:px-3 max-sm:py-2 max-sm:text-sm"
                     style="background-color: rgba(124, 69, 245, 0.07);">
                     @lang('shop::app.components.layouts.footer.footer-content')
                     </x-slot>

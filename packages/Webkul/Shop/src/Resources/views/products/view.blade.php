@@ -90,7 +90,7 @@
                                                                                             <!-- Back + Title -->
                                                                                             <div class="flex items-center gap-3">
                                                                                                 <a href="javascript:history.back()"
-                                                                                                   class="shrink-0 w-9 h-9 rounded-full bg-white/60 backdrop-blur-md border border-white/70 flex items-center justify-center text-zinc-700 active:scale-95 transition-all shadow-sm hover:bg-white">
+                                                                                                   class="shrink-0 w-9 h-9  bg-white/60 backdrop-blur-md border border-white/70 flex items-center justify-center text-zinc-700 active:scale-95 transition-all shadow-sm hover:bg-white">
                                                                                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
                                                                                                     </svg>
@@ -101,7 +101,7 @@
                                                                                             </div>
 
                                                                                             <!-- Single Card: Image + Info — compact, centered -->
-                                                                                            <div class="bg-white rounded-3xl border border-zinc-100 shadow-md overflow-hidden mx-auto" style="display:inline-flex; flex-direction:row; align-items:stretch; max-width:580px; width:100%;">
+                                                                                            <div class="bg-white  border border-zinc-100 shadow-md overflow-hidden mx-auto" style="display:inline-flex; flex-direction:row; align-items:stretch; max-width:580px; width:100%;">
 
                                                                                                 <!-- LEFT: Product Image -->
                                                                                                 <div class="relative flex-shrink-0 flex items-center justify-center bg-zinc-50" style="width:260px; min-width:260px; border-right:1px solid #f4f4f5;">
@@ -115,7 +115,7 @@
                                                                                                 <div class="flex flex-col gap-3 p-5 flex-1 min-w-0" style="position:relative;">
                                                                                                     @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
                                                                                                         <div
-                                                                                                            class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-zinc-100 bg-zinc-50 text-base transition-all hover:scale-110 active:scale-95"
+                                                                                                            class="flex h-8 w-8 cursor-pointer items-center justify-center  border border-zinc-100 bg-zinc-50 text-base transition-all hover:scale-110 active:scale-95"
                                                                                                             style="position:absolute; top:12px; right:12px;"
                                                                                                             :class="isWishlist ? 'icon-heart-fill text-red-500' : 'icon-heart text-zinc-400'"
                                                                                                             @click="addToWishlist"
@@ -126,7 +126,7 @@
                                                                                                     @if ($attributeData->count())
                                                                                                         <div class="flex flex-wrap gap-1.5">
                                                                                                             @foreach ($attributeData as $attribute)
-                                                                                                                <div class="flex items-center gap-1 bg-zinc-50 border border-zinc-100 rounded-md px-2 py-0.5">
+                                                                                                                <div class="flex items-center gap-1 bg-zinc-50 border border-zinc-100  px-2 py-0.5">
                                                                                                                     <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">{{ $attribute['label'] }}:</span>
                                                                                                                     <span class="text-[9px] font-black text-zinc-900 uppercase tracking-tight">{{ $attribute['value'] }}</span>
                                                                                                                 </div>
@@ -143,7 +143,7 @@
                                                                                                     <div class="flex flex-col gap-2">
                                                                                                         <button
                                                                                                             type="button"
-                                                                                                            class="w-full bg-[#7C45F5] text-white py-1.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_4px_12px_-4px_rgba(124,69,245,0.4)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1.5"
+                                                                                                            class="w-full bg-[#7C45F5] text-white py-1.5  font-bold text-xs uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-[0_4px_12px_-4px_rgba(124,69,245,0.4)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1.5"
                                                                                                             :disabled="isStoring.buyNow"
                                                                                                             @click="is_buy_now = 1; addToCart()"
                                                                                                         >
@@ -153,7 +153,7 @@
                                                                                                         </button>
                                                                                                         <button
                                                                                                             type="button"
-                                                                                                            class="w-full bg-white border border-[#7C45F5] text-[#7C45F5] py-1.5 rounded-lg font-bold text-xs uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1.5"
+                                                                                                            class="w-full bg-white border border-[#7C45F5] text-[#7C45F5] py-1.5  font-bold text-xs uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1.5"
                                                                                                             :disabled="isStoring.addToCart"
                                                                                                             @click="is_buy_now = 0; addToCart()"
                                                                                                         >
@@ -168,7 +168,7 @@
 
                                                                                                     @if (in_array($product->type, ['downloadable', 'virtual']))
                                                                                                         <!-- Digital delivery badge -->
-                                                                                                        <div class="flex items-center gap-2 rounded-lg border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-3 py-2">
+                                                                                                        <div class="flex items-center gap-2  border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-3 py-2">
                                                                                                             <span class="text-[#7C45F5] text-sm">✉</span>
                                                                                                             <p class="text-[10px] font-semibold text-[#7C45F5] leading-tight">Цифровой товар — пришлём на e-mail после оплаты</p>
                                                                                                         </div>
@@ -177,10 +177,10 @@
                                                                                                     <!-- Quantity Selector -->
                                                                                                     <div class="flex items-center gap-3">
                                                                                                         <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Кол-во</p>
-                                                                                                        <div class="flex items-center bg-zinc-100 rounded-lg p-0.5 border border-zinc-200 w-fit">
+                                                                                                        <div class="flex items-center bg-zinc-100  p-0.5 border border-zinc-200 w-fit">
                                                                                                             <button
                                                                                                                 type="button"
-                                                                                                                class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white transition-all active:scale-95 disabled:opacity-30"
+                                                                                                                class="w-7 h-7 flex items-center justify-center  hover:bg-white transition-all active:scale-95 disabled:opacity-30"
                                                                                                                 @click="decreaseQty"
                                                                                                                 :disabled="qty <= 1"
                                                                                                             >
@@ -194,7 +194,7 @@
                                                                                                             >
                                                                                                             <button
                                                                                                                 type="button"
-                                                                                                                class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white transition-all active:scale-95"
+                                                                                                                class="w-7 h-7 flex items-center justify-center  hover:bg-white transition-all active:scale-95"
                                                                                                                 @click="increaseQty"
                                                                                                             >
                                                                                                                 <span class="icon-plus text-xs"></span>
@@ -208,7 +208,7 @@
                                                                                             @if ($product->description)
                                                                                                 <div class="space-y-3">
                                                                                                     <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400 pl-1">О товаре</h2>
-                                                                                                    <div class="bg-white/60 backdrop-blur-md rounded-2xl p-6 border border-white/70 shadow-sm text-zinc-700 leading-relaxed text-base max-sm:text-sm prose prose-zinc max-w-none w-full">
+                                                                                                    <div class="bg-white/60 backdrop-blur-md  p-6 border border-white/70 shadow-sm text-zinc-700 leading-relaxed text-base max-sm:text-sm prose prose-zinc max-w-none w-full">
                                                                                                         {!! $product->description !!}
                                                                                                     </div>
                                                                                                 </div>

@@ -40,7 +40,7 @@
             <!-- Reviews Vue Component -->
             <v-product-reviews>
                 <div class="px-5 py-6 space-y-4">
-                    <div v-for="i in 3" :key="i" class="h-20 bg-zinc-100 rounded-xl animate-pulse"></div>
+                    <div v-for="i in 3" :key="i" class="h-20 bg-zinc-100  animate-pulse"></div>
                 </div>
             </v-product-reviews>
         </div>
@@ -50,7 +50,7 @@
             <div>
                 <template v-if="isLoading">
                     <div class="px-5 py-6 space-y-4">
-                        <div v-for="i in 3" :key="i" class="h-20 bg-zinc-100 rounded-xl animate-pulse"></div>
+                        <div v-for="i in 3" :key="i" class="h-20 bg-zinc-100  animate-pulse"></div>
                     </div>
                 </template>
 
@@ -67,7 +67,7 @@
                                     <!-- Product Image -->
                                     <div class="shrink-0">
                                         <img
-                                            class="h-16 w-16 rounded-xl object-cover border border-zinc-100"
+                                            class="h-16 w-16  object-cover border border-zinc-100"
                                             src="{{ $review->product->base_image_url ?? bagisto_asset('images/small-product-placeholder.webp') }}"
                                             alt="Review Image"                   
                                         />

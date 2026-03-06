@@ -44,7 +44,7 @@
     @endif
     @foreach (menu()->getItems('customer') as $menuItem)
         @if ($menuItem->haveChildren())
-            <div class="glass-card !bg-white/40 mb-6 overflow-hidden rounded-2xl">
+            <div class="glass-card !bg-white/40 mb-6 overflow-hidden ">
                 @foreach ($menuItem->getChildren() as $subMenuItem)
 
                     <a href="{{ $subMenuItem->getUrl() }}" class="ios-nav-row">

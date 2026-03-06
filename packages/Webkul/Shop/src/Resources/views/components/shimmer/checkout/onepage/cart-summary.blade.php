@@ -4,7 +4,7 @@
 
         <!-- single card -->
         <div class="flex gap-x-4 pb-5">
-            <div class="shimmer h-[90px] w-[90px] rounded-md"></div>
+            <div class="shimmer h-[90px] w-[90px] "></div>
 
             <div>
                 <p class="shimmer h-6 w-[180px]"></p>
@@ -14,7 +14,7 @@
 
         <!-- single card -->
         <div class="flex gap-x-4 pb-5">
-            <div class="shimmer h-[90px] w-[90px] rounded-md"></div>
+            <div class="shimmer h-[90px] w-[90px] "></div>
 
             <div>
                 <p class="shimmer h-6 w-[180px]"></p>
@@ -24,7 +24,7 @@
 
         <!-- single card -->
         <div class="flex gap-x-4 pb-5">
-            <div class="shimmer h-[90px] w-[90px] rounded-md"></div>
+            <div class="shimmer h-[90px] w-[90px] "></div>
 
             <div>
                 <p class="shimmer h-6 w-[180px]"></p>
@@ -57,5 +57,5 @@
     </div>
 
     <!-- Proceed to checkout button -->
-    <div class="shimmer h-[46px] w-2/4 rounded-2xl max-sm:mb-10 max-sm:hidden"></div>
+    <div class="shimmer h-[46px] w-2/4  max-sm:mb-10 max-sm:hidden"></div>
 </div>

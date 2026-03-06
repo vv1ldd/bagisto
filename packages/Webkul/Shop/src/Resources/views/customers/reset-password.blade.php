@@ -10,7 +10,7 @@
 
         <x-slot:header>
             <a href="{{ route('shop.customer.session.index') }}"
-                class="rounded-full border border-zinc-200 px-6 py-2 text-sm font-medium text-zinc-600 transition hover:bg-zinc-50">
+                class=" border border-zinc-200 px-6 py-2 text-sm font-medium text-zinc-600 transition hover:bg-zinc-50">
                 @lang('shop::app.customers.reset-password.back-link-title')
             </a>
         </x-slot:header>
@@ -31,7 +31,7 @@
                     </x-shop::form.control-group.label>
 
                     <x-shop::form.control-group.control type="email"
-                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-xl focus:!ring-2 focus:!ring-zinc-500 w-full"
+                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 ! focus:!ring-2 focus:!ring-zinc-500 w-full"
                         name="email" rules="required|email" :value="old('email')"
                         :label="trans('shop::app.customers.reset-password.email')" placeholder="email@example.com" />
 
@@ -46,7 +46,7 @@
                     </x-shop::form.control-group.label>
 
                     <x-shop::form.control-group.control type="password"
-                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-xl focus:!ring-2 focus:!ring-zinc-500 w-full"
+                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 ! focus:!ring-2 focus:!ring-zinc-500 w-full"
                         name="password" rules="required|min:6" value=""
                         :label="trans('shop::app.customers.reset-password.password')"
                         :placeholder="trans('shop::app.customers.reset-password.password')" ref="password" />
@@ -62,7 +62,7 @@
                     </x-shop::form.control-group.label>
 
                     <x-shop::form.control-group.control type="password"
-                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-xl focus:!ring-2 focus:!ring-zinc-500 w-full"
+                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 ! focus:!ring-2 focus:!ring-zinc-500 w-full"
                         name="password_confirmation" rules="confirmed:@password" value=""
                         :label="trans('shop::app.customers.reset-password.confirm-password')"
                         :placeholder="trans('shop::app.customers.reset-password.confirm-password')" />
@@ -72,7 +72,7 @@
 
                 <div class="mt-8">
                     <button
-                        class="w-full rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
+                        class="w-full  bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
                         type="submit">
                         @lang('shop::app.customers.reset-password.submit-btn-title')
                     </button>

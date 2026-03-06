@@ -7,7 +7,7 @@
             {{-- Top Navigation & Title (Truly Outside the Tile) --}}
             <div class="flex items-center gap-4 mb-8">
                 <a id="page-back-link" href="{{ route('shop.customers.account.index') }}"
-                    class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
+                    class="w-10 h-10  bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
@@ -15,7 +15,7 @@
                     </svg>
                 </a>
                 <button id="step-back-btn" onclick="handleStepBack()" style="display: none;"
-                    class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
+                    class="w-10 h-10  bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
@@ -48,8 +48,8 @@
 
             {{-- Step 1: Dashboard --}}
             <div id="step-dashboard"
-                class="ios-group p-6 bg-white rounded-[32px] shadow-md relative overflow-hidden active:scale-[0.99] transition-transform">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5 rounded-full blur-3xl"></div>
+                class="ios-group p-6 bg-white  shadow-md relative overflow-hidden active:scale-[0.99] transition-transform">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5  blur-3xl"></div>
                 <div class="flex flex-col gap-2 relative z-10">
                     {{-- Row 1: label + badges --}}
                     <div class="flex items-start justify-between gap-2">
@@ -61,11 +61,11 @@
                             @endif
                         </div>
                         <div class="flex items-center gap-1.5 flex-wrap justify-end">
-                            <div class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold whitespace-nowrap">
+                            <div class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1  border border-violet-100 font-bold whitespace-nowrap">
                                 @ {{ $user->username }}
                             </div>
                             @if($user->is_investor)
-                                <div class="text-[11px] font-black text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200 tracking-wide whitespace-nowrap">
+                                <div class="text-[11px] font-black text-amber-600 bg-amber-50 px-2.5 py-1  border border-amber-200 tracking-wide whitespace-nowrap">
                                     💎 Инвестор
                                 </div>
                             @endif
@@ -79,7 +79,7 @@
                         </div>
                         <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
                             <div
-                                class="w-10 h-10 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
+                                class="w-10 h-10  bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
                                 📜</div>
                             <span
                                 class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
@@ -96,7 +96,7 @@
                                     $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
                                 @endphp
                                 <div class="flex items-center gap-2 text-[14px] font-medium text-zinc-500">
-                                    <span class="w-2 h-2 rounded-full shrink-0" style="background: {{ $m['color'] }}"></span>
+                                    <span class="w-2 h-2  shrink-0" style="background: {{ $m['color'] }}"></span>
                                     <span class="text-zinc-900 font-bold font-mono">{{ $amount }} {{ $m['label'] }}</span>
                                     <span class="text-zinc-400 opacity-60">≈</span>
                                     <span>{{ core()->formatPrice($fiat) }}</span>
@@ -108,13 +108,13 @@
                     <div class="mt-8">
                         @if($user->is_investor)
                             <button onclick="goToDeposit()"
-                                class="inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3 rounded-2xl active:scale-95 transition-all shadow-lg shadow-zinc-100">
+                                class="inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3  active:scale-95 transition-all shadow-lg shadow-zinc-100">
                                 + Пополнить
                             </button>
                         @else
                             <div class="flex flex-col gap-1.5">
                                 <button disabled
-                                    class="inline-flex items-center justify-center text-[14px] font-bold text-zinc-400 bg-zinc-100 px-6 py-3 rounded-2xl cursor-not-allowed opacity-60">
+                                    class="inline-flex items-center justify-center text-[14px] font-bold text-zinc-400 bg-zinc-100 px-6 py-3  cursor-not-allowed opacity-60">
                                     + Пополнить
                                 </button>
                                 <p class="text-[11px] text-zinc-400 text-center">Методы пополнения пока недоступны</p>
@@ -124,7 +124,7 @@
 
                     {{-- Cashback Info (only for non-investors) --}}
                     @if(!auth()->guard('customer')->user()->is_investor)
-                    <div class="mt-6 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex gap-3">
+                    <div class="mt-6 p-4 bg-emerald-50  border border-emerald-100 flex gap-3">
                         <div class="text-xl">💸</div>
                         <div class="text-[12px] text-emerald-800 leading-snug">
                             Мы начисляем кэшбек за покупки на баланс вашего кошелька.
@@ -136,7 +136,7 @@
 
             {{-- Step 2: Transactions --}}
             <div id="step-transactions"
-                class="hidden bg-white overflow-hidden rounded-[32px] border border-zinc-100 shadow-sm">
+                class="hidden bg-white overflow-hidden  border border-zinc-100 shadow-sm">
                 @if ($transactions->count() > 0)
                     <div class="flex flex-col divide-y divide-zinc-50">
                         @foreach ($transactions as $transaction)
@@ -151,7 +151,7 @@
                                         @endphp
                                         <span class="text-[15px] font-bold text-zinc-900 truncate">{{ $typeLabel }}</span>
                                         <span
-                                            class="text-[9px] px-1.5 py-0.5 rounded-md border {{ $statusClass }} uppercase tracking-wider font-bold shrink-0">{{ $transaction->status }}</span>
+                                            class="text-[9px] px-1.5 py-0.5  border {{ $statusClass }} uppercase tracking-wider font-bold shrink-0">{{ $transaction->status }}</span>
                                     </div>
                                     @if($transaction->notes)
                                         <div class="text-[12px] text-zinc-500 leading-tight">{{ $transaction->notes }}</div>
@@ -181,7 +181,7 @@
                 @else
                     <div class="flex flex-col items-center justify-center py-24 text-zinc-400 px-10 text-center">
                         <div
-                            class="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 shadow-inner text-3xl">
+                            class="w-20 h-20 bg-zinc-50  flex items-center justify-center mb-6 shadow-inner text-3xl">
                             📭</div>
                         <p class="text-[17px] font-bold text-zinc-700">Транзакций не найдено</p>
                     </div>
@@ -190,15 +190,15 @@
 
             {{-- Step: Empty --}}
             <div id="step-empty"
-                class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-violet-50 flex items-center justify-center text-3xl">🔐</div>
+                class="hidden bg-white  border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
+                <div class="w-16 h-16  bg-violet-50 flex items-center justify-center text-3xl">🔐</div>
                 <div>
                     <p class="text-[16px] font-bold text-zinc-800">Нет верифицированных кошельков</p>
                     <p class="text-[13px] text-zinc-400 mt-1">Для пополнения необходимо сначала добавить и
                         верифицировать свой кошелёк.</p>
                 </div>
                 <button onclick="goToManagement()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)"
-                    class="text-white font-bold px-6 py-3 rounded-2xl text-[15px] shadow-lg shadow-violet-200 active:scale-95 transition-all">
+                    class="text-white font-bold px-6 py-3  text-[15px] shadow-lg shadow-violet-200 active:scale-95 transition-all">
                     + Добавить кошелёк
                 </button>
             </div>
@@ -239,12 +239,12 @@
                         $coinColor = $m[3];
                     @endphp
                     
-                    <div class="bg-white rounded-3xl shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
+                    <div class="bg-white  shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
                         {{-- Clickable Area for Deposit --}}
                         <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="flex-1 flex gap-4 p-6 min-w-0 text-left cursor-pointer items-center">
                             {{-- Icon Column --}}
                             <div class="relative shrink-0">
-                                <div class="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center text-white text-[22px] font-bold shadow-sm" style="background: {{ $coinColor }}">
+                                <div class="w-[52px] h-[52px]  flex items-center justify-center text-white text-[22px] font-bold shadow-sm" style="background: {{ $coinColor }}">
                                     {{ $m[2] }}
                                 </div>
                             </div>
@@ -304,7 +304,7 @@
                             <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST" class="inline">
                                 @csrf @method('DELETE')
                                 <button type="button" onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')" 
-                                    class="w-[42px] h-[42px] rounded-[16px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
+                                    class="w-[42px] h-[42px]  flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
@@ -315,7 +315,7 @@
                 @endforeach
 
                 <button onclick="goToAddWallet()" class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3">
-                    <span class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
+                    <span class="w-7 h-7  bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
                     <span class="text-[15px]">Добавить новый кошелек</span>
                 </button>
             </div>
@@ -328,11 +328,11 @@
                         $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
                     @endphp
                     <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
-                        <div class="bg-white rounded-[32px] shadow-sm overflow-hidden p-6 md:p-8 flex flex-col items-center">
+                        <div class="bg-white  shadow-sm overflow-hidden p-6 md:p-8 flex flex-col items-center">
                             
                             {{-- QR Code Section --}}
                             <div class="relative inline-block mt-4 mb-2">
-                                <div class="border border-zinc-100 rounded-[32px] p-6 pb-8 bg-white shadow-sm inline-block">
+                                <div class="border border-zinc-100  p-6 pb-8 bg-white shadow-sm inline-block">
                                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($address->address) }}"
                                         alt="QR Code" class="w-56 h-56 mx-auto" />
                                 </div>
@@ -345,7 +345,7 @@
                             </div>
 
                             {{-- Address Copy Section --}}
-                            <div class="w-full max-w-sm mt-8 bg-zinc-50 rounded-[28px] p-6 text-center cursor-pointer active:scale-95 transition-all group"
+                            <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                                 onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                                 <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
                                     {{ $address->address }}
@@ -360,7 +360,7 @@
                             </div>
 
                             {{-- Verification Warning --}}
-                            <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50 rounded-2xl flex gap-3 text-left">
+                            <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50  flex gap-3 text-left">
                                 <span class="text-lg">⚠️</span>
                                 <p class="text-[12px] text-violet-700 leading-snug">
                                     <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы система смогла автоматически зачислить платеж.
@@ -373,7 +373,7 @@
             </div>
 
         {{-- Step: Add Wallet --}}
-        <div id="step-add-wallet" class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-6 md:p-8">
+        <div id="step-add-wallet" class="hidden bg-white  border border-zinc-100 shadow-sm p-6 md:p-8">
             <x-shop::form :action="route('shop.customers.account.crypto.store')">
                 <input type="hidden" name="network" id="wallet-net-input" value="">
                 
@@ -389,8 +389,8 @@
                                 'ton' => ['◎', 'TON', '#0098EA'], 
                                 'dash' => ['D', 'DASH', '#1c75bc']
                             ] as $coin => $m)
-                                <button type="button" id="coin-{{ $coin }}" onclick="selCoin('{{ $coin }}')" class="flex flex-col items-center justify-center p-3 rounded-[16px] border border-zinc-100 transition-all group bg-white hover:bg-zinc-50 relative overflow-hidden">
-                                    <div id="coin-icon-{{ $coin }}" class="w-8 h-8 rounded-[12px] flex items-center justify-center text-white text-[15px] font-bold mb-1.5 shadow-sm transition-all" style="background: {{ $m[2] }}">
+                                <button type="button" id="coin-{{ $coin }}" onclick="selCoin('{{ $coin }}')" class="flex flex-col items-center justify-center p-3  border border-zinc-100 transition-all group bg-white hover:bg-zinc-50 relative overflow-hidden">
+                                    <div id="coin-icon-{{ $coin }}" class="w-8 h-8  flex items-center justify-center text-white text-[15px] font-bold mb-1.5 shadow-sm transition-all" style="background: {{ $m[2] }}">
                                         {{ $m[0] }}
                                     </div>
                                     <span id="coin-label-{{ $coin }}" class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter transition-all">{{ $m[1] }}</span>
@@ -411,11 +411,11 @@
                     <div id="wallet-addr-section" class="hidden space-y-6">
                         <div>
                             <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">3. Адрес</p>
-                            <input type="text" name="address" id="wallet-addr-input" placeholder="Вставьте адрес…" oninput="onWalletInput(this.value)" class="w-full rounded-2xl border-zinc-100 bg-zinc-50 font-mono py-4 pl-5 focus:bg-white transition-all shadow-inner placeholder-zinc-300 text-zinc-800" />
+                            <input type="text" name="address" id="wallet-addr-input" placeholder="Вставьте адрес…" oninput="onWalletInput(this.value)" class="w-full  border-zinc-100 bg-zinc-50 font-mono py-4 pl-5 focus:bg-white transition-all shadow-inner placeholder-zinc-300 text-zinc-800" />
                         </div>
                         
                         <div class="pt-2"> {{-- Added padding top to separate button from input --}}
-                            <button type="submit" id="wallet-add-btn" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);opacity:0.4;cursor:not-allowed;" class="w-full text-white font-bold py-4 rounded-2xl shadow-lg transition-all">+ Добавить кошелек</button>
+                            <button type="submit" id="wallet-add-btn" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);opacity:0.4;cursor:not-allowed;" class="w-full text-white font-bold py-4  shadow-lg transition-all">+ Добавить кошелек</button>
                         </div>
                     </div>
                 </div>
@@ -557,7 +557,7 @@
                 nets.forEach(net => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'network-btn flex items-center justify-center p-3 rounded-[16px] border border-zinc-100 bg-white transition-all font-bold text-[13px] text-zinc-900';
+                    btn.className = 'network-btn flex items-center justify-center p-3  border border-zinc-100 bg-white transition-all font-bold text-[13px] text-zinc-900';
                     btn.innerText = net.label;
                     btn.onclick = () => selActualNet(net.id, btn, coin);
                     container.appendChild(btn);

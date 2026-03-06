@@ -23,9 +23,9 @@
                     @include('shop::checkout.login')
                 @else
                     <div
-                        class="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/60 border border-white/80 backdrop-blur-md shadow-sm">
+                        class="flex items-center gap-2.5 px-3 py-1.5  bg-white/60 border border-white/80 backdrop-blur-md shadow-sm">
                         <div
-                            class="h-7 w-7 rounded-full bg-[#7C45F5] text-white flex items-center justify-center text-[10px] font-black uppercase ring-2 ring-white">
+                            class="h-7 w-7  bg-[#7C45F5] text-white flex items-center justify-center text-[10px] font-black uppercase ring-2 ring-white">
                             {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
                         </div>
                         <span class="text-xs font-black text-zinc-600 truncate max-w-[120px]">
@@ -53,10 +53,10 @@
                                                 <div class="space-y-6" id="steps-container">
                                                     <!-- Mobile Order Summary -->
                                                     <div class="lg:hidden">
-                                                        <div class="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-6 shadow-sm mb-6 overflow-hidden">
+                                                        <div class="bg-white/40 backdrop-blur-3xl border border-white/60  p-6 shadow-sm mb-6 overflow-hidden">
                                                             <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/20">
                                                                 <h3 class="text-lg font-black text-zinc-800 uppercase tracking-tight">Ваш заказ</h3>
-                                                                <div class="px-3 py-1 bg-[#7C45F5] rounded-full text-white text-[10px] font-black uppercase">
+                                                                <div class="px-3 py-1 bg-[#7C45F5]  text-white text-[10px] font-black uppercase">
                                                                     @{{ cart.items.length }} поз.
                                                                 </div>
                                                             </div>
@@ -67,7 +67,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="bg-white/40 backdrop-blur-3xl border border-white/60 rounded-[32px] p-2 shadow-sm overflow-hidden">
+                                                    <div class="bg-white/40 backdrop-blur-3xl border border-white/60  p-2 shadow-sm overflow-hidden">
                                                         <!-- Address -->
                                                         <div class="p-4 sm:p-6 border-b border-white/40" data-step="address">
                                                             <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
@@ -89,13 +89,13 @@
 
                                                 <!-- Sidebar Column (RIGHT) -->
                                                 <div class="hidden lg:block sticky top-8 space-y-4">
-                                                    <div class="bg-white/60 backdrop-blur-3xl border border-white/80 rounded-[32px] p-6 shadow-xl shadow-zinc-200/50">
+                                                    <div class="bg-white/60 backdrop-blur-3xl border border-white/80  p-6 shadow-xl shadow-zinc-200/50">
                                                         @include('shop::checkout.onepage.summary')
 
                                                         <div class="mt-8 space-y-4" v-if="canPlaceOrder">
                                                             <button
                                                                 type="button"
-                                                                class="w-full rounded-2xl bg-[#7C45F5] py-4 text-base font-black text-white shadow-[0_10px_20px_-5px_rgba(124,69,245,0.4)] transition-all hover:bg-[#6b35e4] hover:shadow-[0_15px_30px_-5px_rgba(124,69,245,0.5)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
+                                                                class="w-full  bg-[#7C45F5] py-4 text-base font-black text-white shadow-[0_10px_20px_-5px_rgba(124,69,245,0.4)] transition-all hover:bg-[#6b35e4] hover:shadow-[0_15px_30px_-5px_rgba(124,69,245,0.5)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
                                                                 :disabled="isPlacingOrder"
                                                                 @click="placeOrder"
                                                             >

@@ -28,7 +28,7 @@
 
                                     <div
                                         v-for="rate in method.rates"
-                                        class="relative p-6 rounded-2xl border transition-all duration-300 group cursor-pointer overflow-hidden"
+                                        class="relative p-6  border transition-all duration-300 group cursor-pointer overflow-hidden"
                                         :class="[selectedShippingMethod == rate.method ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
                                         @click="store(rate.method)"
                                     >
@@ -45,7 +45,7 @@
 
                                         <div class="relative flex items-center justify-between">
                                             <div class="flex items-center gap-4">
-                                                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#7C45F5]/10 text-[#7C45F5]">
+                                                <div class="flex h-12 w-12 items-center justify-center  bg-[#7C45F5]/10 text-[#7C45F5]">
                                                     <span class="icon-flate-rate text-3xl"></span>
                                                 </div>
 
@@ -63,10 +63,10 @@
                                                 </p>
 
                                                 <div 
-                                                    class="flex h-6 w-6 items-center justify-center rounded-full border-2 transition-all duration-300"
+                                                    class="flex h-6 w-6 items-center justify-center  border-2 transition-all duration-300"
                                                     :class="[selectedShippingMethod == rate.method ? 'border-[#7C45F5] bg-[#7C45F5] scale-110 shadow-md' : 'border-zinc-300 group-hover:border-zinc-400']"
                                                 >
-                                                    <div v-if="selectedShippingMethod == rate.method" class="h-2.5 w-2.5 rounded-full bg-white"></div>
+                                                    <div v-if="selectedShippingMethod == rate.method" class="h-2.5 w-2.5  bg-white"></div>
                                                 </div>
                                             </div>
                                         </div>

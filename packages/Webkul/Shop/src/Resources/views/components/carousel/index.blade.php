@@ -43,7 +43,7 @@
             <!-- Navigation -->
             <div class="absolute inset-x-0 top-1/2 z-50 flex -translate-y-1/2 justify-between px-4 pointer-events-none md:px-6" style="direction: ltr;">
                 <span
-                    class="pointer-events-auto flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/90 text-black shadow-lg transition-all duration-300 hover:bg-black hover:text-white md:h-12 md:w-12"
+                    class="pointer-events-auto flex h-11 w-11 cursor-pointer items-center justify-center  bg-white/90 text-black shadow-lg transition-all duration-300 hover:bg-black hover:text-white md:h-12 md:w-12"
                     :class="{
                         'opacity-30 cursor-not-allowed': direction == 'ltr' && currentIndex == 0,
                         'hover:scale-110': direction == 'ltr' ? currentIndex > 0 : currentIndex <= 0
@@ -60,7 +60,7 @@
                 </span>
 
                 <span
-                    class="pointer-events-auto flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/90 text-black shadow-lg transition-all duration-300 hover:bg-black hover:text-white md:h-12 md:w-12"
+                    class="pointer-events-auto flex h-11 w-11 cursor-pointer items-center justify-center  bg-white/90 text-black shadow-lg transition-all duration-300 hover:bg-black hover:text-white md:h-12 md:w-12"
                     :class="{
                         'opacity-30 cursor-not-allowed': direction == 'rtl' && currentIndex == 0,
                         'hover:scale-110': direction == 'rtl' ? currentIndex < 0 : currentIndex >= 0
@@ -82,7 +82,7 @@
                 <div
                     v-for="(image, index) in images"
                     :key="index"
-                    class="sm:p-2.5 mx-1 h-3 w-3 cursor-pointer rounded-full max-md:h-2 max-md:w-2 max-sm:h-1.5 max-sm:w-1.5
+                    class="sm:p-2.5 mx-1 h-3 w-3 cursor-pointer  max-md:h-2 max-md:w-2 max-sm:h-1.5 max-sm:w-1.5
                     p-2 focus:outline-none"
                     :class="{ 'bg-navyBlue': index === Math.abs(currentIndex), 'opacity-30 bg-gray-500': index !== Math.abs(currentIndex) }"
                     role="button"

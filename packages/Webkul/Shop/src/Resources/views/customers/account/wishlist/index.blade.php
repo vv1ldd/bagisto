@@ -32,7 +32,7 @@
             <!-- Wishlist Vue Component -->
             <v-wishlist-products>
                 <div class="px-5 py-6 space-y-4">
-                    <div v-for="i in 3" :key="i" class="h-16 bg-zinc-100 rounded-xl animate-pulse"></div>
+                    <div v-for="i in 3" :key="i" class="h-16 bg-zinc-100  animate-pulse"></div>
                 </div>
             </v-wishlist-products>
         </div>
@@ -42,7 +42,7 @@
             <div>
                 <template v-if="isLoading">
                     <div class="px-5 py-6 space-y-4">
-                        <div v-for="i in 3" :key="i" class="h-16 bg-zinc-100 rounded-xl animate-pulse"></div>
+                        <div v-for="i in 3" :key="i" class="h-16 bg-zinc-100  animate-pulse"></div>
                     </div>
                 </template>
 
@@ -74,7 +74,7 @@
                     <!-- Product Image -->
                     <a :href="`{{ route('shop.product_or_category.index', '') }}/${wishlist.product.url_key}`" class="shrink-0">
                         <img
-                            class="h-16 w-16 rounded-xl object-cover border border-zinc-100"
+                            class="h-16 w-16  object-cover border border-zinc-100"
                             :src="wishlist.product.base_image.small_image_url"
                             alt="Product Image"
                         />
@@ -98,7 +98,7 @@
                     @if (core()->getConfigData('sales.checkout.shopping_cart.cart_page'))
                         <button
                             @click="moveToCart"
-                            class="p-2.5 rounded-full bg-zinc-50 text-zinc-500 hover:text-[#7C45F5] hover:bg-[#7C45F5]/5 transition active:scale-95"
+                            class="p-2.5  bg-zinc-50 text-zinc-500 hover:text-[#7C45F5] hover:bg-[#7C45F5]/5 transition active:scale-95"
                             title="@lang('shop::app.customers.account.wishlist.move-to-cart')"
                             :disabled="movingToCart"
                         >
@@ -110,7 +110,7 @@
                     <!-- Remove -->
                     <button
                         @click="remove"
-                        class="p-2.5 rounded-full bg-zinc-50 text-zinc-400 hover:text-red-500 hover:bg-red-50 transition active:scale-95"
+                        class="p-2.5  bg-zinc-50 text-zinc-400 hover:text-red-500 hover:bg-red-50 transition active:scale-95"
                         title="@lang('shop::app.customers.account.wishlist.remove')"
                     >
                         <span class="icon-bin text-xl"></span>

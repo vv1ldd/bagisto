@@ -23,7 +23,7 @@
         <!-- Hero Image -->
         @if ($category->banner_path)
             <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4">
-                <x-shop::media.images.lazy class="aspect-[4/1] max-h-full max-w-full rounded-xl"
+                <x-shop::media.images.lazy class="aspect-[4/1] max-h-full max-w-full "
                     src="{{ $category->banner_url }}" alt="{{ $category->name }}" width="1320" height="300" />
             </div>
         @endif
@@ -85,7 +85,7 @@
                                                                     <!-- Empty -->
                                                                     <template v-else>
                                                                         <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                                        <div class="mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-zinc-100 text-zinc-300">
+                                                                        <div class="mb-4 flex h-24 w-24 items-center justify-center  bg-zinc-100 text-zinc-300">
                                                                             <span class="icon-cart text-[54px]"></span>
                                                                         </div>
 
@@ -127,7 +127,7 @@
                                                                     <!-- Empty -->
                                                                     <template v-else>
                                                                         <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                                        <div class="mb-4 flex h-24 w-24 items-center justify-center rounded-3xl bg-zinc-100 text-zinc-300">
+                                                                        <div class="mb-4 flex h-24 w-24 items-center justify-center  bg-zinc-100 text-zinc-300">
                                                                             <span class="icon-cart text-[54px]"></span>
                                                                         </div>
 
@@ -148,7 +148,7 @@
 
                                                             <!-- Load More Button -->
                                                             <button
-                                                                class="secondary-button mx-auto mt-14 block w-max rounded-2xl px-11 py-3 text-center text-base max-md:rounded-lg max-sm:mt-6 max-sm:px-6 max-sm:py-1.5 max-sm:text-sm"
+                                                                class="secondary-button mx-auto mt-14 block w-max  px-11 py-3 text-center text-base max-md: max-sm:mt-6 max-sm:px-6 max-sm:py-1.5 max-sm:text-sm"
                                                                 @click="loadMoreProducts"
                                                                 v-if="links.next && ! loader"
                                                             >
@@ -157,7 +157,7 @@
 
                                                             <button
                                                                 v-else-if="links.next"
-                                                                class="secondary-button mx-auto mt-14 block w-max rounded-2xl px-[74.5px] py-3.5 text-center text-base max-md:rounded-lg max-md:py-3 max-sm:mt-6 max-sm:px-[50.8px] max-sm:py-1.5"
+                                                                class="secondary-button mx-auto mt-14 block w-max  px-[74.5px] py-3.5 text-center text-base max-md: max-md:py-3 max-sm:mt-6 max-sm:px-[50.8px] max-sm:py-1.5"
                                                             >
                                                                 <!-- Spinner -->
                                                                 <img

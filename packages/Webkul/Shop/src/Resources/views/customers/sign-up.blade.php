@@ -11,7 +11,7 @@
         {!! view_render_event('bagisto.shop.customers.signup.before') !!}
 
         @if (session('status') === 'verification-sent')
-            <div class="mb-8 flex h-14 w-14 items-center justify-center rounded-full bg-[#7C45F5]/10 mx-auto">
+            <div class="mb-8 flex h-14 w-14 items-center justify-center  bg-[#7C45F5]/10 mx-auto">
                 <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#7C45F5" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
@@ -26,7 +26,7 @@
                 </p>
             </div>
 
-            <div class="mt-12 p-6 rounded-2xl bg-[#7C45F5]/5 border border-[#7C45F5]/10">
+            <div class="mt-12 p-6  bg-[#7C45F5]/5 border border-[#7C45F5]/10">
                 <p class="text-zinc-600 leading-relaxed">
                     Мы отправили вам письмо со специальной ссылкой. <br><br>
                     Перейдите по ней, чтобы подтвердить свой аккаунт и продолжить настройку профиля. Код
@@ -53,7 +53,7 @@
                     </x-shop::form.control-group.label>
 
                     <x-shop::form.control-group.control type="email"
-                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-xl focus:!ring-2 focus:!ring-zinc-500 w-full"
+                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 ! focus:!ring-2 focus:!ring-zinc-500 w-full"
                         name="email" rules="required|email" :value="old('email')"
                         :label="trans('shop::app.customers.signup-form.email')" placeholder="email@example.com" />
 
@@ -96,7 +96,7 @@
 
                 <div class="mt-6">
                     <button
-                        class="w-full rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
+                        class="w-full  bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
                         type="submit">
                         @lang('shop::app.customers.signup-form.button-title')
                     </button>

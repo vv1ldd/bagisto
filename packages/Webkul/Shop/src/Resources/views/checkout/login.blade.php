@@ -2,7 +2,7 @@
 <v-checkout-login>
     <div class="flex items-center">
         <span
-            class="cursor-pointer rounded-full border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-sm font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-95">
+            class="cursor-pointer  border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-sm font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-95">
             @lang('shop::app.checkout.login.title')
         </span>
     </div>
@@ -15,7 +15,7 @@
             <div>
                 <div class="flex items-center">
                     <span
-                        class="cursor-pointer rounded-full border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-sm font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-95"
+                        class="cursor-pointer  border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-sm font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-95"
                         role="button"
                         @click="$refs.loginModel.open()"
                     >
@@ -53,7 +53,7 @@
 
                                     <x-shop::form.control-group.control
                                         type="email"
-                                        class="rounded-xl border border-zinc-200 px-6 py-4 focus:border-[#7C45F5] focus:ring-[#7C45F5]"
+                                        class=" border border-zinc-200 px-6 py-4 focus:border-[#7C45F5] focus:ring-[#7C45F5]"
                                         name="email"
                                         rules="required|email"
                                         :label="trans('shop::app.checkout.login.email')"
@@ -73,7 +73,7 @@
 
                                     <x-shop::form.control-group.control
                                         type="password"
-                                        class="rounded-xl border border-zinc-200 px-6 py-4 focus:border-[#7C45F5] focus:ring-[#7C45F5]"
+                                        class=" border border-zinc-200 px-6 py-4 focus:border-[#7C45F5] focus:ring-[#7C45F5]"
                                         id="password"
                                         name="password"
                                         rules="required|min:6"
@@ -100,7 +100,7 @@
                             <x-slot:footer class="!px-6 pb-8">
                                 <div class="flex flex-wrap items-center gap-4">
                                     <x-shop::button
-                                        class="primary-button w-full rounded-full bg-[#7C45F5] py-4 text-base font-bold text-white shadow-lg transition-all hover:bg-[#6b35e4] hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        class="primary-button w-full  bg-[#7C45F5] py-4 text-base font-bold text-white shadow-lg transition-all hover:bg-[#6b35e4] hover:shadow-xl active:scale-95 disabled:opacity-50"
                                         :title="trans('shop::app.checkout.login.title')"
                                         ::loading="isStoring"
                                         ::disabled="isStoring"

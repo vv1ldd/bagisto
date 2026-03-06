@@ -17,8 +17,8 @@
         type="text/x-template"
         id="v-datagrid-table-template"
     >
-        <div class="w-full overflow-x-auto rounded-xl border max-md:rounded-none max-md:border-0">
-            <div class="table-responsive box-shadow grid w-full overflow-hidden rounded bg-white">
+        <div class="w-full overflow-x-auto  border max-md: max-md:border-0">
+            <div class="table-responsive box-shadow grid w-full overflow-hidden  bg-white">
                 <slot
                     name="header"
                     :is-loading="isLoading"
@@ -50,7 +50,7 @@
                                     >
 
                                     <span
-                                        class="icon-uncheck cursor-pointer rounded-md text-2xl"
+                                        class="icon-uncheck cursor-pointer  text-2xl"
                                         :class="[
                                             applied.massActions.meta.mode === 'all' ? 'peer-checked:icon-check-box' : (
                                                 applied.massActions.meta.mode === 'partial' ? 'peer-checked:icon-checkbox-partial' : ''
@@ -122,7 +122,7 @@
                                             v-model="applied.massActions.indices"
                                         >
 
-                                        <span class="icon-uncheck peer-checked:icon-check-box cursor-pointer rounded-md text-2xl">
+                                        <span class="icon-uncheck peer-checked:icon-check-box cursor-pointer  text-2xl">
                                         </span>
                                     </label>
                                 </p>
@@ -140,7 +140,7 @@
                                 <!-- Actions -->
                                 <p v-if="available.actions.length">
                                     <span
-                                        class="float-right cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200"
+                                        class="float-right cursor-pointer  p-1.5 text-2xl transition-all hover:bg-gray-200"
                                         :class="action.icon"
                                         v-for="action in record.actions"
                                         @click="performAction(action)"
@@ -183,14 +183,14 @@
                             <!-- Pagination -->
                             <div class="flex items-center gap-1">
                                 <div
-                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-md border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black active:border-gray-300"
+                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1  border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black active:border-gray-300"
                                     @click="changePage('previous')"
                                 >
                                     <span class="icon-sort-left text-2xl"></span>
                                 </div>
 
                                 <div
-                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-md border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black active:border-gray-300"
+                                    class="inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1  border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-black active:border-gray-300"
                                     @click="changePage('next')"
                                 >
                                     <span class="icon-sort-right text-2xl"></span>
@@ -198,7 +198,7 @@
                             </div>
 
                             <nav aria-label="@lang('shop::app.components.datagrid.table.page-navigation')">
-                                <ul class="inline-flex items-center -space-x-px rounded-lg border border-zinc-200 max-md:px-0">
+                                <ul class="inline-flex items-center -space-x-px  border border-zinc-200 max-md:px-0">
                                     <li  @click="changePage('previous')">
                                         <a
                                             href="javascript:void(0);"

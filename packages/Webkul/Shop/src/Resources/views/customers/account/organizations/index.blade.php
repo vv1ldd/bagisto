@@ -59,7 +59,7 @@
                                         position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
                                         <x-slot:toggle>
                                             <button
-                                                class="p-2 rounded-full hover:bg-zinc-100 transition active:scale-95 text-zinc-400 group-hover:text-zinc-600"
+                                                class="p-2  hover:bg-zinc-100 transition active:scale-95 text-zinc-400 group-hover:text-zinc-600"
                                                 aria-label="More Options">
                                                 <span class="icon-more text-2xl"></span>
                                             </button>

@@ -30,7 +30,7 @@
                                                     <div 
                                                         :class="[
                                                             !isTeleportTargetAvailable 
-                                                                ? 'sticky top-4 z-[100] mx-4 mb-4 rounded-3xl border border-[#E8E4FF] bg-[#F8F7FF]/80 py-3 shadow-lg shadow-[#7C45F5]/5 backdrop-blur-xl no-scrollbar overflow-x-auto' 
+                                                                ? 'sticky top-4 z-[100] mx-4 mb-4  border border-[#E8E4FF] bg-[#F8F7FF]/80 py-3 shadow-lg shadow-[#7C45F5]/5 backdrop-blur-xl no-scrollbar overflow-x-auto' 
                                                                 : 'w-full py-1'
                                                         ]"
                                                         class="transition-all"
@@ -55,7 +55,7 @@
                                                                 name="query"
                                                                 value="{{ request('query') }}"
                                                                 placeholder="Поиск..."
-                                                                class="block w-full rounded-xl border border-zinc-200 bg-zinc-50 py-2.5 pl-11 pr-4 text-sm font-medium text-zinc-700 transition-all focus:border-[#7C45F5] focus:bg-white focus:outline-none shadow-sm"
+                                                                class="block w-full  border border-zinc-200 bg-zinc-50 py-2.5 pl-11 pr-4 text-sm font-medium text-zinc-700 transition-all focus:border-[#7C45F5] focus:bg-white focus:outline-none shadow-sm"
                                                                 :class="isTeleportTargetAvailable ? 'py-1 pl-9 pr-2 text-[13px]' : 'py-1.5 pl-10 pr-4 text-sm font-medium'"
                                                                 minlength="{{ core()->getConfigData('catalog.products.search.min_query_length') }}"
                                                                 maxlength="{{ core()->getConfigData('catalog.products.search.max_query_length') }}"
@@ -78,7 +78,7 @@
                                                             {{-- Pill button --}}
                                                             <button
                                                                 type="button"
-                                                                class="flex items-center gap-1.5 rounded-xl border font-semibold transition-all active:scale-[0.98] whitespace-nowrap"
+                                                                class="flex items-center gap-1.5  border font-semibold transition-all active:scale-[0.98] whitespace-nowrap"
                                                                 :class="[
                                                                     isFilterApplied(filter)
                                                                         ? 'border-[#7C45F5] bg-[#7C45F5] text-white shadow-md shadow-[#7C45F5]/20'
@@ -90,7 +90,7 @@
                                                             >
                                                                 <span>@{{ filter.name }}</span>
                                                                 <span
-                                                                    class="rounded-full bg-[#7C45F5] px-1 py-0.5 text-[10px] font-bold text-white shadow-sm"
+                                                                    class=" bg-[#7C45F5] px-1 py-0.5 text-[10px] font-bold text-white shadow-sm"
                                                                     v-if="isFilterApplied(filter)"
                                                                 >@{{ getAppliedCount(filter) }}</span>
                                                                 <span
@@ -105,7 +105,7 @@
                                                                     <Teleport to="body">
                                                                         <div
                                                                             v-show="activeDropdown === filter.id"
-                                                                            class="fixed min-w-[220px] rounded-xl border border-zinc-200 bg-white shadow-xl"
+                                                                            class="fixed min-w-[220px]  border border-zinc-200 bg-white shadow-xl"
                                                                             style="z-index: 9999;"
                                                                             :style="getDropdownStyle(filter.id)"
                                                                             @click.stop
@@ -128,7 +128,7 @@
                                                                         hasAppliedFilters 
                                                                             ? 'border-red-200 bg-white text-red-500 hover:bg-red-50' 
                                                                             : 'border-zinc-100 bg-white/30 text-zinc-300 pointer-events-none',
-                                                                        isTeleportTargetAvailable ? 'rounded-xl px-2 py-1 text-[13px] font-bold' : 'rounded-2xl px-4 py-2.5 text-sm font-bold',
+                                                                        isTeleportTargetAvailable ? ' px-2 py-1 text-[13px] font-bold' : ' px-4 py-2.5 text-sm font-bold',
                                                                     ]"
                                                                     @click="clear()"
                                                                 >
@@ -151,7 +151,7 @@
                                                                         v-for="sort in sortOptions"
                                                                         :key="sort.value"
                                                                         type="button"
-                                                                        class="flex items-center gap-1 rounded-xl border font-semibold transition-all active:scale-[0.98] whitespace-nowrap"
+                                                                        class="flex items-center gap-1  border font-semibold transition-all active:scale-[0.98] whitespace-nowrap"
                                                                         :class="[
                                                                             sort.value === currentSort
                                                                                 ? 'border-[#7C45F5] bg-[#7C45F5] text-white shadow-md shadow-[#7C45F5]/20'
@@ -166,12 +166,12 @@
 
                                                                 {{-- Grid / List toggle - desktop only --}}
                                                                 <div 
-                                                                    class="flex items-center rounded-xl border border-[#E8E4FF] bg-white p-0.5 max-md:hidden shadow-sm flex-nowrap"
+                                                                    class="flex items-center  border border-[#E8E4FF] bg-white p-0.5 max-md:hidden shadow-sm flex-nowrap"
                                                                     :class="isTeleportTargetAvailable ? 'scale-[0.85]' : ''"
                                                                 >
                                                                     <button
                                                                         type="button"
-                                                                        class="rounded-lg transition-all active:scale-[0.95]"
+                                                                        class=" transition-all active:scale-[0.95]"
                                                                         :class="[
                                                                             currentMode === 'list' ? 'bg-[#7C45F5] text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-600',
                                                                             isTeleportTargetAvailable ? 'px-2 py-1' : 'px-3 py-1.5'
@@ -183,7 +183,7 @@
                                                                     </button>
                                                                     <button
                                                                         type="button"
-                                                                        class="rounded-lg transition-all active:scale-[0.95]"
+                                                                        class=" transition-all active:scale-[0.95]"
                                                                         :class="[
                                                                             currentMode === 'grid' ? 'bg-[#7C45F5] text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-600',
                                                                             isTeleportTargetAvailable ? 'px-2 py-1' : 'px-3 py-1.5'
@@ -224,7 +224,7 @@
                                                                                                                                                                 <span class="icon-search pointer-events-none absolute left-3 top-3 text-xl text-zinc-400"></span>
                                                                                                                                                                 <input
                                                                                                                                                                     type="text"
-                                                                                                                                                                    class="block w-full rounded-xl border border-zinc-200 py-2.5 pl-10 pr-3 text-sm"
+                                                                                                                                                                    class="block w-full  border border-zinc-200 py-2.5 pl-10 pr-3 text-sm"
                                                                                                                                                                     placeholder=""
                                                                                                                                                                     v-model="searchQuery"
                                                                                                                                                                     v-debounce:500="searchOptions"
@@ -234,7 +234,7 @@
 
                                                                                                                                                         <ul class="max-h-[260px] overflow-y-auto p-2">
                                                                                                                                                             <li v-for="(option, optionIndex) in options" :key="`${filter.id}_${option.id}`">
-                                                                                                                                                                <label class="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 hover:bg-zinc-50">
+                                                                                                                                                                <label class="flex cursor-pointer items-center gap-2  px-3 py-2 hover:bg-zinc-50">
                                                                                                                                                                     <input type="checkbox" class="hidden peer" :value="option.id" v-model="appliedValues" @change="applyValue" />
                                                                                                                                                                     <span class="icon-uncheck peer-checked:icon-check-box flex-shrink-0 text-2xl text-navyBlue peer-checked:text-navyBlue"></span>
                                                                                                                                                                     <span class="text-sm text-zinc-700">@{{ option.name }}</span>
@@ -246,7 +246,7 @@
                                                                                                                                                         </ul>
 
                                                                                                                                                         <div class="border-t border-zinc-100 px-3 py-2" v-if="meta && meta.current_page < meta.last_page">
-                                                                                                                                                            <button type="button" class="w-full rounded-lg py-2 text-sm text-[#7C45F5] hover:bg-[#7C45F5]/5"
+                                                                                                                                                            <button type="button" class="w-full  py-2 text-sm text-[#7C45F5] hover:bg-[#7C45F5]/5"
                                                                                                                                                                 @click="loadMoreOptions" :disabled="isLoadingMore">
                                                                                                                                                                 <span v-if="isLoadingMore">@lang('shop::app.categories.filters.search.loading')</span>
                                                                                                                                                                 <span v-else>@lang('shop::app.categories.filters.search.load-more')</span>
@@ -281,7 +281,7 @@
                                                                                                                                                                 <span class="icon-search pointer-events-none absolute left-3 top-3 text-xl text-zinc-400"></span>
                                                                                                                                                                 <input
                                                                                                                                                                     type="text"
-                                                                                                                                                                    class="block w-full rounded-xl border border-zinc-200 py-3 pl-10 pr-3 text-sm"
+                                                                                                                                                                    class="block w-full  border border-zinc-200 py-3 pl-10 pr-3 text-sm"
                                                                                                                                                                     placeholder=""
                                                                                                                                                                     v-model="searchQuery"
                                                                                                                                                                     v-debounce:500="searchOptions"
@@ -290,7 +290,7 @@
 
                                                                                                                                                             <ul class="max-h-[260px] overflow-y-auto">
                                                                                                                                                                 <li v-for="option in options" :key="`${filter.id}_${option.id}`">
-                                                                                                                                                                    <label class="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-zinc-50">
+                                                                                                                                                                    <label class="flex cursor-pointer items-center gap-3  px-2 py-2 hover:bg-zinc-50">
                                                                                                                                                                         <input type="checkbox" class="hidden peer" :value="option.id" v-model="appliedValues" @change="applyValue" />
                                                                                                                                                                         <span class="icon-uncheck peer-checked:icon-check-box flex-shrink-0 text-2xl text-navyBlue peer-checked:text-navyBlue"></span>
                                                                                                                                                                         <span class="text-sm text-zinc-700">@{{ option.name }}</span>
@@ -302,7 +302,7 @@
                                                                                                                                                             </ul>
 
                                                                                                                                                             <div class="mt-2" v-if="meta && meta.current_page < meta.last_page">
-                                                                                                                                                                <button type="button" class="w-full rounded-lg py-2 text-sm text-[#7C45F5] hover:bg-[#7C45F5]/5"
+                                                                                                                                                                <button type="button" class="w-full  py-2 text-sm text-[#7C45F5] hover:bg-[#7C45F5]/5"
                                                                                                                                                                     @click="loadMoreOptions" :disabled="isLoadingMore">
                                                                                                                                                                     <span v-if="isLoadingMore">@lang('shop::app.categories.filters.search.loading')</span>
                                                                                                                                                                     <span v-else>@lang('shop::app.categories.filters.search.load-more')</span>
@@ -323,7 +323,7 @@
                                                                                                                                 <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-400">От</label>
                                                                                                                                 <input
                                                                                                                                     type="number"
-                                                                                                                                    class="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
+                                                                                                                                    class="w-full  border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
                                                                                                                                     :placeholder="minRange"
                                                                                                                                     v-model.number="localMin"
                                                                                                                                     :min="0"
@@ -336,7 +336,7 @@
                                                                                                                                 <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-zinc-400">До</label>
                                                                                                                                 <input
                                                                                                                                     type="number"
-                                                                                                                                    class="w-full rounded-xl border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
+                                                                                                                                    class="w-full  border border-zinc-200 px-3 py-2 text-sm text-zinc-800 focus:border-[#7C45F5] focus:outline-none"
                                                                                                                                     :placeholder="allowedMaxPrice"
                                                                                                                                     v-model.number="localMax"
                                                                                                                                     :min="localMin"
@@ -346,7 +346,7 @@
                                                                                                                         </div>
                                                                                                                         <button
                                                                                                                             type="button"
-                                                                                                                            class="mt-3 w-full rounded-xl bg-[#7C45F5] py-2 text-sm font-semibold text-white transition hover:bg-[#6534d4]"
+                                                                                                                            class="mt-3 w-full  bg-[#7C45F5] py-2 text-sm font-semibold text-white transition hover:bg-[#6534d4]"
                                                                                                                             @click="apply"
                                                                                                                         >Применить</button>
                                                                                                                     </div>

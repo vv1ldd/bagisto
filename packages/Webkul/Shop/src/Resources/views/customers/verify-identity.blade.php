@@ -27,7 +27,7 @@
 
                         @error('verification')
                             <div
-                                class="mb-6 rounded-xl bg-red-50 p-4 border border-red-100 text-sm text-red-600 flex items-center gap-3">
+                                class="mb-6  bg-red-50 p-4 border border-red-100 text-sm text-red-600 flex items-center gap-3">
                                 <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10"></circle>
@@ -335,7 +335,7 @@
 
                             <div class="mt-8">
                                 <button
-                                    class="w-full rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
+                                    class="w-full  bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
                                     type="submit">
                                     Подтвердить и войти
                                 </button>

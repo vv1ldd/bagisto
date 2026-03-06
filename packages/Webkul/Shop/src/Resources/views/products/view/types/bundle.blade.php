@@ -280,7 +280,7 @@
                     <x-shop::quantity-changer
                         ::name="'bundle_option_qty[' + option?.id + ']'"
                         ::value="productQty"
-                        class="mt-5 w-max gap-x-4 rounded-xl !border-zinc-200 px-4 py-1.5 max-sm:my-4"
+                        class="mt-5 w-max gap-x-4  !border-zinc-200 px-4 py-1.5 max-sm:my-4"
                         @change="qtyUpdated($event)"
                     />
                 </template>

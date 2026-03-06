@@ -23,10 +23,10 @@
 
 			<!-- Success Message Container -->
 			<div
-				class="w-full max-w-[500px] rounded-3xl border border-white/60 bg-white/40 p-8 shadow-xl backdrop-blur-3xl md:p-12">
+				class="w-full max-w-[500px]  border border-white/60 bg-white/40 p-8 shadow-xl backdrop-blur-3xl md:p-12">
 				<div class="mb-8 flex items-center justify-center">
 					<div
-						class="flex h-24 w-24 items-center justify-center rounded-full bg-green-100 text-green-600 shadow-inner">
+						class="flex h-24 w-24 items-center justify-center  bg-green-100 text-green-600 shadow-inner">
 						<svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7">
 							</path>
@@ -60,7 +60,7 @@
 
 				<div class="flex flex-col gap-4">
 					<a href="{{ route('shop.home.index') }}"
-						class="flex w-full items-center justify-center rounded-full bg-[#7C45F5] py-4 text-lg font-bold text-white shadow-lg transition-all hover:bg-[#6b35e4] hover:shadow-xl active:scale-[0.98]">
+						class="flex w-full items-center justify-center  bg-[#7C45F5] py-4 text-lg font-bold text-white shadow-lg transition-all hover:bg-[#6b35e4] hover:shadow-xl active:scale-[0.98]">
 						@lang('shop::app.checkout.cart.index.continue-shopping')
 					</a>
 

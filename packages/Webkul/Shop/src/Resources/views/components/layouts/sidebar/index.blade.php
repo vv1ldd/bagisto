@@ -60,7 +60,7 @@
         <div class="px-5 py-4 relative z-10">
             @if ($customer)
                 <a href="{{ route('shop.customers.account.index') }}"
-                    class="flex items-center w-full bg-white/70 backdrop-blur-md rounded-[24px] border border-white/40 p-4 shadow-sm transition-all active:scale-[0.98] group/card hover:bg-white/90">
+                    class="flex items-center w-full bg-white/70 backdrop-blur-md  border border-white/40 p-4 shadow-sm transition-all active:scale-[0.98] group/card hover:bg-white/90">
 
                     <div class="flex-grow overflow-hidden relative z-10">
                         <div class="flex items-center gap-2">
@@ -80,14 +80,14 @@
                     </div>
 
                     <div
-                        class="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-300 group-hover/card:text-[#7C45F5] group-hover/card:bg-violet-50 transition-all shrink-0 ml-2">
+                        class="w-8 h-8  bg-zinc-50 flex items-center justify-center text-zinc-300 group-hover/card:text-[#7C45F5] group-hover/card:bg-violet-50 transition-all shrink-0 ml-2">
                         <span class="icon-arrow-right text-lg"></span>
                     </div>
                 </a>
             @else
                 <div class="flex flex-col gap-3 py-2">
                     <a href="{{ route('shop.customer.session.create') }}"
-                        class="flex w-full items-center justify-center rounded-[20px] bg-gradient-to-r from-[#7C45F5] to-[#7C45F5] px-6 py-4 text-center text-[15px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/30 active:scale-[0.98]">
+                        class="flex w-full items-center justify-center  bg-gradient-to-r from-[#7C45F5] to-[#7C45F5] px-6 py-4 text-center text-[15px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/30 active:scale-[0.98]">
                         Войти / Регистрация
                     </a>
                 </div>
@@ -106,10 +106,10 @@
                     <nav class="space-y-3">
                         @foreach ($personalizedCategories as $category)
                             <a href="{{ $category->url }}"
-                                class="flex items-center justify-between p-4 bg-white rounded-[20px] border border-zinc-50 shadow-[0_4px_16px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:translate-y-[-1px] active:scale-[0.98] group">
+                                class="flex items-center justify-between p-4 bg-white  border border-zinc-50 shadow-[0_4px_16px_rgba(0,0,0,0.02)] transition-all hover:shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:translate-y-[-1px] active:scale-[0.98] group">
                                 <div class="flex items-center gap-4">
                                     <div
-                                        class="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center overflow-hidden shrink-0 group-hover:bg-violet-50 transition-colors">
+                                        class="w-10 h-10  bg-zinc-50 flex items-center justify-center overflow-hidden shrink-0 group-hover:bg-violet-50 transition-colors">
                                         @if ($category->logo_url)
                                             <img src="{{ $category->logo_url }}"
                                                 class="w-6 h-6 object-contain group-hover:scale-110 transition-transform"
@@ -136,7 +136,7 @@
                 <nav class="space-y-1">
                     @foreach ($displayPinnedCategories as $category)
                         <a href="{{ $category->url }}"
-                            class="flex items-center justify-between px-3 py-2.5 rounded-xl text-[14px] font-semibold text-zinc-600 hover:text-[#7C45F5] hover:bg-white/60 transition-all group">
+                            class="flex items-center justify-between px-3 py-2.5  text-[14px] font-semibold text-zinc-600 hover:text-[#7C45F5] hover:bg-white/60 transition-all group">
                             <div class="flex items-center gap-3">
                                 <div class="w-6 h-6 flex items-center justify-center shrink-0">
                                     @if ($category->logo_url)
@@ -145,7 +145,7 @@
                                             alt="{{ $category->name }}">
                                     @else
                                         <span
-                                            class="w-1.5 h-1.5 rounded-full bg-zinc-300 group-hover:bg-[#7C45F5] transition-colors"></span>
+                                            class="w-1.5 h-1.5  bg-zinc-300 group-hover:bg-[#7C45F5] transition-colors"></span>
                                     @endif
                                 </div>
                                 {{ $category->name }}
@@ -156,7 +156,7 @@
                     @endforeach
 
                     @if ($displayPinnedCategories->isEmpty() && $personalizedCategories->isEmpty())
-                        <div class="px-4 py-8 text-center bg-white/30 rounded-2xl border border-dashed border-zinc-200">
+                        <div class="px-4 py-8 text-center bg-white/30  border border-dashed border-zinc-200">
                             <p class="text-zinc-400 text-sm">Нет категорий</p>
                         </div>
                     @endif
@@ -168,7 +168,7 @@
         <div class="px-8 pb-8 mt-auto relative z-10">
             <p
                 class="text-[9px] text-zinc-400 font-bold uppercase tracking-[0.25em] text-center flex items-center justify-center gap-2.5 opacity-40">
-                <span class="w-1 h-1 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="w-1 h-1  bg-green-500 animate-pulse"></span>
                 System Active 2.3
             </p>
         </div>
@@ -187,12 +187,12 @@
                     class="fixed left-0 top-1/2 -translate-y-1/2 z-[998] group/trigger flex items-center transition-all duration-300"
                     aria-label="Open Menu"
                 >
-                    <div class="bg-white/40 backdrop-blur-3xl border border-white/30 border-l-0 rounded-r-3xl py-10 px-3 shadow-[4px_0_24px_rgba(0,0,0,0.04)] transition-all group-hover/trigger:bg-white/70 group-hover/trigger:translate-x-1">
+                    <div class="bg-white/40 backdrop-blur-3xl border border-white/30 border-l-0  py-10 px-3 shadow-[4px_0_24px_rgba(0,0,0,0.04)] transition-all group-hover/trigger:bg-white/70 group-hover/trigger:translate-x-1">
                         <span class="icon-arrow-right text-xl text-zinc-400 group-hover/trigger:text-[#7C45F5] transition-colors"></span>
                     </div>
                     
                     <!-- Text Hint -->
-                    <span class="ml-3 px-4 py-2 bg-white/80 backdrop-blur-xl rounded-2xl text-[11px] font-bold text-zinc-600 uppercase tracking-[0.2em] opacity-0 -translate-x-4 group-hover/trigger:opacity-100 group-hover/trigger:translate-x-0 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white/40">
+                    <span class="ml-3 px-4 py-2 bg-white/80 backdrop-blur-xl  text-[11px] font-bold text-zinc-600 uppercase tracking-[0.2em] opacity-0 -translate-x-4 group-hover/trigger:opacity-100 group-hover/trigger:translate-x-0 transition-all shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-white/40">
                         Меню
                     </span>
                 </button>

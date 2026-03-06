@@ -7,10 +7,10 @@
 <div class="mt-14 grid gap-5 max-1060:grid-cols-[1fr] max-md:mt-5">
     @for ($i = 0;  $i < $count; $i++)
         <!-- Single card -->
-        <div class="rounded-xl border p-6 max-md:p-4">
+        <div class=" border p-6 max-md:p-4">
             <div class="flex gap-5">
                 <x-shop::media.images.lazy
-                    class="h-[146px] max-h-[146px] w-32 min-w-32 max-w-32 rounded-xl max-md:h-20 max-md:w-20 max-md:min-w-20"
+                    class="h-[146px] max-h-[146px] w-32 min-w-32 max-w-32  max-md:h-20 max-md:w-20 max-md:min-w-20"
                     alt="Review Image"
                 />
     

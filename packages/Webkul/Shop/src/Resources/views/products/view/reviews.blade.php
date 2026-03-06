@@ -129,7 +129,7 @@
 
                             <div class="mt-4 flex justify-start gap-4 max-xl:mb-5 max-sm:mb-5 max-sm:flex-wrap max-sm:justify-normal max-sm:gap-x-0">
                                 <button
-                                    class="primary-button w-full max-w-[374px] rounded-2xl px-11 py-4 text-center max-md:max-w-full max-md:rounded-lg max-md:py-3 max-sm:py-1.5"
+                                    class="primary-button w-full max-w-[374px]  px-11 py-4 text-center max-md:max-w-full max-md: max-md:py-3 max-sm:py-1.5"
                                     type='submit'
                                 >
                                     @lang('shop::app.products.view.reviews.submit-review')
@@ -137,7 +137,7 @@
 
                                 <button
                                     type="button"
-                                    class="secondary-button items-center rounded-2xl px-8 py-2.5 max-md:w-full max-md:max-w-full max-md:rounded-lg max-md:py-1.5"
+                                    class="secondary-button items-center  px-8 py-2.5 max-md:w-full max-md:max-w-full max-md: max-md:py-1.5"
                                     @click="canReview = false"
                                 >
                                     @lang('shop::app.products.view.reviews.cancel')
@@ -192,9 +192,9 @@
                                         <div class="row grid grid-cols-[1fr_2fr] items-center gap-4 max-md:grid-cols-[0.5fr_2fr] max-sm:flex-wrap max-sm:gap-0">
                                             <div class="whitespace-nowrap text-base font-medium max-sm:text-sm">{{ $i }} Stars</div>
 
-                                            <div class="h-4 w-[275px] max-w-full rounded-sm bg-neutral-200 max-sm:h-3.5 max-sm:w-full">
+                                            <div class="h-4 w-[275px] max-w-full  bg-neutral-200 max-sm:h-3.5 max-sm:w-full">
                                                 <div
-                                                    class="h-4 rounded-sm bg-amber-500 max-sm:h-3.5"
+                                                    class="h-4  bg-amber-500 max-sm:h-3.5"
                                                     style="width: {{ $percentageRatings[$i] }}%"
                                                 ></div>
                                             </div>
@@ -209,7 +209,7 @@
                                             || auth()->guard('customer')->user()
                                         )
                                             <div
-                                                class="flex cursor-pointer items-center justify-center gap-x-4 rounded-xl border border-navyBlue px-4 py-3 max-sm:rounded-lg max-sm:py-1.5"
+                                                class="flex cursor-pointer items-center justify-center gap-x-4  border border-navyBlue px-4 py-3 max-sm: max-sm:py-1.5"
                                                 @click="canReview = true"
                                             >
                                                 <span class="icon-pen text-2xl"></span>
@@ -229,7 +229,7 @@
                                 ></v-product-review-item>
 
                                 <button
-                                    class="mx-auto block w-max rounded-2xl border border-navyBlue bg-white px-11 py-3 text-center text-base font-medium text-navyBlue"
+                                    class="mx-auto block w-max  border border-navyBlue bg-white px-11 py-3 text-center text-base font-medium text-navyBlue"
                                     v-if="links?.next"
                                     @click="get()"
                                 >
@@ -259,7 +259,7 @@
                                         || auth()->guard('customer')->user()
                                     )
                                         <div
-                                            class="mt-8 flex cursor-pointer items-center gap-x-4 rounded-xl border border-navyBlue px-4 py-2.5 max-sm:mt-5 max-sm:gap-x-1.5 max-sm:rounded-lg max-sm:py-1.5 max-sm:text-sm"
+                                            class="mt-8 flex cursor-pointer items-center gap-x-4  border border-navyBlue px-4 py-2.5 max-sm:mt-5 max-sm:gap-x-1.5 max-sm: max-sm:py-1.5 max-sm:text-sm"
                                             @click="canReview = true"
                                         >
                                             <span class="icon-pen text-2xl max-sm:text-lg"></span>
@@ -280,11 +280,11 @@
         type="text/x-template"
         id="v-product-review-item-template"
     >
-        <div class="rounded-xl border border-zinc-200 p-6 max-md:hidden">
+        <div class=" border border-zinc-200 p-6 max-md:hidden">
             <div class="flex gap-5">
                 <template v-if="review.profile">
                     <img
-                        class="flex max-h-[100px] min-h-[100px] min-w-[100px] max-w-[100px] items-center justify-center rounded-xl"
+                        class="flex max-h-[100px] min-h-[100px] min-w-[100px] max-w-[100px] items-center justify-center "
                         :src="review.profile"
                         :alt="review.name"
                         :title="review.name"
@@ -293,7 +293,7 @@
 
                 <template v-else>
                     <div
-                        class="flex max-h-[100px] min-h-[100px] min-w-[100px] max-w-[100px] items-center justify-center rounded-xl bg-zinc-100"
+                        class="flex max-h-[100px] min-h-[100px] min-w-[100px] max-w-[100px] items-center justify-center  bg-zinc-100"
                         :title="review.name"
                     >
                         <span class="text-2xl font-semibold text-zinc-500">
@@ -332,7 +332,7 @@
 
                 @if ((bool) core()->getConfigData('general.magic_ai.review_translation.enabled'))
                     <button
-                        class="secondary-button min-h-[34px] rounded-lg px-2 py-1 text-sm max-md:rounded-lg"
+                        class="secondary-button min-h-[34px]  px-2 py-1 text-sm max-md:"
                         @click="translate"
                     >
                         <!-- Spinner -->
@@ -366,7 +366,7 @@
                             v-if="file.type == 'image'"
                         >
                             <img
-                                class="max-h-[50px] min-w-[50px] cursor-pointer rounded-xl"
+                                class="max-h-[50px] min-w-[50px] cursor-pointer "
                                 :src="file.url"
                                 :alt="review.name"
                                 :title="review.name"
@@ -381,7 +381,7 @@
                             v-else
                         >
                             <video
-                                class="max-h-[50px] min-w-[50px] cursor-pointer rounded-xl"
+                                class="max-h-[50px] min-w-[50px] cursor-pointer "
                                 :src="file.url"
                                 :alt="review.name"
                                 :title="review.name"
@@ -403,11 +403,11 @@
 
         <!-- For Mobile View -->
         <div class="md:hidden">
-            <div class="grid gap-1.5 rounded-xl border border-zinc-200 p-4 max-md:mb-0">
+            <div class="grid gap-1.5  border border-zinc-200 p-4 max-md:mb-0">
                 <div class="flex items-center gap-2.5">
                     <img
                         v-if="review.profile"
-                        class="flex max-h-10 min-h-10 min-w-10 max-w-10 items-center justify-center rounded-full"
+                        class="flex max-h-10 min-h-10 min-w-10 max-w-10 items-center justify-center "
                         :src="review.profile"
                         :alt="review.name"
                         :title="review.name"
@@ -415,7 +415,7 @@
 
                     <div
                         v-else
-                        class="flex max-h-10 min-h-10 min-w-10 max-w-10 items-center justify-center rounded-full bg-zinc-100"
+                        class="flex max-h-10 min-h-10 min-w-10 max-w-10 items-center justify-center  bg-zinc-100"
                         :title="review.name"
                     >
                         <span class="text-xs font-semibold text-zinc-500">
@@ -451,7 +451,7 @@
 
                     @if ((bool) core()->getConfigData('general.magic_ai.review_translation.enabled'))
                         <button
-                            class="secondary-button mt-2.5 min-h-[34px] rounded-lg px-4 py-2.5 text-base max-md:rounded-lg max-sm:px-3 max-sm:py-1 max-sm:text-xs"
+                            class="secondary-button mt-2.5 min-h-[34px]  px-4 py-2.5 text-base max-md: max-sm:px-3 max-sm:py-1 max-sm:text-xs"
                             @click="translate"
                         >
                             <!-- Spinner -->
@@ -486,7 +486,7 @@
                             v-if="file.type == 'image'"
                         >
                             <img
-                                class="max-h-20 min-w-20 cursor-pointer rounded-xl"
+                                class="max-h-20 min-w-20 cursor-pointer "
                                 :src="file.url"
                                 :alt="review.name"
                                 :title="review.name"
@@ -500,7 +500,7 @@
                             v-else
                         >
                             <video
-                                class="max-h-20 min-w-20 cursor-pointer rounded-xl"
+                                class="max-h-20 min-w-20 cursor-pointer "
                                 :src="file.url"
                                 :alt="review.name"
                                 :title="review.name"

@@ -45,7 +45,7 @@
                 <template #body="{ isLoading, available, applied, sort, performAction }">
                     <template v-if="isLoading">
                         <div class="px-5 space-y-3 py-4">
-                            <div v-for="i in 5" :key="i" class="h-14 bg-zinc-100 rounded-xl animate-pulse">
+                            <div v-for="i in 5" :key="i" class="h-14 bg-zinc-100  animate-pulse">
                             </div>
                         </div>
                     </template>

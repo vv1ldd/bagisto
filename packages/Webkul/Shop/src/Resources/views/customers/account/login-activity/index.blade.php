@@ -60,7 +60,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition">
+                                                    class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100  transition">
                                                     @lang('shop::app.customers.account.login-activity.revoke')
                                                 </button>
                                             </form>
@@ -122,7 +122,7 @@
                             @endif
                         </div>
                     @else
-                        <div class="bg-zinc-50/50 p-10 text-center rounded-3xl border border-zinc-100">
+                        <div class="bg-zinc-50/50 p-10 text-center  border border-zinc-100">
                             <p class="text-[15px] text-zinc-500">
                                 @lang('shop::app.customers.account.login-activity.empty-history').</p>
                         </div>

@@ -8,7 +8,7 @@
 
                         <div v-else-if="cart" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <!-- Unified Checkout Block -->
-                            <div class="bg-white/50 backdrop-blur-sm border border-zinc-100 rounded-3xl p-8 shadow-sm">
+                            <div class="bg-white/50 backdrop-blur-sm border border-zinc-100  p-8 shadow-sm">
                                 <h3 class="text-xl font-black text-zinc-900 uppercase tracking-tight mb-6">Данные и оплата</h3>
 
                                 <!-- Address Selection -->
@@ -26,7 +26,7 @@
                                     <button
                                         @click="placeOrder"
                                         :disabled="isPlacingOrder || !paymentMethodSelected"
-                                        class="w-full bg-[#7C45F5] text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-purple-200 hover:bg-[#6b35e4] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                                        class="w-full bg-[#7C45F5] text-white py-5  font-black text-lg shadow-xl shadow-purple-200 hover:bg-[#6b35e4] transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                                     >
                                         <span v-if="!isPlacingOrder">Оплатить @{{ cart.formatted_grand_total }}</span>
                                         <span v-else class="icon-spinner animate-spin text-2xl"></span>
@@ -35,8 +35,8 @@
                             </div>
 
                             <!-- Success State -->
-                            <div v-if="currentStep == 'success'" class="bg-white/50 backdrop-blur-sm border border-zinc-100 rounded-3xl p-10 shadow-sm text-center">
-                                <div class="h-20 w-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div v-if="currentStep == 'success'" class="bg-white/50 backdrop-blur-sm border border-zinc-100  p-10 shadow-sm text-center">
+                                <div class="h-20 w-20 bg-green-100 text-green-600  flex items-center justify-center mx-auto mb-6">
                                     <span class="icon-done text-4xl"></span>
                                 </div>
                                 <h3 class="text-2xl font-bold text-zinc-900 mb-2">Заказ оформлен!</h3>

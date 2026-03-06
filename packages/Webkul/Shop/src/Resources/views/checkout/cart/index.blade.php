@@ -32,7 +32,7 @@
 
                 @if (!empty($errors) && $errors['error_code'] === 'MINIMUM_ORDER_AMOUNT')
                     <div
-                        class="mt-5 w-full gap-12 rounded-lg bg-[#FFF3CD] px-5 py-3 text-[#383D41] max-sm:px-3 max-sm:py-2 max-sm:text-sm">
+                        class="mt-5 w-full gap-12  bg-[#FFF3CD] px-5 py-3 text-[#383D41] max-sm:px-3 max-sm:py-2 max-sm:text-sm">
                         {{ $errors['message'] }}: {{ $errors['amount'] }}
                     </div>
                 @endif
@@ -71,7 +71,7 @@
                     >
                         <div class="flex flex-1 flex-col gap-4">
                             <!-- Cart items card -->
-                            <div class="rounded-2xl border border-zinc-100 bg-white shadow-sm overflow-hidden">
+                            <div class=" border border-zinc-100 bg-white shadow-sm overflow-hidden">
 
                                 <!-- Header -->
                                 <div class="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100">
@@ -172,7 +172,7 @@
                                     {!! view_render_event('bagisto.shop.checkout.cart.item_image.before') !!}
                                     <a :href="`{{ route('shop.product_or_category.index', '') }}/${item.product_url_key}`" class="flex-shrink-0">
                                         <x-shop::media.images.lazy
-                                            class="h-20 w-20 rounded-xl object-cover"
+                                            class="h-20 w-20  object-cover"
                                             ::src="item.base_image.small_image_url"
                                             ::alt="item.name"
                                             width="80"
@@ -216,7 +216,7 @@
                                             {!! view_render_event('bagisto.shop.checkout.cart.quantity_changer.before') !!}
                                             <x-shop::quantity-changer
                                                 v-if="item.can_change_qty"
-                                                class="flex max-w-max items-center gap-x-2 rounded-full border border-zinc-200 px-3 py-1 text-sm"
+                                                class="flex max-w-max items-center gap-x-2  border border-zinc-200 px-3 py-1 text-sm"
                                                 name="quantity"
                                                 ::value="item?.quantity"
                                                 @change="setItemQuantity(item.id, $event)"
@@ -252,7 +252,7 @@
                             <div class="flex justify-end gap-3">
                                 {!! view_render_event('bagisto.shop.checkout.cart.continue_shopping.before') !!}
                                 <a
-                                    class="secondary-button rounded-xl px-5 py-2.5 text-sm"
+                                    class="secondary-button  px-5 py-2.5 text-sm"
                                     href="{{ route('shop.home.index') }}"
                                 >
                                     @lang('shop::app.checkout.cart.index.continue-shopping')
@@ -261,7 +261,7 @@
 
                                 {!! view_render_event('bagisto.shop.checkout.cart.update_cart.before') !!}
                                 <x-shop::button
-                                    class="secondary-button rounded-xl px-5 py-2.5 text-sm"
+                                    class="secondary-button  px-5 py-2.5 text-sm"
                                     :title="trans('shop::app.checkout.cart.index.update-cart')"
                                     ::loading="isStoring"
                                     ::disabled="isStoring"

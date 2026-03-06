@@ -20,7 +20,7 @@
                 <div class="flex flex-grow flex-col justify-center py-6 md:py-10">
                     <div class="mx-auto w-full max-w-[400px]">
                         <div
-                            class="mx-auto mb-8 flex h-14 w-14 items-center justify-center rounded-full bg-[#7C45F5]/10">
+                            class="mx-auto mb-8 flex h-14 w-14 items-center justify-center  bg-[#7C45F5]/10">
                             <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#7C45F5"
                                 stroke-width="1.5">
                                 @if (isset($submitRoute) && str_contains($submitRoute, 'verify-ip'))
@@ -57,7 +57,7 @@
 
                         @if (!isset($submitRoute) || !str_contains($submitRoute, 'verify-ip'))
                             <!-- Registration flow: just show a status message, no form -->
-                            <div class="mt-12 p-6 rounded-2xl bg-[#7C45F5]/5 border border-[#7C45F5]/10">
+                            <div class="mt-12 p-6  bg-[#7C45F5]/5 border border-[#7C45F5]/10">
                                 <p class="text-zinc-600 leading-relaxed">
                                     Мы отправили вам письмо со специальной ссылкой. <br><br>
                                     Перейдите по ней, чтобы подтвердить свой аккаунт и продолжить настройку профиля. Код
@@ -67,7 +67,7 @@
                         @else
                             <div class="mt-24">
                                 @if ($errors->any())
-                                    <div class="mb-6 rounded-xl bg-red-50 p-4 text-sm text-red-600 border border-red-100">
+                                    <div class="mb-6  bg-red-50 p-4 text-sm text-red-600 border border-red-100">
                                         {{ $errors->first() }}
                                     </div>
                                 @endif
@@ -78,7 +78,7 @@
                                     <div class="mb-10">
                                         <div class="relative flex justify-center gap-3">
                                             @for ($i = 0; $i < 6; $i++)
-                                                <div class="otp-cell flex h-14 w-11 items-center justify-center rounded-lg bg-zinc-50 border-b-2 border-zinc-200 transition-all duration-200"
+                                                <div class="otp-cell flex h-14 w-11 items-center justify-center  bg-zinc-50 border-b-2 border-zinc-200 transition-all duration-200"
                                                     id="otp-cell-{{ $i }}">
                                                     <span class="text-2xl font-bold text-zinc-800"
                                                         id="otp-char-{{ $i }}">_</span>
@@ -114,7 +114,7 @@
                                     </div>
 
                                     <button type="submit"
-                                        class="w-full rounded-full bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
+                                        class="w-full  bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
                                         Подтвердить
                                     </button>
                                 </form>

@@ -26,7 +26,7 @@
                 <div class="row grid grid-cols-[1fr_2fr] items-center gap-4 max-sm:flex-wrap">
                     <div class="shimmer h-6 w-[56px]"></div>
 
-                    <div class="shimmer h-4 w-[275px] rounded-sm"></div>
+                    <div class="shimmer h-4 w-[275px] "></div>
                 </div>
             @endfor
         </div>

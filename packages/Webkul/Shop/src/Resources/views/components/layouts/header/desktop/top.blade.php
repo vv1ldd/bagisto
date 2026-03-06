@@ -6,13 +6,13 @@
         <!-- Currencies -->
         <div class="flex w-20 items-center justify-between gap-2.5 py-3">
             <div
-                class="shimmer h-6 w-12 rounded"
+                class="shimmer h-6 w-12 "
                 role="presentation"
             >
             </div>
 
             <div
-                class="shimmer h-6 w-6 rounded"
+                class="shimmer h-6 w-6 "
                 role="presentation"
             >
             </div>
@@ -20,7 +20,7 @@
 
         <!-- Offers -->
         <div
-            class="shimmer h-6 w-72 rounded py-3"
+            class="shimmer h-6 w-72  py-3"
             role="presentation"
         >
         </div>
@@ -34,7 +34,7 @@
             </div>
 
             <div
-                class="shimmer h-6 w-14 rounded"
+                class="shimmer h-6 w-14 "
                 role="presentation"
             >
             </div>

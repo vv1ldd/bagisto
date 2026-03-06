@@ -59,7 +59,7 @@
                 </x-shop::form.control-group>
 
                 <button type="submit"
-                    class="primary-button m-0 block rounded-2xl px-11 py-3 text-center text-base max-md:w-full max-md:max-w-full max-md:rounded-lg max-md:py-2 max-sm:py-1.5">
+                    class="primary-button m-0 block  px-11 py-3 text-center text-base max-md:w-full max-md:max-w-full max-md: max-md:py-2 max-sm:py-1.5">
                     @lang('shop::app.customers.account.organizations.create.save')
                 </button>
             </x-shop::form>

@@ -27,13 +27,13 @@
                             <div 
                                 v-for="(payment, index) in methods"
                                 :key="payment.method"
-                                class="relative p-2.5 rounded-2xl border transition-all duration-300 group cursor-pointer flex flex-col bg-white"
+                                class="relative p-2.5  border transition-all duration-300 group cursor-pointer flex flex-col bg-white"
                                 :class="[selectedPaymentMethod == payment.method ? 'border-[#7C45F5] ring-1 ring-[#7C45F5] shadow-lg shadow-[#7C45F5]/5' : 'border-zinc-100 hover:border-zinc-200 shadow-sm']"
                                 @click="handleSelection(payment)"
                             >
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
-                                        <div class="h-8 w-8 rounded-xl bg-zinc-50 border border-zinc-100 p-1 flex items-center justify-center shrink-0">
+                                        <div class="h-8 w-8  bg-zinc-50 border border-zinc-100 p-1 flex items-center justify-center shrink-0">
                                             <img :src="payment.image" class="max-h-full max-w-full object-contain" />
                                         </div>
                                         <div class="min-w-0">
@@ -44,15 +44,15 @@
                                     </div>
 
                                     <div 
-                                        class="h-4 w-4 rounded-full border flex items-center justify-center transition-all bg-zinc-50"
+                                        class="h-4 w-4  border flex items-center justify-center transition-all bg-zinc-50"
                                         :class="[selectedPaymentMethod == payment.method ? 'border-[#7C45F5] bg-[#7C45F5]' : 'border-zinc-300']"
                                     >
-                                        <div v-if="selectedPaymentMethod == payment.method" class="h-1.5 w-1.5 rounded-full bg-white"></div>
+                                        <div v-if="selectedPaymentMethod == payment.method" class="h-1.5 w-1.5  bg-white"></div>
                                     </div>
                                 </div>
 
                                 <!-- Meanly Wallet: show total balance, no coin selection needed -->
-                                <div v-if="payment.method === 'credits' && selectedPaymentMethod === 'credits'" class="mt-3 p-2.5 rounded-xl bg-[#7C45F5]/5 border border-[#7C45F5]/10 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div v-if="payment.method === 'credits' && selectedPaymentMethod === 'credits'" class="mt-3 p-2.5  bg-[#7C45F5]/5 border border-[#7C45F5]/10 animate-in fade-in slide-in-from-top-1 duration-200">
                                     <div class="flex items-center justify-between px-1">
                                         <span class="text-[9px] font-black text-zinc-400 uppercase tracking-wider">Баланс</span>
                                         @if(auth()->guard('customer')->check())

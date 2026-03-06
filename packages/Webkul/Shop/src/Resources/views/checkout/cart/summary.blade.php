@@ -1,5 +1,5 @@
 <div class="w-[380px] max-w-full max-md:w-full">
-    <div class="rounded-2xl border border-zinc-100 bg-white shadow-sm overflow-hidden">
+    <div class=" border border-zinc-100 bg-white shadow-sm overflow-hidden">
         <div class="px-5 py-4 border-b border-zinc-100">
             {!! view_render_event('bagisto.shop.checkout.cart.summary.title.before') !!}
             <p class="text-base font-semibold text-zinc-800" role="heading" aria-level="1">
@@ -201,7 +201,7 @@
             {!! view_render_event('bagisto.shop.checkout.cart.summary.proceed_to_checkout.before') !!}
 
             <a href="{{ route('shop.checkout.onepage.index') }}"
-                class="mt-2 block w-full rounded-xl bg-gradient-to-r from-[#7C45F5] to-[#c12f7e] py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
+                class="mt-2 block w-full  bg-gradient-to-r from-[#7C45F5] to-[#c12f7e] py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
                 @lang('shop::app.checkout.cart.summary.proceed-to-checkout')
             </a>
 

@@ -52,7 +52,7 @@
                         <template v-else>
                             <template v-for="record in available.records">
                                 <div
-                                    class="w-full p-4 border rounded-md transition-all hover:bg-gray-50 [&>*]:border-0 mb-4 last:mb-0">
+                                    class="w-full p-4 border  transition-all hover:bg-gray-50 [&>*]:border-0 mb-4 last:mb-0">
                                     <div class="flex items-center justify-between">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex gap-2">
@@ -169,7 +169,7 @@
                         <x-slot:footer>
                             <div class="flex flex-wrap items-center gap-4">
                                 <x-shop::button
-                                    class="primary-button max-w-none flex-auto rounded-2xl px-11 py-3 max-md:rounded-lg max-md:py-1.5"
+                                    class="primary-button max-w-none flex-auto  px-11 py-3 max-md: max-md:py-1.5"
                                     :title="trans('shop::app.customers.account.gdpr.index.modal.save')"
                                     ::loading="isStoring" ::disabled="isStoring" />
                             </div>

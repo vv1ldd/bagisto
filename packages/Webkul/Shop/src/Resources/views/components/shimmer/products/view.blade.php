@@ -7,10 +7,10 @@
             <div class="flex justify-between gap-4">
                 <h1 class="shimmer h-[46px] w-2/4"></h1>
 
-                <div class="shimmer h-[46px] w-[46px] rounded-full"></div>
+                <div class="shimmer h-[46px] w-[46px] "></div>
             </div>
 
-            <div class="shimmer mt-4 h-[38px] w-[150px] rounded-lg"></div>
+            <div class="shimmer mt-4 h-[38px] w-[150px] "></div>
 
             <p class="shimmer mt-5 h-9 w-[35%]"></p>
 
@@ -25,11 +25,11 @@
                 <h3 class="shimmer mb-4 h-9 w-1/5"></h3>
 
                 <div class="flex items-center space-x-3">
-                    <span class="shimmer h-8 w-8 rounded-full"></span>
-                    <span class="shimmer h-8 w-8 rounded-full"></span>
-                    <span class="shimmer h-8 w-8 rounded-full"></span>
-                    <span class="shimmer h-8 w-8 rounded-full"></span>
-                    <span class="shimmer h-8 w-8 rounded-full"></span>
+                    <span class="shimmer h-8 w-8 "></span>
+                    <span class="shimmer h-8 w-8 "></span>
+                    <span class="shimmer h-8 w-8 "></span>
+                    <span class="shimmer h-8 w-8 "></span>
+                    <span class="shimmer h-8 w-8 "></span>
                 </div>
             </div>
 
@@ -38,25 +38,25 @@
                 <h3 class="shimmer mb-4 h-9 w-1/5"></h3>
 
                 <div class="flex flex-wrap gap-3">
-                    <span class="shimmer h-[60px] w-[60px] rounded-full"></span>
-                    <span class="shimmer h-[60px] w-[60px] rounded-full"></span>
-                    <span class="shimmer h-[60px] w-[60px] rounded-full"></span>
-                    <span class="shimmer h-[60px] w-[60px] rounded-full"></span>
-                    <span class="shimmer h-[60px] w-[60px] rounded-full"></span>
-                    <span class="shimmer h-[60px] w-[60px] rounded-full"></span>
+                    <span class="shimmer h-[60px] w-[60px] "></span>
+                    <span class="shimmer h-[60px] w-[60px] "></span>
+                    <span class="shimmer h-[60px] w-[60px] "></span>
+                    <span class="shimmer h-[60px] w-[60px] "></span>
+                    <span class="shimmer h-[60px] w-[60px] "></span>
+                    <span class="shimmer h-[60px] w-[60px] "></span>
                 </div>
             </div>
 
             <div class="mt-8 flex max-w-[470px] flex-wrap gap-4">
                 <!-- Quantity changer button -->
-                <div class="shimmer h-14 w-[161px] rounded-xl max-sm:w-[124px]"></div>
+                <div class="shimmer h-14 w-[161px]  max-sm:w-[124px]"></div>
 
                 <!-- Add to cart Button -->
-                <button class="shimmer h-14 w-[279px] rounded-xl"></button>
+                <button class="shimmer h-14 w-[279px] "></button>
             </div>
 
             <!-- Buy Now Button -->
-            <button class="shimmer mt-5 h-14 w-full rounded-xl"></button>
+            <button class="shimmer mt-5 h-14 w-full "></button>
 
             <!-- Share Buttons -->
             <div class="mt-10 flex items-center gap-9 max-sm:flex-wrap">
@@ -66,10 +66,10 @@
                     <div class="shimmer h-6 w-20"></div>
                     
                     <div class="flex gap-3">
-                        <span class="shimmer h-10 w-10 rounded-full"></span>
-                        <span class="shimmer h-10 w-10 rounded-full"></span>
-                        <span class="shimmer h-10 w-10 rounded-full"></span>
-                        <span class="shimmer h-10 w-10 rounded-full"></span>
+                        <span class="shimmer h-10 w-10 "></span>
+                        <span class="shimmer h-10 w-10 "></span>
+                        <span class="shimmer h-10 w-10 "></span>
+                        <span class="shimmer h-10 w-10 "></span>
                     </div>
                 </div>
             </div>

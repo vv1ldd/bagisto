@@ -2,21 +2,21 @@
     class="sticky top-0 z-[100] flex items-center gap-4 overflow-x-auto border-b border-white/10 bg-white/10 backdrop-blur-2xl py-3 no-scrollbar px-4 md:px-0">
     {{-- Search Shimmer --}}
     <div class="flex-shrink-0 min-w-[180px] md:min-w-[240px]">
-        <div class="shimmer h-[40px] w-full rounded-[5px]"></div>
+        <div class="shimmer h-[40px] w-full "></div>
     </div>
 
     {{-- Filter Pills Shimmer --}}
     <div class="flex items-center gap-2">
-        <div class="shimmer h-[38px] w-[100px] rounded-[5px]"></div>
-        <div class="shimmer h-[38px] w-[120px] rounded-[5px]"></div>
-        <div class="shimmer h-[38px] w-[80px] rounded-[5px]"></div>
-        <div class="shimmer h-[38px] w-[110px] rounded-[5px]"></div>
-        <div class="shimmer h-[38px] w-[90px] rounded-[5px]"></div>
+        <div class="shimmer h-[38px] w-[100px] "></div>
+        <div class="shimmer h-[38px] w-[120px] "></div>
+        <div class="shimmer h-[38px] w-[80px] "></div>
+        <div class="shimmer h-[38px] w-[110px] "></div>
+        <div class="shimmer h-[38px] w-[90px] "></div>
     </div>
 
     {{-- Toolbar Actions Shimmer (Sort/Mode) --}}
     <div class="ml-auto flex items-center gap-3 max-md:hidden">
-        <div class="shimmer h-[34px] w-[140px] rounded-[5px]"></div>
-        <div class="shimmer h-[34px] w-[80px] rounded-[5px]"></div>
+        <div class="shimmer h-[34px] w-[140px] "></div>
+        <div class="shimmer h-[34px] w-[80px] "></div>
     </div>
 </div>

@@ -47,7 +47,7 @@
                                                     <x-shop::form.control-group class="!mb-0">
                                                         <x-shop::form.control-group.control
                                                             type="text"
-                                                            class="rounded-2xl border border-zinc-100 bg-zinc-50 px-5 py-3.5 text-sm font-medium focus:border-[#7C45F5] focus:bg-white focus:ring-[#7C45F5] transition-all"
+                                                            class=" border border-zinc-100 bg-zinc-50 px-5 py-3.5 text-sm font-medium focus:border-[#7C45F5] focus:bg-white focus:ring-[#7C45F5] transition-all"
                                                             name="code"
                                                             rules="required"
                                                             :placeholder="trans('shop::app.checkout.coupon.enter-your-code')"
@@ -73,7 +73,7 @@
                                                         </div>
 
                                                         <x-shop::button
-                                                            class="primary-button rounded-xl bg-gradient-to-r from-[#7C45F5] to-[#9D6CFF] px-8 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_-6px_rgba(124,69,245,0.6)] transition-all hover:shadow-[0_12px_25px_-4px_rgba(124,69,245,0.7)] hover:-translate-y-0.5 active:scale-95 border-0"
+                                                            class="primary-button  bg-gradient-to-r from-[#7C45F5] to-[#9D6CFF] px-8 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_-6px_rgba(124,69,245,0.6)] transition-all hover:shadow-[0_12px_25px_-4px_rgba(124,69,245,0.7)] hover:-translate-y-0.5 active:scale-95 border-0"
                                                             :title="trans('shop::app.checkout.coupon.button-title')"
                                                             ::loading="isStoring"
                                                             ::disabled="isStoring"
@@ -88,7 +88,7 @@
 
                                     <!-- Applied Coupon Information Container -->
                                     <div 
-                                        class="flex items-center gap-2 rounded-full bg-[#7C45F5]/10 px-3 py-1.5 text-[#7C45F5] border border-[#7C45F5]/10"
+                                        class="flex items-center gap-2  bg-[#7C45F5]/10 px-3 py-1.5 text-[#7C45F5] border border-[#7C45F5]/10"
                                         v-if="cart.coupon_code"
                                     >
                                         <p 

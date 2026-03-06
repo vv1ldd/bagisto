@@ -31,9 +31,9 @@
 
             @auth('customer')
                 <a href="{{ route('shop.customers.account.index') }}"
-                    class="flex items-center gap-2 rounded-full bg-white/40 px-1 pr-3 py-1 backdrop-blur-md border border-white/60">
+                    class="flex items-center gap-2  bg-white/40 px-1 pr-3 py-1 backdrop-blur-md border border-white/60">
                     <div
-                        class="flex h-7 w-7 items-center justify-center rounded-full bg-[#7C45F5] text-white font-bold text-[10px] uppercase shrink-0">
+                        class="flex h-7 w-7 items-center justify-center  bg-[#7C45F5] text-white font-bold text-[10px] uppercase shrink-0">
                         {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
                     </div>
                     <span class="text-[13px] font-medium text-zinc-700 flex items-center gap-1 whitespace-nowrap">
@@ -46,7 +46,7 @@
                 </a>
             @else
                 <a href="{{ route('shop.customer.session.index') }}"
-                    class="flex items-center justify-center rounded-full bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-4 py-2 text-[13px] font-bold text-white shadow-md shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97] whitespace-nowrap">
+                    class="flex items-center justify-center  bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-4 py-2 text-[13px] font-bold text-white shadow-md shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97] whitespace-nowrap">
                     Войти
                 </a>
             @endauth
