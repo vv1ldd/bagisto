@@ -86,52 +86,43 @@
                                                                                                                 <input type="hidden" name="is_buy_now" v-model="is_buy_now">
                                                                                                                 <input type="hidden" name="quantity" v-model="qty">
 
-                                                                            <div class="w-full max-w-[540px] mx-auto px-4 lg:px-6 space-y-6 pt-6">
-                                                                                <!-- Navigation and Utility actions are inside the tile -->
+                                                                            <div class="w-full max-w-[420px] mx-auto px-4 lg:px-6 space-y-6 pt-6">
+                                                                                <!-- Single Card: Vertical Stacked Layout -->
+                                                                                <div class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-col items-stretch">
 
-                                                                                <!-- Mobile Title: shown only on small screens -->
-                                                                                <div class="sm:hidden">
-                                                                                    <h1 class="text-lg font-black text-zinc-900 uppercase tracking-tighter leading-tight mb-2">
-                                                                                        {{ $product->name }}
-                                                                                    </h1>
-                                                                                </div>
+                                                                                    <!-- Header: Title + Heart + Cross -->
+                                                                                    <div class="p-6 pb-4 max-sm:p-4 max-sm:pb-2 flex items-start justify-between gap-4 relative z-10">
+                                                                                        <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter leading-tight flex-1 mt-1">
+                                                                                            {{ $product->name }}
+                                                                                        </h1>
 
-                                                                                <!-- Single Card: Image + Info — centered horizontal layout -->
-                                                                                <div class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-row items-stretch">
+                                                                                        <div class="flex items-center gap-2 shrink-0">
+                                                                                            @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
+                                                                                                <button
+                                                                                                    type="button"
+                                                                                                    class="flex h-10 w-10 cursor-pointer items-center justify-center border border-zinc-100 bg-white text-lg transition-all hover:border-[#7C45F5]/30 hover:text-[#7C45F5] active:scale-90"
+                                                                                                    :class="isWishlist ? 'icon-heart-fill text-red-500' : 'icon-heart text-zinc-300'"
+                                                                                                    @click="addToWishlist"
+                                                                                                ></button>
+                                                                                            @endif
 
-                                                                                    <!-- LEFT: Product Image (Enlarged) -->
-                                                                                    <div class="relative flex-shrink-0 flex items-center justify-center bg-zinc-50 border-r border-zinc-100 p-4 w-[160px] sm:w-[220px] md:w-[320px]">
+                                                                                            <a href="javascript:history.back()"
+                                                                                               class="w-10 h-10 bg-white border border-zinc-100 flex items-center justify-center text-zinc-900 active:scale-95 transition-all hover:border-[#7C45F5]/30">
+                                                                                                <span class="icon-cross text-xl"></span>
+                                                                                            </a>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    <!-- Product Image (Full width of the card) -->
+                                                                                    <div class="relative w-full flex items-center justify-center bg-zinc-50 border-y border-zinc-100 p-6 z-0">
                                                                                         <img src="{{ $productBaseImage['medium_image_url'] }}"
                                                                                              class="w-full h-auto object-contain transition-transform duration-500 hover:scale-105"
-                                                                                             style="max-height: 320px;"
+                                                                                             style="max-height: 280px;"
                                                                                              alt="{{ $product->name }}">
                                                                                     </div>
 
-                                                                                    <!-- RIGHT: Info, Price, Buttons -->
-                                                                                    <div class="flex flex-col gap-4 p-6 max-sm:p-4 flex-1 min-w-0 bg-white relative">
-
-                                                                                        <!-- Header: Title + Heart + Cross -->
-                                                                                        <div class="flex items-start justify-between gap-4">
-                                                                                            <h1 class="text-2xl font-black text-zinc-900 uppercase tracking-tighter leading-tight max-sm:hidden flex-1">
-                                                                                                {{ $product->name }}
-                                                                                            </h1>
-
-                                                                                            <div class="flex items-center gap-2 shrink-0">
-                                                                                                @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
-                                                                                                    <button
-                                                                                                        type="button"
-                                                                                                        class="flex h-10 w-10 cursor-pointer items-center justify-center border border-zinc-100 bg-white text-xl transition-all hover:border-[#7C45F5]/30 hover:text-[#7C45F5] active:scale-90"
-                                                                                                        :class="isWishlist ? 'icon-heart-fill text-red-500' : 'icon-heart text-zinc-300'"
-                                                                                                        @click="addToWishlist"
-                                                                                                    ></button>
-                                                                                                @endif
-
-                                                                                                <a href="javascript:history.back()"
-                                                                                                   class="w-10 h-10 bg-white border border-zinc-100 flex items-center justify-center text-zinc-900 active:scale-95 transition-all hover:border-[#7C45F5]/30">
-                                                                                                    <span class="icon-cross text-2xl"></span>
-                                                                                                </a>
-                                                                                            </div>
-                                                                                        </div>
+                                                                                    <!-- Info, Price, Actions -->
+                                                                                    <div class="flex flex-col gap-4 p-6 max-sm:p-4 bg-white relative z-10">
 
                                                                                         <div class="space-y-4">
                                                                                             <!-- Attributes / Brand -->
@@ -152,62 +143,62 @@
                                                                                             </div>
                                                                                         </div>
 
-                                                                                        <!-- Action Bar: Quantity + Buttons (Highly Compact) -->
-                                                                                        <div class="flex flex-wrap items-center gap-1.5">
+                                                                                        <!-- Action Bar: Quantity + Buttons (Compact & Ergonomic) -->
+                                                                                        <div class="flex flex-wrap items-center gap-1.5 mt-2">
                                                                                             <!-- Quantity Selector -->
-                                                                                            <div class="flex items-center bg-zinc-50 border border-zinc-200 shrink-0 h-9">
+                                                                                            <div class="flex items-center bg-zinc-50 border border-zinc-200 shrink-0 h-10">
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="w-8 h-full flex items-center justify-center hover:bg-zinc-100 transition-all active:scale-90 disabled:opacity-30"
+                                                                                                    class="w-10 h-full flex items-center justify-center hover:bg-zinc-100 transition-all active:scale-90 disabled:opacity-30"
                                                                                                     @click="decreaseQty"
                                                                                                     :disabled="qty <= 1"
                                                                                                 >
-                                                                                                    <span class="icon-line text-[10px] text-zinc-400"></span>
+                                                                                                    <span class="icon-line text-xs text-zinc-400"></span>
                                                                                                 </button>
                                                                                                 <input
                                                                                                     type="text"
-                                                                                                    class="w-6 text-center bg-transparent border-none font-black text-zinc-900 focus:ring-0 text-[11px] p-0"
+                                                                                                    class="w-8 text-center bg-transparent border-none font-black text-zinc-900 focus:ring-0 text-sm p-0"
                                                                                                     v-model="qty"
                                                                                                     readonly
                                                                                                 >
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="w-8 h-full flex items-center justify-center hover:bg-zinc-100 transition-all active:scale-90"
+                                                                                                    class="w-10 h-full flex items-center justify-center hover:bg-zinc-100 transition-all active:scale-90"
                                                                                                     @click="increaseQty"
                                                                                                 >
-                                                                                                    <span class="icon-plus text-[10px] text-zinc-400"></span>
+                                                                                                    <span class="icon-plus text-xs text-zinc-400"></span>
                                                                                                 </button>
                                                                                             </div>
 
                                                                                             <div class="flex items-center gap-1.5 flex-1 min-w-[140px]">
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="flex-1 bg-[#7C45F5] text-white h-9 font-black text-[9px] uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-md shadow-[#7C45F5]/10 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-2"
+                                                                                                    class="flex-1 bg-[#7C45F5] text-white h-10 font-black text-[10px] uppercase tracking-wider transition-all hover:bg-[#6b35e4] shadow-md shadow-[#7C45F5]/10 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-2"
                                                                                                     :disabled="isStoring.buyNow"
                                                                                                     @click="is_buy_now = 1; addToCart()"
                                                                                                 >
-                                                                                                    <span v-if="!isStoring.buyNow" class="icon-payment text-xs"></span>
-                                                                                                    <span v-else class="icon-spinner animate-spin text-xs"></span>
+                                                                                                    <span v-if="!isStoring.buyNow" class="icon-payment text-sm"></span>
+                                                                                                    <span v-else class="icon-spinner animate-spin text-sm"></span>
                                                                                                     Купить
                                                                                                 </button>
                                                                                                 <button
                                                                                                     type="button"
-                                                                                                    class="flex-1 bg-white border-2 border-[#7C45F5] text-[#7C45F5] h-9 font-black text-[9px] uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-2"
+                                                                                                    class="flex-1 bg-white border-2 border-[#7C45F5] text-[#7C45F5] h-10 font-black text-[10px] uppercase tracking-wider transition-all hover:bg-[#7C45F5]/5 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-1 px-2"
                                                                                                     :disabled="isStoring.addToCart"
                                                                                                     @click="is_buy_now = 0; addToCart()"
                                                                                                 >
-                                                                                                    <span v-if="!isStoring.addToCart" class="icon-cart text-xs"></span>
-                                                                                                    <span v-else class="icon-spinner animate-spin text-xs"></span>
+                                                                                                    <span v-if="!isStoring.addToCart" class="icon-cart text-sm"></span>
+                                                                                                    <span v-else class="icon-spinner animate-spin text-sm"></span>
                                                                                                     В корзину
                                                                                                 </button>
                                                                                             </div>
                                                                                         </div>
 
                                                                                         <!-- Bottom section: badgets/info -->
-                                                                                        <div class="flex flex-col gap-3 mt-auto">
+                                                                                        <div class="flex flex-col gap-3 mt-3">
                                                                                             @if (in_array($product->type, ['downloadable', 'virtual']))
                                                                                                 <!-- Digital delivery badge -->
-                                                                                                <div class="flex items-center gap-2 border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-3 py-2">
+                                                                                                <div class="flex items-center justify-center text-center gap-2 border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-3 py-2.5">
                                                                                                     <span class="text-[#7C45F5] text-sm">✉</span>
                                                                                                     <p class="text-[10px] font-semibold text-[#7C45F5] leading-tight">Цифровой товар — пришлём на e-mail после оплаты</p>
                                                                                                 </div>
