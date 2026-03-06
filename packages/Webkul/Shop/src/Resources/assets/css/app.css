@@ -16,6 +16,10 @@
     --brand-gradient: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
 }
 
+* {
+    border-radius: 0 !important;
+}
+
 .glass-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.35) 100%);
     backdrop-filter: var(--glass-blur);
