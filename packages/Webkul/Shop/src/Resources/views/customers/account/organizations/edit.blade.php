@@ -37,15 +37,19 @@
 
                         <div>
                             <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                @lang('shop::app.customers.account.organizations.edit.inn') /
-                                @lang('shop::app.customers.account.organizations.edit.kpp')
+                                @lang('shop::app.customers.account.organizations.edit.inn')
+                                @if($organization->kpp)
+                                    / @lang('shop::app.customers.account.organizations.edit.kpp')
+                                @endif
                             </label>
                             <div class="flex gap-2">
                                 <input type="text" name="inn" value="{{ old('inn') ?? $organization->inn }}" readonly
                                     class="w-auto bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default flex-1" />
-                                <span class="text-zinc-300">/</span>
-                                <input type="text" name="kpp" value="{{ old('kpp') ?? $organization->kpp }}" readonly
-                                    class="w-auto bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default flex-1" />
+                                @if($organization->kpp)
+                                    <span class="text-zinc-300">/</span>
+                                    <input type="text" name="kpp" value="{{ old('kpp') ?? $organization->kpp }}" readonly
+                                        class="w-auto bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default flex-1" />
+                                @endif
                             </div>
                         </div>
                     </div>

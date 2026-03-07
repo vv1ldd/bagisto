@@ -58,7 +58,7 @@
                                     class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
                             </div>
 
-                            <div>
+                            <div id="kpp-container">
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                                     @lang('shop::app.customers.account.organizations.create.kpp')
                                 </label>
@@ -238,6 +238,14 @@
                             nameInput.value = data.name || '';
                             kppInput.value = data.kpp || '';
                             addressInput.value = data.address || '';
+                            
+                            // Hide KPP if empty (e.g., for IP)
+                            if (!data.kpp) {
+                                document.getElementById('kpp-container').classList.add('hidden');
+                            } else {
+                                document.getElementById('kpp-container').classList.remove('hidden');
+                            }
+                            
                             step1Details.classList.remove('hidden');
                             
                             // Visual cue
