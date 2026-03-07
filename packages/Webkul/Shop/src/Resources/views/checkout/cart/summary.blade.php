@@ -201,7 +201,7 @@
             {!! view_render_event('bagisto.shop.checkout.cart.summary.proceed_to_checkout.before') !!}
 
             <a href="{{ route('shop.checkout.onepage.index') }}"
-                class="mt-2 block w-full  bg-gradient-to-r from-[#7C45F5] to-[#c12f7e] py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
+                class="mt-2 block w-full bg-[#7C45F5] py-3 text-center text-sm font-semibold text-white shadow-sm transition hover:opacity-90">
                 @lang('shop::app.checkout.cart.summary.proceed-to-checkout')
             </a>
 

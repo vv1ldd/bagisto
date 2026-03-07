@@ -26,12 +26,12 @@
 
                 {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.after') !!}
 
-                <div class="flex items-center gap-4 mt-6 mb-8">
+                <div class="relative">
                     <button type="button" onclick="history.back()"
-                        class="flex h-[40px] w-[40px] items-center justify-center  border border-zinc-200 bg-white text-zinc-600 transition-all hover:bg-zinc-50 hover:text-[#7C45F5] shadow-sm">
-                        <span class="icon-arrow-left text-xl"></span>
+                        class="absolute -top-12 right-0 flex h-10 w-10 items-center justify-center border border-zinc-200 bg-white text-zinc-600 transition-all hover:bg-zinc-50 hover:text-[#7C45F5] shadow-sm z-10"
+                        aria-label="Close">
+                        <span class="icon-cancel text-2xl"></span>
                     </button>
-                    <h1 class="text-3xl font-bold text-zinc-900">@lang('shop::app.checkout.cart.index.cart')</h1>
                 </div>
 
                 @php
@@ -110,39 +110,41 @@
                                     </span>
                                 </div>
 
-                                <div v-if="selectedItemsCount">
-                                    <span
-                                        class="cursor-pointer text-base text-blue-700 max-sm:text-xs"
-                                        role="button"
-                                        tabindex="0"
-                                        @click="removeSelectedItems"
-                                    >
-                                        @lang('shop::app.checkout.cart.index.remove')
-                                    </span>
-
-                                    <span class="mx-2.5 border-r border-zinc-200"></span>
-
-                                    <span
-                                        class="cursor-pointer text-base text-red-600 max-sm:text-xs"
-                                        role="button"
-                                        tabindex="0"
-                                        @click="removeAllItems"
-                                    >
-                                        Очистить корзину 
-                                    </span>
-
-                                    @if (auth()->guard()->check())
-                                        <span class="mx-2.5 border-r border-zinc-200"></span>
-
+                                <div class="flex items-center gap-3">
+                                    <div v-if="selectedItemsCount" class="flex items-center">
                                         <span
                                             class="cursor-pointer text-base text-blue-700 max-sm:text-xs"
                                             role="button"
                                             tabindex="0"
-                                            @click="moveToWishlistSelectedItems"
+                                            @click="removeSelectedItems"
                                         >
-                                            @lang('shop::app.checkout.cart.index.move-to-wishlist')
+                                            @lang('shop::app.checkout.cart.index.remove')
                                         </span>
-                                    @endif
+
+                                        @if (auth()->guard()->check())
+                                            <span class="mx-2.5 border-r border-zinc-200"></span>
+
+                                            <span
+                                                class="cursor-pointer text-base text-blue-700 max-sm:text-xs"
+                                                role="button"
+                                                tabindex="0"
+                                                @click="moveToWishlistSelectedItems"
+                                            >
+                                                @lang('shop::app.checkout.cart.index.move-to-wishlist')
+                                            </span>
+                                        @endif
+                                        
+                                        <span class="mx-2.5 border-l border-zinc-200 h-4"></span>
+                                    </div>
+
+                                    <span
+                                        class="cursor-pointer text-base text-red-600 hover:text-red-700 transition-colors max-sm:text-xs"
+                                        role="button"
+                                        tabindex="0"
+                                        @click="removeAllItems"
+                                    >
+                                        Очистить корзину
+                                    </span>
                                 </div>
                             </div>
 
