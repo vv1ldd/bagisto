@@ -32,7 +32,7 @@
                 </div>
                 <div class="relative">
                     <span
-                        class="bg-white px-4 text-xs font-bold uppercase tracking-widest text-zinc-400">@lang('shop::app.customers.login-form.or')</span>
+                        class="bg-white px-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">@lang('shop::app.customers.login-form.or')</span>
                 </div>
             </div>
 
@@ -58,7 +58,7 @@
                 </div>
                 <div class="relative">
                     <span
-                        class="bg-white px-4 text-xs font-bold uppercase tracking-widest text-zinc-400">@lang('shop::app.customers.login-form.or')</span>
+                        class="bg-white px-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">@lang('shop::app.customers.login-form.or')</span>
                 </div>
             </div>
 
@@ -93,9 +93,9 @@
 
             </div>
 
-            <p class="mt-8 text-center text-sm text-zinc-500">
+            <p class="mt-6 text-center text-sm text-zinc-500">
                 Впервые у нас?
-                <a class="font-bold text-zinc-800 hover:underline" href="{{ route('shop.customers.register.index') }}">
+                <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customers.register.index') }}">
                     @lang('shop::app.customers.signup-form.button-title')
                 </a>
             </p>

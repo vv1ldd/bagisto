@@ -103,9 +103,9 @@
 
             {!! view_render_event('bagisto.shop.customers.signup.after') !!}
 
-            <p class="mt-8 text-center text-sm text-zinc-500">
+            <p class="mt-6 text-center text-sm text-zinc-500">
                 @lang('shop::app.customers.signup-form.account-exists')
-                <a class="font-bold text-zinc-800 hover:underline" href="{{ route('shop.customer.session.index') }}">
+                <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customer.session.index') }}">
                     @lang('shop::app.customers.signup-form.sign-in-button')
                 </a>
             </p>
