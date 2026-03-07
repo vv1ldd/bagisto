@@ -25,9 +25,9 @@
     <div class="glass-footer px-4 md:px-[60px] py-6 max-sm:px-5">
         <div class="mx-auto flex flex-col items-center justify-center gap-2 w-full max-w-7xl">
 
-            <!-- Footer Links (Only on home page) -->
-            @if (Route::currentRouteName() == 'shop.home.index' && $customization?->options)
-                <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3" v-pre>
+            <!-- Footer Links (Only on home and CMS pages) -->
+            @if (in_array(Route::currentRouteName(), ['shop.home.index', 'shop.cms.page']) && $customization?->options)
+                <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 min-h-[30px]" v-pre>
                     @foreach ($customization->options as $footerLinkSection)
                         @php
                             usort($footerLinkSection, function ($a, $b) {
