@@ -13,7 +13,7 @@
     <!-- OTP Code Box -->
     <div style="margin: 32px 0;">
         <span
-            style="display: inline-block; padding: 20px 40px; background: #F3F4F6; color: #1E1B4B; font-size: 36px; font-weight: 800; letter-spacing: 0.25em; border-radius: 12px; border: 1px solid #E5E7EB;">
+            style="display: inline-block; padding: 20px 40px; background: #F3F4F6; color: #1E1B4B; font-size: 36px; font-weight: 800; letter-spacing: 0.25em; border: 1px solid #E5E7EB;">
             {{ $otp }}
         </span>
     </div>

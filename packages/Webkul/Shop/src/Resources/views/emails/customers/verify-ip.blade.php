@@ -15,7 +15,7 @@
     <!-- CTA Button -->
     <div style="margin: 40px 0 24px;">
         <a href="{{ route('shop.customers.verify_ip.link', $token) }}"
-            style="display: inline-block; padding: 18px 48px; background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%); color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);">
+            style="display: inline-block; padding: 18px 48px; background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%); color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);">
             Подтвердить вход
         </a>
     </div>
