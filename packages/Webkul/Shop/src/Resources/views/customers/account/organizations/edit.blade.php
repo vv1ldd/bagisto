@@ -56,6 +56,14 @@
 
                     <div class="mt-4">
                         <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                            Название организации (алиас, необязательно)
+                        </label>
+                        <input type="text" name="alias" value="{{ old('alias') ?? $organization->alias }}" placeholder="Например: Мое ИП, Основная ООО..."
+                            class="w-full bg-white border border-zinc-200 rounded px-3 py-2 text-[14px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5]/30 transition-all" />
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                             @lang('shop::app.customers.account.organizations.edit.address')
                         </label>
                         <input type="text" name="address" value="{{ old('address') ?? $organization->address }}"

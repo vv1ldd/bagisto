@@ -22,6 +22,7 @@ class Organization extends Model implements OrganizationContract
      */
     protected $fillable = [
         'customer_id',
+        'alias',
         'name',
         'inn',
         'kpp',
