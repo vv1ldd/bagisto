@@ -175,93 +175,89 @@
         </x-shop::form>
     </div>
 
-</x-shop::layouts.account>
-
-@push('scripts')
+    <!-- Script moved INSIDE the component structure to ensure execution after dynamic load -->
     <script>
-        (function() {
-            console.log('INN Lookup Script Initializing');
+        // Use a slight delay to ensure Vue has rendered the elements
+        setTimeout(() => {
+            console.log('INN Lookup Script Initializing (Create Inline)');
 
-            const initINNLookup = () => {
-                const lookupBtn = document.getElementById('lookup-inn-btn');
-                const manualBtn = document.getElementById('manual-fill-btn');
-                const detailsContainer = document.getElementById('details-container');
-                const innInput = document.getElementById('inn-input');
+            const lookupBtn = document.getElementById('lookup-inn-btn');
+            const manualBtn = document.getElementById('manual-fill-btn');
+            const detailsContainer = document.getElementById('details-container');
+            const innInput = document.getElementById('inn-input');
+            
+            if (!lookupBtn || !innInput) {
+                console.warn('INN Lookup elements not found (Create Inline).');
+                return;
+            }
+
+            console.log('INN Lookup Elements Found (Create Inline)');
+
+            const nameInput = document.querySelector('input[name="name"]');
+            const kppInput = document.getElementById('kpp-input');
+            const addressInput = document.getElementById('address-input');
+
+            const showDetails = () => {
+                console.log('Showing details');
+                if (detailsContainer) detailsContainer.classList.remove('hidden');
+                if (manualBtn) manualBtn.classList.add('hidden');
+            };
+
+            if (manualBtn) {
+                manualBtn.onclick = showDetails;
+            }
+
+            // Remove existing listeners just in case
+            const newLookupBtn = lookupBtn.cloneNode(true);
+            lookupBtn.parentNode.replaceChild(newLookupBtn, lookupBtn);
+
+            newLookupBtn.onclick = async function() {
+                const inn = innInput.value.trim();
+                console.log('INN Search clicked:', inn);
                 
-                if (!lookupBtn || !innInput) {
-                    console.warn('INN Lookup elements not found, retrying...');
-                    setTimeout(initINNLookup, 500);
+                if (!inn) {
+                    alert('Введите ИНН');
                     return;
                 }
 
-                console.log('INN Lookup Elements Found');
+                newLookupBtn.disabled = true;
+                const originalText = newLookupBtn.innerText;
+                newLookupBtn.innerText = '...';
 
-                const nameInput = document.querySelector('input[name="name"]');
-                const kppInput = document.getElementById('kpp-input');
-                const addressInput = document.getElementById('address-input');
-
-                const showDetails = () => {
-                    console.log('Showing details');
-                    if (detailsContainer) detailsContainer.classList.remove('hidden');
-                    if (manualBtn) manualBtn.classList.add('hidden');
-                };
-
-                if (manualBtn) {
-                    manualBtn.onclick = showDetails;
-                }
-
-                lookupBtn.onclick = async function() {
-                    const inn = innInput.value.trim();
-                    console.log('INN Search clicked:', inn);
+                try {
+                    const url = `{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn);
+                    console.log('Fetching:', url);
                     
-                    if (!inn) {
-                        alert('Введите ИНН');
-                        return;
-                    }
+                    const response = await fetch(url);
+                    const data = await response.json();
 
-                    lookupBtn.disabled = true;
-                    const originalText = lookupBtn.innerText;
-                    lookupBtn.innerText = '...';
-
-                    try {
-                        const url = `{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn);
-                        console.log('Fetching:', url);
+                    if (response.ok) {
+                        console.log('INN Found:', data);
+                        showDetails();
                         
-                        const response = await fetch(url);
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            console.log('INN Found:', data);
-                            showDetails();
-                            
-                            if (data.name) nameInput.value = data.name;
-                            if (data.kpp) kppInput.value = data.kpp;
-                            if (data.address) addressInput.value = data.address;
-                            
-                            // Flash success visual cue
-                            [nameInput, kppInput, addressInput].forEach(el => {
-                                if (el) {
-                                    el.style.backgroundColor = '#f0fff4';
-                                    setTimeout(() => el.style.backgroundColor = '', 1000);
-                                }
-                            });
-                        } else {
-                            console.error('INN Error:', data);
-                            alert(data.message || 'Ошибка при поиске');
-                        }
-                    } catch (error) {
-                        console.error('INN Fetch error:', error);
-                        alert('Не удалось выполнить поиск. Проверьте консоль.');
-                    } finally {
-                        lookupBtn.disabled = false;
-                        lookupBtn.innerText = originalText;
+                        if (data.name) nameInput.value = data.name;
+                        if (data.kpp) kppInput.value = data.kpp;
+                        if (data.address) addressInput.value = data.address;
+                        
+                        // Flash success visual cue
+                        [nameInput, kppInput, addressInput].forEach(el => {
+                            if (el) {
+                                el.style.backgroundColor = '#f0fff4';
+                                setTimeout(() => el.style.backgroundColor = '', 1000);
+                            }
+                        });
+                    } else {
+                        console.error('INN Error:', data);
+                        alert(data.message || 'Ошибка при поиске');
                     }
-                };
+                } catch (error) {
+                    console.error('INN Fetch error:', error);
+                    alert('Не удалось выполнить поиск. Проверьте консоль.');
+                } finally {
+                    newLookupBtn.disabled = false;
+                    newLookupBtn.innerText = originalText;
+                }
             };
-
-            // Try immediate, then DOMContentLoaded as backup
-            initINNLookup();
-            document.addEventListener('DOMContentLoaded', initINNLookup);
-        })();
+        }, 500); // 500ms delay to ensure DOM is ready
     </script>
-@endpush
+</x-shop::layouts.account>
