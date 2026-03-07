@@ -84,24 +84,30 @@
                         </div>
                     </div>
                 @endforeach
+
+                <!-- Add New Organization Inline Button -->
+                <a href="{{ route('shop.customers.account.organizations.create') }}"
+                    class="flex items-center justify-center p-5 border-b border-zinc-50 hover:bg-zinc-50 transition-colors text-[14px] font-bold text-[#7C45F5] group">
+                    <span
+                        class="w-8 h-8 rounded-full bg-[#7C45F5]/10 flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all">
+                        <span class="icon-plus text-sm"></span>
+                    </span>
+                    Добавить еще одну организацию
+                </a>
             </div>
+        @else
             <div class="flex flex-col items-center justify-center py-20 text-center">
-                <div class="w-16 h-16 bg-zinc-50 flex items-center justify-center mb-4">
-                    <span class="icon-dashboard text-4xl text-zinc-200"></span>
+                <div class="w-16 h-16 bg-zinc-50 flex items-center justify-center mb-4 rounded-full">
+                    <span class="icon-dashboard text-4xl text-zinc-300"></span>
                 </div>
-                <p class="text-[15px] font-medium text-zinc-400 max-w-[200px] mx-auto">
+                <p class="text-[15px] font-medium text-zinc-500 max-w-[250px] mx-auto mb-6">
                     @lang('shop::app.customers.account.organizations.index.empty-organization')
                 </p>
+                <a href="{{ route('shop.customers.account.organizations.create') }}"
+                    class="inline-flex items-center justify-center px-8 py-3.5 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold rounded shadow hover:shadow-lg transition-all active:scale-95">
+                    Добавить организацию
+                </a>
             </div>
         @endif
-
-        <!-- Bottom Add Button -->
-        <div
-            class="fixed bottom-6 right-6 z-50 @if($organizations->isEmpty()) relative pt-8 right-auto text-center @endif">
-            <a href="{{ route('shop.customers.account.organizations.create') }}"
-                class="inline-flex items-center justify-center w-[56px] h-[56px] bg-[#7C45F5] hover:bg-[#6534d4] text-white rounded-full shadow-lg transition-transform active:scale-95 group @if($organizations->isEmpty()) mx-auto @endif">
-                <span class="icon-add text-2xl group-hover:rotate-90 transition-transform duration-300"></span>
-            </a>
-        </div>
     </div>
 </x-shop::layouts.account>
