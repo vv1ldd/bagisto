@@ -89,8 +89,8 @@
 
 
                 <!-- ================== STEP 2: BANK DETAILS ================== -->
-                <div id="step-2" class="opacity-50 pointer-events-none transition-all duration-300 pt-6 border-t border-zinc-100">
-                    <div class="flex items-center justify-between mb-4">
+                <div id="step-2" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
+                    <div class="flex items-center justify-between mb-4" id="step-2-search">
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 2: Банк организации</h2>
                         <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
                     </div>
@@ -152,7 +152,7 @@
 
 
                 <!-- ================== STEP 3: SETTLEMENT ACCOUNT ================== -->
-                <div id="step-3" class="opacity-50 pointer-events-none transition-all duration-300 pt-6 border-t border-zinc-100">
+                <div id="step-3" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 3: Расчетный счет</h2>
                     </div>
@@ -263,7 +263,7 @@
                     confirmStep1Btn.classList.add('hidden');
                     step1Badge.classList.remove('hidden');
                     
-                    s2.classList.remove('opacity-50', 'pointer-events-none');
+                    s2.classList.remove('hidden');
                     document.getElementById('step-2-search').scrollIntoView({ behavior: 'smooth', block: 'center' });
                     bicInput.focus();
                 };
@@ -311,7 +311,7 @@
                     confirmStep2Btn.classList.add('hidden');
                     step2Badge.classList.remove('hidden');
                     
-                    s3.classList.remove('opacity-50', 'pointer-events-none');
+                    s3.classList.remove('hidden');
                     s3.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     settlementInput.focus();
                 };
