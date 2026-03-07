@@ -25,8 +25,7 @@
 			<div
 				class="w-full max-w-[500px]  border border-white/60 bg-white/40 p-8 shadow-xl backdrop-blur-3xl md:p-12">
 				<div class="mb-8 flex items-center justify-center">
-					<div
-						class="flex h-24 w-24 items-center justify-center  bg-green-100 text-green-600 shadow-inner">
+					<div class="flex h-24 w-24 items-center justify-center  bg-green-100 text-green-600 shadow-inner">
 						<svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7">
 							</path>
@@ -73,7 +72,7 @@
 				</div>
 			</div>
 
-			<p class="mt-12 text-sm font-medium text-zinc-400">
+			<p class="mt-auto pt-12 pb-4 text-sm font-medium text-zinc-400 block">
 				&copy; {{ date('Y') }} MEANLY. Все права защищены.
 			</p>
 		</div>
