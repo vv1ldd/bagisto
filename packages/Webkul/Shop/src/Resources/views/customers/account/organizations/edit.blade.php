@@ -189,22 +189,21 @@
                             @csrf
 
                             <div class="space-y-4">
-                                <x-shop::form.control-group>
+                                <x-shop::form.control-group class="!mb-4" id="step-2-input-container" style="position: relative;">
                                     <x-shop::form.control-group.label
                                         class="required !text-[12px] !font-bold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
-                                        БИК Банка
+                                        Название банка или БИК
                                     </x-shop::form.control-group.label>
 
-                                    <div class="relative flex items-center">
+                                    <div class="relative w-full">
                                         <x-shop::form.control-group.control type="text" name="bic" id="bic"
-                                            rules="required|length:9" :value="old('bic')"
-                                            class="!pl-4 !pr-24 !py-3 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 font-mono tracking-wider transition-all"
-                                            placeholder="Код из 9 цифр" />
+                                            :value="old('bic')" autocomplete="off"
+                                            class="!w-full !px-4 !py-3 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 font-mono tracking-wider transition-all placeholder:font-sans"
+                                            placeholder="Начните вводить название..." />
 
-                                        <button type="button" id="lookup-bic-btn"
-                                            class="absolute right-2 px-3 py-1.5 text-xs font-bold text-[#7C45F5] bg-[#7C45F5]/10 rounded hover:bg-[#7C45F5]/20 transition-colors disabled:opacity-50">
-                                            Найти
-                                        </button>
+                                        <div id="bank-suggestions" class="absolute z-[100] w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-xl hidden max-h-[250px] overflow-y-auto">
+                                            <!-- Suggestions -->
+                                        </div>
                                     </div>
 
                                     <x-shop::form.control-group.error control-name="bic" />
@@ -279,7 +278,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const bicInput = document.getElementById('bic');
-            const lookupBicBtn = document.getElementById('lookup-bic-btn');
             const bicError = document.getElementById('bic-error');
             const bankDetailsContainer = document.getElementById('bank-details-container');
             const bankNameInput = document.getElementById('bank_name');
@@ -287,85 +285,90 @@
             const settlementAccountInput = document.getElementById('settlement_account');
             const submitAccountBtn = document.getElementById('submit-account-btn');
 
-            // Set up BIC input masking
+            // Set up Bank Autocomplete
+            let bankDebounceTimer;
             if (bicInput) {
-                bicInput.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
-                    lookupBicBtn.disabled = e.target.value.length !== 9;
-                    if (e.target.value.length !== 9) {
-                        bankDetailsContainer.classList.add('hidden');
-                        bankNameInput.value = '';
-                        corrAccountInput.value = '';
-                    }
-                });
-
-                // Initial check
+                // Return old value if present
                 if (bicInput.value.length === 9) {
-                    lookupBicBtn.disabled = false;
-                    // If returning with old values
                     if (bankNameInput && bankNameInput.value) {
                         bankDetailsContainer.classList.remove('hidden');
                     }
-                } else {
-                    lookupBicBtn.disabled = true;
                 }
-            }
 
-            // Set up Settlement Account input masking
-            if (settlementAccountInput) {
-                settlementAccountInput.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 20);
-                    submitAccountBtn.disabled = e.target.value.length !== 20;
+                bicInput.addEventListener('input', (e) => {
+                    const suggestionsContainer = document.getElementById('bank-suggestions');
+                    clearTimeout(bankDebounceTimer);
+                    const query = e.target.value.trim();
+
+                    if (query.length < 2) {
+                        suggestionsContainer.classList.add('hidden');
+                        suggestionsContainer.innerHTML = '';
+                        // Bank details hide logic
+                        if (query.length !== 9) {
+                            bankDetailsContainer.classList.add('hidden');
+                            bankNameInput.value = '';
+                            corrAccountInput.value = '';
+                        }
+                        return;
+                    }
+
+                    bankDebounceTimer = setTimeout(async () => {
+                        try {
+                            const url = `{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`;
+                            const response = await fetch(url);
+                            const banks = await response.json();
+
+                            if (response.ok && banks && banks.length > 0) {
+                                suggestionsContainer.innerHTML = banks.map(bank => `
+                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                        data-name="${bank.bank_name || ''}"
+                                        data-bic="${bank.bic || ''}"
+                                        data-corr="${bank.correspondent_account || ''}">
+                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'}</div>
+                                        <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                    </div>
+                                `).join('');
+                                suggestionsContainer.classList.remove('hidden');
+                            } else {
+                                suggestionsContainer.classList.add('hidden');
+                            }
+                        } catch (err) {
+                            console.error('Ошибка при поиске банка', err);
+                        }
+                    }, 400);
                 });
 
-                // Initial check
-                if (settlementAccountInput.value.length === 20 && bankNameInput.value) {
-                    submitAccountBtn.disabled = false;
-                } else {
-                    submitAccountBtn.disabled = true;
-                }
-            }
+                document.addEventListener('click', function(e) {
+                    const suggestionsContainer = document.getElementById('bank-suggestions');
+                    
+                    if (!suggestionsContainer) return;
 
-            // Lookup BIC
-            if (lookupBicBtn) {
-                lookupBicBtn.addEventListener('click', async function () {
-                    const bic = bicInput.value;
-                    if (bic.length !== 9) return;
+                    const item = e.target.closest('div[data-bic]');
+                    if (item && suggestionsContainer.contains(item)) {
+                        bicInput.value = item.dataset.bic;
+                        bankNameInput.value = item.dataset.name || '';
+                        corrAccountInput.value = item.dataset.corr || '';
 
-                    const originalText = lookupBicBtn.innerText;
-                    lookupBicBtn.innerText = 'Поиск...';
-                    lookupBicBtn.disabled = true;
-                    bicError.classList.add('hidden');
-
-                    try {
-                        const response = await fetch(`{{ route('shop.customers.account.organizations.lookup_bic', '') }}/${bic}`);
-                        if (!response.ok) {
-                            throw new Error('Банк не найден');
-                        }
-                        const data = await response.json();
-
-                        bankNameInput.value = data.name;
-                        corrAccountInput.value = data.correspondent_account;
+                        suggestionsContainer.classList.add('hidden');
                         bankDetailsContainer.classList.remove('hidden');
 
-                        // Small UX delay and clear error if it was there
-                        bicError.classList.add('hidden');
-
+                        ['bank_name', 'correspondent_account'].forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) {
+                                el.style.backgroundColor = '#f0fff4';
+                                setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                            }
+                        });
+                        
                         // Focus on settlement account if empty
                         if (!settlementAccountInput.value) {
                             setTimeout(() => settlementAccountInput.focus(), 100);
                         }
-
-                    } catch (error) {
-                        console.error('Error fetching BIC:', error);
-                        bicError.innerText = 'Банк не найден. Проверьте правильность введенного БИК.';
-                        bicError.classList.remove('hidden');
-                        bankDetailsContainer.classList.add('hidden');
-                        bankNameInput.value = '';
-                        corrAccountInput.value = '';
-                    } finally {
-                        lookupBicBtn.innerText = originalText;
-                        lookupBicBtn.disabled = false;
+                        return;
+                    }
+                    
+                    if (!bicInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                        suggestionsContainer.classList.add('hidden');
                     }
                 });
             }

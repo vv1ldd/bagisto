@@ -236,6 +236,27 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Suggest bank by query (name, bic, swift).
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function suggestBank(Request $request)
+    {
+        $query = $request->input('query');
+
+        if (!$query) {
+            return response()->json([], 400);
+        }
+
+        $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
+
+        $results = $dadataHelper->suggestBank($query);
+
+        return response()->json($results);
+    }
+
+    /**
      * Store a new settlement account for a specific organization.
      */
     public function storeSettlementAccount(int $organizationId, Request $request)

@@ -101,22 +101,20 @@
                         <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
                     </div>
 
-                    <!-- BIC Search -->
-                    <x-shop::form.control-group class="!mb-4" id="step-2-input-container">
+                    <!-- Bank Search Autocomplete -->
+                    <x-shop::form.control-group class="!mb-4" id="step-2-input-container" style="position: relative;">
                         <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
-                            @lang('shop::app.customers.account.organizations.create.bic')
+                            Название банка или БИК
                         </x-shop::form.control-group.label>
 
-                        <div class="flex gap-2">
+                        <div class="relative w-full">
                             <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
-                                class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all flex-1"
-                                :label="trans('shop::app.customers.account.organizations.create.bic')"
-                                placeholder="Введите БИК банка..." />
+                                class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full"
+                                placeholder="Начните вводить название..." autocomplete="off" />
                                 
-                            <button type="button" id="lookup-bic-btn"
-                                class="px-6 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold transition-all disabled:opacity-50 text-[14px]">
-                                Найти
-                            </button>
+                            <div id="bank-suggestions" class="absolute z-[100] w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-xl hidden max-h-[250px] overflow-y-auto">
+                                <!-- Suggestions will be injected here via JS -->
+                            </div>
                         </div>
                         <x-shop::form.control-group.error control-name="bic" />
                     </x-shop::form.control-group>
@@ -274,54 +272,7 @@
                     return;
                 }
 
-                // --- STEP 2: BIC Lookup ---
-                const lookupBicBtn = e.target.closest('#lookup-bic-btn');
-                if (lookupBicBtn) {
-                    e.preventDefault();
-                    if (lookupBicBtn.disabled) return;
-                    
-                    const bicInput = document.getElementById('bic-input');
-                    const bic = bicInput ? bicInput.value.trim() : '';
-                    if (!bic) return alert('Введите БИК');
-                    
-                    lookupBicBtn.disabled = true;
-                    const originalText = lookupBicBtn.innerText;
-                    lookupBicBtn.innerText = '...';
-                    
-                    try {
-                        const url = `{{ route('shop.customers.account.organizations.lookup_bic', ':bic') }}`.replace(':bic', bic);
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        
-                        if (response.ok) {
-                            if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = data.bank_name || '';
-                            if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = data.correspondent_account || '';
-                            
-                            const step2Details = document.getElementById('step-2-details');
-                            if (step2Details) step2Details.classList.remove('hidden');
-                            
-                            // Visual cue
-                            ['bank-name-input', 'corr-account-input'].forEach(id => {
-                                const el = document.getElementById(id);
-                                if (el) {
-                                    el.style.backgroundColor = '#f0fff4';
-                                    setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
-                                }
-                            });
-                        } else {
-                            alert(data.message || 'Банк не найден');
-                        }
-                    } catch (err) {
-                        alert('Ошибка сети при поиске БИК');
-                    } finally {
-                        const btn = document.getElementById('lookup-bic-btn');
-                        if (btn) {
-                            btn.disabled = false;
-                            btn.innerText = originalText;
-                        }
-                    }
-                    return;
-                }
+                // --- STEP 2: Bank Autocomplete removed from click listener as it is now an input listener ---
 
                 // --- STEP 2: Confirm ---
                 const confirmStep2Btn = e.target.closest('#confirm-step-2-btn');
@@ -329,7 +280,6 @@
                     e.preventDefault();
                     if (document.getElementById('step-2-details')) document.getElementById('step-2-details').classList.add('hidden');
                     if (document.getElementById('step-2-input-container')) document.getElementById('step-2-input-container').classList.add('opacity-50', 'pointer-events-none');
-                    if (document.getElementById('lookup-bic-btn')) document.getElementById('lookup-bic-btn').classList.add('hidden');
                     
                     if (document.getElementById('step-2-badge')) document.getElementById('step-2-badge').classList.remove('hidden');
                     
@@ -342,14 +292,94 @@
                     return;
                 }
             });
-
+            
             // Event delegation for input fields
+            let bankDebounceTimer;
+            
             document.addEventListener('input', function(e) {
+                // Bank Autocomplete Logic
+                if (e.target.id === 'bic-input') {
+                    const bicInput = e.target;
+                    const suggestionsContainer = document.getElementById('bank-suggestions');
+                    
+                    clearTimeout(bankDebounceTimer);
+                    const query = bicInput.value.trim();
+                    
+                    if (query.length < 2) {
+                        suggestionsContainer.classList.add('hidden');
+                        suggestionsContainer.innerHTML = '';
+                        return;
+                    }
+                    
+                    bankDebounceTimer = setTimeout(async () => {
+                        try {
+                            const url = `{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`;
+                            const response = await fetch(url);
+                            const banks = await response.json();
+                            
+                            if (response.ok && banks && banks.length > 0) {
+                                suggestionsContainer.innerHTML = banks.map(bank => `
+                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                        data-name="${bank.bank_name || ''}"
+                                        data-bic="${bank.bic || ''}"
+                                        data-corr="${bank.correspondent_account || ''}">
+                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'}</div>
+                                        <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                    </div>
+                                `).join('');
+                                suggestionsContainer.classList.remove('hidden');
+                            } else {
+                                suggestionsContainer.classList.add('hidden');
+                            }
+                        } catch (err) {
+                            console.error('Ошибка при поиске банка', err);
+                        }
+                    }, 400);
+                }
                 if (e.target.id === 'settlement-account-input') {
                     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 20);
                     const submitBtn = document.getElementById('submit-btn');
                     if (submitBtn) {
                         submitBtn.disabled = e.target.value.length !== 20;
+                    }
+                }
+            });
+            });
+
+            // Handle clicking a suggestion or clicking outside
+            document.addEventListener('click', function(e) {
+                const suggestionsContainer = document.getElementById('bank-suggestions');
+                const bicInput = document.getElementById('bic-input');
+                
+                // Clicking a dropdown item
+                const item = e.target.closest('div[data-bic]');
+                if (item && suggestionsContainer && suggestionsContainer.contains(item)) {
+                    if (bicInput) {
+                        bicInput.value = item.dataset.bic;
+                    }
+                    
+                    if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = item.dataset.name || '';
+                    if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = item.dataset.corr || '';
+                    
+                    suggestionsContainer.classList.add('hidden');
+                    
+                    const step2Details = document.getElementById('step-2-details');
+                    if (step2Details) step2Details.classList.remove('hidden');
+                    
+                    ['bank-name-input', 'corr-account-input'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.style.backgroundColor = '#f0fff4';
+                            setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                        }
+                    });
+                    return;
+                }
+                
+                // Clicking outside
+                if (suggestionsContainer && !suggestionsContainer.classList.contains('hidden')) {
+                    if (bicInput && !bicInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                        suggestionsContainer.classList.add('hidden');
                     }
                 }
             });
