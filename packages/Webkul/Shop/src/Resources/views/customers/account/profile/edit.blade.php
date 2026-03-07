@@ -17,8 +17,8 @@
         </v-profile-edit>
     </x-shop::layouts.split-screen>
 @else
-    <x-shop::layouts.account :show-back="true" :has-header="true" :has-footer="true" :is-cardless="true">
-        <x-slot:title>Профиль</x-slot:title>
+    <x-shop::layouts.account :show-back="false" :has-header="true" :has-footer="true" :is-cardless="true">
+        <x-slot:title></x-slot:title>
 
         <!-- Profile Edit Form -->
         <v-profile-edit inline-template>

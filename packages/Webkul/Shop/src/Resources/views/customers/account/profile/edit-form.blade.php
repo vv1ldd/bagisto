@@ -348,6 +348,15 @@
         {{-- Normal profile edit mode --}}
         <!-- Group 1: Contact Info -->
         <div class="ios-group">
+            <div class="ios-row !py-4 flex items-center justify-between">
+                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">Профиль</h1>
+                
+                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                    <span class="icon-cancel text-xl"></span>
+                </a>
+            </div>
+
             <div class="ios-row !flex-col !items-start !h-auto !py-3">
                 <div class="flex items-center justify-between w-full">
                     <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
