@@ -47,7 +47,7 @@
                                 :placeholder="trans('shop::app.customers.account.organizations.edit.inn')" />
                             
                             <button type="button" id="lookup-inn-btn"
-                                class="px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold transition-all disabled:opacity-50">
+                                class="px-6 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold transition-all disabled:opacity-50">
                                 Найти
                             </button>
                         </div>
@@ -90,48 +90,76 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const lookupBtn = document.getElementById('lookup-inn-btn');
-                const innInput = document.getElementById('inn-input');
-                const nameInput = document.querySelector('input[name="name"]');
-                const kppInput = document.getElementById('kpp-input');
-                const addressInput = document.getElementById('address-input');
+            (function() {
+                console.log('INN Lookup Script Initializing (Edit)');
 
-                if (lookupBtn) {
-                    lookupBtn.addEventListener('click', async function() {
+                const initINNLookup = () => {
+                    const lookupBtn = document.getElementById('lookup-inn-btn');
+                    const innInput = document.getElementById('inn-input');
+                    
+                    if (!lookupBtn || !innInput) {
+                        console.warn('INN Lookup elements not found (Edit), retrying...');
+                        setTimeout(initINNLookup, 500);
+                        return;
+                    }
+
+                    console.log('INN Lookup Elements Found (Edit)');
+
+                    const nameInput = document.querySelector('input[name="name"]');
+                    const kppInput = document.getElementById('kpp-input');
+                    const addressInput = document.getElementById('address-input');
+
+                    lookupBtn.onclick = async function() {
                         const inn = innInput.value.trim();
-                        if (!inn) return;
+                        console.log('INN Search clicked (Edit):', inn);
+                        
+                        if (!inn) {
+                            alert('Введите ИНН');
+                            return;
+                        }
 
                         lookupBtn.disabled = true;
+                        const originalText = lookupBtn.innerText;
                         lookupBtn.innerText = '...';
 
                         try {
-                            const response = await fetch(`{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn));
+                            const url = `{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn);
+                            console.log('Fetching:', url);
+                            
+                            const response = await fetch(url);
                             const data = await response.json();
 
                             if (response.ok) {
+                                console.log('INN Found:', data);
+                                
                                 if (data.name) nameInput.value = data.name;
                                 if (data.kpp) kppInput.value = data.kpp;
                                 if (data.address) addressInput.value = data.address;
                                 
                                 // Flash success visual cue
                                 [nameInput, kppInput, addressInput].forEach(el => {
-                                    el.style.backgroundColor = '#f0fff4';
-                                    setTimeout(() => el.style.backgroundColor = '', 1000);
+                                    if (el) {
+                                        el.style.backgroundColor = '#f0fff4';
+                                        setTimeout(() => el.style.backgroundColor = '', 1000);
+                                    }
                                 });
                             } else {
+                                console.error('INN Error:', data);
                                 alert(data.message || 'Ошибка при поиске');
                             }
                         } catch (error) {
-                            console.error('INN lookup error:', error);
-                            alert('Не удалось выполнить поиск');
+                            console.error('INN Fetch error:', error);
+                            alert('Не удалось выполнить поиск. Проверьте консоль.');
                         } finally {
                             lookupBtn.disabled = false;
-                            lookupBtn.innerText = 'Найти';
+                            lookupBtn.innerText = originalText;
                         }
-                    });
-                }
-            });
+                    };
+                };
+
+                initINNLookup();
+                document.addEventListener('DOMContentLoaded', initINNLookup);
+            })();
         </script>
     @endpush
 

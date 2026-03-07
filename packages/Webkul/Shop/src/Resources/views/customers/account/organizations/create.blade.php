@@ -177,38 +177,59 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const lookupBtn = document.getElementById('lookup-inn-btn');
-                const manualBtn = document.getElementById('manual-fill-btn');
-                const detailsContainer = document.getElementById('details-container');
-                const innInput = document.getElementById('inn-input');
-                const nameInput = document.querySelector('input[name="name"]');
-                const kppInput = document.getElementById('kpp-input');
-                const addressInput = document.getElementById('address-input');
+            (function() {
+                console.log('INN Lookup Script Initializing');
 
-                const showDetails = () => {
-                    detailsContainer.classList.remove('hidden');
-                    manualBtn.classList.add('hidden');
-                };
+                const initINNLookup = () => {
+                    const lookupBtn = document.getElementById('lookup-inn-btn');
+                    const manualBtn = document.getElementById('manual-fill-btn');
+                    const detailsContainer = document.getElementById('details-container');
+                    const innInput = document.getElementById('inn-input');
+                    
+                    if (!lookupBtn || !innInput) {
+                        console.warn('INN Lookup elements not found, retrying...');
+                        setTimeout(initINNLookup, 500);
+                        return;
+                    }
 
-                if (manualBtn) {
-                    manualBtn.addEventListener('click', showDetails);
-                }
+                    console.log('INN Lookup Elements Found');
 
-                if (lookupBtn) {
-                    lookupBtn.addEventListener('click', async function() {
+                    const nameInput = document.querySelector('input[name="name"]');
+                    const kppInput = document.getElementById('kpp-input');
+                    const addressInput = document.getElementById('address-input');
+
+                    const showDetails = () => {
+                        console.log('Showing details');
+                        if (detailsContainer) detailsContainer.classList.remove('hidden');
+                        if (manualBtn) manualBtn.classList.add('hidden');
+                    };
+
+                    if (manualBtn) {
+                        manualBtn.onclick = showDetails;
+                    }
+
+                    lookupBtn.onclick = async function() {
                         const inn = innInput.value.trim();
-                        if (!inn) return;
+                        console.log('INN Search clicked:', inn);
+                        
+                        if (!inn) {
+                            alert('Введите ИНН');
+                            return;
+                        }
 
                         lookupBtn.disabled = true;
                         const originalText = lookupBtn.innerText;
                         lookupBtn.innerText = '...';
 
                         try {
-                            const response = await fetch(`{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn));
+                            const url = `{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn);
+                            console.log('Fetching:', url);
+                            
+                            const response = await fetch(url);
                             const data = await response.json();
 
                             if (response.ok) {
+                                console.log('INN Found:', data);
                                 showDetails();
                                 
                                 if (data.name) nameInput.value = data.name;
@@ -217,22 +238,29 @@
                                 
                                 // Flash success visual cue
                                 [nameInput, kppInput, addressInput].forEach(el => {
-                                    el.style.backgroundColor = '#f0fff4';
-                                    setTimeout(() => el.style.backgroundColor = '', 1000);
+                                    if (el) {
+                                        el.style.backgroundColor = '#f0fff4';
+                                        setTimeout(() => el.style.backgroundColor = '', 1000);
+                                    }
                                 });
                             } else {
+                                console.error('INN Error:', data);
                                 alert(data.message || 'Ошибка при поиске');
                             }
                         } catch (error) {
-                            console.error('INN lookup error:', error);
-                            alert('Не удалось выполнить поиск');
+                            console.error('INN Fetch error:', error);
+                            alert('Не удалось выполнить поиск. Проверьте консоль.');
                         } finally {
                             lookupBtn.disabled = false;
                             lookupBtn.innerText = originalText;
                         }
-                    });
-                }
-            });
+                    };
+                };
+
+                // Try immediate, then DOMContentLoaded as backup
+                initINNLookup();
+                document.addEventListener('DOMContentLoaded', initINNLookup);
+            })();
         </script>
     @endpush
 </x-shop::layouts.account>
