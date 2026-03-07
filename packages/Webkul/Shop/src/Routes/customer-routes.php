@@ -264,6 +264,8 @@ Route::prefix('customer')->group(function () {
                     Route::put('edit/{id}', 'update')->name('shop.customers.account.organizations.update');
 
                     Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.organizations.delete');
+
+                    Route::get('lookup-inn/{inn}', 'lookupInn')->name('shop.customers.account.organizations.lookup_inn');
                 });
 
                 /**

@@ -25,6 +25,10 @@ class Organization extends Model implements OrganizationContract
         'inn',
         'kpp',
         'address',
+        'bank_name',
+        'bic',
+        'settlement_account',
+        'correspondent_account',
     ];
 
     /**

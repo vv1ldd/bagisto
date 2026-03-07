@@ -79,4 +79,8 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env('GITHUB_CALLBACK_URL'),
     ],
+
+    'dadata' => [
+        'api_key' => env('DADATA_API_KEY'),
+    ],
 ];

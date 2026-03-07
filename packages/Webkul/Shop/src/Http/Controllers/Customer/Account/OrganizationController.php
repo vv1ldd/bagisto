@@ -49,6 +49,10 @@ class OrganizationController extends Controller
             'name' => 'required',
             'inn' => 'required',
             'kpp' => 'nullable',
+            'bank_name' => 'nullable',
+            'bic' => 'nullable',
+            'settlement_account' => 'nullable',
+            'correspondent_account' => 'nullable',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -60,6 +64,10 @@ class OrganizationController extends Controller
             'inn',
             'kpp',
             'address',
+            'bank_name',
+            'bic',
+            'settlement_account',
+            'correspondent_account',
         ]), [
             'customer_id' => $customer->id,
         ]);
@@ -103,6 +111,10 @@ class OrganizationController extends Controller
             'name' => 'required',
             'inn' => 'required',
             'kpp' => 'nullable',
+            'bank_name' => 'nullable',
+            'bic' => 'nullable',
+            'settlement_account' => 'nullable',
+            'correspondent_account' => 'nullable',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -118,6 +130,10 @@ class OrganizationController extends Controller
             'inn',
             'kpp',
             'address',
+            'bank_name',
+            'bic',
+            'settlement_account',
+            'correspondent_account',
         ]);
 
         $organization = $this->organizationRepository->update($data, $id);
@@ -154,5 +170,26 @@ class OrganizationController extends Controller
         session()->flash('success', trans('shop::app.customers.account.organizations.delete-success'));
 
         return redirect()->route('shop.customers.account.organizations.index');
+    }
+
+    /**
+     * Lookup organization by INN.
+     *
+     * @param  string  $inn
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function lookupInn(string $inn)
+    {
+        $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
+
+        $result = $dadataHelper->lookupOrganization($inn);
+
+        if (!$result) {
+            return response()->json([
+                'message' => 'Организация не найдена',
+            ], 404);
+        }
+
+        return response()->json($result);
     }
 }
