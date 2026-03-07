@@ -79,6 +79,13 @@
             outline: none !important;
             border-radius: 0 !important;
         }
+        
+        .ios-input-wrapper input.pseudonym-input {
+            width: auto !important;
+            text-align: left !important;
+            flex-grow: 0 !important;
+        }
+
         .ios-input-wrapper input:focus::placeholder,
         .ios-input-wrapper input:focus::-webkit-input-placeholder { color: transparent !important; }
 
@@ -219,10 +226,11 @@
                     <div class="ios-row !flex-col !items-start !h-auto !py-3">
                         <div class="flex items-center justify-between w-full">
                             <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
-                            <div class="ios-input-wrapper">
-                                <span class="text-zinc-400 mr-0.5 text-[15px]">@</span>
+                            <div class="ios-input-wrapper !justify-end">
+                                <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.control type="text" name="username" rules="required"
+                                        class="pseudonym-input"
                                         :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
                                         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                                         data-lpignore="true" data-1p-ignore
@@ -343,10 +351,11 @@
             <div class="ios-row !flex-col !items-start !h-auto !py-3">
                 <div class="flex items-center justify-between w-full">
                     <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper">
-                        <span class="text-zinc-400 mr-0.5 text-[15px]">@</span>
+                    <div class="ios-input-wrapper !justify-end">
+                        <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="username" rules="required"
+                                class="pseudonym-input"
                                 :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
                                 autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                                 data-lpignore="true" data-1p-ignore
