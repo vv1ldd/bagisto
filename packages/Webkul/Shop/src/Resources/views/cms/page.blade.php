@@ -17,7 +17,7 @@
         <!-- Page Content -->
         <div class="container mt-8 overflow-x-hidden px-[60px] max-lg:px-8 max-sm:px-4">
             <!-- Custom Close Button & Title Header -->
-            <div class="flex items-center justify-between gap-3 mb-8">
+            <div class="ios-tile-relative mb-8 pt-2">
                 <!-- Page Title -->
                 <h1 class="text-2xl font-bold text-zinc-900 leading-tight">
                     {{ $page->page_title }}
@@ -26,7 +26,7 @@
                 <!-- Close Button -->
                 <button type="button"
                     onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
-                    class="w-10 h-10 bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:border-[#7C45F5] hover:text-[#7C45F5]">
+                    class="ios-close-button">
                     <span class="icon-cancel text-2xl"></span>
                 </button>
             </div>
