@@ -21,6 +21,7 @@ class OrganizationSettlementAccount extends Model implements OrganizationSettlem
      */
     protected $fillable = [
         'organization_id',
+        'alias',
         'bic',
         'bank_name',
         'correspondent_account',

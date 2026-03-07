@@ -267,6 +267,8 @@ Route::prefix('customer')->group(function () {
 
                     Route::post('{id}/settlement-accounts', 'storeSettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.store');
 
+                    Route::put('{organizationId}/settlement-accounts/{accountId}/alias', 'updateSettlementAccountAlias')->name('shop.customers.account.organizations.settlement_accounts.update_alias');
+
                     Route::delete('{organizationId}/settlement-accounts/{accountId}', 'destroySettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.destroy');
 
                     Route::get('lookup-inn/{inn}', 'lookupInn')->name('shop.customers.account.organizations.lookup_inn');

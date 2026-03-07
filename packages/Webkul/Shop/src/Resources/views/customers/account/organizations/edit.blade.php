@@ -77,12 +77,47 @@
                                     class="bg-white rounded-xl p-5 border shadow-sm border-zinc-200 relative group transition-all hover:border-[#7C45F5]/30">
                                     <div class="flex justify-between items-start mb-3">
                                         <div>
-                                            <div class="text-[16px] font-mono tracking-wider font-bold text-zinc-900 mb-1">
-                                                {{ $account->settlement_account }}
+                                            <div class="flex items-center gap-2 mb-1">
+                                                @if($account->alias)
+                                                    <div class="text-[16px] font-bold text-zinc-900 leading-tight">
+                                                        {{ $account->alias }}
+                                                    </div>
+                                                @else
+                                                    <div class="text-[16px] font-mono tracking-wider font-bold text-zinc-900 leading-tight">
+                                                        {{ $account->settlement_account }}
+                                                    </div>
+                                                @endif
+
+                                                <!-- Edit Alias Button -->
+                                                <button type="button" onclick="toggleAliasEdit({{ $account->id }})" class="text-zinc-400 hover:text-[#7C45F5] transition-colors p-1" title="Изменить название">
+                                                    <span class="icon-edit text-sm"></span>
+                                                </button>
                                             </div>
+
+                                            @if($account->alias)
+                                                <div class="text-[13px] font-mono text-zinc-500 mb-0.5">
+                                                    {{ $account->settlement_account }}
+                                                </div>
+                                            @endif
+
                                             <div class="text-[13px] font-medium text-zinc-500">
                                                 {{ $account->bank_name }}
                                             </div>
+
+                                            <!-- Hidden Alias Edit Form -->
+                                            <form method="POST" id="edit-alias-form-{{ $account->id }}" action="{{ route('shop.customers.account.organizations.settlement_accounts.update_alias', ['organizationId' => $organization->id, 'accountId' => $account->id]) }}" class="hidden mt-3 max-w-sm">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="flex items-center gap-2">
+                                                    <input type="text" name="alias" value="{{ $account->alias }}" placeholder="Например: Зарплатный" class="w-full text-sm border-zinc-200 rounded focus:border-[#7C45F5] focus:ring focus:ring-[#7C45F5]/20 px-3 py-1.5" />
+                                                    <button type="submit" class="bg-[#7C45F5] hover:bg-[#6534d4] text-white text-xs font-bold px-3 py-1.5 rounded transition-colors whitespace-nowrap">
+                                                        Сохранить
+                                                    </button>
+                                                    <button type="button" onclick="toggleAliasEdit({{ $account->id }})" class="text-zinc-400 hover:text-zinc-600 px-2 py-1.5 transition-colors">
+                                                        Отмена
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
 
                                         <!-- Actions -->
@@ -190,6 +225,17 @@
                                             id="correspondent_account" :value="old('correspondent_account')" readonly
                                             class="!bg-zinc-100 !text-zinc-600 font-mono focus:!ring-0 cursor-default" />
                                         <x-shop::form.control-group.error control-name="correspondent_account" />
+                                    </x-shop::form.control-group>
+
+                                    <x-shop::form.control-group>
+                                        <x-shop::form.control-group.label
+                                            class="!text-[12px] !font-bold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
+                                            Название счета (необязательно)
+                                        </x-shop::form.control-group.label>
+                                        <x-shop::form.control-group.control type="text" name="alias" id="alias" :value="old('alias')"
+                                            class="!py-3 !px-4 !border-zinc-300 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all bg-white"
+                                            placeholder="Например: Основной Сбербанк, Зарплатный..." />
+                                        <x-shop::form.control-group.error control-name="alias" />
                                     </x-shop::form.control-group>
 
                                     <x-shop::form.control-group class="!mb-6">
@@ -316,5 +362,14 @@
                 });
             }
         });
+
+        // Helper to toggle Alias Edit form
+        function toggleAliasEdit(accountId) {
+            const form = document.getElementById(`edit-alias-form-${accountId}`);
+            if (form) {
+                form.classList.toggle('hidden');
+                form.classList.toggle('block');
+            }
+        }
     </script>
 </x-shop::layouts.account>

@@ -241,6 +241,7 @@ class OrganizationController extends Controller
             'bank_name' => 'required',
             'settlement_account' => 'required',
             'correspondent_account' => 'nullable',
+            'alias' => 'nullable|string|max:255',
         ]);
 
         $organization = $this->organizationRepository->findOneWhere([
@@ -260,10 +261,39 @@ class OrganizationController extends Controller
             'bank_name' => $request->input('bank_name'),
             'settlement_account' => $request->input('settlement_account'),
             'correspondent_account' => $request->input('correspondent_account'),
+            'alias' => $request->input('alias'),
             'is_default' => $isDefault,
         ]);
 
         return back()->with('success', 'Расчетный счет успешно добавлен');
+    }
+
+    /**
+     * Update the alias for a settlement account.
+     */
+    public function updateSettlementAccountAlias(int $organizationId, int $accountId, Request $request)
+    {
+        $request->validate([
+            'alias' => 'nullable|string|max:255',
+        ]);
+
+        $organization = $this->organizationRepository->findOneWhere([
+            'id' => $organizationId,
+            'customer_id' => auth()->guard('customer')->id(),
+        ]);
+
+        if (!$organization) {
+            abort(404);
+        }
+
+        $account = $organization->settlementAccounts()->find($accountId);
+        if ($account) {
+            $account->update([
+                'alias' => $request->input('alias'),
+            ]);
+        }
+
+        return back()->with('success', 'Название счета успешно обновлено');
     }
 
     /**
