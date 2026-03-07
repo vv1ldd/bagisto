@@ -222,15 +222,14 @@
                         <div class="flex items-center justify-between w-full">
                             <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                             <div class="ios-input-wrapper">
+                                <span class="text-zinc-400 mr-0.5 text-[15px]">@</span>
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.control type="text" name="username" rules="required"
-                                        :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
+                                        :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
                                         autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                         label="Псевдоним" 
                                         v-on:focus="clearDefaultUsername($event)"
                                         v-on:input="debounceCheckUsername($event.target.value)" />
-                                    <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>
-                                    <x-shop::form.control-group.error control-name="username" />
                                 </x-shop::form.control-group>
                                 <span class="ios-arrow icon-arrow-right"></span>
                             </div>
@@ -244,7 +243,6 @@
                                     :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
                                     placeholder="Имя" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                     :label="trans('shop::app.customers.account.profile.edit.first-name')" />
-                                <x-shop::form.control-group.error control-name="first_name" />
                             </x-shop::form.control-group>
                             <span class="ios-arrow icon-arrow-right"></span>
                         </div>
@@ -257,7 +255,6 @@
                                     :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
                                     autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                     :label="trans('shop::app.customers.account.profile.edit.last-name')" />
-                                <x-shop::form.control-group.error control-name="last_name" />
                             </x-shop::form.control-group>
                             <span class="ios-arrow icon-arrow-right"></span>
                         </div>
@@ -290,7 +287,6 @@
                                             @lang('shop::app.customers.account.profile.edit.other')
                                         </option>
                                     </x-shop::form.control-group.control>
-                                    <x-shop::form.control-group.error control-name="gender" />
                                 </x-shop::form.control-group>
                                 <span class="ios-arrow icon-arrow-right"></span>
                             </div>
@@ -306,7 +302,6 @@
                                         rules="required" :value="old('date_of_birth') ?? (str_starts_with($customer->date_of_birth, '$2y$') ? '' : $customer->date_of_birth)"
                                         id="dob_input_edit" allow-input="false" placeholder="Выберите дату"
                                         :label="trans('shop::app.customers.account.profile.edit.dob')" />
-                                    <x-shop::form.control-group.error control-name="date_of_birth" />
                                 </x-shop::form.control-group>
                                 <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
                             </div>
@@ -322,7 +317,6 @@
                                         :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
                                         placeholder="Например: Москва" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                         :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
-                                    <x-shop::form.control-group.error control-name="birth_city" />
                                 </x-shop::form.control-group>
                                 <span class="ios-arrow icon-arrow-right"></span>
                             </div>
@@ -349,15 +343,14 @@
                 <div class="flex items-center justify-between w-full">
                     <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                     <div class="ios-input-wrapper">
+                        <span class="text-zinc-400 mr-0.5 text-[15px]">@</span>
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="username" rules="required"
-                                :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
+                                :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
                                 autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                 label="Псевдоним"
                                 v-on:focus="clearDefaultUsername($event)"
                                 v-on:input="debounceCheckUsername($event.target.value)" />
-                            <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>
-                            <x-shop::form.control-group.error control-name="username" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
@@ -371,7 +364,6 @@
                             :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
                             placeholder="Имя" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                             :label="trans('shop::app.customers.account.profile.edit.first-name')" />
-                        <x-shop::form.control-group.error control-name="first_name" />
                     </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
@@ -384,7 +376,6 @@
                             :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
                             autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                             :label="trans('shop::app.customers.account.profile.edit.last-name')" />
-                        <x-shop::form.control-group.error control-name="last_name" />
                     </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
@@ -430,7 +421,6 @@
                                     @lang('shop::app.customers.account.profile.edit.other')
                                 </option>
                             </x-shop::form.control-group.control>
-                            <x-shop::form.control-group.error control-name="gender" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
@@ -446,7 +436,6 @@
                                 rules="required" :value="old('date_of_birth') ?? (str_starts_with($customer->date_of_birth, '$2y$') ? '' : $customer->date_of_birth)"
                                 id="dob_input_edit" allow-input="false" placeholder="Выберите дату"
                                 :label="trans('shop::app.customers.account.profile.edit.dob')" />
-                            <x-shop::form.control-group.error control-name="date_of_birth" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
                     </div>
@@ -462,7 +451,6 @@
                                 :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
                                 placeholder="Например: Москва" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                 :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
-                            <x-shop::form.control-group.error control-name="birth_city" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
@@ -487,7 +475,7 @@
 
         <div class="flex justify-center mt-2">
             <button type="submit"
-                :disabled="!meta.valid"
+                :disabled="!meta.valid || !!usernameError"
                 class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
                 @lang('shop::app.customers.account.profile.edit.save')
             </button>
