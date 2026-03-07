@@ -172,7 +172,7 @@
                             @if ($isCardless)
                                 {{ $slot }}
                             @else
-                                <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 overflow-hidden mb-8 ">
+                                <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 mb-8 ">
                                     <!-- Page Content -->
                                     <div class="flex-1">
                                         {{ $slot }}
