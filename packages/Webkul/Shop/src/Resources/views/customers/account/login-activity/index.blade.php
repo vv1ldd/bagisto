@@ -11,7 +11,7 @@
 
         <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5 relative">
             <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-                class="absolute top-4 right-4 z-10 w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                class="absolute top-5 right-5 z-20 w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
                 <span class="icon-cancel text-xl"></span>
             </a>
 
