@@ -29,15 +29,17 @@
                             @lang('shop::app.customers.account.organizations.create.inn')
                         </x-shop::form.control-group.label>
 
-                        <div class="flex gap-2">
-                            <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
-                                id="inn-input"
-                                class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all flex-1"
-                                :label="trans('shop::app.customers.account.organizations.create.inn')"
-                                placeholder="Введите ИНН..." />
+                        <div class="flex items-stretch gap-2">
+                            <div class="flex-1">
+                                <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
+                                    id="inn-input"
+                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full !rounded-lg"
+                                    :label="trans('shop::app.customers.account.organizations.create.inn')"
+                                    placeholder="Введите ИНН..." />
+                            </div>
                             
                             <button type="button" id="lookup-inn-btn"
-                                class="px-6 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold transition-all disabled:opacity-50 text-[14px]">
+                                class="px-6 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold transition-all disabled:opacity-50 text-[14px] rounded-lg whitespace-nowrap flex items-center justify-center">
                                 Найти
                             </button>
                         </div>
@@ -343,7 +345,6 @@
                         submitBtn.disabled = e.target.value.length !== 20;
                     }
                 }
-            });
             });
 
             // Handle clicking a suggestion or clicking outside
