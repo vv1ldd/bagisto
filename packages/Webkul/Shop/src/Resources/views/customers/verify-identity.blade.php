@@ -9,7 +9,7 @@
         </div>
 
         @error('verification')
-            <div class="mb-4 bg-red-50 p-3 border border-red-100 text-sm text-red-600 flex items-center gap-3 rounded-xl">
+            <div class="mb-4 bg-red-50 p-3 border border-red-100 text-sm text-red-600 flex items-center gap-3 rounded-none">
                 <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -26,7 +26,6 @@
                     .ios-group {
                         background-color: #fff;
                         border: 1px solid #e4e4e7;
-                        border-radius: 16px;
                         margin-bottom: 12px;
                         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
                     }
@@ -40,14 +39,9 @@
                         position: relative;
                     }
 
-                    .ios-row:first-child {
-                        border-top-left-radius: 16px;
-                        border-top-right-radius: 16px;
-                    }
+                    .ios-row:first-child {}
 
                     .ios-row:last-child {
-                        border-bottom-left-radius: 16px;
-                        border-bottom-right-radius: 16px;
                         border-bottom: none;
                     }
 
@@ -245,7 +239,7 @@
 
             <div class="mt-4">
                 <button
-                    class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
+                    class="w-full rounded-none bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
                     type="submit" :disabled="!meta.valid">
                     Подтвердить и войти
                 </button>

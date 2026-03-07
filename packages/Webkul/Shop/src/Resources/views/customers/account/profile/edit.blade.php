@@ -56,6 +56,12 @@
                         this.checkUsername(value);
                     }, 500);
                 },
+
+                clearDefaultUsername(event) {
+                    if (event.target.value.startsWith('user_')) {
+                        event.target.value = '';
+                    }
+                },
                 checkUsername(value) {
                     this.$axios.get("{{ route('shop.customers.account.profile.check_username') }}", {
                         params: { username: value }

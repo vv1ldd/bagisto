@@ -9,8 +9,8 @@
         .ios-group {
             background-color: #fff;
             border: 1px solid #f3f4f6;
-            margin-bottom: 24px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
             overflow: hidden;
         }
 
@@ -174,11 +174,13 @@
         .ios-switch input:checked+.ios-slider:before { transform: translateX(20px); }
 
         @media (max-width: 768px) {
-            .ios-settings-wrapper { padding: 0 16px; }
-            .ios-row { padding: 8px 16px; min-height: 40px; }
+            .ios-settings-wrapper { padding: 0 12px; }
+            .ios-group { margin-bottom: 12px; }
+            .ios-row { padding: 8px 14px; min-height: 44px; }
             .ios-label { font-size: 14px; }
-            .ios-input-wrapper { margin-left: 12px; }
+            .ios-input-wrapper { margin-left: 10px; }
             .ios-input-wrapper input, .ios-input-wrapper select { font-size: 14px !important; }
+            .ios-switch-row { padding: 10px 14px; margin-bottom: 16px; }
         }
     </style>
 @endpush
@@ -195,17 +197,17 @@
 
     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
         {{-- Registration flow: premium card wrapper --}}
-        <div class=" bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-6 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white rounded-none">
+        <div class=" bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-4 md:p-6 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white rounded-none">
             <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10  blur-3xl"></div>
             <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10  blur-3xl"></div>
 
             <div class="w-full mx-auto z-10 relative">
-                <h2 class="text-[22px] md:text-2xl font-bold text-zinc-900 mb-0 mt-0 text-center">Расскажите о себе</h2>
-                <p class="text-[14px] text-zinc-600 mb-2 text-center mx-auto max-w-[320px]">
+                <h2 class="text-[20px] md:text-2xl font-bold text-zinc-900 mb-0 mt-0 text-center">Расскажите о себе</h2>
+                <p class="text-[13px] text-zinc-600 mb-2 text-center mx-auto max-w-[320px] leading-tight">
                     Укажите настоящие имя и фамилию — они понадобятся для безопасного входа по Magic Link и восстановления доступа.
                 </p>
 
-                <div class="ios-group w-full !mb-3 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm ! overflow-hidden">
+                <div class="ios-group w-full !mb-2 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm ! overflow-hidden">
                     {{-- Fields for registration mode --}}
                     <div class="ios-row !flex-col !items-start !h-auto !py-3">
                         <div class="flex items-center justify-between w-full">
@@ -216,7 +218,7 @@
                                         :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
                                         autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                         label="Алиас" 
-                                        v-on:focus="if ($event.target.value.startsWith('user_')) $event.target.value = ''"
+                                        v-on:focus="clearDefaultUsername($event)"
                                         v-on:input="debounceCheckUsername($event.target.value)" />
                                     <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>
                                     <x-shop::form.control-group.error control-name="username" />
@@ -320,7 +322,7 @@
 
                 </div>
 
-                <div class="flex justify-center mt-4">
+                <div class="flex justify-center mt-2">
                     <button type="submit"
                         :disabled="!meta.valid"
                         class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
@@ -343,7 +345,7 @@
                                 :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
                                 autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
                                 label="Алиас"
-                                v-on:focus="if ($event.target.value.startsWith('user_')) $event.target.value = ''"
+                                v-on:focus="clearDefaultUsername($event)"
                                 v-on:input="debounceCheckUsername($event.target.value)" />
                             <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>
                             <x-shop::form.control-group.error control-name="username" />
@@ -474,7 +476,7 @@
             </div>
         </div>
 
-        <div class="flex justify-center mt-4">
+        <div class="flex justify-center mt-2">
             <button type="submit"
                 :disabled="!meta.valid"
                 class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
