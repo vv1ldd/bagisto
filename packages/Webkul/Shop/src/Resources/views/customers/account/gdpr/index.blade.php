@@ -1,8 +1,6 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :show-back="false">
     <!-- Page Title -->
-    <x-slot:title>
-        @lang('shop::app.customers.account.gdpr.index.title')
-        </x-slot>
+    <x-slot:title></x-slot>
 
         <!-- Breadcrumbs -->
         @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
@@ -14,6 +12,16 @@
 
 
         <div class="mx-4 flex-auto">
+            <!-- Tiled Header -->
+            <div
+                class="bg-white border border-gray-100 flex items-center justify-between gap-3 px-5 py-4 border-b mb-4">
+                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
+                    @lang('shop::app.customers.account.gdpr.index.title')</h1>
+                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                    <span class="icon-cancel text-xl"></span>
+                </a>
+            </div>
 
             {!! view_render_event('bagisto.shop.customers.account.gdpr.list.before') !!}
 

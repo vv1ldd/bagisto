@@ -1,8 +1,6 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :show-back="false">
     <!-- Page Title -->
-    <x-slot:title>
-        @lang('shop::app.customers.account.login-activity.title')
-        </x-slot>
+    <x-slot:title></x-slot>
 
         <!-- Breadcrumbs -->
         @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
@@ -12,7 +10,18 @@
         @endif
 
         <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5">
-            <div class="mb-10 mt-6">
+            <div class="mb-10">
+                <!-- Tiled Header -->
+                <div class="ios-nav-group !bg-white !mb-6">
+                    <div class="flex items-center justify-between gap-3 px-5 py-4">
+                        <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
+                            @lang('shop::app.customers.account.login-activity.title')</h1>
+                        <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                            class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                            <span class="icon-cancel text-xl"></span>
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Active Sessions Section -->
                 @if (count($activeSessions))
@@ -124,7 +133,8 @@
                     @else
                         <div class="bg-zinc-50/50 p-10 text-center  border border-zinc-100">
                             <p class="text-[15px] text-zinc-500">
-                                @lang('shop::app.customers.account.login-activity.empty-history').</p>
+                                @lang('shop::app.customers.account.login-activity.empty-history').
+                            </p>
                         </div>
                     @endif
                 </div>
