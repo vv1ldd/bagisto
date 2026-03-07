@@ -24,7 +24,7 @@
                     </div>
 
                     <!-- INN Search -->
-                    <x-shop::form.control-group class="!mb-4" id="step-1-search">
+                    <x-shop::form.control-group class="!mb-4" id="step-1-input-container">
                         <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
                             @lang('shop::app.customers.account.organizations.create.inn')
                         </x-shop::form.control-group.label>
@@ -46,8 +46,6 @@
 
                     <!-- Extracted Organization Details (Readonly Constants) -->
                     <div id="step-1-details" class="hidden space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
-                        <!-- Loading Overlay -->
-                        <div id="step-1-overlay" class="hidden absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10"></div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -90,13 +88,13 @@
 
                 <!-- ================== STEP 2: BANK DETAILS ================== -->
                 <div id="step-2" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
-                    <div class="flex items-center justify-between mb-4" id="step-2-search">
+                    <div class="flex items-center justify-between mb-4" id="step-2-header">
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 2: Банк организации</h2>
                         <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
                     </div>
 
                     <!-- BIC Search -->
-                    <x-shop::form.control-group class="!mb-4" id="step-2-search">
+                    <x-shop::form.control-group class="!mb-4" id="step-2-input-container">
                         <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
                             @lang('shop::app.customers.account.organizations.create.bic')
                         </x-shop::form.control-group.label>
@@ -117,8 +115,6 @@
 
                     <!-- Extracted Bank Details (Readonly Constants) -->
                     <div id="step-2-details" class="hidden space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
-                        <!-- Loading Overlay -->
-                        <div id="step-2-overlay" class="hidden absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10"></div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -253,15 +249,17 @@
                 const confirmStep1Btn = e.target.closest('#confirm-step-1-btn');
                 if (confirmStep1Btn) {
                     e.preventDefault();
-                    if (document.getElementById('step-1-overlay')) document.getElementById('step-1-overlay').classList.remove('hidden');
-                    confirmStep1Btn.classList.add('hidden');
+                    if (document.getElementById('step-1-details')) document.getElementById('step-1-details').classList.add('hidden');
+                    if (document.getElementById('step-1-input-container')) document.getElementById('step-1-input-container').classList.add('opacity-50', 'pointer-events-none');
+                    if (document.getElementById('lookup-inn-btn')) document.getElementById('lookup-inn-btn').classList.add('hidden');
+                    
                     if (document.getElementById('step-1-badge')) document.getElementById('step-1-badge').classList.remove('hidden');
                     
                     const s2 = document.getElementById('step-2');
                     if (s2) {
                         s2.classList.remove('hidden');
-                        if (document.getElementById('step-2-search')) {
-                            document.getElementById('step-2-search').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (document.getElementById('step-2-header')) {
+                            document.getElementById('step-2-header').scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
                         if (document.getElementById('bic-input')) document.getElementById('bic-input').focus();
                     }
@@ -321,8 +319,10 @@
                 const confirmStep2Btn = e.target.closest('#confirm-step-2-btn');
                 if (confirmStep2Btn) {
                     e.preventDefault();
-                    if (document.getElementById('step-2-overlay')) document.getElementById('step-2-overlay').classList.remove('hidden');
-                    confirmStep2Btn.classList.add('hidden');
+                    if (document.getElementById('step-2-details')) document.getElementById('step-2-details').classList.add('hidden');
+                    if (document.getElementById('step-2-input-container')) document.getElementById('step-2-input-container').classList.add('opacity-50', 'pointer-events-none');
+                    if (document.getElementById('lookup-bic-btn')) document.getElementById('lookup-bic-btn').classList.add('hidden');
+                    
                     if (document.getElementById('step-2-badge')) document.getElementById('step-2-badge').classList.remove('hidden');
                     
                     const s3 = document.getElementById('step-3');
