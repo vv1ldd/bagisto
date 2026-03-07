@@ -49,7 +49,7 @@
                     <!-- Extracted Organization Details (Readonly Constants) -->
                     <div id="step-1-details" class="hidden space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                                     @lang('shop::app.customers.account.organizations.create.name')
