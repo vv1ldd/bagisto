@@ -185,162 +185,183 @@
 
     <!-- Script moved INSIDE the component structure to ensure execution after dynamic load -->
     <script>
-        setTimeout(() => {
-            console.log('Wizard Initialization');
+        if (!window.wizardListening) {
+            window.wizardListening = true;
+            console.log('Wizard Initialization with Document Listeners');
 
-            // Steps Elements
-            const s1 = document.getElementById('step-1');
-            const s2 = document.getElementById('step-2');
-            const s3 = document.getElementById('step-3');
-            
-            const submitBtn = document.getElementById('submit-btn');
-            
-            // Step 1: INN
-            const innInput = document.getElementById('inn-input');
-            const lookupInnBtn = document.getElementById('lookup-inn-btn');
-            const step1Details = document.getElementById('step-1-details');
-            const nameInput = document.getElementById('name-input');
-            const kppInput = document.getElementById('kpp-input');
-            const addressInput = document.getElementById('address-input');
-            const confirmStep1Btn = document.getElementById('confirm-step-1-btn');
-            const step1Overlay = document.getElementById('step-1-overlay');
-            const step1Badge = document.getElementById('step-1-badge');
-            
-            // Step 2: BIC
-            const bicInput = document.getElementById('bic-input');
-            const lookupBicBtn = document.getElementById('lookup-bic-btn');
-            const step2Details = document.getElementById('step-2-details');
-            const bankNameInput = document.getElementById('bank-name-input');
-            const corrAccountInput = document.getElementById('corr-account-input');
-            const confirmStep2Btn = document.getElementById('confirm-step-2-btn');
-            const step2Overlay = document.getElementById('step-2-overlay');
-            const step2Badge = document.getElementById('step-2-badge');
-
-            // Step 3: Account
-            const settlementInput = document.getElementById('settlement-account-input');
-
-            // Recreate buttons to drop old listeners safely
-            if (lookupInnBtn) {
-                const newB = lookupInnBtn.cloneNode(true);
-                lookupInnBtn.parentNode.replaceChild(newB, lookupInnBtn);
-                newB.onclick = async () => {
-                    const inn = innInput.value.trim();
+            document.addEventListener('click', async function(e) {
+                
+                // --- STEP 1: INN Lookup ---
+                const lookupInnBtn = e.target.closest('#lookup-inn-btn');
+                if (lookupInnBtn) {
+                    e.preventDefault();
+                    if (lookupInnBtn.disabled) return;
+                    
+                    const innInput = document.getElementById('inn-input');
+                    const inn = innInput ? innInput.value.trim() : '';
                     if (!inn) return alert('Введите ИНН');
                     
-                    newB.disabled = true;
-                    newB.innerText = '...';
+                    lookupInnBtn.disabled = true;
+                    const originalText = lookupInnBtn.innerText;
+                    lookupInnBtn.innerText = '...';
                     
                     try {
-                        const response = await fetch(`{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn));
+                        const url = `{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn);
+                        const response = await fetch(url);
                         const data = await response.json();
                         
+                        // We must re-query the elements in case DOM updated during fetch
                         if (response.ok) {
-                            nameInput.value = data.name || '';
-                            kppInput.value = data.kpp || '';
-                            addressInput.value = data.address || '';
+                            if (document.getElementById('name-input')) document.getElementById('name-input').value = data.name || '';
+                            if (document.getElementById('kpp-input')) document.getElementById('kpp-input').value = data.kpp || '';
+                            if (document.getElementById('address-input')) document.getElementById('address-input').value = data.address || '';
                             
-                            // Hide KPP if empty (e.g., for IP)
-                            if (!data.kpp) {
-                                document.getElementById('kpp-container').classList.add('hidden');
-                            } else {
-                                document.getElementById('kpp-container').classList.remove('hidden');
+                            const kppContainer = document.getElementById('kpp-container');
+                            if (kppContainer) {
+                                if (!data.kpp) kppContainer.classList.add('hidden');
+                                else kppContainer.classList.remove('hidden');
                             }
                             
-                            step1Details.classList.remove('hidden');
+                            const step1Details = document.getElementById('step-1-details');
+                            if (step1Details) step1Details.classList.remove('hidden');
                             
                             // Visual cue
-                            [nameInput, kppInput, addressInput].forEach(el => {
-                                el.style.backgroundColor = '#f0fff4';
-                                setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                            ['name-input', 'kpp-input', 'address-input'].forEach(id => {
+                                const el = document.getElementById(id);
+                                if (el) {
+                                    el.style.backgroundColor = '#f0fff4';
+                                    setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                                }
                             });
                         } else {
                             alert(data.message || 'Организация не найдена');
                         }
-                    } catch (e) {
-                         alert('Ошибка сети при поиске ИНН');
+                    } catch (err) {
+                        alert('Ошибка сети при поиске ИНН');
                     } finally {
-                        newB.disabled = false;
-                        newB.innerText = 'Найти';
+                        // Reselect button as it might have been lost
+                        const btn = document.getElementById('lookup-inn-btn');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerText = originalText;
+                        }
                     }
-                };
-            }
+                    return;
+                }
 
-            if (confirmStep1Btn) {
-                confirmStep1Btn.onclick = () => {
-                    step1Overlay.classList.remove('hidden'); // Freeze step 1
+                // --- STEP 1: Confirm ---
+                const confirmStep1Btn = e.target.closest('#confirm-step-1-btn');
+                if (confirmStep1Btn) {
+                    e.preventDefault();
+                    if (document.getElementById('step-1-overlay')) document.getElementById('step-1-overlay').classList.remove('hidden');
                     confirmStep1Btn.classList.add('hidden');
-                    step1Badge.classList.remove('hidden');
+                    if (document.getElementById('step-1-badge')) document.getElementById('step-1-badge').classList.remove('hidden');
                     
-                    s2.classList.remove('hidden');
-                    document.getElementById('step-2-search').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    bicInput.focus();
-                };
-            }
+                    const s2 = document.getElementById('step-2');
+                    if (s2) {
+                        s2.classList.remove('hidden');
+                        if (document.getElementById('step-2-search')) {
+                            document.getElementById('step-2-search').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        if (document.getElementById('bic-input')) document.getElementById('bic-input').focus();
+                    }
+                    return;
+                }
 
-            if (lookupBicBtn) {
-                const newB = lookupBicBtn.cloneNode(true);
-                lookupBicBtn.parentNode.replaceChild(newB, lookupBicBtn);
-                newB.onclick = async () => {
-                    const bic = bicInput.value.trim();
+                // --- STEP 2: BIC Lookup ---
+                const lookupBicBtn = e.target.closest('#lookup-bic-btn');
+                if (lookupBicBtn) {
+                    e.preventDefault();
+                    if (lookupBicBtn.disabled) return;
+                    
+                    const bicInput = document.getElementById('bic-input');
+                    const bic = bicInput ? bicInput.value.trim() : '';
                     if (!bic) return alert('Введите БИК');
                     
-                    newB.disabled = true;
-                    newB.innerText = '...';
+                    lookupBicBtn.disabled = true;
+                    const originalText = lookupBicBtn.innerText;
+                    lookupBicBtn.innerText = '...';
                     
                     try {
-                        const response = await fetch(`{{ route('shop.customers.account.organizations.lookup_bic', ':bic') }}`.replace(':bic', bic));
+                        const url = `{{ route('shop.customers.account.organizations.lookup_bic', ':bic') }}`.replace(':bic', bic);
+                        const response = await fetch(url);
                         const data = await response.json();
                         
                         if (response.ok) {
-                            bankNameInput.value = data.bank_name || '';
-                            corrAccountInput.value = data.correspondent_account || '';
-                            step2Details.classList.remove('hidden');
+                            if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = data.bank_name || '';
+                            if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = data.correspondent_account || '';
+                            
+                            const step2Details = document.getElementById('step-2-details');
+                            if (step2Details) step2Details.classList.remove('hidden');
                             
                             // Visual cue
-                            [bankNameInput, corrAccountInput].forEach(el => {
-                                el.style.backgroundColor = '#f0fff4';
-                                setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                            ['bank-name-input', 'corr-account-input'].forEach(id => {
+                                const el = document.getElementById(id);
+                                if (el) {
+                                    el.style.backgroundColor = '#f0fff4';
+                                    setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                                }
                             });
                         } else {
                             alert(data.message || 'Банк не найден');
                         }
-                    } catch (e) {
-                         alert('Ошибка сети при поиске БИК');
+                    } catch (err) {
+                        alert('Ошибка сети при поиске БИК');
                     } finally {
-                        newB.disabled = false;
-                        newB.innerText = 'Найти';
+                        const btn = document.getElementById('lookup-bic-btn');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerText = originalText;
+                        }
                     }
-                };
-            }
+                    return;
+                }
 
-            if (confirmStep2Btn) {
-                confirmStep2Btn.onclick = () => {
-                    step2Overlay.classList.remove('hidden');
+                // --- STEP 2: Confirm ---
+                const confirmStep2Btn = e.target.closest('#confirm-step-2-btn');
+                if (confirmStep2Btn) {
+                    e.preventDefault();
+                    if (document.getElementById('step-2-overlay')) document.getElementById('step-2-overlay').classList.remove('hidden');
                     confirmStep2Btn.classList.add('hidden');
-                    step2Badge.classList.remove('hidden');
+                    if (document.getElementById('step-2-badge')) document.getElementById('step-2-badge').classList.remove('hidden');
                     
-                    s3.classList.remove('hidden');
-                    s3.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    settlementInput.focus();
-                };
-            }
+                    const s3 = document.getElementById('step-3');
+                    if (s3) {
+                        s3.classList.remove('hidden');
+                        s3.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (document.getElementById('settlement-account-input')) document.getElementById('settlement-account-input').focus();
+                    }
+                    return;
+                }
+            });
 
-            if (settlementInput) {
-                settlementInput.addEventListener('input', (e) => {
-                    // Only allow numbers
+            // Event delegation for input fields
+            document.addEventListener('input', function(e) {
+                if (e.target.id === 'settlement-account-input') {
                     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 20);
-                    submitBtn.disabled = e.target.value.length !== 20;
-                });
-            }
+                    const submitBtn = document.getElementById('submit-btn');
+                    if (submitBtn) {
+                        submitBtn.disabled = e.target.value.length !== 20;
+                    }
+                }
+            });
+        }
 
-            // If there are validation errors on reload (meaning user hit submit but failed), unlock everything
+        // Run validation error visual unlocking
+        setTimeout(() => {
             if ("{{ $errors->any() }}" === "1") {
-                step1Details.classList.remove('hidden');
-                s2.classList.remove('opacity-50', 'pointer-events-none');
-                step2Details.classList.remove('hidden');
-                s3.classList.remove('opacity-50', 'pointer-events-none');
+                const step1Details = document.getElementById('step-1-details');
+                if (step1Details) step1Details.classList.remove('hidden');
+                
+                const s2 = document.getElementById('step-2');
+                if (s2) s2.classList.remove('hidden');
+                
+                const step2Details = document.getElementById('step-2-details');
+                if (step2Details) step2Details.classList.remove('hidden');
+                
+                const s3 = document.getElementById('step-3');
+                if (s3) s3.classList.remove('hidden');
             }
-
-        }, 300);
+        }, 100);
     </script>
 </x-shop::layouts.account>
