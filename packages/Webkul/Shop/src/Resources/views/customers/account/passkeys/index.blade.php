@@ -10,11 +10,22 @@
         </div>
     </x-shop::layouts.split-screen>
 @else
-    <x-shop::layouts.account :show-back="true" :has-header="true" :has-footer="true" :title="$pageTitle">
-        <x-slot:title>
-            {{ $pageTitle }}
-        </x-slot:title>
+    <x-shop::layouts.account :show-back="false" :has-header="true" :has-footer="true">
+        <x-slot:title></x-slot:title>
 
-        @include('shop::customers.account.passkeys.index-form', ['customer' => $customer])
+        <div class="bg-white border border-zinc-100 mb-6">
+            <!-- Tiled Header -->
+            <div class="flex items-center justify-between gap-3 px-5 py-4 border-b">
+                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $pageTitle }}</h1>
+                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                    <span class="icon-cancel text-xl"></span>
+                </a>
+            </div>
+
+            <div class="p-5">
+                @include('shop::customers.account.passkeys.index-form', ['customer' => $customer])
+            </div>
+        </div>
     </x-shop::layouts.account>
 @endif
