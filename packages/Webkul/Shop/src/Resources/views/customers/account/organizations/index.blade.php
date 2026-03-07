@@ -11,15 +11,7 @@
             </h1>
         </div>
 
-        <!-- Header Actions -->
-        <div class="flex justify-end px-5 mb-4 mt-2">
-            <a href="{{ route('shop.customers.account.organizations.create') }}"
-                class="flex items-center text-[#7C45F5] font-semibold transition hover:opacity-80 active:opacity-60">
-                <span class="icon-add text-xl mr-1"></span>
-                <span
-                    class="text-[15px]">@lang('shop::app.customers.account.organizations.index.add-organization')</span>
-            </a>
-        </div>
+        <!-- Removed top Header Actions -->
 
         @if (!$organizations->isEmpty())
             <div class="flex flex-col border-t border-zinc-100">
@@ -93,7 +85,6 @@
                     </div>
                 @endforeach
             </div>
-        @else
             <div class="flex flex-col items-center justify-center py-20 text-center">
                 <div class="w-16 h-16 bg-zinc-50 flex items-center justify-center mb-4">
                     <span class="icon-dashboard text-4xl text-zinc-200"></span>
@@ -103,5 +94,14 @@
                 </p>
             </div>
         @endif
+
+        <!-- Bottom Add Button -->
+        <div
+            class="fixed bottom-6 right-6 z-50 @if($organizations->isEmpty()) relative pt-8 right-auto text-center @endif">
+            <a href="{{ route('shop.customers.account.organizations.create') }}"
+                class="inline-flex items-center justify-center w-[56px] h-[56px] bg-[#7C45F5] hover:bg-[#6534d4] text-white rounded-full shadow-lg transition-transform active:scale-95 group @if($organizations->isEmpty()) mx-auto @endif">
+                <span class="icon-add text-2xl group-hover:rotate-90 transition-transform duration-300"></span>
+            </a>
+        </div>
     </div>
 </x-shop::layouts.account>
