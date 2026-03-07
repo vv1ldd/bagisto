@@ -164,7 +164,8 @@
                     <div class="ios-input-wrapper">
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="first_name" rules="required"
-                                :value="old('first_name')" placeholder="Имя"
+                                :value="old('first_name')" placeholder="Имя" autocomplete="off" autocorrect="off"
+                                autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore
                                 :label="trans('shop::app.customers.account.profile.index.first-name')" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
@@ -178,7 +179,8 @@
                     <div class="ios-input-wrapper">
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="last_name" rules="required"
-                                :value="old('last_name')" placeholder="Фамилия"
+                                :value="old('last_name')" placeholder="Фамилия" autocomplete="off" autocorrect="off"
+                                autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore
                                 :label="trans('shop::app.customers.account.profile.index.last-name')" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
@@ -231,7 +233,9 @@
                     <div class="ios-input-wrapper">
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
-                                :value="old('birth_city')" placeholder="Например: Москва" label="Город рождения" />
+                                :value="old('birth_city')" placeholder="Например: Москва" autocomplete="off"
+                                autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true"
+                                data-1p-ignore label="Город рождения" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>

@@ -205,18 +205,16 @@
 <div class="ios-settings-wrapper mx-auto w-full">
 
     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-        {{-- Registration flow: premium card wrapper --}}
-        <div class=" bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-4 md:p-6 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white rounded-none">
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10  blur-3xl"></div>
-            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10  blur-3xl"></div>
+        {{-- Registration flow --}}
+        <div class="mb-4 text-center">
+            <h1 class="text-2xl font-bold text-zinc-900 mb-1">Расскажите о себе</h1>
+            <p class="text-sm text-zinc-500 max-w-[400px] mx-auto leading-normal">
+                Укажите настоящие имя и фамилию — они понадобятся для безопасного входа по Magic Link и восстановления доступа.
+            </p>
+        </div>
 
-            <div class="w-full mx-auto z-10 relative">
-                <h2 class="text-[20px] md:text-2xl font-bold text-zinc-900 mb-0 mt-0 text-center">Расскажите о себе</h2>
-                <p class="text-[13px] text-zinc-600 mb-2 text-center mx-auto max-w-[320px] leading-tight">
-                    Укажите настоящие имя и фамилию — они понадобятся для безопасного входа по Magic Link и восстановления доступа.
-                </p>
-
-                <div class="ios-group w-full !mb-2 !border-white/60 !bg-white/80 !backdrop-blur-xl !shadow-sm ! overflow-hidden">
+        <div class="w-full mx-auto relative">
+            <div class="ios-group w-full !mb-2 !overflow-hidden">
                     {{-- Fields for registration mode --}}
                     <div class="ios-row !flex-col !items-start !h-auto !py-3">
                         <div class="flex items-center justify-between w-full">
@@ -226,7 +224,8 @@
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.control type="text" name="username" rules="required"
                                         :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
-                                        autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        data-lpignore="true" data-1p-ignore
                                         label="Псевдоним" 
                                         v-on:focus="clearDefaultUsername($event)"
                                         v-on:input="debounceCheckUsername($event.target.value)" />
@@ -241,7 +240,8 @@
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="text" name="first_name" rules="required"
                                     :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
-                                    placeholder="Имя" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                    placeholder="Имя" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                    data-lpignore="true" data-1p-ignore
                                     :label="trans('shop::app.customers.account.profile.edit.first-name')" />
                             </x-shop::form.control-group>
                             <span class="ios-arrow icon-arrow-right"></span>
@@ -253,7 +253,8 @@
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.control type="text" name="last_name" rules="required"
                                     :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
-                                    autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                    data-lpignore="true" data-1p-ignore
                                     :label="trans('shop::app.customers.account.profile.edit.last-name')" />
                             </x-shop::form.control-group>
                             <span class="ios-arrow icon-arrow-right"></span>
@@ -315,7 +316,8 @@
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
                                         :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
-                                        placeholder="Например: Москва" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        placeholder="Например: Москва" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                        data-lpignore="true" data-1p-ignore
                                         :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
                                 </x-shop::form.control-group>
                                 <span class="ios-arrow icon-arrow-right"></span>
@@ -347,7 +349,8 @@
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="username" rules="required"
                                 :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
-                                autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                data-lpignore="true" data-1p-ignore
                                 label="Псевдоним"
                                 v-on:focus="clearDefaultUsername($event)"
                                 v-on:input="debounceCheckUsername($event.target.value)" />
@@ -362,7 +365,8 @@
                     <x-shop::form.control-group class="!mb-0">
                         <x-shop::form.control-group.control type="text" name="first_name" rules="required"
                             :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
-                            placeholder="Имя" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            placeholder="Имя" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            data-lpignore="true" data-1p-ignore
                             :label="trans('shop::app.customers.account.profile.edit.first-name')" />
                     </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
@@ -374,7 +378,8 @@
                     <x-shop::form.control-group class="!mb-0">
                         <x-shop::form.control-group.control type="text" name="last_name" rules="required"
                             :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
-                            autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            data-lpignore="true" data-1p-ignore
                             :label="trans('shop::app.customers.account.profile.edit.last-name')" />
                     </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
@@ -449,7 +454,8 @@
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
                                 :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
-                                placeholder="Например: Москва" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                placeholder="Например: Москва" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                data-lpignore="true" data-1p-ignore
                                 :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
@@ -473,10 +479,10 @@
             </div>
         </div>
 
-        <div class="flex justify-center mt-2">
+        <div class="flex justify-center mt-6">
             <button type="submit"
                 :disabled="!meta.valid || !!usernameError"
-                class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
+                class="flex w-full items-center justify-center gap-3 bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
                 @lang('shop::app.customers.account.profile.edit.save')
             </button>
         </div>
