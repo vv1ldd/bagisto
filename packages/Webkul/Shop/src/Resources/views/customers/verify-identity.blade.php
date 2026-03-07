@@ -20,7 +20,7 @@
             </div>
         @enderror
 
-        <x-shop::form :action="route('shop.customer.login.verify_identity.post')">
+        <x-shop::form :action="route('shop.customer.login.verify_identity.post')" v-slot="{ meta }">
             @push('styles')
                 <style>
                     .ios-group {
@@ -243,19 +243,10 @@
                 </div>
             </div>
 
-            <!-- Centralized Validation Errors -->
-            <div v-if="Object.keys(errors).length" class="mb-4">
-                <div class="text-[12px] text-red-500 font-medium bg-red-50/50 p-2 rounded-lg border border-red-100/50">
-                    <p v-for="error in errors" class="mb-0.5 last:mb-0">
-                        • @{{ error }}
-                    </p>
-                </div>
-            </div>
-
             <div class="mt-4">
                 <button
-                    class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
-                    type="submit">
+                    class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
+                    type="submit" :disabled="!meta.valid">
                     Подтвердить и войти
                 </button>
             </div>

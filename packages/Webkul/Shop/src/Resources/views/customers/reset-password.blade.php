@@ -34,10 +34,6 @@
                         class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-[12px] focus:!ring-2 focus:!ring-zinc-500 w-full"
                         name="email" rules="required|email" :value="old('email')"
                         :label="trans('shop::app.customers.reset-password.email')" placeholder="email@example.com" />
-
-                    <div v-if="meta.touched && !meta.valid">
-                        <x-shop::form.control-group.error control-name="email" />
-                    </div>
                 </x-shop::form.control-group>
 
                 <!-- Password -->
@@ -52,10 +48,6 @@
                         name="password" rules="required|min:6" value=""
                         :label="trans('shop::app.customers.reset-password.password')"
                         :placeholder="trans('shop::app.customers.reset-password.password')" ref="password" />
-
-                    <div v-if="meta.touched && !meta.valid">
-                        <x-shop::form.control-group.error control-name="password" />
-                    </div>
                 </x-shop::form.control-group>
 
                 <!-- Confirm Password -->
@@ -70,10 +62,6 @@
                         name="password_confirmation" rules="confirmed:@password" value=""
                         :label="trans('shop::app.customers.reset-password.confirm-password')"
                         :placeholder="trans('shop::app.customers.reset-password.confirm-password')" />
-
-                    <div v-if="meta.touched && !meta.valid">
-                        <x-shop::form.control-group.error control-name="password_confirmation" />
-                    </div>
                 </x-shop::form.control-group>
 
                 <div class="mt-6">

@@ -56,10 +56,6 @@
                         class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-[12px] focus:!ring-2 focus:!ring-zinc-500 w-full"
                         name="email" rules="required|email" :value="old('email')"
                         :label="trans('shop::app.customers.signup-form.email')" placeholder="email@example.com" />
-
-                    <div v-if="meta.touched && !meta.valid">
-                        <x-shop::form.control-group.error control-name="email" />
-                    </div>
                 </x-shop::form.control-group>
 
                 <!-- Options: Newsletter & GDPR -->
@@ -78,9 +74,6 @@
                                     </span>
                                 @endif
                             </label>
-                        </div>
-                        <div v-if="meta.touched && !meta.valid">
-                            <x-shop::form.control-group.error control-name="agreement" />
                         </div>
                     @endif
                 </div>

@@ -76,11 +76,6 @@
                             name="email" rules="required|email" :value="old('email')"
                             :label="trans('shop::app.customers.login-form.email')" placeholder="email@example.com" />
 
-                        {{-- Hide specific email required error if button is disabled --}}
-                        <div v-if="meta.touched && !meta.valid">
-                            <x-shop::form.control-group.error control-name="email" />
-                        </div>
-
                         {{-- Register suggestion shown when email not found --}}
                         @if($errors->has('email') && str_contains($errors->first('email'), 'не найден'))
                             <p class="mt-2 text-[12px] text-zinc-400">Нет аккаунта с этой почтой —
