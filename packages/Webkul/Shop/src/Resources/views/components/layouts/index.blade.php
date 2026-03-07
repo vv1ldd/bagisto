@@ -91,6 +91,14 @@
                 position: relative !important;
             }
 
+            .ios-group {
+                background-color: #fff !important;
+                border: 1px solid #f3f4f6 !important;
+                margin-bottom: 20px !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04) !important;
+                overflow: hidden !important;
+            }
+
             .ios-close-button {
                 position: absolute !important;
                 top: 20px !important;
