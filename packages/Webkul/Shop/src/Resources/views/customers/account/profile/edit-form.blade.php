@@ -347,14 +347,14 @@
     @else
         {{-- Normal profile edit mode --}}
         <!-- Group 1: Contact Info -->
-        <div class="ios-group">
-            <div class="ios-row !py-4 flex items-center justify-between">
+        <div class="ios-group relative">
+            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                class="absolute top-4 right-4 z-10 w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                <span class="icon-cancel text-xl"></span>
+            </a>
+
+            <div class="px-5 pt-6 pb-2">
                 <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">Профиль</h1>
-                
-                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-                    class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
-                    <span class="icon-cancel text-xl"></span>
-                </a>
             </div>
 
             <div class="ios-row !flex-col !items-start !h-auto !py-3">

@@ -9,18 +9,18 @@
         @endSection
         @endif
 
-        <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5">
+        <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5 relative">
+            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                class="absolute top-4 right-4 z-10 w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                <span class="icon-cancel text-xl"></span>
+            </a>
+
             <div class="mb-10">
                 <!-- Tiled Header -->
-                <div class="ios-nav-group !bg-white !mb-6">
-                    <div class="flex items-center justify-between gap-3 px-5 py-4">
-                        <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
-                            @lang('shop::app.customers.account.login-activity.title')</h1>
-                        <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-                            class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
-                            <span class="icon-cancel text-xl"></span>
-                        </a>
-                    </div>
+                <div class="px-5 pt-0 pb-6">
+                    <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
+                        @lang('shop::app.customers.account.login-activity.title')
+                    </h1>
                 </div>
 
                 <!-- Active Sessions Section -->

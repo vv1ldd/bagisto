@@ -2,19 +2,20 @@
     <!-- Page Title -->
     <x-slot:title></x-slot>
 
-        <div class="flex-auto pt-2 pb-8">
-            <!-- Tiled Header -->
-            <div class="bg-white border border-gray-100 flex items-center justify-between gap-3 px-5 py-4 border-b">
+        <div class="flex-auto pb-8 relative bg-white border border-gray-100">
+            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                class="absolute top-4 right-4 z-10 w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
+                <span class="icon-cancel text-xl"></span>
+            </a>
+
+            <div class="px-5 pt-6 pb-2">
                 <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
-                    @lang('shop::app.customers.account.organizations.index.title')</h1>
-                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-                    class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:text-[#7C45F5] hover:border-gray-200">
-                    <span class="icon-cancel text-xl"></span>
-                </a>
+                    @lang('shop::app.customers.account.organizations.index.title')
+                </h1>
             </div>
 
             <!-- Header Actions -->
-            <div class="flex justify-end px-5 mb-2 mt-4">
+            <div class="flex justify-end px-5 mb-2 mt-2">
                 <a href="{{ route('shop.customers.account.organizations.create') }}"
                     class="flex items-center text-[#007AFF] font-medium transition active:opacity-50">
                     <span class="icon-add text-xl mr-1"></span>
