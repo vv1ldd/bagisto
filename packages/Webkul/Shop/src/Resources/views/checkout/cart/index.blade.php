@@ -19,16 +19,15 @@
 
                 {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.before') !!}
 
-                <!-- Breadcrumbs -->
-                @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
-                    <x-shop::breadcrumbs name="cart" />
-                @endif
+                <div class="flex justify-between items-center mb-6">
+                    @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
+                        <x-shop::breadcrumbs name="cart" />
+                    @else
+                        <div></div>
+                    @endif
 
-                {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.after') !!}
-
-                <div class="relative">
                     <button type="button" onclick="history.back()"
-                        class="absolute -top-12 right-0 flex h-10 w-10 items-center justify-center border border-zinc-200 bg-white text-zinc-600 transition-all hover:bg-zinc-50 hover:text-[#7C45F5] shadow-sm z-10"
+                        class="flex h-10 w-10 items-center justify-center border border-zinc-200 bg-white text-zinc-600 transition-all hover:bg-zinc-50 hover:text-[#7C45F5] shadow-sm transform translate-y-2"
                         aria-label="Close">
                         <span class="icon-cancel text-2xl"></span>
                     </button>
@@ -138,7 +137,7 @@
                                     </div>
 
                                     <span
-                                        class="cursor-pointer text-base text-red-600 hover:text-red-700 transition-colors max-sm:text-xs"
+                                        class="cursor-pointer text-base text-red-600 hover:text-red-700 transition-colors max-sm:text-xs pr-2"
                                         role="button"
                                         tabindex="0"
                                         @click="removeAllItems"
