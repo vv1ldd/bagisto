@@ -1,4 +1,4 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :is-cardless="true" :show-back="false">
     <div class="flex-auto ios-tile-relative ios-group max-w-[600px] mx-auto p-8 max-md:p-6">
         <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.organizations.index') }}'"
             class="ios-close-button">
@@ -115,10 +115,17 @@
                                     @lang('shop::app.customers.account.organizations.edit.bic')
                                 </x-shop::form.control-group.label>
 
-                                <x-shop::form.control-group.control type="text" name="bic" :value="old('bic') ?? $organization->bic"
-                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all"
-                                    :label="trans('shop::app.customers.account.organizations.edit.bic')"
-                                    :placeholder="trans('shop::app.customers.account.organizations.edit.bic')" />
+                                <div class="flex gap-2">
+                                    <x-shop::form.control-group.control type="text" name="bic" :value="old('bic') ?? $organization->bic" id="bic-input"
+                                        class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all flex-1"
+                                        :label="trans('shop::app.customers.account.organizations.edit.bic')"
+                                        :placeholder="trans('shop::app.customers.account.organizations.edit.bic')" />
+                                        
+                                    <button type="button" id="lookup-bic-btn"
+                                        class="px-5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold transition-all disabled:opacity-50 text-[13px] rounded-sm shrink-0">
+                                        Найти
+                                    </button>
+                                </div>
 
                                 <x-shop::form.control-group.error control-name="bic" />
                             </x-shop::form.control-group>

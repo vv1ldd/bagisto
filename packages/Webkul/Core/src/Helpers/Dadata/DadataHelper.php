@@ -12,6 +12,11 @@ class DadataHelper
     const FIND_BY_ID_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party';
 
     /**
+     * DaData API Endpoint for bank search by BIC.
+     */
+    const FIND_BANK_BY_ID_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/bank';
+
+    /**
      * Lookup organization by INN.
      *
      * @param  string  $inn
@@ -45,6 +50,49 @@ class DadataHelper
                         'inn' => $item['data']['inn'] ?? null,
                         'kpp' => $item['data']['kpp'] ?? null,
                         'address' => $item['data']['address']['value'] ?? null,
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            report($e);
+        }
+
+        return null;
+    }
+
+    /**
+     * Lookup bank by BIC.
+     *
+     * @param  string  $bic
+     * @return array|null
+     */
+    public function lookupBank(string $bic): ?array
+    {
+        $apiKey = config('services.dadata.api_key');
+
+        if (!$apiKey) {
+            return null;
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => 'Token ' . $apiKey,
+            ])->post(self::FIND_BANK_BY_ID_URL, [
+                        'query' => $bic,
+                    ]);
+
+            if ($response->successful()) {
+                $suggestions = $response->json('suggestions');
+
+                if (!empty($suggestions)) {
+                    $item = $suggestions[0];
+
+                    return [
+                        'bank_name' => $item['value'] ?? null,
+                        'correspondent_account' => $item['data']['correspondent_account'] ?? null,
+                        'bic' => $item['data']['bic'] ?? null,
                     ];
                 }
             }

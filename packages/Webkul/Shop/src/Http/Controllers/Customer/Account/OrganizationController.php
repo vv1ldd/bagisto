@@ -192,4 +192,25 @@ class OrganizationController extends Controller
 
         return response()->json($result);
     }
+
+    /**
+     * Lookup bank by BIC.
+     *
+     * @param  string  $bic
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function lookupBic(string $bic)
+    {
+        $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
+
+        $result = $dadataHelper->lookupBank($bic);
+
+        if (!$result) {
+            return response()->json([
+                'message' => 'Банк не найден. Проверьте БИК.',
+            ], 404);
+        }
+
+        return response()->json($result);
+    }
 }

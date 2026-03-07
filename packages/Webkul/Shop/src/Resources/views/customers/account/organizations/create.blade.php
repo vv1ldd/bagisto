@@ -1,4 +1,4 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :is-cardless="true" :show-back="false">
     <div class="flex-auto ios-tile-relative ios-group max-w-[600px] mx-auto p-8 max-md:p-6">
         <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.organizations.index') }}'"
             class="ios-close-button">
@@ -121,10 +121,17 @@
                                         @lang('shop::app.customers.account.organizations.create.bic')
                                     </x-shop::form.control-group.label>
 
-                                    <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')"
-                                        class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all"
-                                        :label="trans('shop::app.customers.account.organizations.create.bic')"
-                                        :placeholder="trans('shop::app.customers.account.organizations.create.bic')" />
+                                    <div class="flex gap-2">
+                                        <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
+                                            class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all flex-1"
+                                            :label="trans('shop::app.customers.account.organizations.create.bic')"
+                                            :placeholder="trans('shop::app.customers.account.organizations.create.bic')" />
+                                            
+                                        <button type="button" id="lookup-bic-btn"
+                                            class="px-5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold transition-all disabled:opacity-50 text-[13px] rounded-sm shrink-0">
+                                            Найти
+                                        </button>
+                                    </div>
 
                                     <x-shop::form.control-group.error control-name="bic" />
                                 </x-shop::form.control-group>
@@ -258,6 +265,54 @@
                     newLookupBtn.innerText = originalText;
                 }
             };
+
+            // BIC Lookup
+            const lookupBicBtn = document.getElementById('lookup-bic-btn');
+            const bicInput = document.getElementById('bic-input');
+            const bankNameInput = document.querySelector('input[name="bank_name"]');
+            const corrAccountInput = document.querySelector('input[name="correspondent_account"]');
+
+            if (lookupBicBtn && bicInput) {
+                const newLookupBicBtn = lookupBicBtn.cloneNode(true);
+                lookupBicBtn.parentNode.replaceChild(newLookupBicBtn, lookupBicBtn);
+
+                newLookupBicBtn.onclick = async function() {
+                    const bic = bicInput.value.trim();
+                    if (!bic) {
+                        alert('Введите БИК');
+                        return;
+                    }
+
+                    newLookupBicBtn.disabled = true;
+                    const originalText = newLookupBicBtn.innerText;
+                    newLookupBicBtn.innerText = '...';
+
+                    try {
+                        const url = `{{ route('shop.customers.account.organizations.lookup_bic', ':bic') }}`.replace(':bic', bic);
+                        const response = await fetch(url);
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            if (data.bank_name) bankNameInput.value = data.bank_name;
+                            if (data.correspondent_account) corrAccountInput.value = data.correspondent_account;
+                            
+                            [bankNameInput, corrAccountInput].forEach(el => {
+                                if (el) {
+                                    el.style.backgroundColor = '#f0fff4';
+                                    setTimeout(() => el.style.backgroundColor = '', 1000);
+                                }
+                            });
+                        } else {
+                            alert(data.message || 'Ошибка при поиске банка');
+                        }
+                    } catch (error) {
+                        alert('Не удалось выполнить поиск банка. Проверьте консоль.');
+                    } finally {
+                        newLookupBicBtn.disabled = false;
+                        newLookupBicBtn.innerText = originalText;
+                    }
+                };
+            }
         }, 500); // 500ms delay to ensure DOM is ready
     </script>
 </x-shop::layouts.account>
