@@ -219,6 +219,7 @@
                     </div>
                 </div>
             </div>
+        </x-shop::form>
     </div>
 
     <script>
