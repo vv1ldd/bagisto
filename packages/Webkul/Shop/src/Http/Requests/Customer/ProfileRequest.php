@@ -26,6 +26,7 @@ class ProfileRequest extends FormRequest
     {
         $customer = auth()->guard('customer')->user();
         $id = $customer->id;
+        $isCompleteRegistration = $this->has('is_complete_registration');
 
         return [
             'first_name' => ['required'],
@@ -36,13 +37,11 @@ class ProfileRequest extends FormRequest
             'birth_city' => $customer->birth_city ? 'nullable' : 'required|string',
             'email' => 'email|unique:customers,email,' . $id,
 
-            'image' => 'array',
-            'image.*' => 'mimes:bmp,jpeg,jpg,png,webp',
+            'image' => ['array', 'nullable'],
+            'image.*' => ['nullable', 'mimes:bmp,jpg,jpeg,' . ($isCompleteRegistration ? 'png' : 'png,svg,webp')],
             'phone' => ['nullable', new PhoneNumber, 'unique:customers,phone,' . $id],
             'subscribed_to_news_letter' => 'nullable',
             'is_complete_registration' => 'boolean|nullable',
-            'country_of_residence' => 'nullable|string',
-            'citizenship' => 'nullable|string',
         ];
     }
 
@@ -62,8 +61,6 @@ class ProfileRequest extends FormRequest
             'birth_city' => trans('shop::app.customers.account.profile.edit.birth-city'),
             'email' => trans('shop::app.customers.signup.email'),
             'phone' => trans('shop::app.customers.signup.phone'),
-            'country_of_residence' => 'Страна резиденции',
-            'citizenship' => 'Гражданство',
         ];
     }
 }

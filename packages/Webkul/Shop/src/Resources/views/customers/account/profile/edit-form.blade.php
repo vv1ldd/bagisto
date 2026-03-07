@@ -9,7 +9,6 @@
         .ios-group {
             background-color: #fff;
             border: 1px solid #f3f4f6;
-            border-radius: 16px;
             margin-bottom: 24px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
             overflow: hidden;
@@ -27,8 +26,6 @@
         }
 
         .ios-row:first-child {
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
         }
 
         .ios-row:last-child {
@@ -153,7 +150,6 @@
         .ios-switch-row {
             background: #fff;
             border: 1px solid #e4e4e7;
-            border-radius: 16px;
             padding: 14px 20px;
             margin-bottom: 32px;
             display: flex;
@@ -166,12 +162,12 @@
         .ios-switch input { opacity: 0; width: 0; height: 0; }
         .ios-slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #e9e9ea; transition: .4s; border-radius: 34px;
+            background-color: #e9e9ea; transition: .4s;
         }
         .ios-slider:before {
             position: absolute; content: "";
             height: 27px; width: 27px; left: 2px; bottom: 2px;
-            background-color: white; transition: .4s; border-radius: 50%;
+            background-color: white; transition: .4s;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
         }
         .ios-switch input:checked+.ios-slider { background-color: #34c759; }
@@ -199,7 +195,7 @@
 
     @if (isset($isCompleteRegistration) && $isCompleteRegistration)
         {{-- Registration flow: premium card wrapper --}}
-        <div class=" bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-6 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
+        <div class=" bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-6 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white rounded-none">
             <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10  blur-3xl"></div>
             <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10  blur-3xl"></div>
 
@@ -219,7 +215,10 @@
                                     <x-shop::form.control-group.control type="text" name="username" rules="required"
                                         :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
                                         autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                        label="Алиас" />
+                                        label="Алиас" 
+                                        v-on:focus="if ($event.target.value.startsWith('user_')) $event.target.value = ''"
+                                        v-on:input="debounceCheckUsername($event.target.value)" />
+                                    <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>
                                     <x-shop::form.control-group.error control-name="username" />
                                 </x-shop::form.control-group>
                                 <span class="ios-arrow icon-arrow-right"></span>
@@ -319,55 +318,12 @@
                         </div>
                     @endif
 
-                    @if (empty($customer->country_of_residence) || str_starts_with($customer->country_of_residence, '$2y$'))
-                        <div class="ios-row">
-                            <label class="ios-label">Страна резиденции <span class="text-red-500">*</span></label>
-                            <div class="ios-input-wrapper relative">
-                                <x-shop::form.control-group class="!mb-0">
-                                    <x-shop::form.control-group.control type="select" name="country_of_residence" rules="required"
-                                        :value="old('country_of_residence') ?? (str_starts_with($customer->country_of_residence, '$2y$') ? '' : $customer->country_of_residence)"
-                                        label="Страна резиденции">
-                                        <option value="" disabled hidden>Выберите страну</option>
-                                        @foreach (core()->countries() as $country)
-                                            <option value="{{ $country->name }}" {{ (($customer->country_of_residence ?? old('country_of_residence')) == $country->name) ? 'selected' : '' }}>
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
-                                    </x-shop::form.control-group.control>
-                                    <x-shop::form.control-group.error control-name="country_of_residence" />
-                                </x-shop::form.control-group>
-                                <span class="ios-arrow icon-arrow-right"></span>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if (empty($customer->citizenship) || str_starts_with($customer->citizenship, '$2y$'))
-                        <div class="ios-row">
-                            <label class="ios-label">Гражданство <span class="text-red-500">*</span></label>
-                            <div class="ios-input-wrapper relative">
-                                <x-shop::form.control-group class="!mb-0">
-                                    <x-shop::form.control-group.control type="select" name="citizenship" rules="required"
-                                        :value="old('citizenship') ?? (str_starts_with($customer->citizenship, '$2y$') ? '' : $customer->citizenship)"
-                                        label="Гражданство">
-                                        <option value="" disabled hidden>Выберите гражданство</option>
-                                        @foreach (core()->countries() as $country)
-                                            <option value="{{ $country->name }}" {{ (($customer->citizenship ?? old('citizenship')) == $country->name) ? 'selected' : '' }}>
-                                                {{ $country->name }}
-                                            </option>
-                                        @endforeach
-                                    </x-shop::form.control-group.control>
-                                    <x-shop::form.control-group.error control-name="citizenship" />
-                                </x-shop::form.control-group>
-                                <span class="ios-arrow icon-arrow-right"></span>
-                            </div>
-                        </div>
-                    @endif
                 </div>
 
                 <div class="flex justify-center mt-4">
                     <button type="submit"
                         :disabled="!meta.valid"
-                        class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100">
+                        class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
                         @lang('shop::app.customers.account.profile.edit.save')
                     </button>
                 </div>
@@ -386,7 +342,10 @@
                             <x-shop::form.control-group.control type="text" name="username" rules="required"
                                 :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
                                 autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                label="Алиас" />
+                                label="Алиас"
+                                v-on:focus="if ($event.target.value.startsWith('user_')) $event.target.value = ''"
+                                v-on:input="debounceCheckUsername($event.target.value)" />
+                            <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>
                             <x-shop::form.control-group.error control-name="username" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
@@ -499,49 +458,6 @@
                 </div>
             @endif
 
-            @if (empty($customer->country_of_residence) || str_starts_with($customer->country_of_residence, '$2y$'))
-                <div class="ios-row">
-                    <label class="ios-label">Страна резиденции <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper relative">
-                        <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.control type="select" name="country_of_residence" rules="required"
-                                :value="old('country_of_residence') ?? (str_starts_with($customer->country_of_residence, '$2y$') ? '' : $customer->country_of_residence)"
-                                label="Страна резиденции">
-                                <option value="" disabled hidden>Выберите страну</option>
-                                @foreach (core()->countries() as $country)
-                                    <option value="{{ $country->name }}" {{ (($customer->country_of_residence ?? old('country_of_residence')) == $country->name) ? 'selected' : '' }}>
-                                        {{ $country->name }}
-                                    </option>
-                                @endforeach
-                            </x-shop::form.control-group.control>
-                            <x-shop::form.control-group.error control-name="country_of_residence" />
-                        </x-shop::form.control-group>
-                        <span class="ios-arrow icon-arrow-right"></span>
-                    </div>
-                </div>
-            @endif
-
-            @if (empty($customer->citizenship) || str_starts_with($customer->citizenship, '$2y$'))
-                <div class="ios-row">
-                    <label class="ios-label">Гражданство <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper relative">
-                        <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.control type="select" name="citizenship" rules="required"
-                                :value="old('citizenship') ?? (str_starts_with($customer->citizenship, '$2y$') ? '' : $customer->citizenship)"
-                                label="Гражданство">
-                                <option value="" disabled hidden>Выберите гражданство</option>
-                                @foreach (core()->countries() as $country)
-                                    <option value="{{ $country->name }}" {{ (($customer->citizenship ?? old('citizenship')) == $country->name) ? 'selected' : '' }}>
-                                        {{ $country->name }}
-                                    </option>
-                                @endforeach
-                            </x-shop::form.control-group.control>
-                            <x-shop::form.control-group.error control-name="citizenship" />
-                        </x-shop::form.control-group>
-                        <span class="ios-arrow icon-arrow-right"></span>
-                    </div>
-                </div>
-            @endif
         </div>
 
         <!-- Newsletter Toggle -->
@@ -561,7 +477,7 @@
         <div class="flex justify-center mt-4">
             <button type="submit"
                 :disabled="!meta.valid"
-                class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100">
+                class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
                 @lang('shop::app.customers.account.profile.edit.save')
             </button>
         </div>

@@ -170,6 +170,8 @@ Route::prefix('customer')->group(function () {
 
                         Route::get('complete-registration-success', 'completeRegistrationSuccess')->name('shop.customers.account.profile.complete_registration_success');
 
+                        Route::get('check-username', 'checkUsername')->name('shop.customers.account.profile.check_username');
+
 
                         Route::post('edit', 'update')->name('shop.customers.account.profile.update');
 
