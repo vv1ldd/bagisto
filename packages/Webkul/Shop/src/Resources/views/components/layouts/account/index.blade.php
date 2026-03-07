@@ -19,7 +19,7 @@
                 @keyframes accountFadeIn {
                     from {
                         opacity: 0;
-                        transform: translateY(10px);
+                        transform: translateY(4px);
                     }
 
                     to {
