@@ -17,19 +17,24 @@
             <div class="flex flex-col border-t border-zinc-100">
                 @foreach ($organizations as $organization)
                     <div
-                        class="org-row flex items-start justify-between p-5 border-b border-zinc-50 last:border-0 hover:bg-zinc-50/50 transition-colors group">
-                        <div class="flex-grow">
+                        class="org-row flex items-start justify-between p-5 border-b border-zinc-50 last:border-0 hover:bg-zinc-50/50 transition-colors group relative">
+                        <!-- Clickable Area -->
+                        <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
+                            class="flex-grow pr-4 block">
                             <div class="flex items-center gap-2 mb-1.5">
-                                <p class="text-[15px] font-bold text-zinc-900" v-pre>
+                                <p class="text-[15px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors"
+                                    v-pre>
                                     {{ $organization->name }}
                                 </p>
                             </div>
 
                             <div class="space-y-0.5">
                                 <p class="text-[13px] text-zinc-500 font-medium" v-pre>
-                                    <span class="text-zinc-400">ИНН:</span> {{ $organization->inn }}
+                                    <span class="text-zinc-400">ИНН:</span> <span
+                                        class="text-zinc-700">{{ $organization->inn }}</span>
                                     @if($organization->kpp)
-                                        <span class="text-zinc-400 ml-2">КПП:</span> {{ $organization->kpp }}
+                                        <span class="text-zinc-400 ml-2">КПП:</span> <span
+                                            class="text-zinc-700">{{ $organization->kpp }}</span>
                                     @endif
                                 </p>
 
@@ -44,15 +49,15 @@
                                     {{ $organization->address }}
                                 </p>
                             </div>
-                        </div>
+                        </a>
 
                         <!-- Dropdown Actions -->
-                        <div class="shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 relative">
                             <x-shop::dropdown
                                 position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
                                 <x-slot:toggle>
                                     <button
-                                        class="p-2 hover:bg-white rounded shadow-sm border border-zinc-100 transition text-zinc-400"
+                                        class="p-2 hover:bg-white rounded shadow-sm border border-zinc-200 transition text-zinc-500 hover:text-zinc-900"
                                         aria-label="More Options">
                                         <span class="icon-more text-2xl"></span>
                                     </button>
@@ -74,7 +79,15 @@
                                             @csrf
                                         </form>
                                         <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
-                                            @click="$emitter.emit('open-confirm-modal', { agree: () => { document.getElementById('delete-org-{{ $organization->id }}').submit() } })">
+                                            onclick="
+                                                        event.preventDefault(); 
+                                                        const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                        if(innPrompt === '{{ $organization->inn }}') { 
+                                                            document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                        } else if(innPrompt !== null) {
+                                                            alert('ИНН введен неверно. Удаление отменено.');
+                                                        }
+                                                    ">
                                             <span class="icon-bin text-xl"></span>
                                             @lang('shop::app.customers.account.organizations.index.delete')
                                         </a>
