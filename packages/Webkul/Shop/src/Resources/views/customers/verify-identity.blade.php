@@ -3,14 +3,13 @@
         Подтверждение личности
         </x-slot>
 
-        <div class="mb-8 text-center text-left">
-            <h1 class="text-2xl font-bold text-zinc-900 mb-2">Подтвердите вашу личность</h1>
-            <p class="text-sm text-zinc-500">Для завершения входа, пожалуйста, введите ваши персональные
-                данные, указанные при регистрации.</p>
+        <div class="mb-4 text-center">
+            <h1 class="text-2xl font-bold text-zinc-900 mb-1">Подтвердите вашу личность</h1>
+            <p class="text-sm text-zinc-500">Для завершения входа введите ваши данные</p>
         </div>
 
         @error('verification')
-            <div class="mb-6  bg-red-50 p-4 border border-red-100 text-sm text-red-600 flex items-center gap-3">
+            <div class="mb-4 bg-red-50 p-3 border border-red-100 text-sm text-red-600 flex items-center gap-3 rounded-xl">
                 <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -28,7 +27,7 @@
                         background-color: #fff;
                         border: 1px solid #e4e4e7;
                         border-radius: 16px;
-                        margin-bottom: 24px;
+                        margin-bottom: 12px;
                         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
                     }
 
@@ -36,7 +35,7 @@
                         display: flex;
                         align-items: center;
                         justify-content: space-between;
-                        padding: 16px 20px;
+                        padding: 12px 20px;
                         border-bottom: 1px solid #f4f4f5;
                         position: relative;
                     }
@@ -77,6 +76,8 @@
                         width: auto;
                         margin-bottom: 0 !important;
                         background: transparent !important;
+                        display: flex;
+                        justify-content: flex-end;
                     }
 
                     .ios-input-wrapper input,
@@ -95,15 +96,6 @@
                         font-size: 15px !important;
                         appearance: none;
                         outline: none !important;
-                    }
-
-                    .ios-input-wrapper p.text-red-500 {
-                        background: transparent !important;
-                        display: block;
-                        text-align: right;
-                        font-size: 11px;
-                        margin-top: 2px;
-                        white-space: normal;
                     }
 
                     .ios-input-wrapper input:focus::placeholder {
@@ -149,7 +141,7 @@
 
                     @media (max-width: 768px) {
                         .ios-row {
-                            padding: 14px 16px;
+                            padding: 10px 16px;
                         }
 
                         .ios-label {
@@ -179,7 +171,6 @@
                             <x-shop::form.control-group.control type="text" name="first_name" rules="required"
                                 :value="old('first_name')" placeholder="Имя"
                                 :label="trans('shop::app.customers.account.profile.index.first-name')" />
-                            <x-shop::form.control-group.error control-name="first_name" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
@@ -194,7 +185,6 @@
                             <x-shop::form.control-group.control type="text" name="last_name" rules="required"
                                 :value="old('last_name')" placeholder="Фамилия"
                                 :label="trans('shop::app.customers.account.profile.index.last-name')" />
-                            <x-shop::form.control-group.error control-name="last_name" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
@@ -220,7 +210,6 @@
                                     @lang('shop::app.customers.account.profile.edit.other')
                                 </option>
                             </x-shop::form.control-group.control>
-                            <x-shop::form.control-group.error control-name="gender" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
@@ -236,7 +225,6 @@
                                 :value="old('date_of_birth')" id="dob_input" allow-input="false"
                                 placeholder="Выберите дату"
                                 :label="trans('shop::app.customers.account.profile.index.dob')" />
-                            <x-shop::form.control-group.error control-name="date_of_birth" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
                     </div>
@@ -249,14 +237,22 @@
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
                                 :value="old('birth_city')" placeholder="Например: Москва" label="Город рождения" />
-                            <x-shop::form.control-group.error control-name="birth_city" />
                         </x-shop::form.control-group>
                         <span class="ios-arrow icon-arrow-right"></span>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-8">
+            <!-- Centralized Validation Errors -->
+            <div v-if="Object.keys(errors).length" class="mb-4">
+                <div class="text-[12px] text-red-500 font-medium bg-red-50/50 p-2 rounded-lg border border-red-100/50">
+                    <p v-for="error in errors" class="mb-0.5 last:mb-0">
+                        • @{{ error }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4">
                 <button
                     class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
                     type="submit">
