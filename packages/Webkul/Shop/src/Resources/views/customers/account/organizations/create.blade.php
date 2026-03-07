@@ -104,17 +104,17 @@
                     </div>
 
                     <!-- Bank Search Autocomplete -->
-                    <x-shop::form.control-group class="!mb-4" id="step-2-input-container" style="position: relative;">
+                    <x-shop::form.control-group class="!mb-4" id="step-2-input-container">
                         <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
                             Название банка или БИК
                         </x-shop::form.control-group.label>
 
-                        <div class="relative w-full">
+                        <div class="relative w-full overflow-visible">
                             <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
-                                class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full"
+                                class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full relative z-10"
                                 placeholder="Начните вводить название..." autocomplete="off" />
                                 
-                            <div id="bank-suggestions" class="absolute z-[100] w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-xl hidden max-h-[250px] overflow-y-auto">
+                            <div id="bank-suggestions" class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden max-h-[250px] overflow-y-auto">
                                 <!-- Suggestions will be injected here via JS -->
                             </div>
                         </div>
