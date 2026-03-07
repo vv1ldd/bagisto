@@ -118,6 +118,7 @@ class CustomerController extends Controller
 
         return response()->json([
             'available' => !$exists,
+            'message' => $exists ? 'Этот псевдоним уже занят' : ''
         ]);
     }
 

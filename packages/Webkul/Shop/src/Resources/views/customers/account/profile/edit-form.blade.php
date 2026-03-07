@@ -77,11 +77,20 @@
             font-size: 15px !important;
             appearance: none;
             outline: none !important;
+            border-radius: 0 !important;
         }
         .ios-input-wrapper input:focus::placeholder,
         .ios-input-wrapper input:focus::-webkit-input-placeholder { color: transparent !important; }
 
-        .ios-input-wrapper p.text-red-500 { display: none !important; }
+        ::selection {
+            background-color: rgba(124, 69, 245, 0.2) !important;
+            color: inherit !important;
+        }
+
+        ::-moz-selection {
+            background-color: rgba(124, 69, 245, 0.2) !important;
+            color: inherit !important;
+        }
 
 
         input::-webkit-calendar-picker-indicator,
@@ -211,13 +220,13 @@
                     {{-- Fields for registration mode --}}
                     <div class="ios-row !flex-col !items-start !h-auto !py-3">
                         <div class="flex items-center justify-between w-full">
-                            <label class="ios-label">Алиас <span class="text-red-500">*</span></label>
+                            <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                             <div class="ios-input-wrapper">
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.control type="text" name="username" rules="required"
                                         :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
                                         autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                        label="Алиас" 
+                                        label="Псевдоним" 
                                         v-on:focus="clearDefaultUsername($event)"
                                         v-on:input="debounceCheckUsername($event.target.value)" />
                                     <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>
@@ -338,13 +347,13 @@
         <div class="ios-group">
             <div class="ios-row !flex-col !items-start !h-auto !py-3">
                 <div class="flex items-center justify-between w-full">
-                    <label class="ios-label">Алиас <span class="text-red-500">*</span></label>
+                    <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                     <div class="ios-input-wrapper">
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="username" rules="required"
                                 :value="old('username') ?? $customer->username" placeholder="Например: @nickname"
                                 autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                label="Алиас"
+                                label="Псевдоним"
                                 v-on:focus="clearDefaultUsername($event)"
                                 v-on:input="debounceCheckUsername($event.target.value)" />
                             <p class="text-red-500 text-xs mt-1" v-if="usernameError">@{{ usernameError }}</p>

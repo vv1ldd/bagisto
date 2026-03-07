@@ -90,6 +90,7 @@
                         font-size: 15px !important;
                         appearance: none;
                         outline: none !important;
+                        border-radius: 0 !important;
                     }
 
                     .ios-input-wrapper input:focus::placeholder {

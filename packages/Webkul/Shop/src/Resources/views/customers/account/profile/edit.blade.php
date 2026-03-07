@@ -68,7 +68,7 @@
                     })
                         .then(response => {
                             if (!response.data.available) {
-                                this.usernameError = 'Этот алиас уже занят';
+                                this.usernameError = response.data.message || 'Этот псевдоним уже занят';
                             } else {
                                 this.usernameError = '';
                             }
