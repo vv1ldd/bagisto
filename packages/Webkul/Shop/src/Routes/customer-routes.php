@@ -265,6 +265,10 @@ Route::prefix('customer')->group(function () {
 
                     Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.organizations.delete');
 
+                    Route::post('{id}/settlement-accounts', 'storeSettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.store');
+
+                    Route::delete('{organizationId}/settlement-accounts/{accountId}', 'destroySettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.destroy');
+
                     Route::get('lookup-inn/{inn}', 'lookupInn')->name('shop.customers.account.organizations.lookup_inn');
 
                     Route::get('lookup-bic/{bic}', 'lookupBic')->name('shop.customers.account.organizations.lookup_bic');

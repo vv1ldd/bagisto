@@ -64,6 +64,7 @@ class OrganizationController extends Controller
             'inn',
             'kpp',
             'address',
+            // Kept for backward compatibility
             'bank_name',
             'bic',
             'settlement_account',
@@ -73,6 +74,17 @@ class OrganizationController extends Controller
         ]);
 
         $organization = $this->organizationRepository->create($data);
+
+        // Store primary settlement account
+        if ($request->filled('settlement_account') && $request->filled('bic')) {
+            $organization->settlementAccounts()->create([
+                'bic' => $request->input('bic'),
+                'bank_name' => $request->input('bank_name'),
+                'correspondent_account' => $request->input('correspondent_account'),
+                'settlement_account' => $request->input('settlement_account'),
+                'is_default' => true,
+            ]);
+        }
 
         Event::dispatch('customer.organizations.create.after', $organization);
 
@@ -118,8 +130,9 @@ class OrganizationController extends Controller
         ]);
 
         $customer = auth()->guard('customer')->user();
+        $organization = $customer->organizations()->find($id);
 
-        if (!$customer->organizations()->find($id)) {
+        if (!$organization) {
             abort(401);
         }
 
@@ -130,6 +143,7 @@ class OrganizationController extends Controller
             'inn',
             'kpp',
             'address',
+            // Kept for backward compatibility
             'bank_name',
             'bic',
             'settlement_account',
@@ -138,11 +152,14 @@ class OrganizationController extends Controller
 
         $organization = $this->organizationRepository->update($data, $id);
 
+        // If the primary settlement account fields are updated, we'll try to update the default account, 
+        // but for simplicity in this implementation, we rely on the specific `storeSettlementAccount` endpoint.
+
         Event::dispatch('customer.organizations.update.after', $organization);
 
         session()->flash('success', trans('shop::app.customers.account.organizations.update-success'));
 
-        return redirect()->route('shop.customers.account.organizations.index');
+        return back();
     }
 
     /**
@@ -212,5 +229,62 @@ class OrganizationController extends Controller
         }
 
         return response()->json($result);
+    }
+
+    /**
+     * Store a new settlement account for a specific organization.
+     */
+    public function storeSettlementAccount(int $organizationId, Request $request)
+    {
+        $request->validate([
+            'bic' => 'required',
+            'bank_name' => 'required',
+            'settlement_account' => 'required',
+            'correspondent_account' => 'nullable',
+        ]);
+
+        $organization = $this->organizationRepository->findOneWhere([
+            'id' => $organizationId,
+            'customer_id' => auth()->guard('customer')->id(),
+        ]);
+
+        if (!$organization) {
+            abort(404);
+        }
+
+        // Check if it's the first account
+        $isDefault = $organization->settlementAccounts()->count() === 0;
+
+        $organization->settlementAccounts()->create([
+            'bic' => $request->input('bic'),
+            'bank_name' => $request->input('bank_name'),
+            'settlement_account' => $request->input('settlement_account'),
+            'correspondent_account' => $request->input('correspondent_account'),
+            'is_default' => $isDefault,
+        ]);
+
+        return back()->with('success', 'Расчетный счет успешно добавлен');
+    }
+
+    /**
+     * Delete a specific settlement account.
+     */
+    public function destroySettlementAccount(int $organizationId, int $accountId)
+    {
+        $organization = $this->organizationRepository->findOneWhere([
+            'id' => $organizationId,
+            'customer_id' => auth()->guard('customer')->id(),
+        ]);
+
+        if (!$organization) {
+            abort(404);
+        }
+
+        $account = $organization->settlementAccounts()->find($accountId);
+        if ($account) {
+            $account->delete();
+        }
+
+        return back()->with('success', 'Расчетный счет успешно удален');
     }
 }

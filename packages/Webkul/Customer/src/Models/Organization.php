@@ -4,6 +4,7 @@ namespace Webkul\Customer\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Customer\Contracts\Organization as OrganizationContract;
+use Webkul\Customer\Models\OrganizationSettlementAccountProxy;
 
 class Organization extends Model implements OrganizationContract
 {
@@ -37,5 +38,13 @@ class Organization extends Model implements OrganizationContract
     public function customer()
     {
         return $this->belongsTo(CustomerProxy::modelClass());
+    }
+
+    /**
+     * Get the settlement accounts for the organization.
+     */
+    public function settlementAccounts()
+    {
+        return $this->hasMany(OrganizationSettlementAccountProxy::modelClass());
     }
 }
