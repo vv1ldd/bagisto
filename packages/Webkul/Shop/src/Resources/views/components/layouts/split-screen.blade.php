@@ -7,11 +7,11 @@
         {{ $title }}
     </x-slot>
    
-    <div class="flex min-h-screen w-full flex-wrap overflow-hidden bg-white">
+    <div class="flex min-h-[100dvh] w-full flex-wrap overflow-hidden bg-white">
         <!-- Left Side: Content -->
-        <div class="flex w-full flex-col min-h-screen px-8 pt-8 pb-4 md:px-10 md:pt-10 md:pb-6 lg:px-20 lg:pt-12 lg:pb-10 md:w-1/2 overflow-y-auto">
+        <div class="flex w-full flex-col min-h-[100dvh] px-6 pt-4 pb-4 md:px-10 md:pt-8 md:pb-6 lg:px-20 lg:pt-10 lg:pb-10 md:w-1/2 overflow-y-auto">
             <!-- Header/Logo -->
-            <div class="mb-4 flex items-center justify-between">
+            <div class="mb-2 flex items-center justify-between">
                 <a href="{{ route('shop.home.index') }}"
                     class="flex items-center gap-2"
                     aria-label="@lang('shop::app.customers.login-form.bagisto')">
@@ -22,16 +22,16 @@
                     {{ $header }}
                 @endif
             </div>
-  
+
             <!-- Content Area -->
-            <div class="flex flex-grow flex-col justify-center py-4">
+            <div class="flex flex-grow flex-col justify-center py-2">
                 <div class="mx-auto w-full max-w-[440px]">
                     {{ $slot }}
                 </div>
             </div>
-  
+
             <!-- Footer -->
-            <div class="mt-auto pt-10 text-center text-xs text-zinc-400">
+            <div class="mt-auto pt-6 text-center text-xs text-zinc-400">
                 @lang('shop::app.customers.login-form.footer', ['current_year' => date('Y')])
             </div>
         </div>

@@ -42,7 +42,7 @@
                 </a>
             </p>
         @else
-            <x-shop::form :action="route('shop.customers.register.store')">
+            <x-shop::form :action="route('shop.customers.register.store')" v-slot="{ meta }">
                 {!! view_render_event('bagisto.shop.customers.signup_form_controls.before') !!}
 
                 <!-- Email -->
@@ -57,12 +57,13 @@
                         name="email" rules="required|email" :value="old('email')"
                         :label="trans('shop::app.customers.signup-form.email')" placeholder="email@example.com" />
 
-                    <x-shop::form.control-group.error control-name="email" />
+                    <div v-if="meta.touched && !meta.valid">
+                        <x-shop::form.control-group.error control-name="email" />
+                    </div>
                 </x-shop::form.control-group>
 
                 <!-- Options: Newsletter & GDPR -->
-                <div class="flex flex-col gap-3 mb-8">
-
+                <div class="flex flex-col gap-3 mb-4">
                     @if(core()->getConfigData('general.gdpr.settings.enabled') && core()->getConfigData('general.gdpr.agreement.enabled'))
                         <div class="flex select-none items-center gap-2">
                             <x-shop::form.control-group.control type="checkbox" name="agreement" id="agreement" value="1"
@@ -78,26 +79,28 @@
                                 @endif
                             </label>
                         </div>
-                        <x-shop::form.control-group.error control-name="agreement" />
+                        <div v-if="meta.touched && !meta.valid">
+                            <x-shop::form.control-group.error control-name="agreement" />
+                        </div>
                     @endif
                 </div>
 
                 <!-- Captcha -->
                 @if (core()->getConfigData('customer.captcha.credentials.status'))
-                    <div class="mb-8">
+                    <div class="mb-4">
                         {!! \Webkul\Customer\Facades\Captcha::render() !!}
                         <x-shop::form.control-group.error control-name="g-recaptcha-response" />
                     </div>
                 @endif
 
-                <div class="mt-8 text-center text-[13px] text-zinc-500 leading-relaxed">
+                <div class="mt-4 text-center text-[12px] text-zinc-500 leading-relaxed">
                     @lang('shop::app.customers.signup-form.agreement')
                 </div>
 
-                <div class="mt-6">
+                <div class="mt-4">
                     <button
-                        class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
-                        type="submit">
+                        class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
+                        type="submit" :disabled="!meta.valid">
                         @lang('shop::app.customers.signup-form.button-title')
                     </button>
 

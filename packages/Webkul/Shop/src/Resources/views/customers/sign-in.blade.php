@@ -11,10 +11,10 @@
         {!! view_render_event('bagisto.shop.customers.login.before') !!}
 
         <!-- Initial Login Options (Passkey vs Email) -->
-        <div id="login-options-container" class="flex flex-col gap-4 transition-all duration-300">
+        <div id="login-options-container" class="flex flex-col gap-2 transition-all duration-300">
             <!-- Passkey Login Button (Primary focus) -->
             <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
-                class="flex w-full items-center justify-center gap-3 !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
+                class="flex w-full items-center justify-center gap-3 !rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center font-medium text-white transition hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -23,8 +23,10 @@
                 </svg>
                 Войти с помощью Passkey
             </button>
-
-            <div class="relative my-4 text-center">
+            @php
+                $showEmailForm = $errors->any() || session('email');
+            @endphp
+            <div class="relative my-2 text-center {{ $showEmailForm ? 'hidden' : '' }}">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                     <div class="w-full border-t border-zinc-200"></div>
                 </div>
@@ -35,10 +37,10 @@
             </div>
 
             <!-- Show Email Login Form Button -->
-            <div id="email-login-form-button-container">
+            <div id="email-login-form-button-container" class="{{ $showEmailForm ? 'hidden' : '' }}">
                 <button type="button" id="show-email-form-button"
-                    onclick="document.getElementById('email-login-form-button-container').classList.add('hidden'); document.getElementById('email-login-form-container').classList.remove('hidden');"
-                    class="flex w-full items-center justify-center gap-3 !rounded-[20px] border border-zinc-200 bg-white px-8 py-4 text-center font-medium text-zinc-700 transition hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2">
+                    onclick="document.getElementById('email-login-form-button-container').classList.add('hidden'); document.getElementById('email-login-form-container').classList.remove('hidden'); document.getElementById('passkey-login-button').classList.add('!hidden'); document.querySelector('.login-options-container-or').classList.add('hidden');"
+                    class="flex w-full items-center justify-center gap-3 !rounded-[20px] border border-zinc-200 bg-white px-8 py-3 text-center font-medium text-zinc-700 transition hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
@@ -49,9 +51,20 @@
                 </button>
             </div>
 
+            <!-- Separator for email view (hidden by default) -->
+            <div class="login-options-container-or relative mb-2 text-center hidden">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-zinc-200"></div>
+                </div>
+                <div class="relative">
+                    <span
+                        class="bg-white px-4 text-xs font-bold uppercase tracking-widest text-zinc-400">@lang('shop::app.customers.login-form.or')</span>
+                </div>
+            </div>
+
             {{-- Magic Link Email Form (Hidden by default, auto-shown on errors) --}}
-            <div id="email-login-form-container" class="{{ $errors->any() ? 'flex' : 'hidden' }} flex-col gap-4">
-                <x-shop::form :action="route('shop.customer.session.email')">
+            <div id="email-login-form-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col gap-4">
+                <x-shop::form :action="route('shop.customer.session.email')" v-slot="{ meta }">
                     <x-shop::form.control-group class="mb-2">
                         <x-shop::form.control-group.label
                             class="required !text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
@@ -63,7 +76,10 @@
                             name="email" rules="required|email" :value="old('email')"
                             :label="trans('shop::app.customers.login-form.email')" placeholder="email@example.com" />
 
-                        <x-shop::form.control-group.error control-name="email" />
+                        {{-- Hide specific email required error if button is disabled --}}
+                        <div v-if="meta.touched && !meta.valid">
+                            <x-shop::form.control-group.error control-name="email" />
+                        </div>
 
                         {{-- Register suggestion shown when email not found --}}
                         @if($errors->has('email') && str_contains($errors->first('email'), 'не найден'))
@@ -74,8 +90,8 @@
                     </x-shop::form.control-group>
 
                     <button
-                        class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20"
-                        type="submit">
+                        class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
+                        type="submit" :disabled="!meta.valid">
                         Отправить ссылку для входа
                     </button>
                 </x-shop::form>
