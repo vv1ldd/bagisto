@@ -85,6 +85,8 @@
             }
             
             /* Restore rounded corners for input fields */
+            input, textarea, select, .form-control {
+                border-radius: 8px !important;
             }
 
             .ios-tile-relative {
