@@ -312,28 +312,65 @@
 
             });
             
-            // Organization Lookup Function
-            window.triggerOrgLookup = async (query) => {
-                console.log('triggerOrgLookup called with query:', query);
+            // --- HELPER: Select Organization and Show Card ---
+            window.selectOrganization = function(org) {
+                console.log('Selecting organization:', org.name);
+                
+                const innInput = document.getElementById('inn-input');
+                const nameInput = document.getElementById('name-input');
+                const kppInput = document.getElementById('kpp-input');
+                const addressInput = document.getElementById('address-input');
                 const suggestionsContainer = document.getElementById('org-suggestions');
-                if (!query || query.length < 3) {
-                    console.warn('Query too short:', query);
-                    return;
+                const step1Details = document.getElementById('step-1-details');
+                const kppContainer = document.getElementById('kpp-container');
+                
+                // Populate fields
+                if (innInput) innInput.value = org.inn || '';
+                if (nameInput) nameInput.value = org.name || '';
+                if (kppInput) kppInput.value = org.kpp || '';
+                if (addressInput) addressInput.value = org.address || '';
+                
+                // Show/hide KPP container
+                if (kppContainer) {
+                    if (!org.kpp) kppContainer.classList.add('hidden');
+                    else kppContainer.classList.remove('hidden');
                 }
+                
+                // Hide suggestions
+                if (suggestionsContainer) suggestionsContainer.classList.add('hidden');
+                
+                // Show confirmation card
+                if (step1Details) {
+                    step1Details.classList.remove('hidden');
+                    step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Focus the confirm button
+                    const confirmBtn = document.getElementById('confirm-step-1-btn');
+                    if (confirmBtn) setTimeout(() => confirmBtn.focus(), 200);
+                }
+            };
+
+            // Organization Lookup Function
+            window.triggerOrgLookup = async (query, forceSelect = false) => {
+                const suggestionsContainer = document.getElementById('org-suggestions');
+                if (!query || query.length < 3) return;
 
                 try {
-                    // Using current location origin to ensure protocol match
                     const relativePath = "{{ route('shop.customers.account.organizations.suggest_organization', [], false) }}";
                     const url = `${window.location.origin}${relativePath}?query=${encodeURIComponent(query)}`;
                     
-                    console.log('Fetching URL:', url);
                     const response = await fetch(url);
-                    console.log('Response status:', response.status);
+                    if (!response.ok) throw new Error('Network response was not ok');
                     
                     const organizations = await response.json();
-                    console.log('Organizations found:', organizations ? organizations.length : 0);
                     
-                    if (response.ok && organizations && organizations.length > 0) {
+                    if (organizations && organizations.length > 0) {
+                        // AUTO-SELECT: If forceSelect is true and we have exactly one result
+                        if (forceSelect && organizations.length === 1) {
+                            window.selectOrganization(organizations[0]);
+                            return;
+                        }
+
                         suggestionsContainer.innerHTML = organizations.map(org => `
                             <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
                                 data-name="${org.name || ''}"
@@ -350,78 +387,67 @@
                         `).join('');
                         suggestionsContainer.classList.remove('hidden');
                     } else {
-                        console.warn('No organizations found or response not OK');
                         suggestionsContainer.classList.add('hidden');
                     }
                 } catch (err) {
-                    console.error('Ошибка при поиске организации (Fetch Error):', err);
+                    console.error('Ошибка при поиске организации:', err);
                 }
             };
 
-            // Search Button Click
+            // Event delegation for search interactions
             document.addEventListener('click', function(e) {
+                // Search Button Click
                 const searchBtn = e.target.closest('#lookup-org-btn');
                 if (searchBtn) {
-                    console.log('Search button clicked');
                     const innInput = document.getElementById('inn-input');
-                    if (innInput) {
-                        window.triggerOrgLookup(innInput.value.trim());
-                    } else {
-                        console.error('inn-input not found');
-                    }
+                    if (innInput) window.triggerOrgLookup(innInput.value.trim(), true);
                 }
-            });
 
-            // Event delegation for input fields
-            let bankDebounceTimer;
-            
-            document.addEventListener('input', function(e) {
-                // Organization Search Activation
-                if (e.target.id === 'inn-input') {
-                    const lookupBtn = document.getElementById('lookup-org-btn');
-                    if (lookupBtn) {
-                        lookupBtn.disabled = e.target.value.trim().length < 3;
-                    }
-                    
-                    // Guard: Hide confirmation if user edits the input after selecting
-                    const step1Details = document.getElementById('step-1-details');
-                    if (step1Details && !step1Details.classList.contains('hidden')) {
-                        step1Details.classList.add('hidden');
-                    }
-                    
-                    const step1Badge = document.getElementById('step-1-badge');
-                    if (step1Badge) step1Badge.classList.add('hidden');
-                    
-                    const step2 = document.getElementById('step-2');
-                    if (step2) step2.classList.add('hidden');
+                // Item Selection from Suggestions
+                const orgItem = e.target.closest('div[data-inn]');
+                if (orgItem && document.getElementById('org-suggestions').contains(orgItem)) {
+                    window.selectOrganization({
+                        name: orgItem.dataset.name,
+                        inn: orgItem.dataset.inn,
+                        kpp: orgItem.dataset.kpp,
+                        address: orgItem.dataset.address
+                    });
                 }
             });
 
             document.addEventListener('keydown', function(e) {
+                // Enter Key in INN Input
                 if (e.target.id === 'inn-input' && e.key === 'Enter') {
                     e.preventDefault();
-                    window.triggerOrgLookup(e.target.value.trim());
+                    window.triggerOrgLookup(e.target.value.trim(), true);
                 }
             });
 
             document.addEventListener('input', function(e) {
-                // Organization Live Search (Keep it but it can be redundant now)
+                // Organization Search Activation/Live Search
                 if (e.target.id === 'inn-input') {
                     const innInput = e.target;
-                    const suggestionsContainer = document.getElementById('org-suggestions');
+                    const query = innInput.value.trim();
+                    const lookupBtn = document.getElementById('lookup-org-btn');
+                    const step1Details = document.getElementById('step-1-details');
+                    
+                    if (lookupBtn) lookupBtn.disabled = query.length < 3;
+                    
+                    // Hide details on edit
+                    if (step1Details && !step1Details.classList.contains('hidden')) {
+                        step1Details.classList.add('hidden');
+                    }
                     
                     if (typeof window.orgDebounceTimer !== 'undefined') clearTimeout(window.orgDebounceTimer);
-                    const query = innInput.value.trim();
                     
                     if (query.length < 3) {
-                        suggestionsContainer.classList.add('hidden');
-                        suggestionsContainer.innerHTML = '';
+                        document.getElementById('org-suggestions').classList.add('hidden');
                         return;
                     }
                     
                     window.orgDebounceTimer = setTimeout(() => {
-                        window.triggerOrgLookup(query);
-                    }, 600); // Slightly longer debounce for live search
+                        window.triggerOrgLookup(query, false); // Live search doesn't force select
+                    }, 500);
                 }
 
                 // Bank Autocomplete Logic
