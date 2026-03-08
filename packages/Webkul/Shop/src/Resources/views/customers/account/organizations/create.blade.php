@@ -114,7 +114,7 @@
                                 class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full relative z-10"
                                 placeholder="Начните вводить название..." autocomplete="off" />
                                 
-                            <div id="bank-suggestions" class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden max-h-[250px] overflow-y-auto">
+                            <div id="bank-suggestions" class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden !max-h-[320px] !overflow-y-auto">
                                 <!-- Suggestions will be injected here via JS -->
                             </div>
                         </div>
