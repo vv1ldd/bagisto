@@ -35,8 +35,7 @@
                     <div id="step-1-summary" class="hidden bg-white border border-zinc-200 rounded-xl p-5 mb-6 shadow-sm">
                         <div class="flex items-start justify-between">
                             <div class="space-y-1">
-                                <div id="summary-org-alias" class="text-[18px] font-bold text-zinc-900 leading-tight"></div>
-                                <div id="summary-org-name" class="text-[13px] text-zinc-500 font-medium italic"></div>
+                                <div id="summary-org-name" class="text-[18px] font-bold text-zinc-900 leading-tight"></div>
                                 <div class="flex items-center gap-3 mt-3 pt-3 border-t border-zinc-100">
                                     <div class="text-[12px] text-zinc-400">
                                         <span class="font-bold uppercase tracking-wider mr-1">ИНН:</span>
@@ -103,19 +102,7 @@
                                     <input type="text" name="kpp" id="kpp-input"  
                                         class="w-full bg-white border border-zinc-200 rounded p-2 text-[15px] font-mono text-zinc-700 focus:border-[#7C45F5] focus:ring-0 transition-all" />
                                 </div>
-                            </div>
-
-                            <div class="mt-2 bg-white p-4 border border-zinc-100 rounded-lg shadow-sm">
-                                <label class="block text-[11px] font-bold text-[#7C45F5] uppercase tracking-wider mb-1.5 flex items-center gap-2">
-                                    <span class="icon-favorites text-sm"></span>
-                                    Назовите эту организацию (для себя)
-                                </label>
-                                <input type="text" name="alias" id="alias-input" placeholder="Например: Моё ИП, Основная ООО..."
-                                    class="w-full bg-transparent border-0 border-b border-zinc-200 focus:border-[#7C45F5] p-0 pb-2 text-[15px] text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300" />
-                                <p class="text-[10px] text-zinc-400 mt-2 italic">Это название будет использоваться во всех списках и при выборе счета.</p>
-                            </div>
-
-                            <div>
+                        </div>
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                                     @lang('shop::app.customers.account.organizations.create.address')
                                 </label>
@@ -317,11 +304,9 @@
                     const name = document.getElementById('name-input').value;
                     const inn = document.getElementById('inn-input').value;
                     const kpp = document.getElementById('kpp-input').value;
-                    const alias = document.getElementById('alias-input').value.trim();
                     
                     // Fill summary
-                    document.getElementById('summary-org-alias').innerText = alias || name;
-                    document.getElementById('summary-org-name').innerText = alias ? name : '';
+                    document.getElementById('summary-org-name').innerText = name;
                     document.getElementById('summary-org-inn').innerText = inn;
                     
                     const summaryKppContainer = document.getElementById('summary-kpp-container');

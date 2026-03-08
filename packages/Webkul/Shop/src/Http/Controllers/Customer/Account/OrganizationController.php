@@ -53,7 +53,6 @@ class OrganizationController extends Controller
             'bic' => 'nullable',
             'settlement_account' => 'nullable',
             'correspondent_account' => 'nullable',
-            'alias' => 'nullable|string|max:255',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -62,7 +61,6 @@ class OrganizationController extends Controller
 
         $data = array_merge($request->only([
             'name',
-            'alias',
             'inn',
             'kpp',
             'address',
@@ -135,7 +133,6 @@ class OrganizationController extends Controller
             'bic' => 'nullable',
             'settlement_account' => 'nullable',
             'correspondent_account' => 'nullable',
-            'alias' => 'nullable|string|max:255',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -149,7 +146,6 @@ class OrganizationController extends Controller
 
         $data = $request->only([
             'name',
-            'alias',
             'inn',
             'kpp',
             'address',

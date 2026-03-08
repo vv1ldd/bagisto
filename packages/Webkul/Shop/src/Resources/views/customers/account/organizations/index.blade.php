@@ -21,17 +21,6 @@
                         <!-- Clickable Area -->
                         <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
                             class="flex-grow pr-4 block">
-                            <div class="flex flex-col gap-1 mb-1.5" v-pre>
-                                @if($organization->alias)
-                                    <p class="text-[16px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors leading-tight">
-                                        {{ $organization->alias }}
-                                    </p>
-                                    <p class="text-[13px] font-medium text-zinc-500">
-                                        {{ $organization->name }}
-                                    </p>
-                                @else
-                                    <p class="text-[15px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors leading-tight">
-                                        {{ $organization->name }}
                                     </p>
                                 @endif
                             </div>
