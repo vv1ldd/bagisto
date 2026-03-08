@@ -21,6 +21,14 @@ return [
                 'validation' => 'required',
                 'channel_based' => true,
             ],
+            [
+                'name' => 'ollama_base_url',
+                'title' => 'Ollama Base URL',
+                'type' => 'text',
+                'info' => 'Internal Docker URL for Ollama, e.g., http://ollama-api:11434',
+                'validation' => 'required',
+                'channel_based' => true,
+            ],
         ],
     ],
 ];
