@@ -22,52 +22,7 @@
             </p>
         </div>
 
-        <style>
-            /* Nuclear Rectangular Enforcement */
-            #wizard-root, 
-            #wizard-root *, 
-            #wizard-root *::before, 
-            #wizard-root *::after {
-                border-radius: 0 !important;
-                -webkit-border-radius: 0 !important;
-                -moz-border-radius: 0 !important;
-                clip-path: none !important;
-            }
-            
-            #wizard-root input, 
-            #wizard-root input:focus, 
-            #wizard-root input:active,
-            #wizard-root input:-webkit-autofill,
-            #wizard-root input:-webkit-autofill:hover, 
-            #wizard-root input:-webkit-autofill:focus {
-                border-radius: 0 !important;
-                -webkit-border-radius: 0 !important;
-                outline: none !important;
-                box-shadow: none !important;
-                -webkit-box-shadow: 0 0 0px 1000px white inset !important; /* Forces autofill background to stay white and square */
-            }
-
-            /* Disable framework-specific focus rings */
-            .v-field, .v-field__overlay, .v-field__loader, .v-field__outline {
-                border-radius: 0 !important;
-            }
-
-            #search-wrapper {
-                border-radius: 0 !important;
-                overflow: hidden;
-                border: 1px solid #e4e4e7;
-            }
-            
-            /* Sharp Focus Ring */
-            #wizard-root input:focus {
-                --tw-ring-offset-shadow: 0 0 #0000 !important;
-                --tw-ring-shadow: 0 0 #0000 !important;
-                border: 1px solid #7C45F5 !important;
-                outline: none !important;
-            }
-        </style>
-
-        <x-shop::form :action="route('shop.customers.account.organizations.store')" id="wizard-root">
+        <x-shop::form :action="route('shop.customers.account.organizations.store')">
             <div class="space-y-6" id="wizard-container">
                 <!-- ================== STEP 1: ORGANIZATION DETAILS ================== -->
                 <div id="step-1" class="transition-all duration-300">

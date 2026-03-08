@@ -80,13 +80,15 @@
 
         <style>
             /* Force sharp corners globally (Meanly brutalist style) */
-            * {
+            *, *::before, *::after {
                 border-radius: 0 !important;
+                -webkit-border-radius: 0 !important;
+                -moz-border-radius: 0 !important;
             }
             
-            /* Restore rounded corners for input fields */
-            input, textarea, select, .form-control {
-                border-radius: 8px !important;
+            /* Target all input types and states */
+            input, textarea, select, button, .v-field, .v-field__overlay, .v-field__outline, .form-control {
+                border-radius: 0 !important;
             }
 
             .ios-tile-relative {

@@ -16,8 +16,25 @@
     --brand-gradient: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
 }
 
-* {
+*,
+*::before,
+*::after {
     border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    clip-path: none !important;
+}
+
+input,
+textarea,
+select,
+button,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 .glass-card {
