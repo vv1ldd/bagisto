@@ -295,14 +295,14 @@ return [
      */
     [
         'key' => 'magic_ai',
-        'name' => 'admin::app.magic-ai.knowledge-base.title',
+        'name' => 'admin::app.magic_ai.knowledge_base.title',
         'route' => 'admin.magic_ai.knowledge_base.index',
         'sort' => 8,
         'icon' => 'icon-cms',
     ],
     [
         'key' => 'magic_ai.knowledge_base',
-        'name' => 'admin::app.magic-ai.knowledge-base.title',
+        'name' => 'admin::app.magic_ai.knowledge_base.title',
         'route' => 'admin.magic_ai.knowledge_base.index',
         'sort' => 1,
         'icon' => '',
