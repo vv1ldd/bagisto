@@ -13,14 +13,6 @@
             </a>
         </div>
 
-        <div class="mb-8">
-            <h1 class="text-[28px] font-bold text-zinc-900 leading-tight">
-                @lang('shop::app.customers.account.organizations.create.add-organization')
-            </h1>
-            <p class="text-[14px] text-zinc-500 mt-1">
-                Добавьте информацию об организации для выставления счетов.
-            </p>
-        </div>
 
         <x-shop::form :action="route('shop.customers.account.organizations.store')">
             <div class="space-y-6" id="wizard-container">
@@ -326,7 +318,7 @@
                 if (!query || query.length < 3) return;
 
                 try {
-                    const url = `{{ route('shop.customers.account.organizations.suggest_organization') }}?query=${encodeURIComponent(query)}`;
+                    const url = `{{ route('shop.customers.account.organizations.suggest_organization', [], false) }}?query=${encodeURIComponent(query)}`;
                     const response = await fetch(url);
                     const organizations = await response.json();
                     
@@ -435,7 +427,7 @@
                             const accountInput = document.getElementById('settlement-account-input');
                             const account = accountInput ? accountInput.value.trim() : '';
                             
-                            const url = `{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`;
+                            const url = `{{ route('shop.customers.account.organizations.suggest_bank', [], false) }}?query=${encodeURIComponent(query)}`;
                             const response = await fetch(url);
                             let banks = await response.json();
                             
