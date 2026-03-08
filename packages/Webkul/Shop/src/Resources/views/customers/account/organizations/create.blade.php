@@ -491,6 +491,9 @@
         }
     }
 
+    // Initialize the wizard
+    window.initOrganizationWizard();
+
     // Run validation error visual unlocking
         setTimeout(() => {
             if ("{{ $errors->any() }}" === "1") {
