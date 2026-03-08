@@ -18,10 +18,18 @@
             <div class="space-y-6" id="wizard-container">
                 <!-- ================== STEP 1: ORGANIZATION DETAILS ================== -->
                 <div id="step-1" class="transition-all duration-300">
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 1: Данные организации</h2>
-                        <span id="step-1-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
+                        <div class="flex items-center gap-3">
+                            <button type="button" id="magic-scan-btn" 
+                                class="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7C45F5] to-[#A855F7] text-white text-[12px] font-bold rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-95 group">
+                                <span class="group-hover:rotate-12 transition-transform">✨</span> Заполнить по фото/скану
+                            </button>
+                            <span id="step-1-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
+                        </div>
                     </div>
+
+                    <input type="file" id="magic-scan-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
 
                     <!-- Step 1 Summary (Shown after confirmation) -->
                     <div id="step-1-summary" class="hidden bg-white border border-zinc-200 rounded-xl p-5 mb-6 shadow-sm">
@@ -67,6 +75,12 @@
                                     Найти
                                 </button>
                             </div>
+                            
+                            <div class="mt-3 text-right">
+                                <button type="button" id="manual-entry-btn" class="text-[12px] text-zinc-500 hover:text-[#7C45F5] transition-colors underline underline-offset-2">
+                                    Ввести данные вручную
+                                </button>
+                            </div>
                             <x-shop::form.control-group.error control-name="inn" />
                         </x-shop::form.control-group>
 
@@ -78,16 +92,16 @@
                                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                                         @lang('shop::app.customers.account.organizations.create.name')
                                     </label>
-                                    <input type="text" name="name" id="name-input" readonly 
-                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
+                                    <input type="text" name="name" id="name-input"  
+                                        class="w-full bg-white border border-zinc-200 rounded p-2 text-[15px] font-semibold text-zinc-900 focus:border-[#7C45F5] focus:ring-0 transition-all" />
                                 </div>
 
                                 <div id="kpp-container">
                                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                                         @lang('shop::app.customers.account.organizations.create.kpp')
                                     </label>
-                                    <input type="text" name="kpp" id="kpp-input" readonly 
-                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default" />
+                                    <input type="text" name="kpp" id="kpp-input"  
+                                        class="w-full bg-white border border-zinc-200 rounded p-2 text-[15px] font-mono text-zinc-700 focus:border-[#7C45F5] focus:ring-0 transition-all" />
                                 </div>
                             </div>
 
@@ -105,8 +119,8 @@
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                                     @lang('shop::app.customers.account.organizations.create.address')
                                 </label>
-                                <input type="text" name="address" id="address-input" readonly 
-                                    class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 cursor-default" />
+                                <input type="text" name="address" id="address-input"  
+                                    class="w-full bg-white border border-zinc-200 rounded p-2 text-[14px] text-zinc-600 focus:border-[#7C45F5] focus:ring-0 transition-all" />
                             </div>
 
                             <div class="pt-2 flex flex-col md:flex-row gap-3 items-center justify-between border-t border-zinc-200/60 mt-4">
@@ -352,11 +366,37 @@
                     return;
                 }
 
+                // --- STEP 1: Manual Entry ---
+                const manualEntryBtn = e.target.closest('#manual-entry-btn');
+                if (manualEntryBtn) {
+                    e.preventDefault();
+                    document.getElementById('step-1-details').classList.remove('hidden');
+                    document.getElementById('kpp-container').classList.remove('hidden');
+                    document.getElementById('name-input').focus();
+                    
+                    // Visual cue
+                    ['name-input', 'kpp-input', 'address-input', 'inn-input'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.style.backgroundColor = '#f0fff4';
+                            setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                        }
+                    });
+                    return;
+                }
+
                 // --- STEP 2: Magic Scan ---
                 const magicScanBtn = e.target.closest('#magic-scan-btn');
                 if (magicScanBtn) {
                     e.preventDefault();
-                    document.getElementById('magic-scan-input').click();
+                    
+                    // Detect which step this button belongs to
+                    const step1 = magicScanBtn.closest('#step-1');
+                    const inputToClick = step1 ? document.getElementById('magic-scan-input') : document.getElementById('magic-scan-input'); // Reusing same generic file upload input
+                    
+                    // Mark the input with the target context so we know what API to call
+                    inputToClick.dataset.context = step1 ? 'org' : 'bank';
+                    inputToClick.click();
                     return;
                 }
 
@@ -371,15 +411,25 @@
                     const file = e.target.files[0];
                     if (!file) return;
 
-                    const scanBtn = document.getElementById('magic-scan-btn');
-                    const originalContent = scanBtn.innerHTML;
+                    const context = e.target.dataset.context || 'bank'; // 'org' or 'bank'
+                    const isOrgContext = context === 'org';
+                    
+                    // Find the right button to show loading state
+                    const scanBtn = isOrgContext 
+                        ? document.querySelector('#step-1 #magic-scan-btn')
+                        : document.querySelector('#step-2 #magic-scan-btn');
+                        
+                    const originalContent = scanBtn ? scanBtn.innerHTML : '✨ Заполнить по фото/скану';
                     
                     try {
-                        scanBtn.disabled = true;
-                        scanBtn.innerHTML = '<span class="animate-spin inline-block mr-1">◌</span> Сканируем...';
+                        if (scanBtn) {
+                            scanBtn.disabled = true;
+                            scanBtn.innerHTML = '<span class="animate-spin inline-block mr-1">◌</span> Сканируем...';
+                        }
                         
                         const formData = new FormData();
                         formData.append('file', file);
+                        formData.append('context', context);
                         formData.append('_token', '{{ csrf_token() }}');
 
                         const response = await fetch('{{ route('shop.customers.account.magic_ai.parse_bank_details') }}', {
@@ -389,36 +439,58 @@
 
                         const data = await response.json();
 
-                        if (response.ok && (data.bic || data.account)) {
-                            if (data.bic) {
-                                const bicInput = document.getElementById('bic-input');
-                                if (bicInput) {
-                                    bicInput.value = data.bic;
-                                    bicInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        if (response.ok) {
+                            if (isOrgContext) {
+                                // Org Context filling
+                                if (data.inn) {
+                                    const innInput = document.getElementById('inn-input');
+                                    if (innInput) innInput.value = data.inn;
                                 }
-                            }
-
-                            if (data.account) {
-                                const accountInput = document.getElementById('settlement-account-input');
-                                if (accountInput) {
-                                    accountInput.value = data.account;
-                                    accountInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                if (data.kpp) {
+                                    const kppInput = document.getElementById('kpp-input');
+                                    if (kppInput) kppInput.value = data.kpp;
                                 }
-                            }
+                                
+                                // Auto trigger INN lookup if we got an INN
+                                if (data.inn) {
+                                    const lookupBtn = document.getElementById('lookup-inn-btn');
+                                    if (lookupBtn && !lookupBtn.disabled) lookupBtn.click();
+                                } else {
+                                    alert('Не удалось найти ИНН в документе. Введите вручную.');
+                                }
+                            } else {
+                                // Bank Context filling
+                                if (data.bic || data.account) {
+                                    if (data.bic) {
+                                        const bicInput = document.getElementById('bic-input');
+                                        if (bicInput) {
+                                            bicInput.value = data.bic;
+                                            bicInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                        }
+                                    }
 
-                            // If we have both, trigger bank lookup if needed
-                            if (data.bic && !data.account) {
-                                // Already handled by bicInput input event
+                                    if (data.account) {
+                                        const accountInput = document.getElementById('settlement-account-input');
+                                        if (accountInput) {
+                                            accountInput.value = data.account;
+                                            accountInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                        }
+                                    }
+                                } else {
+                                    alert(data.message || 'Не удалось распознать банковские реквизиты. Введите вручную.');
+                                }
                             }
                         } else {
-                            alert(data.message || 'Не удалось распознать реквизиты. Попробуйте другое фото или введите вручную.');
+                            alert(data.message || 'Ошибка обработки нейросетью. Попробуйте отключить/включить ИИ или введите вручную.');
                         }
                     } catch (err) {
                         console.error('Magic Scan error:', err);
-                        alert('Ошибка при сканировании документа.');
+                        alert('Ошибка при сканировании документа. Возможно сервер ИИ недоступен.');
                     } finally {
-                        scanBtn.disabled = false;
-                        scanBtn.innerHTML = originalContent;
+                        if (scanBtn) {
+                            scanBtn.disabled = false;
+                            scanBtn.innerHTML = originalContent;
+                        }
                         e.target.value = ''; // Reset input
                     }
                 }
