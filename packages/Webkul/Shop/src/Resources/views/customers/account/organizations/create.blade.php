@@ -23,30 +23,47 @@
         </div>
 
         <style>
-            /* Ultimate Rectangular Enforcement */
-            #wizard-root, #wizard-root *, 
-            #wizard-root input, #wizard-root button, #wizard-root select,
-            #wizard-root .ios-tile, #wizard-root [class*="rounded-"] {
+            /* Nuclear Rectangular Enforcement */
+            #wizard-root, 
+            #wizard-root *, 
+            #wizard-root *::before, 
+            #wizard-root *::after {
                 border-radius: 0 !important;
+                -webkit-border-radius: 0 !important;
+                -moz-border-radius: 0 !important;
+                clip-path: none !important;
             }
             
-            #inn-input, #inn-input:focus, .v-field input, .v-field input:focus {
+            #wizard-root input, 
+            #wizard-root input:focus, 
+            #wizard-root input:active,
+            #wizard-root input:-webkit-autofill,
+            #wizard-root input:-webkit-autofill:hover, 
+            #wizard-root input:-webkit-autofill:focus {
                 border-radius: 0 !important;
+                -webkit-border-radius: 0 !important;
                 outline: none !important;
                 box-shadow: none !important;
+                -webkit-box-shadow: 0 0 0px 1000px white inset !important; /* Forces autofill background to stay white and square */
+            }
+
+            /* Disable framework-specific focus rings */
+            .v-field, .v-field__overlay, .v-field__loader, .v-field__outline {
+                border-radius: 0 !important;
             }
 
             #search-wrapper {
                 border-radius: 0 !important;
                 overflow: hidden;
+                border: 1px solid #e4e4e7;
             }
             
-            /* Remove framework-applied focus rings that might look rounded */
+            /* Sharp Focus Ring */
             #wizard-root input:focus {
                 --tw-ring-offset-shadow: 0 0 #0000 !important;
                 --tw-ring-shadow: 0 0 #0000 !important;
-                outline: 2px solid #7C45F5 !important;
-                outline-offset: -2px !important;
+                border: 1px solid #7C45F5 !important;
+                outline: none !important;
             }
         </style>
 
