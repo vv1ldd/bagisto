@@ -75,6 +75,12 @@ class OrganizationController extends Controller
             'customer_id' => $customer->id,
         ]);
 
+        if ($request->filled('settlement_account') && $request->filled('bic')) {
+            if (!$this->isValidBankAccount($request->input('bic'), $request->input('settlement_account'))) {
+                return back()->withErrors(['settlement_account' => 'Неверный контрольный ключ расчетного счета для указанного БИК'])->withInput();
+            }
+        }
+
         $organization = $this->organizationRepository->create($data);
 
         // Store primary settlement account
@@ -278,6 +284,10 @@ class OrganizationController extends Controller
             abort(404);
         }
 
+        if (!$this->isValidBankAccount($request->input('bic'), $request->input('settlement_account'))) {
+            return back()->withErrors(['settlement_account' => 'Неверный контрольный ключ расчетного счета'])->withInput();
+        }
+
         // Check if it's the first account
         $isDefault = $organization->settlementAccounts()->count() === 0;
 
@@ -341,5 +351,29 @@ class OrganizationController extends Controller
         }
 
         return back()->with('success', 'Расчетный счет успешно удален');
+    }
+
+    /**
+     * Validate the bank account checksum according to CBR standard.
+     *
+     * @param  string  $bic
+     * @param  string  $account
+     * @return bool
+     */
+    protected function isValidBankAccount($bic, $account)
+    {
+        if (strlen($bic) !== 9 || strlen($account) !== 20) {
+            return false;
+        }
+
+        $combined = substr($bic, -3) . $account;
+        $weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
+
+        $sum = 0;
+        for ($i = 0; $i < 23; $i++) {
+            $sum += ((int) $combined[$i] * $weights[$i]) % 10;
+        }
+
+        return $sum % 10 === 0;
     }
 }

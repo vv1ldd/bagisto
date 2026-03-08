@@ -205,6 +205,7 @@
                             placeholder="40702810..." />
 
                         <x-shop::form.control-group.error control-name="settlement_account" />
+                        <div id="settlement-account-error" class="text-red-500 text-[12px] mt-1 hidden font-bold"></div>
                     </x-shop::form.control-group>
 
                     <button type="submit" id="submit-btn" disabled
@@ -218,9 +219,23 @@
 
     <!-- Script moved INSIDE the component structure to ensure execution after dynamic load -->
     <script>
-        if (!window.wizardListening) {
-            window.wizardListening = true;
-            console.log('Wizard Initialization with Document Listeners');
+        if (typeof window.initOrganizationWizard === 'undefined') {
+            window.isValidBankAccount = function(bic, account) {
+                if (!bic || !account || account.length !== 20 || bic.length !== 9) return false;
+                
+                // CBR Algorithm: last 3 digits of BIC + 20 digits of Account
+                const combined = bic.substring(6, 9) + account;
+                const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
+                
+                let sum = 0;
+                for (let i = 0; i < 23; i++) {
+                    sum += (parseInt(combined[i]) * weights[i]) % 10;
+                }
+                
+                return sum % 10 === 0;
+            };
+
+            window.initOrganizationWizard = function() {           console.log('Wizard Initialization with Document Listeners');
 
             document.addEventListener('click', async function(e) {
                 
@@ -405,9 +420,34 @@
                 }
                 if (e.target.id === 'settlement-account-input') {
                     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 20);
+                    
+                    const account = e.target.value;
+                    const bicInput = document.getElementById('bic-input');
+                    const bic = bicInput ? bicInput.value.trim() : '';
                     const submitBtn = document.getElementById('submit-btn');
-                    if (submitBtn) {
-                        submitBtn.disabled = e.target.value.length !== 20;
+                    const errorMsg = document.getElementById('settlement-account-error');
+                    
+                    if (account.length === 20 && bic.length === 9) {
+                        const isValid = window.isValidBankAccount(bic, account);
+                        
+                        if (isValid) {
+                            e.target.classList.remove('!border-red-500', '!ring-red-500');
+                            e.target.classList.add('!border-green-500');
+                            if (errorMsg) errorMsg.classList.add('hidden');
+                            if (submitBtn) submitBtn.disabled = false;
+                        } else {
+                            e.target.classList.remove('!border-green-500');
+                            e.target.classList.add('!border-red-500', '!ring-red-500');
+                            if (errorMsg) {
+                                errorMsg.innerText = 'Неверный контрольный ключ счета для данного БИК';
+                                errorMsg.classList.remove('hidden');
+                            }
+                            if (submitBtn) submitBtn.disabled = true;
+                        }
+                    } else {
+                        e.target.classList.remove('!border-green-500', '!border-red-500', '!ring-red-500');
+                        if (errorMsg) errorMsg.classList.add('hidden');
+                        if (submitBtn) submitBtn.disabled = true;
                     }
                 }
             });
@@ -439,6 +479,12 @@
                             setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
                         }
                     });
+
+                    // Re-validate settlement account if it exists
+                    const accountInput = document.getElementById('settlement-account-input');
+                    if (accountInput && accountInput.value.length === 20) {
+                        accountInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                     return;
                 }
                 

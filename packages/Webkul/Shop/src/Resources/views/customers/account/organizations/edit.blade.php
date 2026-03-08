@@ -264,6 +264,7 @@
                                             class="!py-3 !px-4 !border-zinc-300 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 font-mono tracking-widest text-[15px] transition-all bg-white"
                                             placeholder="00000000000000000000" />
                                         <x-shop::form.control-group.error control-name="settlement_account" />
+                                        <div id="settlement-account-error" class="text-red-500 text-[11px] mt-1 hidden font-bold"></div>
                                     </x-shop::form.control-group>
 
                                     <button type="submit" id="submit-account-btn" disabled
@@ -280,6 +281,17 @@
     </div>
 
     <script>
+        window.isValidBankAccount = function(bic, account) {
+            if (!bic || !account || account.length !== 20 || bic.length !== 9) return false;
+            const combined = bic.substring(6, 9) + account;
+            const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
+            let sum = 0;
+            for (let i = 0; i < 23; i++) {
+                sum += (parseInt(combined[i]) * weights[i]) % 10;
+            }
+            return sum % 10 === 0;
+        };
+
         document.addEventListener('DOMContentLoaded', function () {
             const bicInput = document.getElementById('bic');
             const bicError = document.getElementById('bic-error');
@@ -297,6 +309,37 @@
                     if (bankNameInput && bankNameInput.value) {
                         bankDetailsContainer.classList.remove('hidden');
                     }
+                }
+
+                if (settlementAccountInput) {
+                    settlementAccountInput.addEventListener('input', (e) => {
+                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 20);
+                        const account = e.target.value;
+                        const bic = bicInput.value.trim();
+                        const errorMsg = document.getElementById('settlement-account-error');
+
+                        if (account.length === 20 && bic.length === 9) {
+                            const isValid = window.isValidBankAccount(bic, account);
+                            if (isValid) {
+                                e.target.classList.remove('!border-red-500', '!ring-red-500');
+                                e.target.classList.add('!border-green-500');
+                                if (errorMsg) errorMsg.classList.add('hidden');
+                                if (submitAccountBtn) submitAccountBtn.disabled = false;
+                            } else {
+                                e.target.classList.remove('!border-green-500');
+                                e.target.classList.add('!border-red-500', '!ring-red-500');
+                                if (errorMsg) {
+                                    errorMsg.innerText = 'Неверный контрольный ключ счета для данного БИК';
+                                    errorMsg.classList.remove('hidden');
+                                }
+                                if (submitAccountBtn) submitAccountBtn.disabled = true;
+                            }
+                        } else {
+                            e.target.classList.remove('!border-green-500', '!border-red-500', '!ring-red-500');
+                            if (errorMsg) errorMsg.classList.add('hidden');
+                            if (submitAccountBtn) submitAccountBtn.disabled = (account.length !== 20);
+                        }
+                    });
                 }
 
                 bicInput.addEventListener('input', (e) => {
@@ -367,6 +410,8 @@
                         // Focus on settlement account if empty
                         if (!settlementAccountInput.value) {
                             setTimeout(() => settlementAccountInput.focus(), 100);
+                        } else {
+                            settlementAccountInput.dispatchEvent(new Event('input', { bubbles: true }));
                         }
                         return;
                     }
