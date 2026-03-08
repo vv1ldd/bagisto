@@ -60,19 +60,26 @@
                                 @lang('shop::app.customers.account.organizations.create.inn')
                             </x-shop::form.control-group.label>
 
-                            <div class="relative w-full overflow-visible">
-                                <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
-                                    id="inn-input"
-                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full !rounded-lg"
-                                    :label="trans('shop::app.customers.account.organizations.create.inn')"
-                                    placeholder="Введите ИНН или название организации..." 
-                                    autocomplete="off" />
-                                
-                                <div id="org-suggestions" 
-                                    style="max-height: 320px !important; overflow-y: auto !important;"
-                                    class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden">
-                                    <!-- Suggestions will be injected here via JS -->
+                            <div class="relative w-full overflow-visible flex gap-2">
+                                <div class="relative flex-grow">
+                                    <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
+                                        id="inn-input"
+                                        class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full !rounded-lg"
+                                        :label="trans('shop::app.customers.account.organizations.create.inn')"
+                                        placeholder="Введите ИНН или название..." 
+                                        autocomplete="off" />
+                                    
+                                    <div id="org-suggestions" 
+                                        style="max-height: 320px !important; overflow-y: auto !important;"
+                                        class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden">
+                                        <!-- Suggestions will be injected here via JS -->
+                                    </div>
                                 </div>
+                                
+                                <button type="button" id="lookup-org-btn" disabled
+                                    class="bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-200 disabled:text-zinc-500 text-white font-bold px-6 py-3 rounded-lg transition-all whitespace-nowrap text-[14px]">
+                                    Найти
+                                </button>
                             </div>
                             
                             <div class="mt-3 text-right">
@@ -83,42 +90,55 @@
                             <x-shop::form.control-group.error control-name="inn" />
                         </x-shop::form.control-group>
 
-                        <!-- Extracted Organization Details (Readonly Constants) -->
-                        <div id="step-1-details" class="hidden space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
+                        <!-- Extracted Organization Details (Confirmation Card) -->
+                        <div id="step-1-details" class="hidden space-y-6 bg-[#7C45F5]/5 rounded-2xl p-6 border border-[#7C45F5]/10 relative transition-all duration-500">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="bg-[#7C45F5] text-white p-1.5 rounded-full">
+                                    <span class="icon-done text-xs"></span>
+                                </div>
+                                <h3 class="text-[15px] font-bold text-zinc-900">
+                                    Это верная организация?
+                                </h3>
+                            </div>
 
-                            <div class="grid grid-cols-1 gap-4">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                            <div class="grid grid-cols-1 gap-5">
+                                <div class="ios-tile p-4 bg-white/60">
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
                                         @lang('shop::app.customers.account.organizations.create.name')
                                     </label>
                                     <input type="text" name="name" id="name-input"  
-                                        class="w-full bg-white border border-zinc-200 rounded p-2 text-[15px] font-semibold text-zinc-900 focus:border-[#7C45F5] focus:ring-0 transition-all" />
+                                        class="w-full bg-transparent border-0 p-0 text-[17px] font-bold text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300"
+                                        placeholder="Название организации" />
                                 </div>
 
-                                <div id="kpp-container">
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                                <div id="kpp-container" class="ios-tile p-4 bg-white/60">
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
                                         @lang('shop::app.customers.account.organizations.create.kpp')
                                     </label>
                                     <input type="text" name="kpp" id="kpp-input"  
-                                        class="w-full bg-white border border-zinc-200 rounded p-2 text-[15px] font-mono text-zinc-700 focus:border-[#7C45F5] focus:ring-0 transition-all" />
+                                        class="w-full bg-transparent border-0 p-0 text-[16px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300"
+                                        placeholder="КПП (если есть)" />
                                 </div>
-                        </div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                    @lang('shop::app.customers.account.organizations.create.address')
-                                </label>
-                                <input type="text" name="address" id="address-input"  
-                                    class="w-full bg-white border border-zinc-200 rounded p-2 text-[14px] text-zinc-600 focus:border-[#7C45F5] focus:ring-0 transition-all" />
+
+                                <div class="ios-tile p-4 bg-white/60">
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                                        @lang('shop::app.customers.account.organizations.create.address')
+                                    </label>
+                                    <input type="text" name="address" id="address-input"  
+                                        class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300"
+                                        placeholder="Юридический адрес" />
+                                </div>
                             </div>
 
-                            <div class="pt-4 flex flex-col items-center justify-center border-t border-zinc-200/60 mt-4 space-y-3">
-                                <p class="text-[13px] text-zinc-500 font-medium">
-                                    Проверьте данные. Если всё верно, нажмите «Подтвердить».
-                                </p>
+                            <div class="pt-4 flex flex-col items-center">
                                 <button type="button" id="confirm-step-1-btn"
-                                    class="w-full bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold py-3.5 px-8 rounded-lg shadow-lg shadow-[#7C45F5]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[15px]">
+                                    class="w-full bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold py-4 px-8 rounded-xl shadow-xl shadow-[#7C45F5]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-[16px]">
                                     Подтвердить и продолжить
                                     <span class="icon-arrow-right text-lg"></span>
                                 </button>
+                                <p class="text-[12px] text-zinc-400 mt-4 font-medium">
+                                    Проверьте данные, прежде чем перейти к реквизитам
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -129,16 +149,8 @@
                 <div id="step-2" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
                     <div class="flex items-center justify-between mb-4" id="step-2-header">
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 2: Банковские реквизиты</h2>
-                        <div class="flex items-center gap-3">
-                            <button type="button" id="magic-scan-btn" 
-                                class="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-[#7C45F5] to-[#A855F7] text-white text-[11px] font-bold rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group">
-                                <span class="group-hover:rotate-12 transition-transform">✨</span> Заполнить по фото/скану
-                            </button>
-                            <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
-                        </div>
+                        <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
                     </div>
-
-                    <input type="file" id="magic-scan-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Left: Settlement Account (Primary focus) -->
@@ -298,165 +310,90 @@
                 const manualEntryBtn = e.target.closest('#manual-entry-btn');
                 if (manualEntryBtn) {
                     e.preventDefault();
-                    document.getElementById('step-1-details').classList.remove('hidden');
-                    document.getElementById('kpp-container').classList.remove('hidden');
-                    document.getElementById('name-input').focus();
                     
-                    // Visual cue
-                    ['name-input', 'kpp-input', 'address-input', 'inn-input'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) {
-                            el.style.backgroundColor = '#f0fff4';
-                            setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
-                        }
-                    });
+                    const step1Details = document.getElementById('step-1-details');
+                    if (step1Details) {
+                        step1Details.classList.remove('hidden');
+                        step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    const kppContainer = document.getElementById('kpp-container');
+                    if (kppContainer) kppContainer.classList.remove('hidden');
+                    
+                    const nameInput = document.getElementById('name-input');
+                    if (nameInput) nameInput.focus();
+                    
                     return;
                 }
 
-                // --- STEP 2: Magic Scan ---
-                const magicScanBtn = e.target.closest('#magic-scan-btn');
-                if (magicScanBtn) {
-                    e.preventDefault();
-                    
-                    // Detect which step this button belongs to
-                    const step1 = magicScanBtn.closest('#step-1');
-                    const inputToClick = step1 ? document.getElementById('magic-scan-input') : document.getElementById('magic-scan-input'); // Reusing same generic file upload input
-                    
-                    // Mark the input with the target context so we know what API to call
-                    inputToClick.dataset.context = step1 ? 'org' : 'bank';
-                    inputToClick.click();
-                    return;
-                }
-
-                // --- STEP 2: Bank Autocomplete removed from click listener as it is now an input listener ---
-
-                // --- STEP 2: Confirm handled by submit-btn ---
             });
+            
+            // Organization Lookup Function
+            window.triggerOrgLookup = async (query) => {
+                const suggestionsContainer = document.getElementById('org-suggestions');
+                if (!query || query.length < 3) return;
 
-            // Magic Scan File Handling
-            document.addEventListener('change', async function(e) {
-                if (e.target.id === 'magic-scan-input') {
-                    const file = e.target.files[0];
-                    if (!file) return;
-
-                    const context = e.target.dataset.context || 'bank'; // 'org' or 'bank'
-                    const isOrgContext = context === 'org';
+                try {
+                    const url = `{{ route('shop.customers.account.organizations.suggest_organization') }}?query=${encodeURIComponent(query)}`;
+                    const response = await fetch(url);
+                    const organizations = await response.json();
                     
-                    // Find the right button to show loading state
-                    const scanBtn = isOrgContext 
-                        ? document.querySelector('#step-1 #magic-scan-btn')
-                        : document.querySelector('#step-2 #magic-scan-btn');
-                        
-                    const originalContent = scanBtn ? scanBtn.innerHTML : '✨ Заполнить по фото/скану';
-                    
-                    try {
-                        if (scanBtn) {
-                            scanBtn.disabled = true;
-                            scanBtn.innerHTML = '<span class="animate-spin inline-block mr-1">◌</span> Сканируем...';
-                        }
-                        
-                        const formData = new FormData();
-                        formData.append('file', file);
-                        formData.append('context', context);
-                        formData.append('_token', '{{ csrf_token() }}');
+                    if (response.ok && organizations && organizations.length > 0) {
+                        suggestionsContainer.innerHTML = organizations.map(org => `
+                            <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                data-name="${org.name || ''}"
+                                data-inn="${org.inn || ''}"
+                                data-kpp="${org.kpp || ''}"
+                                data-address="${org.address || ''}">
+                                <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
+                                <div class="text-[12px] text-zinc-500 font-mono">
+                                    ИНН: ${org.inn || '-'} 
+                                    ${org.kpp ? ` | КПП: ${org.kpp}` : ''}
+                                </div>
+                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
+                            </div>
+                        `).join('');
+                        suggestionsContainer.classList.remove('hidden');
+                    } else {
+                        suggestionsContainer.classList.add('hidden');
+                    }
+                } catch (err) {
+                    console.error('Ошибка при поиске организации', err);
+                }
+            };
 
-                        const response = await fetch('{{ route('shop.customers.account.magic_ai.parse_bank_details') }}', {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            if (isOrgContext) {
-                                // Org Context filling
-                                if (data.inn) {
-                                    const innInput = document.getElementById('inn-input');
-                                    if (innInput) innInput.value = data.inn;
-                                }
-                                if (data.kpp) {
-                                    const kppInput = document.getElementById('kpp-input');
-                                    if (kppInput) kppInput.value = data.kpp;
-                                }
-                                if (data.name) {
-                                    const nameInput = document.getElementById('name-input');
-                                    if (nameInput) nameInput.value = data.name;
-                                }
-                                
-                                // Also prep bank data if vision model managed to see it
-                                if (data.bic) {
-                                    const bicInput = document.getElementById('bic-input');
-                                    if (bicInput) {
-                                        bicInput.value = data.bic;
-                                        // Trigger input event to search bank details
-                                        bicInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                    }
-                                }
-                                if (data.account) {
-                                    const accountInput = document.getElementById('settlement-account-input');
-                                    if (accountInput) {
-                                        accountInput.value = data.account;
-                                        accountInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                    }
-                                }
-                                if (data.corr_account) {
-                                    const corrInput = document.getElementById('corr-account-input');
-                                    if (corrInput) corrInput.value = data.corr_account;
-                                }
-
-                                // Auto trigger INN lookup if we got an INN
-                                if (data.inn) {
-                                    const manualBtn = document.getElementById('manual-entry-btn');
-                                    if (manualBtn) manualBtn.click(); // Open manual entry fields to show what we found
-                                    
-                                    const lookupBtn = document.getElementById('lookup-inn-btn');
-                                    if (lookupBtn && !lookupBtn.disabled) lookupBtn.click();
-                                } else {
-                                    alert('Не удалось найти ИНН в документе. Введите вручную.');
-                                }
-                            } else {
-                                // Bank Context filling
-                                if (data.bic || data.account) {
-                                    if (data.bic) {
-                                        const bicInput = document.getElementById('bic-input');
-                                        if (bicInput) {
-                                            bicInput.value = data.bic;
-                                            bicInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                        }
-                                    }
-
-                                    if (data.account) {
-                                        const accountInput = document.getElementById('settlement-account-input');
-                                        if (accountInput) {
-                                            accountInput.value = data.account;
-                                            accountInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                        }
-                                    }
-                                } else {
-                                    alert(data.message || 'Не удалось распознать банковские реквизиты. Введите вручную.');
-                                }
-                            }
-                        } else {
-                            alert(data.message || 'Ошибка обработки нейросетью. Попробуйте отключить/включить ИИ или введите вручную.');
-                        }
-                    } catch (err) {
-                        console.error('Magic Scan error:', err);
-                        alert('Ошибка при сканировании документа. Возможно сервер ИИ недоступен.');
-                    } finally {
-                        if (scanBtn) {
-                            scanBtn.disabled = false;
-                            scanBtn.innerHTML = originalContent;
-                        }
-                        e.target.value = ''; // Reset input
+            // Search Button Click
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'lookup-org-btn') {
+                    const innInput = document.getElementById('inn-input');
+                    if (innInput) {
+                        window.triggerOrgLookup(innInput.value.trim());
                     }
                 }
             });
-            
+
             // Event delegation for input fields
             let bankDebounceTimer;
             
             document.addEventListener('input', function(e) {
-                // Organization Live Search
+                // Organization Search Activation
+                if (e.target.id === 'inn-input') {
+                    const lookupBtn = document.getElementById('lookup-org-btn');
+                    if (lookupBtn) {
+                        lookupBtn.disabled = e.target.value.trim().length < 3;
+                    }
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.target.id === 'inn-input' && e.key === 'Enter') {
+                    e.preventDefault();
+                    window.triggerOrgLookup(e.target.value.trim());
+                }
+            });
+
+            document.addEventListener('input', function(e) {
+                // Organization Live Search (Keep it but it can be redundant now)
                 if (e.target.id === 'inn-input') {
                     const innInput = e.target;
                     const suggestionsContainer = document.getElementById('org-suggestions');
@@ -470,35 +407,9 @@
                         return;
                     }
                     
-                    window.orgDebounceTimer = setTimeout(async () => {
-                        try {
-                            const url = `{{ route('shop.customers.account.organizations.suggest_organization') }}?query=${encodeURIComponent(query)}`;
-                            const response = await fetch(url);
-                            const organizations = await response.json();
-                            
-                            if (response.ok && organizations && organizations.length > 0) {
-                                suggestionsContainer.innerHTML = organizations.map(org => `
-                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
-                                        data-name="${org.name || ''}"
-                                        data-inn="${org.inn || ''}"
-                                        data-kpp="${org.kpp || ''}"
-                                        data-address="${org.address || ''}">
-                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
-                                        <div class="text-[12px] text-zinc-500 font-mono">
-                                            ИНН: ${org.inn || '-'} 
-                                            ${org.kpp ? ` | КПП: ${org.kpp}` : ''}
-                                        </div>
-                                        <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
-                                    </div>
-                                `).join('');
-                                suggestionsContainer.classList.remove('hidden');
-                            } else {
-                                suggestionsContainer.classList.add('hidden');
-                            }
-                        } catch (err) {
-                            console.error('Ошибка при поиске организации', err);
-                        }
-                    }, 400);
+                    window.orgDebounceTimer = setTimeout(() => {
+                        window.triggerOrgLookup(query);
+                    }, 600); // Slightly longer debounce for live search
                 }
 
                 // Bank Autocomplete Logic
@@ -617,16 +528,18 @@
                 orgSuggestions.classList.add('hidden');
                 
                 const step1Details = document.getElementById('step-1-details');
-                if (step1Details) step1Details.classList.remove('hidden');
-                
-                // Visual cue
-                ['name-input', 'kpp-input', 'address-input', 'inn-input'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.style.backgroundColor = '#f0fff4';
-                        setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
+                if (step1Details) {
+                    step1Details.classList.remove('hidden');
+                    // Focus the confirm button immediately for the user
+                    const confirmBtn = document.getElementById('confirm-step-1-btn');
+                    if (confirmBtn) {
+                        setTimeout(() => confirmBtn.focus(), 100);
                     }
-                });
+                    
+                    // Smooth scroll to the confirmation card
+                    step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
                 return;
             }
 
