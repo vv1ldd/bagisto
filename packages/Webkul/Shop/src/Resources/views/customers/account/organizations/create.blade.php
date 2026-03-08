@@ -36,18 +36,18 @@
                         <div class="flex items-start justify-between">
                             <div class="space-y-1">
                                 <div id="summary-org-name" class="text-[18px] font-bold text-zinc-900 leading-tight"></div>
-                                <div class="flex items-center gap-3 mt-3 pt-3 border-t border-zinc-100">
-                                    <div class="text-[12px] text-zinc-400">
-                                        <span class="font-bold uppercase tracking-wider mr-1">ИНН:</span>
-                                        <span id="summary-org-inn" class="font-mono text-zinc-600"></span>
+                                <div class="flex items-center gap-6 mt-4 pt-4 border-t border-zinc-100">
+                                    <div class="text-[12px] text-zinc-400 flex items-center gap-1.5">
+                                        <span class="font-bold uppercase tracking-wider opacity-60">ИНН</span>
+                                        <span id="summary-org-inn" class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
                                     </div>
-                                    <div id="summary-kpp-container" class="text-[12px] text-zinc-400">
-                                        <span class="font-bold uppercase tracking-wider mr-1">КПП:</span>
-                                        <span id="summary-org-kpp" class="font-mono text-zinc-600"></span>
+                                    <div id="summary-kpp-container" class="text-[12px] text-zinc-400 flex items-center gap-1.5 ">
+                                        <span class="font-bold uppercase tracking-wider opacity-60">КПП</span>
+                                        <span id="summary-org-kpp" class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
                                     </div>
-                                    <div id="summary-ogrn-container" class="text-[12px] text-zinc-400 hidden">
-                                        <span class="font-bold uppercase tracking-wider mr-1">ОГРН:</span>
-                                        <span id="summary-org-ogrn" class="font-mono text-zinc-600"></span>
+                                    <div id="summary-ogrn-container" class="text-[12px] text-zinc-400 hidden flex items-center gap-1.5">
+                                        <span class="font-bold uppercase tracking-wider opacity-60">ОГРН</span>
+                                        <span id="summary-org-ogrn" class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
                                     </div>
                                 </div>
                             </div>
@@ -98,12 +98,13 @@
                         </x-shop::form.control-group>
 
                         <!-- Extracted Organization Details (Confirmation Card) -->
-                        <div id="step-1-details" class="hidden space-y-6 bg-[#7C45F5]/5 rounded-none p-6 border border-[#7C45F5]/10 relative transition-all duration-500">
+                        <div id="step-1-details" class="hidden space-y-8 bg-white rounded-none p-8 border-2 border-[#7C45F5] relative transition-all duration-500 shadow-[0_20px_50px_rgba(124,69,245,0.1)]">
+                            <div class="absolute -top-4 left-6 bg-[#7C45F5] text-white px-4 py-1 text-[12px] font-black uppercase tracking-widest">
+                                Проверка данных
+                            </div>
+                            
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="bg-[#7C45F5] text-white p-1.5 rounded-none">
-                                    <span class="icon-done text-xs"></span>
-                                </div>
-                                <h3 class="text-[15px] font-bold text-zinc-900">
+                                <h3 class="text-[18px] font-black text-zinc-900 tracking-tight">
                                     Это верная организация?
                                 </h3>
                             </div>
@@ -148,9 +149,9 @@
 
                             <div class="pt-4 flex flex-col items-center">
                                 <button type="button" id="confirm-step-1-btn"
-                                    class="w-full bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold py-4 px-8 rounded-none shadow-xl shadow-[#7C45F5]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-[16px]">
-                                    Подтвердить и продолжить
-                                    <span class="icon-arrow-right text-lg"></span>
+                                    class="w-full bg-[#7C45F5] hover:bg-black text-white font-black py-5 px-8 rounded-none shadow-2xl transition-all active:scale-[0.97] flex items-center justify-center gap-4 text-[17px] uppercase tracking-wider group">
+                                    Да, всё верно
+                                    <span class="icon-arrow-right text-xl group-hover:translate-x-1 transition-transform"></span>
                                 </button>
                                 <p class="text-[12px] text-zinc-400 mt-4 font-medium">
                                     Проверьте данные, прежде чем перейти к реквизитам
