@@ -3,8 +3,8 @@
 return [
     [
         'key' => 'general.magic_ai',
-        'name' => 'admin::app.magic-ai.knowledge-base.title',
-        'info' => 'MagicAI Global Settings',
+        'name' => 'admin::app.magic_ai.knowledge_base.title',
+        'info' => 'admin::app.magic_ai.knowledge_base.title',
         'icon' => 'settings/magic-ai.svg',
         'sort' => 1,
     ],
