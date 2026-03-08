@@ -1,12 +1,20 @@
 <x-shop::layouts.account :is-cardless="true" :show-back="false">
-    <div class="flex-auto ios-tile-relative ios-group max-w-[600px] mx-auto p-8 max-md:p-6">
-        <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.organizations.index') }}'"
-            class="ios-close-button">
-            <span class="icon-cancel text-xl"></span>
-        </a>
+    <div class="flex-auto ios-tile-relative ios-group max-w-[600px] mx-auto p-8 max-md:p-6 !bg-transparent border-none !shadow-none">
+        
+        <!-- Brand Header Section -->
+        <div class="flex items-center justify-between mb-12">
+            <div class="text-[20px] font-black tracking-tighter text-[#7C45F5]">
+                MEANLY
+            </div>
+            
+            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.organizations.index') }}'"
+                class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 hover:text-[#7C45F5] hover:border-[#7C45F5] transition-all">
+                <span class="icon-cancel text-xl"></span>
+            </a>
+        </div>
 
         <div class="mb-8">
-            <h1 class="text-[22px] font-bold text-zinc-900 leading-tight">
+            <h1 class="text-[28px] font-bold text-zinc-900 leading-tight">
                 @lang('shop::app.customers.account.organizations.create.add-organization')
             </h1>
             <p class="text-[14px] text-zinc-500 mt-1">
