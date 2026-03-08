@@ -14,7 +14,10 @@ class Gemini
         protected string $prompt,
         protected bool $stream,
         protected bool $raw,
-    ) {}
+        protected ?string $attachment = null,
+        protected ?string $mimeType = null,
+    ) {
+    }
 
     /**
      * Send request to Gemini AI.
@@ -27,6 +30,19 @@ class Gemini
 
         $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$apiKey}";
 
+        $parts = [
+            ['text' => $this->prompt],
+        ];
+
+        if ($this->attachment && $this->mimeType) {
+            $parts[] = [
+                'inline_data' => [
+                    'mime_type' => $this->mimeType,
+                    'data' => $this->attachment,
+                ],
+            ];
+        }
+
         $result = $httpClient->request('POST', $endpoint, [
             'headers' => [
                 'Accept' => 'application/json',
@@ -34,7 +50,7 @@ class Gemini
             ],
             'json' => [
                 'contents' => [
-                    ['parts' => [['text' => $this->prompt]]],
+                    ['parts' => $parts],
                 ],
             ],
         ]);

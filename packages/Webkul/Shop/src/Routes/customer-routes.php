@@ -249,6 +249,14 @@ Route::prefix('customer')->group(function () {
 
                     Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
                 });
+
+                /**
+                 * Magic AI routes.
+                 */
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\MagicAIController::class)->prefix('magic-ai')->group(function () {
+                    Route::post('parse-bank-details', 'parseBankDetails')->name('shop.customers.account.magic_ai.parse_bank_details');
+                });
+
                 /**
                  * Organizations.
                  */

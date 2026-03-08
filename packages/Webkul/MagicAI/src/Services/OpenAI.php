@@ -13,7 +13,9 @@ class OpenAI
         protected string $model,
         protected string $prompt,
         protected float $temperature,
-        protected bool $stream = false
+        protected bool $stream = false,
+        protected ?string $attachment = null,
+        protected ?string $mimeType = null,
     ) {
         $this->setConfig();
     }
@@ -34,13 +36,29 @@ class OpenAI
      */
     public function ask(): string
     {
+        $content = [
+            [
+                'type' => 'text',
+                'text' => $this->prompt,
+            ],
+        ];
+
+        if ($this->attachment && $this->mimeType) {
+            $content[] = [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => "data:{$this->mimeType};base64,{$this->attachment}",
+                ],
+            ];
+        }
+
         $result = BaseOpenAI::chat()->create([
             'model' => $this->model,
             'temperature' => $this->temperature,
             'messages' => [
                 [
                     'role' => 'user',
-                    'content' => $this->prompt,
+                    'content' => $content,
                 ],
             ],
         ]);
@@ -65,7 +83,7 @@ class OpenAI
         $images = [];
 
         foreach ($result->data as $image) {
-            $images[]['url'] = 'data:image/png;base64,'.$image->b64_json;
+            $images[]['url'] = 'data:image/png;base64,' . $image->b64_json;
         }
 
         return $images;

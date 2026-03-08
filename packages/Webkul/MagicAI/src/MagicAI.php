@@ -40,6 +40,16 @@ class MagicAI
     protected string $prompt;
 
     /**
+     * Attachment (base64).
+     */
+    protected ?string $attachment = null;
+
+    /**
+     * Attachment Mime Type.
+     */
+    protected ?string $mimeType = null;
+
+    /**
      * Set LLM model
      */
     public function setModel(string $model): self
@@ -100,6 +110,18 @@ class MagicAI
     }
 
     /**
+     * Set Attachment.
+     */
+    public function setAttachment(string $attachment, string $mimeType): self
+    {
+        $this->attachment = $attachment;
+
+        $this->mimeType = $mimeType;
+
+        return $this;
+    }
+
+    /**
      * Set LLM prompt text.
      */
     public function ask(): string
@@ -126,6 +148,8 @@ class MagicAI
                 $this->prompt,
                 $this->temperature,
                 $this->stream,
+                $this->attachment,
+                $this->mimeType,
             );
         }
 
@@ -144,6 +168,8 @@ class MagicAI
                 $this->prompt,
                 $this->stream,
                 $this->raw,
+                $this->attachment,
+                $this->mimeType,
             );
         }
 

@@ -127,8 +127,16 @@
                 <div id="step-2" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
                     <div class="flex items-center justify-between mb-4" id="step-2-header">
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 2: Банковские реквизиты</h2>
-                        <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
+                        <div class="flex items-center gap-3">
+                            <button type="button" id="magic-scan-btn" 
+                                class="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-[#7C45F5] to-[#A855F7] text-white text-[11px] font-bold rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group">
+                                <span class="group-hover:rotate-12 transition-transform">✨</span> Заполнить по фото/скану
+                            </button>
+                            <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
+                        </div>
                     </div>
+
+                    <input type="file" id="magic-scan-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Left: Settlement Account (Primary focus) -->
@@ -344,9 +352,76 @@
                     return;
                 }
 
+                // --- STEP 2: Magic Scan ---
+                const magicScanBtn = e.target.closest('#magic-scan-btn');
+                if (magicScanBtn) {
+                    e.preventDefault();
+                    document.getElementById('magic-scan-input').click();
+                    return;
+                }
+
                 // --- STEP 2: Bank Autocomplete removed from click listener as it is now an input listener ---
 
                 // --- STEP 2: Confirm handled by submit-btn ---
+            });
+
+            // Magic Scan File Handling
+            document.addEventListener('change', async function(e) {
+                if (e.target.id === 'magic-scan-input') {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    const scanBtn = document.getElementById('magic-scan-btn');
+                    const originalContent = scanBtn.innerHTML;
+                    
+                    try {
+                        scanBtn.disabled = true;
+                        scanBtn.innerHTML = '<span class="animate-spin inline-block mr-1">◌</span> Сканируем...';
+                        
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('_token', '{{ csrf_token() }}');
+
+                        const response = await fetch('{{ route('shop.customers.account.magic_ai.parse_bank_details') }}', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && (data.bic || data.account)) {
+                            if (data.bic) {
+                                const bicInput = document.getElementById('bic-input');
+                                if (bicInput) {
+                                    bicInput.value = data.bic;
+                                    bicInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }
+
+                            if (data.account) {
+                                const accountInput = document.getElementById('settlement-account-input');
+                                if (accountInput) {
+                                    accountInput.value = data.account;
+                                    accountInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }
+
+                            // If we have both, trigger bank lookup if needed
+                            if (data.bic && !data.account) {
+                                // Already handled by bicInput input event
+                            }
+                        } else {
+                            alert(data.message || 'Не удалось распознать реквизиты. Попробуйте другое фото или введите вручную.');
+                        }
+                    } catch (err) {
+                        console.error('Magic Scan error:', err);
+                        alert('Ошибка при сканировании документа.');
+                    } finally {
+                        scanBtn.disabled = false;
+                        scanBtn.innerHTML = originalContent;
+                        e.target.value = ''; // Reset input
+                    }
+                }
             });
             
             // Event delegation for input fields
