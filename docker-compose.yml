@@ -38,9 +38,9 @@ services:
     volumes:
       - 'bagisto-storage:/var/www/html/storage'
     depends_on:
-
       - elasticsearch
       - mailpit
+      - ollama
 
   elasticsearch:
     image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.0'
@@ -72,6 +72,20 @@ services:
     networks:
       - bagisto-network
 
+  ollama:
+    image: 'ollama/ollama:latest'
+    container_name: bagisto-ollama
+    restart: always
+    volumes:
+      - 'bagisto-ollama-data:/root/.ollama'
+    networks:
+      - bagisto-network
+    healthcheck:
+      test: [ "CMD", "ollama", "list" ]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+
 networks:
   bagisto-network:
     driver: bridge
@@ -83,4 +97,6 @@ volumes:
   bagisto-elasticsearch-data:
     driver: local
   bagisto-storage:
+    driver: local
+  bagisto-ollama-data:
     driver: local
