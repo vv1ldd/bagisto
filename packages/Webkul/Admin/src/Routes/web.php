@@ -55,6 +55,11 @@ Route::group(['middleware' => ['admin', NoCacheMiddleware::class], 'prefix' => c
     require 'notification-routes.php';
 
     /**
+     * MagicAI routes.
+     */
+    require 'magic-ai-routes.php';
+
+    /**
      * Remaining routes.
      */
     require 'rest-routes.php';
