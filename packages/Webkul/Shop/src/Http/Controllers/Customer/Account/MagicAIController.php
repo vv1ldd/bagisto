@@ -28,12 +28,18 @@ class MagicAIController extends Controller
             $model = env('MAGIC_AI_MODEL', 'qwen2.5');
 
             if ($context === 'org') {
-                $prompt = "Extract Russian organization details from this document.
-                I need the INN (ИНН, 10 or 12 digits) and the KPP (КПП, 9 digits). 
-                Return ONLY a valid JSON object with 'inn' and 'kpp' keys. 
+                $prompt = "Extract Russian organization details and bank details from this document.
+                I need the following information:
+                - INN (ИНН, 10 or 12 digits)
+                - KPP (КПП, 9 digits)
+                - Organization Name (Название организации/ФИО ИП)
+                - BIC (БИК, 9 digits)
+                - Settlement Account (Расчетный счет, 20 digits)
+                - Correspondent Account (Корр. счет, 20 digits)
+                Return ONLY a valid JSON object with keys: 'inn', 'kpp', 'name', 'bic', 'account', 'corr_account'. 
                 Do not include any other text.
                 If not found, return empty strings for the values.
-                Example: {\"inn\": \"7712345678\", \"kpp\": \"771201001\"}";
+                Example: {\"inn\": \"7712345678\", \"kpp\": \"771201001\", \"name\": \"ООО Ромашка\", \"bic\": \"044525225\", \"account\": \"40702810400000000123\", \"corr_account\": \"30101810400000000225\"}";
             } else {
                 $prompt = "Extract Russian bank details from this document.
                 I need the BIC (9 digits) and the Settlement Account (Расчетный счет, 20 digits). 
@@ -57,19 +63,53 @@ class MagicAIController extends Controller
 
             $data = json_decode($response, true);
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // Try one more time with a simple regex if JSON fails
+            if (json_last_error() !== JSON_ERROR_NONE || empty($data)) {
+                // Try one more time with a simple regex if JSON fails or is empty
                 if ($context === 'org') {
-                    preg_match('/"inn":\s*"(\d{10,12})"/', $response, $innMatch);
-                    preg_match('/"kpp":\s*"(\d{9})"/', $response, $kppMatch);
+                    // Try to find labeled values first
+                    preg_match('/(?:inn|инн).*?(\d{10,12})/i', $response, $innMatch);
+                    preg_match('/(?:kpp|кпп).*?(\d{9})/i', $response, $kppMatch);
+
+                    // If no labels, just grab the first matching digit sequences
+                    if (empty($innMatch[1])) { // Check for actual value, not just match array existence
+                        preg_match('/\b(\d{10}|\d{12})\b/', $response, $innMatch);
+                    }
+                    if (empty($kppMatch[1])) { // Check for actual value
+                        preg_match('/\b(\d{9})\b/', $response, $kppMatch);
+                    }
 
                     $data = [
                         'inn' => $innMatch[1] ?? '',
                         'kpp' => $kppMatch[1] ?? '',
+                        'name' => '', // Hard to regex name reliably from small models, rely on JSON if it worked
+                        'bic' => '',
+                        'account' => '',
+                        'corr_account' => '',
                     ];
+
+                    // Also try to find bank details if they were in the org document
+                    preg_match('/(?:bic|бик).*?(\d{9})/i', $response, $bicMatch);
+                    preg_match('/(?:расчетный.*?счет|р\/с|р\sс|account).*?(\d{20})/ui', $response, $accMatch);
+                    preg_match('/(?:корреспондентский.*?счет|к\/с|к\sс|corr).*?(\d{20})/ui', $response, $corrMatch);
+
+                    if (!empty($bicMatch[1]))
+                        $data['bic'] = $bicMatch[1];
+                    if (!empty($accMatch[1]))
+                        $data['account'] = $accMatch[1];
+                    if (!empty($corrMatch[1]))
+                        $data['corr_account'] = $corrMatch[1];
+
                 } else {
-                    preg_match('/"bic":\s*"(\d{9})"/', $response, $bicMatch);
-                    preg_match('/"account":\s*"(\d{20})"/', $response, $accMatch);
+                    // Banks
+                    preg_match('/(?:bic|бик).*?(\d{9})/i', $response, $bicMatch);
+                    preg_match('/(?:account|счет|счёт|р\/с).*?(\d{20})/ui', $response, $accMatch);
+
+                    if (empty($bicMatch)) {
+                        preg_match('/\b(\d{9})\b/', $response, $bicMatch);
+                    }
+                    if (empty($accMatch)) {
+                        preg_match('/\b(\d{20})\b/', $response, $accMatch);
+                    }
 
                     $data = [
                         'bic' => $bicMatch[1] ?? '',
@@ -78,10 +118,43 @@ class MagicAIController extends Controller
                 }
             }
 
+            // Fallback for empty strings if JSON parsed but values are missing
+            if ($context === 'org') {
+                if (empty($data['inn'])) {
+                    preg_match('/\b(\d{10}|\d{12})\b/', $response, $fallbackInn);
+                    if (!empty($fallbackInn[1]))
+                        $data['inn'] = $fallbackInn[1];
+                }
+
+                // Aggressive fallback for 20-digit accounts if missing in org context
+                if (empty($data['account'])) {
+                    preg_match('/(?:расчетный.*?счет|р\/с|р\sс).*?(\d{20})/ui', $response, $accMatch);
+                    if (!empty($accMatch[1]))
+                        $data['account'] = $accMatch[1];
+                }
+                if (empty($data['corr_account'])) {
+                    preg_match('/(?:корреспондентский.*?счет|к\/с|к\sс).*?(\d{20})/ui', $response, $corrMatch);
+                    if (!empty($corrMatch[1]))
+                        $data['corr_account'] = $corrMatch[1];
+                }
+                if (empty($data['bic'])) {
+                    preg_match('/(?:bic|бик).*?(\d{9})/i', $response, $bicFallback);
+                    if (!empty($bicFallback[1]))
+                        $data['bic'] = $bicFallback[1];
+                }
+            }
+
+            if ($context === 'bank' && empty($data['account'])) {
+                preg_match('/\b(\d{20})\b/', $response, $fallback);
+                if (!empty($fallback[1]))
+                    $data['account'] = $fallback[1];
+            }
+
             return new JsonResponse($data);
         } catch (\Exception $e) {
             return new JsonResponse([
                 'message' => $e->getMessage(),
+                'response_dump' => $response ?? null // helpful for debugging
             ], 500);
         }
     }

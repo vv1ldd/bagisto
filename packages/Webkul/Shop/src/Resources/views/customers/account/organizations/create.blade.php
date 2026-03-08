@@ -450,9 +450,37 @@
                                     const kppInput = document.getElementById('kpp-input');
                                     if (kppInput) kppInput.value = data.kpp;
                                 }
+                                if (data.name) {
+                                    const nameInput = document.getElementById('name-input');
+                                    if (nameInput) nameInput.value = data.name;
+                                }
                                 
+                                // Also prep bank data if vision model managed to see it
+                                if (data.bic) {
+                                    const bicInput = document.getElementById('bic-input');
+                                    if (bicInput) {
+                                        bicInput.value = data.bic;
+                                        // Trigger input event to search bank details
+                                        bicInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
+                                }
+                                if (data.account) {
+                                    const accountInput = document.getElementById('settlement-account-input');
+                                    if (accountInput) {
+                                        accountInput.value = data.account;
+                                        accountInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
+                                }
+                                if (data.corr_account) {
+                                    const corrInput = document.getElementById('corr-account-input');
+                                    if (corrInput) corrInput.value = data.corr_account;
+                                }
+
                                 // Auto trigger INN lookup if we got an INN
                                 if (data.inn) {
+                                    const manualBtn = document.getElementById('manual-entry-btn');
+                                    if (manualBtn) manualBtn.click(); // Open manual entry fields to show what we found
+                                    
                                     const lookupBtn = document.getElementById('lookup-inn-btn');
                                     if (lookupBtn && !lookupBtn.disabled) lookupBtn.click();
                                 } else {
