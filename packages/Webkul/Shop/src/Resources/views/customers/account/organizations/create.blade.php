@@ -22,7 +22,7 @@
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 1: Данные организации</h2>
                         <div class="flex items-center gap-3">
                             <button type="button" id="magic-scan-btn" 
-                                class="hidden flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7C45F5] to-[#A855F7] text-white text-[12px] font-bold rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-95 group">
+                                class="hidden flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7C45F5] to-[#A855F7] text-white text-[12px] font-bold rounded-none shadow-lg hover:shadow-xl transition-all active:scale-95 group">
                                 <span class="group-hover:rotate-12 transition-transform">✨</span> Заполнить по фото/скану
                             </button>
                             <span id="step-1-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
@@ -32,7 +32,7 @@
                     <input type="file" id="magic-scan-input" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
 
                     <!-- Step 1 Summary (Shown after confirmation) -->
-                    <div id="step-1-summary" class="hidden bg-white border border-zinc-200 rounded-xl p-5 mb-6 shadow-sm">
+                    <div id="step-1-summary" class="hidden bg-white border border-zinc-200 rounded-none p-5 mb-6 shadow-sm">
                         <div class="flex items-start justify-between">
                             <div class="space-y-1">
                                 <div id="summary-org-name" class="text-[18px] font-bold text-zinc-900 leading-tight"></div>
@@ -47,7 +47,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" id="edit-step-1-btn" class="text-[12px] font-bold text-[#7C45F5] hover:underline px-3 py-1 bg-[#7C45F5]/5 rounded-lg transition-all">
+                            <button type="button" id="edit-step-1-btn" class="text-[12px] font-bold text-[#7C45F5] hover:underline px-3 py-1 bg-[#7C45F5]/5 rounded-none transition-all">
                                 Изменить
                             </button>
                         </div>
@@ -60,26 +60,26 @@
                                 @lang('shop::app.customers.account.organizations.create.inn')
                             </x-shop::form.control-group.label>
 
-                            <div class="relative w-full overflow-visible flex gap-2">
+                            <div class="relative w-full overflow-visible flex gap-0 border border-zinc-200">
                                 <div class="relative flex-grow">
                                     <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
                                         id="inn-input"
-                                        class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full !rounded-lg"
+                                        class="!py-3.5 !px-4 !border-0 focus:!ring-0 transition-all w-full !rounded-none"
                                         :label="trans('shop::app.customers.account.organizations.create.inn')"
                                         placeholder="Введите ИНН или название..." 
                                         autocomplete="off" />
-                                    
-                                    <div id="org-suggestions" 
-                                        style="max-height: 320px !important; overflow-y: auto !important;"
-                                        class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden">
-                                        <!-- Suggestions will be injected here via JS -->
-                                    </div>
                                 </div>
                                 
                                 <button type="button" id="lookup-org-btn" disabled
-                                    class="bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-200 disabled:text-zinc-500 text-white font-bold px-6 py-3 rounded-lg transition-all whitespace-nowrap text-[14px]">
+                                    class="bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-100 disabled:text-zinc-400 text-white font-bold px-8 !py-3.5 rounded-none transition-all whitespace-nowrap text-[14px]">
                                     Найти
                                 </button>
+
+                                <div id="org-suggestions" 
+                                    style="max-height: 320px !important; overflow-y: auto !important;"
+                                    class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-none shadow-2xl hidden">
+                                    <!-- Suggestions will be injected here via JS -->
+                                </div>
                             </div>
                             
                             <div class="mt-3 text-right">
@@ -91,9 +91,9 @@
                         </x-shop::form.control-group>
 
                         <!-- Extracted Organization Details (Confirmation Card) -->
-                        <div id="step-1-details" class="hidden space-y-6 bg-[#7C45F5]/5 rounded-2xl p-6 border border-[#7C45F5]/10 relative transition-all duration-500">
+                        <div id="step-1-details" class="hidden space-y-6 bg-[#7C45F5]/5 rounded-none p-6 border border-[#7C45F5]/10 relative transition-all duration-500">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="bg-[#7C45F5] text-white p-1.5 rounded-full">
+                                <div class="bg-[#7C45F5] text-white p-1.5 rounded-none">
                                     <span class="icon-done text-xs"></span>
                                 </div>
                                 <h3 class="text-[15px] font-bold text-zinc-900">
@@ -102,7 +102,7 @@
                             </div>
 
                             <div class="grid grid-cols-1 gap-5">
-                                <div class="ios-tile p-4 bg-white/60">
+                                <div class="ios-tile p-4 bg-white/60 !rounded-none">
                                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
                                         @lang('shop::app.customers.account.organizations.create.name')
                                     </label>
@@ -111,7 +111,7 @@
                                         placeholder="Название организации" />
                                 </div>
 
-                                <div id="kpp-container" class="ios-tile p-4 bg-white/60">
+                                <div id="kpp-container" class="ios-tile p-4 bg-white/60 !rounded-none">
                                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
                                         @lang('shop::app.customers.account.organizations.create.kpp')
                                     </label>
@@ -120,7 +120,7 @@
                                         placeholder="КПП (если есть)" />
                                 </div>
 
-                                <div class="ios-tile p-4 bg-white/60">
+                                <div class="ios-tile p-4 bg-white/60 !rounded-none">
                                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
                                         @lang('shop::app.customers.account.organizations.create.address')
                                     </label>
@@ -132,7 +132,7 @@
 
                             <div class="pt-4 flex flex-col items-center">
                                 <button type="button" id="confirm-step-1-btn"
-                                    class="w-full bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold py-4 px-8 rounded-xl shadow-xl shadow-[#7C45F5]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-[16px]">
+                                    class="w-full bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold py-4 px-8 rounded-none shadow-xl shadow-[#7C45F5]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-[16px]">
                                     Подтвердить и продолжить
                                     <span class="icon-arrow-right text-lg"></span>
                                 </button>
@@ -159,13 +159,13 @@
                                 <x-shop::form.control-group.label
                                     class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider flex items-center gap-2">
                                     @lang('shop::app.customers.account.organizations.create.settlement_account')
-                                    <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded text-zinc-500">20 цифр</span>
+                                    <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded-none text-zinc-500">20 цифр</span>
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="settlement_account" rules="required|length:20"
                                     :value="old('settlement_account')"
                                     id="settlement-account-input"
-                                    class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans"
+                                    class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans !rounded-none"
                                     :label="trans('shop::app.customers.account.organizations.create.settlement_account')"
                                     placeholder="40702810..." />
 
@@ -183,12 +183,12 @@
 
                                 <div class="relative w-full overflow-visible">
                                     <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
-                                        class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full relative z-10"
+                                        class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full relative z-10 !rounded-none"
                                         placeholder="Начните вводить..." autocomplete="off" />
                                         
                                     <div id="bank-suggestions" 
                                         style="max-height: 320px !important; overflow-y: auto !important;"
-                                        class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden">
+                                        class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-none shadow-2xl hidden">
                                         <!-- Suggestions will be injected here via JS -->
                                     </div>
                                 </div>
@@ -198,7 +198,7 @@
                     </div>
 
                     <!-- Extracted Bank Details (Readonly Constants) -->
-                    <div id="step-2-details" class="hidden mt-6 space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
+                    <div id="step-2-details" class="hidden mt-6 space-y-4 bg-zinc-50/50 rounded-none p-5 border border-zinc-100 relative">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
