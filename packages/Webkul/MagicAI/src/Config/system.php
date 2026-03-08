@@ -11,6 +11,7 @@ return [
     [
         'key' => 'general.magic_ai.knowledge_base',
         'name' => 'admin::app.magic_ai.knowledge_base.title',
+        'info' => 'admin::app.magic_ai.knowledge_base.title',
         'sort' => 6,
         'fields' => [
             [
