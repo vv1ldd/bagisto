@@ -81,7 +81,7 @@
                                             id="inn-input"
                                             v-bind="field"
                                             class="!py-3.5 !px-4 !border-0 transition-all w-full text-gray-600"
-                                            placeholder="Введите ИНН или название..." 
+                                            placeholder="Введите ИНН..." 
                                             autocomplete="off" />
                                     </v-field>
                                 </div>
