@@ -126,33 +126,57 @@
                 <!-- ================== STEP 2: BANK DETAILS ================== -->
                 <div id="step-2" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
                     <div class="flex items-center justify-between mb-4" id="step-2-header">
-                        <h2 class="text-[16px] font-bold text-zinc-900">Шаг 2: Банк организации</h2>
+                        <h2 class="text-[16px] font-bold text-zinc-900">Шаг 2: Банковские реквизиты</h2>
                         <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
                     </div>
 
-                    <!-- Bank Search Autocomplete -->
-                    <x-shop::form.control-group class="!mb-4" id="step-2-input-container">
-                        <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
-                            Название банка или БИК
-                        </x-shop::form.control-group.label>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Left: Settlement Account (Primary focus) -->
+                        <div>
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.label
+                                    class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider flex items-center gap-2">
+                                    @lang('shop::app.customers.account.organizations.create.settlement_account')
+                                    <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded text-zinc-500">20 цифр</span>
+                                </x-shop::form.control-group.label>
 
-                        <div class="relative w-full overflow-visible">
-                            <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
-                                class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full relative z-10"
-                                placeholder="Начните вводить название..." autocomplete="off" />
-                                
-                            <div id="bank-suggestions" 
-                                style="max-height: 320px !important; overflow-y: auto !important;"
-                                class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden">
-                                <!-- Suggestions will be injected here via JS -->
-                            </div>
+                                <x-shop::form.control-group.control type="text" name="settlement_account" rules="required|length:20"
+                                    :value="old('settlement_account')"
+                                    id="settlement-account-input"
+                                    class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans"
+                                    :label="trans('shop::app.customers.account.organizations.create.settlement_account')"
+                                    placeholder="40702810..." />
+
+                                <x-shop::form.control-group.error control-name="settlement_account" />
+                                <div id="settlement-account-error" class="text-red-500 text-[12px] mt-1 hidden font-bold"></div>
+                            </x-shop::form.control-group>
                         </div>
-                        <x-shop::form.control-group.error control-name="bic" />
-                    </x-shop::form.control-group>
+
+                        <!-- Right: Bank Search -->
+                        <div class="relative">
+                            <x-shop::form.control-group class="!mb-0" id="step-2-input-container">
+                                <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
+                                    Название банка или БИК
+                                </x-shop::form.control-group.label>
+
+                                <div class="relative w-full overflow-visible">
+                                    <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
+                                        class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full relative z-10"
+                                        placeholder="Начните вводить..." autocomplete="off" />
+                                        
+                                    <div id="bank-suggestions" 
+                                        style="max-height: 320px !important; overflow-y: auto !important;"
+                                        class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden">
+                                        <!-- Suggestions will be injected here via JS -->
+                                    </div>
+                                </div>
+                                <x-shop::form.control-group.error control-name="bic" />
+                            </x-shop::form.control-group>
+                        </div>
+                    </div>
 
                     <!-- Extracted Bank Details (Readonly Constants) -->
-                    <div id="step-2-details" class="hidden space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
-
+                    <div id="step-2-details" class="hidden mt-6 space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
@@ -170,48 +194,14 @@
                                     class="w-full bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default" />
                             </div>
                         </div>
-
-                        <div class="pt-2 flex flex-col md:flex-row gap-3 items-center justify-between border-t border-zinc-200/60 mt-4">
-                            <span class="text-[12px] text-zinc-500">
-                                Банк определен. Нажмите для ввода расч. счета.
-                            </span>
-                            <button type="button" id="confirm-step-2-btn"
-                                class="px-6 py-2 border-2 border-[#7C45F5] text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white font-bold transition-all text-[13px] w-full md:w-auto">
-                                Подтвердить и продолжить
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- ================== STEP 3: SETTLEMENT ACCOUNT ================== -->
-                <div id="step-3" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-[16px] font-bold text-zinc-900">Шаг 3: Расчетный счет</h2>
                     </div>
 
-                    <x-shop::form.control-group class="!mb-6">
-                        <x-shop::form.control-group.label
-                            class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider flex items-center gap-2">
-                            @lang('shop::app.customers.account.organizations.create.settlement_account')
-                            <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded text-zinc-500">20 цифр</span>
-                        </x-shop::form.control-group.label>
-
-                        <x-shop::form.control-group.control type="text" name="settlement_account" rules="required|length:20"
-                            :value="old('settlement_account')"
-                            id="settlement-account-input"
-                            class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans"
-                            :label="trans('shop::app.customers.account.organizations.create.settlement_account')"
-                            placeholder="40702810..." />
-
-                        <x-shop::form.control-group.error control-name="settlement_account" />
-                        <div id="settlement-account-error" class="text-red-500 text-[12px] mt-1 hidden font-bold"></div>
-                    </x-shop::form.control-group>
-
-                    <button type="submit" id="submit-btn" disabled
-                        class="w-full bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold py-4 px-8 rounded-none shadow-lg shadow-[#7C45F5]/20 disabled:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-                        @lang('shop::app.customers.account.organizations.create.save')
-                    </button>
+                    <div class="mt-8">
+                        <button type="submit" id="submit-btn" disabled
+                            class="w-full bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold py-4 px-8 rounded-none shadow-lg shadow-[#7C45F5]/20 disabled:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                            @lang('shop::app.customers.account.organizations.create.save')
+                        </button>
+                    </div>
                 </div>
             </div>
         </x-shop::form>
@@ -356,23 +346,7 @@
 
                 // --- STEP 2: Bank Autocomplete removed from click listener as it is now an input listener ---
 
-                // --- STEP 2: Confirm ---
-                const confirmStep2Btn = e.target.closest('#confirm-step-2-btn');
-                if (confirmStep2Btn) {
-                    e.preventDefault();
-                    if (document.getElementById('step-2-details')) document.getElementById('step-2-details').classList.add('hidden');
-                    if (document.getElementById('step-2-input-container')) document.getElementById('step-2-input-container').classList.add('opacity-50', 'pointer-events-none');
-                    
-                    if (document.getElementById('step-2-badge')) document.getElementById('step-2-badge').classList.remove('hidden');
-                    
-                    const s3 = document.getElementById('step-3');
-                    if (s3) {
-                        s3.classList.remove('hidden');
-                        s3.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        if (document.getElementById('settlement-account-input')) document.getElementById('settlement-account-input').focus();
-                    }
-                    return;
-                }
+                // --- STEP 2: Confirm handled by submit-btn ---
             });
             
             // Event delegation for input fields
@@ -395,18 +369,31 @@
                     
                     bankDebounceTimer = setTimeout(async () => {
                         try {
+                            const accountInput = document.getElementById('settlement-account-input');
+                            const account = accountInput ? accountInput.value.trim() : '';
+                            
                             const url = `{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`;
                             const response = await fetch(url);
-                            const banks = await response.json();
+                            let banks = await response.json();
                             
                             if (response.ok && banks && banks.length > 0) {
+                                // Prioritize banks that match the current account checksum
+                                if (account.length === 20) {
+                                    banks = banks.map(bank => ({
+                                        ...bank,
+                                        isValidForAccount: window.isValidBankAccount(bank.bic, account)
+                                    })).sort((a, b) => b.isValidForAccount - a.isValidForAccount);
+                                }
+
                                 suggestionsContainer.innerHTML = banks.map(bank => `
-                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
                                         data-name="${bank.bank_name || ''}"
                                         data-bic="${bank.bic || ''}"
                                         data-corr="${bank.correspondent_account || ''}">
-                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'}</div>
-                                        <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                        <div>
+                                            <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит к счету</span>' : ''}</div>
+                                            <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                        </div>
                                     </div>
                                 `).join('');
                                 suggestionsContainer.classList.remove('hidden');
@@ -444,6 +431,12 @@
                             }
                             if (submitBtn) submitBtn.disabled = true;
                         }
+                    } else if (account.length === 20 && bic.length === 0) {
+                        // Account entered first, just generic success if 20 digits, 
+                        // checksum will be verified once BIC is selected
+                        e.target.classList.add('!border-green-500');
+                        if (errorMsg) errorMsg.classList.add('hidden');
+                        if (submitBtn) submitBtn.disabled = true; // Still need BIC
                     } else {
                         e.target.classList.remove('!border-green-500', '!border-red-500', '!ring-red-500');
                         if (errorMsg) errorMsg.classList.add('hidden');
@@ -508,9 +501,6 @@
                 
                 const step2Details = document.getElementById('step-2-details');
                 if (step2Details) step2Details.classList.remove('hidden');
-                
-                const s3 = document.getElementById('step-3');
-                if (s3) s3.classList.remove('hidden');
             }
         }, 100);
     </script>
