@@ -54,12 +54,14 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                            Название организации (алиас, необязательно)
+                    <div class="mt-4 bg-white p-4 border border-zinc-100 rounded-lg shadow-sm">
+                        <label class="block text-[11px] font-bold text-[#7C45F5] uppercase tracking-wider mb-1.5 flex items-center gap-2">
+                            <span class="icon-favorites text-sm"></span>
+                            Назовите эту организацию (для себя)
                         </label>
-                        <input type="text" name="alias" value="{{ old('alias') ?? $organization->alias }}" placeholder="Например: Мое ИП, Основная ООО..."
-                            class="w-full bg-white border border-zinc-200 rounded px-3 py-2 text-[14px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5]/30 transition-all" />
+                        <input type="text" name="alias" value="{{ old('alias') ?? $organization->alias }}" placeholder="Например: Моё ИП, Основная ООО..."
+                            class="w-full bg-transparent border-0 border-b border-zinc-200 focus:border-[#7C45F5] p-0 pb-2 text-[15px] text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300" />
+                        <p class="text-[10px] text-zinc-400 mt-2 italic">Это название будет использоваться во всех списках и при выборе счета.</p>
                     </div>
 
                     <div class="mt-4">

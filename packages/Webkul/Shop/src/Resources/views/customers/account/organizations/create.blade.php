@@ -23,74 +23,101 @@
                         <span id="step-1-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
                     </div>
 
-                    <!-- INN Search -->
-                    <x-shop::form.control-group class="!mb-4" id="step-1-input-container">
-                        <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
-                            @lang('shop::app.customers.account.organizations.create.inn')
-                        </x-shop::form.control-group.label>
-
-                        <div class="flex items-stretch gap-2">
-                            <div class="flex-1">
-                                <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
-                                    id="inn-input"
-                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full !rounded-lg"
-                                    :label="trans('shop::app.customers.account.organizations.create.inn')"
-                                    placeholder="Введите ИНН..." />
+                    <!-- Step 1 Summary (Shown after confirmation) -->
+                    <div id="step-1-summary" class="hidden bg-white border border-zinc-200 rounded-xl p-5 mb-6 shadow-sm">
+                        <div class="flex items-start justify-between">
+                            <div class="space-y-1">
+                                <div id="summary-org-alias" class="text-[18px] font-bold text-zinc-900 leading-tight"></div>
+                                <div id="summary-org-name" class="text-[13px] text-zinc-500 font-medium italic"></div>
+                                <div class="flex items-center gap-3 mt-3 pt-3 border-t border-zinc-100">
+                                    <div class="text-[12px] text-zinc-400">
+                                        <span class="font-bold uppercase tracking-wider mr-1">ИНН:</span>
+                                        <span id="summary-org-inn" class="font-mono text-zinc-600"></span>
+                                    </div>
+                                    <div id="summary-kpp-container" class="text-[12px] text-zinc-400">
+                                        <span class="font-bold uppercase tracking-wider mr-1">КПП:</span>
+                                        <span id="summary-org-kpp" class="font-mono text-zinc-600"></span>
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <button type="button" id="lookup-inn-btn"
-                                class="px-6 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold transition-all disabled:opacity-50 text-[14px] rounded-lg whitespace-nowrap flex items-center justify-center">
-                                Найти
+                            <button type="button" id="edit-step-1-btn" class="text-[12px] font-bold text-[#7C45F5] hover:underline px-3 py-1 bg-[#7C45F5]/5 rounded-lg transition-all">
+                                Изменить
                             </button>
                         </div>
-                        <x-shop::form.control-group.error control-name="inn" />
-                    </x-shop::form.control-group>
+                    </div>
 
-                    <!-- Extracted Organization Details (Readonly Constants) -->
-                    <div id="step-1-details" class="hidden space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
+                    <div id="step-1-inputs">
+                        <!-- INN Search -->
+                        <x-shop::form.control-group class="!mb-4" id="step-1-input-container">
+                            <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
+                                @lang('shop::app.customers.account.organizations.create.inn')
+                            </x-shop::form.control-group.label>
 
-                        <div class="grid grid-cols-1 gap-4">
+                            <div class="flex items-stretch gap-2">
+                                <div class="flex-1">
+                                    <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
+                                        id="inn-input"
+                                        class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full !rounded-lg"
+                                        :label="trans('shop::app.customers.account.organizations.create.inn')"
+                                        placeholder="Введите ИНН..." />
+                                </div>
+                                
+                                <button type="button" id="lookup-inn-btn"
+                                    class="px-6 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold transition-all disabled:opacity-50 text-[14px] rounded-lg whitespace-nowrap flex items-center justify-center">
+                                    Найти
+                                </button>
+                            </div>
+                            <x-shop::form.control-group.error control-name="inn" />
+                        </x-shop::form.control-group>
+
+                        <!-- Extracted Organization Details (Readonly Constants) -->
+                        <div id="step-1-details" class="hidden space-y-4 bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
+
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                                        @lang('shop::app.customers.account.organizations.create.name')
+                                    </label>
+                                    <input type="text" name="name" id="name-input" readonly 
+                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
+                                </div>
+
+                                <div id="kpp-container">
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                                        @lang('shop::app.customers.account.organizations.create.kpp')
+                                    </label>
+                                    <input type="text" name="kpp" id="kpp-input" readonly 
+                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default" />
+                                </div>
+                            </div>
+
+                            <div class="mt-2 bg-white p-4 border border-zinc-100 rounded-lg shadow-sm">
+                                <label class="block text-[11px] font-bold text-[#7C45F5] uppercase tracking-wider mb-1.5 flex items-center gap-2">
+                                    <span class="icon-favorites text-sm"></span>
+                                    Назовите эту организацию (для себя)
+                                </label>
+                                <input type="text" name="alias" id="alias-input" placeholder="Например: Моё ИП, Основная ООО..."
+                                    class="w-full bg-transparent border-0 border-b border-zinc-200 focus:border-[#7C45F5] p-0 pb-2 text-[15px] text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300" />
+                                <p class="text-[10px] text-zinc-400 mt-2 italic">Это название будет использоваться во всех списках и при выборе счета.</p>
+                            </div>
+
                             <div>
                                 <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                    @lang('shop::app.customers.account.organizations.create.name')
+                                    @lang('shop::app.customers.account.organizations.create.address')
                                 </label>
-                                <input type="text" name="name" id="name-input" readonly 
-                                    class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
+                                <input type="text" name="address" id="address-input" readonly 
+                                    class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 cursor-default" />
                             </div>
 
-                            <div id="kpp-container">
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                    @lang('shop::app.customers.account.organizations.create.kpp')
-                                </label>
-                                <input type="text" name="kpp" id="kpp-input" readonly 
-                                    class="w-full bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default" />
+                            <div class="pt-2 flex flex-col md:flex-row gap-3 items-center justify-between border-t border-zinc-200/60 mt-4">
+                                <span class="text-[12px] text-zinc-500">
+                                    Проверьте данные. Если всё верно, нажмите «Подтвердить».
+                                </span>
+                                <button type="button" id="confirm-step-1-btn"
+                                    class="px-6 py-2 border-2 border-[#7C45F5] text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white font-bold transition-all text-[13px] w-full md:w-auto">
+                                    Подтвердить и продолжить
+                                </button>
                             </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                Название организации (алиас, необязательно)
-                            </label>
-                            <input type="text" name="alias" id="alias-input" placeholder="Например: Мое ИП, Основная ООО..."
-                                class="w-full bg-white border border-zinc-200 rounded px-3 py-2 text-[14px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5]/30 transition-all" />
-                        </div>
-
-                        <div>
-                            <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                @lang('shop::app.customers.account.organizations.create.address')
-                            </label>
-                            <input type="text" name="address" id="address-input" readonly 
-                                class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 cursor-default" />
-                        </div>
-
-                        <div class="pt-2 flex flex-col md:flex-row gap-3 items-center justify-between border-t border-zinc-200/60 mt-4">
-                            <span class="text-[12px] text-zinc-500">
-                                Проверьте данные. Если всё верно, нажмите «Подтвердить».
-                            </span>
-                            <button type="button" id="confirm-step-1-btn"
-                                class="px-6 py-2 border-2 border-[#7C45F5] text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white font-bold transition-all text-[13px] w-full md:w-auto">
-                                Подтвердить и продолжить
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -259,11 +286,29 @@
                 const confirmStep1Btn = e.target.closest('#confirm-step-1-btn');
                 if (confirmStep1Btn) {
                     e.preventDefault();
-                    if (document.getElementById('step-1-details')) document.getElementById('step-1-details').classList.add('hidden');
-                    if (document.getElementById('step-1-input-container')) document.getElementById('step-1-input-container').classList.add('opacity-50', 'pointer-events-none');
-                    if (document.getElementById('lookup-inn-btn')) document.getElementById('lookup-inn-btn').classList.add('hidden');
                     
-                    if (document.getElementById('step-1-badge')) document.getElementById('step-1-badge').classList.remove('hidden');
+                    const name = document.getElementById('name-input').value;
+                    const inn = document.getElementById('inn-input').value;
+                    const kpp = document.getElementById('kpp-input').value;
+                    const alias = document.getElementById('alias-input').value.trim();
+                    
+                    // Fill summary
+                    document.getElementById('summary-org-alias').innerText = alias || name;
+                    document.getElementById('summary-org-name').innerText = alias ? name : '';
+                    document.getElementById('summary-org-inn').innerText = inn;
+                    
+                    const summaryKppContainer = document.getElementById('summary-kpp-container');
+                    if (kpp) {
+                        document.getElementById('summary-org-kpp').innerText = kpp;
+                        summaryKppContainer.classList.remove('hidden');
+                    } else {
+                        summaryKppContainer.classList.add('hidden');
+                    }
+                    
+                    // Toggle visibility
+                    document.getElementById('step-1-inputs').classList.add('hidden');
+                    document.getElementById('step-1-summary').classList.remove('hidden');
+                    document.getElementById('step-1-badge').classList.remove('hidden');
                     
                     const s2 = document.getElementById('step-2');
                     if (s2) {
@@ -271,8 +316,26 @@
                         if (document.getElementById('step-2-header')) {
                             document.getElementById('step-2-header').scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
-                        if (document.getElementById('bic-input')) document.getElementById('bic-input').focus();
+                        if (document.getElementById('bank-query')) document.getElementById('bank-query').focus();
                     }
+                    return;
+                }
+
+                // --- STEP 1: Edit ---
+                const editStep1Btn = e.target.closest('#edit-step-1-btn');
+                if (editStep1Btn) {
+                    e.preventDefault();
+                    document.getElementById('step-1-inputs').classList.remove('hidden');
+                    document.getElementById('step-1-summary').classList.add('hidden');
+                    document.getElementById('step-1-badge').classList.add('hidden');
+                    
+                    // Hide subsequent steps
+                    ['step-2', 'step-3', 'step-4'].forEach(id => {
+                        const step = document.getElementById(id);
+                        if (step) step.classList.add('hidden');
+                    });
+                    
+                    document.getElementById('inn-input').focus();
                     return;
                 }
 
