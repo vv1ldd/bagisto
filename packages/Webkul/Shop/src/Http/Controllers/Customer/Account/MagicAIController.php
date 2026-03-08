@@ -23,7 +23,7 @@ class MagicAIController extends Controller
             $mimeType = $file->getMimeType();
             $base64 = base64_encode(file_get_contents($file->getPathname()));
 
-            $model = core()->getConfigData('general.magic_ai.settings.model') ?: 'gemini-2.0-flash';
+            $model = env('MAGIC_AI_MODEL', 'qwen2.5');
 
             $prompt = "Extract Russian bank details from this document.
             I need the BIC (9 digits) and the Settlement Account (Расчетный счет, 20 digits). 
