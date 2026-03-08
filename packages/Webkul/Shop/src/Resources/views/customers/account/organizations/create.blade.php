@@ -60,14 +60,26 @@
                                 @lang('shop::app.customers.account.organizations.create.inn')
                             </x-shop::form.control-group.label>
 
-                            <div class="relative w-full overflow-visible flex gap-0 border border-zinc-200">
+                            <style>
+                                #search-wrapper * { border-radius: 0 !important; }
+                                #inn-input:focus { outline: none !important; border-color: #7C45F5 !important; box-shadow: none !important; }
+                            </style>
+                            <div class="relative w-full overflow-visible flex gap-0 border border-zinc-200" id="search-wrapper">
                                 <div class="relative flex-grow">
-                                    <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
-                                        id="inn-input"
-                                        class="!py-3.5 !px-4 !border-0 focus:!ring-0 transition-all w-full !rounded-none"
-                                        :label="trans('shop::app.customers.account.organizations.create.inn')"
-                                        placeholder="Введите ИНН или название..." 
-                                        autocomplete="off" />
+                                    <v-field
+                                        name="inn"
+                                        rules="required"
+                                        label="{{ trans('shop::app.customers.account.organizations.create.inn') }}"
+                                        v-slot="{ field }"
+                                    >
+                                        <input
+                                            type="text"
+                                            id="inn-input"
+                                            v-bind="field"
+                                            class="!py-3.5 !px-4 !border-0 transition-all w-full !rounded-none !mb-0 text-gray-600"
+                                            placeholder="Введите ИНН или название..." 
+                                            autocomplete="off" />
+                                    </v-field>
                                 </div>
                                 
                                 <button type="button" id="lookup-org-btn" disabled
