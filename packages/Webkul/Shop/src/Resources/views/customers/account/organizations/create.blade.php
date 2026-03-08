@@ -126,11 +126,6 @@
                                 </div>
                             </div>
                             
-                            <div class="mt-3 text-right">
-                                <button type="button" id="manual-entry-btn" class="text-[12px] text-zinc-500 hover:text-[#7C45F5] transition-colors underline underline-offset-2">
-                                    Ввести данные вручную
-                                </button>
-                            </div>
                             <x-shop::form.control-group.error control-name="inn" />
                         </x-shop::form.control-group>
 
@@ -350,25 +345,6 @@
                     return;
                 }
 
-                // --- STEP 1: Manual Entry ---
-                const manualEntryBtn = e.target.closest('#manual-entry-btn');
-                if (manualEntryBtn) {
-                    e.preventDefault();
-                    
-                    const step1Details = document.getElementById('step-1-details');
-                    if (step1Details) {
-                        step1Details.classList.remove('hidden');
-                        step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                    
-                    const kppContainer = document.getElementById('kpp-container');
-                    if (kppContainer) kppContainer.classList.remove('hidden');
-                    
-                    const nameInput = document.getElementById('name-input');
-                    if (nameInput) nameInput.focus();
-                    
-                    return;
-                }
 
             });
             
@@ -426,6 +402,18 @@
                     if (lookupBtn) {
                         lookupBtn.disabled = e.target.value.trim().length < 3;
                     }
+                    
+                    // Guard: Hide confirmation if user edits the input after selecting
+                    const step1Details = document.getElementById('step-1-details');
+                    if (step1Details && !step1Details.classList.contains('hidden')) {
+                        step1Details.classList.add('hidden');
+                    }
+                    
+                    const step1Badge = document.getElementById('step-1-badge');
+                    if (step1Badge) step1Badge.classList.add('hidden');
+                    
+                    const step2 = document.getElementById('step-2');
+                    if (step2) step2.classList.add('hidden');
                 }
             });
 
