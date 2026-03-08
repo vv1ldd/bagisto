@@ -49,6 +49,7 @@ class OrganizationController extends Controller
             'name' => 'required',
             'inn' => 'required',
             'kpp' => 'nullable',
+            'ogrn' => 'nullable',
             'bank_name' => 'nullable',
             'bic' => 'nullable',
             'settlement_account' => 'nullable',
@@ -63,6 +64,7 @@ class OrganizationController extends Controller
             'name',
             'inn',
             'kpp',
+            'ogrn',
             'address',
             // Kept for backward compatibility
             'bank_name',
@@ -129,6 +131,7 @@ class OrganizationController extends Controller
             'name' => 'required',
             'inn' => 'required',
             'kpp' => 'nullable',
+            'ogrn' => 'nullable',
             'bank_name' => 'nullable',
             'bic' => 'nullable',
             'settlement_account' => 'nullable',
@@ -148,6 +151,7 @@ class OrganizationController extends Controller
             'name',
             'inn',
             'kpp',
+            'ogrn',
             'address',
             // Kept for backward compatibility
             'bank_name',

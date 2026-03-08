@@ -60,6 +60,7 @@ class DadataHelper
                         'inn' => $item['data']['inn'] ?? null,
                         'kpp' => $item['data']['kpp'] ?? null,
                         'address' => $item['data']['address']['value'] ?? null,
+                        'ogrn' => $item['data']['ogrn'] ?? null,
                     ];
                 }
             }
@@ -192,6 +193,7 @@ class DadataHelper
                             'kpp' => $item['data']['kpp'] ?? null,
                             'address' => $item['data']['address']['value'] ?? null,
                             'type' => $item['data']['type'] ?? null,
+                            'ogrn' => $item['data']['ogrn'] ?? null,
                         ];
                     }, $suggestions);
                 }

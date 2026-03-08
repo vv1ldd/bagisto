@@ -1,5 +1,5 @@
 <x-shop::layouts.account :is-cardless="true" :show-back="false">
-    <div class="flex-auto ios-tile-relative ios-group max-w-[600px] mx-auto p-8 max-md:p-6 !bg-transparent border-none !shadow-none">
+    <div class="flex-auto ios-tile-relative ios-group max-w-[800px] mx-auto p-8 max-md:p-6 !bg-transparent border-none !shadow-none">
         
         <!-- Brand Header Section -->
         <div class="flex items-center justify-between mb-12">
@@ -44,6 +44,10 @@
                                     <div id="summary-kpp-container" class="text-[12px] text-zinc-400">
                                         <span class="font-bold uppercase tracking-wider mr-1">КПП:</span>
                                         <span id="summary-org-kpp" class="font-mono text-zinc-600"></span>
+                                    </div>
+                                    <div id="summary-ogrn-container" class="text-[12px] text-zinc-400 hidden">
+                                        <span class="font-bold uppercase tracking-wider mr-1">ОГРН:</span>
+                                        <span id="summary-org-ogrn" class="font-mono text-zinc-600"></span>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +108,7 @@
                                 </h3>
                             </div>
 
-                            <div class="grid grid-cols-1 gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div class="ios-tile p-4 bg-white/60 !rounded-none">
                                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
                                         @lang('shop::app.customers.account.organizations.create.name')
@@ -112,6 +116,15 @@
                                     <input type="text" name="name" id="name-input"  
                                         class="w-full bg-transparent border-0 p-0 text-[17px] font-bold text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300"
                                         placeholder="Название организации" />
+                                </div>
+
+                                <div class="ios-tile p-4 bg-white/60 !rounded-none">
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
+                                        Юридический адрес
+                                    </label>
+                                    <input type="text" name="address" id="address-input"  
+                                        class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300"
+                                        placeholder="Юридический адрес" />
                                 </div>
 
                                 <div id="kpp-container" class="ios-tile p-4 bg-white/60 !rounded-none">
@@ -123,13 +136,13 @@
                                         placeholder="КПП (если есть)" />
                                 </div>
 
-                                <div class="ios-tile p-4 bg-white/60 !rounded-none">
+                                <div id="ogrn-container" class="ios-tile p-4 bg-white/60 !rounded-none">
                                     <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                                        @lang('shop::app.customers.account.organizations.create.address')
+                                        ОГРН / ОГРНИП
                                     </label>
-                                    <input type="text" name="address" id="address-input"  
-                                        class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300"
-                                        placeholder="Юридический адрес" />
+                                    <input type="text" name="ogrn" id="ogrn-input"  
+                                        class="w-full bg-transparent border-0 p-0 text-[16px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300"
+                                        placeholder="ОГРН" />
                                 </div>
                             </div>
 
@@ -262,6 +275,7 @@
                     const name = document.getElementById('name-input').value;
                     const inn = document.getElementById('inn-input').value;
                     const kpp = document.getElementById('kpp-input').value;
+                    const ogrn = document.getElementById('ogrn-input').value;
                     
                     // Fill summary
                     document.getElementById('summary-org-name').innerText = name;
@@ -273,6 +287,14 @@
                         summaryKppContainer.classList.remove('hidden');
                     } else {
                         summaryKppContainer.classList.add('hidden');
+                    }
+
+                    const summaryOgrnContainer = document.getElementById('summary-ogrn-container');
+                    if (ogrn) {
+                        document.getElementById('summary-org-ogrn').innerText = ogrn;
+                        summaryOgrnContainer.classList.remove('hidden');
+                    } else {
+                        summaryOgrnContainer.classList.add('hidden');
                     }
                     
                     // Toggle visibility
@@ -329,6 +351,8 @@
                 if (nameInput) nameInput.value = org.name || '';
                 if (kppInput) kppInput.value = org.kpp || '';
                 if (addressInput) addressInput.value = org.address || '';
+                const ogrnInput = document.getElementById('ogrn-input');
+                if (ogrnInput) ogrnInput.value = org.ogrn || '';
                 
                 // Show/hide KPP container
                 if (kppContainer) {
@@ -376,11 +400,13 @@
                                 data-name="${org.name || ''}"
                                 data-inn="${org.inn || ''}"
                                 data-kpp="${org.kpp || ''}"
+                                data-ogrn="${org.ogrn || ''}"
                                 data-address="${org.address || ''}">
                                 <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
                                 <div class="text-[12px] text-zinc-500 font-mono">
                                     ИНН: ${org.inn || '-'} 
                                     ${org.kpp ? ` | КПП: ${org.kpp}` : ''}
+                                    ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
                                 </div>
                                 <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
                             </div>
@@ -410,6 +436,7 @@
                         name: orgItem.dataset.name,
                         inn: orgItem.dataset.inn,
                         kpp: orgItem.dataset.kpp,
+                        ogrn: orgItem.dataset.ogrn,
                         address: orgItem.dataset.address
                     });
                 }
