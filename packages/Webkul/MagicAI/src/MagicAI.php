@@ -179,6 +179,8 @@ class MagicAI
             $this->temperature,
             $this->stream,
             $this->raw,
+            $this->attachment,
+            $this->mimeType,
         );
     }
 }
