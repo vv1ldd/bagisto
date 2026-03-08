@@ -65,7 +65,7 @@ class KnowledgeBaseController extends Controller
         // Generate embedding
         $this->generateEmbedding($item);
 
-        session()->flash('success', trans('admin::app.magic_ai.knowledge_base.create-success'));
+        session()->flash('success', trans('magic_ai::app.knowledge_base.create-success'));
 
         return redirect()->route('admin.magic_ai.knowledge_base.index');
     }
@@ -104,7 +104,7 @@ class KnowledgeBaseController extends Controller
         // Update embedding
         $this->generateEmbedding($item);
 
-        session()->flash('success', trans('admin::app.magic_ai.knowledge_base.update-success'));
+        session()->flash('success', trans('magic_ai::app.knowledge_base.update-success'));
 
         return redirect()->route('admin.magic_ai.knowledge_base.index');
     }
@@ -119,7 +119,7 @@ class KnowledgeBaseController extends Controller
     {
         $this->knowledgeItemRepository->delete($id);
 
-        return response()->json(['message' => trans('admin::app.magic_ai.knowledge_base.delete-success')]);
+        return response()->json(['message' => trans('magic_ai::app.knowledge_base.delete-success')]);
     }
 
     /**

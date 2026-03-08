@@ -33,20 +33,20 @@
             <div class="flex flex-1 flex-col gap-2 max-xl:flex-auto">
                 <div class="box-shadow rounded bg-white p-4 dark:bg-gray-900">
                     <p class="mb-4 text-base font-semibold text-gray-800 dark:text-white">
-                        @lang('admin::app.magic_ai.knowledge_base.create.general')
+                        @lang('magic_ai::app.knowledge_base.create.general')
                     </p>
 
                     <x-admin::form.control-group>
                         <x-admin::form.control-group.label>
-                            @lang('admin::app.magic_ai.knowledge_base.create.title')
+                            @lang('magic_ai::app.knowledge_base.create.title')
                         </x-admin::form.control-group.label>
 
                         <x-admin::form.control-group.control
                             type="text"
                             name="title"
                             :value="old('title') ?: $item->title"
-                            :label="trans('admin::app.magic_ai.knowledge-base.create.title')"
-                            :placeholder="trans('admin::app.magic_ai.knowledge-base.create.title')"
+                            :label="trans('magic_ai::app.knowledge_base.create.title')"
+                            :placeholder="trans('magic_ai::app.knowledge_base.create.title')"
                         />
 
                         <x-admin::form.control-group.error control-name="title" />

@@ -39,7 +39,7 @@ class KnowledgeBaseDataGrid extends DataGrid
     {
         $this->addColumn([
             'index' => 'id',
-            'label' => trans('admin::app.magic_ai.knowledge_base.index.datagrid.id'),
+            'label' => trans('magic_ai::app.knowledge_base.index.datagrid.id'),
             'type' => 'integer',
             'filterable' => true,
             'sortable' => true,
@@ -47,7 +47,7 @@ class KnowledgeBaseDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'title',
-            'label' => trans('admin::app.magic_ai.knowledge_base.index.datagrid.title'),
+            'label' => trans('magic_ai::app.knowledge_base.index.datagrid.title'),
             'type' => 'string',
             'searchable' => true,
             'filterable' => true,
@@ -56,7 +56,7 @@ class KnowledgeBaseDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'content',
-            'label' => trans('admin::app.magic_ai.knowledge_base.index.datagrid.content'),
+            'label' => trans('magic_ai::app.knowledge_base.index.datagrid.content'),
             'type' => 'string',
             'searchable' => true,
             'filterable' => false,

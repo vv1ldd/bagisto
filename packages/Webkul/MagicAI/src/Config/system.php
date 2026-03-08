@@ -3,15 +3,15 @@
 return [
     [
         'key' => 'general.magic_ai',
-        'name' => 'admin::app.magic_ai.knowledge_base.title',
-        'info' => 'admin::app.magic_ai.knowledge_base.title',
+        'name' => 'magic_ai::app.knowledge_base.title',
+        'info' => 'magic_ai::app.knowledge_base.title',
         'icon' => 'settings/magic-ai.svg',
         'sort' => 1,
     ],
     [
         'key' => 'general.magic_ai.knowledge_base',
-        'name' => 'admin::app.magic_ai.knowledge_base.title',
-        'info' => 'admin::app.magic_ai.knowledge_base.title',
+        'name' => 'magic_ai::app.knowledge_base.title',
+        'info' => 'magic_ai::app.knowledge_base.title',
         'sort' => 6,
         'fields' => [
             [
