@@ -259,6 +259,27 @@ class OrganizationController extends Controller
     }
 
     /**
+     * Suggest organizations by query.
+     *
+     * @param  Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function suggestOrganization(Request $request)
+    {
+        $query = $request->input('query');
+
+        if (!$query) {
+            return response()->json([], 400);
+        }
+
+        $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
+
+        $results = $dadataHelper->suggestOrganization($query);
+
+        return response()->json($results);
+    }
+
+    /**
      * Store a new settlement account for a specific organization.
      */
     public function storeSettlementAccount(int $organizationId, Request $request)

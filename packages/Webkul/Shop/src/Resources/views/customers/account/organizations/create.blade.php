@@ -60,19 +60,19 @@
                                 @lang('shop::app.customers.account.organizations.create.inn')
                             </x-shop::form.control-group.label>
 
-                            <div class="flex items-stretch gap-2">
-                                <div class="flex-1">
-                                    <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
-                                        id="inn-input"
-                                        class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-0 transition-all w-full !rounded-lg"
-                                        :label="trans('shop::app.customers.account.organizations.create.inn')"
-                                        placeholder="Введите ИНН..." />
-                                </div>
+                            <div class="relative w-full overflow-visible">
+                                <x-shop::form.control-group.control type="text" name="inn" rules="required" :value="old('inn')"
+                                    id="inn-input"
+                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full !rounded-lg"
+                                    :label="trans('shop::app.customers.account.organizations.create.inn')"
+                                    placeholder="Введите ИНН или название организации..." 
+                                    autocomplete="off" />
                                 
-                                <button type="button" id="lookup-inn-btn"
-                                    class="px-6 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold transition-all disabled:opacity-50 text-[14px] rounded-lg whitespace-nowrap flex items-center justify-center">
-                                    Найти
-                                </button>
+                                <div id="org-suggestions" 
+                                    style="max-height: 320px !important; overflow-y: auto !important;"
+                                    class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-2xl hidden">
+                                    <!-- Suggestions will be injected here via JS -->
+                                </div>
                             </div>
                             
                             <div class="mt-3 text-right">
@@ -110,13 +110,14 @@
                                     class="w-full bg-white border border-zinc-200 rounded p-2 text-[14px] text-zinc-600 focus:border-[#7C45F5] focus:ring-0 transition-all" />
                             </div>
 
-                            <div class="pt-2 flex flex-col md:flex-row gap-3 items-center justify-between border-t border-zinc-200/60 mt-4">
-                                <span class="text-[12px] text-zinc-500">
+                            <div class="pt-4 flex flex-col items-center justify-center border-t border-zinc-200/60 mt-4 space-y-3">
+                                <p class="text-[13px] text-zinc-500 font-medium">
                                     Проверьте данные. Если всё верно, нажмите «Подтвердить».
-                                </span>
+                                </p>
                                 <button type="button" id="confirm-step-1-btn"
-                                    class="px-6 py-2 border-2 border-[#7C45F5] text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white font-bold transition-all text-[13px] w-full md:w-auto">
+                                    class="w-full bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold py-3.5 px-8 rounded-lg shadow-lg shadow-[#7C45F5]/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[15px]">
                                     Подтвердить и продолжить
+                                    <span class="icon-arrow-right text-lg"></span>
                                 </button>
                             </div>
                         </div>
@@ -238,67 +239,9 @@
 
             document.addEventListener('click', async function(e) {
                 
-                // --- STEP 1: INN Lookup ---
-                const lookupInnBtn = e.target.closest('#lookup-inn-btn');
-                if (lookupInnBtn) {
-                    e.preventDefault();
-                    if (lookupInnBtn.disabled) return;
-                    
-                    const innInput = document.getElementById('inn-input');
-                    const inn = innInput ? innInput.value.trim() : '';
-                    if (!inn) return alert('Введите ИНН');
-                    
-                    lookupInnBtn.disabled = true;
-                    const originalText = lookupInnBtn.innerText;
-                    lookupInnBtn.innerText = '...';
-                    
-                    try {
-                        const url = `{{ route('shop.customers.account.organizations.lookup_inn', ':inn') }}`.replace(':inn', inn);
-                        const response = await fetch(url);
-                        const data = await response.json();
-                        
-                        // We must re-query the elements in case DOM updated during fetch
-                        if (response.ok) {
-                            if (document.getElementById('name-input')) document.getElementById('name-input').value = data.name || '';
-                            if (document.getElementById('kpp-input')) document.getElementById('kpp-input').value = data.kpp || '';
-                            if (document.getElementById('address-input')) document.getElementById('address-input').value = data.address || '';
-                            
-                            const kppContainer = document.getElementById('kpp-container');
-                            if (kppContainer) {
-                                if (!data.kpp) kppContainer.classList.add('hidden');
-                                else kppContainer.classList.remove('hidden');
-                            }
-                            
-                            const step1Details = document.getElementById('step-1-details');
-                            if (step1Details) step1Details.classList.remove('hidden');
-                            
-                            // Visual cue
-                            ['name-input', 'kpp-input', 'address-input'].forEach(id => {
-                                const el = document.getElementById(id);
-                                if (el) {
-                                    el.style.backgroundColor = '#f0fff4';
-                                    setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
-                                }
-                            });
-                        } else {
-                            alert(data.message || 'Организация не найдена');
-                        }
-                    } catch (err) {
-                        alert('Ошибка сети при поиске ИНН');
-                    } finally {
-                        // Reselect button as it might have been lost
-                        const btn = document.getElementById('lookup-inn-btn');
-                        if (btn) {
-                            btn.disabled = false;
-                            btn.innerText = originalText;
-                        }
-                    }
-                    return;
-                }
-
-                // --- STEP 1: Confirm ---
-                const confirmStep1Btn = e.target.closest('#confirm-step-1-btn');
-                if (confirmStep1Btn) {
+            // --- STEP 1: Confirm ---
+            const confirmStep1Btn = e.target.closest('#confirm-step-1-btn');
+            if (confirmStep1Btn) {
                     e.preventDefault();
                     
                     const name = document.getElementById('name-input').value;
@@ -513,6 +456,51 @@
             let bankDebounceTimer;
             
             document.addEventListener('input', function(e) {
+                // Organization Live Search
+                if (e.target.id === 'inn-input') {
+                    const innInput = e.target;
+                    const suggestionsContainer = document.getElementById('org-suggestions');
+                    
+                    if (typeof window.orgDebounceTimer !== 'undefined') clearTimeout(window.orgDebounceTimer);
+                    const query = innInput.value.trim();
+                    
+                    if (query.length < 3) {
+                        suggestionsContainer.classList.add('hidden');
+                        suggestionsContainer.innerHTML = '';
+                        return;
+                    }
+                    
+                    window.orgDebounceTimer = setTimeout(async () => {
+                        try {
+                            const url = `{{ route('shop.customers.account.organizations.suggest_organization') }}?query=${encodeURIComponent(query)}`;
+                            const response = await fetch(url);
+                            const organizations = await response.json();
+                            
+                            if (response.ok && organizations && organizations.length > 0) {
+                                suggestionsContainer.innerHTML = organizations.map(org => `
+                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                        data-name="${org.name || ''}"
+                                        data-inn="${org.inn || ''}"
+                                        data-kpp="${org.kpp || ''}"
+                                        data-address="${org.address || ''}">
+                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
+                                        <div class="text-[12px] text-zinc-500 font-mono">
+                                            ИНН: ${org.inn || '-'} 
+                                            ${org.kpp ? ` | КПП: ${org.kpp}` : ''}
+                                        </div>
+                                        <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
+                                    </div>
+                                `).join('');
+                                suggestionsContainer.classList.remove('hidden');
+                            } else {
+                                suggestionsContainer.classList.add('hidden');
+                            }
+                        } catch (err) {
+                            console.error('Ошибка при поиске организации', err);
+                        }
+                    }, 400);
+                }
+
                 // Bank Autocomplete Logic
                 if (e.target.id === 'bic-input') {
                     const bicInput = e.target;
@@ -605,49 +593,86 @@
                 }
             });
 
-            // Handle clicking a suggestion or clicking outside
-            document.addEventListener('click', function(e) {
-                const suggestionsContainer = document.getElementById('bank-suggestions');
-                const bicInput = document.getElementById('bic-input');
+        // Handle clicking a suggestion or clicking outside
+        document.addEventListener('click', function(e) {
+            const orgSuggestions = document.getElementById('org-suggestions');
+            const bankSuggestions = document.getElementById('bank-suggestions');
+            const innInput = document.getElementById('inn-input');
+            const bicInput = document.getElementById('bic-input');
+            
+            // --- Organization Suggestion Selection ---
+            const orgItem = e.target.closest('div[data-inn]');
+            if (orgItem && orgSuggestions && orgSuggestions.contains(orgItem)) {
+                if (innInput) innInput.value = orgItem.dataset.inn;
+                if (document.getElementById('name-input')) document.getElementById('name-input').value = orgItem.dataset.name || '';
+                if (document.getElementById('kpp-input')) document.getElementById('kpp-input').value = orgItem.dataset.kpp || '';
+                if (document.getElementById('address-input')) document.getElementById('address-input').value = orgItem.dataset.address || '';
                 
-                // Clicking a dropdown item
-                const item = e.target.closest('div[data-bic]');
-                if (item && suggestionsContainer && suggestionsContainer.contains(item)) {
-                    if (bicInput) {
-                        bicInput.value = item.dataset.bic;
+                const kppContainer = document.getElementById('kpp-container');
+                if (kppContainer) {
+                    if (!orgItem.dataset.kpp) kppContainer.classList.add('hidden');
+                    else kppContainer.classList.remove('hidden');
+                }
+                
+                orgSuggestions.classList.add('hidden');
+                
+                const step1Details = document.getElementById('step-1-details');
+                if (step1Details) step1Details.classList.remove('hidden');
+                
+                // Visual cue
+                ['name-input', 'kpp-input', 'address-input', 'inn-input'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.style.backgroundColor = '#f0fff4';
+                        setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
                     }
-                    
-                    if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = item.dataset.name || '';
-                    if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = item.dataset.corr || '';
-                    
-                    suggestionsContainer.classList.add('hidden');
-                    
-                    const step2Details = document.getElementById('step-2-details');
-                    if (step2Details) step2Details.classList.remove('hidden');
-                    
-                    ['bank-name-input', 'corr-account-input'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) {
-                            el.style.backgroundColor = '#f0fff4';
-                            setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
-                        }
-                    });
+                });
+                return;
+            }
 
-                    // Re-validate settlement account if it exists
-                    const accountInput = document.getElementById('settlement-account-input');
-                    if (accountInput && accountInput.value.length === 20) {
-                        accountInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
-                    return;
+            // --- Bank Suggestion Selection ---
+            const bankItem = e.target.closest('div[data-bic]');
+            if (bankItem && bankSuggestions && bankSuggestions.contains(bankItem)) {
+                if (bicInput) {
+                    bicInput.value = bankItem.dataset.bic;
                 }
                 
-                // Clicking outside
-                if (suggestionsContainer && !suggestionsContainer.classList.contains('hidden')) {
-                    if (bicInput && !bicInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
-                        suggestionsContainer.classList.add('hidden');
+                if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = bankItem.dataset.name || '';
+                if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = bankItem.dataset.corr || '';
+                
+                bankSuggestions.classList.add('hidden');
+                
+                const step2Details = document.getElementById('step-2-details');
+                if (step2Details) step2Details.classList.remove('hidden');
+                
+                ['bank-name-input', 'corr-account-input'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.style.backgroundColor = '#f0fff4';
+                        setTimeout(() => el.style.backgroundColor = 'transparent', 1000);
                     }
+                });
+
+                // Re-validate settlement account if it exists
+                const accountInput = document.getElementById('settlement-account-input');
+                if (accountInput && accountInput.value.length === 20) {
+                    accountInput.dispatchEvent(new Event('input', { bubbles: true }));
                 }
-            });
+                return;
+            }
+            
+            // Clicking outside
+            if (orgSuggestions && !orgSuggestions.classList.contains('hidden')) {
+                if (innInput && !innInput.contains(e.target) && !orgSuggestions.contains(e.target)) {
+                    orgSuggestions.classList.add('hidden');
+                }
+            }
+            if (bankSuggestions && !bankSuggestions.classList.contains('hidden')) {
+                if (bicInput && !bicInput.contains(e.target) && !bankSuggestions.contains(e.target)) {
+                    bankSuggestions.classList.add('hidden');
+                }
+            }
+        });
         }
     }
 

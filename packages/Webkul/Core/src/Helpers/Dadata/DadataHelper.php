@@ -22,6 +22,11 @@ class DadataHelper
     const SUGGEST_BANK_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/bank';
 
     /**
+     * DaData API Endpoint for party suggestion by query (name, inn, etc.).
+     */
+    const SUGGEST_PARTY_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/party';
+
+    /**
      * Lookup organization by INN.
      *
      * @param  string  $inn
@@ -142,6 +147,51 @@ class DadataHelper
                             'correspondent_account' => $item['data']['correspondent_account'] ?? null,
                             'bic' => $item['data']['bic'] ?? null,
                             'address' => $item['data']['address']['value'] ?? null,
+                        ];
+                    }, $suggestions);
+                }
+            }
+        } catch (\Exception $e) {
+            report($e);
+        }
+
+        return [];
+    }
+
+    /**
+     * Suggest organizations by query string (name, INN, etc.).
+     *
+     * @param  string  $query
+     * @return array
+     */
+    public function suggestOrganization(string $query): array
+    {
+        $apiKey = config('services.dadata.api_key');
+
+        if (!$apiKey) {
+            return [];
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => 'Token ' . $apiKey,
+            ])->post(self::SUGGEST_PARTY_URL, [
+                        'query' => $query,
+                    ]);
+
+            if ($response->successful()) {
+                $suggestions = $response->json('suggestions');
+
+                if (!empty($suggestions)) {
+                    return array_map(function ($item) {
+                        return [
+                            'name' => $item['value'] ?? null,
+                            'inn' => $item['data']['inn'] ?? null,
+                            'kpp' => $item['data']['kpp'] ?? null,
+                            'address' => $item['data']['address']['value'] ?? null,
+                            'type' => $item['data']['type'] ?? null,
                         ];
                     }, $suggestions);
                 }

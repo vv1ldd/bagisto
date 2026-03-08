@@ -284,6 +284,8 @@ Route::prefix('customer')->group(function () {
                     Route::get('lookup-bic/{bic}', 'lookupBic')->name('shop.customers.account.organizations.lookup_bic');
 
                     Route::get('suggest-bank', 'suggestBank')->name('shop.customers.account.organizations.suggest_bank');
+
+                    Route::get('suggest-organization', 'suggestOrganization')->name('shop.customers.account.organizations.suggest_organization');
                 });
 
                 /**

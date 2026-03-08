@@ -21,8 +21,10 @@
                         <!-- Clickable Area -->
                         <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
                             class="flex-grow pr-4 block">
-                                    </p>
-                                @endif
+                            <div class="mb-1">
+                                <p class="text-[17px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors">
+                                    {{ $organization->name }}
+                                </p>
                             </div>
 
                             <div class="space-y-0.5">
@@ -77,14 +79,14 @@
                                         </form>
                                         <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                             onclick="
-                                                        event.preventDefault(); 
-                                                        const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                        if(innPrompt === '{{ $organization->inn }}') { 
-                                                            document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                        } else if(innPrompt !== null) {
-                                                            alert('ИНН введен неверно. Удаление отменено.');
-                                                        }
-                                                    ">
+                                                                event.preventDefault(); 
+                                                                const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                if(innPrompt === '{{ $organization->inn }}') { 
+                                                                    document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                } else if(innPrompt !== null) {
+                                                                    alert('ИНН введен неверно. Удаление отменено.');
+                                                                }
+                                                            ">
                                             <span class="icon-bin text-xl"></span>
                                             @lang('shop::app.customers.account.organizations.index.delete')
                                         </a>
