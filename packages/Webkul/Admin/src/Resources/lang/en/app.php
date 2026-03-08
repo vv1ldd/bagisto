@@ -5096,7 +5096,7 @@ return [
         ],
     ],
 
-    'magic-ai' => [
+    'magic_ai' => [
         'knowledge-base' => [
             'title' => 'MagicAI Knowledge Base',
             'create-btn' => 'Add Knowledge Item',
