@@ -27,7 +27,7 @@ class Ollama
     {
         $httpClient = new Client;
 
-        $endpoint = core()->getConfigData('general.magic_ai.settings.api_domain') . '/api/generate';
+        $endpoint = rtrim(env('MAGIC_AI_API_DOMAIN', config('magic_ai_settings.api_domain') ?? ''), '/') . '/api/generate';
 
         $body = [
             'model' => $this->model,

@@ -26,8 +26,8 @@ class OpenAI
     public function setConfig(): void
     {
         config([
-            'openai.api_key' => core()->getConfigData('general.magic_ai.settings.api_key'),
-            'openai.organization' => core()->getConfigData('general.magic_ai.settings.organization'),
+            'openai.api_key' => env('MAGIC_AI_API_KEY', config('magic_ai_settings.api_key')),
+            'openai.organization' => env('MAGIC_AI_ORGANIZATION', config('magic_ai_settings.organization')),
         ]);
     }
 

@@ -26,7 +26,7 @@ class Gemini
     {
         $httpClient = new Client;
 
-        $apiKey = core()->getConfigData('general.magic_ai.settings.api_key');
+        $apiKey = env('MAGIC_AI_API_KEY', config('magic_ai_settings.api_key'));
 
         $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$apiKey}";
 
