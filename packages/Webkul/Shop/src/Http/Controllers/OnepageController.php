@@ -16,7 +16,7 @@ class OnepageController extends Controller
      */
     public function index()
     {
-        if (! core()->getConfigData('sales.checkout.shopping_cart.cart_page')) {
+        if (!core()->getConfigData('sales.checkout.shopping_cart.cart_page')) {
             abort(404);
         }
 
@@ -26,8 +26,8 @@ class OnepageController extends Controller
          * If guest checkout is not allowed then redirect back to the cart page
          */
         if (
-            ! auth()->guard('customer')->check()
-            && ! core()->getConfigData('sales.checkout.shopping_cart.allow_guest_checkout')
+            !auth()->guard('customer')->check()
+            && !core()->getConfigData('sales.checkout.shopping_cart.allow_guest_checkout')
         ) {
             return redirect()->route('shop.customer.session.index');
         }
@@ -55,10 +55,10 @@ class OnepageController extends Controller
          * then redirect back to the cart page
          */
         if (
-            ! auth()->guard('customer')->check()
+            !auth()->guard('customer')->check()
             && (
                 $cart->hasDownloadableItems()
-                || ! $cart->hasGuestCheckoutItems()
+                || !$cart->hasGuestCheckoutItems()
             )
         ) {
             return redirect()->route('shop.customer.session.index');
@@ -74,14 +74,14 @@ class OnepageController extends Controller
      */
     public function success(OrderRepository $orderRepository)
     {
-        if (! $order = $orderRepository->find(session('order_id'))) {
+        if (!$order = $orderRepository->find(session('order_id'))) {
             return redirect()->route('shop.checkout.cart.index');
         }
 
         if (
-            core()->getConfigData('general.magic_ai.settings.enabled')
+            config('magic_ai_settings.enabled')
             && core()->getConfigData('general.magic_ai.checkout_message.enabled')
-            && ! empty(core()->getConfigData('general.magic_ai.checkout_message.prompt'))
+            && !empty(core()->getConfigData('general.magic_ai.checkout_message.prompt'))
         ) {
 
             try {
@@ -115,16 +115,16 @@ class OnepageController extends Controller
         foreach ($order->items as $item) {
             $products .= "Name: $item->name\n";
             $products .= "Qty: $item->qty_ordered\n";
-            $products .= 'Price: '.core()->formatPrice($item->total)."\n\n";
+            $products .= 'Price: ' . core()->formatPrice($item->total) . "\n\n";
         }
 
         $prompt .= "\n\nProduct Details:\n $products";
 
         $prompt .= "Customer Details:\n $order->customer_full_name \n\n";
 
-        $prompt .= "Current Locale:\n ".core()->getCurrentLocale()->name."\n\n";
+        $prompt .= "Current Locale:\n " . core()->getCurrentLocale()->name . "\n\n";
 
-        $prompt .= "Store Name:\n".core()->getCurrentChannel()->name;
+        $prompt .= "Store Name:\n" . core()->getCurrentChannel()->name;
 
         return $prompt;
     }

@@ -27,5 +27,10 @@ class MagicAIServiceProvider extends ServiceProvider
             dirname(__DIR__) . '/Config/system.php',
             'core'
         );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__) . '/Config/magic_ai.php',
+            'magic_ai_settings'
+        );
     }
 }

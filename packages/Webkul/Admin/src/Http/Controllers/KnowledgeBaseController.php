@@ -127,7 +127,7 @@ class KnowledgeBaseController extends Controller
      */
     protected function generateEmbedding($item)
     {
-        $model = core()->getConfigData('general.magic_ai.knowledge_base.embedding_model') ?: 'nomic-embed-text';
+        $model = config('magic_ai_settings.knowledge_base.embedding_model') ?: 'nomic-embed-text';
 
         $vector = $this->embeddingService->getEmbedding($item->content, $model);
 

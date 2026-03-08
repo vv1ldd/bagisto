@@ -22,7 +22,7 @@
                         <h2 class="text-[16px] font-bold text-zinc-900">Шаг 1: Данные организации</h2>
                         <div class="flex items-center gap-3">
                             <button type="button" id="magic-scan-btn" 
-                                class="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7C45F5] to-[#A855F7] text-white text-[12px] font-bold rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-95 group">
+                                class="hidden flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#7C45F5] to-[#A855F7] text-white text-[12px] font-bold rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-95 group">
                                 <span class="group-hover:rotate-12 transition-transform">✨</span> Заполнить по фото/скану
                             </button>
                             <span id="step-1-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
