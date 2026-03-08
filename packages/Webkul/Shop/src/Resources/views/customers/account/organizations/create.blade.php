@@ -489,8 +489,9 @@
                 }
             });
         }
+    }
 
-        // Run validation error visual unlocking
+    // Run validation error visual unlocking
         setTimeout(() => {
             if ("{{ $errors->any() }}" === "1") {
                 const step1Details = document.getElementById('step-1-details');
