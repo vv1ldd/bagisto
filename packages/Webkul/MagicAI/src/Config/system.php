@@ -9,9 +9,9 @@ return [
         'sort' => 1,
     ],
     [
-        'key' => 'general.magic_ai.settings',
-        'name' => 'admin::app.magic-ai.knowledge-base.create.general',
-        'sort' => 1,
+        'key' => 'general.magic_ai.knowledge_base',
+        'name' => 'admin::app.magic_ai.knowledge_base.title',
+        'sort' => 6,
         'fields' => [
             [
                 'name' => 'embedding_model',

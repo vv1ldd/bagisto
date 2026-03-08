@@ -23,7 +23,7 @@ class MagicAIServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(
             dirname(__DIR__) . '/Config/system.php',
-            'core_config'
+            'core'
         );
     }
 }

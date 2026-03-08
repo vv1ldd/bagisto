@@ -11,8 +11,8 @@ class EmbeddingService
      */
     public function getEmbedding(string $text, string $model = null): array
     {
-        $model = $model ?: core()->getConfigData('general.magic_ai.settings.embedding_model') ?: 'nomic-embed-text';
-        $ollamaBaseUrl = core()->getConfigData('general.magic_ai.settings.ollama_base_url') ?: 'http://ollama-api:11434';
+        $model = $model ?: core()->getConfigData('general.magic_ai.knowledge_base.embedding_model') ?: 'nomic-embed-text';
+        $ollamaBaseUrl = core()->getConfigData('general.magic_ai.knowledge_base.ollama_base_url') ?: 'http://ollama-api:11434';
 
         if (str_contains($model, 'text-embedding')) {
             return $this->getOpenAIEmbedding($text, $model);
