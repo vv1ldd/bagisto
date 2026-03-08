@@ -68,7 +68,7 @@ class KnowledgeBaseDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'source',
-            'label' => trans('admin::app.magic_ai.knowledge_base.index.datagrid.source'),
+            'label' => trans('magic_ai::app.knowledge_base.index.datagrid.source'),
             'type' => 'string',
             'searchable' => true,
             'filterable' => true,
@@ -77,7 +77,7 @@ class KnowledgeBaseDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'created_at',
-            'label' => trans('admin::app.magic_ai.knowledge_base.index.datagrid.created-at'),
+            'label' => trans('magic_ai::app.knowledge_base.index.datagrid.created-at'),
             'type' => 'datetime',
             'filterable' => true,
             'sortable' => true,
@@ -93,7 +93,7 @@ class KnowledgeBaseDataGrid extends DataGrid
     {
         $this->addAction([
             'icon' => 'icon-edit',
-            'title' => trans('admin::app.magic_ai.knowledge_base.index.datagrid.edit'),
+            'title' => trans('magic_ai::app.knowledge_base.index.datagrid.edit'),
             'method' => 'GET',
             'url' => function ($row) {
                 return route('admin.magic_ai.knowledge_base.edit', $row->id);
@@ -102,7 +102,7 @@ class KnowledgeBaseDataGrid extends DataGrid
 
         $this->addAction([
             'icon' => 'icon-delete',
-            'title' => trans('admin::app.magic_ai.knowledge_base.index.datagrid.delete'),
+            'title' => trans('magic_ai::app.knowledge_base.index.datagrid.delete'),
             'method' => 'DELETE',
             'url' => function ($row) {
                 return route('admin.magic_ai.knowledge_base.delete', $row->id);

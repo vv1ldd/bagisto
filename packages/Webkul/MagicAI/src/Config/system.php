@@ -15,21 +15,12 @@ return [
         'sort' => 6,
         'fields' => [
             [
-                'name' => 'embedding_model',
-                'title' => 'Embedding Model',
-                'type' => 'text',
-                'info' => 'Model name for embeddings, e.g., nomic-embed-text (default).',
-                'validation' => 'required',
-                'channel_based' => true,
-            ],
-            [
-                'name' => 'ollama_base_url',
-                'title' => 'Ollama Base URL',
-                'type' => 'text',
-                'info' => 'Internal Docker URL for Ollama, e.g., http://ollama-api:11434',
-                'validation' => 'required',
-                'channel_based' => true,
-            ],
+                'name' => 'settings_info',
+                'title' => 'Настройки перенесены',
+                'info' => 'Все настройки AI (ключи и адреса API) теперь управляются через переменные окружения (.env).',
+                'type' => 'boolean',
+                'default' => true,
+            ]
         ],
     ],
 ];

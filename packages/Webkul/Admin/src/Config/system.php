@@ -366,29 +366,12 @@ return [
         'sort' => 1,
         'fields' => [
             [
-                'name' => 'enabled',
-                'title' => 'admin::app.configuration.index.general.magic-ai.settings.enabled',
+                'name' => 'settings_info',
+                'title' => 'Настройки перенесены',
+                'info' => 'Все настройки AI (ключи и адреса API) теперь управляются через переменные окружения (.env).',
                 'type' => 'boolean',
-                'channel_based' => true,
-            ],
-            [
-                'name' => 'api_key',
-                'title' => 'admin::app.configuration.index.general.magic-ai.settings.api-key',
-                'type' => 'password',
-                'channel_based' => true,
-            ],
-            [
-                'name' => 'organization',
-                'title' => 'admin::app.configuration.index.general.magic-ai.settings.organization',
-                'type' => 'text',
-                'channel_based' => true,
-            ],
-            [
-                'name' => 'api_domain',
-                'title' => 'admin::app.configuration.index.general.magic-ai.settings.llm-api-domain',
-                'type' => 'text',
-                'channel_based' => true,
-            ],
+                'default' => true,
+            ]
         ],
     ],
     [

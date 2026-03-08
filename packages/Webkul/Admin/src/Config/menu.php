@@ -294,7 +294,14 @@ return [
      * MagicAI.
      */
     [
-        'key' => 'configuration.magic_ai',
+        'key' => 'magic_ai',
+        'name' => 'magic_ai::app.knowledge_base.title',
+        'route' => 'admin.magic_ai.knowledge_base.index',
+        'sort' => 8,
+        'icon' => 'icon-magic-ai',
+    ],
+    [
+        'key' => 'magic_ai.knowledge_base',
         'name' => 'magic_ai::app.knowledge_base.title',
         'route' => 'admin.magic_ai.knowledge_base.index',
         'sort' => 1,
