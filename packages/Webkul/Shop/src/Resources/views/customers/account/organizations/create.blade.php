@@ -14,7 +14,35 @@
             </p>
         </div>
 
-        <x-shop::form :action="route('shop.customers.account.organizations.store')">
+        <style>
+            /* Ultimate Rectangular Enforcement */
+            #wizard-root, #wizard-root *, 
+            #wizard-root input, #wizard-root button, #wizard-root select,
+            #wizard-root .ios-tile, #wizard-root [class*="rounded-"] {
+                border-radius: 0 !important;
+            }
+            
+            #inn-input, #inn-input:focus, .v-field input, .v-field input:focus {
+                border-radius: 0 !important;
+                outline: none !important;
+                box-shadow: none !important;
+            }
+
+            #search-wrapper {
+                border-radius: 0 !important;
+                overflow: hidden;
+            }
+            
+            /* Remove framework-applied focus rings that might look rounded */
+            #wizard-root input:focus {
+                --tw-ring-offset-shadow: 0 0 #0000 !important;
+                --tw-ring-shadow: 0 0 #0000 !important;
+                outline: 2px solid #7C45F5 !important;
+                outline-offset: -2px !important;
+            }
+        </style>
+
+        <x-shop::form :action="route('shop.customers.account.organizations.store')" id="wizard-root">
             <div class="space-y-6" id="wizard-container">
                 <!-- ================== STEP 1: ORGANIZATION DETAILS ================== -->
                 <div id="step-1" class="transition-all duration-300">
@@ -60,10 +88,6 @@
                                 @lang('shop::app.customers.account.organizations.create.inn')
                             </x-shop::form.control-group.label>
 
-                            <style>
-                                #search-wrapper * { border-radius: 0 !important; }
-                                #inn-input:focus { outline: none !important; border-color: #7C45F5 !important; box-shadow: none !important; }
-                            </style>
                             <div class="relative w-full overflow-visible flex gap-0 border border-zinc-200" id="search-wrapper">
                                 <div class="relative flex-grow">
                                     <v-field
@@ -76,14 +100,14 @@
                                             type="text"
                                             id="inn-input"
                                             v-bind="field"
-                                            class="!py-3.5 !px-4 !border-0 transition-all w-full !rounded-none !mb-0 text-gray-600"
+                                            class="!py-3.5 !px-4 !border-0 transition-all w-full text-gray-600"
                                             placeholder="Введите ИНН или название..." 
                                             autocomplete="off" />
                                     </v-field>
                                 </div>
                                 
                                 <button type="button" id="lookup-org-btn" disabled
-                                    class="bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-100 disabled:text-zinc-400 text-white font-bold px-8 !py-3.5 rounded-none transition-all whitespace-nowrap text-[14px]">
+                                    class="bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-100 disabled:text-zinc-400 text-white font-bold px-8 !py-3.5 transition-all whitespace-nowrap text-[14px]">
                                     Найти
                                 </button>
 
