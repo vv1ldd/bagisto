@@ -314,13 +314,24 @@
             
             // Organization Lookup Function
             window.triggerOrgLookup = async (query) => {
+                console.log('triggerOrgLookup called with query:', query);
                 const suggestionsContainer = document.getElementById('org-suggestions');
-                if (!query || query.length < 3) return;
+                if (!query || query.length < 3) {
+                    console.warn('Query too short:', query);
+                    return;
+                }
 
                 try {
-                    const url = `{{ route('shop.customers.account.organizations.suggest_organization', [], false) }}?query=${encodeURIComponent(query)}`;
+                    // Using current location origin to ensure protocol match
+                    const relativePath = "{{ route('shop.customers.account.organizations.suggest_organization', [], false) }}";
+                    const url = `${window.location.origin}${relativePath}?query=${encodeURIComponent(query)}`;
+                    
+                    console.log('Fetching URL:', url);
                     const response = await fetch(url);
+                    console.log('Response status:', response.status);
+                    
                     const organizations = await response.json();
+                    console.log('Organizations found:', organizations ? organizations.length : 0);
                     
                     if (response.ok && organizations && organizations.length > 0) {
                         suggestionsContainer.innerHTML = organizations.map(org => `
@@ -339,19 +350,24 @@
                         `).join('');
                         suggestionsContainer.classList.remove('hidden');
                     } else {
+                        console.warn('No organizations found or response not OK');
                         suggestionsContainer.classList.add('hidden');
                     }
                 } catch (err) {
-                    console.error('Ошибка при поиске организации', err);
+                    console.error('Ошибка при поиске организации (Fetch Error):', err);
                 }
             };
 
             // Search Button Click
             document.addEventListener('click', function(e) {
-                if (e.target.id === 'lookup-org-btn') {
+                const searchBtn = e.target.closest('#lookup-org-btn');
+                if (searchBtn) {
+                    console.log('Search button clicked');
                     const innInput = document.getElementById('inn-input');
                     if (innInput) {
                         window.triggerOrgLookup(innInput.value.trim());
+                    } else {
+                        console.error('inn-input not found');
                     }
                 }
             });
