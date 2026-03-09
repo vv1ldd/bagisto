@@ -75,8 +75,12 @@ class OrganizationController extends Controller
             'customer_id' => $customer->id,
         ]);
 
-        if ($request->filled('settlement_account') && $request->filled('bic')) {
-            if (!$this->isValidBankAccount($request->input('bic'), $request->input('settlement_account'))) {
+        // Sanitize bank details before validation and storage
+        $bic = preg_replace('/\D/', '', $request->input('bic', ''));
+        $settlementAccount = preg_replace('/\D/', '', $request->input('settlement_account', ''));
+
+        if (!empty($settlementAccount) && !empty($bic)) {
+            if (!$this->isValidBankAccount($bic, $settlementAccount)) {
                 return back()->withErrors(['settlement_account' => 'Неверный контрольный ключ расчетного счета для указанного БИК'])->withInput();
             }
         }
@@ -84,12 +88,12 @@ class OrganizationController extends Controller
         $organization = $this->organizationRepository->create($data);
 
         // Store primary settlement account
-        if ($request->filled('settlement_account') && $request->filled('bic')) {
+        if (!empty($settlementAccount) && !empty($bic)) {
             $organization->settlementAccounts()->create([
-                'bic' => $request->input('bic'),
+                'bic' => $bic,
                 'bank_name' => $request->input('bank_name'),
-                'correspondent_account' => $request->input('correspondent_account'),
-                'settlement_account' => $request->input('settlement_account'),
+                'correspondent_account' => preg_replace('/\D/', '', $request->input('correspondent_account', '')),
+                'settlement_account' => $settlementAccount,
                 'is_default' => true,
             ]);
         }
@@ -305,7 +309,11 @@ class OrganizationController extends Controller
             abort(404);
         }
 
-        if (!$this->isValidBankAccount($request->input('bic'), $request->input('settlement_account'))) {
+        // Sanitize bank details
+        $bic = preg_replace('/\D/', '', $request->input('bic', ''));
+        $settlementAccount = preg_replace('/\D/', '', $request->input('settlement_account', ''));
+
+        if (!$this->isValidBankAccount($bic, $settlementAccount)) {
             return back()->withErrors(['settlement_account' => 'Неверный контрольный ключ расчетного счета'])->withInput();
         }
 
@@ -313,10 +321,10 @@ class OrganizationController extends Controller
         $isDefault = $organization->settlementAccounts()->count() === 0;
 
         $organization->settlementAccounts()->create([
-            'bic' => $request->input('bic'),
+            'bic' => $bic,
             'bank_name' => $request->input('bank_name'),
-            'settlement_account' => $request->input('settlement_account'),
-            'correspondent_account' => $request->input('correspondent_account'),
+            'settlement_account' => $settlementAccount,
+            'correspondent_account' => preg_replace('/\D/', '', $request->input('correspondent_account', '')),
             'alias' => $request->input('alias'),
             'is_default' => $isDefault,
         ]);
@@ -383,11 +391,23 @@ class OrganizationController extends Controller
      */
     protected function isValidBankAccount($bic, $account)
     {
+        // Sanitize just in case
+        $bic = preg_replace('/\D/', '', $bic);
+        $account = preg_replace('/\D/', '', $account);
+
         if (strlen($bic) !== 9 || strlen($account) !== 20) {
             return false;
         }
 
-        $combined = substr($bic, -3) . $account;
+        // RKC Rule: If digits 7 and 8 of BIC are '00', use '0' + 5th + 6th digits of BIC.
+        // Index 6 is 7th digit, Index 7 is 8th digit.
+        if ($bic[6] === '0' && $bic[7] === '0') {
+            $bicPart = '0' . $bic[4] . $bic[5];
+        } else {
+            $bicPart = substr($bic, -3);
+        }
+
+        $combined = $bicPart . $account;
         $weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
 
         $sum = 0;

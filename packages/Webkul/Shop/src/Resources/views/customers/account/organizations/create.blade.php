@@ -285,10 +285,23 @@
     <script>
         if (typeof window.initOrganizationWizard === 'undefined') {
             window.isValidBankAccount = function (bic, account) {
-                if (!bic || !account || account.length !== 20 || bic.length !== 9) return false;
+                // Sanitize: strip non-digits
+                bic = (bic || '').toString().replace(/\D/g, '');
+                account = (account || '').toString().replace(/\D/g, '');
 
-                // CBR Algorithm: last 3 digits of BIC + 20 digits of Account
-                const combined = bic.substring(6, 9) + account;
+                if (bic.length !== 9 || account.length !== 20) return false;
+
+                // RKC Rule: If digits 7 and 8 of BIC are '00', use '0' + 5th + 6th digits of BIC.
+                // JS substring is (start, end), where end is exclusive. 
+                // Index 6 is 7th char, Index 8 is 9th.
+                let bicPart;
+                if (bic[6] === '0' && bic[7] === '0') {
+                    bicPart = '0' + bic[4] + bic[5];
+                } else {
+                    bicPart = bic.substring(6, 9);
+                }
+
+                const combined = bicPart + account;
                 const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
 
                 let sum = 0;
@@ -296,7 +309,9 @@
                     sum += (parseInt(combined[i]) * weights[i]) % 10;
                 }
 
-                return sum % 10 === 0;
+                const isValid = sum % 10 === 0;
+                console.log(`[CBR Check] BIC Part: ${bicPart}, Valid: ${isValid}`);
+                return isValid;
             };
 
             window.initOrganizationWizard = function () {

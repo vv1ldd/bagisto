@@ -271,15 +271,33 @@
     </div>
 
     <script>
-        window.isValidBankAccount = function(bic, account) {
-            if (!bic || !account || account.length !== 20 || bic.length !== 9) return false;
-            const combined = bic.substring(6, 9) + account;
+        window.isValidBankAccount = function (bic, account) {
+            // Sanitize: strip non-digits
+            bic = (bic || '').toString().replace(/\D/g, '');
+            account = (account || '').toString().replace(/\D/g, '');
+
+            if (bic.length !== 9 || account.length !== 20) return false;
+
+            // RKC Rule: If digits 7 and 8 of BIC are '00', use '0' + 5th + 6th digits of BIC.
+            // Index 6 is 7th char, Index 8 is 9th.
+            let bicPart;
+            if (bic[6] === '0' && bic[7] === '0') {
+                bicPart = '0' + bic[4] + bic[5];
+            } else {
+                bicPart = bic.substring(6, 9);
+            }
+
+            const combined = bicPart + account;
             const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
+
             let sum = 0;
             for (let i = 0; i < 23; i++) {
                 sum += (parseInt(combined[i]) * weights[i]) % 10;
             }
-            return sum % 10 === 0;
+
+            const isValid = sum % 10 === 0;
+            console.log(`[CBR Check] BIC Part: ${bicPart}, Valid: ${isValid}`);
+            return isValid;
         };
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -308,7 +326,7 @@
                         const bic = bicInput.value.trim();
                         const errorMsg = document.getElementById('settlement-account-error');
 
-                        if (account.length === 20 && bic.length === 9) {
+                        if (account.length === 20 && bic.length >= 9) {
                             const isValid = window.isValidBankAccount(bic, account);
                             if (isValid) {
                                 e.target.classList.remove('!border-red-500', '!ring-red-500');
