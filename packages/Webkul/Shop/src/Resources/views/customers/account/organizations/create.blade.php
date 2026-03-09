@@ -13,7 +13,7 @@
                 MEANLY
             </div>
 
-            <a href="{{ route('shop.customers.account.index') }}"
+            <a href="{{ route('shop.customers.account.credits.index') }}"
                 class="ios-close-button !top-0 !right-0 !relative !mt-0 !mr-0">
                 <span class="icon-cancel text-xl"></span>
             </a>

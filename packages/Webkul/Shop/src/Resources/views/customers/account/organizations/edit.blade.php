@@ -5,7 +5,7 @@
             <span class="icon-arrow-left text-xl"></span>
         </a>
 
-        <a href="{{ route('shop.customers.account.index') }}"
+        <a href="{{ route('shop.customers.account.credits.index') }}"
             class="ios-close-button">
             <span class="icon-cancel text-xl"></span>
         </a>

@@ -105,22 +105,31 @@
                         </div>
                     @endif
 
-                    <div class="mt-8">
-                        @if($user->is_investor)
-                            <button onclick="goToDeposit()"
-                                class="inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3  active:scale-95 transition-all shadow-lg shadow-zinc-100">
-                                + Пополнить
-                            </button>
-                        @else
-                            <div class="flex flex-col gap-1.5">
-                                <button disabled
-                                    class="inline-flex items-center justify-center text-[14px] font-bold text-zinc-400 bg-zinc-100 px-6 py-3  cursor-not-allowed opacity-60">
+                    <div class="mt-8 flex gap-3 max-sm:flex-col">
+                        <div class="flex-1">
+                            @if($user->is_investor)
+                                <button onclick="goToDeposit()"
+                                    class="w-full inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3  active:scale-95 transition-all shadow-lg shadow-zinc-100">
                                     + Пополнить
                                 </button>
-                                <p class="text-[11px] text-zinc-400 text-center">Методы пополнения пока недоступны</p>
-                            </div>
-                        @endif
+                            @else
+                                <div class="flex flex-col gap-1.5 h-full">
+                                    <button disabled
+                                        class="w-full h-full inline-flex items-center justify-center text-[14px] font-bold text-zinc-400 bg-zinc-100 px-6 py-3  cursor-not-allowed opacity-60">
+                                        + Пополнить
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+
+                        <a href="{{ route('shop.customers.account.organizations.index') }}"
+                            class="flex-1 inline-flex items-center justify-center text-[14px] font-bold text-zinc-900 bg-zinc-50 border border-zinc-200 px-6 py-3 hover:bg-white hover:border-violet-200 hover:text-violet-600 transition-all shadow-sm group">
+                            <span class="mr-2 text-lg">🏢</span> Мои организации
+                        </a>
                     </div>
+                    @if(!auth()->guard('customer')->user()->is_investor)
+                        <p class="text-[11px] text-zinc-400 text-center mt-2">Методы пополнения пока недоступны</p>
+                    @endif
 
                     {{-- Cashback Info (only for non-investors) --}}
                     @if(!auth()->guard('customer')->user()->is_investor)
