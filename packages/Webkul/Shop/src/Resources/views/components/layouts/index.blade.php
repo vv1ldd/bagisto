@@ -127,6 +127,32 @@
             .ios-close-button:active {
                 transform: scale(0.95) !important;
             }
+
+            .ios-back-button {
+                position: absolute !important;
+                top: 20px !important;
+                left: 20px !important;
+                right: auto !important;
+                z-index: 20 !important;
+                width: 32px !important;
+                height: 32px !important;
+                background-color: #fff !important;
+                border: 1px solid #f4f4f5 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #a1a1aa !important;
+                transition: all 0.2s ease !important;
+            }
+
+            .ios-back-button:hover {
+                color: #7C45F5 !important;
+                border-color: #e4e4e7 !important;
+            }
+
+            .ios-back-button:active {
+                transform: scale(0.95) !important;
+            }
             {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
         </style>
 

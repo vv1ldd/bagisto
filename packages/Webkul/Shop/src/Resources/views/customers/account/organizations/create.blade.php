@@ -3,13 +3,18 @@
         class="flex-auto ios-tile-relative ios-group max-w-[800px] mx-auto p-8 max-md:p-6 !bg-transparent border-none !shadow-none">
 
         <!-- Brand Header Section -->
-        <div class="flex items-center justify-between mb-12">
-            <div class="text-[20px] font-black tracking-tighter text-[#7C45F5]">
+        <div class="flex items-center justify-between mb-12 relative">
+            <a href="{{ route('shop.customers.account.organizations.index') }}"
+                class="ios-back-button !top-0 !left-0 !relative !mt-0 !ml-0">
+                <span class="icon-arrow-left text-xl"></span>
+            </a>
+
+            <div class="text-[20px] font-black tracking-tighter text-[#7C45F5] absolute left-1/2 -translate-x-1/2">
                 MEANLY
             </div>
 
-            <a href="{{ route('shop.customers.account.organizations.index') }}"
-                class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 hover:text-[#7C45F5] hover:border-[#7C45F5] transition-all">
+            <a href="{{ route('shop.customers.account.index') }}"
+                class="ios-close-button !top-0 !right-0 !relative !mt-0 !mr-0">
                 <span class="icon-cancel text-xl"></span>
             </a>
         </div>

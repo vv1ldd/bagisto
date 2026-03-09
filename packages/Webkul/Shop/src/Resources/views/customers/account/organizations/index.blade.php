@@ -1,7 +1,6 @@
 <x-shop::layouts.account :show-back="false">
     <div class="flex-auto pb-8 ios-tile-relative ios-group max-w-[800px] mx-auto">
-        <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-            class="ios-close-button">
+        <a href="{{ route('shop.customers.account.index') }}" class="ios-close-button">
             <span class="icon-cancel text-xl"></span>
         </a>
 
@@ -131,14 +130,14 @@
                                         </form>
                                         <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                             onclick="
-                                                                                                event.preventDefault(); 
-                                                                                                const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                                if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                                    document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                                } else if(innPrompt !== null) {
-                                                                                                    alert('ИНН введен неверно. Удаление отменено.');
-                                                                                                }
-                                                                                            ">
+                                                                                                        event.preventDefault(); 
+                                                                                                        const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                        if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                            document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                        } else if(innPrompt !== null) {
+                                                                                                            alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                        }
+                                                                                                    ">
                                             <span class="icon-bin text-xl"></span>
                                             @lang('shop::app.customers.account.organizations.index.delete')
                                         </a>
