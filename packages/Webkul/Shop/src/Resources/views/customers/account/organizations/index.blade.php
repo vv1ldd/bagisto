@@ -29,24 +29,75 @@
 
                             <div class="space-y-0.5">
                                 <p class="text-[13px] text-zinc-500 font-medium" v-pre>
-                                    <span class="text-zinc-400">ИНН:</span> <span
-                                        class="text-zinc-700">{{ $organization->inn }}</span>
+                                    <span class="text-zinc-400">ИНН:</span>
+                                    <span class="text-zinc-700">{{ $organization->inn }}</span>
+                                    <button type="button" onclick="copyValue('{{ $organization->inn }}', this, event)"
+                                        class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                        title="Копировать ИНН">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                        </svg>
+                                    </button>
+
                                     @if($organization->kpp)
-                                        <span class="text-zinc-400 ml-2">КПП:</span> <span
-                                            class="text-zinc-700">{{ $organization->kpp }}</span>
+                                        <span class="text-zinc-400 ml-2">КПП:</span>
+                                        <span class="text-zinc-700">{{ $organization->kpp }}</span>
+                                        <button type="button" onclick="copyValue('{{ $organization->kpp }}', this, event)"
+                                            class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                            title="Копировать КПП">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                        </button>
                                     @endif
                                 </p>
 
                                 @if($organization->bank_name)
                                     <p class="text-[13px] text-zinc-500" v-pre>
-                                        <span class="text-zinc-400">Банк:</span> {{ $organization->bank_name }}
-                                        <span class="text-zinc-400 ml-2">БИК:</span> {{ $organization->bic }}
+                                        <span class="text-zinc-400">Банк:</span>
+                                        <span>{{ $organization->bank_name }}</span>
+                                        <button type="button" onclick="copyValue('{{ $organization->bank_name }}', this, event)"
+                                            class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                            title="Копировать название банка">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                        </button>
+
+                                        <span class="text-zinc-400 ml-2">БИК:</span>
+                                        <span>{{ $organization->bic }}</span>
+                                        <button type="button" onclick="copyValue('{{ $organization->bic }}', this, event)"
+                                            class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                            title="Копировать БИК">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                        </button>
                                     </p>
                                 @endif
 
                                 <p class="text-[13px] text-zinc-500 leading-relaxed flex items-start gap-1.5 mt-1" v-pre>
                                     <span class="icon-location text-[16px] text-zinc-300 mt-0.5"></span>
-                                    <span>{{ $organization->address }}</span>
+                                    <span>
+                                        {{ $organization->address }}
+                                        <button type="button" onclick="copyValue('{{ $organization->address }}', this, event)"
+                                            class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                            title="Копировать адрес">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
                                 </p>
                             </div>
                         </a>
@@ -80,14 +131,14 @@
                                         </form>
                                         <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                             onclick="
-                                                                        event.preventDefault(); 
-                                                                        const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                        if(innPrompt === '{{ $organization->inn }}') { 
-                                                                            document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                        } else if(innPrompt !== null) {
-                                                                            alert('ИНН введен неверно. Удаление отменено.');
-                                                                        }
-                                                                    ">
+                                                                                                event.preventDefault(); 
+                                                                                                const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                    document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                } else if(innPrompt !== null) {
+                                                                                                    alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                }
+                                                                                            ">
                                             <span class="icon-bin text-xl"></span>
                                             @lang('shop::app.customers.account.organizations.index.delete')
                                         </a>
@@ -124,3 +175,36 @@
         @endif
     </div>
 </x-shop::layouts.account>
+
+<script>
+    window.copyValue = function (text, btn, e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!navigator.clipboard) {
+            // Fallback
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) { }
+            document.body.removeChild(textArea);
+        } else {
+            navigator.clipboard.writeText(text);
+        }
+
+        // Visual feedback
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<span class="text-[10px] font-bold text-green-500 uppercase ml-1">Скопировано!</span>';
+        btn.classList.remove('text-zinc-300');
+        btn.classList.add('text-green-500');
+
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.add('text-zinc-300');
+            btn.classList.remove('text-green-500');
+        }, 2000);
+    }
+</script>

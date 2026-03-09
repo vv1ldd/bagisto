@@ -31,8 +31,13 @@
                             <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                                 @lang('shop::app.customers.account.organizations.edit.name')
                             </label>
-                            <input type="text" name="name" value="{{ old('name') ?? $organization->name }}" readonly
-                                class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
+                            <div class="flex items-center gap-2">
+                                <input type="text" name="name" value="{{ old('name') ?? $organization->name }}" readonly
+                                    class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
+                                <button type="button" onclick="copyValue('{{ $organization->name }}', this, event)" class="copy-btn shrink-0 text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать название">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                </button>
+                            </div>
                         </div>
 
                         <div>
@@ -42,14 +47,26 @@
                                     / @lang('shop::app.customers.account.organizations.edit.kpp')
                                 @endif
                             </label>
-                            <div class="flex gap-2">
-                                <input type="text" name="inn" value="{{ old('inn') ?? $organization->inn }}" readonly
-                                    class="w-auto bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default flex-1" />
-                                @if($organization->kpp)
-                                    <span class="text-zinc-300">/</span>
-                                    <input type="text" name="kpp" value="{{ old('kpp') ?? $organization->kpp }}" readonly
+                            <div class="flex items-center gap-2">
+                                <div class="flex gap-2 flex-grow">
+                                    <input type="text" name="inn" value="{{ old('inn') ?? $organization->inn }}" readonly
                                         class="w-auto bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default flex-1" />
-                                @endif
+                                    @if($organization->kpp)
+                                        <span class="text-zinc-300">/</span>
+                                        <input type="text" name="kpp" value="{{ old('kpp') ?? $organization->kpp }}" readonly
+                                            class="w-auto bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default flex-1" />
+                                    @endif
+                                </div>
+                                <div class="flex gap-1 shrink-0">
+                                    <button type="button" onclick="copyValue('{{ $organization->inn }}', this, event)" class="copy-btn text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать ИНН">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    </button>
+                                    @if($organization->kpp)
+                                        <button type="button" onclick="copyValue('{{ $organization->kpp }}', this, event)" class="copy-btn text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать КПП">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -58,9 +75,14 @@
                         <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
                             @lang('shop::app.customers.account.organizations.edit.address')
                         </label>
-                        <input type="text" name="address" value="{{ old('address') ?? $organization->address }}"
-                            readonly
-                            class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 cursor-default" />
+                        <div class="flex items-center gap-2">
+                            <input type="text" name="address" value="{{ old('address') ?? $organization->address }}"
+                                readonly
+                                class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 cursor-default" />
+                            <button type="button" onclick="copyValue('{{ $organization->address }}', this, event)" class="copy-btn shrink-0 text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать адрес">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -83,8 +105,11 @@
                                                         {{ $account->alias }}
                                                     </div>
                                                 @else
-                                                    <div class="text-[16px] font-mono tracking-wider font-bold text-zinc-900 leading-tight">
+                                                    <div class="text-[16px] font-mono tracking-wider font-bold text-zinc-900 leading-tight flex items-center gap-1">
                                                         {{ $account->settlement_account }}
+                                                        <button type="button" onclick="copyValue('{{ $account->settlement_account }}', this, event)" class="copy-btn text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать счет">
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                        </button>
                                                     </div>
                                                 @endif
 
@@ -95,13 +120,19 @@
                                             </div>
 
                                             @if($account->alias)
-                                                <div class="text-[13px] font-mono text-zinc-500 mb-0.5">
+                                                <div class="text-[13px] font-mono text-zinc-500 mb-0.5 flex items-center gap-1">
                                                     {{ $account->settlement_account }}
+                                                    <button type="button" onclick="copyValue('{{ $account->settlement_account }}', this, event)" class="copy-btn text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать счет">
+                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                    </button>
                                                 </div>
                                             @endif
 
-                                            <div class="text-[13px] font-medium text-zinc-500">
+                                            <div class="text-[13px] font-medium text-zinc-500 flex items-center gap-1">
                                                 {{ $account->bank_name }}
+                                                <button type="button" onclick="copyValue('{{ $account->bank_name }}', this, event)" class="copy-btn text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать банк">
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                </button>
                                             </div>
 
                                             <!-- Hidden Alias Edit Form -->
@@ -131,7 +162,7 @@
                                             <form method="POST"
                                                 action="{{ route('shop.customers.account.organizations.settlement_accounts.destroy', ['organizationId' => $organization->id, 'accountId' => $account->id]) }}"
                                                 class="inline-block"
-                                                onsubmit="return confirm('Вы уверены, что хотите удалить этот расчетный счет?');">
+                                                onsubmit="return confirmDeletion('{{ $account->settlement_account }}');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
@@ -147,14 +178,23 @@
                                         <div>
                                             <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">БИК
                                             </div>
-                                            <div class="text-[13px] font-mono text-zinc-700">{{ $account->bic }}</div>
+                                            <div class="text-[13px] font-mono text-zinc-700 flex items-center gap-1">
+                                                {{ $account->bic }}
+                                                <button type="button" onclick="copyValue('{{ $account->bic }}', this, event)" class="copy-btn text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать БИК">
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                </button>
+                                            </div>
                                         </div>
                                         @if($account->correspondent_account)
                                             <div>
                                                 <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mb-1">Корр.
                                                     счет</div>
-                                                <div class="text-[13px] font-mono text-zinc-700">
-                                                    {{ $account->correspondent_account }}</div>
+                                                <div class="text-[13px] font-mono text-zinc-700 flex items-center gap-1">
+                                                    {{ $account->correspondent_account }}
+                                                    <button type="button" onclick="copyValue('{{ $account->correspondent_account }}', this, event)" class="copy-btn text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Копировать корр. счет">
+                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         @endif
                                     </div>
@@ -447,6 +487,52 @@
             if (form) {
                 form.classList.toggle('hidden');
                 form.classList.toggle('block');
+            }
+        }
+
+        window.copyValue = function(text, btn, e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!navigator.clipboard) {
+                // Fallback
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {}
+                document.body.removeChild(textArea);
+            } else {
+                navigator.clipboard.writeText(text);
+            }
+
+            // Visual feedback
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<span class="text-[10px] font-bold text-green-500 uppercase ml-1">Скопировано!</span>';
+            btn.classList.remove('text-zinc-300');
+            btn.classList.add('text-green-500');
+
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.add('text-zinc-300');
+                btn.classList.remove('text-green-500');
+            }, 2000);
+        }
+
+        window.confirmDeletion = function(accountNumber) {
+            const promptValue = prompt(`Для удаления счета введите последние 4 цифры номера счета (${accountNumber.slice(-4)}):`);
+            
+            if (promptValue === null) {
+                return false;
+            }
+
+            if (promptValue === accountNumber.slice(-4)) {
+                return true;
+            } else {
+                alert('Неверный код. Удаление отменено.');
+                return false;
             }
         }
     </script>
