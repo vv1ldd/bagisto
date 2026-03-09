@@ -163,83 +163,90 @@
 
 
                 <!-- ================== STEP 2: BANK DETAILS ================== -->
-                <div id="step-2" class="hidden transition-all duration-300 pt-6 border-t border-zinc-100">
-                    <div class="flex items-center justify-between mb-4" id="step-2-header">
-                        <h2 class="text-[16px] font-bold text-zinc-900">Шаг 2: Банковские реквизиты</h2>
-                        <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
-                    </div>
+                <div id="step-2" class="hidden transition-all duration-300 pt-10 border-t border-zinc-100">
+                    <div id="step-2-card" class="space-y-8 bg-white rounded-none p-8 border-2 border-[#7C45F5] relative transition-all duration-500 shadow-[0_20px_50px_rgba(124,69,245,0.1)]">
+                        <div class="absolute -top-4 left-6 bg-[#7C45F5] text-white px-4 py-1 text-[12px] font-black uppercase tracking-widest">
+                            Реквизиты платежа
+                        </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Left: Bank Search -->
-                        <div class="relative">
-                            <x-shop::form.control-group class="!mb-0" id="step-2-input-container">
-                                <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
-                                    Название банка или БИК
-                                </x-shop::form.control-group.label>
+                        <div class="flex items-center justify-between mb-2" id="step-2-header">
+                            <h2 class="text-[18px] font-black text-zinc-900 tracking-tight">Шаг 2: Банковские реквизиты</h2>
+                            <span id="step-2-badge" class="hidden bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">✓ Заполнено</span>
+                        </div>
 
-                                <div class="relative w-full overflow-visible">
-                                    <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
-                                        class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full relative z-10 !rounded-none"
-                                        placeholder="Начните вводить..." autocomplete="off" />
-                                        
-                                    <div id="bank-suggestions" 
-                                        style="max-height: 320px !important; overflow-y: auto !important;"
-                                        class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-none shadow-2xl hidden">
-                                        <!-- Suggestions will be injected here via JS -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Left: Bank Search -->
+                            <div class="relative">
+                                <x-shop::form.control-group class="!mb-0" id="step-2-input-container">
+                                    <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
+                                        Название банка или БИК
+                                    </x-shop::form.control-group.label>
+
+                                    <div class="relative w-full overflow-visible">
+                                        <x-shop::form.control-group.control type="text" name="bic" :value="old('bic')" id="bic-input"
+                                            class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 transition-all w-full relative z-10 !rounded-none"
+                                            placeholder="Начните вводить..." autocomplete="off" />
+                                            
+                                        <div id="bank-suggestions" 
+                                            style="max-height: 320px !important; overflow-y: auto !important;"
+                                            class="absolute z-[9999] top-full left-0 w-full mt-1 bg-white border border-zinc-200 rounded-none shadow-2xl hidden">
+                                            <!-- Suggestions will be injected here via JS -->
+                                        </div>
                                     </div>
+                                    <x-shop::form.control-group.error control-name="bic" />
+                                </x-shop::form.control-group>
+                            </div>
+
+                            <!-- Right: Settlement Account -->
+                            <div>
+                                <x-shop::form.control-group class="!mb-0">
+                                    <x-shop::form.control-group.label
+                                        class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider flex items-center gap-2">
+                                        @lang('shop::app.customers.account.organizations.create.settlement_account')
+                                        <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded-none text-zinc-500">20 цифр</span>
+                                    </x-shop::form.control-group.label>
+
+                                    <x-shop::form.control-group.control type="text" name="settlement_account" rules="required|length:20"
+                                        :value="old('settlement_account')"
+                                        id="settlement-account-input"
+                                        class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans !rounded-none"
+                                        :label="trans('shop::app.customers.account.organizations.create.settlement_account')"
+                                        placeholder="40702810..." />
+
+                                    <x-shop::form.control-group.error control-name="settlement_account" />
+                                    <div id="settlement-account-error" class="text-red-500 text-[12px] mt-1 hidden font-bold"></div>
+                                </x-shop::form.control-group>
+                            </div>
+                        </div>
+
+                        <!-- Extracted Bank Details (Readonly Constants) -->
+                        <div id="step-2-details" class="hidden mt-6 space-y-4 bg-zinc-50/50 rounded-none p-5 border border-zinc-100 relative">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                                        @lang('shop::app.customers.account.organizations.create.bank_name')
+                                    </label>
+                                    <input type="text" name="bank_name" id="bank-name-input" readonly 
+                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
                                 </div>
-                                <x-shop::form.control-group.error control-name="bic" />
-                            </x-shop::form.control-group>
-                        </div>
 
-                        <!-- Right: Settlement Account -->
-                        <div>
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider flex items-center gap-2">
-                                    @lang('shop::app.customers.account.organizations.create.settlement_account')
-                                    <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded-none text-zinc-500">20 цифр</span>
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="settlement_account" rules="required|length:20"
-                                    :value="old('settlement_account')"
-                                    id="settlement-account-input"
-                                    class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans !rounded-none"
-                                    :label="trans('shop::app.customers.account.organizations.create.settlement_account')"
-                                    placeholder="40702810..." />
-
-                                <x-shop::form.control-group.error control-name="settlement_account" />
-                                <div id="settlement-account-error" class="text-red-500 text-[12px] mt-1 hidden font-bold"></div>
-                            </x-shop::form.control-group>
-                        </div>
-                    </div>
-
-                    <!-- Extracted Bank Details (Readonly Constants) -->
-                    <div id="step-2-details" class="hidden mt-6 space-y-4 bg-zinc-50/50 rounded-none p-5 border border-zinc-100 relative">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                    @lang('shop::app.customers.account.organizations.create.bank_name')
-                                </label>
-                                <input type="text" name="bank_name" id="bank-name-input" readonly 
-                                    class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
-                            </div>
-
-                            <div>
-                                <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                    @lang('shop::app.customers.account.organizations.create.correspondent_account')
-                                </label>
-                                <input type="text" name="correspondent_account" id="corr-account-input" readonly 
-                                    class="w-full bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default" />
+                                <div>
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
+                                        @lang('shop::app.customers.account.organizations.create.correspondent_account')
+                                    </label>
+                                    <input type="text" name="correspondent_account" id="corr-account-input" readonly 
+                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default" />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mt-8">
-                        <button type="submit" id="submit-btn" disabled
-                            class="w-full bg-[#7C45F5] hover:bg-[#6534d4] disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-bold py-4 px-8 rounded-none shadow-lg shadow-[#7C45F5]/20 disabled:shadow-none transition-all active:scale-[0.98] flex items-center justify-center gap-2">
-                            @lang('shop::app.customers.account.organizations.create.save')
-                        </button>
+                        <div class="pt-4">
+                            <button type="submit" id="submit-btn" disabled
+                                class="w-full bg-[#7C45F5] hover:bg-black disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-black py-5 px-8 rounded-none shadow-2xl disabled:shadow-none transition-all active:scale-[0.97] flex items-center justify-center gap-4 text-[17px] uppercase tracking-wider group">
+                                @lang('shop::app.customers.account.organizations.create.save')
+                                <span class="icon-arrow-right text-xl group-hover:translate-x-1 transition-transform"></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
