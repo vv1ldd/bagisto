@@ -10,7 +10,7 @@
             <span class="icon-cancel text-xl"></span>
         </a>
 
-        <div class="mb-8">
+        <div class="mb-8 mt-8 sm:mt-0 sm:px-10 text-center">
             <h1 class="text-[22px] font-bold text-zinc-900 leading-tight">
                 @lang('shop::app.customers.account.organizations.edit.title')
             </h1>
