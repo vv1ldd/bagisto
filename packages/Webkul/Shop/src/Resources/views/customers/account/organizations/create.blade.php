@@ -170,28 +170,7 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Left: Settlement Account (Primary focus) -->
-                        <div>
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider flex items-center gap-2">
-                                    @lang('shop::app.customers.account.organizations.create.settlement_account')
-                                    <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded-none text-zinc-500">20 цифр</span>
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="settlement_account" rules="required|length:20"
-                                    :value="old('settlement_account')"
-                                    id="settlement-account-input"
-                                    class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans !rounded-none"
-                                    :label="trans('shop::app.customers.account.organizations.create.settlement_account')"
-                                    placeholder="40702810..." />
-
-                                <x-shop::form.control-group.error control-name="settlement_account" />
-                                <div id="settlement-account-error" class="text-red-500 text-[12px] mt-1 hidden font-bold"></div>
-                            </x-shop::form.control-group>
-                        </div>
-
-                        <!-- Right: Bank Search -->
+                        <!-- Left: Bank Search -->
                         <div class="relative">
                             <x-shop::form.control-group class="!mb-0" id="step-2-input-container">
                                 <x-shop::form.control-group.label class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
@@ -210,6 +189,27 @@
                                     </div>
                                 </div>
                                 <x-shop::form.control-group.error control-name="bic" />
+                            </x-shop::form.control-group>
+                        </div>
+
+                        <!-- Right: Settlement Account -->
+                        <div>
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.label
+                                    class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider flex items-center gap-2">
+                                    @lang('shop::app.customers.account.organizations.create.settlement_account')
+                                    <span class="text-[10px] bg-zinc-100 px-2 py-0.5 rounded-none text-zinc-500">20 цифр</span>
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control type="text" name="settlement_account" rules="required|length:20"
+                                    :value="old('settlement_account')"
+                                    id="settlement-account-input"
+                                    class="!py-4 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-2 focus:!ring-[#7C45F5]/20 focus:text-lg focus:font-mono transition-all text-[16px] font-mono tracking-widest placeholder:tracking-normal placeholder:font-sans !rounded-none"
+                                    :label="trans('shop::app.customers.account.organizations.create.settlement_account')"
+                                    placeholder="40702810..." />
+
+                                <x-shop::form.control-group.error control-name="settlement_account" />
+                                <div id="settlement-account-error" class="text-red-500 text-[12px] mt-1 hidden font-bold"></div>
                             </x-shop::form.control-group>
                         </div>
                     </div>
@@ -309,7 +309,7 @@
                         if (document.getElementById('step-2-header')) {
                             document.getElementById('step-2-header').scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
-                        if (document.getElementById('bank-query')) document.getElementById('bank-query').focus();
+                        if (document.getElementById('bic-input')) document.getElementById('bic-input').focus();
                     }
                     return;
                 }
