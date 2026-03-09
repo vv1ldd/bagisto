@@ -301,6 +301,8 @@
             window.initOrganizationWizard = function () {
                 console.log('Wizard Initialization with Document Listeners');
 
+                let bankDebounceTimer;
+
                 document.addEventListener('click', async function (e) {
 
                     // --- STEP 1: Confirm ---
@@ -532,7 +534,9 @@
                                 const accountInput = document.getElementById('settlement-account-input');
                                 const account = accountInput ? accountInput.value.trim() : '';
 
-                                const url = `{{ route('shop.customers.account.organizations.suggest_bank', [], false) }}?query=${encodeURIComponent(query)}`;
+                                const relativePath = "{{ route('shop.customers.account.organizations.suggest_bank', [], false) }}";
+                                const url = `${window.location.origin}${relativePath}?query=${encodeURIComponent(query)}`;
+                                
                                 const response = await fetch(url);
                                 let banks = await response.json();
 
