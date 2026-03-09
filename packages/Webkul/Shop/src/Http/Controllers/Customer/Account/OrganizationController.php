@@ -27,17 +27,17 @@ class OrganizationController extends Controller
      */
     public function index()
     {
-        return view('shop::customers.account.organizations.index')->with('organizations', auth()->guard('customer')->user()->organizations);
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
     }
 
     /**
      * Show the organization create form.
      *
-     * @return \Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function create()
     {
-        return view('shop::customers.account.organizations.create');
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'add-organization']);
     }
 
     /**
@@ -133,7 +133,7 @@ class OrganizationController extends Controller
             abort(404);
         }
 
-        return view('shop::customers.account.organizations.edit')->with('organization', $organization);
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
     }
 
     /**
