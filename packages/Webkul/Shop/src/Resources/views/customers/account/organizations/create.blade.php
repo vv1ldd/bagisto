@@ -109,41 +109,39 @@
                                 </h3>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <div class="ios-tile p-4 bg-white/60 !rounded-none">
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                                        @lang('shop::app.customers.account.organizations.create.name')
+                            <div class="space-y-6">
+                                <div class="ios-tile p-6 bg-white/60 !rounded-none border-b border-zinc-100 pb-8">
+                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-3 opacity-60">
+                                        Название организации
                                     </label>
                                     <input type="text" name="name" id="name-input"  
-                                        class="w-full bg-transparent border-0 p-0 text-[17px] font-bold text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300"
+                                        class="w-full bg-transparent border-0 p-0 text-[20px] font-black text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300 tracking-tight"
                                         placeholder="Название организации" />
                                 </div>
 
-                                <div class="ios-tile p-4 bg-white/60 !rounded-none">
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                                        Юридический адрес
-                                    </label>
-                                    <input type="text" name="address" id="address-input"  
-                                        class="w-full bg-transparent border-0 p-0 text-[14px] text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300"
-                                        placeholder="Юридический адрес" />
-                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pb-2">
+                                    <div class="col-span-2">
+                                        <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2 opacity-60">
+                                            Юридический адрес
+                                        </label>
+                                        <input type="text" name="address" id="address-input"  
+                                            class="w-full bg-transparent border-0 p-0 text-[15px] font-medium text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 leading-relaxed"
+                                            placeholder="Юридический адрес" />
+                                    </div>
 
-                                <div id="kpp-container" class="ios-tile p-4 bg-white/60 !rounded-none">
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                                        @lang('shop::app.customers.account.organizations.create.kpp')
-                                    </label>
-                                    <input type="text" name="kpp" id="kpp-input"  
-                                        class="w-full bg-transparent border-0 p-0 text-[16px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300"
-                                        placeholder="КПП (если есть)" />
-                                </div>
+                                    <div id="kpp-container" class="flex items-center gap-3">
+                                        <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider opacity-60">КПП</span>
+                                        <input type="text" name="kpp" id="kpp-input"  
+                                            class="w-auto bg-zinc-50 border border-zinc-100 px-3 py-1 text-[14px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
+                                            placeholder="—" />
+                                    </div>
 
-                                <div id="ogrn-container" class="ios-tile p-4 bg-white/60 !rounded-none">
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                                        ОГРН / ОГРНИП
-                                    </label>
-                                    <input type="text" name="ogrn" id="ogrn-input"  
-                                        class="w-full bg-transparent border-0 p-0 text-[16px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300"
-                                        placeholder="ОГРН" />
+                                    <div id="ogrn-container" class="flex items-center gap-3">
+                                        <span class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider opacity-60">ОГРН</span>
+                                        <input type="text" name="ogrn" id="ogrn-input"  
+                                            class="w-auto bg-zinc-50 border border-zinc-100 px-3 py-1 text-[14px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
+                                            placeholder="—" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -219,23 +217,24 @@
                             </div>
                         </div>
 
-                        <!-- Extracted Bank Details (Readonly Constants) -->
-                        <div id="step-2-details" class="hidden mt-6 space-y-4 bg-zinc-50/50 rounded-none p-5 border border-zinc-100 relative">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Extracted Bank Details (Premium Tag Style) -->
+                        <div id="step-2-details" class="hidden mt-6 space-y-4 bg-white rounded-none p-6 border border-zinc-100 relative shadow-sm">
+                            <div class="space-y-4">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                        @lang('shop::app.customers.account.organizations.create.bank_name')
-                                    </label>
-                                    <input type="text" name="bank_name" id="bank-name-input" readonly 
-                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-semibold text-zinc-900 focus:ring-0 cursor-default" />
+                                    <h3 id="display-bank-name" class="text-[17px] font-bold text-zinc-900 leading-tight"></h3>
+                                    <input type="hidden" name="bank_name" id="bank-name-input" />
                                 </div>
 
-                                <div>
-                                    <label class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-1">
-                                        @lang('shop::app.customers.account.organizations.create.correspondent_account')
-                                    </label>
-                                    <input type="text" name="correspondent_account" id="corr-account-input" readonly 
-                                        class="w-full bg-transparent border-0 p-0 text-[15px] font-mono text-zinc-700 focus:ring-0 cursor-default" />
+                                <div class="flex items-center gap-6 pt-4 border-t border-zinc-100">
+                                    <div class="text-[12px] text-zinc-400 flex items-center gap-1.5">
+                                        <span class="font-bold uppercase tracking-wider opacity-60">БИК</span>
+                                        <span id="display-bic" class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
+                                    </div>
+                                    <div class="text-[12px] text-zinc-400 flex items-center gap-1.5">
+                                        <span class="font-bold uppercase tracking-wider opacity-60">КОРР. СЧЕТ</span>
+                                        <span id="display-corr-account" class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
+                                        <input type="hidden" name="correspondent_account" id="corr-account-input" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -624,14 +623,19 @@
                 }
                 
                 if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = bankItem.dataset.name || '';
+                if (document.getElementById('display-bank-name')) document.getElementById('display-bank-name').innerText = bankItem.dataset.name || '';
+                
                 if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = bankItem.dataset.corr || '';
+                if (document.getElementById('display-corr-account')) document.getElementById('display-corr-account').innerText = bankItem.dataset.corr || '';
+                
+                if (document.getElementById('display-bic')) document.getElementById('display-bic').innerText = bankItem.dataset.bic || '';
                 
                 bankSuggestions.classList.add('hidden');
                 
                 const step2Details = document.getElementById('step-2-details');
                 if (step2Details) step2Details.classList.remove('hidden');
                 
-                ['bank-name-input', 'corr-account-input'].forEach(id => {
+                ['display-bank-name', 'display-bic', 'display-corr-account'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) {
                         el.style.backgroundColor = '#f0fff4';
