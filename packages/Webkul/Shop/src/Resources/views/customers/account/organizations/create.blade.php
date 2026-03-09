@@ -8,7 +8,7 @@
                 MEANLY
             </div>
 
-            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.organizations.index') }}'"
+            <a href="{{ route('shop.customers.account.organizations.index') }}"
                 class="w-8 h-8 bg-white border border-gray-100 flex items-center justify-center text-zinc-400 hover:text-[#7C45F5] hover:border-[#7C45F5] transition-all">
                 <span class="icon-cancel text-xl"></span>
             </a>
@@ -274,9 +274,15 @@
                             </div>
                         </div>
 
-                        <div class="pt-2">
+                        <div class="pt-2 flex gap-4">
+                            <button type="button" id="back-to-step-1-btn"
+                                class="flex-1 bg-white border border-zinc-200 text-zinc-600 font-black py-4 px-8 rounded-none hover:bg-zinc-50 transition-all active:scale-[0.97] flex items-center justify-center gap-4 text-[16px] uppercase tracking-wider">
+                                <span class="icon-arrow-left text-xl"></span>
+                                @lang('shop::app.customers.account.organizations.edit.back')
+                            </button>
+
                             <button type="submit" id="submit-btn" disabled
-                                class="w-full bg-[#7C45F5] hover:bg-black disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-black py-4 px-8 rounded-none shadow-2xl disabled:shadow-none transition-all active:scale-[0.97] flex items-center justify-center gap-4 text-[16px] uppercase tracking-wider group">
+                                class="flex-[2] bg-[#7C45F5] hover:bg-black disabled:bg-zinc-200 disabled:text-zinc-400 text-white font-black py-4 px-8 rounded-none shadow-2xl disabled:shadow-none transition-all active:scale-[0.97] flex items-center justify-center gap-4 text-[16px] uppercase tracking-wider group">
                                 @lang('shop::app.customers.account.organizations.create.save')
                                 <span
                                     class="icon-arrow-right text-xl group-hover:translate-x-1 transition-transform"></span>
@@ -400,6 +406,24 @@
                         return;
                     }
 
+                    // --- STEP 2: Back ---
+                    const backToStep1Btn = e.target.closest('#back-to-step-1-btn');
+                    if (backToStep1Btn) {
+                        e.preventDefault();
+
+                        // Use same logic as "Edit Step 1"
+                        document.getElementById('step-1-inputs').classList.remove('hidden');
+                        document.getElementById('step-1-summary').classList.add('hidden');
+                        document.getElementById('step-1-badge').classList.add('hidden');
+
+                        ['step-2', 'step-3', 'step-4'].forEach(id => {
+                            const step = document.getElementById(id);
+                            if (step) step.classList.add('hidden');
+                        });
+
+                        document.getElementById('inn-input').focus();
+                        return;
+                    }
 
                 });
 

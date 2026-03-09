@@ -1,6 +1,6 @@
 <x-shop::layouts.account :is-cardless="true" :show-back="false">
     <div class="flex-auto ios-tile-relative ios-group max-w-[600px] mx-auto p-8 max-md:p-6">
-        <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.organizations.index') }}'"
+        <a href="{{ route('shop.customers.account.organizations.index') }}"
             class="ios-close-button">
             <span class="icon-cancel text-xl"></span>
         </a>
