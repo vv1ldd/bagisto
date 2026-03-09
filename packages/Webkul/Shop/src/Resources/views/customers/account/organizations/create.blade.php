@@ -119,41 +119,41 @@
                             </div>
 
                             <div class="space-y-6">
-                                <div class="p-6 bg-zinc-50/30 !rounded-none border-b border-zinc-100 pb-8">
+                                <div class="p-6 bg-zinc-50/30 !rounded-none border-b border-zinc-100 pb-8 transition-all duration-300" id="name-container">
                                     <label
                                         class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2 opacity-60">
                                         Название организации
                                     </label>
                                     <input type="text" name="name" id="name-input"
-                                        class="w-full bg-transparent border-0 p-0 text-[24px] font-black text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300 tracking-tight"
+                                        class="w-full bg-transparent border-0 p-0 text-[24px] font-black text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300 tracking-tight read-only:opacity-80 read-only:cursor-default"
                                         placeholder="Название организации" />
                                 </div>
 
                                 <div class="px-6 space-y-8 pb-4">
-                                    <div>
+                                    <div id="address-container" class="transition-all duration-300">
                                         <label
                                             class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2 opacity-60">
                                             Юридический адрес
                                         </label>
                                         <input type="text" name="address" id="address-input"
-                                            class="w-full bg-transparent border-0 p-0 text-[15px] font-medium text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 leading-relaxed"
+                                            class="w-full bg-transparent border-0 p-0 text-[15px] font-medium text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 leading-relaxed read-only:opacity-80 read-only:cursor-default"
                                             placeholder="Юридический адрес" />
                                     </div>
 
                                     <div class="flex flex-wrap items-center gap-x-10 gap-y-4 pt-2 border-t border-zinc-50">
-                                        <div id="kpp-container" class="flex items-center gap-3">
+                                        <div id="kpp-container" class="flex items-center gap-3 transition-all duration-300">
                                             <span
                                                 class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest opacity-40">КПП</span>
                                             <input type="text" name="kpp" id="kpp-input"
-                                                class="w-[110px] bg-zinc-50 border border-zinc-100 px-3 py-1 text-[13px] font-mono text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
+                                                class="w-[110px] bg-zinc-50 border border-zinc-100 px-3 py-1 text-[13px] font-mono text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none read-only:bg-zinc-100/50 read-only:border-transparent read-only:cursor-default"
                                                 placeholder="—" />
                                         </div>
 
-                                        <div id="ogrn-container" class="flex items-center gap-3">
+                                        <div id="ogrn-container" class="flex items-center gap-3 transition-all duration-300">
                                             <span
                                                 class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest opacity-40">ОГРН</span>
                                             <input type="text" name="ogrn" id="ogrn-input"
-                                                class="w-[160px] bg-zinc-50 border border-zinc-100 px-3 py-1 text-[13px] font-mono text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
+                                                class="w-[160px] bg-zinc-50 border border-zinc-100 px-3 py-1 text-[13px] font-mono text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none read-only:bg-zinc-100/50 read-only:border-transparent read-only:cursor-default"
                                                 placeholder="—" />
                                         </div>
                                     </div>
@@ -386,13 +386,24 @@
                     const step1Details = document.getElementById('step-1-details');
                     const kppContainer = document.getElementById('kpp-container');
 
-                    // Populate fields
+                    // Populate fields and set to Readonly (as per user request: identified by INN = no manual edit)
                     if (innInput) innInput.value = org.inn || '';
-                    if (nameInput) nameInput.value = org.name || '';
-                    if (kppInput) kppInput.value = org.kpp || '';
-                    if (addressInput) addressInput.value = org.address || '';
-                    const ogrnInput = document.getElementById('ogrn-input');
-                    if (ogrnInput) ogrnInput.value = org.ogrn || '';
+                    if (nameInput) {
+                        nameInput.value = org.name || '';
+                        nameInput.readOnly = true;
+                    }
+                    if (kppInput) {
+                        kppInput.value = org.kpp || '';
+                        kppInput.readOnly = true;
+                    }
+                    if (addressInput) {
+                        addressInput.value = org.address || '';
+                        addressInput.readOnly = true;
+                    }
+                    if (ogrnInput) {
+                        ogrnInput.value = org.ogrn || '';
+                        ogrnInput.readOnly = true;
+                    }
 
                     // Show/hide KPP container
                     if (kppContainer) {
