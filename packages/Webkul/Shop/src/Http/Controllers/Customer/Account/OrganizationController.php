@@ -14,8 +14,10 @@ class OrganizationController extends Controller
      *
      * @return void
      */
-    public function __construct(protected OrganizationRepository $organizationRepository)
-    {
+    public function __construct(
+        protected OrganizationRepository $organizationRepository,
+        protected \Webkul\Customer\Repositories\BankRepository $bankRepository
+    ) {
     }
 
     /**
@@ -242,8 +244,19 @@ class OrganizationController extends Controller
      */
     public function lookupBic(string $bic)
     {
-        $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
+        // 1. Check local cache first
+        $bank = $this->bankRepository->findOneByField('bic', $bic);
 
+        if ($bank) {
+            return response()->json([
+                'bank_name' => $bank->name,
+                'correspondent_account' => $bank->correspondent_account,
+                'bic' => $bank->bic,
+            ]);
+        }
+
+        // 2. Fallback to DaData
+        $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
         $result = $dadataHelper->lookupBank($bic);
 
         if (!$result) {
@@ -251,6 +264,14 @@ class OrganizationController extends Controller
                 'message' => 'Банк не найден. Проверьте БИК.',
             ], 404);
         }
+
+        // 3. Cache the result for future
+        $this->bankRepository->updateOrCreate([
+            'bic' => $result['bic'],
+        ], [
+            'name' => $result['bank_name'],
+            'correspondent_account' => $result['correspondent_account'],
+        ]);
 
         return response()->json($result);
     }
@@ -269,11 +290,53 @@ class OrganizationController extends Controller
             return response()->json([], 400);
         }
 
-        $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
+        // 1. Search in local cache (by BIC or Name)
+        $localResults = $this->bankRepository->scopeQuery(function ($queryBuilder) use ($query) {
+            return $queryBuilder->where('bic', 'like', $query . '%')
+                ->orWhere('name', 'like', '%' . $query . '%');
+        })->get();
 
-        $results = $dadataHelper->suggestBank($query);
+        $results = $localResults->map(function ($bank) {
+            return [
+                'name' => $bank->name,
+                'bank_name' => $bank->name,
+                'correspondent_account' => $bank->correspondent_account,
+                'bic' => $bank->bic,
+                'address' => $bank->address,
+            ];
+        })->toArray();
 
-        return response()->json($results);
+        // 2. If results are insufficient, fetch from DaData
+        if (count($results) < 5) {
+            $dadataHelper = app(\Webkul\Core\Helpers\Dadata\DadataHelper::class);
+            $dadataResults = $dadataHelper->suggestBank($query);
+
+            foreach ($dadataResults as $item) {
+                // Upsert into local cache
+                $this->bankRepository->updateOrCreate([
+                    'bic' => $item['bic'],
+                ], [
+                    'name' => $item['bank_name'],
+                    'correspondent_account' => $item['correspondent_account'],
+                    'address' => $item['address'],
+                ]);
+
+                // Merge into results if not already there (by BIC)
+                $exists = false;
+                foreach ($results as $res) {
+                    if ($res['bic'] === $item['bic']) {
+                        $exists = true;
+                        break;
+                    }
+                }
+
+                if (!$exists) {
+                    $results[] = $item;
+                }
+            }
+        }
+
+        return response()->json(array_slice($results, 0, 15));
     }
 
     /**
