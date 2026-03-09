@@ -73,18 +73,18 @@
                         <x-shop::form.control-group class="!mb-4" id="step-1-input-container">
                             <x-shop::form.control-group.label
                                 class="required !text-[13px] !font-semibold !text-zinc-500 !mb-1.5 uppercase tracking-wider">
-                                @lang('shop::app.customers.account.organizations.create.inn')
+                                ИНН или название организации
                             </x-shop::form.control-group.label>
 
                             <div class="relative w-full overflow-visible flex gap-0 border border-zinc-200"
                                 id="search-wrapper">
                                 <div class="relative flex-grow">
                                     <v-field name="inn" rules="required"
-                                        label="{{ trans('shop::app.customers.account.organizations.create.inn') }}"
+                                        label="ИНН или название организации"
                                         v-slot="{ field }">
                                         <input type="text" id="inn-input" v-bind="field"
                                             class="!py-3.5 !px-4 !border-0 transition-all w-full text-gray-600"
-                                            placeholder="Введите ИНН..." autocomplete="off" />
+                                            placeholder="Введите ИНН или название компании..." autocomplete="off" />
                                     </v-field>
                                 </div>
 
