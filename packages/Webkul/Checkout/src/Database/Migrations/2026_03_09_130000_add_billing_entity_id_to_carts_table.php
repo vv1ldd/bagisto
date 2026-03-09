@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::table('carts', function (Blueprint $table) {
+        Schema::table('cart', function (Blueprint $table) {
             $table->integer('billing_entity_id')->unsigned()->nullable()->after('id');
             $table->foreign('billing_entity_id')->references('id')->on('billing_entities')->onDelete('set null');
         });
@@ -25,7 +25,7 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table('carts', function (Blueprint $table) {
+        Schema::table('cart', function (Blueprint $table) {
             $table->dropForeign(['billing_entity_id']);
             $table->dropColumn('billing_entity_id');
         });
