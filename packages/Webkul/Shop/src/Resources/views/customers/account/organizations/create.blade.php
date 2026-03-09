@@ -384,6 +384,7 @@
                     const nameInput = document.getElementById('name-input');
                     const kppInput = document.getElementById('kpp-input');
                     const addressInput = document.getElementById('address-input');
+                    const ogrnInput = document.getElementById('ogrn-input');
                     const suggestionsContainer = document.getElementById('org-suggestions');
                     const step1Details = document.getElementById('step-1-details');
                     const kppContainer = document.getElementById('kpp-container');
