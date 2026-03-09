@@ -58,6 +58,16 @@ class OrganizationController extends Controller
 
         $customer = auth()->guard('customer')->user();
 
+        $inn = $request->input('inn');
+        $existing = $this->organizationRepository->findOneWhere([
+            'customer_id' => $customer->id,
+            'inn' => $inn,
+        ]);
+
+        if ($existing) {
+            return back()->withErrors(['inn' => 'Организация с таким ИНН уже добавлена'])->withInput();
+        }
+
         Event::dispatch('customer.organizations.create.before');
 
         $data = array_merge($request->only([
@@ -315,6 +325,16 @@ class OrganizationController extends Controller
 
         if (!$this->isValidBankAccount($bic, $settlementAccount)) {
             return back()->withErrors(['settlement_account' => 'Неверный контрольный ключ расчетного счета'])->withInput();
+        }
+
+        // Check if this account already exists for the organization
+        $existingAccount = $organization->settlementAccounts()->where([
+            'bic' => $bic,
+            'settlement_account' => $settlementAccount,
+        ])->first();
+
+        if ($existingAccount) {
+            return back()->withErrors(['settlement_account' => 'Этот расчетный счет уже добавлен'])->withInput();
         }
 
         // Check if it's the first account

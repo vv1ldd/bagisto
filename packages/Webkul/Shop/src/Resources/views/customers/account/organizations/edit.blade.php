@@ -177,7 +177,8 @@
 
                         <form method="POST"
                             action="{{ route('shop.customers.account.organizations.settlement_accounts.store', $organization->id) }}"
-                            id="add-account-form">
+                            id="add-account-form"
+                            onsubmit="document.getElementById('submit-account-btn').disabled = true; document.getElementById('submit-account-btn').innerHTML = 'Сохранение...'">
                             @csrf
 
                             <div class="space-y-4">

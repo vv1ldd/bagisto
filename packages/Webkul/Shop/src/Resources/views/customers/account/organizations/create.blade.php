@@ -15,7 +15,8 @@
         </div>
 
 
-        <x-shop::form :action="route('shop.customers.account.organizations.store')">
+        <x-shop::form :action="route('shop.customers.account.organizations.store')"
+            @submit="document.getElementById('submit-btn').disabled = true; document.getElementById('submit-btn').innerHTML = 'Сохранение...'">
             <div class="space-y-6" id="wizard-container">
                 <!-- ================== STEP 1: ORGANIZATION DETAILS ================== -->
                 <div id="step-1" class="transition-all duration-300">
