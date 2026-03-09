@@ -681,6 +681,8 @@
                     if (bankItem && bankSuggestions && bankSuggestions.contains(bankItem)) {
                         if (bicInput) {
                             bicInput.value = bankItem.dataset.bic;
+                            // Critical: Dispatch input event for Vue/VeeValidate and to trigger our own listeners
+                            bicInput.dispatchEvent(new Event('input', { bubbles: true }));
                         }
 
                         if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = bankItem.dataset.name || '';
