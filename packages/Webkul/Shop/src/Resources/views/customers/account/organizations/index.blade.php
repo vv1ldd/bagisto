@@ -44,8 +44,9 @@
                                     </p>
                                 @endif
 
-                                <p class="text-[13px] text-zinc-400 leading-relaxed italic" v-pre>
-                                    {{ $organization->address }}
+                                <p class="text-[13px] text-zinc-500 leading-relaxed flex items-start gap-1.5 mt-1" v-pre>
+                                    <span class="icon-location text-[16px] text-zinc-300 mt-0.5"></span>
+                                    <span>{{ $organization->address }}</span>
                                 </p>
                             </div>
                         </a>
@@ -79,14 +80,14 @@
                                         </form>
                                         <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                             onclick="
-                                                                event.preventDefault(); 
-                                                                const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                if(innPrompt === '{{ $organization->inn }}') { 
-                                                                    document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                } else if(innPrompt !== null) {
-                                                                    alert('ИНН введен неверно. Удаление отменено.');
-                                                                }
-                                                            ">
+                                                                        event.preventDefault(); 
+                                                                        const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                        if(innPrompt === '{{ $organization->inn }}') { 
+                                                                            document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                        } else if(innPrompt !== null) {
+                                                                            alert('ИНН введен неверно. Удаление отменено.');
+                                                                        }
+                                                                    ">
                                             <span class="icon-bin text-xl"></span>
                                             @lang('shop::app.customers.account.organizations.index.delete')
                                         </a>
