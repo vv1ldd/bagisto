@@ -37,35 +37,34 @@
 
                     <!-- Step 1 Summary (Shown after confirmation) -->
                     <div id="step-1-summary"
-                        class="hidden bg-white border border-zinc-200 rounded-none p-5 mb-6 shadow-sm">
-                        <div class="flex items-start justify-between">
-                            <div class="space-y-1">
-                                <div id="summary-org-name" class="text-[18px] font-bold text-zinc-900 leading-tight">
+                        class="hidden bg-white border border-zinc-200 rounded-none p-5 mb-8 shadow-sm transition-all duration-300">
+                        <div class="space-y-3">
+                            <div class="flex items-start justify-between gap-4">
+                                <div id="summary-org-name" class="text-[17px] font-black text-zinc-900 leading-tight">
                                 </div>
-                                <div class="flex items-center gap-6 mt-4 pt-4 border-t border-zinc-100">
-                                    <div class="text-[12px] text-zinc-400 flex items-center gap-1.5">
-                                        <span class="font-bold uppercase tracking-wider opacity-60">ИНН</span>
-                                        <span id="summary-org-inn"
-                                            class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
-                                    </div>
-                                    <div id="summary-kpp-container"
-                                        class="text-[12px] text-zinc-400 flex items-center gap-1.5 ">
-                                        <span class="font-bold uppercase tracking-wider opacity-60">КПП</span>
-                                        <span id="summary-org-kpp"
-                                            class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
-                                    </div>
-                                    <div id="summary-ogrn-container"
-                                        class="text-[12px] text-zinc-400 hidden flex items-center gap-1.5">
-                                        <span class="font-bold uppercase tracking-wider opacity-60">ОГРН</span>
-                                        <span id="summary-org-ogrn"
-                                            class="font-mono text-zinc-600 bg-zinc-50 px-2 py-0.5 border border-zinc-100"></span>
-                                    </div>
+                                <button type="button" id="edit-step-1-btn"
+                                    class="shrink-0 text-[12px] font-bold text-[#7C45F5] hover:bg-[#7C45F5]/5 px-3 py-1.5 rounded transition-all">
+                                    Изменить
+                                </button>
+                            </div>
+
+                            <div id="summary-org-address" class="text-[13px] text-zinc-500 font-medium leading-relaxed max-w-[580px]">
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-x-8 gap-y-2 pt-3 border-t border-zinc-50">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">ИНН</span>
+                                    <span id="summary-org-inn" class="text-[13px] font-mono text-zinc-700"></span>
+                                </div>
+                                <div id="summary-kpp-container" class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">КПП</span>
+                                    <span id="summary-org-kpp" class="text-[13px] font-mono text-zinc-700"></span>
+                                </div>
+                                <div id="summary-ogrn-container" class="hidden flex items-center gap-2">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">ОГРН</span>
+                                    <span id="summary-org-ogrn" class="text-[13px] font-mono text-zinc-700"></span>
                                 </div>
                             </div>
-                            <button type="button" id="edit-step-1-btn"
-                                class="text-[12px] font-bold text-[#7C45F5] hover:underline px-3 py-1 bg-[#7C45F5]/5 rounded-none transition-all">
-                                Изменить
-                            </button>
                         </div>
                     </div>
 
@@ -317,9 +316,12 @@
                         const kpp = document.getElementById('kpp-input').value;
                         const ogrn = document.getElementById('ogrn-input').value;
 
+                        const address = document.getElementById('address-input').value;
+
                         // Fill summary
-                        document.getElementById('summary-org-name').innerText = name;
-                        document.getElementById('summary-org-inn').innerText = inn;
+                        if (document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = name;
+                        if (document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = inn;
+                        if (document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = address;
 
                         const summaryKppContainer = document.getElementById('summary-kpp-container');
                         if (kpp) {
