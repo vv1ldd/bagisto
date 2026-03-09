@@ -278,8 +278,7 @@
 
             if (bic.length !== 9 || account.length !== 20) return false;
 
-            // RKC Rule: If digits 7 and 8 of BIC are '00', use '0' + 5th + 6th digits of BIC.
-            // Index 6 is 7th char, Index 8 is 9th.
+            // RKC Rule: If digits 7 and 8 of BIC are '00', use '0' + 5th + 6th digits.
             let bicPart;
             if (bic[6] === '0' && bic[7] === '0') {
                 bicPart = '0' + bic[4] + bic[5];
@@ -291,12 +290,17 @@
             const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
 
             let sum = 0;
+            let details = [];
             for (let i = 0; i < 23; i++) {
-                sum += (parseInt(combined[i]) * weights[i]) % 10;
+                const digit = parseInt(combined[i]);
+                const product = (digit * weights[i]) % 10;
+                sum += product;
+                details.push({ pos: i + 1, digit, weight: weights[i], prod: product });
             }
 
             const isValid = sum % 10 === 0;
-            console.log(`[CBR Check] BIC Part: ${bicPart}, Valid: ${isValid}`);
+            console.log(`[CBR Check Edit] BIC Part: ${bicPart}, Valid: ${isValid}`);
+            console.table(details);
             return isValid;
         };
 
@@ -403,6 +407,11 @@
                         bicInput.value = item.dataset.bic;
                         bankNameInput.value = item.dataset.name || '';
                         corrAccountInput.value = item.dataset.corr || '';
+
+                        // Dispatch events so listeners (including validation) pick up the changes
+                        bicInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        bankNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        corrAccountInput.dispatchEvent(new Event('input', { bubbles: true }));
 
                         suggestionsContainer.classList.add('hidden');
                         bankDetailsContainer.classList.remove('hidden');

@@ -48,20 +48,24 @@
                                 </button>
                             </div>
 
-                            <div id="summary-org-address" class="text-[13px] text-zinc-500 font-medium leading-relaxed max-w-[580px]">
+                            <div id="summary-org-address"
+                                class="text-[13px] text-zinc-500 font-medium leading-relaxed max-w-[580px]">
                             </div>
 
                             <div class="flex flex-wrap items-center gap-x-8 gap-y-2 pt-3 border-t border-zinc-50">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">ИНН</span>
+                                    <span
+                                        class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">ИНН</span>
                                     <span id="summary-org-inn" class="text-[13px] font-mono text-zinc-700"></span>
                                 </div>
                                 <div id="summary-kpp-container" class="flex items-center gap-2">
-                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">КПП</span>
+                                    <span
+                                        class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">КПП</span>
                                     <span id="summary-org-kpp" class="text-[13px] font-mono text-zinc-700"></span>
                                 </div>
                                 <div id="summary-ogrn-container" class="hidden flex items-center gap-2">
-                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">ОГРН</span>
+                                    <span
+                                        class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest opacity-60">ОГРН</span>
                                     <span id="summary-org-ogrn" class="text-[13px] font-mono text-zinc-700"></span>
                                 </div>
                             </div>
@@ -79,8 +83,7 @@
                             <div class="relative w-full overflow-visible flex gap-0 border border-zinc-200"
                                 id="search-wrapper">
                                 <div class="relative flex-grow">
-                                    <v-field name="inn" rules="required"
-                                        label="ИНН или название организации"
+                                    <v-field name="inn" rules="required" label="ИНН или название организации"
                                         v-slot="{ field }">
                                         <input type="text" id="inn-input" v-bind="field"
                                             class="!py-3.5 !px-4 !border-0 transition-all w-full text-gray-600"
@@ -118,7 +121,8 @@
                             </div>
 
                             <div class="space-y-6">
-                                <div class="p-6 bg-zinc-50/30 !rounded-none border-b border-zinc-100 pb-8 transition-all duration-300" id="name-container">
+                                <div class="p-6 bg-zinc-50/30 !rounded-none border-b border-zinc-100 pb-8 transition-all duration-300"
+                                    id="name-container">
                                     <label
                                         class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2 opacity-60">
                                         Название организации
@@ -139,8 +143,10 @@
                                             placeholder="Юридический адрес" />
                                     </div>
 
-                                    <div class="flex flex-wrap items-center gap-x-10 gap-y-4 pt-2 border-t border-zinc-50">
-                                        <div id="kpp-container" class="flex items-center gap-3 transition-all duration-300">
+                                    <div
+                                        class="flex flex-wrap items-center gap-x-10 gap-y-4 pt-2 border-t border-zinc-50">
+                                        <div id="kpp-container"
+                                            class="flex items-center gap-3 transition-all duration-300">
                                             <span
                                                 class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest opacity-40">КПП</span>
                                             <input type="text" name="kpp" id="kpp-input"
@@ -148,7 +154,8 @@
                                                 placeholder="—" />
                                         </div>
 
-                                        <div id="ogrn-container" class="flex items-center gap-3 transition-all duration-300">
+                                        <div id="ogrn-container"
+                                            class="flex items-center gap-3 transition-all duration-300">
                                             <span
                                                 class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest opacity-40">ОГРН</span>
                                             <input type="text" name="ogrn" id="ogrn-input"
@@ -305,12 +312,17 @@
                 const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
 
                 let sum = 0;
+                let details = [];
                 for (let i = 0; i < 23; i++) {
-                    sum += (parseInt(combined[i]) * weights[i]) % 10;
+                    const digit = parseInt(combined[i]);
+                    const product = (digit * weights[i]) % 10;
+                    sum += product;
+                    details.push({ pos: i + 1, digit, weight: weights[i], prod: product });
                 }
 
                 const isValid = sum % 10 === 0;
                 console.log(`[CBR Check] BIC Part: ${bicPart}, Valid: ${isValid}`);
+                console.table(details);
                 return isValid;
             };
 
@@ -486,7 +498,8 @@
                                     </div>
                                     <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
                                 </div>
-                            `;}).join('');
+                            `;
+                            }).join('');
                             suggestionsContainer.classList.remove('hidden');
                         } else {
                             suggestionsContainer.classList.add('hidden');
@@ -574,7 +587,7 @@
 
                                 const relativePath = "{{ route('shop.customers.account.organizations.suggest_bank', [], false) }}";
                                 const url = `${window.location.origin}${relativePath}?query=${encodeURIComponent(query)}`;
-                                
+
                                 const response = await fetch(url);
                                 let banks = await response.json();
 
@@ -602,7 +615,8 @@
                                                 <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
                                             </div>
                                         </div>
-                                    `;}).join('');
+                                    `;
+                                    }).join('');
                                     suggestionsContainer.classList.remove('hidden');
                                 } else {
                                     suggestionsContainer.classList.add('hidden');
