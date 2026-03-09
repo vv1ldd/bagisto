@@ -49,7 +49,10 @@ class CreditController extends Controller
 
         $organizations = $customer->organizations;
 
-        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations'));
+        $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
+        $defaultBillingEntity = $this->billingEntityRepository->find($defaultBillingEntityId);
+
+        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations', 'defaultBillingEntity'));
     }
 
     /**
@@ -75,10 +78,12 @@ class CreditController extends Controller
      */
     public function storeTopup()
     {
+        $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
+
         $this->validate(request(), [
             'amount' => 'required|numeric|min:0.01',
             'organization_id' => 'required|exists:customer_organizations,id',
-            'billing_entity_id' => 'required|exists:billing_entities,id',
+            'billing_entity_id' => $defaultBillingEntityId ? 'nullable' : 'required|exists:billing_entities,id',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -91,7 +96,7 @@ class CreditController extends Controller
             'notes' => 'Top-up via B2B Bank Transfer',
             'metadata' => [
                 'organization_id' => request('organization_id'),
-                'billing_entity_id' => request('billing_entity_id'),
+                'billing_entity_id' => request('billing_entity_id') ?: $defaultBillingEntityId,
             ],
             'currency_code' => core()->getCurrentCurrencyCode(),
         ]);

@@ -136,6 +136,16 @@ return [
                 ],
             ],
 
+            'topup' => [
+                'amount' => 'Top-up Amount',
+                'select-billing-entity' => 'Select Billing Entity',
+                'generate-invoice' => 'Generate Proforma Invoice',
+                'success' => 'Top-up request created successfully.',
+                'pending-message' => 'Your request is pending. Please download the invoice and make the payment.',
+                'download-invoice' => 'Download Proforma Invoice',
+                'title' => 'Top-up Proforma Invoice',
+            ],
+
             'addresses' => [
                 'index' => [
                     'add-address' => 'Add Address',

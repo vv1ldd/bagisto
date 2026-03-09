@@ -74,4 +74,27 @@ return [
             ],
         ],
     ],
+    [
+        'key' => 'customer.settings.b2b',
+        'name' => 'shop::app.layouts.b2b',
+        'info' => 'shop::app.layouts.b2b',
+        'icon' => 'settings/customer.svg',
+        'sort' => 5,
+        'fields' => [
+            [
+                'name' => 'default_billing_entity',
+                'title' => 'shop::app.customers.account.topup.select-billing-entity',
+                'type' => 'select',
+                'options' => [
+                    [
+                        'title' => 'None',
+                        'value' => '',
+                    ],
+                ],
+                'channel_based' => true,
+                'locale_based' => false,
+                'repository' => 'Webkul\Core\Repositories\BillingEntityRepository',
+            ],
+        ],
+    ],
 ];

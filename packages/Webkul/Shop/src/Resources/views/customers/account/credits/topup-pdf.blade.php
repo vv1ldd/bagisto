@@ -144,6 +144,26 @@
         <p>Итого к оплате: {{ core()->formatBasePrice($transaction->amount) }}</p>
     </div>
 
+    <div style="margin-top: 40px; position: relative;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="width: 50%; vertical-align: top;">
+                    <p>Руководитель: ____________________ ({{ $billingEntity->director_name ?? '____________' }})</p>
+                    <p style="margin-top: 20px;">Бухгалтер: ____________________
+                        ({{ $billingEntity->accountant_name ?? '____________' }})</p>
+                </td>
+                <td style="width: 50%; text-align: right; vertical-align: middle;">
+                    @if ($billingEntity->seal)
+                        <div style="position: absolute; right: 50px; bottom: -20px;">
+                            <img src="{{ public_path('storage/' . $billingEntity->seal) }}"
+                                style="width: 150px; height: auto; opacity: 0.8;">
+                        </div>
+                    @endif
+                </td>
+            </tr>
+        </table>
+    </div>
+
     <div class="footer">
         <p>Просим Вас произвести оплату в течение 3-х банковских дней.</p>
     </div>
