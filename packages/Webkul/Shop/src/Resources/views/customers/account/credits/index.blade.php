@@ -511,8 +511,8 @@
                             <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                                 onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                                 <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                    {{ $address->address }}
-                                                </code>
+                                                        {{ $address->address }}
+                                                    </code>
                                 <div
                                     class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                     <span class="copy-txt">Скопировать</span>
@@ -1014,14 +1014,14 @@
                                 document.getElementById('step-1-badge').classList.remove('hidden');
                                 document.getElementById('step-2').classList.remove('hidden');
 
-                                if(document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = "{{ old('name') }}";
-                                if(document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = "{{ old('inn') }}";
-                                if(document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = "{{ old('address') }}";
-                                if(document.getElementById('summary-org-kpp') && "{{ old('kpp') }}") {
+                                if (document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = "{{ old('name') }}";
+                                if (document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = "{{ old('inn') }}";
+                                if (document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = "{{ old('address') }}";
+                                if (document.getElementById('summary-org-kpp') && "{{ old('kpp') }}") {
                                     document.getElementById('summary-org-kpp').innerText = "{{ old('kpp') }}";
                                     document.getElementById('summary-kpp-container').classList.remove('hidden');
                                 }
-                                if(document.getElementById('summary-org-ogrn') && "{{ old('ogrn') }}") {
+                                if (document.getElementById('summary-org-ogrn') && "{{ old('ogrn') }}") {
                                     document.getElementById('summary-org-ogrn').innerText = "{{ old('ogrn') }}";
                                     document.getElementById('summary-ogrn-container').classList.remove('hidden');
                                 }
@@ -1033,7 +1033,7 @@
                                     document.getElementById('display-bic').innerText = "{{ old('bic') }}";
                                     document.getElementById('step-2-details').classList.remove('hidden');
                                 @endif
-                            }, 100);
+                                        }, 100);
                         @endif
                     @endif
 
@@ -1045,8 +1045,7 @@
                         @endif
                     @endif
 
-                                @endif
-                            });
+                                });
 
                 // --- ORGANIZATION WIZARD SCRIPTS ---
                 window.isValidBankAccount = function (bic, account) {
@@ -1192,14 +1191,14 @@
                                     const safeOgrn = (org.ogrn || '').replace(/"/g, '&quot;');
 
                                     return `
-                                                <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
-                                                    data-name="${safeName}" data-inn="${safeInn}" data-kpp="${safeKpp}" data-ogrn="${safeOgrn}" data-address="${safeAddress}">
-                                                    <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
-                                                    <div class="text-[12px] text-zinc-500 font-mono">
-                                                        ИНН: ${org.inn || '-'} ${org.kpp ? ` | КПП: ${org.kpp}` : ''} ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
-                                                    </div>
-                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
-                                                </div>`;
+                                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                                        data-name="${safeName}" data-inn="${safeInn}" data-kpp="${safeKpp}" data-ogrn="${safeOgrn}" data-address="${safeAddress}">
+                                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
+                                                        <div class="text-[12px] text-zinc-500 font-mono">
+                                                            ИНН: ${org.inn || '-'} ${org.kpp ? ` | КПП: ${org.kpp}` : ''} ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
+                                                        </div>
+                                                        <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
+                                                    </div>`;
                                 }).join('');
                                 suggestionsContainer.classList.remove('hidden');
                             } else {
@@ -1284,13 +1283,13 @@
                                             const safeBic = (bank.bic || '').replace(/"/g, '&quot;');
                                             const safeCorr = (bank.correspondent_account || '').replace(/"/g, '&quot;');
                                             return `
-                                                        <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
-                                                            data-name="${safeName}" data-bic="${safeBic}" data-corr="${safeCorr}">
-                                                            <div>
-                                                                <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит</span>' : ''}</div>
-                                                                <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
-                                                            </div>
-                                                        </div>`;
+                                                            <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
+                                                                data-name="${safeName}" data-bic="${safeBic}" data-corr="${safeCorr}">
+                                                                <div>
+                                                                    <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит</span>' : ''}</div>
+                                                                    <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                                                </div>
+                                                            </div>`;
                                         }).join('');
                                         suggestionsContainer.classList.remove('hidden');
                                     } else {
