@@ -39,7 +39,9 @@ class CreditController extends Controller
             ->orderBy('id', 'desc')
             ->paginate(20);
 
-        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions'));
+        $organizations = $customer->organizations;
+
+        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations'));
     }
 
     /**

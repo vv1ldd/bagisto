@@ -114,7 +114,7 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('shop::app.customers.account.organizations.create-success'));
 
-        return redirect()->route('shop.customers.account.organizations.index');
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
     }
 
     /**
@@ -185,7 +185,7 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('shop::app.customers.account.organizations.update-success'));
 
-        return back();
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
     }
 
     /**
@@ -212,7 +212,7 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('shop::app.customers.account.organizations.delete-success'));
 
-        return redirect()->route('shop.customers.account.organizations.index');
+        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
     }
 
     /**
