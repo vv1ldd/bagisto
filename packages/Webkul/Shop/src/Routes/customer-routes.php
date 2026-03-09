@@ -17,6 +17,7 @@ use Webkul\Shop\Http\Controllers\DataGridController;
 use Webkul\Shop\Http\Controllers\Customer\PasskeyController;
 use Spatie\LaravelPasskeys\Http\Controllers\AuthenticateUsingPasskeyController;
 use Spatie\LaravelPasskeys\Http\Controllers\GeneratePasskeyAuthenticationOptionsController;
+use Webkul\Shop\Http\Controllers\Customer\Account\TransferController;
 
 Route::prefix('customer')->group(function () {
     /**
@@ -152,6 +153,10 @@ Route::prefix('customer')->group(function () {
                     Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
                     Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
                     Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
+
+                    Route::post('credits/topup', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'storeTopup'])->name('shop.customers.account.credits.topup.store');
+
+                    Route::get('credits/topup/print/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'printTopupInvoice'])->name('shop.customers.account.credits.topup.print');
 
                     // Credits Transfer
                     Route::controller(TransferController::class)->prefix('credits')->group(function () {

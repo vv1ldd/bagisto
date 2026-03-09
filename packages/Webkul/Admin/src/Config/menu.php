@@ -397,10 +397,17 @@ return [
         'icon' => '',
     ],
     [
+        'key' => 'settings.billing_entities',
+        'name' => 'admin::app.settings.billing-entities.index.title',
+        'route' => 'admin.settings.billing_entities.index',
+        'sort' => 10,
+        'icon' => '',
+    ],
+    [
         'key' => 'settings.data_transfer',
         'name' => 'admin::app.components.layouts.sidebar.data-transfer',
         'route' => 'admin.settings.data_transfer.imports.index',
-        'sort' => 10,
+        'sort' => 11,
         'icon' => '',
     ],
     [

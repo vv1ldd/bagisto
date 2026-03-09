@@ -62,10 +62,13 @@ class BillingEntityController extends Controller
             'settlement_account',
             'correspondent_account',
             'director_name',
-            'accountant_name'
+            'accountant_name',
+            'seal',
         ]);
 
         $billingEntity = $this->billingEntityRepository->create($data);
+
+        $this->billingEntityRepository->uploadSeal(request()->all(), $billingEntity);
 
         // If it's the first entity being created, make it default automatically
         if ($this->billingEntityRepository->count() === 1) {
@@ -121,10 +124,15 @@ class BillingEntityController extends Controller
             'settlement_account',
             'correspondent_account',
             'director_name',
-            'accountant_name'
+            'accountant_name',
+            'seal',
         ]);
 
         $this->billingEntityRepository->update($data, $id);
+
+        $billingEntity = $this->billingEntityRepository->find($id);
+
+        $this->billingEntityRepository->uploadSeal(request()->all(), $billingEntity);
 
         session()->flash('success', trans('admin::app.settings.billing-entities.update-success'));
 

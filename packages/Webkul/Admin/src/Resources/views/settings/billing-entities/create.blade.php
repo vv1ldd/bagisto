@@ -5,7 +5,7 @@
         </x-slot>
 
         <!-- Create form -->
-        <x-admin::form :action="route('admin.settings.billing_entities.store')">
+        <x-admin::form :action="route('admin.settings.billing_entities.store')" enctype="multipart/form-data">
             <div class="flex justify-between items-center">
                 <p class="text-[20px] text-gray-800 dark:text-white font-bold">
                     @lang('admin::app.settings.billing-entities.create.title')
@@ -194,9 +194,25 @@
                                 :placeholder="trans('admin::app.settings.billing-entities.create.correspondent-account')">
                             </x-admin::form.control-group.control>
 
-                            <x-admin::form.control-group.error
+                        <x-admin::form.control-group.error
                                 control-name="correspondent_account"></x-admin::form.control-group.error>
                         </x-admin::form.control-group>
+                    </div>
+
+                    {{-- Seal --}}
+                    <div class="p-[16px] bg-white dark:bg-gray-900 rounded-[4px] box-shadow">
+                        <p class="text-[16px] text-gray-800 dark:text-white font-semibold mb-[16px]">
+                            @lang('admin::app.settings.billing-entities.create.seal')
+                        </p>
+
+                        <x-admin::media.images
+                            name="seal"
+                            width="220px"
+                        />
+
+                        <p class="text-[12px] text-gray-600 dark:text-gray-300 mt-[10px]">
+                            @lang('admin::app.settings.billing-entities.create.seal-info')
+                        </p>
                     </div>
                 </div>
             </div>

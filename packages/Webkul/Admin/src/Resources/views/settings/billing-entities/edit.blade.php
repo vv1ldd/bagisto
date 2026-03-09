@@ -7,6 +7,7 @@
     <!-- Edit form -->
     <x-admin::form
         :action="route('admin.settings.billing_entities.update', $billingEntity->id)"
+        enctype="multipart/form-data"
         method="PUT"
     >
         <div class="flex justify-between items-center">
@@ -240,6 +241,23 @@
 
                         <x-admin::form.control-group.error control-name="correspondent_account"></x-admin::form.control-group.error>
                     </x-admin::form.control-group>
+                </div>
+
+                {{-- Seal --}}
+                <div class="p-[16px] bg-white dark:bg-gray-900 rounded-[4px] box-shadow">
+                    <p class="text-[16px] text-gray-800 dark:text-white font-semibold mb-[16px]">
+                        @lang('admin::app.settings.billing-entities.edit.seal')
+                    </p>
+
+                    <x-admin::media.images
+                        name="seal"
+                        :uploaded-images="$billingEntity->seal ? [['id' => 'seal', 'url' => \Illuminate\Support\Facades\Storage::url($billingEntity->seal)]] : []"
+                        width="220px"
+                    />
+
+                    <p class="text-[12px] text-gray-600 dark:text-gray-300 mt-[10px]">
+                        @lang('admin::app.settings.billing-entities.edit.seal-info')
+                    </p>
                 </div>
             </div>
         </div>

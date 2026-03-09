@@ -3,8 +3,8 @@
 return [
     'cashondelivery' => [
         'code' => 'cashondelivery',
-        'title' => 'Cash On Delivery',
-        'description' => 'Cash On Delivery',
+        'title' => 'Банковский перевод для физических лиц',
+        'description' => 'Банковский перевод для физических лиц',
         'class' => 'Webkul\Payment\Payment\CashOnDelivery',
         'active' => false,
         'sort' => 1,
@@ -12,8 +12,8 @@ return [
 
     'moneytransfer' => [
         'code' => 'moneytransfer',
-        'title' => 'Money Transfer',
-        'description' => 'Money Transfer',
+        'title' => 'Банковский перевод для юридических лиц',
+        'description' => 'Банковский перевод для юридических лиц',
         'class' => 'Webkul\Payment\Payment\MoneyTransfer',
         'active' => false,
         'sort' => 2,

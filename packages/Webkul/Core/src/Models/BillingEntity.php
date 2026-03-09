@@ -31,6 +31,7 @@ class BillingEntity extends Model implements BillingEntityContract
         'correspondent_account',
         'director_name',
         'accountant_name',
+        'seal',
         'is_default',
     ];
 
