@@ -5,7 +5,7 @@ namespace Webkul\Shop\Http\Controllers\Customer\Account;
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Customer\Services\BlockchainSyncService;
 use Webkul\Customer\Repositories\CustomerTransactionRepository;
-use Webkul\Customer\Repositories\CustomerOrganizationRepository;
+use Webkul\Customer\Repositories\OrganizationRepository;
 use Webkul\Core\Repositories\BillingEntityRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -14,7 +14,7 @@ class CreditController extends Controller
     public function __construct(
         protected BlockchainSyncService $syncService,
         protected CustomerTransactionRepository $customerTransactionRepository,
-        protected CustomerOrganizationRepository $customerOrganizationRepository,
+        protected OrganizationRepository $organizationRepository,
         protected BillingEntityRepository $billingEntityRepository
     ) {
     }
@@ -117,7 +117,7 @@ class CreditController extends Controller
             abort(403);
         }
 
-        $organization = $this->customerOrganizationRepository->find($transaction->metadata['organization_id']);
+        $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
         $billingEntity = $this->billingEntityRepository->find($transaction->metadata['billing_entity_id']);
 
         $pdf = PDF::loadView('shop::customers.account.credits.topup-pdf', [
