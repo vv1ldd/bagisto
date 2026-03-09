@@ -119,18 +119,18 @@
                             </div>
 
                             <div class="space-y-6">
-                                <div class="ios-tile p-6 bg-white/60 !rounded-none border-b border-zinc-100 pb-8">
+                                <div class="p-6 bg-zinc-50/30 !rounded-none border-b border-zinc-100 pb-8">
                                     <label
-                                        class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-3 opacity-60">
+                                        class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2 opacity-60">
                                         Название организации
                                     </label>
                                     <input type="text" name="name" id="name-input"
-                                        class="w-full bg-transparent border-0 p-0 text-[20px] font-black text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300 tracking-tight"
+                                        class="w-full bg-transparent border-0 p-0 text-[24px] font-black text-zinc-900 focus:ring-0 transition-all placeholder:text-zinc-300 tracking-tight"
                                         placeholder="Название организации" />
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pb-2">
-                                    <div class="col-span-2">
+                                <div class="px-6 space-y-8 pb-4">
+                                    <div>
                                         <label
                                             class="block text-[11px] font-bold text-zinc-400 uppercase tracking-wider mb-2 opacity-60">
                                             Юридический адрес
@@ -140,20 +140,22 @@
                                             placeholder="Юридический адрес" />
                                     </div>
 
-                                    <div id="kpp-container" class="flex items-center gap-3">
-                                        <span
-                                            class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider opacity-60">КПП</span>
-                                        <input type="text" name="kpp" id="kpp-input"
-                                            class="w-auto bg-zinc-50 border border-zinc-100 px-3 py-1 text-[14px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
-                                            placeholder="—" />
-                                    </div>
+                                    <div class="flex flex-wrap items-center gap-x-10 gap-y-4 pt-2 border-t border-zinc-50">
+                                        <div id="kpp-container" class="flex items-center gap-3">
+                                            <span
+                                                class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest opacity-40">КПП</span>
+                                            <input type="text" name="kpp" id="kpp-input"
+                                                class="w-[110px] bg-zinc-50 border border-zinc-100 px-3 py-1 text-[13px] font-mono text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
+                                                placeholder="—" />
+                                        </div>
 
-                                    <div id="ogrn-container" class="flex items-center gap-3">
-                                        <span
-                                            class="text-[11px] font-bold text-zinc-400 uppercase tracking-wider opacity-60">ОГРН</span>
-                                        <input type="text" name="ogrn" id="ogrn-input"
-                                            class="w-auto bg-zinc-50 border border-zinc-100 px-3 py-1 text-[14px] font-mono text-zinc-700 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
-                                            placeholder="—" />
+                                        <div id="ogrn-container" class="flex items-center gap-3">
+                                            <span
+                                                class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest opacity-40">ОГРН</span>
+                                            <input type="text" name="ogrn" id="ogrn-input"
+                                                class="w-[160px] bg-zinc-50 border border-zinc-100 px-3 py-1 text-[13px] font-mono text-zinc-600 focus:ring-0 transition-all placeholder:text-zinc-300 rounded-none"
+                                                placeholder="—" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -433,22 +435,29 @@
                                 return;
                             }
 
-                            suggestionsContainer.innerHTML = organizations.map(org => `
-                            <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
-                                data-name="${org.name || ''}"
-                                data-inn="${org.inn || ''}"
-                                data-kpp="${org.kpp || ''}"
-                                data-ogrn="${org.ogrn || ''}"
-                                data-address="${org.address || ''}">
-                                <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
-                                <div class="text-[12px] text-zinc-500 font-mono">
-                                    ИНН: ${org.inn || '-'} 
-                                    ${org.kpp ? ` | КПП: ${org.kpp}` : ''}
-                                    ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
+                            suggestionsContainer.innerHTML = organizations.map(org => {
+                                const safeName = (org.name || '').replace(/"/g, '&quot;');
+                                const safeAddress = (org.address || '').replace(/"/g, '&quot;');
+                                const safeInn = (org.inn || '').replace(/"/g, '&quot;');
+                                const safeKpp = (org.kpp || '').replace(/"/g, '&quot;');
+                                const safeOgrn = (org.ogrn || '').replace(/"/g, '&quot;');
+
+                                return `
+                                <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                    data-name="${safeName}"
+                                    data-inn="${safeInn}"
+                                    data-kpp="${safeKpp}"
+                                    data-ogrn="${safeOgrn}"
+                                    data-address="${safeAddress}">
+                                    <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
+                                    <div class="text-[12px] text-zinc-500 font-mono">
+                                        ИНН: ${org.inn || '-'} 
+                                        ${org.kpp ? ` | КПП: ${org.kpp}` : ''}
+                                        ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
+                                    </div>
+                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
                                 </div>
-                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
-                            </div>
-                        `).join('');
+                            `;}).join('');
                             suggestionsContainer.classList.remove('hidden');
                         } else {
                             suggestionsContainer.classList.add('hidden');
@@ -549,17 +558,22 @@
                                         })).sort((a, b) => b.isValidForAccount - a.isValidForAccount);
                                     }
 
-                                    suggestionsContainer.innerHTML = banks.map(bank => `
-                                    <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
-                                        data-name="${bank.bank_name || ''}"
-                                        data-bic="${bank.bic || ''}"
-                                        data-corr="${bank.correspondent_account || ''}">
-                                        <div>
-                                            <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит к счету</span>' : ''}</div>
-                                            <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                    suggestionsContainer.innerHTML = banks.map(bank => {
+                                        const safeName = (bank.bank_name || '').replace(/"/g, '&quot;');
+                                        const safeBic = (bank.bic || '').replace(/"/g, '&quot;');
+                                        const safeCorr = (bank.correspondent_account || '').replace(/"/g, '&quot;');
+
+                                        return `
+                                        <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
+                                            data-name="${safeName}"
+                                            data-bic="${safeBic}"
+                                            data-corr="${safeCorr}">
+                                            <div>
+                                                <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит к счету</span>' : ''}</div>
+                                                <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                            </div>
                                         </div>
-                                    </div>
-                                `).join('');
+                                    `;}).join('');
                                     suggestionsContainer.classList.remove('hidden');
                                 } else {
                                     suggestionsContainer.classList.add('hidden');
