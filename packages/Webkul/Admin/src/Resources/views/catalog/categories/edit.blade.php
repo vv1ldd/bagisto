@@ -428,6 +428,37 @@
                             />
                         </x-admin::form.control-group>
 
+                        <!-- Billing Entity -->
+                        <x-admin::form.control-group>
+                            <x-admin::form.control-group.label>
+                                @lang('admin::app.catalog.categories.edit.billing-entity')
+                            </x-admin::form.control-group.label>
+
+                            @php $selectedBillingEntityId = old('billing_entity_id') ?: $category->billing_entity_id @endphp
+
+                            <x-admin::form.control-group.control
+                                type="select"
+                                id="billing_entity_id"
+                                class="cursor-pointer"
+                                name="billing_entity_id"
+                                :value="$selectedBillingEntityId"
+                                :label="trans('admin::app.catalog.categories.edit.billing-entity')"
+                            >
+                                <option value="">@lang('admin::app.catalog.categories.edit.select-display-mode')</option>
+
+                                @foreach ($billingEntities as $billingEntity)
+                                    <option 
+                                        value="{{ $billingEntity->id }}"
+                                        {{ $selectedBillingEntityId == $billingEntity->id ? 'selected' : '' }}
+                                    >
+                                        {{ $billingEntity->name }}
+                                    </option>
+                                @endforeach
+                            </x-admin::form.control-group.control>
+
+                            <x-admin::form.control-group.error control-name="billing_entity_id" />
+                        </x-admin::form.control-group>
+
                         <!-- Position -->
                         <x-admin::form.control-group>
                             <x-admin::form.control-group.label class="required">

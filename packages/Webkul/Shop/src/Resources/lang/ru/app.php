@@ -398,6 +398,11 @@ return [
                     'tax-amount' => 'Сумма налога',
                     'tax' => 'Налог',
                     'vat-number' => 'Номер НДС',
+                    'inn' => 'ИНН',
+                    'kpp' => 'КПП',
+                    'bic' => 'БИК',
+                    'settlement-account' => 'Расчетный счет',
+                    'correspondent-account' => 'Корреспондентский счет',
                 ],
             ],
 

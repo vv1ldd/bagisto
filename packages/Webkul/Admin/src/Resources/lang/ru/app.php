@@ -1526,6 +1526,7 @@ return [
                 'add-logo' => 'Добавить логотип',
                 'back-btn' => 'Назад',
                 'banner' => 'Баннер',
+                'billing-entity' => 'Реквизиты для оплаты',
                 'banner-size' => 'Соотношение сторон баннера (1320px X 300px)',
                 'description' => 'Описание',
                 'description-and-images' => 'Описание и изображения',
@@ -1561,6 +1562,7 @@ return [
                 'add-logo' => 'Добавить логотип',
                 'back-btn' => 'Назад',
                 'banner' => 'Баннер',
+                'billing-entity' => 'Реквизиты для оплаты',
                 'banner-size' => 'Соотношение сторон баннера (1320px X 300px)',
                 'description' => 'Описание',
                 'description-and-images' => 'Описание и изображения',
@@ -2778,6 +2780,62 @@ return [
     ],
 
     'settings' => [
+        'billing-entities' => [
+            'index' => [
+                'title' => 'Реквизиты',
+                'create-btn' => 'Добавить реквизиты',
+
+                'datagrid' => [
+                    'id' => 'ID',
+                    'name' => 'Название',
+                    'inn' => 'ИНН',
+                    'bank' => 'Банк',
+                    'default' => 'По умолчанию',
+                    'edit' => 'Редактировать',
+                    'delete' => 'Удалить',
+                    'set-default' => 'Сделать по умолчанию',
+                ],
+            ],
+
+            'create' => [
+                'title' => 'Создать реквизиты',
+                'back-btn' => 'Назад',
+                'save-btn' => 'Сохранить',
+                'general' => 'Общие данные',
+                'name' => 'Название',
+                'inn' => 'ИНН',
+                'kpp' => 'КПП',
+                'address' => 'Адрес',
+                'people' => 'Лица',
+                'director-name' => 'ФИО Директора',
+                'accountant-name' => 'ФИО Бухгалтера',
+                'banking' => 'Банковские реквизиты',
+                'bank-name' => 'Название банка',
+                'bic' => 'БИК',
+                'settlement-account' => 'Расчетный счет',
+                'correspondent-account' => 'Корреспондентский счет',
+            ],
+
+            'edit' => [
+                'title' => 'Редактировать реквизиты',
+                'back-btn' => 'Назад',
+                'save-btn' => 'Сохранить',
+                'general' => 'Общие данные',
+                'name' => 'Название',
+                'inn' => 'ИНН',
+                'kpp' => 'КПП',
+                'address' => 'Адрес',
+                'people' => 'Лица',
+                'director-name' => 'ФИО Директора',
+                'accountant-name' => 'ФИО Бухгалтера',
+                'banking' => 'Банковские реквизиты',
+                'bank-name' => 'Название банка',
+                'bic' => 'БИК',
+                'settlement-account' => 'Расчетный счет',
+                'correspondent-account' => 'Корреспондентский счет',
+            ],
+        ],
+
         'locales' => [
             'index' => [
                 'create-btn' => 'Создать локаль',

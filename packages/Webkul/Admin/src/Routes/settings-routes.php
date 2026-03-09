@@ -12,11 +12,24 @@ use Webkul\Admin\Http\Controllers\Settings\Tax\TaxCategoryController;
 use Webkul\Admin\Http\Controllers\Settings\Tax\TaxRateController;
 use Webkul\Admin\Http\Controllers\Settings\ThemeController;
 use Webkul\Admin\Http\Controllers\Settings\UserController;
+use Webkul\Admin\Http\Controllers\Settings\BillingEntityController;
 
 /**
  * Settings routes.
  */
 Route::prefix('settings')->group(function () {
+    /**
+     * Billing entities routes.
+     */
+    Route::controller(BillingEntityController::class)->prefix('billing-entities')->group(function () {
+        Route::get('', 'index')->name('admin.settings.billing_entities.index');
+        Route::post('create', 'store')->name('admin.settings.billing_entities.store');
+        Route::get('edit/{id}', 'edit')->name('admin.settings.billing_entities.edit');
+        Route::put('edit/{id}', 'update')->name('admin.settings.billing_entities.update');
+        Route::delete('edit/{id}', 'destroy')->name('admin.settings.billing_entities.delete');
+        Route::post('default/{id}', 'setDefault')->name('admin.settings.billing_entities.default');
+    });
+
     /**
      * Channels routes.
      */

@@ -1526,6 +1526,7 @@ return [
                 'add-logo' => 'Add Logo',
                 'back-btn' => 'Back',
                 'banner' => 'Banner',
+                'billing-entity' => 'Billing Entity for Payment',
                 'banner-size' => 'Banner aspect ration (1320px X 300px)',
                 'description' => 'Description',
                 'description-and-images' => 'Description and Images',
@@ -1560,6 +1561,7 @@ return [
                 'add-logo' => 'Add Logo',
                 'back-btn' => 'Back',
                 'banner' => 'Banner',
+                'billing-entity' => 'Billing Entity for Payment',
                 'banner-size' => 'Banner aspect ration (1320px X 300px)',
                 'description' => 'Description',
                 'description-and-images' => 'Description and Images',
@@ -2776,6 +2778,62 @@ return [
     ],
 
     'settings' => [
+        'billing-entities' => [
+            'index' => [
+                'title' => 'Billing Entities',
+                'create-btn' => 'Create Billing Entity',
+
+                'datagrid' => [
+                    'id' => 'ID',
+                    'name' => 'Name',
+                    'inn' => 'TIN (INN)',
+                    'bank' => 'Bank',
+                    'default' => 'Default',
+                    'edit' => 'Edit',
+                    'delete' => 'Delete',
+                    'set-default' => 'Set as Default',
+                ],
+            ],
+
+            'create' => [
+                'title' => 'Create Billing Entity',
+                'back-btn' => 'Back',
+                'save-btn' => 'Save',
+                'general' => 'General Details',
+                'name' => 'Name',
+                'inn' => 'TIN (INN)',
+                'kpp' => 'KPP',
+                'address' => 'Address',
+                'people' => 'People',
+                'director-name' => 'Director Name',
+                'accountant-name' => 'Accountant Name',
+                'banking' => 'Banking Details',
+                'bank-name' => 'Bank Name',
+                'bic' => 'BIC',
+                'settlement-account' => 'Settlement Account',
+                'correspondent-account' => 'Correspondent Account',
+            ],
+
+            'edit' => [
+                'title' => 'Edit Billing Entity',
+                'back-btn' => 'Back',
+                'save-btn' => 'Save',
+                'general' => 'General Details',
+                'name' => 'Name',
+                'inn' => 'TIN (INN)',
+                'kpp' => 'KPP',
+                'address' => 'Address',
+                'people' => 'People',
+                'director-name' => 'Director Name',
+                'accountant-name' => 'Accountant Name',
+                'banking' => 'Banking Details',
+                'bank-name' => 'Bank Name',
+                'bic' => 'BIC',
+                'settlement-account' => 'Settlement Account',
+                'correspondent-account' => 'Correspondent Account',
+            ],
+        ],
+
         'locales' => [
             'index' => [
                 'create-btn' => 'Create Locale',

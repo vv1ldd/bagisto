@@ -65,11 +65,12 @@ class InvoiceRepository extends Repository
                 'base_currency_code' => $order->base_currency_code,
                 'channel_currency_code' => $order->channel_currency_code,
                 'order_currency_code' => $order->order_currency_code,
+                'billing_entity_id' => $order->billing_entity_id,
                 'order_address_id' => $order->billing_address->id,
             ]);
 
             foreach ($data['invoice']['items'] as $itemId => $qty) {
-                if (! $qty) {
+                if (!$qty) {
                     continue;
                 }
 
@@ -134,7 +135,7 @@ class InvoiceRepository extends Repository
 
                         if (
                             $childOrderItem->product
-                            && ! $childOrderItem->getTypeInstance()->isStockable()
+                            && !$childOrderItem->getTypeInstance()->isStockable()
                             && $childOrderItem->getTypeInstance()->showQuantityBox()
                         ) {
                             $this->invoiceItemRepository->updateProductInventory([
@@ -149,7 +150,7 @@ class InvoiceRepository extends Repository
                     }
                 } elseif (
                     $orderItem->product
-                    && ! $orderItem->getTypeInstance()->isStockable()
+                    && !$orderItem->getTypeInstance()->isStockable()
                     && $orderItem->getTypeInstance()->showQuantityBox()
                 ) {
                     $this->invoiceItemRepository->updateProductInventory([

@@ -2,7 +2,11 @@
 
 namespace Webkul\Sales\Transformers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Webkul\Sales\Transformers\OrderAddressResource;
+use Webkul\Sales\Transformers\OrderPaymentResource;
+use Webkul\Sales\Transformers\OrderItemResource;
 
 class OrderResource extends JsonResource
 {
@@ -13,12 +17,6 @@ class OrderResource extends JsonResource
      */
     public $preserveKeys = true;
 
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request
-     * @return array
-     */
     public function toArray($request)
     {
         $shippingInformation = [];
@@ -26,7 +24,7 @@ class OrderResource extends JsonResource
         if ($this->haveStockableItems()) {
             $shippingInformation = [
                 'shipping_method' => $this->selected_shipping_rate->method,
-                'shipping_title' => $this->selected_shipping_rate->carrier_title.' - '.$this->selected_shipping_rate->method_title,
+                'shipping_title' => $this->selected_shipping_rate->carrier_title . ' - ' . $this->selected_shipping_rate->method_title,
                 'shipping_description' => $this->selected_shipping_rate->method_description,
                 'shipping_amount' => $this->selected_shipping_rate->price,
                 'base_shipping_amount' => $this->selected_shipping_rate->base_price,
@@ -68,6 +66,7 @@ class OrderResource extends JsonResource
             'applied_cart_rule_ids' => $this->applied_cart_rule_ids,
             'discount_amount' => $this->discount_amount,
             'base_discount_amount' => $this->base_discount_amount,
+            'billing_entity_id' => $this->billing_entity_id,
             'billing_address' => (new OrderAddressResource($this->billing_address))->jsonSerialize(),
             $this->mergeWhen($this->haveStockableItems(), $shippingInformation),
             'payment' => (new OrderPaymentResource($this->payment))->jsonSerialize(),

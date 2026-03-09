@@ -388,6 +388,11 @@ return [
                     'tax-amount' => 'Tax Amount',
                     'tax' => 'Tax',
                     'vat-number' => 'Vat Number',
+                    'inn' => 'INN',
+                    'kpp' => 'KPP',
+                    'bic' => 'BIC',
+                    'settlement-account' => 'Settlement Account',
+                    'correspondent-account' => 'Correspondent Account',
                 ],
             ],
 

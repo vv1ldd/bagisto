@@ -340,6 +340,32 @@
                             />
                         </x-admin::form.control-group>
 
+                        <!-- Billing Entity -->
+                        <x-admin::form.control-group>
+                            <x-admin::form.control-group.label>
+                                @lang('admin::app.catalog.categories.create.billing-entity')
+                            </x-admin::form.control-group.label>
+
+                            <x-admin::form.control-group.control
+                                type="select"
+                                id="billing_entity_id"
+                                class="cursor-pointer"
+                                name="billing_entity_id"
+                                :value="old('billing_entity_id')"
+                                :label="trans('admin::app.catalog.categories.create.billing-entity')"
+                            >
+                                <option value="">@lang('admin::app.catalog.categories.create.select-display-mode')</option>
+
+                                @foreach ($billingEntities as $billingEntity)
+                                    <option value="{{ $billingEntity->id }}">
+                                        {{ $billingEntity->name }}
+                                    </option>
+                                @endforeach
+                            </x-admin::form.control-group.control>
+
+                            <x-admin::form.control-group.error control-name="billing_entity_id" />
+                        </x-admin::form.control-group>
+
                         <!-- Position -->
                         <x-admin::form.control-group>
                             <x-admin::form.control-group.label class="required text-gray-800 dark:text-white">
