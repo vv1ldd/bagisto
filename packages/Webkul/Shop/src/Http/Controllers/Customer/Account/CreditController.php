@@ -9,6 +9,7 @@ use Webkul\Customer\Repositories\OrganizationRepository;
 use Webkul\Core\Repositories\BillingEntityRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Webkul\Shop\Mail\Customer\TopupInvoiceNotification;
 
 class CreditController extends Controller
@@ -102,6 +103,7 @@ class CreditController extends Controller
             $customer = auth()->guard('customer')->user();
 
             $transaction = $this->customerTransactionRepository->create([
+                'uuid' => (string) Str::uuid(),
                 'customer_id' => $customer->id,
                 'amount' => request('amount'),
                 'type' => 'deposit',
