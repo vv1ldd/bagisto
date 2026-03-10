@@ -252,10 +252,11 @@
                 let orgTimeout = null;
 
                 function handleOrgInput(e) {
+                    clearTimeout(orgTimeout);
+
                     // Prevent autocomplete from triggering on programmatic 'input' events (after selection)
                     if (e && !e.isTrusted) return;
 
-                    clearTimeout(orgTimeout);
                     const query = e.target.value;
                     const orgSuggestionsBox = document.getElementById('org-suggestions');
 
@@ -284,12 +285,13 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                                                <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                                            `;
+                                                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                                `;
 
-                                        div.onclick = () => {
+                                        div.onmousedown = (event) => {
+                                            event.preventDefault(); // Prevent input blur from hiding box before selection
                                             const nameInput = document.getElementById('org-name');
                                             const innInput = document.getElementById('org-inn');
                                             const kppInput = document.getElementById('org-kpp');
@@ -334,10 +336,11 @@
                 let bankTimeout = null;
 
                 function handleBankInput(e) {
+                    clearTimeout(bankTimeout);
+
                     // Prevent autocomplete from triggering on programmatic 'input' events (after selection)
                     if (e && !e.isTrusted) return;
 
-                    clearTimeout(bankTimeout);
                     const query = e.target.value;
                     const bankSuggestionsBox = document.getElementById('bank-suggestions');
 
@@ -360,11 +363,12 @@
                                         div.className = 'p-2.5 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                                            `;
+                                                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                                `;
 
-                                        div.onclick = () => {
+                                        div.onmousedown = (event) => {
+                                            event.preventDefault(); // Prevent input blur from hiding box before selection
                                             const bicInput = document.getElementById('bank-bic');
                                             const nameInput = document.getElementById('bank-name');
                                             const corrInput = document.getElementById('bank-corr');
@@ -431,18 +435,22 @@
                 // Hide suggestions on outside click
                 document.addEventListener('click', function (e) {
                     const orgSuggestionsBox = document.getElementById('org-suggestions');
+                    const orgNameInput = document.getElementById('org-name');
+                    const orgInnInput = document.getElementById('org-inn');
                     const bicInput = document.getElementById('bank-bic');
 
                     if (orgSuggestionsBox && !orgSuggestionsBox.contains(e.target) &&
                         (!orgNameInput || !orgNameInput.contains(e.target)) &&
                         (!orgInnInput || !orgInnInput.contains(e.target))) {
                         orgSuggestionsBox.classList.add('hidden');
+                        orgSuggestionsBox.innerHTML = '';
                     }
 
                     const bankSuggestionsBox = document.getElementById('bank-suggestions');
                     if (bankSuggestionsBox && !bankSuggestionsBox.contains(e.target) &&
                         (!bicInput || !bicInput.contains(e.target))) {
                         bankSuggestionsBox.classList.add('hidden');
+                        bankSuggestionsBox.innerHTML = '';
                     }
                 });
             });
