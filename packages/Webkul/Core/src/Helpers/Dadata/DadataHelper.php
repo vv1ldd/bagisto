@@ -128,7 +128,6 @@ class DadataHelper
             return [];
         }
 
-        try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -137,14 +136,17 @@ class DadataHelper
                         'query' => $query,
                     ]);
 
+            \Log::info('Dadata Bank Suggest Query: ' . $query);
+
             if ($response->successful()) {
                 $suggestions = $response->json('suggestions');
+                \Log::info('Dadata Bank Suggest Response count: ' . count($suggestions ?? []));
 
                 if (!empty($suggestions)) {
                     return array_map(function ($item) {
                         return [
-                            'name' => $item['value'] ?? null,
-                            'bank_name' => $item['value'] ?? null,
+                            'name' => $item['value'] ?? ($item['data']['name']['payment'] ?? null),
+                            'bank_name' => $item['value'] ?? ($item['data']['name']['payment'] ?? null),
                             'correspondent_account' => $item['data']['correspondent_account'] ?? null,
                             'bic' => $item['data']['bic'] ?? null,
                             'address' => $item['data']['address']['value'] ?? null,

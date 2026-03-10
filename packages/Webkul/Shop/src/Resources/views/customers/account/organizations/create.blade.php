@@ -278,10 +278,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                            `;
+                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                `;
 
                                         div.onclick = () => {
                                             const orgNameInput = document.getElementById('org-name');
@@ -330,8 +330,10 @@
                 const bankSuggestionsBox = document.getElementById('bank-suggestions');
 
                 function handleBankInput(e) {
-                    clearTimeout(bankTimeout);
                     const query = e.target.value;
+                    console.log('Bank Input Query:', query);
+
+                    clearTimeout(bankTimeout);
 
                     if (query.length < 3) {
                         if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
@@ -340,8 +342,10 @@
 
                     bankTimeout = setTimeout(async () => {
                         try {
+                            console.log('Fetching Bank Suggestions for:', query);
                             const response = await fetch(`{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`);
                             const data = await response.json();
+                            console.log('Bank Data Received:', data);
 
                             if (bankSuggestionsBox) {
                                 bankSuggestionsBox.innerHTML = '';
@@ -352,9 +356,9 @@
                                         div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                            `;
+                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                `;
 
                                         div.onclick = () => {
                                             const bicInput = document.getElementById('bank-bic');
