@@ -17,24 +17,24 @@ import Pusher from 'pusher-js';
 
 window.Pusher = Pusher;
 
-if (import.meta.env.VITE_REVERB_APP_KEY || import.meta.env.VITE_PUSHER_APP_KEY) {
+const laravelEnv = window.Laravel || {};
+
+if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
     // Enable Pusher logging - don't include this in production
     Pusher.logToConsole = true;
 
-    let isReverb = !!import.meta.env.VITE_REVERB_APP_KEY;
-
     window.Echo = new Echo({
         broadcaster: 'reverb',
-        key: import.meta.env.VITE_REVERB_APP_KEY ?? import.meta.env.VITE_PUSHER_APP_KEY,
-        wsHost: import.meta.env.VITE_REVERB_HOST ?? import.meta.env.VITE_PUSHER_HOST ?? `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
-        wsPort: import.meta.env.VITE_REVERB_PORT ?? import.meta.env.VITE_PUSHER_PORT ?? 80,
-        wssPort: import.meta.env.VITE_REVERB_PORT ?? import.meta.env.VITE_PUSHER_PORT ?? 443,
-        forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+        key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
+        wsHost: laravelEnv.reverbHost || laravelEnv.pusherHost || `ws-${laravelEnv.pusherCluster}.pusher.com`,
+        wsPort: laravelEnv.reverbPort || laravelEnv.pusherPort || 80,
+        wssPort: laravelEnv.reverbPort || laravelEnv.pusherPort || 443,
+        forceTLS: (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https',
         enabledTransports: ['ws', 'wss'],
         authEndpoint: '/api/broadcasting/auth',
     });
 } else {
-    console.warn('Pusher App Key is missing. P2P calls (incoming signals) will not work.');
+    console.warn('Pusher/Reverb App Key is missing. P2P calls (incoming signals) will not work.');
 }
 
 /**

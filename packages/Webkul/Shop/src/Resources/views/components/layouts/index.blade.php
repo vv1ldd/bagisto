@@ -56,6 +56,20 @@
             href="{{ core()->getCurrentChannel()->favicon_url ?? '/favicon.ico' }}"
         />
 
+        <script>
+            window.Laravel = {
+                reverbAppKey: '{{ env('REVERB_APP_KEY') }}',
+                reverbHost: '{{ env('REVERB_HOST') }}',
+                reverbPort: '{{ env('REVERB_PORT', 8088) }}',
+                reverbScheme: '{{ env('REVERB_SCHEME', 'https') }}',
+                pusherAppKey: '{{ env('PUSHER_APP_KEY') }}',
+                pusherHost: '{{ env('PUSHER_HOST') }}',
+                pusherPort: '{{ env('PUSHER_PORT', 8088) }}',
+                pusherScheme: '{{ env('PUSHER_SCHEME', 'https') }}',
+                pusherCluster: '{{ env('PUSHER_APP_CLUSTER', 'mt1') }}',
+            };
+        </script>
+
         @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
 
         <link
