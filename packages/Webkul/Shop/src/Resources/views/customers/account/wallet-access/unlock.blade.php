@@ -1,57 +1,63 @@
-<x-shop::layouts.account :show-back="false" :has-header="true" :has-footer="false">
+<x-shop::layouts.account :show-back="false" :has-header="false" :has-footer="false">
     <x-slot:title>Разблокировка Кошелька</x-slot:title>
 
-    <div class="fixed inset-0 z-[200] bg-zinc-900 flex flex-col items-center justify-center pb-12 animate-fade-in">
+    <div
+        class="fixed inset-0 z-[9999] bg-zinc-950 flex flex-col items-center justify-center pb-12 animate-fade-in overflow-y-auto">
 
         <!-- Cancel Button to go back -->
         <a href="{{ route('shop.customers.account.index') }}"
-            class="absolute top-6 left-6 p-4 text-white bg-zinc-800 rounded-full hover:bg-zinc-700 transition active:scale-90">
-            <span class="icon-cancel text-xl"></span>
+            class="absolute top-10 left-10 p-4 text-zinc-400 hover:text-white transition active:scale-90 z-[10000]">
+            <span class="icon-cancel text-2xl"></span>
         </a>
 
-        @if($hasPasskey)
-            <div class="mb-8 w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center cursor-pointer hover:bg-zinc-700 transition active:scale-95"
-                onclick="triggerPasskeyAuth()">
-                <span class="text-3xl text-emerald-400">😁</span>
-            </div>
-            <h2 class="text-[16px] font-medium text-zinc-400 mb-8 cursor-pointer" onclick="triggerPasskeyAuth()">Используйте
-                Face ID</h2>
-        @else
-            <div class="mb-4 w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center text-3xl">
-                🔒
-            </div>
-        @endif
-
-        <h2 class="text-[20px] font-bold text-white mb-8" id="unlock-title">
-            @if(session()->has('error'))
-                <span class="text-red-400">{{ session('error') }}</span>
+        <div class="flex flex-col items-center w-full max-w-sm px-6">
+            @if($hasPasskey)
+                <div class="mb-6 w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center cursor-pointer hover:bg-zinc-800 transition shadow-2xl active:scale-95"
+                    onclick="triggerPasskeyAuth()">
+                    <span class="text-4xl">😁</span>
+                </div>
+                <h2 class="text-[14px] font-bold uppercase tracking-widest text-zinc-500 mb-10 cursor-pointer hover:text-zinc-300 transition"
+                    onclick="triggerPasskeyAuth()">
+                    Разблокировать Face ID
+                </h2>
             @else
-                Введите PIN-код
+                <div
+                    class="mb-10 w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-4xl shadow-2xl">
+                    🔒
+                </div>
             @endif
-        </h2>
 
-        <!-- PIN Dots -->
-        <div class="flex gap-4 mb-16" id="unlock-pin-dots">
-            <!-- Rendered by JS -->
-        </div>
+            <h2 class="text-[22px] font-bold text-white mb-10 text-center leading-tight" id="unlock-title">
+                @if(session()->has('error'))
+                    <span class="text-red-400">{{ session('error') }}</span>
+                @else
+                    Введите PIN-код
+                @endif
+            </h2>
 
-        <!-- Numpad -->
-        <div class="grid grid-cols-3 gap-x-8 gap-y-6 max-w-[280px]">
-            @for ($i = 1; $i <= 9; $i++)
-                <button type="button" onclick="enterUnlockDigit({{ $i }})"
-                    class="w-20 h-20 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 flex items-center justify-center text-[28px] font-medium text-white transition active:bg-zinc-600 focus:outline-none">
-                    {{ $i }}
+            <!-- PIN Dots -->
+            <div class="flex gap-5 mb-16" id="unlock-pin-dots">
+                <!-- Rendered by JS -->
+            </div>
+
+            <!-- Numpad -->
+            <div class="grid grid-cols-3 gap-x-10 gap-y-8">
+                @for ($i = 1; $i <= 9; $i++)
+                    <button type="button" onclick="enterUnlockDigit({{ $i }})"
+                        class="w-20 h-20 rounded-full bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800/50 flex items-center justify-center text-[32px] font-medium text-white transition active:scale-90 active:bg-zinc-700/50 focus:outline-none shadow-sm">
+                        {{ $i }}
+                    </button>
+                @endfor
+                <div></div> <!-- Empty bottom left -->
+                <button type="button" onclick="enterUnlockDigit(0)"
+                    class="w-20 h-20 rounded-full bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800/50 flex items-center justify-center text-[32px] font-medium text-white transition active:scale-90 active:bg-zinc-700/50 focus:outline-none shadow-sm">
+                    0
                 </button>
-            @endfor
-            <div></div> <!-- Empty bottom left -->
-            <button type="button" onclick="enterUnlockDigit(0)"
-                class="w-20 h-20 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 flex items-center justify-center text-[28px] font-medium text-white transition active:bg-zinc-600 focus:outline-none">
-                0
-            </button>
-            <button type="button" onclick="deleteUnlockDigit()"
-                class="w-20 h-20 rounded-full flex items-center justify-center text-[24px] text-zinc-400 hover:bg-zinc-800 transition active:bg-zinc-700 focus:outline-none">
-                ⌫
-            </button>
+                <button type="button" onclick="deleteUnlockDigit()"
+                    class="w-20 h-20 rounded-full flex items-center justify-center text-[28px] text-zinc-500 hover:text-white hover:bg-zinc-900/30 transition active:scale-90 focus:outline-none">
+                    ⌫
+                </button>
+            </div>
         </div>
 
         <form id="unlock-pin-form" action="{{ route('shop.customers.account.wallet.unlock.post') }}" method="POST"

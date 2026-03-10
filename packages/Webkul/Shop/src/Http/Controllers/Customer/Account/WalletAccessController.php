@@ -11,13 +11,16 @@ class WalletAccessController extends Controller
     /**
      * Show the setup screen for Wallet Access (Passkey / PIN).
      */
-    public function setup()
+    public function setup(Request $request)
     {
         $customer = auth()->guard('customer')->user();
 
-        // If user already has a passkey or PIN, redirect back to wallet
-        if ($customer->passkeys()->count() > 0 || !empty($customer->wallet_pin)) {
-            return redirect()->route('shop.customers.account.credits.index');
+        // If user already has a passkey or PIN, redirect back to wallet, 
+        // unless 'force' is passed (from settings)
+        if (!$request->has('force')) {
+            if ($customer->passkeys()->count() > 0 || !empty($customer->wallet_pin)) {
+                return redirect()->route('shop.customers.account.credits.index');
+            }
         }
 
         return view('shop::customers.account.wallet-access.setup');
