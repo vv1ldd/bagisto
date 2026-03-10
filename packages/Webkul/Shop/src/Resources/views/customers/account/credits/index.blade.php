@@ -268,7 +268,8 @@
                         <div
                             class="org-row flex items-start justify-between p-5 hover:bg-zinc-50/50 transition-colors group relative">
                             <!-- Clickable Area -->
-                            <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
+                            <a href="javascript:void(0);"
+                                onclick="openOrganizationDetails({{ $organization->id }}, '{{ addslashes($organization->name) }}', '{{ $organization->inn }}', '{{ $organization->kpp ?? '' }}', '{{ $organization->ogrn ?? '' }}', '{{ addslashes($organization->address) }}')"
                                 class="flex-grow pr-4 block">
                                 <div class="mb-1">
                                     <p class="text-[17px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-all">
@@ -401,14 +402,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                                                    event.preventDefault(); 
-                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                    } else if(innPrompt !== null) {
-                                                                                        alert('ИНН введен неверно. Удаление отменено.');
-                                                                                    }
-                                                                                ">
+                                                                                            event.preventDefault(); 
+                                                                                            const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                            if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                            } else if(innPrompt !== null) {
+                                                                                                alert('ИНН введен неверно. Удаление отменено.');
+                                                                                            }
+                                                                                        ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -699,6 +700,67 @@
                     </button>
                 </div>
             </form>
+        </div>
+
+        {{-- Step: Organization Details --}}
+        <div id="step-organization-details"
+            class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-6">
+            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
+                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+                    Детали организации
+                </h1>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Org Info -->
+                <div class="bg-zinc-50 p-5 border border-zinc-200">
+                    <h2 id="org-details-name" class="text-[16px] font-bold text-zinc-900 mb-3 uppercase tracking-tight">
+                        Название</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
+                        <div>
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">ИНН</span>
+                            <span id="org-details-inn" class="text-[14px] font-mono text-zinc-800">0000000000</span>
+                        </div>
+                        <div>
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">КПП</span>
+                            <span id="org-details-kpp" class="text-[14px] font-mono text-zinc-800">-</span>
+                        </div>
+                        <div>
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">ОГРН</span>
+                            <span id="org-details-ogrn" class="text-[14px] font-mono text-zinc-800">-</span>
+                        </div>
+                        <div class="md:col-span-2">
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Юридический
+                                адрес</span>
+                            <span id="org-details-address" class="text-[13px] text-zinc-800">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank Accounts List Placeholder -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 border-b border-zinc-50 pb-2">
+                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-400">
+                            Расчетные счета
+                        </h3>
+                    </div>
+                    <div id="org-details-bank-accounts" class="space-y-3">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-zinc-50 mt-6 pt-4 flex items-center justify-end gap-3">
+                <button type="button" onclick="switchStep('organizations')"
+                    class="px-8 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-[14px] text-zinc-700 font-bold transition-all active:scale-95">
+                    Назад к списку
+                </button>
+            </div>
         </div>
 
         {{-- Step: Deposit Type Selection --}}
@@ -1169,8 +1231,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                        {{ $address->address }}
-                                                                                                                                                                                                                    </code>
+                                                                                                                                                                                                                            {{ $address->address }}
+                                                                                                                                                                                                                        </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1274,7 +1336,7 @@
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
-                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -1299,6 +1361,7 @@
                         if (currentStep === 'organizations') titleEl.innerText = "Мои компании";
                         if (currentStep === 'add-organization') titleEl.innerText = "Новая компания";
                         if (currentStep === 'add-bank-account') titleEl.innerText = "Новый счет";
+                        if (currentStep === 'organization-details') titleEl.innerText = "Детали";
                         if (currentStep === 'invoices') titleEl.innerText = "Выставленные счета";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
                         if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
@@ -1318,6 +1381,7 @@
                 else if (currentStep === 'organizations') switchStep('dashboard');
                 else if (currentStep === 'add-organization') switchStep('organizations');
                 else if (currentStep === 'add-bank-account') switchStep('organizations');
+                else if (currentStep === 'organization-details') switchStep('organizations');
                 else if (currentStep === 'deposit-type') switchStep('dashboard');
                 else if (currentStep === 'empty') switchStep('deposit-type');
                 else if (currentStep === 'details') switchStep('management');
@@ -1810,7 +1874,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                                });
+                                                                                                                                                                                                    });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
@@ -1911,10 +1975,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                            `;
+                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
@@ -1979,9 +2043,9 @@
                                         div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                            `;
+                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
