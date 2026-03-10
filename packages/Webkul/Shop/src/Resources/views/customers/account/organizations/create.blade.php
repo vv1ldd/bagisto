@@ -211,23 +211,23 @@
                     }
                 };
 
-                const innInput = document.getElementById('org-inn');
-                const kppInput = document.getElementById('org-kpp');
-                const bicInput = document.getElementById('bank-bic');
-                const accInput = document.getElementById('bank-account');
-
-                if (innInput) innInput.addEventListener('keypress', window.forceNumeric);
-                if (kppInput) kppInput.addEventListener('keypress', window.forceNumeric);
-                if (bicInput) bicInput.addEventListener('keypress', window.forceNumeric);
-                if (accInput) accInput.addEventListener('keypress', window.forceNumeric);
+                // Use event delegation for keypress force numeric
+                document.addEventListener('keypress', function(e) {
+                    if (e.target && (e.target.id === 'org-inn' || e.target.id === 'org-kpp' || e.target.id === 'bank-bic' || e.target.id === 'bank-account')) {
+                        window.forceNumeric(e);
+                    }
+                });
 
                 // Validation logic for creating organization
-                const orgForm = document.getElementById('org-form');
-                if (orgForm) {
-                    orgForm.addEventListener('submit', function (e) {
-                        const bic = document.getElementById('bank-bic').value.replace(/\D/g, '');
-                        const account = document.getElementById('bank-account').value.replace(/\D/g, '');
-                        const inn = document.getElementById('org-inn').value.replace(/\D/g, '');
+                document.body.addEventListener('submit', function (e) {
+                    if (e.target && e.target.id === 'org-form') {
+                        const bicInput = document.getElementById('bank-bic');
+                        const accInput = document.getElementById('bank-account');
+                        const innInput = document.getElementById('org-inn');
+                        
+                        const bic = bicInput ? bicInput.value.replace(/\D/g, '') : '';
+                        const account = accInput ? accInput.value.replace(/\D/g, '') : '';
+                        const inn = innInput ? innInput.value.replace(/\D/g, '') : '';
 
                         if (inn.length !== 10 && inn.length !== 12) {
                             alert('ИНН должен состоять из 10 или 12 цифр');
@@ -242,13 +242,11 @@
                                 return false;
                             }
                         }
-                    });
-                }
+                    }
+                });
 
                 // DaData Organization Autocomplete
                 let orgTimeout = null;
-                const orgNameInput = document.getElementById('org-name');
-                const orgInnInput = document.getElementById('org-inn');
                 const orgSuggestionsBox = document.getElementById('org-suggestions');
 
                 function handleOrgInput(e) {
@@ -256,7 +254,7 @@
                     const query = e.target.value;
 
                     if (query.length < 3) {
-                        orgSuggestionsBox.classList.add('hidden');
+                        if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
                         return;
                     }
 
@@ -265,52 +263,61 @@
                             const response = await fetch(`{{ route('shop.customers.account.organizations.suggest') }}?query=${encodeURIComponent(query)}`);
                             const data = await response.json();
 
-                            orgSuggestionsBox.innerHTML = '';
+                            if (orgSuggestionsBox) {
+                                orgSuggestionsBox.innerHTML = '';
 
-                            if (data && data.length > 0) {
-                                data.forEach(item => {
-                                    const div = document.createElement('div');
-                                    div.className = 'p-3 hover:bg-indigo-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                                if (data && data.length > 0) {
+                                    data.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.className = 'p-3 hover:bg-emerald-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
-                                    const itemName = item.name || '';
-                                    const inn = item.inn || '';
-                                    const kpp = item.kpp ? ` КПП: ${item.kpp}` : '';
-                                    const address = item.address || '';
-                                    const ogrn = item.ogrn || '';
+                                        const itemName = item.name || '';
+                                        const inn = item.inn || '';
+                                        const kpp = item.kpp ? ` КПП: ${item.kpp}` : '';
+                                        const address = item.address || '';
+                                        const ogrn = item.ogrn || '';
 
-                                    div.innerHTML = `
+                                        div.innerHTML = `
                                             <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
                                             <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
                                             <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
                                         `;
 
-                                    div.onclick = () => {
-                                        if (orgNameInput) orgNameInput.value = itemName;
-                                        if (orgInnInput) orgInnInput.value = inn;
-                                        
-                                        const kppInput = document.getElementById('org-kpp');
-                                        if (kppInput && item.kpp) kppInput.value = item.kpp;
-                                        
-                                        const addressInput = document.getElementById('org-address');
-                                        if (addressInput && address) addressInput.value = address;
-                                        
-                                        const ogrnInput = document.getElementById('org-ogrn');
-                                        if (ogrnInput && ogrn) ogrnInput.value = ogrn;
+                                        div.onclick = () => {
+                                            const orgNameInput = document.getElementById('org-name');
+                                            const orgInnInput = document.getElementById('org-inn');
+                                            const kppInput = document.getElementById('org-kpp');
+                                            const addressInput = document.getElementById('org-address');
+                                            const ogrnInput = document.getElementById('org-ogrn');
 
-                                        orgSuggestionsBox.classList.add('hidden');
-                                    };
+                                            if (orgNameInput) orgNameInput.value = itemName;
+                                            if (orgInnInput) orgInnInput.value = inn;
+                                            if (kppInput && item.kpp) kppInput.value = item.kpp;
+                                            if (addressInput && address) addressInput.value = address;
+                                            if (ogrnInput && ogrn) ogrnInput.value = ogrn;
 
-                                    orgSuggestionsBox.appendChild(div);
-                                });
-                                // Match width and position to active input
-                                const parentGroup = e.target.closest('.relative') || e.target.parentNode;
-                                if (parentGroup) {
-                                  parentGroup.appendChild(orgSuggestionsBox);
+                                            // Manually trigger input events for Vue v-model to update
+                                            if (orgNameInput) orgNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            if (orgInnInput) orgInnInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            if (kppInput && item.kpp) kppInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            if (addressInput && address) addressInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            if (ogrnInput && ogrn) ogrnInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+                                            orgSuggestionsBox.classList.add('hidden');
+                                        };
+
+                                        orgSuggestionsBox.appendChild(div);
+                                    });
+                                    // Match width and position to active input
+                                    const parentGroup = e.target.closest('.relative') || e.target.parentNode;
+                                    if (parentGroup) {
+                                      parentGroup.appendChild(orgSuggestionsBox);
+                                    }
+                                    orgSuggestionsBox.classList.remove('hidden');
+                                } else {
+                                    orgSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Ничего не найдено</div>';
+                                    orgSuggestionsBox.classList.remove('hidden');
                                 }
-                                orgSuggestionsBox.classList.remove('hidden');
-                            } else {
-                                orgSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Ничего не найдено</div>';
-                                orgSuggestionsBox.classList.remove('hidden');
                             }
                         } catch (err) {
                             console.error('Error fetching org suggestions', err);
@@ -318,59 +325,56 @@
                     }, 500);
                 }
 
-                if (orgNameInput) orgNameInput.addEventListener('input', handleOrgInput);
-                if (orgInnInput) orgInnInput.addEventListener('input', handleOrgInput);
-
-                // Hide suggestions on outside click
-                document.addEventListener('click', function (e) {
-                    if (orgSuggestionsBox && !orgSuggestionsBox.contains(e.target) &&
-                        (!orgNameInput || !orgNameInput.contains(e.target)) &&
-                        (!orgInnInput || !orgInnInput.contains(e.target))) {
-                        orgSuggestionsBox.classList.add('hidden');
-                    }
-                });
-
                 // DaData Bank Autocomplete
                 let bankTimeout = null;
                 const bankSuggestionsBox = document.getElementById('bank-suggestions');
 
-                if (bicInput) {
-                    bicInput.addEventListener('input', function (e) {
-                        clearTimeout(bankTimeout);
-                        const query = this.value.replace(/\D/g, '');
+                function handleBankInput(e) {
+                    clearTimeout(bankTimeout);
+                    const query = e.target.value.replace(/\D/g, '');
 
-                        if (query.length < 3) {
-                            bankSuggestionsBox.classList.add('hidden');
-                            return;
-                        }
+                    if (query.length < 3) {
+                        if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
+                        return;
+                    }
 
-                        bankTimeout = setTimeout(async () => {
-                            try {
-                                const response = await fetch(`{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`);
-                                const data = await response.json();
+                    bankTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(`{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`);
+                            const data = await response.json();
 
+                            if (bankSuggestionsBox) {
                                 bankSuggestionsBox.innerHTML = '';
 
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const div = document.createElement('div');
-                                        div.className = 'p-3 hover:bg-indigo-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                                        div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                            `;
+                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                        `;
 
                                         div.onclick = () => {
-                                            document.getElementById('bank-bic').value = item.bic;
-                                            document.getElementById('bank-name').value = item.bank_name || item.name;
-                                            document.getElementById('bank-corr').value = item.correspondent_account;
+                                            const bicInput = document.getElementById('bank-bic');
+                                            const nameInput = document.getElementById('bank-name');
+                                            const corrInput = document.getElementById('bank-corr');
+
+                                            if (bicInput) bicInput.value = item.bic;
+                                            if (nameInput) nameInput.value = item.bank_name || item.name;
+                                            if (corrInput) corrInput.value = item.correspondent_account;
+
+                                            if (bicInput) bicInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            if (nameInput) nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            if (corrInput) corrInput.dispatchEvent(new Event('input', { bubbles: true }));
 
                                             bankSuggestionsBox.classList.add('hidden');
 
                                             // Focus on settlement account next
-                                            if (document.getElementById('bank-account')) {
-                                                document.getElementById('bank-account').focus();
+                                            const bankAccountInput = document.getElementById('bank-account');
+                                            if (bankAccountInput) {
+                                                bankAccountInput.focus();
                                             }
                                         };
 
@@ -381,19 +385,41 @@
                                     bankSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Банк не найден</div>';
                                     bankSuggestionsBox.classList.remove('hidden');
                                 }
-                            } catch (err) {
-                                console.error('Error fetching bank suggestions', err);
                             }
-                        }, 500);
-                    });
-
-                    // Hide suggestions on outside click
-                    document.addEventListener('click', function (e) {
-                        if (bicInput && bankSuggestionsBox && !bicInput.contains(e.target) && !bankSuggestionsBox.contains(e.target)) {
-                            bankSuggestionsBox.classList.add('hidden');
+                        } catch (err) {
+                            console.error('Error fetching bank suggestions', err);
                         }
-                    });
+                    }, 500);
                 }
+
+                // Event delegation for input events
+                document.addEventListener('input', function(e) {
+                    if (e.target) {
+                        if (e.target.id === 'org-name' || e.target.id === 'org-inn') {
+                            handleOrgInput(e);
+                        } else if (e.target.id === 'bank-bic') {
+                            handleBankInput(e);
+                        }
+                    }
+                });
+
+                // Hide suggestions on outside click
+                document.addEventListener('click', function (e) {
+                    const orgNameInput = document.getElementById('org-name');
+                    const orgInnInput = document.getElementById('org-inn');
+                    
+                    if (orgSuggestionsBox && !orgSuggestionsBox.contains(e.target) &&
+                        (!orgNameInput || !orgNameInput.contains(e.target)) &&
+                        (!orgInnInput || !orgInnInput.contains(e.target))) {
+                        orgSuggestionsBox.classList.add('hidden');
+                    }
+
+                    const bicInput = document.getElementById('bank-bic');
+                    if (bankSuggestionsBox && !bankSuggestionsBox.contains(e.target) && 
+                        (!bicInput || !bicInput.contains(e.target))) {
+                        bankSuggestionsBox.classList.add('hidden');
+                    }
+                });
             });
 
             // Re-usable bank account validation function
