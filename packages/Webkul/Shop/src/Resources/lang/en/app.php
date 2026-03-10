@@ -1235,7 +1235,7 @@ return [
         'profile' => 'Profile',
         'reviews' => 'Reviews',
         'wishlist' => 'Wishlist',
-        'passkeys' => 'Login Methods',
+        'passkeys' => 'Access Keys',
         'login-activity' => 'Login Activity',
     ],
 

@@ -1,6 +1,6 @@
 @php
     $isCompleteRegistration = isset($isCompleteRegistration) && $isCompleteRegistration;
-    $pageTitle = $isCompleteRegistration ? 'Добавление Passkey' : 'Способы входа';
+    $pageTitle = $isCompleteRegistration ? 'Добавление Ключа' : 'Ключи доступа';
 @endphp
 
 @if ($isCompleteRegistration)
@@ -19,7 +19,8 @@
                 <span class="icon-cancel text-xl"></span>
             </a>
 
-            <div class="px-5 pt-6 pb-2">
+            <div class="px-5 pt-6 pb-2 flex items-center gap-3">
+                <span class="text-2xl">🔑</span>
                 <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $pageTitle }}</h1>
             </div>
 

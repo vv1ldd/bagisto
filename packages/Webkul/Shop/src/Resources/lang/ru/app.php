@@ -1262,7 +1262,7 @@ return [
         'profile' => 'Профиль',
         'reviews' => 'Отзывы',
         'wishlist' => 'Список желаний',
-        'passkeys' => 'Способы входа',
+        'passkeys' => 'Ключи доступа',
         'login-activity' => 'Активность входа',
     ],
 

@@ -102,48 +102,6 @@
                         </div>
                     </div>
 
-                    <!-- PIN Management Section -->
-                    <div class="mt-8">
-                        <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
-                            Защита PIN-кодом
-                        </h3>
-
-                        <div class="bg-zinc-50 border border-zinc-100 overflow-hidden">
-                            <div class="flex justify-between items-center px-5 py-5 bg-white/50">
-                                <div class="flex items-center gap-3">
-                                    <div class="p-2.5 bg-zinc-200/50">
-                                        <span class="icon-shield text-xl text-zinc-600"></span>
-                                    </div>
-                                    <div>
-                                        <p class="text-[15px] font-medium text-zinc-900">
-                                            @if($customer->wallet_pin)
-                                                PIN-код установлен
-                                                <span class="ml-1 text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 px-2 py-0.5">Активно</span>
-                                            @else
-                                                PIN-код не установлен
-                                                <span class="ml-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 bg-zinc-100 px-2 py-0.5">Не настроено</span>
-                                            @endif
-                                        </p>
-                                        <p class="text-xs text-zinc-500 mt-0.5">
-                                            @if($customer->wallet_pin)
-                                                Используется для быстрого подтверждения операций в кошельке.
-                                            @else
-                                                Дополнительный уровень защиты для доступа к вашим средствам.
-                                            @endif
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="p-5 bg-white border-t border-zinc-100">
-                                <a href="{{ route('shop.customers.account.wallet.setup', ['force' => 1]) }}"
-                                    class="flex w-full items-center justify-center gap-2 border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50">
-                                    <span class="icon-edit text-lg"></span>
-                                    <span>{{ $customer->wallet_pin ? 'Изменить PIN-код' : 'Настроить PIN-код' }}</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
 
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.before') !!}
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
