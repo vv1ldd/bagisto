@@ -203,15 +203,30 @@
             document.addEventListener('DOMContentLoaded', () => {
                 // Formatting for numbers
                 window.forceNumeric = function (e) {
-                    if (!/[\d]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Tab') {
+                    // Allow modifier keys (Ctrl, Cmd, Alt, Shift)
+                    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+                    // Allow functional keys
+                    const functionalKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Escape'];
+                    if (functionalKeys.includes(e.key)) return;
+
+                    // Block anything that isn't a digit
+                    if (!/[\d]/.test(e.key)) {
                         e.preventDefault();
                     }
                 };
 
-                // Use event delegation for keypress force numeric
-                document.addEventListener('keypress', function (e) {
+                // Use event delegation for keydown (better than keypress for control keys)
+                document.addEventListener('keydown', function (e) {
                     if (e.target && (e.target.id === 'org-inn' || e.target.id === 'org-kpp' || e.target.id === 'bank-account')) {
                         window.forceNumeric(e);
+                    }
+                });
+
+                // Automatic sanitization for numeric fields (handles right-click paste)
+                document.addEventListener('input', function (e) {
+                    if (e.target && (e.target.id === 'org-inn' || e.target.id === 'org-kpp' || e.target.id === 'bank-account' || e.target.id === 'org-ogrn')) {
+                        e.target.value = e.target.value.replace(/\D/g, '');
                     }
                 });
 
