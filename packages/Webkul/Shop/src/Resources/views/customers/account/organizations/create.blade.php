@@ -123,13 +123,13 @@
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
                                         class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
-                                        БИК Банка
+                                        БИК или Название Банка
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="bic" id="bank-bic"
                                         value="{{ old('bic') }}"
                                         class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
-                                        placeholder="Введите БИК для поиска" autocomplete="off" />
+                                        placeholder="Введите БИК или название для поиска" autocomplete="off" />
 
                                     <x-shop::form.control-group.error control-name="bic" />
                                 </x-shop::form.control-group>
@@ -213,7 +213,7 @@
 
                 // Use event delegation for keypress force numeric
                 document.addEventListener('keypress', function(e) {
-                    if (e.target && (e.target.id === 'org-inn' || e.target.id === 'org-kpp' || e.target.id === 'bank-bic' || e.target.id === 'bank-account')) {
+                    if (e.target && (e.target.id === 'org-inn' || e.target.id === 'org-kpp' || e.target.id === 'bank-account')) {
                         window.forceNumeric(e);
                     }
                 });
@@ -331,7 +331,7 @@
 
                 function handleBankInput(e) {
                     clearTimeout(bankTimeout);
-                    const query = e.target.value.replace(/\D/g, '');
+                    const query = e.target.value;
 
                     if (query.length < 3) {
                         if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
