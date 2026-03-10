@@ -129,6 +129,8 @@
                             <option value="osno" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'osno' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.osno')</option>
                             <option value="usn-6" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-6' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-6')</option>
                             <option value="usn-15" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-15' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-15')</option>
+                            <option value="usn-vat-5" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-vat-5' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-vat-5')</option>
+                            <option value="usn-vat-7" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-vat-7' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-vat-7')</option>
                             <option value="aupsn" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'aupsn' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.aupsn')</option>
                             <option value="psn" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'psn' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.psn')</option>
                             <option value="npd" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'npd' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.npd')</option>

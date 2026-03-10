@@ -1044,7 +1044,7 @@ class Cart
                 continue;
             }
 
-            $isOsno = !$this->cart->billing_entity || $this->cart->billing_entity->tax_regime === 'osno';
+            $isVatPayer = !$this->cart->billing_entity || in_array($this->cart->billing_entity->tax_regime, ['osno', 'usn-vat-5', 'usn-vat-7']);
 
             $calculationBasedOn = core()->getConfigData('sales.taxes.calculation.based_on');
 
@@ -1075,7 +1075,7 @@ class Cart
 
             $item->tax_percent = $item->tax_amount = $item->base_tax_amount = 0;
 
-            if ($isOsno) {
+            if ($isVatPayer) {
                 Tax::isTaxApplicableInCurrentAddress($taxCategories[$taxCategoryId], $address, function ($rate) use ($item, $taxCategoryId) {
                     $item->applied_tax_rate = $rate->identifier;
 
@@ -1177,9 +1177,9 @@ class Cart
 
         Event::dispatch('checkout.cart.calculate.shipping.tax.before', $this->cart);
 
-        $isOsno = !$this->cart->billing_entity || $this->cart->billing_entity->tax_regime === 'osno';
+        $isVatPayer = !$this->cart->billing_entity || in_array($this->cart->billing_entity->tax_regime, ['osno', 'usn-vat-5', 'usn-vat-7']);
 
-        if ($isOsno) {
+        if ($isVatPayer) {
             Tax::isTaxApplicableInCurrentAddress($taxCategory, $address, function ($rate) use ($shippingRate) {
                 $shippingRate->applied_tax_rate = $rate->identifier;
 

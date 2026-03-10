@@ -109,6 +109,12 @@
                                 <option value="usn-15">
                                     @lang('admin::app.settings.billing-entities.create.tax-regime-options.usn-15')
                                 </option>
+                                <option value="usn-vat-5">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.usn-vat-5')
+                                </option>
+                                <option value="usn-vat-7">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.usn-vat-7')
+                                </option>
                                 <option value="aupsn">
                                     @lang('admin::app.settings.billing-entities.create.tax-regime-options.aupsn')
                                 </option>
