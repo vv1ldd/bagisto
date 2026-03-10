@@ -1,0 +1,43 @@
+# Draft Docker Compose for Matrix + LiveKit + MAS
+
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    restart: unless-stopped
+    volumes:
+      - ./synapse:/data
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    ports:
+      - "8008:8008"
+
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit
+    restart: unless-stopped
+    command: --config /etc/livekit.yaml
+    volumes:
+      - ./livekit/livekit.yaml:/etc/livekit.yaml
+    ports:
+      - "7880:7880" # API
+      - "7881:7881" # WebRTC TCP
+      - "7882:7882/udp" # WebRTC UDP
+      - "3478:3478/udp" # TURN
+
+  matrix-auth-service:
+    image: ghcr.io/element-hq/matrix-authentication-service:latest
+    container_name: mas
+    restart: unless-stopped
+    volumes:
+      - ./mas/config.yaml:/config.yaml
+    ports:
+      - "8080:8080"
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_matrix
+    environment:
+      - POSTGRES_PASSWORD=replace_me
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
