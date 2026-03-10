@@ -248,79 +248,94 @@
                 // DaData Organization Autocomplete
                 let orgTimeout = null;
                 const orgNameInput = document.getElementById('org-name');
+                const orgInnInput = document.getElementById('org-inn');
                 const orgSuggestionsBox = document.getElementById('org-suggestions');
 
-                if (orgNameInput) {
-                    orgNameInput.addEventListener('input', function () {
-                        clearTimeout(orgTimeout);
-                        const query = this.value;
+                function handleOrgInput(e) {
+                    clearTimeout(orgTimeout);
+                    const query = e.target.value;
 
-                        if (query.length < 3) {
-                            orgSuggestionsBox.classList.add('hidden');
-                            return;
-                        }
+                    if (query.length < 3) {
+                        orgSuggestionsBox.classList.add('hidden');
+                        return;
+                    }
 
-                        orgTimeout = setTimeout(async () => {
-                            try {
-                                const response = await fetch(`{{ route('shop.customers.account.organizations.suggest') }}?query=${encodeURIComponent(query)}`);
-                                const data = await response.json();
+                    orgTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(`{{ route('shop.customers.account.organizations.suggest') }}?query=${encodeURIComponent(query)}`);
+                            const data = await response.json();
 
-                                orgSuggestionsBox.innerHTML = '';
+                            orgSuggestionsBox.innerHTML = '';
 
-                                if (data && data.length > 0) {
-                                    data.forEach(item => {
-                                        const div = document.createElement('div');
-                                        div.className = 'p-3 hover:bg-emerald-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                            if (data && data.length > 0) {
+                                data.forEach(item => {
+                                    const div = document.createElement('div');
+                                    div.className = 'p-3 hover:bg-indigo-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
-                                        const itemName = item.data.name?.short_with_opf || item.value;
-                                        const inn = item.data.inn;
-                                        const kpp = item.data.kpp ? ` КПП: ${item.data.kpp}` : '';
-                                        const address = item.data.address?.value || '';
-                                        const ogrn = item.data.ogrn || '';
+                                    const itemName = item.name || '';
+                                    const inn = item.inn || '';
+                                    const kpp = item.kpp ? ` КПП: ${item.kpp}` : '';
+                                    const address = item.address || '';
+                                    const ogrn = item.ogrn || '';
 
-                                        div.innerHTML = `
-                                                    <div class="font-bold text-zinc-900 text-[14px]">${itemName}</div>
-                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                    <div class="text-[12px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                `;
+                                    div.innerHTML = `
+                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                        `;
 
-                                        div.onclick = () => {
-                                            document.getElementById('org-name').value = itemName;
-                                            document.getElementById('org-inn').value = inn;
-                                            if (item.data.kpp) document.getElementById('org-kpp').value = item.data.kpp;
-                                            if (item.data.address) document.getElementById('org-address').value = address;
-                                            if (ogrn) document.getElementById('org-ogrn').value = ogrn;
+                                    div.onclick = () => {
+                                        if (orgNameInput) orgNameInput.value = itemName;
+                                        if (orgInnInput) orgInnInput.value = inn;
+                                        
+                                        const kppInput = document.getElementById('org-kpp');
+                                        if (kppInput && item.kpp) kppInput.value = item.kpp;
+                                        
+                                        const addressInput = document.getElementById('org-address');
+                                        if (addressInput && address) addressInput.value = address;
+                                        
+                                        const ogrnInput = document.getElementById('org-ogrn');
+                                        if (ogrnInput && ogrn) ogrnInput.value = ogrn;
 
-                                            orgSuggestionsBox.classList.add('hidden');
-                                        };
+                                        orgSuggestionsBox.classList.add('hidden');
+                                    };
 
-                                        orgSuggestionsBox.appendChild(div);
-                                    });
-                                    orgSuggestionsBox.classList.remove('hidden');
-                                } else {
-                                    orgSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[13px]">Ничего не найдено</div>';
-                                    orgSuggestionsBox.classList.remove('hidden');
+                                    orgSuggestionsBox.appendChild(div);
+                                });
+                                // Match width and position to active input
+                                const parentGroup = e.target.closest('.relative') || e.target.parentNode;
+                                if (parentGroup) {
+                                  parentGroup.appendChild(orgSuggestionsBox);
                                 }
-                            } catch (e) {
-                                console.error('Error fetching org suggestions', e);
+                                orgSuggestionsBox.classList.remove('hidden');
+                            } else {
+                                orgSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Ничего не найдено</div>';
+                                orgSuggestionsBox.classList.remove('hidden');
                             }
-                        }, 500);
-                    });
-
-                    // Hide suggestions on outside click
-                    document.addEventListener('click', function (e) {
-                        if (orgNameInput && orgSuggestionsBox && !orgNameInput.contains(e.target) && !orgSuggestionsBox.contains(e.target)) {
-                            orgSuggestionsBox.classList.add('hidden');
+                        } catch (err) {
+                            console.error('Error fetching org suggestions', err);
                         }
-                    });
+                    }, 500);
                 }
+
+                if (orgNameInput) orgNameInput.addEventListener('input', handleOrgInput);
+                if (orgInnInput) orgInnInput.addEventListener('input', handleOrgInput);
+
+                // Hide suggestions on outside click
+                document.addEventListener('click', function (e) {
+                    if (orgSuggestionsBox && !orgSuggestionsBox.contains(e.target) &&
+                        (!orgNameInput || !orgNameInput.contains(e.target)) &&
+                        (!orgInnInput || !orgInnInput.contains(e.target))) {
+                        orgSuggestionsBox.classList.add('hidden');
+                    }
+                });
 
                 // DaData Bank Autocomplete
                 let bankTimeout = null;
                 const bankSuggestionsBox = document.getElementById('bank-suggestions');
 
                 if (bicInput) {
-                    bicInput.addEventListener('input', function () {
+                    bicInput.addEventListener('input', function (e) {
                         clearTimeout(bankTimeout);
                         const query = this.value.replace(/\D/g, '');
 
@@ -339,12 +354,12 @@
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const div = document.createElement('div');
-                                        div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                                        div.className = 'p-3 hover:bg-indigo-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                    <div class="font-bold text-zinc-900 text-[14px]">${item.bank_name || item.name}</div>
-                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                `;
+                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                            `;
 
                                         div.onclick = () => {
                                             document.getElementById('bank-bic').value = item.bic;
@@ -363,11 +378,11 @@
                                     });
                                     bankSuggestionsBox.classList.remove('hidden');
                                 } else {
-                                    bankSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[13px]">Банк не найден</div>';
+                                    bankSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Банк не найден</div>';
                                     bankSuggestionsBox.classList.remove('hidden');
                                 }
-                            } catch (e) {
-                                console.error('Error fetching bank suggestions', e);
+                            } catch (err) {
+                                console.error('Error fetching bank suggestions', err);
                             }
                         }, 500);
                     });
