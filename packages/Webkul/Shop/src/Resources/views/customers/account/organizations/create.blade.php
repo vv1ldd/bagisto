@@ -212,7 +212,7 @@
                 };
 
                 // Use event delegation for keypress force numeric
-                document.addEventListener('keypress', function(e) {
+                document.addEventListener('keypress', function (e) {
                     if (e.target && (e.target.id === 'org-inn' || e.target.id === 'org-kpp' || e.target.id === 'bank-account')) {
                         window.forceNumeric(e);
                     }
@@ -224,7 +224,7 @@
                         const bicInput = document.getElementById('bank-bic');
                         const accInput = document.getElementById('bank-account');
                         const innInput = document.getElementById('org-inn');
-                        
+
                         const bic = bicInput ? bicInput.value.replace(/\D/g, '') : '';
                         const account = accInput ? accInput.value.replace(/\D/g, '') : '';
                         const inn = innInput ? innInput.value.replace(/\D/g, '') : '';
@@ -278,10 +278,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                        `;
+                                                <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                            `;
 
                                         div.onclick = () => {
                                             const orgNameInput = document.getElementById('org-name');
@@ -311,7 +311,7 @@
                                     // Match width and position to active input
                                     const parentGroup = e.target.closest('.relative') || e.target.parentNode;
                                     if (parentGroup) {
-                                      parentGroup.appendChild(orgSuggestionsBox);
+                                        parentGroup.appendChild(orgSuggestionsBox);
                                     }
                                     orgSuggestionsBox.classList.remove('hidden');
                                 } else {
@@ -352,9 +352,9 @@
                                         div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                        `;
+                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                            `;
 
                                         div.onclick = () => {
                                             const bicInput = document.getElementById('bank-bic');
@@ -380,6 +380,11 @@
 
                                         bankSuggestionsBox.appendChild(div);
                                     });
+                                    // Match width and position to active input
+                                    const parentGroup = e.target.closest('.relative') || e.target.parentNode;
+                                    if (parentGroup) {
+                                        parentGroup.appendChild(bankSuggestionsBox);
+                                    }
                                     bankSuggestionsBox.classList.remove('hidden');
                                 } else {
                                     bankSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Банк не найден</div>';
@@ -392,22 +397,34 @@
                     }, 500);
                 }
 
-                // Event delegation for input events
-                document.addEventListener('input', function(e) {
-                    if (e.target) {
-                        if (e.target.id === 'org-name' || e.target.id === 'org-inn') {
-                            handleOrgInput(e);
-                        } else if (e.target.id === 'bank-bic') {
-                            handleBankInput(e);
+                // Event delegation for input events (handling typing, pasting, and changing)
+                const events = ['input', 'paste', 'change'];
+                events.forEach(eventType => {
+                    document.addEventListener(eventType, function (e) {
+                        if (e.target) {
+                            if (e.target.id === 'org-name' || e.target.id === 'org-inn') {
+                                if (eventType === 'paste') {
+                                    setTimeout(() => handleOrgInput(e), 0);
+                                } else {
+                                    handleOrgInput(e);
+                                }
+                            } else if (e.target.id === 'bank-bic') {
+                                // For paste, we might need a tiny timeout so e.target.value is updated
+                                if (eventType === 'paste') {
+                                    setTimeout(() => handleBankInput(e), 0);
+                                } else {
+                                    handleBankInput(e);
+                                }
+                            }
                         }
-                    }
+                    });
                 });
 
                 // Hide suggestions on outside click
                 document.addEventListener('click', function (e) {
                     const orgNameInput = document.getElementById('org-name');
                     const orgInnInput = document.getElementById('org-inn');
-                    
+
                     if (orgSuggestionsBox && !orgSuggestionsBox.contains(e.target) &&
                         (!orgNameInput || !orgNameInput.contains(e.target)) &&
                         (!orgInnInput || !orgInnInput.contains(e.target))) {
@@ -415,7 +432,7 @@
                     }
 
                     const bicInput = document.getElementById('bank-bic');
-                    if (bankSuggestionsBox && !bankSuggestionsBox.contains(e.target) && 
+                    if (bankSuggestionsBox && !bankSuggestionsBox.contains(e.target) &&
                         (!bicInput || !bicInput.contains(e.target))) {
                         bankSuggestionsBox.classList.add('hidden');
                     }
