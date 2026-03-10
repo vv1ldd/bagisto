@@ -166,10 +166,17 @@
         <table class="bank-details">
             <tr>
                 <td class="label-cell">ИНН {{ $billingEntity->inn }}</td>
-                <td class="label-cell">КПП {{ $billingEntity->kpp }}</td>
+                <td class="label-cell">
+                    @if($billingEntity->kpp)
+                        КПП {{ $billingEntity->kpp }}
+                    @else
+                        {{-- IP doesn't have KPP --}}
+                    @endif
+                </td>
                 <td rowspan="2" class="label-cell" style="width: 10%; vertical-align: middle;">Сч. №</td>
                 <td rowspan="2" class="value-cell" style="vertical-align: middle;">
-                    {{ $billingEntity->settlement_account }}</td>
+                    {{ $billingEntity->settlement_account }}
+                </td>
             </tr>
             <tr>
                 <td colspan="2" class="value-cell">
@@ -193,6 +200,15 @@
         <div class="basis-box">
             <b>Назначение платежа:</b> Оплата по счету №{{ $transaction->id }} от
             {{ $transaction->created_at->format('d.m.Y') }}
+            @if($billingEntity->tax_regime == 'osno')
+                (в т.ч. НДС 20% — {{ number_format($transaction->amount * 20 / 120, 2, ',', ' ') }} руб.)
+            @elseif(str_contains($billingEntity->tax_regime, 'vat-5'))
+                (в т.ч. НДС 5% — {{ number_format($transaction->amount * 5 / 105, 2, ',', ' ') }} руб.)
+            @elseif(str_contains($billingEntity->tax_regime, 'vat-7'))
+                (в т.ч. НДС 7% — {{ number_format($transaction->amount * 7 / 107, 2, ',', ' ') }} руб.)
+            @else
+                Без НДС.
+            @endif
         </div>
     </div>
 
@@ -210,7 +226,13 @@
     </div>
 
     <div class="payer-info">
-        Плательщик: <span>{{ $organization->name }}, ИНН {{ $organization->inn }}</span>
+        Поставщик: <span>{{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}@if($billingEntity->kpp), КПП
+        {{ $billingEntity->kpp }}@endif, {{ $billingEntity->address }}</span>
+    </div>
+
+    <div class="payer-info">
+        Покупатель: <span>{{ $organization->name }}, ИНН {{ $organization->inn }}@if($organization->kpp), КПП
+        {{ $organization->kpp }}@endif, {{ $organization->address }}</span>
     </div>
 
     <table class="items">
@@ -244,15 +266,29 @@
         <tr>
             <td class="label">
                 @if($billingEntity->tax_regime == 'osno')
-                    Всего к оплате с учетом НДС:
+                    В том числе НДС (20%):
+                @elseif(str_contains($billingEntity->tax_regime, 'vat-5'))
+                    В том числе НДС (5%):
+                @elseif(str_contains($billingEntity->tax_regime, 'vat-7'))
+                    В том числе НДС (7%):
                 @else
-                    Всего к оплате:
+                    Без НДС:
                 @endif
             </td>
-            <td style="font-weight: bold;">{{ number_format($transaction->amount, 2, ',', ' ') }}</td>
+            <td>
+                @if($billingEntity->tax_regime == 'osno')
+                    {{ number_format($transaction->amount * 20 / 120, 2, ',', ' ') }}
+                @elseif(str_contains($billingEntity->tax_regime, 'vat-5'))
+                    {{ number_format($transaction->amount * 5 / 105, 2, ',', ' ') }}
+                @elseif(str_contains($billingEntity->tax_regime, 'vat-7'))
+                    {{ number_format($transaction->amount * 7 / 107, 2, ',', ' ') }}
+                @else
+                    -
+                @endif
+            </td>
         </tr>
         <tr>
-            <td class="label">Сумма к оплате:</td>
+            <td class="label">Всего к оплате:</td>
             <td style="font-weight: bold;">{{ number_format($transaction->amount, 2, ',', ' ') }}</td>
         </tr>
     </table>
@@ -266,9 +302,50 @@
         @endif
     </div>
 
+    @if(!str_contains($billingEntity->tax_regime, 'osno') && !str_contains($billingEntity->tax_regime, 'vat'))
+        <div style="margin-top: 10px; font-size: 10px;">
+            НДС не облагается в связи с применением упрощенной системы налогообложения (ст. 346.11 НК РФ).
+        </div>
+    @endif
+
+    {{-- Signatures --}}
+    <div style="margin-top: 40px; position: relative;">
+        @if($billingEntity->seal)
+            <img src="{{ storage_path('app/public/' . $billingEntity->seal) }}"
+                style="position: absolute; left: 40px; top: -30px; width: 150px; opacity: 0.8;" />
+        @endif
+
+        <table style="border: none;">
+            <tr>
+                <td style="border: none; width: 50%;">
+                    <b>
+                        @if(!$billingEntity->kpp)
+                            Индивидуальный предприниматель:
+                        @else
+                            Руководитель:
+                        @endif
+                    </b>
+                    <span style="border-bottom: 1px solid #000; width: 150px; display: inline-block;">&nbsp;</span>
+                    ({{ $billingEntity->director_name ?: '____________________' }})
+                </td>
+                @if($billingEntity->kpp && $billingEntity->accountant_name)
+                    <td style="border: none; width: 50%;">
+                        <b>Бухгалтер:</b>
+                        <span style="border-bottom: 1px solid #000; width: 150px; display: inline-block;">&nbsp;</span>
+                        ({{ $billingEntity->accountant_name }})
+                    </td>
+                @endif
+            </tr>
+        </table>
+    </div>
+
     <div class="footer-note">
-        Если банк требует размер НДС, указывайте общеустановленную ставку НДС, предусмотренную п. 3 ст.164 НК РФ.
-        Итоговая сумма и ставка НДС будут написаны отдельной строкой в УПД/Акте приема передачи.
+        @if($billingEntity->tax_regime == 'osno')
+            Срок оплаты счета — 3 банковских дня.
+        @else
+            Если банк требует размер НДС, указывайте общеустановленную ставку НДС, предусмотренную п. 3 ст.164 НК РФ.
+            Итоговая сумма и ставка НДС будут написаны отдельной строкой в УПД/Акте приема передачи.
+        @endif
     </div>
 </body>
 
