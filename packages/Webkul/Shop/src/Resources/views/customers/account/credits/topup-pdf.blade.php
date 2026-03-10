@@ -1,3 +1,4 @@
+{{-- v1.1 --}}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 
@@ -142,12 +143,14 @@
             <tr>
                 <td style="width: 100px; vertical-align: top;"><b>Поставщик:</b></td>
                 <td>{{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}, КПП {{ $billingEntity->kpp }},
-                    {{ $billingEntity->address }}</td>
+                    {{ $billingEntity->address }}
+                </td>
             </tr>
             <tr>
                 <td style="padding-top: 10px;"><b>Покупатель:</b></td>
                 <td style="padding-top: 10px;">{{ $organization->name }}, ИНН {{ $organization->inn }}, КПП
-                    {{ $organization->kpp }}, {{ $organization->address }}</td>
+                    {{ $organization->kpp }}, {{ $organization->address }}
+                </td>
             </tr>
             <tr>
                 <td style="padding-top: 10px;"><b>Основание:</b></td>
