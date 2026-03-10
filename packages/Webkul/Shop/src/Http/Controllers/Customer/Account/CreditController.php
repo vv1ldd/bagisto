@@ -199,8 +199,8 @@ class CreditController extends Controller
 
             $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords'));
 
-            // Use queue to prevent UI hang
-            Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
+            // Use queue to prevent UI hang, base64 encode PDF to prevent JSON serialization errors
+            Mail::queue(new TopupInvoiceNotification($transaction, base64_encode($pdf->output())));
 
             return response()->json([
                 'success' => true,

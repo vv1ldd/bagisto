@@ -45,15 +45,10 @@ class TopupInvoiceNotification extends Mailable
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
     public function attachments(): array
     {
         return [
-            Attachment::fromData(fn() => $this->pdfData, 'proforma-invoice-' . $this->transaction->id . '.pdf')
+            Attachment::fromData(fn() => base64_decode($this->pdfData), 'proforma-invoice-' . $this->transaction->id . '.pdf')
                 ->withMime('application/pdf'),
         ];
     }
