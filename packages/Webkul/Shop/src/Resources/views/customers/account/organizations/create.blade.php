@@ -1,37 +1,39 @@
-<x-shop::layouts.account :show-back="true">
-    <div class="flex-auto pb-8 ios-tile-relative ios-group max-w-[800px] mx-auto">
-        <a href="{{ route('shop.customers.account.organizations.index') }}" class="ios-close-button">
-            <span class="icon-cancel text-xl"></span>
-        </a>
+<x-shop::layouts.account :is-cardless="true" :has-header="false">
+    <div class="flex items-center justify-center min-h-[80vh]">
+        <div class="w-full max-w-[500px] bg-white border border-zinc-100 shadow-sm relative pt-4 pb-2 px-6">
+            <a href="{{ route('shop.customers.account.organizations.index') }}"
+                class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 inline-flex items-center justify-center w-8 h-8 rounded-sm hover:bg-zinc-50 transition-colors">
+                <span class="icon-cancel text-sm"></span>
+            </a>
 
-        <div class="px-5 pt-7 pb-2 flex justify-between items-center">
-            <h1 class="text-[22px] font-bold text-zinc-900 leading-tight">
-                Добавление организации
-            </h1>
-        </div>
+            <div class="pt-2 pb-6 flex border-b border-zinc-50 mb-6">
+                <h1 class="text-[16px] font-bold text-zinc-900 leading-tight">
+                    Добавление организации
+                </h1>
+            </div>
 
-        <div class="p-5">
             <form action="{{ route('shop.customers.account.organizations.store') }}" method="POST" id="org-form">
                 @csrf
 
                 <!-- Basic Organization Details -->
-                <div class="bg-white border text-left border-zinc-100 shadow-sm p-6 mb-6">
-                    <h3 class="text-[15px] font-bold text-zinc-900 mb-6 flex items-center gap-2">
-                        <span class="text-emerald-500 text-lg">🏢</span>
+                <div class="text-left mb-6">
+                    <h3
+                        class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
+                        <span class="text-zinc-400 text-base">🏢</span>
                         Реквизиты юридического лица
                     </h3>
 
                     <div class="space-y-4">
                         <div class="relative">
-                            <x-shop::form.control-group>
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="required uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="required uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     Название организации / ИП
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="name" id="org-name"
                                     value="{{ old('name') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-emerald-500 focus:!ring-2 focus:!ring-emerald-500/20 transition-all font-medium text-zinc-900"
+                                    class="!py-2.5 !px-3 !border-zinc-200 focus:!border-indigo-500 focus:!ring-1 focus:!ring-indigo-500 text-[13px] text-zinc-900"
                                     placeholder="Введите название или ИНН для поиска" autocomplete="off" />
 
                                 <x-shop::form.control-group.error control-name="name" />
@@ -39,65 +41,64 @@
 
                             <!-- DaData Organization Suggestions Dropdown -->
                             <div id="org-suggestions"
-                                class="absolute z-50 w-full mt-1 bg-white border border-zinc-200 shadow-lg rounded-md hidden max-h-60 overflow-y-auto">
-                                <!-- Suggestions will be populated here -->
+                                class="absolute z-50 w-full mt-1 bg-white border border-zinc-200 shadow-lg hidden max-h-60 overflow-y-auto">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <x-shop::form.control-group>
+                        <div class="grid grid-cols-2 gap-4">
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="required uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="required uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     ИНН
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="inn" id="org-inn"
                                     value="{{ old('inn') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-zinc-900 focus:!border-emerald-500 transition-all"
+                                    class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
                                     placeholder="ИНН" />
 
                                 <x-shop::form.control-group.error control-name="inn" />
                             </x-shop::form.control-group>
 
-                            <x-shop::form.control-group>
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     КПП (если применимо)
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="kpp" id="org-kpp"
                                     value="{{ old('kpp') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-zinc-900 focus:!border-emerald-500 transition-all"
+                                    class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
                                     placeholder="КПП" />
 
                                 <x-shop::form.control-group.error control-name="kpp" />
                             </x-shop::form.control-group>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <x-shop::form.control-group>
+                        <div class="grid grid-cols-2 gap-4">
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     ОГРН / ОГРНИП
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="ogrn" id="org-ogrn"
                                     value="{{ old('ogrn') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-zinc-900 focus:!border-emerald-500 transition-all"
+                                    class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
                                     placeholder="ОГРН" />
 
                                 <x-shop::form.control-group.error control-name="ogrn" />
                             </x-shop::form.control-group>
 
-                            <x-shop::form.control-group>
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     Юридический адрес
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="address" id="org-address"
                                     value="{{ old('address') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 text-zinc-900 focus:!border-emerald-500 transition-all"
+                                    class="!py-2.5 !px-3 !border-zinc-200 text-[13px] text-zinc-900 focus:!border-indigo-500"
                                     placeholder="Юридический адрес" />
 
                                 <x-shop::form.control-group.error control-name="address" />
@@ -106,25 +107,28 @@
                     </div>
                 </div>
 
+                <div class="border-t border-zinc-100 border-dashed my-6"></div>
+
                 <!-- Bank Details -->
-                <div class="bg-white border text-left border-zinc-100 shadow-sm p-6 mb-8">
-                    <h3 class="text-[15px] font-bold text-zinc-900 mb-6 flex items-center gap-2">
-                        <span class="text-blue-500 text-lg">🏦</span>
+                <div class="text-left mb-6">
+                    <h3
+                        class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
+                        <span class="text-zinc-400 text-base">🏦</span>
                         Основной банковский счет
                     </h3>
 
                     <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-4">
                             <div class="relative">
-                                <x-shop::form.control-group>
+                                <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                         БИК Банка
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="bic" id="bank-bic"
                                         value="{{ old('bic') }}"
-                                        class="!py-3 !px-4 !border-zinc-200 font-mono text-zinc-900 focus:!border-blue-500 transition-all"
+                                        class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
                                         placeholder="Введите БИК для поиска" autocomplete="off" />
 
                                     <x-shop::form.control-group.error control-name="bic" />
@@ -132,51 +136,50 @@
 
                                 <!-- DaData Bank Suggestions Dropdown -->
                                 <div id="bank-suggestions"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-zinc-200 shadow-lg rounded-md hidden max-h-60 overflow-y-auto">
-                                    <!-- Suggestions will be populated here -->
+                                    class="absolute z-50 w-full mt-1 bg-white border border-zinc-200 shadow-lg hidden max-h-60 overflow-y-auto">
                                 </div>
                             </div>
 
-                            <x-shop::form.control-group>
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     Расчетный счет
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="settlement_account"
                                     id="bank-account" value="{{ old('settlement_account') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-zinc-900 focus:!border-blue-500 transition-all"
+                                    class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
                                     placeholder="20 цифр расчетного счета" />
 
                                 <x-shop::form.control-group.error control-name="settlement_account" />
                             </x-shop::form.control-group>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <x-shop::form.control-group>
+                        <div class="grid grid-cols-2 gap-4">
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     Название Банка
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="bank_name" id="bank-name"
                                     value="{{ old('bank_name') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 text-zinc-900 focus:!border-blue-500 transition-all bg-zinc-50"
-                                    placeholder="Название банка" readonly />
+                                    class="!py-2.5 !px-3 !border-zinc-200 text-[13px] text-zinc-900 bg-zinc-50 text-zinc-500 focus:!border-zinc-200"
+                                    placeholder="Название банка" readonly tabindex="-1" />
 
                                 <x-shop::form.control-group.error control-name="bank_name" />
                             </x-shop::form.control-group>
 
-                            <x-shop::form.control-group>
+                            <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-wider text-[11px] font-bold text-zinc-500">
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
                                     Корреспондентский счет
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="correspondent_account"
                                     id="bank-corr" value="{{ old('correspondent_account') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-zinc-900 focus:!border-blue-500 transition-all bg-zinc-50"
-                                    placeholder="Корр. счет" readonly />
+                                    class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 bg-zinc-50 text-zinc-500 focus:!border-zinc-200"
+                                    placeholder="Корр. счет" readonly tabindex="-1" />
 
                                 <x-shop::form.control-group.error control-name="correspondent_account" />
                             </x-shop::form.control-group>
@@ -184,13 +187,13 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-3 mt-8">
+                <div class="border-t border-zinc-50 mt-8 py-5 flex items-center justify-end gap-3">
                     <a href="{{ route('shop.customers.account.organizations.index') }}"
-                        class="px-6 py-3 border border-zinc-200 text-zinc-600 font-medium hover:bg-zinc-50 transition-colors">
+                        class="px-5 py-2.5 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
                         Отмена
                     </a>
                     <button type="submit"
-                        class="px-8 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center gap-2">
+                        class="px-6 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[13px] text-white font-bold transition-all active:scale-95">
                         Сохранить организацию
                     </button>
                 </div>
@@ -276,10 +279,10 @@
                                         const ogrn = item.data.ogrn || '';
 
                                         div.innerHTML = `
-                                                <div class="font-bold text-zinc-900 text-[14px]">${itemName}</div>
-                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                <div class="text-[12px] text-zinc-400 mt-1 truncate">${address}</div>
-                                            `;
+                                                    <div class="font-bold text-zinc-900 text-[14px]">${itemName}</div>
+                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                    <div class="text-[12px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                `;
 
                                         div.onclick = () => {
                                             document.getElementById('org-name').value = itemName;
@@ -339,9 +342,9 @@
                                         div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                <div class="font-bold text-zinc-900 text-[14px]">${item.bank_name || item.name}</div>
-                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                            `;
+                                                    <div class="font-bold text-zinc-900 text-[14px]">${item.bank_name || item.name}</div>
+                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                `;
 
                                         div.onclick = () => {
                                             document.getElementById('bank-bic').value = item.bic;
