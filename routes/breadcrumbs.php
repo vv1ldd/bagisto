@@ -67,11 +67,6 @@ Breadcrumbs::for('reviews', function (BreadcrumbTrail $trail) {
     $trail->push(trans('shop::app.layouts.reviews'), route('shop.customers.account.reviews.index'));
 });
 
-// Home > My Account > Wishlist
-Breadcrumbs::for('wishlist', function (BreadcrumbTrail $trail) {
-    $trail->parent('account');
-    $trail->push(trans('shop::app.layouts.wishlist'), route('shop.customers.account.wishlist.index'));
-});
 
 // Home > My Account > Credits
 Breadcrumbs::for('credits', function (BreadcrumbTrail $trail) {

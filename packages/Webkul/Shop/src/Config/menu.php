@@ -43,13 +43,7 @@ return [
         'icon' => 'icon-star',
         'sort' => 6,
     ],
-    [
-        'key' => 'account.wishlist',
-        'name' => 'shop::app.layouts.wishlist',
-        'route' => 'shop.customers.account.wishlist.index',
-        'icon' => 'icon-heart',
-        'sort' => 7,
-    ],
+
     [
         'key' => 'account.gdpr_data_request',
         'name' => 'shop::app.layouts.gdpr-request',
