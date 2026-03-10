@@ -402,14 +402,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                                                            event.preventDefault(); 
-                                                                                            const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                            if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                                document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                            } else if(innPrompt !== null) {
-                                                                                                alert('ИНН введен неверно. Удаление отменено.');
-                                                                                            }
-                                                                                        ">
+                                                                                                    event.preventDefault(); 
+                                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                    } else if(innPrompt !== null) {
+                                                                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                    }
+                                                                                                ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -1184,10 +1184,10 @@
                             платежа</span>
                         <span
                             class="text-[14px] font-mono text-zinc-900 font-black mt-0.5 flex justify-between items-start md:items-center group">
-                            <span class="pr-2">Оплата за цифровые услуги. Пользователь
-                                #{{ auth()->guard('customer')->id() }}. Без НДС.</span>
+                            <span class="pr-2">Оплата по договору № {{ auth()->guard('customer')->id() }} от
+                                {{ now()->format('d.m.Y') }}. Без НДС.</span>
                             <button type="button"
-                                onclick="copyAddr('Оплата за цифровые услуги. Пользователь #{{ auth()->guard('customer')->id() }}. Без НДС.', this)"
+                                onclick="copyAddr('Оплата по договору № {{ auth()->guard('customer')->id() }} от {{ now()->format('d.m.Y') }}. Без НДС.', this)"
                                 class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100 shrink-0">Копировать</button>
                         </span>
                     </div>
@@ -1231,8 +1231,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                            {{ $address->address }}
-                                                                                                                                                                                                                        </code>
+                                                                                                                                                                                                                                {{ $address->address }}
+                                                                                                                                                                                                                            </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1874,7 +1874,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                                    });
+                                                                                                                                                                                                        });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
@@ -1975,10 +1975,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                `;
+                                                        <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                        <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                    `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
@@ -2043,9 +2043,9 @@
                                         div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                `;
+                                                        <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                    `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();

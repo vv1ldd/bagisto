@@ -143,16 +143,19 @@
             <tr>
                 <td style="width: 100px; vertical-align: top;"><b>Поставщик:</b></td>
                 <td>{{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}, КПП {{ $billingEntity->kpp }},
-                    {{ $billingEntity->address }}</td>
+                    {{ $billingEntity->address }}
+                </td>
             </tr>
             <tr>
                 <td style="padding-top: 10px;"><b>Покупатель:</b></td>
                 <td style="padding-top: 10px;">{{ $organization->name }}, ИНН {{ $organization->inn }}, КПП
-                    {{ $organization->kpp }}, {{ $organization->address }}</td>
+                    {{ $organization->kpp }}, {{ $organization->address }}
+                </td>
             </tr>
             <tr>
                 <td style="padding-top: 10px;"><b>Основание:</b></td>
-                <td style="padding-top: 10px;">Пополнение баланса в личном кабинете.</td>
+                <td style="padding-top: 10px;">Оплата по договору № {{ auth()->guard('customer')->id() }} от
+                    {{ $transaction->created_at->format('d.m.Y') }}.</td>
             </tr>
         </table>
     </div>
