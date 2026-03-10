@@ -53,7 +53,7 @@ class CreditController extends Controller
 
         $organizations = $customer->organizations;
 
-        $defaultBillingEntity = $this->billingEntityRepository->getDefault();
+        $defaultBillingEntity = $this->billingEntityRepository->skipCache()->getDefault();
 
         return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations', 'defaultBillingEntity'));
     }
@@ -82,7 +82,7 @@ class CreditController extends Controller
     public function storeInvoice()
     {
         try {
-            $billingEntity = $this->billingEntityRepository->getDefault();
+            $billingEntity = $this->billingEntityRepository->skipCache()->getDefault();
 
             if (!$billingEntity) {
                 return response()->json([
@@ -116,6 +116,8 @@ class CreditController extends Controller
 
             try {
                 $billingEntity = $this->billingEntityRepository->find($defaultBillingEntityId);
+
+                $organization = $this->organizationRepository->find(request('organization_id'));
 
                 $amountInWords = NumberToWords::convert($transaction->amount);
 

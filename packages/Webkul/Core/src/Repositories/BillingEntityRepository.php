@@ -30,11 +30,7 @@ class BillingEntityRepository extends Repository
     {
         $this->model->query()->update(['is_default' => 0]);
 
-        $entity = $this->find($id);
-        $entity->is_default = 1;
-        $entity->save();
-
-        return $entity;
+        return $this->update(['is_default' => 1], $id);
     }
 
     /**
@@ -44,7 +40,7 @@ class BillingEntityRepository extends Repository
      */
     public function getDefault()
     {
-        return $this->model->query()->where('is_default', 1)->first() ?: $this->model->query()->first();
+        return $this->findOneByField('is_default', 1) ?: $this->model->query()->first();
     }
 
     /**
