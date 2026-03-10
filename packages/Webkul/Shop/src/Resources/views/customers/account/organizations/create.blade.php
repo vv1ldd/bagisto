@@ -18,7 +18,8 @@
                 <!-- STEP 1: Organization Details -->
                 <div id="step-1-container">
                     <div class="text-left mb-6">
-                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
+                        <h3
+                            class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
                             <span class="text-zinc-400 text-base">🏠</span>
                             Шаг 1: Реквизиты организации
                         </h3>
@@ -107,7 +108,7 @@
                     </div>
 
                     <div class="border-t border-zinc-50 mt-8 py-5 flex items-center justify-end gap-3">
-                         <a href="{{ route('shop.customers.account.organizations.index') }}"
+                        <a href="{{ route('shop.customers.account.organizations.index') }}"
                             class="px-5 py-2.5 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
                             Отмена
                         </a>
@@ -121,7 +122,8 @@
                 <!-- STEP 2: Bank Details (HIDDEN BY DEFAULT) -->
                 <div id="step-2-container" class="hidden">
                     <div class="text-left mb-6">
-                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
+                        <h3
+                            class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
                             <span class="text-zinc-400 text-base">🏦</span>
                             Шаг 2: Банковский счет
                         </h3>
@@ -218,8 +220,11 @@
 
                 // Step Switching
                 nextBtn.addEventListener('click', () => {
-                    const inn = orgInnInput.value.replace(/\D/g, '');
-                    const name = orgNameInput.value.trim();
+                    const currentInnInput = document.getElementById('org-inn');
+                    const currentNameInput = document.getElementById('org-name');
+
+                    const inn = currentInnInput ? currentInnInput.value.replace(/\D/g, '') : '';
+                    const name = currentNameInput ? currentNameInput.value.trim() : '';
 
                     if (!name || (inn.length !== 10 && inn.length !== 12)) {
                         alert('Пожалуйста, выберите организацию или введите корректный ИНН (10 или 12 цифр)');
@@ -300,24 +305,26 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                `;
+                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                        `;
 
                                         div.onclick = () => {
+                                            const nameInput = document.getElementById('org-name');
+                                            const innInput = document.getElementById('org-inn');
                                             const kppInput = document.getElementById('org-kpp');
                                             const addressInput = document.getElementById('org-address');
                                             const ogrnInput = document.getElementById('org-ogrn');
 
-                                            if (orgNameInput) orgNameInput.value = itemName;
-                                            if (orgInnInput) orgInnInput.value = inn;
+                                            if (nameInput) nameInput.value = itemName;
+                                            if (innInput) innInput.value = inn;
                                             if (kppInput && item.kpp) kppInput.value = item.kpp;
                                             if (addressInput && address) addressInput.value = address;
                                             if (ogrnInput && ogrn) ogrnInput.value = ogrn;
 
                                             // Manually trigger input events for Vue v-model to update
-                                            [orgNameInput, orgInnInput, kppInput, addressInput, ogrnInput].forEach(input => {
+                                            [nameInput, innInput, kppInput, addressInput, ogrnInput].forEach(input => {
                                                 if (input) input.dispatchEvent(new Event('input', { bubbles: true }));
                                             });
 
@@ -370,9 +377,9 @@
                                         div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                `;
+                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                        `;
 
                                         div.onclick = () => {
                                             const bicInput = document.getElementById('bank-bic');
