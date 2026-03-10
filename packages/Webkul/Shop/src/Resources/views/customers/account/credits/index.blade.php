@@ -612,15 +612,8 @@
                             @endforeach
                         </div>
                     </div>
-
                 @empty
             @endforelse
-            <!-- Add Organization Button -->
-            <a href="{{ route('shop.customers.account.organizations.create') }}"
-                class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
-                <span class="w-7 h-7 bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
-                <span class="text-[15px]">Добавить организацию</span>
-            </a>
         </div>
 
         {{-- Step: Top-up Details --}}
