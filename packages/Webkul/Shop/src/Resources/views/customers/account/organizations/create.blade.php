@@ -1,13 +1,13 @@
 <x-shop::layouts.account :is-cardless="true" :has-header="false">
-    <div class="flex items-center justify-center min-h-[80vh]">
-        <div class="w-full max-w-[500px] bg-white border border-zinc-100 shadow-sm relative pt-4 pb-2 px-6">
+    <div class="flex items-center justify-center min-h-[85vh] py-10">
+        <div class="w-full max-w-[700px] bg-white border border-zinc-100 shadow-xl relative pt-6 pb-4 px-8">
             <a href="{{ route('shop.customers.account.organizations.index') }}"
-                class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 inline-flex items-center justify-center w-8 h-8 rounded-sm hover:bg-zinc-50 transition-colors">
-                <span class="icon-cancel text-sm"></span>
+                class="absolute top-0 right-0 p-4 text-zinc-400 hover:text-red-500 transition-colors group">
+                <span class="icon-cancel text-xl group-hover:scale-110 transition-transform"></span>
             </a>
 
-            <div class="pt-2 pb-6 flex border-b border-zinc-50 mb-6">
-                <h1 class="text-[16px] font-bold text-zinc-900 leading-tight">
+            <div class="pt-2 pb-6 flex border-b border-zinc-50 mb-8">
+                <h1 class="text-[18px] font-bold text-zinc-900 leading-tight">
                     Добавление организации
                 </h1>
             </div>
@@ -16,75 +16,77 @@
                 @csrf
 
                 <!-- STEP 1: Organization Details -->
-                <div id="step-1-container">
                     <div class="text-left mb-6">
                         <h3
-                            class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
-                            <span class="text-zinc-400 text-base">🏠</span>
-                            Шаг 1: Реквизиты организации
+                            class="text-[12px] font-bold uppercase tracking-wider text-zinc-400 mb-6 flex items-center gap-2 border-b border-zinc-50 pb-2">
+                            <span class="text-zinc-400 text-lg">📁</span>
+                            Шаг 1: Основные сведения
                         </h3>
 
-                        <div class="space-y-4">
+                        <div class="space-y-6">
+                            {{-- Row 1: Search --}}
                             <div class="relative">
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="required uppercase tracking-widest text-[10px] font-bold text-zinc-500">
-                                        Название организации / ИНН
+                                        class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                        Поиск по названию или ИНН
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="name" id="org-name"
                                         value="{{ old('name') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 focus:!border-indigo-500 focus:!ring-1 focus:!ring-indigo-500 text-[13px] text-zinc-900"
-                                        placeholder="Введите название или ИНН для поиска" autocomplete="off" />
+                                        class="!py-3 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-1 focus:!ring-[#7C45F5] text-[14px] text-zinc-900 font-medium"
+                                        placeholder="Начните вводить данные для автозаполнения..." autocomplete="off" />
 
                                     <x-shop::form.control-group.error control-name="name" />
                                 </x-shop::form.control-group>
 
                                 <div id="org-suggestions"
-                                    class="absolute z-50 w-full mt-1 bg-white border border-zinc-200 shadow-lg hidden max-h-60 overflow-y-auto">
+                                    class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
+                            {{-- Row 2: INN | KPP --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="required uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                        class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                         ИНН
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="inn" id="org-inn"
                                         value="{{ old('inn') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
-                                        placeholder="ИНН" />
+                                        class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                        placeholder="10 или 12 цифр" />
 
                                     <x-shop::form.control-group.error control-name="inn" />
                                 </x-shop::form.control-group>
 
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                         КПП
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="kpp" id="org-kpp"
                                         value="{{ old('kpp') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
-                                        placeholder="КПП" />
+                                        class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                        placeholder="9 цифр" />
 
                                     <x-shop::form.control-group.error control-name="kpp" />
                                 </x-shop::form.control-group>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
+                            {{-- Row 3: OGRN | Address --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                         ОГРН
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="ogrn" id="org-ogrn"
                                         value="{{ old('ogrn') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
+                                        class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
                                         placeholder="ОГРН" />
 
                                     <x-shop::form.control-group.error control-name="ogrn" />
@@ -92,14 +94,14 @@
 
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                         Юридический адрес
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="address" id="org-address"
                                         value="{{ old('address') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 text-[13px] text-zinc-900 focus:!border-indigo-500"
-                                        placeholder="Юридический адрес" />
+                                        class="!py-3 !px-4 !border-zinc-200 text-[14px] text-zinc-900 focus:!border-[#7C45F5] truncate"
+                                        placeholder="Полный адрес" />
 
                                     <x-shop::form.control-group.error control-name="address" />
                                 </x-shop::form.control-group>
@@ -119,75 +121,77 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: Bank Details (HIDDEN BY DEFAULT) -->
+                <!-- STEP 2: Bank Details -->
                 <div id="step-2-container" class="hidden">
                     <div class="text-left mb-6">
                         <h3
-                            class="text-[12px] font-bold uppercase tracking-wider text-zinc-500 mb-4 flex items-center gap-2">
-                            <span class="text-zinc-400 text-base">🏦</span>
-                            Шаг 2: Банковский счет
+                            class="text-[12px] font-bold uppercase tracking-wider text-zinc-400 mb-6 flex items-center gap-2 border-b border-zinc-50 pb-2">
+                            <span class="text-zinc-400 text-lg">🏦</span>
+                            Шаг 2: Банковские реквизиты
                         </h3>
 
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-6">
+                            {{-- Row 1: BIC | Settlement Account --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="relative">
                                     <x-shop::form.control-group class="!mb-0">
                                         <x-shop::form.control-group.label
-                                            class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                            class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                             БИК или Название Банка
                                         </x-shop::form.control-group.label>
 
                                         <x-shop::form.control-group.control type="text" name="bic" id="bank-bic"
                                             value="{{ old('bic') }}"
-                                            class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
-                                            placeholder="Введите БИК или название" autocomplete="off" />
+                                            class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                            placeholder="БИК или название" autocomplete="off" />
 
                                         <x-shop::form.control-group.error control-name="bic" />
                                     </x-shop::form.control-group>
 
                                     <div id="bank-suggestions"
-                                        class="absolute z-50 w-full mt-1 bg-white border border-zinc-200 shadow-lg hidden max-h-60 overflow-y-auto">
+                                        class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
                                     </div>
                                 </div>
 
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                        class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                         Расчетный счет
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="settlement_account"
                                         id="bank-account" value="{{ old('settlement_account') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-indigo-500"
-                                        placeholder="20 цифр расчетного счета" />
+                                        class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                        placeholder="20 цифр" />
 
                                     <x-shop::form.control-group.error control-name="settlement_account" />
                                 </x-shop::form.control-group>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4">
+                            {{-- Row 2: Bank name | Correspondent Account --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                         Название Банка
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="bank_name" id="bank-name"
                                         value="{{ old('bank_name') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 text-[13px] text-zinc-900 bg-zinc-50 text-zinc-500 focus:!border-zinc-200"
-                                        placeholder="Название банка" readonly tabindex="-1" />
+                                        class="!py-3 !px-4 !border-zinc-200 text-[14px] text-zinc-900 bg-zinc-50 font-medium"
+                                        placeholder="Подтянется по БИК" readonly tabindex="-1" />
                                 </x-shop::form.control-group>
 
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-500">
+                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
                                         Корр. счет
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="correspondent_account"
                                         id="bank-corr" value="{{ old('correspondent_account') }}"
-                                        class="!py-2.5 !px-3 !border-zinc-200 font-mono text-[13px] text-zinc-900 bg-zinc-50 text-zinc-500 focus:!border-zinc-200"
-                                        placeholder="Корр. счет" readonly tabindex="-1" />
+                                        class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 bg-zinc-50"
+                                        placeholder="Подтянется по БИК" readonly tabindex="-1" />
                                 </x-shop::form.control-group>
                             </div>
                         </div>
@@ -195,11 +199,11 @@
 
                     <div class="border-t border-zinc-50 mt-8 py-5 flex items-center justify-end gap-3">
                         <button type="button" id="back-to-step-1"
-                            class="px-5 py-2.5 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                            class="px-5 py-2.5 text-[13px] font-bold text-zinc-400 hover:text-zinc-600 transition-colors">
                             Назад
                         </button>
                         <button type="submit"
-                            class="px-6 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[13px] text-white font-bold transition-all active:scale-95">
+                            class="px-10 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
                             Сохранить организацию
                         </button>
                     </div>
@@ -215,7 +219,9 @@
                 document.addEventListener('click', (e) => {
                     const nextBtn = e.target.closest('#next-to-step-2');
                     const backBtn = e.target.closest('#back-to-step-1');
-
+                    const orgSuggestionsBox = document.getElementById('org-suggestions');
+                    const bankSuggestionsBox = document.getElementById('bank-suggestions');
+                    
                     if (nextBtn) {
                         const step1 = document.getElementById('step-1-container');
                         const step2 = document.getElementById('step-2-container');
@@ -232,6 +238,12 @@
 
                         if (step1) step1.classList.add('hidden');
                         if (step2) step2.classList.remove('hidden');
+                        
+                        // Hide any leftover suggestions
+                        if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
+                        if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
+
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
 
                     if (backBtn) {
@@ -239,6 +251,11 @@
                         const step2 = document.getElementById('step-2-container');
                         if (step2) step2.classList.add('hidden');
                         if (step1) step1.classList.remove('hidden');
+
+                        if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
+                        if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
+
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     }
                 });
 
