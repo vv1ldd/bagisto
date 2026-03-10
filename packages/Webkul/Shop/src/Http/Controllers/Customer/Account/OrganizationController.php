@@ -27,17 +27,21 @@ class OrganizationController extends Controller
      */
     public function index()
     {
-        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
+        $organizations = $this->organizationRepository->findWhere([
+            'customer_id' => auth()->guard('customer')->id(),
+        ]);
+
+        return view('shop::customers.account.organizations.index', compact('organizations'));
     }
 
     /**
      * Show the organization create form.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\View\View
      */
     public function create()
     {
-        return redirect()->route('shop.customers.account.credits.index', ['step' => 'add-organization']);
+        return view('shop::customers.account.organizations.create');
     }
 
     /**
@@ -114,7 +118,7 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('shop::app.customers.account.organizations.create-success'));
 
-        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
+        return redirect()->route('shop.customers.account.organizations.index');
     }
 
     /**
@@ -133,7 +137,7 @@ class OrganizationController extends Controller
             abort(404);
         }
 
-        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
+        return view('shop::customers.account.organizations.edit', compact('organization'));
     }
 
     /**
@@ -185,7 +189,7 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('shop::app.customers.account.organizations.update-success'));
 
-        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
+        return redirect()->route('shop.customers.account.organizations.index');
     }
 
     /**
@@ -212,7 +216,7 @@ class OrganizationController extends Controller
 
         session()->flash('success', trans('shop::app.customers.account.organizations.delete-success'));
 
-        return redirect()->route('shop.customers.account.credits.index', ['step' => 'b2b-management']);
+        return redirect()->route('shop.customers.account.organizations.index');
     }
 
     /**

@@ -530,8 +530,10 @@
                                     <div class="flex items-center gap-3 text-[12px] text-zinc-500 font-mono">
                                         <div class="flex items-center gap-1 group/inn">
                                             <span>ИНН: {{ $org->inn }}</span>
-                                            <button type="button" onclick="event.stopPropagation(); copyAddr('{{ $org->inn }}', this)"
-                                                class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/inn:opacity-100" title="Копировать ИНН">
+                                            <button type="button"
+                                                onclick="event.stopPropagation(); copyAddr('{{ $org->inn }}', this)"
+                                                class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/inn:opacity-100"
+                                                title="Копировать ИНН">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -543,8 +545,10 @@
                                             <span class="text-zinc-300 hidden sm:inline">|</span>
                                             <div class="flex items-center gap-1 group/kpp">
                                                 <span>КПП: {{ $org->kpp }}</span>
-                                                <button type="button" onclick="event.stopPropagation(); copyAddr('{{ $org->kpp }}', this)"
-                                                    class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/kpp:opacity-100" title="Копировать КПП">
+                                                <button type="button"
+                                                    onclick="event.stopPropagation(); copyAddr('{{ $org->kpp }}', this)"
+                                                    class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/kpp:opacity-100"
+                                                    title="Копировать КПП">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
                                                         viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -621,8 +625,13 @@
 
                 @empty
                 @endforelse
-
-                <!-- Organization add button removed per requested flow -->
+                <!-- Add Organization Button -->
+                <a href="{{ route('shop.customers.account.organizations.create') }}"
+                    class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                    <span
+                        class="w-7 h-7 bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
+                    <span class="text-[15px]">Добавить организацию</span>
+                </a>
             </div>
 
             {{-- Step: Top-up Details --}}
@@ -787,8 +796,8 @@
                             <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                                 onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                                 <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                    {{ $address->address }}
-                                                                                                                                                </code>
+                                                                                                                                                        {{ $address->address }}
+                                                                                                                                                    </code>
                                 <div
                                     class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                     <span class="copy-txt">Скопировать</span>
@@ -823,7 +832,7 @@
                 const initialTitle = "Meanly Wallet";
 
                 function switchStep(newStep) {
-                    ['step-dashboard', 'step-transactions', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-add-organization', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                    ['step-dashboard', 'step-transactions', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
                         const el = document.getElementById(id);
                         if (el) el.classList.add('hidden');
                     });
@@ -1172,36 +1181,9 @@
                     else if (step === 'b2b-management') goToB2BManagement();
 
                     @if($errors->any() && old('inn'))
-                        switchStep('add-organization');
-                        // If name is already present due to old input, fast forward to step 2 visually
-                        @if(old('name'))
-                            setTimeout(() => {
-                                document.getElementById('step-1-inputs').classList.add('hidden');
-                                document.getElementById('step-1-summary').classList.remove('hidden');
-                                document.getElementById('step-1-badge').classList.remove('hidden');
-                                document.getElementById('step-2').classList.remove('hidden');
-
-                                if (document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = "{{ old('name') }}";
-                                if (document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = "{{ old('inn') }}";
-                                if (document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = "{{ old('address') }}";
-                                if (document.getElementById('summary-org-kpp') && "{{ old('kpp') }}") {
-                                    document.getElementById('summary-org-kpp').innerText = "{{ old('kpp') }}";
-                                    document.getElementById('summary-kpp-container').classList.remove('hidden');
-                                }
-                                if (document.getElementById('summary-org-ogrn') && "{{ old('ogrn') }}") {
-                                    document.getElementById('summary-org-ogrn').innerText = "{{ old('ogrn') }}";
-                                    document.getElementById('summary-ogrn-container').classList.remove('hidden');
-                                }
-
-                                // Also show the bank details display if we had selected one
-                                @if(old('bic') && old('bank_name'))
-                                    document.getElementById('display-bank-name').innerText = "{{ old('bank_name') }}";
-                                    document.getElementById('display-corr-account').innerText = "{{ old('correspondent_account') }}";
-                                    document.getElementById('display-bic').innerText = "{{ old('bic') }}";
-                                    document.getElementById('step-2-details').classList.remove('hidden');
-                                @endif
-                                                                                                                                                                                                    }, 100);
-                        @endif
+                        goToB2BManagement();
+                        // Let user know there was an error in the standalone create form if they were redirected back here.
+                        // Though this shouldn't happen anymore with the controller change.
                     @endif
 
                     @if(session('show_verify_id'))
@@ -1212,7 +1194,7 @@
                         @endif
                     @endif
 
-                                                                                                                            });
+                                                                                                                                });
 
                 // --- ORGANIZATION WIZARD SCRIPTS ---
                 window.isValidBankAccount = function (bic, account) {
