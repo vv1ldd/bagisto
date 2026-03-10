@@ -386,10 +386,10 @@
                                     <x-slot:menu class="!py-1 min-w-[140px] shadow-xl border-zinc-100">
                                         <x-shop::dropdown.menu.item>
                                             <a href="javascript:void(0);"
-                                                onclick="loadOrganizationEdit({{ $organization->id }})"
+                                                onclick="openAddBankAccount({{ $organization->id }}, '{{ addslashes($organization->name) }}', '{{ $organization->inn }}')"
                                                 class="flex items-center gap-2 w-full text-[14px]">
-                                                <span class="icon-edit text-xl"></span>
-                                                @lang('shop::app.customers.account.organizations.index.edit')
+                                                <span class="icon-plus text-xl"></span>
+                                                Добавить счет
                                             </a>
                                         </x-shop::dropdown.menu.item>
 
@@ -401,14 +401,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                                            event.preventDefault(); 
-                                                                            const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                            if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                            } else if(innPrompt !== null) {
-                                                                                alert('ИНН введен неверно. Удаление отменено.');
-                                                                            }
-                                                                        ">
+                                                                                    event.preventDefault(); 
+                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                    } else if(innPrompt !== null) {
+                                                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                                                    }
+                                                                                ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -615,6 +615,88 @@
                             Сохранить организацию
                         </button>
                     </div>
+                </div>
+            </form>
+        </div>
+
+        {{-- Step: Add Bank Account (SPA replacement for Edit Organization) --}}
+        <div id="step-add-bank-account" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-6">
+            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
+                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+                    Добавление расчетного счета
+                </h1>
+            </div>
+
+            <div class="mb-5 p-4 border border-zinc-200 bg-zinc-50 relative">
+                <div id="add-bank-org-name" class="font-bold text-[14px] text-zinc-900 pr-16 truncate">
+                    Название организации</div>
+                <div id="add-bank-org-inn" class="text-[11px] font-mono text-zinc-500 mt-1">ИНН: 0000000000</div>
+            </div>
+
+            <form id="add-bank-account-form" onsubmit="submitAddBankAccount(event)">
+                <input type="hidden" id="add-bank-org-id" value="">
+
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="relative">
+                            <label for="new-bank-bic"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                БИК или Название Банка
+                            </label>
+                            <input type="text" id="new-bank-bic" required
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                placeholder="БИК или название" autocomplete="off">
+                            <div id="new-bank-suggestions"
+                                class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="new-bank-account"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                Расчетный счет
+                            </label>
+                            <input type="text" id="new-bank-account" required
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                placeholder="20 цифр">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="new-bank-name"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                Название Банка
+                            </label>
+                            <input type="text" id="new-bank-name"
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 bg-zinc-50 font-medium cursor-not-allowed"
+                                placeholder="Подтянется по БИК" readonly tabindex="-1">
+                        </div>
+
+                        <div>
+                            <label for="new-bank-corr"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                Корр. счет
+                            </label>
+                            <input type="text" id="new-bank-corr"
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 bg-zinc-50 cursor-not-allowed"
+                                placeholder="Подтянется по БИК" readonly tabindex="-1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
+                    <button type="button" onclick="switchStep('organizations')"
+                        class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                        Отмена
+                    </button>
+                    <button type="submit" id="add-bank-submit-btn"
+                        class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200 flex items-center gap-2">
+                        <span id="add-bank-btn-text">Добавить счет</span>
+                        <div id="add-bank-btn-spinner"
+                            class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin">
+                        </div>
+                    </button>
                 </div>
             </form>
         </div>
@@ -1087,8 +1169,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                    {{ $address->address }}
-                                                                                                                                                                                                                </code>
+                                                                                                                                                                                                                        {{ $address->address }}
+                                                                                                                                                                                                                    </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1192,7 +1274,7 @@
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
-                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-edit-organization', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -1216,7 +1298,7 @@
                         if (currentStep === 'transactions') titleEl.innerText = "История";
                         if (currentStep === 'organizations') titleEl.innerText = "Мои компании";
                         if (currentStep === 'add-organization') titleEl.innerText = "Новая компания";
-                        if (currentStep === 'edit-organization') titleEl.innerText = "Редактирование";
+                        if (currentStep === 'add-bank-account') titleEl.innerText = "Новый счет";
                         if (currentStep === 'invoices') titleEl.innerText = "Выставленные счета";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
                         if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
@@ -1235,7 +1317,7 @@
                 else if (currentStep === 'invoices') switchStep('dashboard');
                 else if (currentStep === 'organizations') switchStep('dashboard');
                 else if (currentStep === 'add-organization') switchStep('organizations');
-                else if (currentStep === 'edit-organization') switchStep('organizations');
+                else if (currentStep === 'add-bank-account') switchStep('organizations');
                 else if (currentStep === 'deposit-type') switchStep('dashboard');
                 else if (currentStep === 'empty') switchStep('deposit-type');
                 else if (currentStep === 'details') switchStep('management');
@@ -1289,33 +1371,77 @@
                 document.getElementById('add-org-step-2').classList.remove('hidden');
             }
 
-            async function loadOrganizationEdit(id) {
-                const container = document.getElementById('step-edit-organization');
-                container.innerHTML = '<div class="py-20 text-center"><div class="w-8 h-8 border-4 border-[#7C45F5] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div><span class="text-zinc-500 font-bold uppercase tracking-wider text-xs">Загрузка...</span></div>';
-                switchStep('edit-organization');
+            function openAddBankAccount(orgId, orgName, orgInn) {
+                document.getElementById('add-bank-org-id').value = orgId;
+                document.getElementById('add-bank-org-name').innerText = orgName;
+                document.getElementById('add-bank-org-inn').innerText = 'ИНН: ' + orgInn;
+
+                document.getElementById('new-bank-bic').value = '';
+                document.getElementById('new-bank-account').value = '';
+                document.getElementById('new-bank-name').value = '';
+                document.getElementById('new-bank-corr').value = '';
+
+                switchStep('add-bank-account');
+            }
+
+            async function submitAddBankAccount(e) {
+                e.preventDefault();
+                const orgId = document.getElementById('add-bank-org-id').value;
+                const bicInput = document.getElementById('new-bank-bic');
+                const accInput = document.getElementById('new-bank-account');
+
+                const bic = (bicInput.value || '').replace(/\D/g, '');
+                const account = (accInput.value || '').replace(/\D/g, '');
+
+                if (bic || account) {
+                    if (!window.isValidBankAccount(bic, account)) {
+                        alert('Расчетный счет не соответствует БИК банка (неверный контрольный ключ)');
+                        return false;
+                    }
+                }
+
+                const btn = document.getElementById('add-bank-submit-btn');
+                const btnText = document.getElementById('add-bank-btn-text');
+                const btnSpinner = document.getElementById('add-bank-btn-spinner');
+
+                btn.disabled = true;
+                btnText.classList.add('opacity-50');
+                btnSpinner.classList.remove('hidden');
 
                 try {
-                    const response = await fetch(`/customer/account/organizations/${id}/edit`, {
+                    const formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('bic', bicInput.value);
+                    formData.append('settlement_account', accInput.value);
+                    formData.append('bank_name', document.getElementById('new-bank-name').value);
+                    formData.append('correspondent_account', document.getElementById('new-bank-corr').value);
+
+                    const response = await fetch(`/customer/account/organizations/${orgId}/settlement-account`, {
+                        method: 'POST',
                         headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
                     });
 
-                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
 
-                    const html = await response.text();
-                    container.innerHTML = html;
+                    if (!response.ok) {
+                        const errorMsg = data.errors ? Object.values(data.errors).flat().join('\n') : data.message;
+                        throw new Error(errorMsg || 'Произошла ошибка');
+                    }
 
-                    // Execute scripts that were injected (fetch doesn't execute script tags automatically like jQuery did)
-                    Array.from(container.querySelectorAll('script')).forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                        oldScript.parentNode.replaceChild(newScript, oldScript);
-                    });
+                    if (data.success) {
+                        window.showAlert('success', 'Успех', data.message);
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
                 } catch (error) {
-                    console.error('Error loading organization details:', error);
-                    container.innerHTML = '<div class="py-20 text-center text-red-500 font-bold">Ошибка загрузки данных. Пожалуйста, попробуйте позже.</div>';
+                    window.showAlert('error', 'Ошибка', error.message);
+                } finally {
+                    btn.disabled = false;
+                    btnText.classList.remove('opacity-50');
+                    btnSpinner.classList.add('hidden');
                 }
             }
 
@@ -1684,7 +1810,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                            });
+                                                                                                                                                                                                });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
@@ -1711,6 +1837,224 @@
 
                 return sum % 10 === 0;
             };
+
+            // DaData Integration Ported
+            document.addEventListener('DOMContentLoaded', () => {
+                // Formatting for numbers
+                window.forceNumeric = function (e) {
+                    if (e.ctrlKey || e.metaKey || e.altKey) return;
+                    const functionalKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Escape'];
+                    if (functionalKeys.includes(e.key)) return;
+                    if (!/[\d]/.test(e.key)) e.preventDefault();
+                };
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.target && ['org-inn', 'org-kpp', 'bank-account', 'new-bank-account'].includes(e.target.id)) {
+                        window.forceNumeric(e);
+                    }
+                });
+
+                document.addEventListener('input', function (e) {
+                    if (e.target && ['org-inn', 'org-kpp', 'bank-account', 'new-bank-account', 'org-ogrn'].includes(e.target.id)) {
+                        e.target.value = e.target.value.replace(/\D/g, '');
+                    }
+                });
+
+                // Validation for Add Org
+                document.body.addEventListener('submit', function (e) {
+                    if (e.target && e.target.id === 'org-form') {
+                        const bicInput = document.getElementById('bank-bic');
+                        const accInput = document.getElementById('bank-account');
+                        const bic = bicInput ? bicInput.value.replace(/\D/g, '') : '';
+                        const account = accInput ? accInput.value.replace(/\D/g, '') : '';
+
+                        if (bic || account) {
+                            if (!window.isValidBankAccount(bic, account)) {
+                                alert('Расчетный счет не соответствует БИК банка (неверный контрольный ключ)');
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
+                    }
+                });
+
+                // DaData Organization Autocomplete
+                let orgTimeout = null;
+                function handleOrgInput(e) {
+                    clearTimeout(orgTimeout);
+                    if (e && !e.isTrusted) return;
+
+                    const query = e.target.value;
+                    const orgSuggestionsBox = document.getElementById('org-suggestions');
+
+                    if (query.length < 3) {
+                        if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
+                        return;
+                    }
+
+                    orgTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(`{{ route('shop.customers.account.organizations.suggest') }}?query=${encodeURIComponent(query)}`);
+                            const data = await response.json();
+
+                            if (orgSuggestionsBox) {
+                                orgSuggestionsBox.innerHTML = '';
+                                if (data && data.length > 0) {
+                                    data.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.className = 'p-2 hover:bg-emerald-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+
+                                        const itemName = item.name || '';
+                                        const inn = item.inn || '';
+                                        const kpp = item.kpp ? ` КПП: ${item.kpp}` : '';
+                                        const address = item.address || '';
+                                        const ogrn = item.ogrn || '';
+
+                                        div.innerHTML = `
+                                                <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                            `;
+
+                                        div.onmousedown = (event) => {
+                                            event.preventDefault();
+                                            const nameInput = document.getElementById('org-name');
+                                            const innInput = document.getElementById('org-inn');
+                                            const kppInput = document.getElementById('org-kpp');
+                                            const addressInput = document.getElementById('org-address');
+                                            const ogrnInput = document.getElementById('org-ogrn');
+
+                                            if (nameInput) nameInput.value = itemName;
+                                            if (innInput) innInput.value = inn;
+                                            if (kppInput && item.kpp) kppInput.value = item.kpp;
+                                            if (addressInput && address) addressInput.value = address;
+                                            if (ogrnInput && ogrn) ogrnInput.value = ogrn;
+
+                                            orgSuggestionsBox.classList.add('hidden');
+                                            orgSuggestionsBox.innerHTML = '';
+                                        };
+
+                                        orgSuggestionsBox.appendChild(div);
+                                    });
+                                    const parentGroup = e.target.closest('.relative');
+                                    if (parentGroup && !parentGroup.contains(orgSuggestionsBox)) {
+                                        parentGroup.appendChild(orgSuggestionsBox);
+                                    }
+                                    orgSuggestionsBox.classList.remove('hidden');
+                                } else {
+                                    orgSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Ничего не найдено</div>';
+                                    orgSuggestionsBox.classList.remove('hidden');
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error fetching org suggestions', err);
+                        }
+                    }, 500);
+                }
+
+                // DaData Bank Autocomplete
+                let bankTimeout = null;
+                function handleBankInput(e, prefix = 'bank') {
+                    clearTimeout(bankTimeout);
+                    if (e && !e.isTrusted) return;
+
+                    const query = e.target.value;
+                    const bankSuggestionsBox = document.getElementById(`${prefix}-suggestions`);
+
+                    if (query.length < 3) {
+                        if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
+                        return;
+                    }
+
+                    bankTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(`{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`);
+                            const data = await response.json();
+
+                            if (bankSuggestionsBox) {
+                                bankSuggestionsBox.innerHTML = '';
+                                if (data && data.length > 0) {
+                                    data.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+
+                                        div.innerHTML = `
+                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                            `;
+
+                                        div.onmousedown = (event) => {
+                                            event.preventDefault();
+                                            const bicInput = document.getElementById(`${prefix}-bic`);
+                                            const nameInput = document.getElementById(`${prefix}-name`);
+                                            const corrInput = document.getElementById(`${prefix}-corr`);
+
+                                            if (bicInput) bicInput.value = item.bic;
+                                            if (nameInput) nameInput.value = item.bank_name || item.name;
+                                            if (corrInput) corrInput.value = item.correspondent_account;
+
+                                            bankSuggestionsBox.classList.add('hidden');
+                                            bankSuggestionsBox.innerHTML = '';
+
+                                            const bankAccountInput = document.getElementById(`${prefix}-account`);
+                                            if (bankAccountInput) bankAccountInput.focus();
+                                        };
+
+                                        bankSuggestionsBox.appendChild(div);
+                                    });
+                                    const parentGroup = e.target.closest('.relative') || e.target.parentNode;
+                                    if (parentGroup) {
+                                        parentGroup.appendChild(bankSuggestionsBox);
+                                    }
+                                    bankSuggestionsBox.classList.remove('hidden');
+                                } else {
+                                    bankSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Банк не найден</div>';
+                                    bankSuggestionsBox.classList.remove('hidden');
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error fetching bank suggestions', err);
+                        }
+                    }, 500);
+                }
+
+                // Event delegation for input events
+                const events = ['input', 'paste', 'change'];
+                events.forEach(eventType => {
+                    document.addEventListener(eventType, function (e) {
+                        if (e.target) {
+                            if (e.target.id === 'org-name' || e.target.id === 'org-inn') {
+                                if (eventType === 'paste') setTimeout(() => handleOrgInput(e), 0);
+                                else handleOrgInput(e);
+                            } else if (e.target.id === 'bank-bic') {
+                                if (eventType === 'paste') setTimeout(() => handleBankInput(e, 'bank'), 0);
+                                else handleBankInput(e, 'bank');
+                            } else if (e.target.id === 'new-bank-bic') {
+                                if (eventType === 'paste') setTimeout(() => handleBankInput(e, 'new-bank'), 0);
+                                else handleBankInput(e, 'new-bank');
+                            }
+                        }
+                    });
+                });
+
+                // Hide suggestions on outside click
+                document.addEventListener('click', function (e) {
+                    const orgSuggestionsBox = document.getElementById('org-suggestions');
+                    if (orgSuggestionsBox && !orgSuggestionsBox.contains(e.target) && e.target.id !== 'org-name' && e.target.id !== 'org-inn') {
+                        orgSuggestionsBox.classList.add('hidden');
+                    }
+
+                    const bankSuggestionsBox = document.getElementById('bank-suggestions');
+                    if (bankSuggestionsBox && !bankSuggestionsBox.contains(e.target) && e.target.id !== 'bank-bic') {
+                        bankSuggestionsBox.classList.add('hidden');
+                    }
+
+                    const newBankSuggestionsBox = document.getElementById('new-bank-suggestions');
+                    if (newBankSuggestionsBox && !newBankSuggestionsBox.contains(e.target) && e.target.id !== 'new-bank-bic') {
+                        newBankSuggestionsBox.classList.add('hidden');
+                    }
+                });
+            });
 
         </script>
     @endpush
