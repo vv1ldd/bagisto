@@ -155,6 +155,7 @@ class CustomerController extends Controller
             'status',
             'is_suspended',
             'is_investor',
+            'is_call_enabled',
         ]);
 
         if (empty($data['phone'])) {

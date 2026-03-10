@@ -6,13 +6,13 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-customer-edit-template">
-                <!-- Customer Edit Button -->
-                @if (bouncer()->hasPermission('customers.customers.edit'))
-                    <div class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline"
-                        @click="$refs.customerEditModal.toggle()">
-                        @lang('admin::app.customers.customers.view.edit.edit-btn')
-                    </div>
-                @endif
+                    <!-- Customer Edit Button -->
+                    @if (bouncer()->hasPermission('customers.customers.edit'))
+                        <div class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline"
+                            @click="$refs.customerEditModal.toggle()">
+                            @lang('admin::app.customers.customers.view.edit.edit-btn')
+                        </div>
+                    @endif
 
     {!! view_render_event('bagisto.admin.customers.customers.view.edit.edit_form_controls.before', ['customer' => $customer]) !!}
 
@@ -184,6 +184,18 @@
 
                                 <x-admin::form.control-group.control type="switch" name="is_investor" :value="1"
                                     label="Инвестор" ::checked="customer.is_investor" />
+                            </x-admin::form.control-group>
+
+                            <!-- P2P Call Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    📞 Звонки P2P
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_call_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_call_enabled" :value="1"
+                                    label="Звонки P2P" ::checked="customer.is_call_enabled" />
                             </x-admin::form.control-group>
                         </div>
 

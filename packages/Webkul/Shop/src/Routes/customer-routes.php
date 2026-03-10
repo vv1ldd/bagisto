@@ -316,6 +316,12 @@ Route::prefix('customer')->group(function () {
                     Route::post('update-alias/{id}', 'updateAlias')->name('shop.customers.account.crypto.update_alias');
                     Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
                 });
+                /**
+                 * Calls.
+                 */
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CallController::class)->prefix('calls')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.calls.index');
+                });
             });
         });
     });

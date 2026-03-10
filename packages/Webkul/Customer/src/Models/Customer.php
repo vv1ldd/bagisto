@@ -45,6 +45,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'subscribed_to_news_letter' => 'boolean',
         'balance' => 'decimal:4',
         'is_investor' => 'boolean',
+        'is_call_enabled' => 'boolean',
     ];
 
     /**
@@ -73,6 +74,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'is_verified',
         'is_suspended',
         'is_investor',
+        'is_call_enabled',
         'last_login_ip',
         'verification_code',
         'registration_ip',
