@@ -44,6 +44,10 @@
             content="Bagisto"
         >
 
+        @if (auth()->guard('customer')->check())
+            <meta name="customer-id" content="{{ auth()->guard('customer')->user()->id }}">
+        @endif
+
         @stack('meta')
 
         <link
@@ -224,6 +228,7 @@
             </div>
 
             <v-shortcut-help></v-shortcut-help>
+            <v-call-overlay></v-call-overlay>
         </div>
 
         {!! view_render_event('bagisto.shop.layout.body.after') !!}

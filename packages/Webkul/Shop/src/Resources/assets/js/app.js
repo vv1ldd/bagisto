@@ -9,6 +9,22 @@ import.meta.glob(["../images/**", "../fonts/**"]);
 import { createApp } from "vue/dist/vue.esm-bundler";
 
 /**
+ * Echo initialization.
+ */
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true,
+    authEndpoint: '/api/broadcasting/auth', // Standard Bagisto/Laravel sanctum path
+});
+
+/**
  * Main root application registry.
  */
 window.app = createApp({
@@ -161,7 +177,9 @@ import Flatpickr from "./plugins/flatpickr";
  * Global directives.
  */
 import Debounce from "./directives/debounce";
+import CallOverlay from "./components/CallOverlay.vue";
 
 app.directive("debounce", Debounce);
+app.component("v-call-overlay", CallOverlay);
 
 export default app;

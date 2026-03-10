@@ -236,7 +236,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 max-md:w-full max-md:mt-2">
-                                <a href="{{ route('shop.customers.account.credits.topup.print', $inv->id) }}" target="_blank"
+                                <a href="{{ route('shop.customers.account.credits.invoice.print', $inv->id) }}" target="_blank"
                                     class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-50 hover:bg-violet-50 text-zinc-600 hover:text-[#7C45F5] font-bold text-[12px] uppercase tracking-wider transition-all">
                                     <span class="icon-download text-lg"></span>
                                     <span class="max-md:hidden">Скачать</span>
@@ -402,14 +402,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                                                                                                            event.preventDefault(); 
-                                                                                                                                            const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                                                                            if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                                                                                document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                                                                            } else if(innPrompt !== null) {
-                                                                                                                                                alert('ИНН введен неверно. Удаление отменено.');
-                                                                                                                                            }
-                                                                                                                                        ">
+                                                                                                                                                    event.preventDefault(); 
+                                                                                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                                                                    } else if(innPrompt !== null) {
+                                                                                                                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                                                                    }
+                                                                                                                                                ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -1240,8 +1240,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                                                {{ $address->address }}
-                                                                                                                                                                                                                                            </code>
+                                                                                                                                                                                                                                                    {{ $address->address }}
+                                                                                                                                                                                                                                                </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1883,7 +1883,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                                                        });
+                                                                                                                                                                                                                            });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
@@ -1984,10 +1984,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                                        <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                                        <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                                    `;
+                                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                        `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
@@ -2052,9 +2052,9 @@
                                         div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                                        <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                                    `;
+                                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                        `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
