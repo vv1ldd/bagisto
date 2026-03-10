@@ -15,12 +15,12 @@
             <form action="{{ route('shop.customers.account.organizations.store') }}" method="POST" id="org-form">
                 @csrf
 
-                <!-- STEP 1: Organization Details -->
-                <div class="text-left mb-6">
+                <!-- SECTION 1: Organization Details -->
+                <div class="text-left mb-8">
                     <h3
                         class="text-[12px] font-bold uppercase tracking-wider text-zinc-400 mb-6 flex items-center gap-2 border-b border-zinc-50 pb-2">
                         <span class="text-zinc-400 text-lg">📁</span>
-                        Шаг 1: Основные сведения
+                        Основные сведения
                     </h3>
 
                     <div class="space-y-6">
@@ -109,156 +109,98 @@
                     </div>
                 </div>
 
+                <!-- SECTION 2: Bank Details -->
+                <div class="text-left mb-6">
+                    <h3
+                        class="text-[12px] font-bold uppercase tracking-wider text-zinc-400 mb-6 flex items-center gap-2 border-b border-zinc-50 pb-2">
+                        <span class="text-zinc-400 text-lg">🏦</span>
+                        Банковские реквизиты
+                    </h3>
+
+                    <div class="space-y-6">
+                        {{-- Row 1: BIC | Settlement Account --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="relative">
+                                <x-shop::form.control-group class="!mb-0">
+                                    <x-shop::form.control-group.label
+                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                        БИК или Название Банка
+                                    </x-shop::form.control-group.label>
+
+                                    <x-shop::form.control-group.control type="text" name="bic" id="bank-bic"
+                                        value="{{ old('bic') }}"
+                                        class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                        placeholder="БИК или название" autocomplete="off" />
+
+                                    <x-shop::form.control-group.error control-name="bic" />
+                                </x-shop::form.control-group>
+
+                                <div id="bank-suggestions"
+                                    class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
+                                </div>
+                            </div>
+
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.label
+                                    class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    Расчетный счет
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control type="text" name="settlement_account"
+                                    id="bank-account" value="{{ old('settlement_account') }}"
+                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                    placeholder="20 цифр" />
+
+                                <x-shop::form.control-group.error control-name="settlement_account" />
+                            </x-shop::form.control-group>
+                        </div>
+
+                        {{-- Row 2: Bank name | Correspondent Account --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.label
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    Название Банка
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control type="text" name="bank_name" id="bank-name"
+                                    value="{{ old('bank_name') }}"
+                                    class="!py-3 !px-4 !border-zinc-200 text-[14px] text-zinc-900 bg-zinc-50 font-medium"
+                                    placeholder="Подтянется по БИК" readonly tabindex="-1" />
+                            </x-shop::form.control-group>
+
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.label
+                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    Корр. счет
+                                </x-shop::form.control-group.label>
+
+                                <x-shop::form.control-group.control type="text" name="correspondent_account"
+                                    id="bank-corr" value="{{ old('correspondent_account') }}"
+                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 bg-zinc-50"
+                                    placeholder="Подтянется по БИК" readonly tabindex="-1" />
+                            </x-shop::form.control-group>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="border-t border-zinc-50 mt-8 py-5 flex items-center justify-end gap-3">
                     <a href="{{ route('shop.customers.account.organizations.index') }}"
                         class="px-5 py-2.5 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
                         Отмена
                     </a>
-                    <button type="button" id="next-to-step-2"
-                        class="px-6 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[13px] text-white font-bold transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
-                        Далее
+                    <button type="submit"
+                        class="px-10 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
+                        Сохранить организацию
                     </button>
                 </div>
+            </form>
         </div>
-
-        <!-- STEP 2: Bank Details -->
-        <div id="step-2-container" class="hidden">
-            <div class="text-left mb-6">
-                <h3
-                    class="text-[12px] font-bold uppercase tracking-wider text-zinc-400 mb-6 flex items-center gap-2 border-b border-zinc-50 pb-2">
-                    <span class="text-zinc-400 text-lg">🏦</span>
-                    Шаг 2: Банковские реквизиты
-                </h3>
-
-                <div class="space-y-6">
-                    {{-- Row 1: BIC | Settlement Account --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="relative">
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
-                                    БИК или Название Банка
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="bic" id="bank-bic"
-                                    value="{{ old('bic') }}"
-                                    class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
-                                    placeholder="БИК или название" autocomplete="off" />
-
-                                <x-shop::form.control-group.error control-name="bic" />
-                            </x-shop::form.control-group>
-
-                            <div id="bank-suggestions"
-                                class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
-                            </div>
-                        </div>
-
-                        <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.label
-                                class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
-                                Расчетный счет
-                            </x-shop::form.control-group.label>
-
-                            <x-shop::form.control-group.control type="text" name="settlement_account" id="bank-account"
-                                value="{{ old('settlement_account') }}"
-                                class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
-                                placeholder="20 цифр" />
-
-                            <x-shop::form.control-group.error control-name="settlement_account" />
-                        </x-shop::form.control-group>
-                    </div>
-
-                    {{-- Row 2: Bank name | Correspondent Account --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.label
-                                class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
-                                Название Банка
-                            </x-shop::form.control-group.label>
-
-                            <x-shop::form.control-group.control type="text" name="bank_name" id="bank-name"
-                                value="{{ old('bank_name') }}"
-                                class="!py-3 !px-4 !border-zinc-200 text-[14px] text-zinc-900 bg-zinc-50 font-medium"
-                                placeholder="Подтянется по БИК" readonly tabindex="-1" />
-                        </x-shop::form.control-group>
-
-                        <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.label
-                                class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
-                                Корр. счет
-                            </x-shop::form.control-group.label>
-
-                            <x-shop::form.control-group.control type="text" name="correspondent_account" id="bank-corr"
-                                value="{{ old('correspondent_account') }}"
-                                class="!py-3 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 bg-zinc-50"
-                                placeholder="Подтянется по БИК" readonly tabindex="-1" />
-                        </x-shop::form.control-group>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-t border-zinc-50 mt-8 py-5 flex items-center justify-end gap-3">
-                <button type="button" id="back-to-step-1"
-                    class="px-5 py-2.5 text-[13px] font-bold text-zinc-400 hover:text-zinc-600 transition-colors">
-                    Назад
-                </button>
-                <button type="submit"
-                    class="px-10 py-3 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
-                    Сохранить организацию
-                </button>
-            </div>
-        </div>
-        </form>
-    </div>
     </div>
 
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                // Step Switching using Event Delegation
-                document.addEventListener('click', (e) => {
-                    const nextBtn = e.target.closest('#next-to-step-2');
-                    const backBtn = e.target.closest('#back-to-step-1');
-                    const orgSuggestionsBox = document.getElementById('org-suggestions');
-                    const bankSuggestionsBox = document.getElementById('bank-suggestions');
-
-                    if (nextBtn) {
-                        const step1 = document.getElementById('step-1-container');
-                        const step2 = document.getElementById('step-2-container');
-                        const currentInnInput = document.getElementById('org-inn');
-                        const currentNameInput = document.getElementById('org-name');
-
-                        const inn = currentInnInput ? currentInnInput.value.replace(/\D/g, '') : '';
-                        const name = currentNameInput ? currentNameInput.value.trim() : '';
-
-                        if (!name || (inn.length !== 10 && inn.length !== 12)) {
-                            alert('Пожалуйста, выберите организацию или введите корректный ИНН (10 или 12 цифр)');
-                            return;
-                        }
-
-                        if (step1) step1.classList.add('hidden');
-                        if (step2) step2.classList.remove('hidden');
-
-                        // Hide any leftover suggestions
-                        if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
-                        if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
-
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-
-                    if (backBtn) {
-                        const step1 = document.getElementById('step-1-container');
-                        const step2 = document.getElementById('step-2-container');
-                        if (step2) step2.classList.add('hidden');
-                        if (step1) step1.classList.remove('hidden');
-
-                        if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
-                        if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
-
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                });
-
                 // Formatting for numbers
                 window.forceNumeric = function (e) {
                     if (!/[\d]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Tab') {
@@ -324,10 +266,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                                `;
+                                                                        <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                        <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                    `;
 
                                         div.onclick = () => {
                                             const nameInput = document.getElementById('org-name');
@@ -397,9 +339,9 @@
                                         div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                                `;
+                                                                        <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                    `;
 
                                         div.onclick = () => {
                                             const bicInput = document.getElementById('bank-bic');
