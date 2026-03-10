@@ -79,13 +79,24 @@
                         <div class="text-4xl font-bold font-mono text-zinc-900 tracking-tight">
                             {{ core()->formatPrice($user->getTotalFiatBalance()) }}
                         </div>
-                        <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
-                            <div
-                                class="w-10 h-10  bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
-                                📜</div>
-                            <span
-                                class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('shop.customers.account.organizations.index') }}"
+                                class="flex flex-col items-center gap-1 group">
+                                <div
+                                    class="w-10 h-10  bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all border border-zinc-100 group-hover:border-emerald-100 shadow-sm text-[20px]">
+                                    🏢</div>
+                                <span
+                                    class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest group-hover:text-emerald-500 transition-colors">компании</span>
+                            </a>
+
+                            <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
+                                <div
+                                    class="w-10 h-10  bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
+                                    📜</div>
+                                <span
+                                    class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
+                            </button>
+                        </div>
                     </div>
 
                     @if($balances->count() > 0)
@@ -441,47 +452,64 @@
 
                             {{-- Main Content Column --}}
                             <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                                </div>
+                                </div>
+
+                                {{-- Selection Indicator --}}
                                 <div
-                                    class="text-[16px] font-bold text-zinc-900 truncate pr-2 group-hover/card:text-emerald-700 transition-colors">
-                                    {{ $org->name }}
+                                    class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-emerald-500 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    <div class="text-[11px] text-zinc-500 font-mono tracking-wide">
-                                        ИНН: {{ $org->inn }}
-                                    </div>
-                                    @if($org->is_verified)
-                                        <div
-                                            class="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded uppercase font-bold tracking-widest">
-                                            ✓ Проверено
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
+                            </button>
 
-                            {{-- Selection Indicator --}}
-                            <div
-                                class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-emerald-500 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
+                            {{-- Action Column (Delete) --}}
+                            <div class="shrink-0 flex items-center pr-6 pl-2 border-l border-zinc-50 ml-2">
+                                <form action="{{ route('shop.customers.account.organizations.delete', $org->id) }}"
+                                    method="POST" class="inline" onsubmit="return confirm('Удалить организацию?');">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-[38px] h-[38px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
+                                        <span class="icon-bin text-lg"></span>
+                                    </button>
+                                </form>
                             </div>
-                        </button>
-
-                        {{-- Action Column (Delete) --}}
-                        <div class="shrink-0 flex items-center pr-6 pl-2 border-l border-zinc-50 ml-2">
-                            <form action="{{ route('shop.customers.account.organizations.delete', $org->id) }}"
-                                method="POST" class="inline" onsubmit="return confirm('Удалить организацию?');">
-                                @method('DELETE')
-                                @csrf
-                                <button type="submit"
-                                    class="w-[38px] h-[38px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
-                                    <span class="icon-bin text-lg"></span>
-                                </button>
-                            </form>
                         </div>
-                    </div>
+
+                        {{-- Organization Invoices --}}
+                        @php
+                            $orgInvoices = $transactions->filter(function ($t) use ($org) {
+                                return ($t->metadata['organization_id'] ?? null) == $org->id;
+                            });
+                        @endphp
+
+                        @if($orgInvoices->count() > 0)
+                            <div class="ml-12 mb-6 border-l-2 border-emerald-100 pl-4 space-y-2">
+                                <h4 class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Выставленные счета</h4>
+                                @foreach($orgInvoices as $inv)
+                                    <div class="flex items-center justify-between py-2 border-b border-zinc-50 last:border-0 group/inv">
+                                        <div class="flex flex-col">
+                                            <span class="text-[13px] font-bold text-zinc-700">Счет #{{ $inv->id }}</span>
+                                            <span class="text-[11px] text-zinc-400 font-mono">{{ core()->formatBasePrice($inv->amount) }} • {{ $inv->created_at->format('d.m.Y') }}</span>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('shop.customers.account.credits.topup.print', $inv->id) }}" target="_blank"
+                                               class="p-2 text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all" title="Скачать">
+                                                <span class="icon-download text-lg"></span>
+                                            </a>
+                                            <button type="button" onclick="window.lastTransactionId = {{ $inv->id }}; sendTopupInvoiceEmail();"
+                                                    class="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Отправить на Email">
+                                                <span class="icon-mail text-lg"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                 @empty
                     <div
                         class="flex flex-col items-center justify-center py-16 text-zinc-400 bg-white border border-dashed border-zinc-200">
@@ -662,8 +690,8 @@
                             <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                                 onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                                 <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                            {{ $address->address }}
-                                                                                                                        </code>
+                                                                                                                                    {{ $address->address }}
+                                                                                                                                </code>
                                 <div
                                     class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                     <span class="copy-txt">Скопировать</span>
@@ -1071,7 +1099,7 @@
 
                         if (result.success) {
                             successMsg.classList.remove('hidden');
-                                invoiceLink.href = "{{ route('shop.customers.account.credits.topup.print', '') }}/" + result.transaction_id;
+                            invoiceLink.href = "{{ route('shop.customers.account.credits.topup.print', '') }}/" + result.transaction_id;
 
                                 // Store transaction ID for email button
                                 window.lastTransactionId = result.transaction_id;
@@ -1131,547 +1159,562 @@
                                 btn.disabled = false;
                             });
                     }
-                            function copyAddr(text, btn) {
-                                navigator.clipboard.writeText(text).then(() => {
-                                    const orig = btn.innerText; btn.innerText = '✓ ADDR OK';
-                                    setTimeout(() => btn.innerText = orig, 2000);
-                                });
+                    function copyAddr(text, btn) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            const orig = btn.innerText; btn.innerText = '✓ ADDR OK';
+                            setTimeout(() => btn.innerText = orig, 2000);
+                        });
+                    }
+
+                    // Global alert handler to replace missing window.showAlert
+                    window.showAlert = function(type, title, message) {
+                        // Use Bagisto's built-in flash if possible, or a simple alert fallback
+                        if (window.app && window.app.config && window.app.config.globalProperties && window.app.config.globalProperties.$emitter) {
+                            window.app.config.globalProperties.$emitter.emit('add-flash', { type, message });
+                        } else {
+                            // Fallback to a custom styled div or just alert if emitter is not ready
+                            const alertBox = document.createElement('div');
+                            alertBox.className = `fixed bottom-4 right-4 z-[10001] p-4 font-bold text-white shadow-2xl transition-all border-l-4 ${type === 'success' ? 'bg-zinc-900 border-green-500' : 'bg-red-600 border-white'}`;
+                            alertBox.innerHTML = `<div class="text-[10px] uppercase tracking-widest opacity-60 mb-1">${title}</div><div class="text-[13px]">${message}</div>`;
+                            document.body.appendChild(alertBox);
+                            setTimeout(() => alertBox.remove(), 5000);
+                        }
+                    };
+
+                    // --- FULL VALIDATION LOGIC ---
+                    const _SHA256 = (() => { const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]; function h(msg) { let H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]; msg = Array.from(msg); const l = msg.length * 8; msg.push(0x80); while ((msg.length % 64) !== 56) msg.push(0); for (let i = 7; i >= 0; i--)msg.push((l / (2 ** (i * 8))) & 0xFF); for (let c = 0; c < msg.length; c += 64) { const W = []; for (let i = 0; i < 16; i++)W[i] = (msg[c + i * 4] << 24) | (msg[c + i * 4 + 1] << 16) | (msg[c + i * 4 + 2] << 8) | msg[c + i * 4 + 3]; for (let i = 16; i < 64; i++) { const s0 = ((W[i - 15] >>> 7) | (W[i - 15] << 25)) ^ ((W[i - 15] >>> 18) | (W[i - 15] << 14)) ^ (W[i - 15] >>> 3); const s1 = ((W[i - 2] >>> 17) | (W[i - 2] << 15)) ^ ((W[i - 2] >>> 19) | (W[i - 2] << 13)) ^ (W[i - 2] >>> 10); W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0; } let [a, b, d, e, f, g, hh, ii] = [...H, H[6], H[7]]; for (let j = 0; j < 64; j++) { const S1 = ((f >>> 6) | (f << 26)) ^ ((f >>> 11) | (f << 21)) ^ ((f >>> 25) | (f << 7)); const ch = (f & g) ^ (~f & hh); const t1 = (ii + S1 + ch + K[j] + W[j]) >>> 0; const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10)); const maj = (a & b) ^ (a & d) ^ (b & d); const t2 = (S0 + maj) >>> 0; ii = hh; hh = g; g = f; f = (e + t1) >>> 0; e = d; d = b; b = a; a = (t1 + t2) >>> 0; } H = [H[0] + a, H[1] + b, H[2] + d, H[3] + e, H[4] + f, H[5] + g, H[6] + hh, H[7] + ii].map(v => v >>> 0); } return H.map(v => v.toString(16).padStart(8, '0')).join(''); } return { hash: h }; })();
+                    function _b58d(s) { const A = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; let n = 0n; for (const c of s) { const i = A.indexOf(c); if (i < 0) return null; n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = '0' + h; const b = h.match(/../g).map(x => parseInt(x, 16)); return [...Array(s.match(/^1*/)[0].length).fill(0), ...b]; }
+                    function _b58chk(a) { const b = _b58d(a); if (!b || b.length < 5) return false; const p = b.slice(0, -4), cs = b.slice(-4), h1 = _SHA256.hash(p), h2 = _SHA256.hash(h1.match(/../g).map(x => parseInt(x, 16))); return h2.slice(0, 8) === cs.map(x => x.toString(16).padStart(2, '0')).join(''); }
+                    function _crc16(d) { let c = 0; for (const b of d) { c ^= (b << 8); for (let i = 0; i < 8; i++)c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1); } return c & 0xFFFF; }
+
+                    const ADDR_NETS = {
+                        bitcoin: { validate: a => { if (/^bc1[a-z0-9]{6,87}$/.test(a)) return true; if (!/^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/.test(a)) return false; return _b58chk(a); }, bg: '#FFF7ED', color: '#F7931A' },
+                        ethereum: { validate: a => /^0x[0-9a-fA-F]{40}$/.test(a), bg: '#EEF2FF', color: '#627EEA' },
+                        ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E0F5FF', color: '#0098EA' },
+                        usdt_ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E6F6F1', color: '#26A17B' },
+                        dash: { validate: a => { if (!/^X[1-9A-HJ-NP-Za-km-z]{33}$/.test(a)) return false; return _b58chk(a); }, bg: '#EFF6FF', color: '#1c75bc' }
+                    };
+
+                    const COIN_NETWORKS = {
+                        'btc': [{ id: 'bitcoin', label: 'Bitcoin (BTC)' }],
+                        'eth': [{ id: 'ethereum', label: 'Ethereum (ERC20)' }],
+                        'usdt': [{ id: 'usdt_ton', label: 'TON Network' }],
+                        'ton': [{ id: 'ton', label: 'TON Network' }],
+                        'dash': [{ id: 'dash', label: 'Dash' }]
+                    };
+
+                    const COIN_COLORS = {
+                        'btc': '#F7931A',
+                        'eth': '#627EEA',
+                        'usdt': '#26A17B',
+                        'ton': '#0098EA',
+                        'dash': '#1c75bc'
+                    };
+
+                    let _selCoin = null;
+                    let _selNet = null;
+
+                    function selCoin(coin) {
+                        _selCoin = coin;
+
+                        // Update Coin Buttons
+                        document.querySelectorAll('button[id^="coin-"]').forEach(b => {
+                            const id = b.id.replace('coin-', '');
+                            const isSelected = id === coin;
+                            const color = COIN_COLORS[id];
+
+                            if (isSelected) {
+                                b.style.borderColor = color;
+                                b.style.borderWidth = '1.5px'; // slightly thicker border
+                                b.classList.remove('bg-white');
+                                b.classList.add('bg-zinc-50/30'); // slight tint
+
+                                document.getElementById('coin-label-' + id).style.color = color;
+                            } else {
+                                b.style.borderColor = '#f4f4f5'; // zinc-100
+                                b.style.borderWidth = '1px';
+                                b.classList.add('bg-white');
+                                b.classList.remove('bg-zinc-50/30');
+
+                                document.getElementById('coin-label-' + id).style.color = '#a1a1aa'; // zinc-400
                             }
+                        });
 
-                            // --- FULL VALIDATION LOGIC ---
-                            const _SHA256 = (() => { const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]; function h(msg) { let H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]; msg = Array.from(msg); const l = msg.length * 8; msg.push(0x80); while ((msg.length % 64) !== 56) msg.push(0); for (let i = 7; i >= 0; i--)msg.push((l / (2 ** (i * 8))) & 0xFF); for (let c = 0; c < msg.length; c += 64) { const W = []; for (let i = 0; i < 16; i++)W[i] = (msg[c + i * 4] << 24) | (msg[c + i * 4 + 1] << 16) | (msg[c + i * 4 + 2] << 8) | msg[c + i * 4 + 3]; for (let i = 16; i < 64; i++) { const s0 = ((W[i - 15] >>> 7) | (W[i - 15] << 25)) ^ ((W[i - 15] >>> 18) | (W[i - 15] << 14)) ^ (W[i - 15] >>> 3); const s1 = ((W[i - 2] >>> 17) | (W[i - 2] << 15)) ^ ((W[i - 2] >>> 19) | (W[i - 2] << 13)) ^ (W[i - 2] >>> 10); W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0; } let [a, b, d, e, f, g, hh, ii] = [...H, H[6], H[7]]; for (let j = 0; j < 64; j++) { const S1 = ((f >>> 6) | (f << 26)) ^ ((f >>> 11) | (f << 21)) ^ ((f >>> 25) | (f << 7)); const ch = (f & g) ^ (~f & hh); const t1 = (ii + S1 + ch + K[j] + W[j]) >>> 0; const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10)); const maj = (a & b) ^ (a & d) ^ (b & d); const t2 = (S0 + maj) >>> 0; ii = hh; hh = g; g = f; f = (e + t1) >>> 0; e = d; d = b; b = a; a = (t1 + t2) >>> 0; } H = [H[0] + a, H[1] + b, H[2] + d, H[3] + e, H[4] + f, H[5] + g, H[6] + hh, H[7] + ii].map(v => v >>> 0); } return H.map(v => v.toString(16).padStart(8, '0')).join(''); } return { hash: h }; })();
-                            function _b58d(s) { const A = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; let n = 0n; for (const c of s) { const i = A.indexOf(c); if (i < 0) return null; n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = '0' + h; const b = h.match(/../g).map(x => parseInt(x, 16)); return [...Array(s.match(/^1*/)[0].length).fill(0), ...b]; }
-                            function _b58chk(a) { const b = _b58d(a); if (!b || b.length < 5) return false; const p = b.slice(0, -4), cs = b.slice(-4), h1 = _SHA256.hash(p), h2 = _SHA256.hash(h1.match(/../g).map(x => parseInt(x, 16))); return h2.slice(0, 8) === cs.map(x => x.toString(16).padStart(2, '0')).join(''); }
-                            function _crc16(d) { let c = 0; for (const b of d) { c ^= (b << 8); for (let i = 0; i < 8; i++)c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1); } return c & 0xFFFF; }
+                        const nets = COIN_NETWORKS[coin];
+                        const container = document.getElementById('network-options-container');
+                        container.innerHTML = '';
 
-                            const ADDR_NETS = {
-                                bitcoin: { validate: a => { if (/^bc1[a-z0-9]{6,87}$/.test(a)) return true; if (!/^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/.test(a)) return false; return _b58chk(a); }, bg: '#FFF7ED', color: '#F7931A' },
-                                ethereum: { validate: a => /^0x[0-9a-fA-F]{40}$/.test(a), bg: '#EEF2FF', color: '#627EEA' },
-                                ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E0F5FF', color: '#0098EA' },
-                                usdt_ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E6F6F1', color: '#26A17B' },
-                                dash: { validate: a => { if (!/^X[1-9A-HJ-NP-Za-km-z]{33}$/.test(a)) return false; return _b58chk(a); }, bg: '#EFF6FF', color: '#1c75bc' }
-                            };
+                        nets.forEach(net => {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'network-btn flex items-center justify-center p-3  border border-zinc-100 bg-white transition-all font-bold text-[13px] text-zinc-900';
+                            btn.innerText = net.label;
+                            btn.onclick = () => selActualNet(net.id, btn, coin);
+                            container.appendChild(btn);
+                        });
 
-                            const COIN_NETWORKS = {
-                                'btc': [{ id: 'bitcoin', label: 'Bitcoin (BTC)' }],
-                                'eth': [{ id: 'ethereum', label: 'Ethereum (ERC20)' }],
-                                'usdt': [{ id: 'usdt_ton', label: 'TON Network' }],
-                                'ton': [{ id: 'ton', label: 'TON Network' }],
-                                'dash': [{ id: 'dash', label: 'Dash' }]
-                            };
+                        document.getElementById('wallet-network-section').classList.remove('hidden');
+                        document.getElementById('wallet-addr-section').classList.add('hidden');
+                        document.getElementById('wallet-net-input').value = '';
+                        _selNet = null;
+                        onWalletInput('');
 
-                            const COIN_COLORS = {
-                                'btc': '#F7931A',
-                                'eth': '#627EEA',
-                                'usdt': '#26A17B',
-                                'ton': '#0098EA',
-                                'dash': '#1c75bc'
-                            };
+                        if (nets.length === 1) {
+                            container.firstChild.click();
+                        }
+                    }
 
-                            let _selCoin = null;
-                            let _selNet = null;
+                    function selActualNet(netId, btnEl, coin) {
+                        _selNet = netId;
+                        document.getElementById('wallet-net-input').value = netId;
 
-                            function selCoin(coin) {
-                                _selCoin = coin;
+                        document.querySelectorAll('.network-btn').forEach(b => {
+                            b.style.borderColor = '#f4f4f5'; // zinc-100
+                            b.style.borderWidth = '1px';
+                            b.classList.remove('bg-[#E6F6F1]'); // ensure we remove any specific bg class if we add them later
+                            b.style.background = '#ffffff';
+                        });
 
-                                // Update Coin Buttons
-                                document.querySelectorAll('button[id^="coin-"]').forEach(b => {
-                                    const id = b.id.replace('coin-', '');
-                                    const isSelected = id === coin;
-                                    const color = COIN_COLORS[id];
+                        // Specifically map the green background for USDT as shown in screenshot
+                        const color = COIN_COLORS[coin];
+                        btnEl.style.borderColor = color;
+                        btnEl.style.borderWidth = '1.5px';
 
-                                    if (isSelected) {
-                                        b.style.borderColor = color;
-                                        b.style.borderWidth = '1.5px'; // slightly thicker border
-                                        b.classList.remove('bg-white');
-                                        b.classList.add('bg-zinc-50/30'); // slight tint
+                        // If it's the green usdt color, match the screenshot's green tint background
+                        if (color === '#26A17B') {
+                            btnEl.style.background = '#E6F6F1';
+                        } else if (color === '#0098EA') {
+                            btnEl.style.background = '#E0F5FF';
+                        } else if (color === '#F7931A') {
+                            btnEl.style.background = '#FFF7ED';
+                        } else if (color === '#627EEA') {
+                            btnEl.style.background = '#EEF2FF';
+                        } else {
+                            btnEl.style.background = '#f8fafc'; // light gray fallback
+                        }
 
-                                        document.getElementById('coin-label-' + id).style.color = color;
-                                    } else {
-                                        b.style.borderColor = '#f4f4f5'; // zinc-100
-                                        b.style.borderWidth = '1px';
-                                        b.classList.add('bg-white');
-                                        b.classList.remove('bg-zinc-50/30');
+                        document.getElementById('wallet-addr-section').classList.remove('hidden');
+                        onWalletInput(document.getElementById('wallet-addr-input').value);
+                    }
 
-                                        document.getElementById('coin-label-' + id).style.color = '#a1a1aa'; // zinc-400
+                    function onWalletInput(val) {
+                        const v = _selNet ? ADDR_NETS[_selNet].validate(val.trim()) : false;
+                        const btn = document.getElementById('wallet-add-btn');
+                        btn.disabled = !v;
+                        btn.style.opacity = v ? '1' : '0.4';
+                        btn.style.cursor = v ? 'pointer' : 'not-allowed';
+                    }
+                    function confirmWalletDeletion(id, expected) { if (prompt(`Введите "${expected}" для удаления:`) === expected) document.getElementById(`delete-wallet-form-${id}`).submit(); }
+
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const step = urlParams.get('step');
+                        if (step === 'transactions') switchStep('transactions');
+                        else if (step === 'deposit') goToDeposit();
+                        else if (step === 'management') goToManagement();
+                        else if (step === 'b2b-management') goToB2BManagement();
+
+                        @if($errors->any() && old('inn'))
+                            switchStep('add-organization');
+                            // If name is already present due to old input, fast forward to step 2 visually
+                            @if(old('name'))
+                                setTimeout(() => {
+                                    document.getElementById('step-1-inputs').classList.add('hidden');
+                                    document.getElementById('step-1-summary').classList.remove('hidden');
+                                    document.getElementById('step-1-badge').classList.remove('hidden');
+                                    document.getElementById('step-2').classList.remove('hidden');
+
+                                    if (document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = "{{ old('name') }}";
+                                    if (document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = "{{ old('inn') }}";
+                                    if (document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = "{{ old('address') }}";
+                                    if (document.getElementById('summary-org-kpp') && "{{ old('kpp') }}") {
+                                        document.getElementById('summary-org-kpp').innerText = "{{ old('kpp') }}";
+                                        document.getElementById('summary-kpp-container').classList.remove('hidden');
                                     }
-                                });
+                                    if (document.getElementById('summary-org-ogrn') && "{{ old('ogrn') }}") {
+                                        document.getElementById('summary-org-ogrn').innerText = "{{ old('ogrn') }}";
+                                        document.getElementById('summary-ogrn-container').classList.remove('hidden');
+                                    }
 
-                                const nets = COIN_NETWORKS[coin];
-                                const container = document.getElementById('network-options-container');
-                                container.innerHTML = '';
-
-                                nets.forEach(net => {
-                                    const btn = document.createElement('button');
-                                    btn.type = 'button';
-                                    btn.className = 'network-btn flex items-center justify-center p-3  border border-zinc-100 bg-white transition-all font-bold text-[13px] text-zinc-900';
-                                    btn.innerText = net.label;
-                                    btn.onclick = () => selActualNet(net.id, btn, coin);
-                                    container.appendChild(btn);
-                                });
-
-                                document.getElementById('wallet-network-section').classList.remove('hidden');
-                                document.getElementById('wallet-addr-section').classList.add('hidden');
-                                document.getElementById('wallet-net-input').value = '';
-                                _selNet = null;
-                                onWalletInput('');
-
-                                if (nets.length === 1) {
-                                    container.firstChild.click();
-                                }
-                            }
-
-                            function selActualNet(netId, btnEl, coin) {
-                                _selNet = netId;
-                                document.getElementById('wallet-net-input').value = netId;
-
-                                document.querySelectorAll('.network-btn').forEach(b => {
-                                    b.style.borderColor = '#f4f4f5'; // zinc-100
-                                    b.style.borderWidth = '1px';
-                                    b.classList.remove('bg-[#E6F6F1]'); // ensure we remove any specific bg class if we add them later
-                                    b.style.background = '#ffffff';
-                                });
-
-                                // Specifically map the green background for USDT as shown in screenshot
-                                const color = COIN_COLORS[coin];
-                                btnEl.style.borderColor = color;
-                                btnEl.style.borderWidth = '1.5px';
-
-                                // If it's the green usdt color, match the screenshot's green tint background
-                                if (color === '#26A17B') {
-                                    btnEl.style.background = '#E6F6F1';
-                                } else if (color === '#0098EA') {
-                                    btnEl.style.background = '#E0F5FF';
-                                } else if (color === '#F7931A') {
-                                    btnEl.style.background = '#FFF7ED';
-                                } else if (color === '#627EEA') {
-                                    btnEl.style.background = '#EEF2FF';
-                                } else {
-                                    btnEl.style.background = '#f8fafc'; // light gray fallback
-                                }
-
-                                document.getElementById('wallet-addr-section').classList.remove('hidden');
-                                onWalletInput(document.getElementById('wallet-addr-input').value);
-                            }
-
-                            function onWalletInput(val) {
-                                const v = _selNet ? ADDR_NETS[_selNet].validate(val.trim()) : false;
-                                const btn = document.getElementById('wallet-add-btn');
-                                btn.disabled = !v;
-                                btn.style.opacity = v ? '1' : '0.4';
-                                btn.style.cursor = v ? 'pointer' : 'not-allowed';
-                            }
-                            function confirmWalletDeletion(id, expected) { if (prompt(`Введите "${expected}" для удаления:`) === expected) document.getElementById(`delete-wallet-form-${id}`).submit(); }
-
-                            document.addEventListener('DOMContentLoaded', () => {
-                                const urlParams = new URLSearchParams(window.location.search);
-                                const step = urlParams.get('step');
-                                if (step === 'transactions') switchStep('transactions');
-                                else if (step === 'deposit') goToDeposit();
-                                else if (step === 'management') goToManagement();
-                                else if (step === 'b2b-management') goToB2BManagement();
-
-                                @if($errors->any() && old('inn'))
-                                    switchStep('add-organization');
-                                    // If name is already present due to old input, fast forward to step 2 visually
-                                    @if(old('name'))
-                                        setTimeout(() => {
-                                            document.getElementById('step-1-inputs').classList.add('hidden');
-                                            document.getElementById('step-1-summary').classList.remove('hidden');
-                                            document.getElementById('step-1-badge').classList.remove('hidden');
-                                            document.getElementById('step-2').classList.remove('hidden');
-
-                                            if (document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = "{{ old('name') }}";
-                                            if (document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = "{{ old('inn') }}";
-                                            if (document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = "{{ old('address') }}";
-                                            if (document.getElementById('summary-org-kpp') && "{{ old('kpp') }}") {
-                                                document.getElementById('summary-org-kpp').innerText = "{{ old('kpp') }}";
-                                                document.getElementById('summary-kpp-container').classList.remove('hidden');
-                                            }
-                                            if (document.getElementById('summary-org-ogrn') && "{{ old('ogrn') }}") {
-                                                document.getElementById('summary-org-ogrn').innerText = "{{ old('ogrn') }}";
-                                                document.getElementById('summary-ogrn-container').classList.remove('hidden');
-                                            }
-
-                                            // Also show the bank details display if we had selected one
-                                            @if(old('bic') && old('bank_name'))
-                                                document.getElementById('display-bank-name').innerText = "{{ old('bank_name') }}";
-                                                document.getElementById('display-corr-account').innerText = "{{ old('correspondent_account') }}";
-                                                document.getElementById('display-bic').innerText = "{{ old('bic') }}";
-                                                document.getElementById('step-2-details').classList.remove('hidden');
-                                            @endif
-                                                                                                                                    }, 100);
+                                    // Also show the bank details display if we had selected one
+                                    @if(old('bic') && old('bank_name'))
+                                        document.getElementById('display-bank-name').innerText = "{{ old('bank_name') }}";
+                                        document.getElementById('display-corr-account').innerText = "{{ old('correspondent_account') }}";
+                                        document.getElementById('display-bic').innerText = "{{ old('bic') }}";
+                                        document.getElementById('step-2-details').classList.remove('hidden');
                                     @endif
-                                @endif
+                                                                                                                                                    }, 100);
+                            @endif
+                        @endif
 
-                                @if(session('show_verify_id'))
-                                    @php $target = $allAddresses->firstWhere('id', session('show_verify_id')); @endphp
-                                    @if($target)
-                                        goToManagement();
-                                        setTimeout(() => showVerifyModal('{{ $target->id }}', '{{ $target->network }}', '{{ rtrim(rtrim(number_format($target->verification_amount ?? 0, 8, '.', ''), '0'), '.') }}', '{{ $target->address }}'), 500);
-                                    @endif
-                                @endif
+                        @if(session('show_verify_id'))
+                            @php $target = $allAddresses->firstWhere('id', session('show_verify_id')); @endphp
+                            @if($target)
+                                goToManagement();
+                                setTimeout(() => showVerifyModal('{{ $target->id }}', '{{ $target->network }}', '{{ rtrim(rtrim(number_format($target->verification_amount ?? 0, 8, '.', ''), '0'), '.') }}', '{{ $target->address }}'), 500);
+                            @endif
+                        @endif
 
-                                                                                                    });
+                                                                                                            });
 
-                            // --- ORGANIZATION WIZARD SCRIPTS ---
-                            window.isValidBankAccount = function (bic, account) {
-                                bic = (bic || '').toString().replace(/\D/g, '');
-                                account = (account || '').toString().replace(/\D/g, '');
+                    // --- ORGANIZATION WIZARD SCRIPTS ---
+                    window.isValidBankAccount = function (bic, account) {
+                        bic = (bic || '').toString().replace(/\D/g, '');
+                        account = (account || '').toString().replace(/\D/g, '');
 
-                                if (bic.length !== 9 || account.length !== 20) return false;
+                        if (bic.length !== 9 || account.length !== 20) return false;
 
-                                let bicPart;
-                                if (bic[6] === '0' && bic[7] === '0') {
-                                    bicPart = '0' + bic[4] + bic[5];
+                        let bicPart;
+                        if (bic[6] === '0' && bic[7] === '0') {
+                            bicPart = '0' + bic[4] + bic[5];
+                        } else {
+                            bicPart = bic.substring(6, 9);
+                        }
+
+                        const combined = bicPart + account;
+                        const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
+
+                        let sum = 0;
+                        for (let i = 0; i < 23; i++) {
+                            const digit = parseInt(combined[i]);
+                            sum += (digit * weights[i]) % 10;
+                        }
+
+                        return sum % 10 === 0;
+                    };
+
+                    window.initOrganizationWizard = function () {
+                        let bankDebounceTimer;
+
+                        document.addEventListener('click', async function (e) {
+                            const confirmStep1Btn = e.target.closest('#confirm-step-1-btn');
+                            if (confirmStep1Btn) {
+                                const inn = document.getElementById('inn-input').value;
+
+                                // Check if this INN is already in the list of existing organizations
+                                const existingOrgs = Array.from(document.querySelectorAll('#step-b2b-management div.text-\\[11px\\]'));
+                                const isDuplicate = existingOrgs.some(el => el.textContent.includes('ИНН: ' + inn));
+
+                                if (isDuplicate) {
+                                    alert('Эта организация (ИНН ' + inn + ') уже добавлена в ваш профиль.');
+                                    return;
+                                }
+
+                                const name = document.getElementById('name-input').value;
+                                const kpp = document.getElementById('kpp-input').value;
+                                const ogrn = document.getElementById('ogrn-input').value;
+                                const address = document.getElementById('address-input').value;
+
+                                if (document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = name;
+                                if (document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = inn;
+                                if (document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = address;
+
+                                const summaryKppContainer = document.getElementById('summary-kpp-container');
+                                if (kpp) {
+                                    document.getElementById('summary-org-kpp').innerText = kpp;
+                                    summaryKppContainer.classList.remove('hidden');
                                 } else {
-                                    bicPart = bic.substring(6, 9);
+                                    summaryKppContainer.classList.add('hidden');
                                 }
 
-                                const combined = bicPart + account;
-                                const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
-
-                                let sum = 0;
-                                for (let i = 0; i < 23; i++) {
-                                    const digit = parseInt(combined[i]);
-                                    sum += (digit * weights[i]) % 10;
+                                const summaryOgrnContainer = document.getElementById('summary-ogrn-container');
+                                if (ogrn) {
+                                    document.getElementById('summary-org-ogrn').innerText = ogrn;
+                                    summaryOgrnContainer.classList.remove('hidden');
+                                } else {
+                                    summaryOgrnContainer.classList.add('hidden');
                                 }
 
-                                return sum % 10 === 0;
-                            };
+                                document.getElementById('step-1-inputs').classList.add('hidden');
+                                document.getElementById('step-1-summary').classList.remove('hidden');
+                                document.getElementById('step-1-badge').classList.remove('hidden');
 
-                            window.initOrganizationWizard = function () {
-                                let bankDebounceTimer;
+                                const s2 = document.getElementById('step-2');
+                                if (s2) {
+                                    s2.classList.remove('hidden');
+                                    if (document.getElementById('step-2-header')) document.getElementById('step-2-header').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    if (document.getElementById('bic-input')) document.getElementById('bic-input').focus();
+                                }
+                                return;
+                            }
 
-                                document.addEventListener('click', async function (e) {
-                                    const confirmStep1Btn = e.target.closest('#confirm-step-1-btn');
-                                    if (confirmStep1Btn) {
-                                        const inn = document.getElementById('inn-input').value;
+                            const editStep1Btn = e.target.closest('#edit-step-1-btn');
+                            if (editStep1Btn) {
+                                e.preventDefault();
+                                document.getElementById('step-1-inputs').classList.remove('hidden');
+                                document.getElementById('step-1-summary').classList.add('hidden');
+                                document.getElementById('step-1-badge').classList.add('hidden');
 
-                                        // Check if this INN is already in the list of existing organizations
-                                        const existingOrgs = Array.from(document.querySelectorAll('#step-b2b-management div.text-\\[11px\\]'));
-                                        const isDuplicate = existingOrgs.some(el => el.textContent.includes('ИНН: ' + inn));
+                                ['step-2'].forEach(id => {
+                                    const step = document.getElementById(id);
+                                    if (step) step.classList.add('hidden');
+                                });
+                                document.getElementById('inn-input').focus();
+                                return;
+                            }
+                        });
 
-                                        if (isDuplicate) {
-                                            alert('Эта организация (ИНН ' + inn + ') уже добавлена в ваш профиль.');
-                                            return;
-                                        }
+                        window.selectOrganization = function (org) {
+                            const innInput = document.getElementById('inn-input');
+                            const nameInput = document.getElementById('name-input');
+                            const kppInput = document.getElementById('kpp-input');
+                            const addressInput = document.getElementById('address-input');
+                            const ogrnInput = document.getElementById('ogrn-input');
+                            const suggestionsContainer = document.getElementById('org-suggestions');
+                            const step1Details = document.getElementById('step-1-details');
+                            const kppContainer = document.getElementById('kpp-container');
 
-                                        const name = document.getElementById('name-input').value;
-                                        const kpp = document.getElementById('kpp-input').value;
-                                        const ogrn = document.getElementById('ogrn-input').value;
-                                        const address = document.getElementById('address-input').value;
+                            if (innInput) {
+                                innInput.value = org.inn || '';
+                                innInput.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                            if (nameInput) { nameInput.value = org.name || ''; nameInput.readOnly = true; }
+                            if (kppInput) { kppInput.value = org.kpp || ''; kppInput.readOnly = true; }
+                            if (addressInput) { addressInput.value = org.address || ''; addressInput.readOnly = true; }
+                            if (ogrnInput) { ogrnInput.value = org.ogrn || ''; ogrnInput.readOnly = true; }
 
-                                        if (document.getElementById('summary-org-name')) document.getElementById('summary-org-name').innerText = name;
-                                        if (document.getElementById('summary-org-inn')) document.getElementById('summary-org-inn').innerText = inn;
-                                        if (document.getElementById('summary-org-address')) document.getElementById('summary-org-address').innerText = address;
+                            if (kppContainer) {
+                                if (!org.kpp) kppContainer.classList.add('hidden');
+                                else kppContainer.classList.remove('hidden');
+                            }
 
-                                        const summaryKppContainer = document.getElementById('summary-kpp-container');
-                                        if (kpp) {
-                                            document.getElementById('summary-org-kpp').innerText = kpp;
-                                            summaryKppContainer.classList.remove('hidden');
-                                        } else {
-                                            summaryKppContainer.classList.add('hidden');
-                                        }
+                            if (suggestionsContainer) suggestionsContainer.classList.add('hidden');
 
-                                        const summaryOgrnContainer = document.getElementById('summary-ogrn-container');
-                                        if (ogrn) {
-                                            document.getElementById('summary-org-ogrn').innerText = ogrn;
-                                            summaryOgrnContainer.classList.remove('hidden');
-                                        } else {
-                                            summaryOgrnContainer.classList.add('hidden');
-                                        }
+                            if (step1Details) {
+                                step1Details.classList.remove('hidden');
+                                step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                const confirmBtn = document.getElementById('confirm-step-1-btn');
+                                if (confirmBtn) setTimeout(() => confirmBtn.focus(), 200);
+                            }
+                        };
 
-                                        document.getElementById('step-1-inputs').classList.add('hidden');
-                                        document.getElementById('step-1-summary').classList.remove('hidden');
-                                        document.getElementById('step-1-badge').classList.remove('hidden');
+                        window.triggerOrgLookup = async (query, forceSelect = false) => {
+                            const suggestionsContainer = document.getElementById('org-suggestions');
+                            if (!query || query.length < 3) return;
 
-                                        const s2 = document.getElementById('step-2');
-                                        if (s2) {
-                                            s2.classList.remove('hidden');
-                                            if (document.getElementById('step-2-header')) document.getElementById('step-2-header').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                            if (document.getElementById('bic-input')) document.getElementById('bic-input').focus();
-                                        }
+                            try {
+                                const relativePath = "{{ route('shop.customers.account.organizations.suggest_organization', [], false) }}";
+                                const url = `${window.location.origin}${relativePath}?query=${encodeURIComponent(query)}`;
+                                const response = await fetch(url);
+                                if (!response.ok) throw new Error('Network response failure');
+                                const organizations = await response.json();
+
+                                if (organizations && organizations.length > 0) {
+                                    if (forceSelect && organizations.length === 1) {
+                                        window.selectOrganization(organizations[0]);
                                         return;
                                     }
 
-                                    const editStep1Btn = e.target.closest('#edit-step-1-btn');
-                                    if (editStep1Btn) {
-                                        e.preventDefault();
-                                        document.getElementById('step-1-inputs').classList.remove('hidden');
-                                        document.getElementById('step-1-summary').classList.add('hidden');
-                                        document.getElementById('step-1-badge').classList.add('hidden');
+                                    suggestionsContainer.innerHTML = organizations.map(org => {
+                                        const safeName = (org.name || '').replace(/"/g, '&quot;');
+                                        const safeAddress = (org.address || '').replace(/"/g, '&quot;');
+                                        const safeInn = (org.inn || '').replace(/"/g, '&quot;');
+                                        const safeKpp = (org.kpp || '').replace(/"/g, '&quot;');
+                                        const safeOgrn = (org.ogrn || '').replace(/"/g, '&quot;');
 
-                                        ['step-2'].forEach(id => {
-                                            const step = document.getElementById(id);
-                                            if (step) step.classList.add('hidden');
-                                        });
-                                        document.getElementById('inn-input').focus();
-                                        return;
-                                    }
+                                        return `
+                                                                                                                                <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                                                                                                                    data-name="${safeName}" data-inn="${safeInn}" data-kpp="${safeKpp}" data-ogrn="${safeOgrn}" data-address="${safeAddress}">
+                                                                                                                                    <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
+                                                                                                                                    <div class="text-[12px] text-zinc-500 font-mono">
+                                                                                                                                        ИНН: ${org.inn || '-'} ${org.kpp ? ` | КПП: ${org.kpp}` : ''} ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
+                                                                                                                                    </div>
+                                                                                                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
+                                                                                                                                </div>`;
+                                    }).join('');
+                                    suggestionsContainer.classList.remove('hidden');
+                                } else {
+                                    suggestionsContainer.classList.add('hidden');
+                                }
+                            } catch (err) {
+                                console.error('Organization Lookup Error:', err);
+                            }
+                        };
+
+                        document.addEventListener('click', function (e) {
+                            const searchBtn = e.target.closest('#lookup-org-btn');
+                            if (searchBtn) {
+                                const innInput = document.getElementById('inn-input');
+                                if (innInput) window.triggerOrgLookup(innInput.value.trim(), true);
+                            }
+
+                            const orgItem = e.target.closest('div[data-inn]');
+                            if (orgItem && document.getElementById('org-suggestions') && document.getElementById('org-suggestions').contains(orgItem)) {
+                                window.selectOrganization({
+                                    name: orgItem.dataset.name,
+                                    inn: orgItem.dataset.inn,
+                                    kpp: orgItem.dataset.kpp,
+                                    ogrn: orgItem.dataset.ogrn,
+                                    address: orgItem.dataset.address
                                 });
+                            }
+                        });
 
-                                window.selectOrganization = function (org) {
-                                    const innInput = document.getElementById('inn-input');
-                                    const nameInput = document.getElementById('name-input');
-                                    const kppInput = document.getElementById('kpp-input');
-                                    const addressInput = document.getElementById('address-input');
-                                    const ogrnInput = document.getElementById('ogrn-input');
-                                    const suggestionsContainer = document.getElementById('org-suggestions');
-                                    const step1Details = document.getElementById('step-1-details');
-                                    const kppContainer = document.getElementById('kpp-container');
+                        document.addEventListener('keydown', function (e) {
+                            if (e.target.id === 'inn-input' && e.key === 'Enter') {
+                                e.preventDefault();
+                                window.triggerOrgLookup(e.target.value.trim(), true);
+                            }
+                        });
 
-                                    if (innInput) {
-                                        innInput.value = org.inn || '';
-                                        innInput.dispatchEvent(new Event('change', { bubbles: true }));
-                                    }
-                                    if (nameInput) { nameInput.value = org.name || ''; nameInput.readOnly = true; }
-                                    if (kppInput) { kppInput.value = org.kpp || ''; kppInput.readOnly = true; }
-                                    if (addressInput) { addressInput.value = org.address || ''; addressInput.readOnly = true; }
-                                    if (ogrnInput) { ogrnInput.value = org.ogrn || ''; ogrnInput.readOnly = true; }
+                        document.addEventListener('input', function (e) {
+                            if (e.target.id === 'inn-input') {
+                                const query = e.target.value.trim();
+                                const lookupBtn = document.getElementById('lookup-org-btn');
+                                const step1Details = document.getElementById('step-1-details');
 
-                                    if (kppContainer) {
-                                        if (!org.kpp) kppContainer.classList.add('hidden');
-                                        else kppContainer.classList.remove('hidden');
-                                    }
+                                if (lookupBtn) lookupBtn.disabled = query.length < 3;
+                                if (step1Details && !step1Details.classList.contains('hidden')) step1Details.classList.add('hidden');
 
-                                    if (suggestionsContainer) suggestionsContainer.classList.add('hidden');
+                                if (typeof window.orgDebounceTimer !== 'undefined') clearTimeout(window.orgDebounceTimer);
+                                if (query.length < 3) { document.getElementById('org-suggestions').classList.add('hidden'); return; }
 
-                                    if (step1Details) {
-                                        step1Details.classList.remove('hidden');
-                                        step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        const confirmBtn = document.getElementById('confirm-step-1-btn');
-                                        if (confirmBtn) setTimeout(() => confirmBtn.focus(), 200);
-                                    }
-                                };
+                                window.orgDebounceTimer = setTimeout(() => { window.triggerOrgLookup(query, false); }, 500);
+                            }
 
-                                window.triggerOrgLookup = async (query, forceSelect = false) => {
-                                    const suggestionsContainer = document.getElementById('org-suggestions');
-                                    if (!query || query.length < 3) return;
+                            if (e.target.id === 'bic-input') {
+                                const bicInput = e.target;
+                                const suggestionsContainer = document.getElementById('bank-suggestions');
 
+                                clearTimeout(bankDebounceTimer);
+                                const query = bicInput.value.trim();
+
+                                if (query.length < 2) {
+                                    suggestionsContainer.classList.add('hidden');
+                                    suggestionsContainer.innerHTML = '';
+                                    return;
+                                }
+
+                                bankDebounceTimer = setTimeout(async () => {
                                     try {
-                                        const relativePath = "{{ route('shop.customers.account.organizations.suggest_organization', [], false) }}";
+                                        const accountInput = document.getElementById('settlement-account-input');
+                                        const account = accountInput ? accountInput.value.trim() : '';
+
+                                        const relativePath = "{{ route('shop.customers.account.organizations.suggest_bank', [], false) }}";
                                         const url = `${window.location.origin}${relativePath}?query=${encodeURIComponent(query)}`;
                                         const response = await fetch(url);
-                                        if (!response.ok) throw new Error('Network response failure');
-                                        const organizations = await response.json();
+                                        let banks = await response.json();
 
-                                        if (organizations && organizations.length > 0) {
-                                            if (forceSelect && organizations.length === 1) {
-                                                window.selectOrganization(organizations[0]);
-                                                return;
+                                        if (response.ok && banks && banks.length > 0) {
+                                            if (account.length === 20) {
+                                                banks = banks.map(bank => ({ ...bank, isValidForAccount: window.isValidBankAccount(bank.bic, account) })).sort((a, b) => b.isValidForAccount - a.isValidForAccount);
                                             }
 
-                                            suggestionsContainer.innerHTML = organizations.map(org => {
-                                                const safeName = (org.name || '').replace(/"/g, '&quot;');
-                                                const safeAddress = (org.address || '').replace(/"/g, '&quot;');
-                                                const safeInn = (org.inn || '').replace(/"/g, '&quot;');
-                                                const safeKpp = (org.kpp || '').replace(/"/g, '&quot;');
-                                                const safeOgrn = (org.ogrn || '').replace(/"/g, '&quot;');
-
+                                            suggestionsContainer.innerHTML = banks.map(bank => {
+                                                const safeName = (bank.bank_name || '').replace(/"/g, '&quot;');
+                                                const safeBic = (bank.bic || '').replace(/"/g, '&quot;');
+                                                const safeCorr = (bank.correspondent_account || '').replace(/"/g, '&quot;');
                                                 return `
-                                                                                                                        <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
-                                                                                                                            data-name="${safeName}" data-inn="${safeInn}" data-kpp="${safeKpp}" data-ogrn="${safeOgrn}" data-address="${safeAddress}">
-                                                                                                                            <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
-                                                                                                                            <div class="text-[12px] text-zinc-500 font-mono">
-                                                                                                                                ИНН: ${org.inn || '-'} ${org.kpp ? ` | КПП: ${org.kpp}` : ''} ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
-                                                                                                                            </div>
-                                                                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
-                                                                                                                        </div>`;
+                                                                                                                                        <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
+                                                                                                                                            data-name="${safeName}" data-bic="${safeBic}" data-corr="${safeCorr}">
+                                                                                                                                            <div>
+                                                                                                                                                <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит</span>' : ''}</div>
+                                                                                                                                                <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>`;
                                             }).join('');
                                             suggestionsContainer.classList.remove('hidden');
                                         } else {
                                             suggestionsContainer.classList.add('hidden');
                                         }
-                                    } catch (err) {
-                                        console.error('Organization Lookup Error:', err);
-                                    }
-                                };
+                                    } catch (err) { console.error('Bank Lookup Error', err); }
+                                }, 400);
+                            }
 
-                                document.addEventListener('click', function (e) {
-                                    const searchBtn = e.target.closest('#lookup-org-btn');
-                                    if (searchBtn) {
-                                        const innInput = document.getElementById('inn-input');
-                                        if (innInput) window.triggerOrgLookup(innInput.value.trim(), true);
-                                    }
+                            if (e.target.id === 'settlement-account-input') {
+                                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 20);
+                                const account = e.target.value;
+                                const bicInput = document.getElementById('bic-input');
+                                const bic = bicInput ? bicInput.value.trim() : '';
+                                const submitBtn = document.getElementById('org-submit-btn');
+                                const errorMsg = document.getElementById('settlement-account-error');
 
-                                    const orgItem = e.target.closest('div[data-inn]');
-                                    if (orgItem && document.getElementById('org-suggestions') && document.getElementById('org-suggestions').contains(orgItem)) {
-                                        window.selectOrganization({
-                                            name: orgItem.dataset.name,
-                                            inn: orgItem.dataset.inn,
-                                            kpp: orgItem.dataset.kpp,
-                                            ogrn: orgItem.dataset.ogrn,
-                                            address: orgItem.dataset.address
-                                        });
+                                if (account.length === 20 && bic.length === 9) {
+                                    const isValid = window.isValidBankAccount(bic, account);
+                                    if (isValid) {
+                                        e.target.classList.remove('!border-red-500', '!ring-red-500');
+                                        e.target.classList.add('!border-green-500');
+                                        if (errorMsg) errorMsg.classList.add('hidden');
+                                        if (submitBtn) submitBtn.disabled = false;
+                                    } else {
+                                        e.target.classList.remove('!border-green-500');
+                                        e.target.classList.add('!border-red-500', '!ring-red-500');
+                                        if (errorMsg) { errorMsg.innerText = 'Неверный контрольный ключ'; errorMsg.classList.remove('hidden'); }
+                                        if (submitBtn) submitBtn.disabled = true;
                                     }
+                                } else if (account.length === 20 && bic.length === 0) {
+                                    e.target.classList.add('!border-green-500');
+                                    if (errorMsg) errorMsg.classList.add('hidden');
+                                    if (submitBtn) submitBtn.disabled = true;
+                                } else {
+                                    e.target.classList.remove('!border-green-500', '!border-red-500', '!ring-red-500');
+                                    if (errorMsg) errorMsg.classList.add('hidden');
+                                    if (submitBtn) submitBtn.disabled = true;
+                                }
+                            }
+                        });
+
+                        document.addEventListener('click', function (e) {
+                            const orgSuggestions = document.getElementById('org-suggestions');
+                            const bankSuggestions = document.getElementById('bank-suggestions');
+                            const innInput = document.getElementById('inn-input');
+                            const bicInput = document.getElementById('bic-input');
+
+                            const orgItem = e.target.closest('div[data-inn]');
+                            if (orgItem && orgSuggestions && orgSuggestions.contains(orgItem)) {
+                                if (innInput) innInput.value = orgItem.dataset.inn;
+                                if (document.getElementById('name-input')) document.getElementById('name-input').value = orgItem.dataset.name || '';
+                                if (document.getElementById('kpp-input')) document.getElementById('kpp-input').value = orgItem.dataset.kpp || '';
+                                if (document.getElementById('address-input')) document.getElementById('address-input').value = orgItem.dataset.address || '';
+
+                                const kppContainer = document.getElementById('kpp-container');
+                                if (kppContainer) {
+                                    if (!orgItem.dataset.kpp) kppContainer.classList.add('hidden');
+                                    else kppContainer.classList.remove('hidden');
+                                }
+
+                                orgSuggestions.classList.add('hidden');
+                                const step1Details = document.getElementById('step-1-details');
+                                if (step1Details) {
+                                    step1Details.classList.remove('hidden');
+                                    const confirmBtn = document.getElementById('confirm-step-1-btn');
+                                    if (confirmBtn) setTimeout(() => confirmBtn.focus(), 100);
+                                    step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                                return;
+                            }
+
+                            const bankItem = e.target.closest('div[data-bic]');
+                            if (bankItem && bankSuggestions && bankSuggestions.contains(bankItem)) {
+                                if (bicInput) {
+                                    bicInput.value = bankItem.dataset.bic;
+                                    bicInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                                if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = bankItem.dataset.name || '';
+                                if (document.getElementById('display-bank-name')) document.getElementById('display-bank-name').innerText = bankItem.dataset.name || '';
+                                if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = bankItem.dataset.corr || '';
+                                if (document.getElementById('display-corr-account')) document.getElementById('display-corr-account').innerText = bankItem.dataset.corr || '';
+                                if (document.getElementById('display-bic')) document.getElementById('display-bic').innerText = bankItem.dataset.bic || '';
+
+                                bankSuggestions.classList.add('hidden');
+                                const step2Details = document.getElementById('step-2-details');
+                                if (step2Details) step2Details.classList.remove('hidden');
+
+                                ['display-bank-name', 'display-bic', 'display-corr-account'].forEach(id => {
+                                    const el = document.getElementById(id);
+                                    if (el) { el.style.backgroundColor = '#f0fff4'; setTimeout(() => el.style.backgroundColor = 'transparent', 1000); }
                                 });
 
-                                document.addEventListener('keydown', function (e) {
-                                    if (e.target.id === 'inn-input' && e.key === 'Enter') {
-                                        e.preventDefault();
-                                        window.triggerOrgLookup(e.target.value.trim(), true);
-                                    }
-                                });
+                                const accountInput = document.getElementById('settlement-account-input');
+                                if (accountInput && accountInput.value.length === 20) accountInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                return;
+                            }
 
-                                document.addEventListener('input', function (e) {
-                                    if (e.target.id === 'inn-input') {
-                                        const query = e.target.value.trim();
-                                        const lookupBtn = document.getElementById('lookup-org-btn');
-                                        const step1Details = document.getElementById('step-1-details');
-
-                                        if (lookupBtn) lookupBtn.disabled = query.length < 3;
-                                        if (step1Details && !step1Details.classList.contains('hidden')) step1Details.classList.add('hidden');
-
-                                        if (typeof window.orgDebounceTimer !== 'undefined') clearTimeout(window.orgDebounceTimer);
-                                        if (query.length < 3) { document.getElementById('org-suggestions').classList.add('hidden'); return; }
-
-                                        window.orgDebounceTimer = setTimeout(() => { window.triggerOrgLookup(query, false); }, 500);
-                                    }
-
-                                    if (e.target.id === 'bic-input') {
-                                        const bicInput = e.target;
-                                        const suggestionsContainer = document.getElementById('bank-suggestions');
-
-                                        clearTimeout(bankDebounceTimer);
-                                        const query = bicInput.value.trim();
-
-                                        if (query.length < 2) {
-                                            suggestionsContainer.classList.add('hidden');
-                                            suggestionsContainer.innerHTML = '';
-                                            return;
-                                        }
-
-                                        bankDebounceTimer = setTimeout(async () => {
-                                            try {
-                                                const accountInput = document.getElementById('settlement-account-input');
-                                                const account = accountInput ? accountInput.value.trim() : '';
-
-                                                const relativePath = "{{ route('shop.customers.account.organizations.suggest_bank', [], false) }}";
-                                                const url = `${window.location.origin}${relativePath}?query=${encodeURIComponent(query)}`;
-                                                const response = await fetch(url);
-                                                let banks = await response.json();
-
-                                                if (response.ok && banks && banks.length > 0) {
-                                                    if (account.length === 20) {
-                                                        banks = banks.map(bank => ({ ...bank, isValidForAccount: window.isValidBankAccount(bank.bic, account) })).sort((a, b) => b.isValidForAccount - a.isValidForAccount);
-                                                    }
-
-                                                    suggestionsContainer.innerHTML = banks.map(bank => {
-                                                        const safeName = (bank.bank_name || '').replace(/"/g, '&quot;');
-                                                        const safeBic = (bank.bic || '').replace(/"/g, '&quot;');
-                                                        const safeCorr = (bank.correspondent_account || '').replace(/"/g, '&quot;');
-                                                        return `
-                                                                                                                                <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
-                                                                                                                                    data-name="${safeName}" data-bic="${safeBic}" data-corr="${safeCorr}">
-                                                                                                                                    <div>
-                                                                                                                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит</span>' : ''}</div>
-                                                                                                                                        <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
-                                                                                                                                    </div>
-                                                                                                                                </div>`;
-                                                    }).join('');
-                                                    suggestionsContainer.classList.remove('hidden');
-                                                } else {
-                                                    suggestionsContainer.classList.add('hidden');
-                                                }
-                                            } catch (err) { console.error('Bank Lookup Error', err); }
-                                        }, 400);
-                                    }
-
-                                    if (e.target.id === 'settlement-account-input') {
-                                        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 20);
-                                        const account = e.target.value;
-                                        const bicInput = document.getElementById('bic-input');
-                                        const bic = bicInput ? bicInput.value.trim() : '';
-                                        const submitBtn = document.getElementById('org-submit-btn');
-                                        const errorMsg = document.getElementById('settlement-account-error');
-
-                                        if (account.length === 20 && bic.length === 9) {
-                                            const isValid = window.isValidBankAccount(bic, account);
-                                            if (isValid) {
-                                                e.target.classList.remove('!border-red-500', '!ring-red-500');
-                                                e.target.classList.add('!border-green-500');
-                                                if (errorMsg) errorMsg.classList.add('hidden');
-                                                if (submitBtn) submitBtn.disabled = false;
-                                            } else {
-                                                e.target.classList.remove('!border-green-500');
-                                                e.target.classList.add('!border-red-500', '!ring-red-500');
-                                                if (errorMsg) { errorMsg.innerText = 'Неверный контрольный ключ'; errorMsg.classList.remove('hidden'); }
-                                                if (submitBtn) submitBtn.disabled = true;
-                                            }
-                                        } else if (account.length === 20 && bic.length === 0) {
-                                            e.target.classList.add('!border-green-500');
-                                            if (errorMsg) errorMsg.classList.add('hidden');
-                                            if (submitBtn) submitBtn.disabled = true;
-                                        } else {
-                                            e.target.classList.remove('!border-green-500', '!border-red-500', '!ring-red-500');
-                                            if (errorMsg) errorMsg.classList.add('hidden');
-                                            if (submitBtn) submitBtn.disabled = true;
-                                        }
-                                    }
-                                });
-
-                                document.addEventListener('click', function (e) {
-                                    const orgSuggestions = document.getElementById('org-suggestions');
-                                    const bankSuggestions = document.getElementById('bank-suggestions');
-                                    const innInput = document.getElementById('inn-input');
-                                    const bicInput = document.getElementById('bic-input');
-
-                                    const orgItem = e.target.closest('div[data-inn]');
-                                    if (orgItem && orgSuggestions && orgSuggestions.contains(orgItem)) {
-                                        if (innInput) innInput.value = orgItem.dataset.inn;
-                                        if (document.getElementById('name-input')) document.getElementById('name-input').value = orgItem.dataset.name || '';
-                                        if (document.getElementById('kpp-input')) document.getElementById('kpp-input').value = orgItem.dataset.kpp || '';
-                                        if (document.getElementById('address-input')) document.getElementById('address-input').value = orgItem.dataset.address || '';
-
-                                        const kppContainer = document.getElementById('kpp-container');
-                                        if (kppContainer) {
-                                            if (!orgItem.dataset.kpp) kppContainer.classList.add('hidden');
-                                            else kppContainer.classList.remove('hidden');
-                                        }
-
-                                        orgSuggestions.classList.add('hidden');
-                                        const step1Details = document.getElementById('step-1-details');
-                                        if (step1Details) {
-                                            step1Details.classList.remove('hidden');
-                                            const confirmBtn = document.getElementById('confirm-step-1-btn');
-                                            if (confirmBtn) setTimeout(() => confirmBtn.focus(), 100);
-                                            step1Details.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        }
-                                        return;
-                                    }
-
-                                    const bankItem = e.target.closest('div[data-bic]');
-                                    if (bankItem && bankSuggestions && bankSuggestions.contains(bankItem)) {
-                                        if (bicInput) {
-                                            bicInput.value = bankItem.dataset.bic;
-                                            bicInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                        }
-                                        if (document.getElementById('bank-name-input')) document.getElementById('bank-name-input').value = bankItem.dataset.name || '';
-                                        if (document.getElementById('display-bank-name')) document.getElementById('display-bank-name').innerText = bankItem.dataset.name || '';
-                                        if (document.getElementById('corr-account-input')) document.getElementById('corr-account-input').value = bankItem.dataset.corr || '';
-                                        if (document.getElementById('display-corr-account')) document.getElementById('display-corr-account').innerText = bankItem.dataset.corr || '';
-                                        if (document.getElementById('display-bic')) document.getElementById('display-bic').innerText = bankItem.dataset.bic || '';
-
-                                        bankSuggestions.classList.add('hidden');
-                                        const step2Details = document.getElementById('step-2-details');
-                                        if (step2Details) step2Details.classList.remove('hidden');
-
-                                        ['display-bank-name', 'display-bic', 'display-corr-account'].forEach(id => {
-                                            const el = document.getElementById(id);
-                                            if (el) { el.style.backgroundColor = '#f0fff4'; setTimeout(() => el.style.backgroundColor = 'transparent', 1000); }
-                                        });
-
-                                        const accountInput = document.getElementById('settlement-account-input');
-                                        if (accountInput && accountInput.value.length === 20) accountInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                        return;
-                                    }
-
-                                    if (orgSuggestions && !orgSuggestions.classList.contains('hidden') && innInput && !innInput.contains(e.target) && !orgSuggestions.contains(e.target)) orgSuggestions.classList.add('hidden');
-                                    if (bankSuggestions && !bankSuggestions.classList.contains('hidden') && bicInput && !bicInput.contains(e.target) && !bankSuggestions.contains(e.target)) bankSuggestions.classList.add('hidden');
-                                });
-                            };
-                            window.initOrganizationWizard();
+                            if (orgSuggestions && !orgSuggestions.classList.contains('hidden') && innInput && !innInput.contains(e.target) && !orgSuggestions.contains(e.target)) orgSuggestions.classList.add('hidden');
+                            if (bankSuggestions && !bankSuggestions.classList.contains('hidden') && bicInput && !bicInput.contains(e.target) && !bankSuggestions.contains(e.target)) bankSuggestions.classList.add('hidden');
+                        });
+                    };
+                    window.initOrganizationWizard();
                 </script>
         @endpush
 

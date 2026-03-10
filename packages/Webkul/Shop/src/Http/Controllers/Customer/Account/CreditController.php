@@ -199,18 +199,19 @@ class CreditController extends Controller
 
             $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords'));
 
+            // Use queue to prevent UI hang
             Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
 
             return response()->json([
                 'success' => true,
-                'message' => 'Invoice sent to email successfully.'
+                'message' => 'Invoice queued for sending successfully.'
             ]);
         } catch (\Exception $e) {
             report($e);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send email: ' . $e->getMessage()
+                'message' => 'Failed to queue email: ' . $e->getMessage()
             ], 500);
         }
     }
