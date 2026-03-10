@@ -74,7 +74,6 @@ class BillingEntityController extends Controller
             'director_name',
             'accountant_name',
             'tax_regime',
-            'seal',
         ]);
 
         $billingEntity = $this->billingEntityRepository->create($data);
@@ -137,7 +136,6 @@ class BillingEntityController extends Controller
             'director_name',
             'accountant_name',
             'tax_regime',
-            'seal',
         ]);
 
         $this->billingEntityRepository->update($data, $id);
