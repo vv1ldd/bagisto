@@ -73,13 +73,13 @@ return new class extends Migration {
             }
 
             // 3. Link Rate to Category
-            $mappingExists = DB::table('tax_mappings')
+            $mappingExists = DB::table('tax_categories_tax_rates')
                 ->where('tax_category_id', $taxCategoryId)
                 ->where('tax_rate_id', $catData['rate_id'])
                 ->exists();
 
             if (!$mappingExists) {
-                DB::table('tax_mappings')->insert([
+                DB::table('tax_categories_tax_rates')->insert([
                     'tax_category_id' => $taxCategoryId,
                     'tax_rate_id' => $catData['rate_id'],
                 ]);
@@ -101,7 +101,7 @@ return new class extends Migration {
         foreach ($taxCategoryCodes as $code) {
             $taxCategoryId = DB::table('tax_categories')->where('code', $code)->value('id');
             if ($taxCategoryId) {
-                DB::table('tax_mappings')->where('tax_category_id', $taxCategoryId)->delete();
+                DB::table('tax_categories_tax_rates')->where('tax_category_id', $taxCategoryId)->delete();
                 DB::table('tax_categories')->where('id', $taxCategoryId)->delete();
             }
         }
