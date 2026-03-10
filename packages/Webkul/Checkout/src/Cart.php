@@ -315,6 +315,8 @@ class Cart
             }
         }
 
+        $this->refreshCart();
+
         $this->collectTotals();
 
         Event::dispatch('checkout.cart.add.after', $this->cart);
