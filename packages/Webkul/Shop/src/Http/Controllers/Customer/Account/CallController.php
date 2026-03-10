@@ -60,4 +60,26 @@ class CallController extends Controller
 
         return view('shop::customers.account.calls.index', compact('contacts'));
     }
+
+    /**
+     * Handle WebRTC signaling between users.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function signal()
+    {
+        $request = request();
+
+        $request->validate([
+            'to_user_id' => 'required|integer',
+            'signal_data' => 'required|array',
+        ]);
+
+        $toUserId = $request->input('to_user_id');
+        $signalData = $request->input('signal_data');
+
+        event(new \Webkul\Shop\Events\CallSignal($toUserId, $signalData));
+
+        return response()->json(['status' => 'success']);
+    }
 }
