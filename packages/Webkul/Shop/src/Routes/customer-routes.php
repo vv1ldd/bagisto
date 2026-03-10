@@ -142,14 +142,20 @@ Route::prefix('customer')->group(function () {
 
             Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
                 /**
-                 * Wishlist.
+                 * Wallet Access (PIN / Passkey) Setup & Unlock
                  */
-                Route::get('wishlist', [WishlistController::class, 'index'])->name('shop.customers.account.wishlist.index');
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\WalletAccessController::class)->prefix('wallet-access')->group(function () {
+                    Route::get('setup', 'setup')->name('shop.customers.account.wallet.setup');
+                    Route::post('setup', 'storePin')->name('shop.customers.account.wallet.setup.post');
+                    Route::get('unlock', 'unlock')->name('shop.customers.account.wallet.unlock');
+                    Route::post('unlock', 'verifyPin')->name('shop.customers.account.wallet.unlock.post');
+                    Route::post('passkey-auth', 'verifyPasskey')->name('shop.customers.account.wallet.passkey.post');
+                });
 
                 /**
                  * Credits (formerly Transactions).
                  */
-                Route::group(['middleware' => ['passkey.timeout']], function () {
+                Route::group(['middleware' => ['passkey.timeout', \Webkul\Shop\Http\Middleware\CheckWalletAccess::class]], function () {
                     Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
                     Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
                     Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
