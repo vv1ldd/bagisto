@@ -155,7 +155,8 @@
             <tr>
                 <td style="padding-top: 10px;"><b>Основание:</b></td>
                 <td style="padding-top: 10px;">Оплата по договору № {{ auth()->guard('customer')->id() }} от
-                    {{ $transaction->created_at->format('d.m.Y') }}.</td>
+                    {{ $transaction->created_at->format('d.m.Y') }}.
+                </td>
             </tr>
         </table>
     </div>
@@ -174,7 +175,7 @@
         <tbody>
             <tr>
                 <td align="center">1</td>
-                <td>Пополнение баланса ({{ $transaction->notes }})</td>
+                <td>{{ $transaction->notes }}</td>
                 <td align="center">1</td>
                 <td align="center">шт.</td>
                 <td align="right">{{ number_format($transaction->amount, 2, ',', ' ') }}</td>

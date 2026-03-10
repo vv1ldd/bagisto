@@ -109,7 +109,7 @@ class CreditController extends Controller
                 'amount' => request('amount'),
                 'type' => 'deposit',
                 'status' => 'pending',
-                'notes' => 'Top-up via B2B Bank Transfer',
+                'notes' => 'Услуги в области информационных технологий',
                 'metadata' => [
                     'organization_id' => request('organization_id'),
                     'billing_entity_id' => $defaultBillingEntityId,
