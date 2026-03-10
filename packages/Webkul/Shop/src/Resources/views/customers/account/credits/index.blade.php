@@ -508,47 +508,32 @@
                     организацию-плательщика</p>
 
                 @forelse($organizations as $org)
-                    <div
-                        class="bg-white shadow-sm border border-zinc-100 hover:shadow-md hover:border-emerald-200 transition-all group/card relative flex flex-col">
-                        <div class="flex items-center">
-                            <button type="button" onclick="selectTopupOrg('{{ $org->id }}', '{{ $org->name }}')"
-                                class="flex-1 flex gap-4 p-5 min-w-0 text-left cursor-pointer items-center">
-                                {{-- Icon Column --}}
-                                <div class="relative shrink-0">
-                                    <div
-                                        class="w-12 h-12 bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-xl font-bold">
-                                        🏢
-                                    </div>
-                                </div>
-
-                                {{-- Main Content Column --}}
-                                <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-                                    <h4
-                                        class="text-[16px] font-bold text-zinc-900 leading-tight group-hover/card:text-emerald-700 transition-colors">
-                                        {{ $org->name }}
-                                    </h4>
-                                    <div class="flex items-center gap-3 text-[12px] text-zinc-500 font-mono">
-                                        <div class="flex items-center gap-1 group/inn">
-                                            <span>ИНН: {{ $org->inn }}</span>
-                                            <button type="button"
-                                                onclick="event.stopPropagation(); copyAddr('{{ $org->inn }}', this)"
-                                                class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/inn:opacity-100"
-                                                title="Копировать ИНН">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
-                                                    viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                                </svg>
-                                            </button>
+                        <div
+                            class="bg-white shadow-sm border border-zinc-100 hover:shadow-md hover:border-emerald-200 transition-all group/card relative flex flex-col">
+                            <div class="flex items-center">
+                                <button type="button" onclick="selectTopupOrg('{{ $org->id }}', '{{ $org->name }}')"
+                                    class="flex-1 flex gap-4 p-5 min-w-0 text-left cursor-pointer items-center">
+                                    {{-- Icon Column --}}
+                                    <div class="relative shrink-0">
+                                        <div
+                                            class="w-12 h-12 bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-xl font-bold">
+                                            🏢
                                         </div>
-                                        @if($org->kpp)
-                                            <span class="text-zinc-300 hidden sm:inline">|</span>
-                                            <div class="flex items-center gap-1 group/kpp">
-                                                <span>КПП: {{ $org->kpp }}</span>
+                                    </div>
+
+                                    {{-- Main Content Column --}}
+                                    <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                                        <h4
+                                            class="text-[16px] font-bold text-zinc-900 leading-tight group-hover/card:text-emerald-700 transition-colors">
+                                            {{ $org->name }}
+                                        </h4>
+                                        <div class="flex items-center gap-3 text-[12px] text-zinc-500 font-mono">
+                                            <div class="flex items-center gap-1 group/inn">
+                                                <span>ИНН: {{ $org->inn }}</span>
                                                 <button type="button"
-                                                    onclick="event.stopPropagation(); copyAddr('{{ $org->kpp }}', this)"
-                                                    class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/kpp:opacity-100"
-                                                    title="Копировать КПП">
+                                                    onclick="event.stopPropagation(); copyAddr('{{ $org->inn }}', this)"
+                                                    class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/inn:opacity-100"
+                                                    title="Копировать ИНН">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
                                                         viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -556,31 +541,37 @@
                                                     </svg>
                                                 </button>
                                             </div>
-                                        @endif
+                                            @if($org->kpp)
+                                                <span class="text-zinc-300 hidden sm:inline">|</span>
+                                                <div class="flex items-center gap-1 group/kpp">
+                                                    <span>КПП: {{ $org->kpp }}</span>
+                                                    <button type="button"
+                                                        onclick="event.stopPropagation(); copyAddr('{{ $org->kpp }}', this)"
+                                                        class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/kpp:opacity-100"
+                                                        title="Копировать КПП">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
 
-                                {{-- Selection Indicator --}}
-                                <div
-                                    class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-emerald-500 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </div>
-                            </button>
+                                    {{-- Selection Indicator --}}
+                                    <div
+                                        class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-emerald-500 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
+                                </button>
 
-                            {{-- Action Column (Delete) --}}
-                            <div class="shrink-0 flex items-center pr-6 pl-2 border-l border-zinc-50 py-5">
-                                <form action="{{ route('shop.customers.account.organizations.delete', $org->id) }}"
-                                    method="POST" class="inline" onsubmit="return confirm('Удалить организацию?');">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit"
-                                        class="w-[38px] h-[38px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
-                                        <span class="icon-bin text-lg"></span>
-                                    </button>
+                                @csrf
                                 </form>
                             </div>
                         </div>
@@ -600,8 +591,7 @@
                             @foreach($details as $label => $value)
                                 @if($value)
                                     <div class="flex flex-col gap-0.5 group/copy relative">
-                                        <span
-                                            class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ $label }}</span>
+                                        <span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ $label }}</span>
                                         <div class="flex items-center justify-between gap-2 max-w-[250px]">
                                             <span
                                                 class="text-[12px] text-zinc-700 font-mono truncate cursor-pointer hover:text-emerald-600 transition-colors"
@@ -624,205 +614,202 @@
                     </div>
 
                 @empty
-                @endforelse
-                <!-- Add Organization Button -->
-                <a href="{{ route('shop.customers.account.organizations.create') }}"
-                    class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
-                    <span
-                        class="w-7 h-7 bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
-                    <span class="text-[15px]">Добавить организацию</span>
-                </a>
-            </div>
+            @endforelse
+            <!-- Add Organization Button -->
+            <a href="{{ route('shop.customers.account.organizations.create') }}"
+                class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                <span class="w-7 h-7 bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
+                <span class="text-[15px]">Добавить организацию</span>
+            </a>
+        </div>
 
-            {{-- Step: Top-up Details --}}
-            <div id="step-topup-details" class="hidden space-y-6">
-                <div class="ios-group p-6 bg-white shadow-md">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-10 h-10 bg-emerald-50 flex items-center justify-center text-emerald-600 text-xl">
-                            🏦</div>
-                        <div>
-                            <h3 class="text-[16px] font-bold text-zinc-900" id="selected-org-name">Название организации
-                            </h3>
-                            <p class="text-[12px] text-zinc-400">Пополнение баланса через банковский перевод</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div id="topup-amount-container">
-                            <x-shop::form.control-group>
-                                <x-shop::form.control-group.label
-                                    class="required !text-[12px] !font-bold text-zinc-400 uppercase tracking-widest">
-                                    @lang('shop::app.customers.account.topup.amount')
-                                </x-shop::form.control-group.label>
-                                <x-shop::form.control-group.control type="text" name="amount" id="topup-amount"
-                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-emerald-500 focus:!ring-2 focus:!ring-emerald-500/20 transition-all text-[18px] font-bold"
-                                    placeholder="0.00" />
-                            </x-shop::form.control-group>
-                        </div>
-
-                        <div id="topup-success-msg"
-                            class="hidden p-6 bg-white border-l-4 border-l-emerald-500 shadow-sm space-y-4">
-                            <div class="flex items-center gap-3 text-emerald-600">
-                                <span class="text-2xl">✅</span>
-                                <p class="font-bold text-[16px]">Счет на оплату сформирован и ожидает оплаты.</p>
-                            </div>
-
-                            <p class="text-zinc-600 text-[14px] leading-relaxed">
-                                Пожалуйста, скачайте счет и произведите платеж.
-                            </p>
-
-                            <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                                <a id="topup-invoice-link" href="#" target="_blank"
-                                    class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-zinc-900 text-white font-bold text-[13px] uppercase tracking-wider hover:bg-emerald-600 transition-all active:scale-[0.98]">
-                                    <span>⬇️</span>
-                                    <span>@lang('shop::app.customers.account.topup.download-invoice')</span>
-                                </a>
-
-                                <button type="button" id="email-invoice-btn" onclick="sendTopupInvoiceEmail()"
-                                    class="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-zinc-900 text-zinc-900 font-bold text-[13px] uppercase tracking-wider hover:bg-zinc-900 hover:text-white transition-all active:scale-[0.98]">
-                                    <span id="email-btn-icon">📧</span>
-                                    <span id="email-btn-text">Email Invoice</span>
-                                    <div id="email-btn-loader"
-                                        class="hidden w-4 h-4 border-2 border-current border-t-transparent animate-spin">
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-
-                        <button type="button" id="generate-topup-btn" onclick="generateTopupInvoice()"
-                            class="w-full bg-zinc-900 hover:bg-emerald-600 text-white font-bold py-4 px-8 shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3 text-[16px] uppercase tracking-wider">
-                            <span id="btn-text">@lang('shop::app.customers.account.topup.generate-invoice')</span>
-                            <div id="btn-loader"
-                                class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin"></div>
-                        </button>
+        {{-- Step: Top-up Details --}}
+        <div id="step-topup-details" class="hidden space-y-6">
+            <div class="ios-group p-6 bg-white shadow-md">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 bg-emerald-50 flex items-center justify-center text-emerald-600 text-xl">
+                        🏦</div>
+                    <div>
+                        <h3 class="text-[16px] font-bold text-zinc-900" id="selected-org-name">Название организации
+                        </h3>
+                        <p class="text-[12px] text-zinc-400">Пополнение баланса через банковский перевод</p>
                     </div>
                 </div>
-            </div>
 
-            {{-- Step: B2C Details --}}
-            <div id="step-b2c-details" class="hidden space-y-4">
-                <div
-                    class="bg-white shadow-sm border border-zinc-100 p-6 md:p-8 flex flex-col items-center text-center">
-                    <div class="w-16 h-16 bg-blue-50 flex items-center justify-center mb-4 text-3xl">🏦</div>
-                    <h3 class="text-[18px] font-bold text-zinc-900 mb-2">Реквизиты для перевода</h3>
-                    <p class="text-[14px] text-zinc-500 mb-6 max-w-[300px]">
-                        Для пополнения баланса переведите средства по следующим реквизитам. Обязательно укажите ваш ID в
-                        назначении платежа.
-                    </p>
-
-                    <div class="w-full bg-zinc-50 border border-zinc-100 p-5 text-left space-y-3">
-                        <div class="flex flex-col">
-                            <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Получатель
-                                (Наименование)</span>
-                            <span class="text-[14px] font-mono text-zinc-900 mt-0.5">ИП АТАНИЯЗОВА НОВБАХАР
-                                ДУРДЫКУЛЫЕВНА</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">ИНН</span>
-                            <span class="text-[14px] font-mono text-zinc-900 mt-0.5">500315995400</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Расчетный
-                                счет</span>
-                            <span
-                                class="text-[14px] font-mono text-zinc-900 mt-0.5 flex justify-between items-center group">
-                                <span>40802810800000109919</span>
-                                <button type="button" onclick="copyAddr('40802810800000109919', this)"
-                                    class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
-                            </span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">БИК Банка</span>
-                            <span
-                                class="text-[14px] font-mono text-zinc-900 mt-0.5 flex justify-between items-center group">
-                                <span>044525974</span>
-                                <button type="button" onclick="copyAddr('044525974', this)"
-                                    class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
-                            </span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Банк</span>
-                            <span class="text-[14px] font-mono text-zinc-900 mt-0.5">АО «ТБанк»</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Назначение
-                                платежа</span>
-                            <span
-                                class="text-[14px] font-mono text-zinc-900 mt-0.5 flex justify-between items-start md:items-center group">
-                                <span class="pr-2">Оплата за цифровые услуги. Пользователь
-                                    #{{ auth()->guard('customer')->id() }}. Без НДС.</span>
-                                <button type="button"
-                                    onclick="copyAddr('Оплата за цифровые услуги. Пользователь #{{ auth()->guard('customer')->id() }}. Без НДС.', this)"
-                                    class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100 shrink-0">Копировать</button>
-                            </span>
-                        </div>
+                <div class="space-y-4">
+                    <div id="topup-amount-container">
+                        <x-shop::form.control-group>
+                            <x-shop::form.control-group.label
+                                class="required !text-[12px] !font-bold text-zinc-400 uppercase tracking-widest">
+                                @lang('shop::app.customers.account.topup.amount')
+                            </x-shop::form.control-group.label>
+                            <x-shop::form.control-group.control type="text" name="amount" id="topup-amount"
+                                class="!py-3 !px-4 !border-zinc-200 focus:!border-emerald-500 focus:!ring-2 focus:!ring-emerald-500/20 transition-all text-[18px] font-bold"
+                                placeholder="0.00" />
+                        </x-shop::form.control-group>
                     </div>
 
-                    <div class="mt-6 w-full p-4 bg-orange-50 border border-orange-100 text-left">
-                        <p class="text-[12px] text-orange-800 font-medium">
-                            <span class="font-bold">Важно:</span> Средства будут зачислены на ваш баланс после
-                            поступления на расчетный счет (Обычно в течение 1 рабочего дня).
-                            Пожалуйста, сохраняйте квитанцию об оплате для подтверждения (отправьте её в поддержку).
+                    <div id="topup-success-msg"
+                        class="hidden p-6 bg-white border-l-4 border-l-emerald-500 shadow-sm space-y-4">
+                        <div class="flex items-center gap-3 text-emerald-600">
+                            <span class="text-2xl">✅</span>
+                            <p class="font-bold text-[16px]">Счет на оплату сформирован и ожидает оплаты.</p>
+                        </div>
+
+                        <p class="text-zinc-600 text-[14px] leading-relaxed">
+                            Пожалуйста, скачайте счет и произведите платеж.
                         </p>
-                    </div>
-                </div>
-            </div>
 
-            <div id="step-details" class="hidden">
-                @foreach($allAddresses as $address)
-                    @php
-                        $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
-                        $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
-                    @endphp
-                    <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
-                        <div class="bg-white  shadow-sm overflow-hidden p-6 md:p-8 flex flex-col items-center">
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                            <a id="topup-invoice-link" href="#" target="_blank"
+                                class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-zinc-900 text-white font-bold text-[13px] uppercase tracking-wider hover:bg-emerald-600 transition-all active:scale-[0.98]">
+                                <span>⬇️</span>
+                                <span>@lang('shop::app.customers.account.topup.download-invoice')</span>
+                            </a>
 
-                            {{-- QR Code Section --}}
-                            <div class="relative inline-block mt-4 mb-2">
-                                <div class="border border-zinc-100  p-6 pb-8 bg-white shadow-sm inline-block">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($address->address) }}"
-                                        alt="QR Code" class="w-56 h-56 mx-auto" />
+                            <button type="button" id="email-invoice-btn" onclick="sendTopupInvoiceEmail()"
+                                class="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-zinc-900 text-zinc-900 font-bold text-[13px] uppercase tracking-wider hover:bg-zinc-900 hover:text-white transition-all active:scale-[0.98]">
+                                <span id="email-btn-icon">📧</span>
+                                <span id="email-btn-text">Email Invoice</span>
+                                <div id="email-btn-loader"
+                                    class="hidden w-4 h-4 border-2 border-current border-t-transparent animate-spin">
                                 </div>
-                                {{-- Floated Label --}}
-                                <div class="absolute -bottom-3 left-0 right-0 flex justify-center">
-                                    <div
-                                        class="bg-white px-4 py-1.5 text-[11px] font-black text-zinc-400 uppercase tracking-[0.15em]">
-                                        Адрес пополнения ({{ $m[0] }})
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Address Copy Section --}}
-                            <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
-                                onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
-                                <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                        {{ $address->address }}
-                                                                                                                                                    </code>
-                                <div
-                                    class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
-                                    <span class="copy-txt">Скопировать</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </div>
-                            </div>
-
-                            {{-- Verification Warning --}}
-                            <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50  flex gap-3 text-left">
-                                <span class="text-lg">⚠️</span>
-                                <p class="text-[12px] text-violet-700 leading-snug">
-                                    <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы
-                                    система смогла автоматически зачислить платеж.
-                                </p>
-                            </div>
-
+                            </button>
                         </div>
                     </div>
-                @endforeach
+
+                    <button type="button" id="generate-topup-btn" onclick="generateTopupInvoice()"
+                        class="w-full bg-zinc-900 hover:bg-emerald-600 text-white font-bold py-4 px-8 shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3 text-[16px] uppercase tracking-wider">
+                        <span id="btn-text">@lang('shop::app.customers.account.topup.generate-invoice')</span>
+                        <div id="btn-loader"
+                            class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin"></div>
+                    </button>
+                </div>
             </div>
+        </div>
+
+        {{-- Step: B2C Details --}}
+        <div id="step-b2c-details" class="hidden space-y-4">
+            <div class="bg-white shadow-sm border border-zinc-100 p-6 md:p-8 flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-blue-50 flex items-center justify-center mb-4 text-3xl">🏦</div>
+                <h3 class="text-[18px] font-bold text-zinc-900 mb-2">Реквизиты для перевода</h3>
+                <p class="text-[14px] text-zinc-500 mb-6 max-w-[300px]">
+                    Для пополнения баланса переведите средства по следующим реквизитам. Обязательно укажите ваш ID в
+                    назначении платежа.
+                </p>
+
+                <div class="w-full bg-zinc-50 border border-zinc-100 p-5 text-left space-y-3">
+                    <div class="flex flex-col">
+                        <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Получатель
+                            (Наименование)</span>
+                        <span class="text-[14px] font-mono text-zinc-900 mt-0.5">ИП АТАНИЯЗОВА НОВБАХАР
+                            ДУРДЫКУЛЫЕВНА</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">ИНН</span>
+                        <span class="text-[14px] font-mono text-zinc-900 mt-0.5">500315995400</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Расчетный
+                            счет</span>
+                        <span
+                            class="text-[14px] font-mono text-zinc-900 mt-0.5 flex justify-between items-center group">
+                            <span>40802810800000109919</span>
+                            <button type="button" onclick="copyAddr('40802810800000109919', this)"
+                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
+                        </span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">БИК Банка</span>
+                        <span
+                            class="text-[14px] font-mono text-zinc-900 mt-0.5 flex justify-between items-center group">
+                            <span>044525974</span>
+                            <button type="button" onclick="copyAddr('044525974', this)"
+                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
+                        </span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Банк</span>
+                        <span class="text-[14px] font-mono text-zinc-900 mt-0.5">АО «ТБанк»</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wider">Назначение
+                            платежа</span>
+                        <span
+                            class="text-[14px] font-mono text-zinc-900 mt-0.5 flex justify-between items-start md:items-center group">
+                            <span class="pr-2">Оплата за цифровые услуги. Пользователь
+                                #{{ auth()->guard('customer')->id() }}. Без НДС.</span>
+                            <button type="button"
+                                onclick="copyAddr('Оплата за цифровые услуги. Пользователь #{{ auth()->guard('customer')->id() }}. Без НДС.', this)"
+                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100 shrink-0">Копировать</button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6 w-full p-4 bg-orange-50 border border-orange-100 text-left">
+                    <p class="text-[12px] text-orange-800 font-medium">
+                        <span class="font-bold">Важно:</span> Средства будут зачислены на ваш баланс после
+                        поступления на расчетный счет (Обычно в течение 1 рабочего дня).
+                        Пожалуйста, сохраняйте квитанцию об оплате для подтверждения (отправьте её в поддержку).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="step-details" class="hidden">
+            @foreach($allAddresses as $address)
+                @php
+                    $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
+                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
+                @endphp
+                <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
+                    <div class="bg-white  shadow-sm overflow-hidden p-6 md:p-8 flex flex-col items-center">
+
+                        {{-- QR Code Section --}}
+                        <div class="relative inline-block mt-4 mb-2">
+                            <div class="border border-zinc-100  p-6 pb-8 bg-white shadow-sm inline-block">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($address->address) }}"
+                                    alt="QR Code" class="w-56 h-56 mx-auto" />
+                            </div>
+                            {{-- Floated Label --}}
+                            <div class="absolute -bottom-3 left-0 right-0 flex justify-center">
+                                <div
+                                    class="bg-white px-4 py-1.5 text-[11px] font-black text-zinc-400 uppercase tracking-[0.15em]">
+                                    Адрес пополнения ({{ $m[0] }})
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Address Copy Section --}}
+                        <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
+                            onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
+                            <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
+                                                                                                                                                            {{ $address->address }}
+                                                                                                                                                        </code>
+                            <div
+                                class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
+                                <span class="copy-txt">Скопировать</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        {{-- Verification Warning --}}
+                        <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50  flex gap-3 text-left">
+                            <span class="text-lg">⚠️</span>
+                            <p class="text-[12px] text-violet-700 leading-snug">
+                                <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы
+                                система смогла автоматически зачислить платеж.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            @endforeach
+        </div>
 
         </div>
 
@@ -1194,7 +1181,7 @@
                         @endif
                     @endif
 
-                                                                                                                                });
+                                                                                                                                    });
 
                 // --- ORGANIZATION WIZARD SCRIPTS ---
                 window.isValidBankAccount = function (bic, account) {
