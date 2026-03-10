@@ -198,6 +198,13 @@ class OrganizationController extends Controller
 
         Event::dispatch('customer.organizations.update.after', $organization);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => trans('shop::app.customers.account.organizations.update-success'),
+            ]);
+        }
+
         session()->flash('success', trans('shop::app.customers.account.organizations.update-success'));
 
         return redirect()->route('shop.customers.account.organizations.index');
@@ -427,6 +434,13 @@ class OrganizationController extends Controller
             'is_default' => $isDefault,
         ]);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Расчетный счет успешно добавлен'
+            ]);
+        }
+
         return back()->with('success', 'Расчетный счет успешно добавлен');
     }
 
@@ -461,7 +475,7 @@ class OrganizationController extends Controller
     /**
      * Delete a specific settlement account.
      */
-    public function destroySettlementAccount(int $organizationId, int $accountId)
+    public function destroySettlementAccount(int $organizationId, int $accountId, Request $request)
     {
         $organization = $this->organizationRepository->findOneWhere([
             'id' => $organizationId,
@@ -469,12 +483,22 @@ class OrganizationController extends Controller
         ]);
 
         if (!$organization) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Organization not found'], 404);
+            }
             abort(404);
         }
 
         $account = $organization->settlementAccounts()->find($accountId);
         if ($account) {
             $account->delete();
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Расчетный счет успешно удален'
+            ]);
         }
 
         return back()->with('success', 'Расчетный счет успешно удален');

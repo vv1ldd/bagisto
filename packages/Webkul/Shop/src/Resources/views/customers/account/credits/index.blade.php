@@ -385,7 +385,8 @@
 
                                     <x-slot:menu class="!py-1 min-w-[140px] shadow-xl border-zinc-100">
                                         <x-shop::dropdown.menu.item>
-                                            <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
+                                            <a href="javascript:void(0);"
+                                                onclick="loadOrganizationEdit({{ $organization->id }})"
                                                 class="flex items-center gap-2 w-full text-[14px]">
                                                 <span class="icon-edit text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.edit')
@@ -400,14 +401,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                                    event.preventDefault(); 
-                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                    if(innPrompt === '{{ $organization->inn }}') { 
-                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                    } else if(innPrompt !== null) {
-                                                                        alert('ИНН введен неверно. Удаление отменено.');
-                                                                    }
-                                                                ">
+                                                                            event.preventDefault(); 
+                                                                            const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                            if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                            } else if(innPrompt !== null) {
+                                                                                alert('ИНН введен неверно. Удаление отменено.');
+                                                                            }
+                                                                        ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -1086,8 +1087,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                {{ $address->address }}
-                                                                                                                                                                                                            </code>
+                                                                                                                                                                                                                    {{ $address->address }}
+                                                                                                                                                                                                                </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1191,7 +1192,7 @@
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
-                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-edit-organization', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -1215,6 +1216,7 @@
                         if (currentStep === 'transactions') titleEl.innerText = "История";
                         if (currentStep === 'organizations') titleEl.innerText = "Мои компании";
                         if (currentStep === 'add-organization') titleEl.innerText = "Новая компания";
+                        if (currentStep === 'edit-organization') titleEl.innerText = "Редактирование";
                         if (currentStep === 'invoices') titleEl.innerText = "Выставленные счета";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
                         if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
@@ -1233,6 +1235,7 @@
                 else if (currentStep === 'invoices') switchStep('dashboard');
                 else if (currentStep === 'organizations') switchStep('dashboard');
                 else if (currentStep === 'add-organization') switchStep('organizations');
+                else if (currentStep === 'edit-organization') switchStep('organizations');
                 else if (currentStep === 'deposit-type') switchStep('dashboard');
                 else if (currentStep === 'empty') switchStep('deposit-type');
                 else if (currentStep === 'details') switchStep('management');
@@ -1284,6 +1287,36 @@
 
                 document.getElementById('add-org-step-1').classList.add('hidden');
                 document.getElementById('add-org-step-2').classList.remove('hidden');
+            }
+
+            async function loadOrganizationEdit(id) {
+                const container = document.getElementById('step-edit-organization');
+                container.innerHTML = '<div class="py-20 text-center"><div class="w-8 h-8 border-4 border-[#7C45F5] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div><span class="text-zinc-500 font-bold uppercase tracking-wider text-xs">Загрузка...</span></div>';
+                switchStep('edit-organization');
+
+                try {
+                    const response = await fetch(`/customer/account/organizations/${id}/edit`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const html = await response.text();
+                    container.innerHTML = html;
+
+                    // Execute scripts that were injected (fetch doesn't execute script tags automatically like jQuery did)
+                    Array.from(container.querySelectorAll('script')).forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                } catch (error) {
+                    console.error('Error loading organization details:', error);
+                    container.innerHTML = '<div class="py-20 text-center text-red-500 font-bold">Ошибка загрузки данных. Пожалуйста, попробуйте позже.</div>';
+                }
             }
 
             function goToManagement() { switchStep('management'); }
@@ -1651,7 +1684,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                        });
+                                                                                                                                                                                            });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {

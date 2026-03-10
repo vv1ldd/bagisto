@@ -1,14 +1,17 @@
-<x-shop::layouts.account :is-cardless="true" :show-back="false">
+@if (!request()->ajax())
+    <x-shop::layouts.account :is-cardless="true" :show-back="false">
+@endif
+
     <div class="flex-auto ios-tile-relative ios-group max-w-[600px] mx-auto p-8 max-md:p-6">
-        <a href="{{ route('shop.customers.account.organizations.index') }}"
+        <button type="button" @if (request()->ajax()) onclick="switchStep('organizations')" @else onclick="window.location='{{ route('shop.customers.account.organizations.index') }}'" @endif
             class="ios-back-button">
             <span class="icon-arrow-left text-xl"></span>
-        </a>
+        </button>
 
-        <a href="{{ route('shop.customers.account.credits.index') }}"
+        <button type="button" @if (request()->ajax()) onclick="switchStep('organizations')" @else onclick="window.location='{{ route('shop.customers.account.credits.index') }}'" @endif
             class="ios-close-button">
             <span class="icon-cancel text-xl"></span>
-        </a>
+        </button>
 
         <div class="mb-8 mt-8 sm:mt-0 sm:px-10 text-center">
             <h1 class="text-[22px] font-bold text-zinc-900 leading-tight">
@@ -19,7 +22,7 @@
             </p>
         </div>
 
-        <x-shop::form method="PUT" :action="route('shop.customers.account.organizations.update', $organization->id)">
+        <x-shop::form method="PUT" :action="route('shop.customers.account.organizations.update', $organization->id)" id="edit-organization-form" onsubmit="handleAjaxSubmit(event)">
             <div class="space-y-6">
                 <!-- ================== BLOCK 1: ORGANIZATION DETAILS (Readonly) ================== -->
                 <div class="bg-zinc-50/50 rounded-lg p-5 border border-zinc-100 relative">
@@ -141,7 +144,7 @@
                                             </div>
 
                                             <!-- Hidden Alias Edit Form -->
-                                            <form method="POST" id="edit-alias-form-{{ $account->id }}" action="{{ route('shop.customers.account.organizations.settlement_accounts.update_alias', ['organizationId' => $organization->id, 'accountId' => $account->id]) }}" class="hidden mt-3 max-w-sm">
+                                            <form method="POST" id="edit-alias-form-{{ $account->id }}" action="{{ route('shop.customers.account.organizations.settlement_accounts.update_alias', ['organizationId' => $organization->id, 'accountId' => $account->id]) }}" class="hidden mt-3 max-w-sm ajax-form" onsubmit="handleAjaxSubmit(event)">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="flex items-center gap-2">
@@ -166,8 +169,8 @@
                                             <!-- Delete Button Form -->
                                             <form method="POST"
                                                 action="{{ route('shop.customers.account.organizations.settlement_accounts.destroy', ['organizationId' => $organization->id, 'accountId' => $account->id]) }}"
-                                                class="inline-block"
-                                                onsubmit="return confirmDeletion('{{ $account->settlement_account }}');">
+                                                class="inline-block ajax-form"
+                                                onsubmit="return handleAjaxSubmit(event, 'delete-account', '{{ $account->settlement_account }}');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
@@ -222,8 +225,8 @@
 
                         <form method="POST"
                             action="{{ route('shop.customers.account.organizations.settlement_accounts.store', $organization->id) }}"
-                            id="add-account-form"
-                            onsubmit="document.getElementById('submit-account-btn').disabled = true; document.getElementById('submit-account-btn').innerHTML = 'Сохранение...'">
+                            id="add-account-form" class="ajax-form"
+                            onsubmit="handleAjaxSubmit(event)">
                             @csrf
 
                             <div class="space-y-4">
@@ -540,5 +543,72 @@
                 return false;
             }
         }
+        window.handleAjaxSubmit = async function(e, actionType = 'default', additionalData = null) {
+            e.preventDefault();
+            const form = e.target;
+            
+            if (actionType === 'delete-account') {
+                if (!window.confirmDeletion(additionalData)) {
+                    return false;
+                }
+            }
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Обработка...';
+            }
+            
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: form.method || 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.success) {
+                        // Reload the edit view seamlessly
+                        if (typeof window.loadOrganizationEdit === 'function') {
+                            window.loadOrganizationEdit({{ $organization->id }});
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        alert(data.message || 'Произошла ошибка');
+                    }
+                } else {
+                    if (response.status === 422) {
+                        // Handle validation errors dynamically or alert
+                        const errors = data.errors || {};
+                        let errorStr = 'Ошибки валидации: \n';
+                        for (let param in errors) {
+                            errorStr += `- ${errors[param][0]}\n`;
+                        }
+                        alert(errorStr);
+                    } else {
+                        alert(data.message || 'Внутренняя ошибка сервера. Попробуйте позже.');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Произошла ошибка при отправке формы.');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            }
+            return false;
+        };
     </script>
+@if (!request()->ajax())
 </x-shop::layouts.account>
+@endif
