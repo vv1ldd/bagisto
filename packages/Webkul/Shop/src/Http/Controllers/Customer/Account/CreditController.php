@@ -162,10 +162,13 @@ class CreditController extends Controller
         $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
         $billingEntity = $this->billingEntityRepository->find($transaction->metadata['billing_entity_id']);
 
+        $amountInWords = NumberToWords::convert($transaction->amount);
+
         $pdf = PDF::loadView('shop::customers.account.credits.topup-pdf', [
             'transaction' => $transaction,
             'organization' => $organization,
             'billingEntity' => $billingEntity,
+            'amountInWords' => $amountInWords,
         ]);
 
         return $pdf->download('proforma-invoice-' . $transaction->id . '.pdf');

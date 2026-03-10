@@ -1,7 +1,6 @@
-{{-- v1.1 --}}
+{{-- v1.2 --}}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -14,20 +13,16 @@
             color: #000;
             line-height: 1.4;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-
-        .bank-details th,
-        .bank-details td {
+        .bank-details th, .bank-details td {
             border: 1px solid #000;
             padding: 4px;
             vertical-align: top;
         }
-
         .header {
             font-weight: bold;
             font-size: 16px;
@@ -36,81 +31,68 @@
             padding-bottom: 5px;
             margin-top: 20px;
         }
-
         .info-line {
             margin-bottom: 10px;
         }
-
         .info-line b {
             width: 100px;
             display: inline-block;
         }
-
         .items th {
             border: 2px solid #000;
             padding: 5px;
             background: #eee;
             text-align: center;
         }
-
         .items td {
             border: 1px solid #000;
             padding: 5px;
         }
-
         .totals td {
             text-align: right;
             padding: 2px 5px;
         }
-
         .totals .label {
             font-weight: bold;
         }
-
         .summary {
             margin-top: 20px;
             border-top: 2px solid #000;
             padding-top: 10px;
         }
-
         .signatures {
             margin-top: 40px;
             position: relative;
         }
-
         .sig-block {
             display: inline-block;
             width: 45%;
             vertical-align: top;
         }
-
         .sig-line {
             display: inline-block;
             width: 150px;
             border-bottom: 1px solid #000;
             margin: 0 5px;
         }
-
         .seal-container {
             position: absolute;
             top: -30px;
             left: 200px;
             z-index: 10;
         }
-
         .seal-container img {
             width: 160px;
             opacity: 0.8;
         }
     </style>
 </head>
-
 <body>
     {{-- Bank Details Plate --}}
     <table class="bank-details">
         <tr>
             <td colspan="2" rowspan="2" style="width: 60%">
-                {{ $billingEntity->bank_name }}<br />
+                {{ $billingEntity->bank_name }}<br/>
                 <small>Банк получателя</small>
             </td>
             <td style="width: 10%">БИК</td>
@@ -128,7 +110,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                {{ $billingEntity->name }}<br />
+                {{ $billingEntity->name }}<br/>
                 <small>Получатель</small>
             </td>
         </tr>
@@ -142,15 +124,11 @@
         <table style="margin-bottom: 0;">
             <tr>
                 <td style="width: 100px; vertical-align: top;"><b>Поставщик:</b></td>
-                <td>{{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}, КПП {{ $billingEntity->kpp }},
-                    {{ $billingEntity->address }}
-                </td>
+                <td>{{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}, КПП {{ $billingEntity->kpp }}, {{ $billingEntity->address }}</td>
             </tr>
             <tr>
                 <td style="padding-top: 10px;"><b>Покупатель:</b></td>
-                <td style="padding-top: 10px;">{{ $organization->name }}, ИНН {{ $organization->inn }}, КПП
-                    {{ $organization->kpp }}, {{ $organization->address }}
-                </td>
+                <td style="padding-top: 10px;">{{ $organization->name }}, ИНН {{ $organization->inn }}, КПП {{ $organization->kpp }}, {{ $organization->address }}</td>
             </tr>
             <tr>
                 <td style="padding-top: 10px;"><b>Основание:</b></td>
@@ -211,8 +189,8 @@
     <div style="clear: both;"></div>
 
     <div class="summary">
-        Всего наименований 1, на сумму {{ number_format($transaction->amount, 2, ',', ' ') }} руб.<br />
-        <b>{{ $amountInWords }}</b>
+        Всего наименований 1, на сумму {{ number_format($transaction->amount, 2, ',', ' ') }} руб.<br/>
+        <b>{{ $amountInWords ?? '' }}</b>
     </div>
 
     <div class="signatures">
@@ -226,7 +204,7 @@
             <div class="sig-block">
                 Руководитель <span class="sig-line"></span> ({{ $billingEntity->director_name }})
             </div>
-
+            
             <div class="sig-block" style="margin-left: 5%;">
                 Бухгалтер <span class="sig-line"></span> ({{ $billingEntity->accountant_name }})
             </div>
@@ -237,5 +215,4 @@
         Просим Вас произвести оплату в течение 3-х банковских дней.
     </div>
 </body>
-
 </html>
