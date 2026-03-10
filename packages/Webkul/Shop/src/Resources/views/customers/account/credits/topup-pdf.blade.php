@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
+
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
@@ -8,91 +9,111 @@
     <style>
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 12px;
+            font-size: 11px;
             color: #000;
             line-height: 1.4;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-        .bank-details th, .bank-details td {
+
+        .bank-details th,
+        .bank-details td {
             border: 1px solid #000;
             padding: 4px;
             vertical-align: top;
         }
+
         .header {
             font-weight: bold;
             font-size: 16px;
             border-bottom: 2px solid #000;
             margin-bottom: 10px;
             padding-bottom: 5px;
+            margin-top: 20px;
         }
+
         .info-line {
             margin-bottom: 10px;
         }
+
         .info-line b {
             width: 100px;
             display: inline-block;
         }
+
         .items th {
             border: 2px solid #000;
             padding: 5px;
             background: #eee;
             text-align: center;
         }
+
         .items td {
             border: 1px solid #000;
             padding: 5px;
         }
+
         .totals td {
             text-align: right;
             padding: 2px 5px;
         }
+
         .totals .label {
             font-weight: bold;
         }
+
         .summary {
             margin-top: 20px;
-            border-top: 1px solid #000;
+            border-top: 2px solid #000;
             padding-top: 10px;
         }
+
         .signatures {
             margin-top: 40px;
             position: relative;
         }
+
+        .sig-block {
+            display: inline-block;
+            width: 45%;
+            vertical-align: top;
+        }
+
         .sig-line {
             display: inline-block;
-            width: 250px;
+            width: 150px;
             border-bottom: 1px solid #000;
-            margin: 0 10px;
+            margin: 0 5px;
         }
+
         .seal-container {
             position: absolute;
-            top: -40px;
-            left: 50px;
-            z-index: -1;
+            top: -30px;
+            left: 200px;
+            z-index: 10;
         }
+
         .seal-container img {
-            width: 150px;
-            opacity: 0.7;
-        }
-        .no-wrap {
-            white-space: nowrap;
+            width: 160px;
+            opacity: 0.8;
         }
     </style>
 </head>
+
 <body>
     {{-- Bank Details Plate --}}
     <table class="bank-details">
         <tr>
-            <td colspan="2" rowspan="2">
-                {{ $billingEntity->bank_name }}<br/>
+            <td colspan="2" rowspan="2" style="width: 60%">
+                {{ $billingEntity->bank_name }}<br />
                 <small>Банк получателя</small>
             </td>
-            <td>БИК</td>
-            <td>{{ $billingEntity->bic }}</td>
+            <td style="width: 10%">БИК</td>
+            <td style="width: 30%">{{ $billingEntity->bic }}</td>
         </tr>
         <tr>
             <td>Сч. №</td>
@@ -101,12 +122,12 @@
         <tr>
             <td>ИНН {{ $billingEntity->inn }}</td>
             <td>КПП {{ $billingEntity->kpp }}</td>
-            <td rowspan="2">Сч. №</td>
-            <td rowspan="2">{{ $billingEntity->settlement_account }}</td>
+            <td rowspan="2" style="vertical-align: middle;">Сч. №</td>
+            <td rowspan="2" style="vertical-align: middle;">{{ $billingEntity->settlement_account }}</td>
         </tr>
         <tr>
             <td colspan="2">
-                {{ $billingEntity->name }}<br/>
+                {{ $billingEntity->name }}<br />
                 <small>Получатель</small>
             </td>
         </tr>
@@ -117,15 +138,22 @@
     </div>
 
     <div class="info-line">
-        <b>Поставщик:</b> {{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}, КПП {{ $billingEntity->kpp }}, {{ $billingEntity->address }}
-    </div>
-
-    <div class="info-line">
-        <b>Покупатель:</b> {{ $organization->name }}, ИНН {{ $organization->inn }}, КПП {{ $organization->kpp }}, {{ $organization->address }}
-    </div>
-
-    <div class="info-line">
-        <b>Основание:</b> Пополнение баланса в личном кабинете.
+        <table style="margin-bottom: 0;">
+            <tr>
+                <td style="width: 100px; vertical-align: top;"><b>Поставщик:</b></td>
+                <td>{{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}, КПП {{ $billingEntity->kpp }},
+                    {{ $billingEntity->address }}</td>
+            </tr>
+            <tr>
+                <td style="padding-top: 10px;"><b>Покупатель:</b></td>
+                <td style="padding-top: 10px;">{{ $organization->name }}, ИНН {{ $organization->inn }}, КПП
+                    {{ $organization->kpp }}, {{ $organization->address }}</td>
+            </tr>
+            <tr>
+                <td style="padding-top: 10px;"><b>Основание:</b></td>
+                <td style="padding-top: 10px;">Пополнение баланса в личном кабинете.</td>
+            </tr>
+        </table>
     </div>
 
     <table class="items">
@@ -151,17 +179,59 @@
         </tbody>
     </table>
 
-                            <img src="{{ public_path('storage/' . $billingEntity->seal) }}"
-                                style="width: 150px; height: auto; opacity: 0.8;">
-                        </div>
-                    @endif
-                </td>
-            </tr>
-        </table>
+    <table class="totals" style="width: 30%; float: right; margin-bottom: 10px;">
+        <tr>
+            <td class="label">Итого:</td>
+            <td>{{ number_format($transaction->amount, 2, ',', ' ') }}</td>
+        </tr>
+        <tr>
+            <td class="label" style="white-space: nowrap;">
+                @if($billingEntity->tax_regime == 'usn-6')
+                    Без НДС:
+                @else
+                    В т.ч. НДС (20%):
+                @endif
+            </td>
+            <td>
+                @if($billingEntity->tax_regime == 'usn-6')
+                    -
+                @else
+                    {{ number_format($transaction->amount * 0.2, 2, ',', ' ') }}
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <td class="label">Всего к оплате:</td>
+            <td style="font-weight: bold;">{{ number_format($transaction->amount, 2, ',', ' ') }}</td>
+        </tr>
+    </table>
+    <div style="clear: both;"></div>
+
+    <div class="summary">
+        Всего наименований 1, на сумму {{ number_format($transaction->amount, 2, ',', ' ') }} руб.<br />
+        <b>{{ $amountInWords }}</b>
     </div>
 
-    <div class="footer">
-        <p>Просим Вас произвести оплату в течение 3-х банковских дней.</p>
+    <div class="signatures">
+        @if($billingEntity->seal)
+            <div class="seal-container">
+                <img src="{{ public_path('storage/' . $billingEntity->seal) }}" />
+            </div>
+        @endif
+
+        <div style="margin-top: 20px;">
+            <div class="sig-block">
+                Руководитель <span class="sig-line"></span> ({{ $billingEntity->director_name }})
+            </div>
+
+            <div class="sig-block" style="margin-left: 5%;">
+                Бухгалтер <span class="sig-line"></span> ({{ $billingEntity->accountant_name }})
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; font-size: 10px; color: #555;">
+        Просим Вас произвести оплату в течение 3-х банковских дней.
     </div>
 </body>
 
