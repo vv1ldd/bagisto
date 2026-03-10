@@ -53,8 +53,7 @@ class CreditController extends Controller
 
         $organizations = $customer->organizations;
 
-        $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
-        $defaultBillingEntity = $this->billingEntityRepository->find($defaultBillingEntityId);
+        $defaultBillingEntity = $this->billingEntityRepository->getDefault();
 
         return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations', 'defaultBillingEntity'));
     }
@@ -83,18 +82,16 @@ class CreditController extends Controller
     public function storeInvoice()
     {
         try {
-            $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
+            $billingEntity = $this->billingEntityRepository->getDefault();
 
-            if (!$defaultBillingEntityId) {
-                $defaultBillingEntityId = $this->billingEntityRepository->all()->first()?->id;
-            }
-
-            if (!$defaultBillingEntityId) {
+            if (!$billingEntity) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No billing entity configured for top-ups.'
                 ], 400);
             }
+
+            $defaultBillingEntityId = $billingEntity->id;
 
             $this->validate(request(), [
                 'amount' => 'required|numeric|min:0.01',

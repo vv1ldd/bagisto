@@ -38,6 +38,16 @@ class BillingEntityRepository extends Repository
     }
 
     /**
+     * Get the default billing entity.
+     *
+     * @return \Webkul\Core\Contracts\BillingEntity|null
+     */
+    public function getDefault()
+    {
+        return $this->model->query()->where('is_default', 1)->first() ?: $this->model->query()->first();
+    }
+
+    /**
      * Upload seal image.
      *
      * @param array $data
