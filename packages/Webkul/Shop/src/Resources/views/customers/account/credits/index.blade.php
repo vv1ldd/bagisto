@@ -10,7 +10,7 @@
         </button>
     </x-slot:headerActions>
 
-    <div class="max-w-lg mx-auto px-4 py-6">
+    <div class="mx-auto py-6">
 
         @php
             $user = auth()->guard('customer')->user();
@@ -35,7 +35,7 @@
 
         {{-- Step 1: Dashboard --}}
         <div id="step-dashboard"
-            class="ios-group p-6 bg-white  shadow-md relative overflow-hidden active:scale-[0.99] transition-transform">
+            class="ios-group p-5 bg-white  shadow-md relative overflow-hidden active:scale-[0.99] transition-transform">
             <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5  blur-3xl"></div>
             <div class="flex flex-col gap-2 relative z-10">
                 {{-- Row 1: label + badges --}}
@@ -402,14 +402,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                                                                            event.preventDefault(); 
-                                                                                                            const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                                            if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                                                document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                                            } else if(innPrompt !== null) {
-                                                                                                                alert('ИНН введен неверно. Удаление отменено.');
-                                                                                                            }
-                                                                                                        ">
+                                                                                                                                    event.preventDefault(); 
+                                                                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                                                    } else if(innPrompt !== null) {
+                                                                                                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                                                    }
+                                                                                                                                ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -433,7 +433,7 @@
         </div>
 
         {{-- Step 2.7: Add Organization --}}
-        <div id="step-add-organization" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-6">
+        <div id="step-add-organization" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
             <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
                 <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
                     Добавление организации
@@ -624,7 +624,7 @@
         </div>
 
         {{-- Step: Add Bank Account (SPA replacement for Edit Organization) --}}
-        <div id="step-add-bank-account" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-6">
+        <div id="step-add-bank-account" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
             <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
                 <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
                     Добавление расчетного счета
@@ -713,7 +713,7 @@
 
         {{-- Step: Organization Details --}}
         <div id="step-organization-details"
-            class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-6">
+            class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
             <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
                 <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
                     Детали организации
@@ -773,7 +773,7 @@
         </div>
 
         {{-- Step: Deposit Type Selection --}}
-        <div id="step-deposit-type" class="hidden ios-group p-6 bg-white shadow-md">
+        <div id="step-deposit-type" class="hidden ios-group p-5 bg-white shadow-md">
             <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 text-center opacity-70">
                 Способ пополнения
             </p>
@@ -904,86 +904,86 @@
                 <div class="bg-white  shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
                     {{-- Clickable Area for Deposit --}}
                     <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')"
-                        class="flex-1 flex gap-4 p-6 min-w-0 text-left cursor-pointer items-center">
-                        {{-- Icon Column --}}
-                        <div class="relative shrink-0">
-                            <div class="w-[52px] h-[52px]  flex items-center justify-center text-white text-[22px] font-black shadow-sm"
-                                style="background: {{ $coinColor }}">
-                                {{ $m[2] }}
-                            </div>
-                        </div>
-
-                        {{-- Main Content Column --}}
-                        <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-                            {{-- Header: Verified Icon + Alias --}}
-                            <div class="flex items-center gap-1.5 min-w-0">
-                                @if($address->isVerified())
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0"
-                                        viewBox="0 0 24 24" fill="currentColor">
-                                        <path
-                                            d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
-                                    </svg>
-                                @endif
-                                <span
-                                    class="text-[18px] font-black text-black truncate tracking-tight">{{ $fullAlias }}</span>
-                            </div>
-
-                            {{-- Network Breadcrumbs + Address (Premium View) --}}
-                            <div
-                                class="flex items-center gap-2 text-[11px] font-black text-zinc-400 uppercase tracking-widest opacity-80">
-                                <span class="shrink-0">{{ $m[5] }}</span>
-                                <span class="shrink-0 text-zinc-200">›</span>
-                                <span class="shrink-0">{{ $m[1] }}</span>
-                                <span class="shrink-0 text-zinc-200">›</span>
-                                <div class="flex items-center gap-1.5 min-w-0 pr-2">
-                                    <code
-                                        class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
+                        class="flex-1 flex gap-4 p-5 min-w-0 text-left cursor-pointer items-center">
+                            {{-- Icon Column --}}
+                            <div class="relative shrink-0">
+                                <div class="w-[52px] h-[52px]  flex items-center justify-center text-white text-[22px] font-black shadow-sm"
+                                    style="background: {{ $coinColor }}">
+                                    {{ $m[2] }}
                                 </div>
                             </div>
 
-                            {{-- Balance + Sync Status --}}
-                            <div class="flex items-center gap-3 mt-0.5">
-                                <span class="text-[16px] font-black font-mono text-black">
-                                    {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                            {{-- Main Content Column --}}
+                            <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                                {{-- Header: Verified Icon + Alias --}}
+                                <div class="flex items-center gap-1.5 min-w-0">
+                                    @if($address->isVerified())
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0"
+                                            viewBox="0 0 24 24" fill="currentColor">
+                                            <path
+                                                d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
+                                        </svg>
+                                    @endif
                                     <span
-                                        class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.1em] ml-1">{{ $m[1] }}</span>
-                                </span>
-                                <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                        class="text-[18px] font-black text-black truncate tracking-tight">{{ $fullAlias }}</span>
+                                </div>
+
+                                {{-- Network Breadcrumbs + Address (Premium View) --}}
+                                <div
+                                    class="flex items-center gap-2 text-[11px] font-black text-zinc-400 uppercase tracking-widest opacity-80">
+                                    <span class="shrink-0">{{ $m[5] }}</span>
+                                    <span class="shrink-0 text-zinc-200">›</span>
+                                    <span class="shrink-0">{{ $m[1] }}</span>
+                                    <span class="shrink-0 text-zinc-200">›</span>
+                                    <div class="flex items-center gap-1.5 min-w-0 pr-2">
+                                        <code
+                                            class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
+                                    </div>
+                                </div>
+
+                                {{-- Balance + Sync Status --}}
+                                <div class="flex items-center gap-3 mt-0.5">
+                                    <span class="text-[16px] font-black font-mono text-black">
+                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                        <span
+                                            class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.1em] ml-1">{{ $m[1] }}</span>
+                                    </span>
+                                    <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        @if($address->updated_at)
+                                            {{ $address->updated_at->diffForHumans() }}
+                                        @else
+                                            не синхронизирован
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Removal of redundant chevron --}}
+                        </button>
+
+                        {{-- Action Column (Delete) --}}
+                        <div class="shrink-0 flex items-center pr-8 pl-2 border-l border-zinc-50 ml-2">
+                            <form id="delete-wallet-form-{{ $address->id }}"
+                                action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
+                                class="inline">
+                                @csrf @method('DELETE')
+                                <button type="button"
+                                    onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
+                                    class="w-[42px] h-[42px]  flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                                         stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
-                                    @if($address->updated_at)
-                                        {{ $address->updated_at->diffForHumans() }}
-                                    @else
-                                        не синхронизирован
-                                    @endif
-                                </div>
-                            </div>
+                                </button>
+                            </form>
                         </div>
-
-                        {{-- Removal of redundant chevron --}}
-                    </button>
-
-                    {{-- Action Column (Delete) --}}
-                    <div class="shrink-0 flex items-center pr-8 pl-2 border-l border-zinc-50 ml-2">
-                        <form id="delete-wallet-form-{{ $address->id }}"
-                            action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
-                            class="inline">
-                            @csrf @method('DELETE')
-                            <button type="button"
-                                onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
-                                class="w-[42px] h-[42px]  flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </form>
                     </div>
-                </div>
             @endforeach
 
             <button onclick="goToAddWallet()"
@@ -1000,7 +1000,7 @@
             </p>
 
             @forelse($organizations as $org)
-                <div class="bg-white border border-zinc-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/50 transition-all group/card relative flex flex-col p-6 cursor-pointer"
+                <div class="bg-white border border-zinc-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/50 transition-all group/card relative flex flex-col p-5 cursor-pointer"
                     onclick="selectTopupOrg('{{ $org->id }}', '{{ $org->name }}')">
                     <div class="flex items-start gap-5">
                         {{-- Icon Column --}}
@@ -1068,7 +1068,7 @@
 
         {{-- Step: Top-up Details --}}
         <div id="step-topup-details" class="hidden space-y-6">
-            <div class="bg-white border border-zinc-100 shadow-xl p-8">
+            <div class="bg-white border border-zinc-100 shadow-xl p-5">
                 <div class="flex items-center gap-4 mb-10 border-b border-zinc-50 pb-8">
                     <div class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">
                         🏢</div>
@@ -1146,7 +1146,7 @@
 
         {{-- Step: B2C Details --}}
         <div id="step-b2c-details" class="hidden space-y-4">
-            <div class="bg-white shadow-sm border border-zinc-100 p-6 md:p-8 flex flex-col items-center text-center">
+            <div class="bg-white shadow-sm border border-zinc-100 p-5 flex flex-col items-center text-center">
                 <div class="w-16 h-16 bg-blue-50 flex items-center justify-center mb-6 text-3xl shadow-inner">🏦</div>
                 <h3 class="text-[18px] font-black text-zinc-900 mb-2 tracking-tight">Реквизиты для перевода</h3>
                 <p class="text-[13px] text-zinc-400 mb-8 max-w-[280px] leading-relaxed">
@@ -1219,7 +1219,7 @@
                     $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
                 @endphp
                 <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
-                    <div class="bg-white  shadow-sm overflow-hidden p-6 md:p-8 flex flex-col items-center">
+                    <div class="bg-white  shadow-sm overflow-hidden p-5 flex flex-col items-center">
 
                         {{-- QR Code Section --}}
                         <div class="relative inline-block mt-4 mb-2">
@@ -1240,8 +1240,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                                    {{ $address->address }}
-                                                                                                                                                                                                                                </code>
+                                                                                                                                                                                                                                            {{ $address->address }}
+                                                                                                                                                                                                                                        </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1269,7 +1269,7 @@
 
         {{-- Step: Add Wallet --}}
         <div id="step-add-wallet" class="hidden space-y-8">
-            <div class="bg-white border border-zinc-100 shadow-sm p-6 md:p-10">
+            <div class="bg-white border border-zinc-100 shadow-sm p-5 md:p-6">
                 {{-- Coin Selection --}}
                 <div class="space-y-4">
                     <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Выберите актив
@@ -1883,7 +1883,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                                            });
+                                                                                                                                                                                                                    });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
@@ -1984,10 +1984,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                        `;
+                                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
@@ -2052,9 +2052,9 @@
                                         div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                        `;
+                                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
