@@ -101,7 +101,7 @@ export default {
 
     mounted() {
         // Listen for incoming call signals (only for logged in users)
-        const customerId = window.app.config.globalProperties.$shop.customer_id;
+        const customerId = this.$shop.customer_id;
         
         if (window.Echo && customerId) {
             window.Echo.private(`user.${customerId}`)
@@ -112,7 +112,7 @@ export default {
 
         // Global event to start a call
         this.$emitter.on('start-call', (payload) => {
-            if (!customerId) {
+            if (!this.$shop.customer_id) {
                 this.$emitter.emit('add-flash', { 
                     type: 'warning', 
                     message: 'Пожалуйста, войдите в систему, чтобы совершить вызов' 
