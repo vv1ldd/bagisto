@@ -58,15 +58,15 @@
 
         <script>
             window.Laravel = {
-                reverbAppKey: '{{ env('REVERB_APP_KEY') }}',
-                reverbHost: '{{ env('REVERB_HOST') }}',
-                reverbPort: '{{ env('REVERB_PORT', 8088) }}',
-                reverbScheme: '{{ env('REVERB_SCHEME', 'https') }}',
-                pusherAppKey: '{{ env('PUSHER_APP_KEY') }}',
-                pusherHost: '{{ env('PUSHER_HOST') }}',
-                pusherPort: '{{ env('PUSHER_PORT', 8088) }}',
-                pusherScheme: '{{ env('PUSHER_SCHEME', 'https') }}',
-                pusherCluster: '{{ env('PUSHER_APP_CLUSTER', 'mt1') }}',
+                reverbAppKey: '{{ config('broadcasting.connections.reverb.key') }}',
+                reverbHost: '{{ config('broadcasting.connections.reverb.options.host') }}',
+                reverbPort: '{{ config('broadcasting.connections.reverb.options.port') }}',
+                reverbScheme: '{{ config('broadcasting.connections.reverb.options.scheme') }}',
+                pusherAppKey: '{{ config('broadcasting.connections.pusher.key') }}',
+                pusherHost: '{{ config('broadcasting.connections.pusher.options.host') }}',
+                pusherPort: '{{ config('broadcasting.connections.pusher.options.port') }}',
+                pusherScheme: '{{ config('broadcasting.connections.pusher.options.scheme') }}',
+                pusherCluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
             };
         </script>
 
