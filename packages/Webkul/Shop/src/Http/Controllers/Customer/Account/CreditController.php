@@ -80,59 +80,68 @@ class CreditController extends Controller
      */
     public function storeTopup()
     {
-        $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
-
-        if (!$defaultBillingEntityId) {
-            $defaultBillingEntityId = $this->billingEntityRepository->all()->first()?->id;
-        }
-
-        if (!$defaultBillingEntityId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No billing entity configured for top-ups.'
-            ], 400);
-        }
-
-        $this->validate(request(), [
-            'amount' => 'required|numeric|min:0.01',
-            'organization_id' => 'required|exists:customer_organizations,id',
-        ]);
-
-        $customer = auth()->guard('customer')->user();
-
-        $transaction = $this->customerTransactionRepository->create([
-            'customer_id' => $customer->id,
-            'amount' => request('amount'),
-            'type' => 'deposit',
-            'status' => 'pending',
-            'notes' => 'Top-up via B2B Bank Transfer',
-            'metadata' => [
-                'organization_id' => request('organization_id'),
-                'billing_entity_id' => $defaultBillingEntityId,
-            ],
-            'currency_code' => core()->getCurrentCurrencyCode(),
-        ]);
-
         try {
-            $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
-            $billingEntity = $this->billingEntityRepository->find($transaction->metadata['billing_entity_id']);
+            $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
 
-            $pdf = PDF::loadView('shop::customers.account.credits.topup-pdf', [
-                'transaction' => $transaction,
-                'organization' => $organization,
-                'billingEntity' => $billingEntity,
+            if (!$defaultBillingEntityId) {
+                $defaultBillingEntityId = $this->billingEntityRepository->all()->first()?->id;
+            }
+
+            if (!$defaultBillingEntityId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No billing entity configured for top-ups.'
+                ], 400);
+            }
+
+            $this->validate(request(), [
+                'amount' => 'required|numeric|min:0.01',
+                'organization_id' => 'required|exists:customer_organizations,id',
             ]);
 
-            Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
+            $customer = auth()->guard('customer')->user();
+
+            $transaction = $this->customerTransactionRepository->create([
+                'customer_id' => $customer->id,
+                'amount' => request('amount'),
+                'type' => 'deposit',
+                'status' => 'pending',
+                'notes' => 'Top-up via B2B Bank Transfer',
+                'metadata' => [
+                    'organization_id' => request('organization_id'),
+                    'billing_entity_id' => $defaultBillingEntityId,
+                ],
+                'currency_code' => core()->getCurrentCurrencyCode(),
+            ]);
+
+            try {
+                $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
+                $billingEntity = $this->billingEntityRepository->find($transaction->metadata['billing_entity_id']);
+
+                $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', [
+                    'transaction' => $transaction,
+                    'organization' => $organization,
+                    'billingEntity' => $billingEntity,
+                ]);
+
+                Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
+            } catch (\Exception $e) {
+                report($e);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => trans('shop::app.customers.account.topup.success'),
+                'transaction_id' => $transaction->id,
+            ]);
         } catch (\Exception $e) {
             report($e);
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => trans('shop::app.customers.account.topup.success'),
-            'transaction_id' => $transaction->id,
-        ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal Server Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
