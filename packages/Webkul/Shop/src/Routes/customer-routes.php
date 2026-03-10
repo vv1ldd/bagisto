@@ -322,6 +322,15 @@ Route::prefix('customer')->group(function () {
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CallController::class)->prefix('calls')->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.calls.index');
                 });
+
+                /**
+                 * Matrix / Element X Integration
+                 */
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\MatrixController::class)->prefix('matrix')->group(function () {
+                    Route::get('redirect', 'redirect')->name('shop.customers.account.matrix.redirect');
+                    Route::post('verify', 'verifyCredentials')->name('shop.customers.account.matrix.verify');
+                });
+
             });
         });
     });

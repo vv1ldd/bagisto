@@ -38,9 +38,30 @@
             </div>
         @endif
 
-        <div class="mt-10 p-4 bg-zinc-50 border border-zinc-100 text-[12px] text-zinc-500 leading-relaxed">
-            <p><strong>Безопасность:</strong> Все звонки осуществляются напрямую между устройствами (P2P) и не
-                записываются на сервере. Для работы функции требуется доступ к микрофону и камере (опционально).</p>
+        <div class="mt-10 p-6 bg-zinc-900 rounded-3xl text-white shadow-xl relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-transparent pointer-events-none">
+            </div>
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h3 class="text-xl font-bold mb-2 flex items-center gap-2">
+                        <span class="text-emerald-400">❖</span> Element X
+                    </h3>
+                    <p class="text-zinc-400 text-sm leading-relaxed max-w-md">
+                        Для групповых видеоконференций, обмена файлами и защищенных чатов с инвесторами используйте наше
+                        корпоративное приложение на базе протокола Matrix.
+                    </p>
+                </div>
+                <a href="{{ route('shop.customers.account.matrix.redirect') }}" target="_blank"
+                    class="shrink-0 bg-emerald-500 hover:bg-emerald-400 text-white px-8 py-3 rounded-full font-bold transition-all shadow-lg shadow-emerald-500/30 active:scale-95 flex items-center gap-2">
+                    Открыть Element X
+                    <span class="icon-arrow-right text-sm"></span>
+                </a>
+            </div>
+        </div>
+
+        <div class="mt-8 p-4 bg-zinc-50 border border-zinc-100 text-[12px] text-zinc-500 leading-relaxed rounded-2xl">
+            <p><strong>Безопасность:</strong> Все P2P звонки осуществляются напрямую между устройствами и не
+                записываются на сервере. Чаты в Element X защищены сквозным E2E шифрованием по умолчанию.</p>
         </div>
     </div>
 </x-shop::layouts.account>

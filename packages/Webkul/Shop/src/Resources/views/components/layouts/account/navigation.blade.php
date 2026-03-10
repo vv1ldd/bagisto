@@ -44,8 +44,20 @@
             @if ($customer->is_call_enabled)
                 <div class="ios-nav-row !py-3 bg-zinc-50 border-t border-zinc-100 cursor-pointer transition active:bg-zinc-100"
                     onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
-                    <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
-                        📞 Звонки P2P
+                    <span
+                        class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold flex items-center gap-2">
+                        <span>📞</span> Звонки P2P
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <span class="icon-arrow-right text-zinc-200 text-lg ml-0.5"></span>
+                    </span>
+                </div>
+
+                <div class="ios-nav-row !py-3 bg-zinc-50 border-t border-zinc-100 cursor-pointer transition active:bg-zinc-100"
+                    onclick="window.open('{{ route('shop.customers.account.matrix.redirect') }}', '_blank')">
+                    <span
+                        class="ios-nav-label text-xs uppercase tracking-wider text-emerald-600 font-bold flex items-center gap-2">
+                        <span>❖</span> Element X
                     </span>
                     <span class="flex items-center gap-2">
                         <span class="icon-arrow-right text-zinc-200 text-lg ml-0.5"></span>
