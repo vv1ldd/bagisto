@@ -237,6 +237,9 @@
                 let orgTimeout = null;
 
                 function handleOrgInput(e) {
+                    // Prevent autocomplete from triggering on programmatic 'input' events (after selection)
+                    if (e && !e.isTrusted) return;
+
                     clearTimeout(orgTimeout);
                     const query = e.target.value;
                     const orgSuggestionsBox = document.getElementById('org-suggestions');
@@ -266,10 +269,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                                        <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                                        <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                                    `;
+                                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                        `;
 
                                         div.onclick = () => {
                                             const nameInput = document.getElementById('org-name');
@@ -316,6 +319,9 @@
                 let bankTimeout = null;
 
                 function handleBankInput(e) {
+                    // Prevent autocomplete from triggering on programmatic 'input' events (after selection)
+                    if (e && !e.isTrusted) return;
+
                     clearTimeout(bankTimeout);
                     const query = e.target.value;
                     const bankSuggestionsBox = document.getElementById('bank-suggestions');
@@ -339,9 +345,9 @@
                                         div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                                        <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                                        <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                                    `;
+                                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                        `;
 
                                         div.onclick = () => {
                                             const bicInput = document.getElementById('bank-bic');
@@ -357,6 +363,7 @@
                                             });
 
                                             bankSuggestionsBox.classList.add('hidden');
+                                            bankSuggestionsBox.innerHTML = '';
 
                                             // Focus on settlement account next
                                             const bankAccountInput = document.getElementById('bank-account');
