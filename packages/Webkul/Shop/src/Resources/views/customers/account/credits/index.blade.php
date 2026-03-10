@@ -463,15 +463,7 @@
                                 </div>
                             </div>
 
-                            {{-- Selection Indicator --}}
-                            <div
-                                class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-violet-500 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5l7 7-7 7" />
-                                </svg>
-                            </div>
+                            {{-- Removal of redundant chevron --}}
                         </button>
 
                         {{-- Action Column (Delete) --}}
@@ -560,19 +552,8 @@
                                         </div>
                                     </div>
 
-                                    {{-- Selection Indicator --}}
-                                    <div
-                                        class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-emerald-500 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </div>
+                                    {{-- Removal of redundant chevron --}}
                                 </button>
-
-                                @csrf
-                                </form>
                             </div>
                         </div>
 
@@ -777,8 +758,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                            {{ $address->address }}
-                                                                                                                                                        </code>
+                                                                                                                                                                {{ $address->address }}
+                                                                                                                                                            </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1174,7 +1155,7 @@
                         @endif
                     @endif
 
-                                                                                                                                    });
+                                                                                                                                        });
 
                 // --- ORGANIZATION WIZARD SCRIPTS ---
                 window.isValidBankAccount = function (bic, account) {

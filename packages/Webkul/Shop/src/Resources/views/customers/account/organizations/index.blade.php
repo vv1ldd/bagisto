@@ -21,7 +21,7 @@
                         <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
                             class="flex-grow pr-4 block">
                             <div class="mb-1">
-                                <p class="text-[17px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors">
+                                <p class="text-[17px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-all">
                                     {{ $organization->name }}
                                 </p>
                             </div>
@@ -147,14 +147,14 @@
                                         </form>
                                         <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                             onclick="
-                                                                                                                        event.preventDefault(); 
-                                                                                                                        const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                                                        if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                                                            document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                                                        } else if(innPrompt !== null) {
-                                                                                                                            alert('ИНН введен неверно. Удаление отменено.');
-                                                                                                                        }
-                                                                                                                    ">
+                                                                                                                                        event.preventDefault(); 
+                                                                                                                                        const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                                                        if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                                                            document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                                                        } else if(innPrompt !== null) {
+                                                                                                                                            alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                                                        }
+                                                                                                                                    ">
                                             <span class="icon-bin text-xl"></span>
                                             @lang('shop::app.customers.account.organizations.index.delete')
                                         </a>
@@ -167,10 +167,10 @@
 
                 <!-- Add New Organization Inline Button -->
                 <a href="{{ route('shop.customers.account.organizations.create') }}"
-                    class="flex items-center justify-center p-5 border-b border-zinc-50 hover:bg-zinc-50 transition-colors text-[14px] font-bold text-[#7C45F5] group">
+                    class="flex items-center justify-center p-6 border-b border-zinc-50 hover:bg-violet-50/30 transition-all text-[14px] font-bold text-[#7C45F5] group">
                     <span
-                        class="w-8 h-8 rounded-full bg-[#7C45F5]/10 flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all">
-                        <span class="icon-plus text-sm"></span>
+                        class="w-10 h-10 bg-violet-100/50 text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all shadow-sm">
+                        <span class="icon-plus text-base"></span>
                     </span>
                     Добавить еще одну организацию
                 </a>

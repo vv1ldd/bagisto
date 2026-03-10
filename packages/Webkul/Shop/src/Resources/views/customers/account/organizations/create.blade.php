@@ -211,33 +211,35 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const step1 = document.getElementById('step-1-container');
-                const step2 = document.getElementById('step-2-container');
-                const nextBtn = document.getElementById('next-to-step-2');
-                const backBtn = document.getElementById('back-to-step-1');
-                const orgNameInput = document.getElementById('org-name');
-                const orgInnInput = document.getElementById('org-inn');
+                // Step Switching using Event Delegation
+                document.addEventListener('click', (e) => {
+                    const nextBtn = e.target.closest('#next-to-step-2');
+                    const backBtn = e.target.closest('#back-to-step-1');
 
-                // Step Switching
-                nextBtn.addEventListener('click', () => {
-                    const currentInnInput = document.getElementById('org-inn');
-                    const currentNameInput = document.getElementById('org-name');
+                    if (nextBtn) {
+                        const step1 = document.getElementById('step-1-container');
+                        const step2 = document.getElementById('step-2-container');
+                        const currentInnInput = document.getElementById('org-inn');
+                        const currentNameInput = document.getElementById('org-name');
 
-                    const inn = currentInnInput ? currentInnInput.value.replace(/\D/g, '') : '';
-                    const name = currentNameInput ? currentNameInput.value.trim() : '';
+                        const inn = currentInnInput ? currentInnInput.value.replace(/\D/g, '') : '';
+                        const name = currentNameInput ? currentNameInput.value.trim() : '';
 
-                    if (!name || (inn.length !== 10 && inn.length !== 12)) {
-                        alert('Пожалуйста, выберите организацию или введите корректный ИНН (10 или 12 цифр)');
-                        return;
+                        if (!name || (inn.length !== 10 && inn.length !== 12)) {
+                            alert('Пожалуйста, выберите организацию или введите корректный ИНН (10 или 12 цифр)');
+                            return;
+                        }
+
+                        if (step1) step1.classList.add('hidden');
+                        if (step2) step2.classList.remove('hidden');
                     }
 
-                    step1.classList.add('hidden');
-                    step2.classList.remove('hidden');
-                });
-
-                backBtn.addEventListener('click', () => {
-                    step2.classList.add('hidden');
-                    step1.classList.remove('hidden');
+                    if (backBtn) {
+                        const step1 = document.getElementById('step-1-container');
+                        const step2 = document.getElementById('step-2-container');
+                        if (step2) step2.classList.add('hidden');
+                        if (step1) step1.classList.remove('hidden');
+                    }
                 });
 
                 // Formatting for numbers
@@ -305,10 +307,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                        `;
+                                                                <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                            `;
 
                                         div.onclick = () => {
                                             const nameInput = document.getElementById('org-name');
@@ -377,9 +379,9 @@
                                         div.className = 'p-3 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                        `;
+                                                                <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                            `;
 
                                         div.onclick = () => {
                                             const bicInput = document.getElementById('bank-bic');
