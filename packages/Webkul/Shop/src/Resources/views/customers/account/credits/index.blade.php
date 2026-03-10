@@ -525,12 +525,33 @@
                                 <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
                                     <h4
                                         class="text-[16px] font-bold text-zinc-900 leading-tight group-hover/card:text-emerald-700 transition-colors">
-                                        {{ $org->name }}</h4>
+                                        {{ $org->name }}
+                                    </h4>
                                     <div class="flex items-center gap-3 text-[12px] text-zinc-500 font-mono">
-                                        <span>ИНН: {{ $org->inn }}</span>
+                                        <div class="flex items-center gap-1 group/inn">
+                                            <span>ИНН: {{ $org->inn }}</span>
+                                            <button type="button" onclick="event.stopPropagation(); copyAddr('{{ $org->inn }}', this)"
+                                                class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/inn:opacity-100" title="Копировать ИНН">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                         @if($org->kpp)
-                                            <span class="text-zinc-300">|</span>
-                                            <span>КПП: {{ $org->kpp }}</span>
+                                            <span class="text-zinc-300 hidden sm:inline">|</span>
+                                            <div class="flex items-center gap-1 group/kpp">
+                                                <span>КПП: {{ $org->kpp }}</span>
+                                                <button type="button" onclick="event.stopPropagation(); copyAddr('{{ $org->kpp }}', this)"
+                                                    class="text-zinc-300 hover:text-emerald-600 transition-colors shrink-0 p-1 sm:opacity-0 sm:group-hover/kpp:opacity-100" title="Копировать КПП">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>
@@ -601,10 +622,7 @@
                 @empty
                 @endforelse
 
-                <button type="button" onclick="goToAddOrganization()"
-                    class="w-full py-5 mt-4 border border-zinc-200 bg-white shadow-sm text-emerald-600 font-bold hover:bg-emerald-50 hover:border-emerald-200 transition-all flex items-center justify-center gap-3">
-                    <span class="text-[15px]">+ Добавить организацию</span>
-                </button>
+                <!-- Organization add button removed per requested flow -->
             </div>
 
             {{-- Step: Top-up Details --}}
@@ -769,8 +787,8 @@
                             <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                                 onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                                 <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                {{ $address->address }}
-                                                                                                                                            </code>
+                                                                                                                                                    {{ $address->address }}
+                                                                                                                                                </code>
                                 <div
                                     class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                     <span class="copy-txt">Скопировать</span>
@@ -1182,7 +1200,7 @@
                                     document.getElementById('display-bic').innerText = "{{ old('bic') }}";
                                     document.getElementById('step-2-details').classList.remove('hidden');
                                 @endif
-                                                                                                                                                                                        }, 100);
+                                                                                                                                                                                                    }, 100);
                         @endif
                     @endif
 
@@ -1194,7 +1212,7 @@
                         @endif
                     @endif
 
-                                                                                                                        });
+                                                                                                                            });
 
                 // --- ORGANIZATION WIZARD SCRIPTS ---
                 window.isValidBankAccount = function (bic, account) {
