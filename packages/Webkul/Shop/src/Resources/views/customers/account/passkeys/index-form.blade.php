@@ -232,14 +232,52 @@
                         } else {
                             const errorData = await registrationResponse.json();
                             console.error('Registration rejected by server:', errorData);
-                            alert(errorData.message || 'Ошибка сохранения Passkey');
+                            window.showAlert('error', 'Ошибка', errorData.message || 'Ошибка сохранения Passkey');
                         }
                     } catch (error) {
                         console.error('Passkey registration error:', error);
-                        alert('Ошибка: ' + error.message);
+                        
+                        let message = error.message;
+                        let title = 'Ошибка';
+                        let type = 'error';
+
+                        // Handle cancellation
+                        if (error.name === 'NotAllowedError' || message.includes('отмена') || message.includes('cancelled')) {
+                            title = 'Запрос отменен';
+                            message = 'Действие отменено пользователем.';
+                            type = 'warning';
+                        }
+
+                        window.showAlert(type, title, message);
                     } finally {
                         if (button) button.disabled = false;
                         if (buttonText) buttonText.innerText = originalText;
+                    }
+                };
+
+                // Global alert handler for Meanly style
+                window.showAlert = function (type, title, message) {
+                    // Try to use Bagisto's flash emitter first
+                    if (window.app && window.app.config && window.app.config.globalProperties && window.app.config.globalProperties.$emitter) {
+                        window.app.config.globalProperties.$emitter.emit('add-flash', { type, message });
+                    } else {
+                        // Fallback to Meanly-styled alert
+                        const alertBox = document.createElement('div');
+                        alertBox.className = `fixed bottom-10 left-1/2 -translate-x-1/2 z-[10001] p-5 font-bold text-white shadow-2xl transition-all border-l-4 min-w-[300px] animate-in slide-in-from-bottom-5 duration-300 ${type === 'success' ? 'bg-zinc-900 border-green-500' : (type === 'warning' ? 'bg-zinc-900 border-orange-500' : 'bg-red-600 border-white')}`;
+                        alertBox.innerHTML = `
+                            <div class="flex items-start gap-4">
+                                <div class="flex-1">
+                                    <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-1">${title}</div>
+                                    <div class="text-[14px] leading-tight">${message}</div>
+                                </div>
+                                <button onclick="this.parentElement.parentElement.remove()" class="text-white/40 hover:text-white">✕</button>
+                            </div>
+                        `;
+                        document.body.appendChild(alertBox);
+                        setTimeout(() => {
+                            alertBox.classList.add('opacity-0', 'translate-y-5');
+                            setTimeout(() => alertBox.remove(), 300);
+                        }, 5000);
                     }
                 };
             </script>

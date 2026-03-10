@@ -160,11 +160,9 @@ Route::prefix('customer')->group(function () {
                     Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
                     Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
 
-                    Route::post('credits/topup', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'storeTopup'])->name('shop.customers.account.credits.topup.store');
-
-                    Route::get('credits/topup/print/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'printTopupInvoice'])->name('shop.customers.account.credits.topup.print');
-
-                    Route::post('credits/topup/email/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'emailTopupInvoice'])->name('shop.customers.account.credits.topup.email');
+                    Route::post('credits/invoice', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'storeInvoice'])->name('shop.customers.account.credits.invoice.store');
+                    Route::get('credits/invoice/print/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'printInvoice'])->name('shop.customers.account.credits.invoice.print');
+                    Route::post('credits/invoice/email/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'emailInvoice'])->name('shop.customers.account.credits.invoice.email');
 
                     // Credits Transfer
                     Route::controller(TransferController::class)->prefix('credits')->group(function () {

@@ -10,7 +10,7 @@ use Webkul\Core\Repositories\BillingEntityRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use Webkul\Shop\Mail\Customer\TopupInvoiceNotification;
+use Webkul\Shop\Mail\Customer\InvoiceNotification;
 use Webkul\Shop\Helpers\NumberToWords;
 
 class CreditController extends Controller
@@ -80,7 +80,7 @@ class CreditController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function storeTopup()
+    public function storeInvoice()
     {
         try {
             $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
@@ -118,21 +118,23 @@ class CreditController extends Controller
             ]);
 
             try {
-                $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
                 $billingEntity = $this->billingEntityRepository->find($defaultBillingEntityId);
 
                 $amountInWords = NumberToWords::convert($transaction->amount);
 
-                $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords'));
+                $amountInKopeks = (int) ($transaction->amount * 100);
+                $qrCodeData = "ST00012|Name={$billingEntity->name}|PersonalAcc={$billingEntity->settlement_account}|BankName={$billingEntity->bank_name}|BIC={$billingEntity->bic}|CorrespAcc={$billingEntity->correspondent_account}|PayeeINN={$billingEntity->inn}|PayeeKPP={$billingEntity->kpp}|Sum={$amountInKopeks}|Purpose=Оплата по счету №{$transaction->id} от {$transaction->created_at->format('d.m.Y')}";
 
-                Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
+                $pdf = Pdf::loadView('shop::customers.account.credits.invoice-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords', 'qrCodeData'));
+
+                Mail::queue(new InvoiceNotification($transaction, $pdf->output()));
             } catch (\Exception $e) {
                 report($e);
             }
 
             return response()->json([
                 'success' => true,
-                'message' => trans('shop::app.customers.account.topup.success'),
+                'message' => trans('shop::app.customers.account.invoice.success'),
                 'transaction_id' => $transaction->id,
             ]);
         } catch (\Exception $e) {
@@ -151,7 +153,7 @@ class CreditController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function printTopupInvoice($id)
+    public function printInvoice($id)
     {
         $transaction = $this->customerTransactionRepository->findOrFail($id);
 
@@ -164,14 +166,20 @@ class CreditController extends Controller
 
         $amountInWords = NumberToWords::convert($transaction->amount);
 
-        $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', [
+        $amountInKopeks = (int) ($transaction->amount * 100);
+        $qrCodeData = "ST00012|Name={$billingEntity->name}|PersonalAcc={$billingEntity->settlement_account}|BankName={$billingEntity->bank_name}|BIC={$billingEntity->bic}|CorrespAcc={$billingEntity->correspondent_account}|PayeeINN={$billingEntity->inn}|PayeeKPP={$billingEntity->kpp}|Sum={$amountInKopeks}|Purpose=Оплата по счету №{$transaction->id} от {$transaction->created_at->format('d.m.Y')}";
+
+        $pdf = Pdf::loadView('shop::customers.account.credits.invoice-pdf', [
             'transaction' => $transaction,
             'organization' => $organization,
             'billingEntity' => $billingEntity,
             'amountInWords' => $amountInWords,
+            'qrCodeData' => $qrCodeData,
         ]);
 
-        return $pdf->download('proforma-invoice-' . $transaction->id . '.pdf');
+        $fileName = 'Счет_Оферта_' . $transaction->id . '_от_' . $transaction->created_at->format('d.m.Y') . '.pdf';
+
+        return $pdf->download($fileName);
     }
 
     /**
@@ -180,7 +188,7 @@ class CreditController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function emailTopupInvoice($id)
+    public function emailInvoice($id)
     {
         try {
             $transaction = $this->customerTransactionRepository->findOrFail($id);
@@ -197,10 +205,13 @@ class CreditController extends Controller
 
             $amountInWords = NumberToWords::convert($transaction->amount);
 
-            $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords'));
+            $amountInKopeks = (int) ($transaction->amount * 100);
+            $qrCodeData = "ST00012|Name={$billingEntity->name}|PersonalAcc={$billingEntity->settlement_account}|BankName={$billingEntity->bank_name}|BIC={$billingEntity->bic}|CorrespAcc={$billingEntity->correspondent_account}|PayeeINN={$billingEntity->inn}|PayeeKPP={$billingEntity->kpp}|Sum={$amountInKopeks}|Purpose=Оплата по счету №{$transaction->id} от {$transaction->created_at->format('d.m.Y')}";
+
+            $pdf = Pdf::loadView('shop::customers.account.credits.invoice-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords', 'qrCodeData'));
 
             // Use queue to prevent UI hang, base64 encode PDF to prevent JSON serialization errors
-            Mail::queue(new TopupInvoiceNotification($transaction, base64_encode($pdf->output())));
+            Mail::queue(new InvoiceNotification($transaction, base64_encode($pdf->output())));
 
             return response()->json([
                 'success' => true,

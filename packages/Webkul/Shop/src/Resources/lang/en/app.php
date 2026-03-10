@@ -136,14 +136,14 @@ return [
                 ],
             ],
 
-            'topup' => [
-                'amount' => 'Top-up Amount',
+            'invoice' => [
+                'amount' => 'Invoice Amount',
                 'select-billing-entity' => 'Select Billing Entity',
-                'generate-invoice' => 'Generate Proforma Invoice',
-                'success' => 'Top-up request created successfully.',
+                'generate-invoice' => 'Generate Invoice-Offer',
+                'success' => 'Invoice generated successfully.',
                 'pending-message' => 'Your request is pending. Please download the invoice and make the payment.',
-                'download-invoice' => 'Download Proforma Invoice',
-                'title' => 'Top-up Proforma Invoice',
+                'download-invoice' => 'Download Invoice-Offer',
+                'title' => 'Invoice-Offer',
             ],
 
             'addresses' => [
@@ -1330,13 +1330,13 @@ return [
                 'subject' => 'Invoice reminder',
             ],
 
-            'topup' => [
-                'subject' => 'Proforma Invoice for Top-up #:id',
-                'greeting' => 'We have received your top-up request.',
-                'description' => 'A top-up request for :amount has been created. Please find the proforma invoice attached to this email.',
-                'transaction-id' => 'Transaction ID',
+            'invoice' => [
+                'subject' => 'Invoice-Offer №:id from :date',
+                'greeting' => 'Your invoice request has been accepted.',
+                'description' => 'A request for invoice payment of :amount has been created. The invoice PDF is attached to this email.',
+                'transaction-id' => 'Invoice Number',
                 'amount-label' => 'Amount',
-                'footer' => 'Please make the payment according to the details in the attached invoice. Once the payment is received, your balance will be updated automatically.',
+                'footer' => 'Please make the payment using the details provided in the attached invoice. Your balance will be updated automatically upon receipt of funds.',
             ],
         ],
 

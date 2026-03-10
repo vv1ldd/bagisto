@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Webkul\Shop\Mail\Mailable;
 use Webkul\Customer\Contracts\CustomerTransaction;
 
-class TopupInvoiceNotification extends Mailable
+class InvoiceNotification extends Mailable
 {
     /**
      * Create a new mailable instance.
@@ -31,7 +31,10 @@ class TopupInvoiceNotification extends Mailable
             to: [
                 new Address($this->transaction->customer->email),
             ],
-            subject: trans('shop::app.emails.customers.topup.subject', ['id' => $this->transaction->id]),
+            subject: trans('shop::app.emails.customers.invoice.subject', [
+                'id' => $this->transaction->id,
+                'date' => $this->transaction->created_at->format('d.m.Y')
+            ]),
         );
     }
 
@@ -41,14 +44,16 @@ class TopupInvoiceNotification extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'shop::emails.customers.topup-invoice',
+            view: 'shop::emails.customers.invoice',
         );
     }
 
     public function attachments(): array
     {
+        $fileName = 'Счет_Оферта_' . $this->transaction->id . '_от_' . $this->transaction->created_at->format('d.m.Y') . '.pdf';
+
         return [
-            Attachment::fromData(fn() => base64_decode($this->pdfData), 'proforma-invoice-' . $this->transaction->id . '.pdf')
+            Attachment::fromData(fn() => base64_decode($this->pdfData), $fileName)
                 ->withMime('application/pdf'),
         ];
     }
