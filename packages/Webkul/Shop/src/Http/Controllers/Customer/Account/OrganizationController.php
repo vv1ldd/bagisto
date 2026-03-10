@@ -116,7 +116,18 @@ class OrganizationController extends Controller
 
         Event::dispatch('customer.organizations.create.after', $organization);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => trans('shop::app.customers.account.organizations.create-success'),
+            ]);
+        }
+
         session()->flash('success', trans('shop::app.customers.account.organizations.create-success'));
+
+        if ($request->has('from_wallet')) {
+            return redirect()->route('shop.customers.account.credits.index', ['step' => 'organizations']);
+        }
 
         return redirect()->route('shop.customers.account.organizations.index');
     }
