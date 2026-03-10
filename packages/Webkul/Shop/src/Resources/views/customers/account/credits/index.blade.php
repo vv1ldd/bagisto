@@ -67,6 +67,15 @@
                         {{ core()->formatPrice($user->getTotalFiatBalance()) }}
                     </div>
                     <div class="flex items-center gap-3">
+                        <button onclick="$emitter.emit('start-call', { userId: 1, userName: 'Support' })"
+                            class="flex flex-col items-center gap-1 group">
+                            <div
+                                class="w-10 h-10 bg-black flex items-center justify-center text-white group-hover:bg-zinc-800 transition-all border border-black shadow-sm text-[20px]">
+                                📞</div>
+                            <span
+                                class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-black transition-colors">поддержка</span>
+                        </button>
+
                         <button onclick="goToOrganizations()" class="flex flex-col items-center gap-1 group">
                             <div
                                 class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-[#7C45F5] transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
@@ -171,18 +180,41 @@
                                     {{ $transaction->created_at->format('d.m.Y — H:i') }}
                                 </div>
                             </div>
-                            <div class="text-right shrink-0">
-                                @php
-                                    $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
-                                    $isDebit = in_array($transaction->type, $debitTypes);
-                                    $sign = $isDebit ? '-' : '+';
-                                    $colorClass = $isDebit ? 'text-red-500' : 'text-emerald-500';
-                                @endphp
-                                <div class="text-[16px] font-black font-mono {{ $colorClass }} tracking-tight">
-                                    {{ $sign }}{{ core()->formatPrice($transaction->amount) }}
+                            <div class="flex items-center gap-4">
+                                @if (in_array($transaction->type, ['transfer_debit', 'transfer_credit']))
+                                    @php
+                                        $targetId = $transaction->type === 'transfer_debit'
+                                            ? ($transaction->metadata['recipient_id'] ?? null)
+                                            : ($transaction->metadata['sender_id'] ?? null);
+                                        $targetAlias = $transaction->type === 'transfer_debit'
+                                            ? ($transaction->metadata['recipient_alias'] ?? 'User')
+                                            : ($transaction->metadata['sender_alias'] ?? 'User');
+                                    @endphp
+
+                                    @if ($targetId)
+                                        <button
+                                            onclick="$emitter.emit('start-call', { userId: {{ $targetId }}, userName: '{{ $targetAlias }}' })"
+                                            class="w-10 h-10 bg-zinc-900 flex items-center justify-center text-white hover:bg-black transition-all active:scale-95 shadow-sm border border-black group"
+                                            title="Позвонить {{ $targetAlias }}">
+                                            <span
+                                                class="icon-phone text-xl group-hover:rotate-12 group-hover:scale-110 transition-all"></span>
+                                        </button>
+                                    @endif
+                                @endif
+
+                                <div class="text-right shrink-0">
+                                    @php
+                                        $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
+                                        $isDebit = in_array($transaction->type, $debitTypes);
+                                        $sign = $isDebit ? '-' : '+';
+                                        $colorClass = $isDebit ? 'text-red-500' : 'text-emerald-500';
+                                    @endphp
+                                    <div class="text-[16px] font-black font-mono {{ $colorClass }} tracking-tight">
+                                        {{ $sign }}{{ core()->formatPrice($transaction->amount) }}
+                                    </div>
+                                    <div class="text-[10px] text-zinc-400 font-black mt-0.5 uppercase tracking-[0.1em]">
+                                        #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
                                 </div>
-                                <div class="text-[10px] text-zinc-400 font-black mt-0.5 uppercase tracking-[0.1em]">
-                                    #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
                             </div>
                         </div>
                     @endforeach
@@ -402,14 +434,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                                                                                                                    event.preventDefault(); 
-                                                                                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                                                                                    } else if(innPrompt !== null) {
-                                                                                                                                                        alert('ИНН введен неверно. Удаление отменено.');
-                                                                                                                                                    }
-                                                                                                                                                ">
+                                                                                                                                                                    event.preventDefault(); 
+                                                                                                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                                                                                    } else if(innPrompt !== null) {
+                                                                                                                                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                                                                                    }
+                                                                                                                                                                ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -1240,8 +1272,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                                                    {{ $address->address }}
-                                                                                                                                                                                                                                                </code>
+                                                                                                                                                                                                                                                            {{ $address->address }}
+                                                                                                                                                                                                                                                        </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1341,7 +1373,7 @@
 
     @push('scripts')
         <script>
-            let currentStep = 'dashboard';
+            let currentStep = 'das                 hboard';
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
@@ -1883,7 +1915,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                                                            });
+                                                                                                                                                                                                                                    });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
@@ -1984,10 +2016,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                                        `;
+                                                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                                `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
@@ -2052,9 +2084,9 @@
                                         div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                                        `;
+                                                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                                `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault();
