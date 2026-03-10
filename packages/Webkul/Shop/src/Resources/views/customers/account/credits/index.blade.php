@@ -637,11 +637,11 @@
                             class="hidden p-6 bg-white border-l-4 border-l-emerald-500 shadow-sm space-y-4">
                             <div class="flex items-center gap-3 text-emerald-600">
                                 <span class="text-2xl">✅</span>
-                                <p class="font-bold text-[16px]">@lang('shop::app.customers.account.topup.success')</p>
+                                <p class="font-bold text-[16px]">Счет на оплату сформирован и ожидает оплаты.</p>
                             </div>
 
                             <p class="text-zinc-600 text-[14px] leading-relaxed">
-                                @lang('shop::app.customers.account.topup.pending-message')
+                                Пожалуйста, скачайте счет и произведите платеж.
                             </p>
 
                             <div class="flex flex-col sm:flex-row gap-3 pt-2">
