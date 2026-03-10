@@ -33,6 +33,16 @@ class BillingEntityController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        return view('admin::settings.billing-entities.create');
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @return \Illuminate\Http\JsonResponse

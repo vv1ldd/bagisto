@@ -23,6 +23,7 @@ Route::prefix('settings')->group(function () {
      */
     Route::controller(BillingEntityController::class)->prefix('billing-entities')->group(function () {
         Route::get('', 'index')->name('admin.settings.billing_entities.index');
+        Route::get('create', 'create')->name('admin.settings.billing_entities.create');
         Route::post('create', 'store')->name('admin.settings.billing_entities.store');
         Route::get('edit/{id}', 'edit')->name('admin.settings.billing_entities.edit');
         Route::put('edit/{id}', 'update')->name('admin.settings.billing_entities.update');
