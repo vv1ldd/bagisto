@@ -91,6 +91,26 @@
                             <x-admin::form.control-group.error
                                 control-name="address"></x-admin::form.control-group.error>
                         </x-admin::form.control-group>
+
+                        <!-- Tax Regime -->
+                        <x-admin::form.control-group class="mb-[10px]">
+                            <x-admin::form.control-group.label>
+                                @lang('admin::app.settings.billing-entities.create.tax-regime')
+                            </x-admin::form.control-group.label>
+
+                            <x-admin::form.control-group.control type="select" name="tax_regime"
+                                :label="trans('admin::app.settings.billing-entities.create.tax-regime')">
+                                <option value="usn-6">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.usn-6')
+                                </option>
+                                <option value="osno">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.osno')
+                                </option>
+                            </x-admin::form.control-group.control>
+
+                            <x-admin::form.control-group.error
+                                control-name="tax_regime"></x-admin::form.control-group.error>
+                        </x-admin::form.control-group>
                     </div>
 
                     {{-- People Details --}}
@@ -194,7 +214,7 @@
                                 :placeholder="trans('admin::app.settings.billing-entities.create.correspondent-account')">
                             </x-admin::form.control-group.control>
 
-                        <x-admin::form.control-group.error
+                            <x-admin::form.control-group.error
                                 control-name="correspondent_account"></x-admin::form.control-group.error>
                         </x-admin::form.control-group>
                     </div>
@@ -205,10 +225,7 @@
                             @lang('admin::app.settings.billing-entities.create.seal')
                         </p>
 
-                        <x-admin::media.images
-                            name="seal"
-                            width="220px"
-                        />
+                        <x-admin::media.images name="seal" width="220px" />
 
                         <p class="text-[12px] text-gray-600 dark:text-gray-300 mt-[10px]">
                             @lang('admin::app.settings.billing-entities.create.seal-info')

@@ -116,6 +116,23 @@
 
                         <x-admin::form.control-group.error control-name="address"></x-admin::form.control-group.error>
                     </x-admin::form.control-group>
+
+                    <!-- Tax Regime -->
+                    <x-admin::form.control-group class="mb-[10px]">
+                        <x-admin::form.control-group.label>
+                            @lang('admin::app.settings.billing-entities.edit.tax-regime')
+                        </x-admin::form.control-group.label>
+
+                        <x-admin::form.control-group.control type="select" name="tax_regime"
+                            :value="old('tax_regime') ?: $billingEntity->tax_regime"
+                            :label="trans('admin::app.settings.billing-entities.edit.tax-regime')">
+                            <option value="usn-6" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-6' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-6')</option>
+                            <option value="osno" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'osno' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.osno')</option>
+                        </x-admin::form.control-group.control>
+
+                        <x-admin::form.control-group.error
+                            control-name="tax_regime"></x-admin::form.control-group.error>
+                    </x-admin::form.control-group>
                 </div>
 
                 {{-- People Details --}}

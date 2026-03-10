@@ -11,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Webkul\Shop\Mail\Customer\TopupInvoiceNotification;
+use Webkul\Shop\Helpers\NumberToWords;
 
 class CreditController extends Controller
 {
@@ -118,13 +119,11 @@ class CreditController extends Controller
 
             try {
                 $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
-                $billingEntity = $this->billingEntityRepository->find($transaction->metadata['billing_entity_id']);
+                $billingEntity = $this->billingEntityRepository->findOneByField('is_default', 1);
 
-                $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', [
-                    'transaction' => $transaction,
-                    'organization' => $organization,
-                    'billingEntity' => $billingEntity,
-                ]);
+                $amountInWords = NumberToWords::convert($transaction->amount);
+
+                $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords'));
 
                 Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
             } catch (\Exception $e) {

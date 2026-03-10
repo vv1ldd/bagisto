@@ -1,160 +1,156 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <style type="text/css">
+    <style>
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 12px;
-            color: #333;
-        }
-
-        .header {
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
             color: #000;
+            line-height: 1.4;
         }
-
-        .header p {
-            margin: 5px 0 0;
-        }
-
-        .section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-weight: bold;
-            font-size: 14px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
-        }
-
-        .grid {
+        table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
-
-        .grid th,
-        .grid td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+        .bank-details th, .bank-details td {
+            border: 1px solid #000;
+            padding: 4px;
+            vertical-align: top;
         }
-
-        .grid th {
-            background-color: #f9f9f9;
-        }
-
-        .total-section {
-            margin-top: 20px;
-            text-align: right;
-        }
-
-        .total-section p {
+        .header {
+            font-weight: bold;
             font-size: 16px;
+            border-bottom: 2px solid #000;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+        .info-line {
+            margin-bottom: 10px;
+        }
+        .info-line b {
+            width: 100px;
+            display: inline-block;
+        }
+        .items th {
+            border: 2px solid #000;
+            padding: 5px;
+            background: #eee;
+            text-align: center;
+        }
+        .items td {
+            border: 1px solid #000;
+            padding: 5px;
+        }
+        .totals td {
+            text-align: right;
+            padding: 2px 5px;
+        }
+        .totals .label {
             font-weight: bold;
         }
-
-        .footer {
-            margin-top: 50px;
-            font-size: 10px;
-            color: #777;
-            text-align: center;
+        .summary {
+            margin-top: 20px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+        .signatures {
+            margin-top: 40px;
+            position: relative;
+        }
+        .sig-line {
+            display: inline-block;
+            width: 250px;
+            border-bottom: 1px solid #000;
+            margin: 0 10px;
+        }
+        .seal-container {
+            position: absolute;
+            top: -40px;
+            left: 50px;
+            z-index: -1;
+        }
+        .seal-container img {
+            width: 150px;
+            opacity: 0.7;
+        }
+        .no-wrap {
+            white-space: nowrap;
         }
     </style>
 </head>
-
 <body>
+    {{-- Bank Details Plate --}}
+    <table class="bank-details">
+        <tr>
+            <td colspan="2" rowspan="2">
+                {{ $billingEntity->bank_name }}<br/>
+                <small>Банк получателя</small>
+            </td>
+            <td>БИК</td>
+            <td>{{ $billingEntity->bic }}</td>
+        </tr>
+        <tr>
+            <td>Сч. №</td>
+            <td>{{ $billingEntity->correspondent_account }}</td>
+        </tr>
+        <tr>
+            <td>ИНН {{ $billingEntity->inn }}</td>
+            <td>КПП {{ $billingEntity->kpp }}</td>
+            <td rowspan="2">Сч. №</td>
+            <td rowspan="2">{{ $billingEntity->settlement_account }}</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                {{ $billingEntity->name }}<br/>
+                <small>Получатель</small>
+            </td>
+        </tr>
+    </table>
+
     <div class="header">
-        <h1>{{ trans('shop::app.customers.account.topup.title') }}</h1>
-        <p>№ {{ $transaction->id }} от {{ $transaction->created_at->format('d.m.Y') }}</p>
+        Счет на оплату № {{ $transaction->id }} от {{ $transaction->created_at->format('d.m.Y') }}
     </div>
 
-    <div class="section">
-        <div class="section-title">Исполнитель</div>
-        <p>
-            <strong>{{ $billingEntity->name }}</strong><br>
-            ИНН: {{ $billingEntity->inn }} / КПП: {{ $billingEntity->kpp }}<br>
-            Адрес: {{ $billingEntity->address }}
-        </p>
+    <div class="info-line">
+        <b>Поставщик:</b> {{ $billingEntity->name }}, ИНН {{ $billingEntity->inn }}, КПП {{ $billingEntity->kpp }}, {{ $billingEntity->address }}
     </div>
 
-    <div class="section">
-        <div class="section-title">Плательщик</div>
-        <p>
-            <strong>{{ $organization->name }}</strong><br>
-            ИНН: {{ $organization->inn }} / КПП: {{ $organization->kpp }}<br>
-            Адрес: {{ $organization->address }}
-        </p>
+    <div class="info-line">
+        <b>Покупатель:</b> {{ $organization->name }}, ИНН {{ $organization->inn }}, КПП {{ $organization->kpp }}, {{ $organization->address }}
     </div>
 
-    <div class="section">
-        <div class="section-title">Банковские реквизиты для оплаты</div>
-        <grid class="grid">
-            <tr>
-                <th width="30%">Банк</th>
-                <td>{{ $billingEntity->bank_name }}</td>
-            </tr>
-            <tr>
-                <th>БИК</th>
-                <td>{{ $billingEntity->bic }}</td>
-            </tr>
-            <tr>
-                <th>Корр. счет</th>
-                <td>{{ $billingEntity->correspondent_account }}</td>
-            </tr>
-            <tr>
-                <th>Расчетный счет</th>
-                <td>{{ $billingEntity->settlement_account }}</td>
-            </tr>
-        </grid>
+    <div class="info-line">
+        <b>Основание:</b> Пополнение баланса в личном кабинете.
     </div>
 
-    <table class="grid">
+    <table class="items">
         <thead>
             <tr>
-                <th>№</th>
-                <th>Наименование товара, работ, услуг</th>
-                <th>Кол-во</th>
-                <th>Ед.</th>
-                <th>Цена</th>
-                <th>Сумма</th>
+                <th width="5%">№</th>
+                <th>Товары (работы, услуги)</th>
+                <th width="10%">Кол-во</th>
+                <th width="10%">Ед.</th>
+                <th width="15%">Цена</th>
+                <th width="15%">Сумма</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>1</td>
-                <td>{{ $transaction->notes }}</td>
-                <td>1</td>
-                <td>шт.</td>
-                <td>{{ core()->formatBasePrice($transaction->amount) }}</td>
-                <td>{{ core()->formatBasePrice($transaction->amount) }}</td>
+                <td align="center">1</td>
+                <td>Пополнение баланса ({{ $transaction->notes }})</td>
+                <td align="center">1</td>
+                <td align="center">шт.</td>
+                <td align="right">{{ number_format($transaction->amount, 2, ',', ' ') }}</td>
+                <td align="right">{{ number_format($transaction->amount, 2, ',', ' ') }}</td>
             </tr>
         </tbody>
     </table>
 
-    <div class="total-section">
-        <p>Итого к оплате: {{ core()->formatBasePrice($transaction->amount) }}</p>
-    </div>
-
-    <div style="margin-top: 40px; position: relative;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-                <td style="width: 50%; vertical-align: top;">
-                    <p>Руководитель: ____________________ ({{ $billingEntity->director_name ?? '____________' }})</p>
-                    <p style="margin-top: 20px;">Бухгалтер: ____________________
-                        ({{ $billingEntity->accountant_name ?? '____________' }})</p>
-                </td>
-                <td style="width: 50%; text-align: right; vertical-align: middle;">
-                    @if ($billingEntity->seal)
-                        <div style="position: absolute; right: 50px; bottom: -20px;">
                             <img src="{{ public_path('storage/' . $billingEntity->seal) }}"
                                 style="width: 150px; height: auto; opacity: 0.8;">
                         </div>

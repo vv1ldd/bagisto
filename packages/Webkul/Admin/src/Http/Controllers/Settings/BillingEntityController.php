@@ -73,6 +73,7 @@ class BillingEntityController extends Controller
             'correspondent_account',
             'director_name',
             'accountant_name',
+            'tax_regime',
             'seal',
         ]);
 
@@ -135,6 +136,7 @@ class BillingEntityController extends Controller
             'correspondent_account',
             'director_name',
             'accountant_name',
+            'tax_regime',
             'seal',
         ]);
 

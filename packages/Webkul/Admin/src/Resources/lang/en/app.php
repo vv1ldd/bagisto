@@ -2809,6 +2809,11 @@ return [
                 'people' => 'People',
                 'director-name' => 'Director Name',
                 'accountant-name' => 'Accountant Name',
+                'tax-regime' => 'Tax Regime',
+                'tax-regime-options' => [
+                    'usn-6' => 'USN 6%',
+                    'osno' => 'OSNO',
+                ],
                 'banking' => 'Banking Details',
                 'bank-name' => 'Bank Name',
                 'bic' => 'BIC',
