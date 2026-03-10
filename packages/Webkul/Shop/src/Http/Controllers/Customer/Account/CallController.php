@@ -77,8 +77,21 @@ class CallController extends Controller
 
         $toUserId = $request->input('to_user_id');
         $signalData = $request->input('signal_data');
+        $fromUserId = auth()->guard('customer')->id();
 
-        event(new \Webkul\Shop\Events\CallSignal($toUserId, $signalData));
+        if (!$fromUserId) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        try {
+            event(new \Webkul\Shop\Events\CallSignal($toUserId, $fromUserId, $signalData));
+        } catch (\Exception $e) {
+            \Log::error('WebRTC Signaling Error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Ошибка бродкаста: ' . $e->getMessage() . ' (Убедитесь, что настроен Pusher в .env)'
+            ], 500);
+        }
 
         return response()->json(['status' => 'success']);
     }

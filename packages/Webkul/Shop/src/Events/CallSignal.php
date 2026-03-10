@@ -16,11 +16,13 @@ class CallSignal implements ShouldBroadcast
      * Create a new event instance.
      *
      * @param  int  $toUserId
+     * @param  int  $fromUserId
      * @param  array  $signalData
      * @return void
      */
     public function __construct(
         public int $toUserId,
+        public int $fromUserId,
         public array $signalData
     ) {
     }
@@ -43,7 +45,7 @@ class CallSignal implements ShouldBroadcast
     public function broadcastWith()
     {
         return [
-            'from_user_id' => auth()->id(),
+            'from_user_id' => $this->fromUserId,
             'signal_data' => $this->signalData,
         ];
     }
