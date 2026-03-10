@@ -126,8 +126,13 @@
                         <x-admin::form.control-group.control type="select" name="tax_regime"
                             :value="old('tax_regime') ?: $billingEntity->tax_regime"
                             :label="trans('admin::app.settings.billing-entities.edit.tax-regime')">
-                            <option value="usn-6" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-6' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-6')</option>
                             <option value="osno" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'osno' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.osno')</option>
+                            <option value="usn-6" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-6' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-6')</option>
+                            <option value="usn-15" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'usn-15' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.usn-15')</option>
+                            <option value="aupsn" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'aupsn' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.aupsn')</option>
+                            <option value="psn" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'psn' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.psn')</option>
+                            <option value="npd" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'npd' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.npd')</option>
+                            <option value="eshn" {{ (old('tax_regime') ?: $billingEntity->tax_regime) == 'eshn' ? 'selected' : '' }}>@lang('admin::app.settings.billing-entities.edit.tax-regime-options.eshn')</option>
                         </x-admin::form.control-group.control>
 
                         <x-admin::form.control-group.error

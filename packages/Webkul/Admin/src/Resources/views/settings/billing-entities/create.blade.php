@@ -100,11 +100,26 @@
 
                             <x-admin::form.control-group.control type="select" name="tax_regime"
                                 :label="trans('admin::app.settings.billing-entities.create.tax-regime')">
+                                <option value="osno">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.osno')
+                                </option>
                                 <option value="usn-6">
                                     @lang('admin::app.settings.billing-entities.create.tax-regime-options.usn-6')
                                 </option>
-                                <option value="osno">
-                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.osno')
+                                <option value="usn-15">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.usn-15')
+                                </option>
+                                <option value="aupsn">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.aupsn')
+                                </option>
+                                <option value="psn">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.psn')
+                                </option>
+                                <option value="npd">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.npd')
+                                </option>
+                                <option value="eshn">
+                                    @lang('admin::app.settings.billing-entities.create.tax-regime-options.eshn')
                                 </option>
                             </x-admin::form.control-group.control>
 
