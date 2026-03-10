@@ -158,6 +158,8 @@ Route::prefix('customer')->group(function () {
 
                     Route::get('credits/topup/print/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'printTopupInvoice'])->name('shop.customers.account.credits.topup.print');
 
+                    Route::post('credits/topup/email/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'emailTopupInvoice'])->name('shop.customers.account.credits.topup.email');
+
                     // Credits Transfer
                     Route::controller(TransferController::class)->prefix('credits')->group(function () {
                         Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');

@@ -119,7 +119,7 @@ class CreditController extends Controller
 
             try {
                 $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
-                $billingEntity = $this->billingEntityRepository->findOneByField('is_default', 1);
+                $billingEntity = $this->billingEntityRepository->find($defaultBillingEntityId);
 
                 $amountInWords = NumberToWords::convert($transaction->amount);
 
@@ -164,7 +164,7 @@ class CreditController extends Controller
 
         $amountInWords = NumberToWords::convert($transaction->amount);
 
-        $pdf = PDF::loadView('shop::customers.account.credits.topup-pdf', [
+        $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', [
             'transaction' => $transaction,
             'organization' => $organization,
             'billingEntity' => $billingEntity,
@@ -172,5 +172,46 @@ class CreditController extends Controller
         ]);
 
         return $pdf->download('proforma-invoice-' . $transaction->id . '.pdf');
+    }
+
+    /**
+     * Re-send proforma invoice via email.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function emailTopupInvoice($id)
+    {
+        try {
+            $transaction = $this->customerTransactionRepository->findOrFail($id);
+
+            if ($transaction->customer_id != auth()->guard('customer')->id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 403);
+            }
+
+            $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
+            $billingEntity = $this->billingEntityRepository->find($transaction->metadata['billing_entity_id']);
+
+            $amountInWords = NumberToWords::convert($transaction->amount);
+
+            $pdf = Pdf::loadView('shop::customers.account.credits.topup-pdf', compact('transaction', 'organization', 'billingEntity', 'amountInWords'));
+
+            Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Invoice sent to email successfully.'
+            ]);
+        } catch (\Exception $e) {
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send email: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

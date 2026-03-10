@@ -514,24 +514,45 @@
                     </div>
 
                     <div class="space-y-4">
-                        <x-shop::form.control-group>
-                            <x-shop::form.control-group.label
-                                class="required !text-[12px] !font-bold text-zinc-400 uppercase tracking-widest">
-                                @lang('shop::app.customers.account.topup.amount')
-                            </x-shop::form.control-group.label>
-                            <x-shop::form.control-group.control type="text" name="amount" id="topup-amount"
-                                class="!py-3 !px-4 !border-zinc-200 focus:!border-emerald-500 focus:!ring-2 focus:!ring-emerald-500/20 transition-all text-[18px] font-bold"
-                                placeholder="0.00" />
-                        </x-shop::form.control-group>
+                        <div id="topup-amount-container">
+                            <x-shop::form.control-group>
+                                <x-shop::form.control-group.label
+                                    class="required !text-[12px] !font-bold text-zinc-400 uppercase tracking-widest">
+                                    @lang('shop::app.customers.account.topup.amount')
+                                </x-shop::form.control-group.label>
+                                <x-shop::form.control-group.control type="text" name="amount" id="topup-amount"
+                                    class="!py-3 !px-4 !border-zinc-200 focus:!border-emerald-500 focus:!ring-2 focus:!ring-emerald-500/20 transition-all text-[18px] font-bold"
+                                    placeholder="0.00" />
+                            </x-shop::form.control-group>
+                        </div>
 
                         <div id="topup-success-msg"
-                            class="hidden p-4 bg-emerald-50 border border-emerald-100 text-emerald-800 text-[14px]">
-                            <p class="font-bold">@lang('shop::app.customers.account.topup.success')</p>
-                            <p class="mt-1">@lang('shop::app.customers.account.topup.pending-message')</p>
-                            <a id="topup-invoice-link" href="#" target="_blank"
-                                class="inline-block mt-3 px-4 py-2 bg-emerald-600 text-white font-bold text-[13px] hover:bg-emerald-700 transition-colors">
-                                ⬇️ @lang('shop::app.customers.account.topup.download-invoice')
-                            </a>
+                            class="hidden p-6 bg-white border-l-4 border-l-emerald-500 shadow-sm space-y-4">
+                            <div class="flex items-center gap-3 text-emerald-600">
+                                <span class="text-2xl">✅</span>
+                                <p class="font-bold text-[16px]">@lang('shop::app.customers.account.topup.success')</p>
+                            </div>
+
+                            <p class="text-zinc-600 text-[14px] leading-relaxed">
+                                @lang('shop::app.customers.account.topup.pending-message')
+                            </p>
+
+                            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                                <a id="topup-invoice-link" href="#" target="_blank"
+                                    class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-zinc-900 text-white font-bold text-[13px] uppercase tracking-wider hover:bg-emerald-600 transition-all active:scale-[0.98]">
+                                    <span>⬇️</span>
+                                    <span>@lang('shop::app.customers.account.topup.download-invoice')</span>
+                                </a>
+
+                                <button type="button" id="email-invoice-btn" onclick="sendTopupInvoiceEmail()"
+                                    class="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-zinc-900 text-zinc-900 font-bold text-[13px] uppercase tracking-wider hover:bg-zinc-900 hover:text-white transition-all active:scale-[0.98]">
+                                    <span id="email-btn-icon">📧</span>
+                                    <span id="email-btn-text">Email Invoice</span>
+                                    <div id="email-btn-loader"
+                                        class="hidden w-4 h-4 border-2 border-current border-t-transparent animate-spin">
+                                    </div>
+                                </button>
+                            </div>
                         </div>
 
                         <button type="button" id="generate-topup-btn" onclick="generateTopupInvoice()"
@@ -641,8 +662,8 @@
                             <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                                 onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                                 <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                            {{ $address->address }}
-                                                                                                        </code>
+                                                                                                                            {{ $address->address }}
+                                                                                                                        </code>
                                 <div
                                     class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                     <span class="copy-txt">Скопировать</span>
@@ -935,138 +956,181 @@
 
         @push('scripts')
             <script>
-                             let currentStep = 'dashbo            ard';
-                            const initialTitle = "Meanly Wallet";
+                let currentStep = '                                    dashbo            ard';
+                const initialTitle = "Meanly Wallet";
 
-                            function switchStep(newStep) {
-                                ['step-dashboard', 'step-transactions', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-add-organization', 'step-b2c-details', 'step-topup-details'].forEach(id => {
-                                    const el = document.getElementById(id);
-                                    if (el) el.classList.add('hidden');
-                                });
-                                const target = document.getElementById('step-' + newStep);
-                                if (target) target.classList.remove('hidden');
-                                currentStep = newStep;
-                                updateHeader();
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                function switchStep(newStep) {
+                    ['step-dashboard', 'step-transactions', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-add-organization', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.classList.add('hidden');
+                    });
+                    const target = document.getElementById('step-' + newStep);
+                    if (target) target.classList.remove('hidden');
+                    currentStep = newStep;
+                    updateHeader();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+
+                function updateHeader() {
+                    const titleEl = document.getElementById('page-title');
+                    const backLink = document.getElementById('page-back-link');
+                    const backBtn = document.getElementById('step-back-btn');
+
+                    if (currentStep === 'dashboard') {
+                        titleEl.innerText = initialTitle;
+                        backLink.style.display = 'flex';
+                        backBtn.style.display = 'none';
+                    } else {
+                        backLink.style.display = 'none';
+                        backBtn.style.display = 'flex';
+                        if (currentStep === 'transactions') titleEl.innerText = "История";
+                        if (currentStep === 'empty') titleEl.innerText = "Кошельки";
+                        if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
+                        if (currentStep === 'details') titleEl.innerText = "Детали пополнения";
+                        if (currentStep === 'management') titleEl.innerText = "Кошельки для пополнения";
+                        if (currentStep === 'b2b-management') titleEl.innerText = "Мои организации";
+                        if (currentStep === 'add-wallet') titleEl.innerText = "Новый кошелек";
+                        if (currentStep === 'add-organization') titleEl.innerText = "Добавить организацию";
+                        if (currentStep === 'b2c-details') titleEl.innerText = "Реквизиты для оплаты";
+                        if (currentStep === 'topup-details') titleEl.innerText = "Оформление счета";
+                    }
+                }
+
+                function handleStepBack() {
+                    if (currentStep === 'transactions') switchStep('dashboard');
+                    else if (currentStep === 'deposit-type') switchStep('dashboard');
+                    else if (currentStep === 'empty') switchStep('deposit-type');
+                    else if (currentStep === 'details') switchStep('management');
+                    else if (currentStep === 'management') switchStep('deposit-type');
+                    else if (currentStep === 'b2b-management') switchStep('deposit-type');
+                    else if (currentStep === 'b2c-details') switchStep('deposit-type');
+                    else if (currentStep === 'add-wallet') switchStep('management');
+                    else if (currentStep === 'add-organization') switchStep('b2b-management');
+                    else if (currentStep === 'topup-details') switchStep('b2b-management');
+                }
+
+                function goToDeposit() { switchStep('deposit-type'); }
+                function goToCryptoManagement() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
+                function goToB2BManagement() { switchStep('b2b-management'); }
+                function goToB2CManagement() { switchStep('b2c-details'); }
+                function goToManagement() { switchStep('management'); }
+                function goToAddWallet() { switchStep('add-wallet'); }
+                function goToAddOrganization() { switchStep('add-organization'); }
+                function selectAsset(assetKey, walletId) {
+                    // Check if wallet is verified, ideally this should be handled better, but simple check for now
+                    const form = document.getElementById('delete-wallet-form-' + walletId);
+                    if (form && !form.closest('div.bg-white').querySelector('svg[viewBox="0 0 24 24"]')) {
+                        alert('Сначала верифицируйте кошелек для пополнения.');
+                        return;
+                    }
+                    switchStep('details');
+                    document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
+                    const target = document.getElementById('details-wallet-' + walletId);
+                    if (target) target.classList.remove('hidden');
+                }
+
+                let _selectedTopupOrgId = null;
+
+                function selectTopupOrg(id, name) {
+                    _selectedTopupOrgId = id;
+                    document.getElementById('selected-org-name').innerText = name;
+                    switchStep('topup-details');
+                }
+
+                async function generateTopupInvoice() {
+                    const amount = document.getElementById('topup-amount').value;
+                    const btn = document.getElementById('generate-topup-btn');
+                    const btnText = document.getElementById('btn-text');
+                    const btnLoader = document.getElementById('btn-loader');
+                    const successMsg = document.getElementById('topup-success-msg');
+                    const invoiceLink = document.getElementById('topup-invoice-link');
+
+                    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                        alert('Пожалуйста, введите корректную сумму');
+                        return;
+                    }
+
+                    btn.disabled = true;
+                    btnText.classList.add('hidden');
+                    btnLoader.classList.remove('hidden');
+
+                    try {
+                        const response = await fetch("{{ route('shop.customers.account.credits.topup.store') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                amount: amount,
+                                organization_id: _selectedTopupOrgId
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            successMsg.classList.remove('hidden');
+                                invoiceLink.href = "{{ route('shop.customers.account.credits.topup.print', '') }}/" + result.transaction_id;
+
+                                // Store transaction ID for email button
+                                window.lastTransactionId = result.transaction_id;
+
+                                btn.classList.add('hidden');
+
+                                // Hide amount input
+                                document.getElementById('topup-amount-container').classList.add('hidden');
+
+                                window.showAlert('success', 'Success', result.message);
+                            } else {
+                                alert(result.message || 'Произошла ошибка при создании счета');
+                                btn.disabled = false;
+                                btnText.classList.remove('hidden');
+                                btnLoader.classList.add('hidden');
                             }
+                        } catch (error) {
+                            console.error('Topup Error:', error);
+                            alert('Произошла системная ошибка. Пожалуйста, попробуйте позже.');
+                            btn.disabled = false;
+                            btnText.classList.remove('hidden');
+                            btnLoader.classList.add('hidden');
+                        }
+                    }
 
-                            function updateHeader() {
-                                const titleEl = document.getElementById('page-title');
-                                const backLink = document.getElementById('page-back-link');
-                                const backBtn = document.getElementById('step-back-btn');
+                    function sendTopupInvoiceEmail() {
+                        const transactionId = window.lastTransactionId;
+                        if (!transactionId) return;
 
-                                if (currentStep === 'dashboard') {
-                                    titleEl.innerText = initialTitle;
-                                    backLink.style.display = 'flex';
-                                    backBtn.style.display = 'none';
-                                } else {
-                                    backLink.style.display = 'none';
-                                    backBtn.style.display = 'flex';
-                                    if (currentStep === 'transactions') titleEl.innerText = "История";
-                                    if (currentStep === 'empty') titleEl.innerText = "Кошельки";
-                                    if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
-                                    if (currentStep === 'details') titleEl.innerText = "Детали пополнения";
-                                    if (currentStep === 'management') titleEl.innerText = "Кошельки для пополнения";
-                                    if (currentStep === 'b2b-management') titleEl.innerText = "Мои организации";
-                                    if (currentStep === 'add-wallet') titleEl.innerText = "Новый кошелек";
-                                    if (currentStep === 'add-organization') titleEl.innerText = "Добавить организацию";
-                                    if (currentStep === 'b2c-details') titleEl.innerText = "Реквизиты для оплаты";
-                                    if (currentStep === 'topup-details') titleEl.innerText = "Оформление счета";
-                                }
-                            }
+                        const btn = document.getElementById('email-invoice-btn');
+                        const btnText = document.getElementById('email-btn-text');
+                        const btnIcon = document.getElementById('email-btn-icon');
+                        const btnLoader = document.getElementById('email-btn-loader');
 
-                            function handleStepBack() {
-                                if (currentStep === 'transactions') switchStep('dashboard');
-                                else if (currentStep === 'deposit-type') switchStep('dashboard');
-                                else if (currentStep === 'empty') switchStep('deposit-type');
-                                else if (currentStep === 'details') switchStep('management');
-                                else if (currentStep === 'management') switchStep('deposit-type');
-                                else if (currentStep === 'b2b-management') switchStep('deposit-type');
-                                else if (currentStep === 'b2c-details') switchStep('deposit-type');
-                                else if (currentStep === 'add-wallet') switchStep('management');
-                                else if (currentStep === 'add-organization') switchStep('b2b-management');
-                                else if (currentStep === 'topup-details') switchStep('b2b-management');
-                            }
+                        btn.disabled = true;
+                        const originalText = btnText.textContent;
+                        btnText.textContent = 'Sending...';
+                        btnIcon.classList.add('hidden');
+                        btnLoader.classList.remove('hidden');
 
-                            function goToDeposit() { switchStep('deposit-type'); }
-                            function goToCryptoManagement() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
-                            function goToB2BManagement() { switchStep('b2b-management'); }
-                            function goToB2CManagement() { switchStep('b2c-details'); }
-                            function goToManagement() { switchStep('management'); }
-                            function goToAddWallet() { switchStep('add-wallet'); }
-                            function goToAddOrganization() { switchStep('add-organization'); }
-                            function selectAsset(assetKey, walletId) {
-                                // Check if wallet is verified, ideally this should be handled better, but simple check for now
-                                const form = document.getElementById('delete-wallet-form-' + walletId);
-                                if (form && !form.closest('div.bg-white').querySelector('svg[viewBox="0 0 24 24"]')) {
-                                    alert('Сначала верифицируйте кошелек для пополнения.');
-                                    return;
-                                }
-                                switchStep('details');
-                                document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
-                                const target = document.getElementById('details-wallet-' + walletId);
-                                if (target) target.classList.remove('hidden');
-                            }
-
-                            let _selectedTopupOrgId = null;
-
-                            function selectTopupOrg(id, name) {
-                                _selectedTopupOrgId = id;
-                                document.getElementById('selected-org-name').innerText = name;
-                                switchStep('topup-details');
-                            }
-
-                            async function generateTopupInvoice() {
-                                const amount = document.getElementById('topup-amount').value;
-                                const btn = document.getElementById('generate-topup-btn');
-                                const btnText = document.getElementById('btn-text');
-                                const btnLoader = document.getElementById('btn-loader');
-                                const successMsg = document.getElementById('topup-success-msg');
-                                const invoiceLink = document.getElementById('topup-invoice-link');
-
-                                if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-                                    alert('Пожалуйста, введите корректную сумму');
-                                    return;
-                                }
-
-                                btn.disabled = true;
-                                btnText.classList.add('hidden');
-                                btnLoader.classList.remove('hidden');
-
-                                try {
-                                    const response = await fetch("{{ route('shop.customers.account.credits.topup.store') }}", {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        },
-                                        body: JSON.stringify({
-                                            amount: amount,
-                                            organization_id: _selectedTopupOrgId
-                                        })
-                                    });
-
-                                    const result = await response.json();
-
-                                    if (result.success) {
-                                        successMsg.classList.remove('hidden');
-                                        invoiceLink.href = "{{ route('shop.customers.account.credits.topup.print', ['id' => ':id']) }}".replace(':id', result.transaction_id);
-                                        btn.classList.add('hidden');
-                                    } else {
-                                        alert(result.message || 'Произошла ошибка при создании счета');
-                                        btn.disabled = false;
-                                        btnText.classList.remove('hidden');
-                                        btnLoader.classList.add('hidden');
-                                    }
-                                } catch (error) {
-                                    console.error('Topup Error:', error);
-                                    alert('Произошла системная ошибка. Пожалуйста, попробуйте позже.');
+                        axios.post("{{ route('shop.customers.account.credits.topup.email', '') }}/" + transactionId)
+                            .then(response => {
+                                window.showAlert('success', 'Success', response.data.message);
+                                btnText.textContent = 'Sent!';
+                                btnLoader.classList.add('hidden');
+                                setTimeout(() => {
+                                    btnText.textContent = originalText;
+                                    btnIcon.classList.remove('hidden');
                                     btn.disabled = false;
-                                    btnText.classList.remove('hidden');
-                                    btnLoader.classList.add('hidden');
-                                }
-                            }
-
+                                }, 3000);
+                            })
+                            .catch(error => {
+                                window.showAlert('error', 'Error', error.response?.data?.message || 'Failed to send email');
+                                btnText.textContent = originalText;
+                                btnIcon.classList.remove('hidden');
+                                btnLoader.classList.add('hidden');
+                                btn.disabled = false;
+                            });
+                    }
                             function copyAddr(text, btn) {
                                 navigator.clipboard.writeText(text).then(() => {
                                     const orig = btn.innerText; btn.innerText = '✓ ADDR OK';
@@ -1236,7 +1300,7 @@
                                                 document.getElementById('display-bic').innerText = "{{ old('bic') }}";
                                                 document.getElementById('step-2-details').classList.remove('hidden');
                                             @endif
-                                                                                                            }, 100);
+                                                                                                                                    }, 100);
                                     @endif
                                 @endif
 
@@ -1248,7 +1312,7 @@
                                     @endif
                                 @endif
 
-                                                                                    });
+                                                                                                    });
 
                             // --- ORGANIZATION WIZARD SCRIPTS ---
                             window.isValidBankAccount = function (bic, account) {
@@ -1406,14 +1470,14 @@
                                                 const safeOgrn = (org.ogrn || '').replace(/"/g, '&quot;');
 
                                                 return `
-                                                                                                        <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
-                                                                                                            data-name="${safeName}" data-inn="${safeInn}" data-kpp="${safeKpp}" data-ogrn="${safeOgrn}" data-address="${safeAddress}">
-                                                                                                            <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
-                                                                                                            <div class="text-[12px] text-zinc-500 font-mono">
-                                                                                                                ИНН: ${org.inn || '-'} ${org.kpp ? ` | КПП: ${org.kpp}` : ''} ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
-                                                                                                            </div>
-                                                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
-                                                                                                        </div>`;
+                                                                                                                        <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0"
+                                                                                                                            data-name="${safeName}" data-inn="${safeInn}" data-kpp="${safeKpp}" data-ogrn="${safeOgrn}" data-address="${safeAddress}">
+                                                                                                                            <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${org.name || 'Неизвестная организация'}</div>
+                                                                                                                            <div class="text-[12px] text-zinc-500 font-mono">
+                                                                                                                                ИНН: ${org.inn || '-'} ${org.kpp ? ` | КПП: ${org.kpp}` : ''} ${org.ogrn ? ` | ОГРН: ${org.ogrn}` : ''}
+                                                                                                                            </div>
+                                                                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${org.address || ''}</div>
+                                                                                                                        </div>`;
                                             }).join('');
                                             suggestionsContainer.classList.remove('hidden');
                                         } else {
@@ -1498,13 +1562,13 @@
                                                         const safeBic = (bank.bic || '').replace(/"/g, '&quot;');
                                                         const safeCorr = (bank.correspondent_account || '').replace(/"/g, '&quot;');
                                                         return `
-                                                                                                                <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
-                                                                                                                    data-name="${safeName}" data-bic="${safeBic}" data-corr="${safeCorr}">
-                                                                                                                    <div>
-                                                                                                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит</span>' : ''}</div>
-                                                                                                                        <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
-                                                                                                                    </div>
-                                                                                                                </div>`;
+                                                                                                                                <div class="px-4 py-3 hover:bg-zinc-50 cursor-pointer border-b border-zinc-100 last:border-0 flex justify-between items-start"
+                                                                                                                                    data-name="${safeName}" data-bic="${safeBic}" data-corr="${safeCorr}">
+                                                                                                                                    <div>
+                                                                                                                                        <div class="font-bold text-zinc-900 text-[14px] leading-tight mb-1">${bank.bank_name || 'Неизвестный банк'} ${bank.isValidForAccount ? '<span class="ml-1 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded">✓ Подходит</span>' : ''}</div>
+                                                                                                                                        <div class="text-[12px] text-zinc-500 font-mono">БИК: ${bank.bic || '-'} | Корр.счет: ${bank.correspondent_account || '-'}</div>
+                                                                                                                                    </div>
+                                                                                                                                </div>`;
                                                     }).join('');
                                                     suggestionsContainer.classList.remove('hidden');
                                                 } else {
@@ -1608,7 +1672,7 @@
                                 });
                             };
                             window.initOrganizationWizard();
-                        </script>
+                </script>
         @endpush
 
 </x-shop::layouts.account>
