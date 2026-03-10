@@ -47,7 +47,7 @@ class BillingEntityController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(): JsonResponse
+    public function store()
     {
         $this->validate(request(), [
             'name' => 'required|string',
@@ -60,6 +60,7 @@ class BillingEntityController extends Controller
             'correspondent_account' => 'nullable|string',
             'director_name' => 'nullable|string',
             'accountant_name' => 'nullable|string',
+            'tax_regime' => 'nullable|string',
         ]);
 
         $data = request()->only([
@@ -85,9 +86,9 @@ class BillingEntityController extends Controller
             $this->billingEntityRepository->setDefault($billingEntity->id);
         }
 
-        return response()->json([
-            'message' => trans('admin::app.settings.billing-entities.create-success'),
-        ]);
+        session()->flash('success', trans('admin::app.settings.billing-entities.create-success'));
+
+        return redirect()->route('admin.settings.billing_entities.index');
     }
 
     /**
