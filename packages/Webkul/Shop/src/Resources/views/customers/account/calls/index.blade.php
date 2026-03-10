@@ -8,7 +8,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @foreach($contacts as $contact)
                 <div class="glass-card !bg-white/60 p-5 flex items-center justify-between hover:scale-[1.02] transition-all cursor-pointer border border-zinc-100 shadow-sm"
-                    onclick="window.$emitter.emit('start-call', { userId: {{ $contact['id'] }}, userName: '{{ $contact['name'] }}' })">
+                    onclick="console.log('Tile clicked. window.$emitter is:', window.$emitter); if (window.$emitter) { window.$emitter.emit('start-call', { userId: {{ $contact['id'] }}, userName: '{{ $contact['name'] }}' }) } else { alert('Критическая ошибка: window.$emitter не найден. Попробуйте обновить страницу (Ctrl+F5)') }">
 
                     <div class="flex items-center gap-4">
                         <div

@@ -6,6 +6,7 @@ import.meta.glob(["../images/**", "../fonts/**"]);
 /**
  * Main vue bundler.
  */
+console.log('App.js: Loading...');
 import { createApp } from "vue/dist/vue.esm-bundler";
 
 /**
