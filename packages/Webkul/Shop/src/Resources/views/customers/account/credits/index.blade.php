@@ -151,41 +151,41 @@
             @if ($transactions->count() > 0)
                 <div class="flex flex-col divide-y divide-zinc-50">
                     @foreach ($transactions as $transaction)
-                                <div class="p-5 hover:bg-zinc-50/50 flex items-center justify-between">
-                                    <div class="flex flex-col gap-1.5 min-w-0 pr-4">
-                                        <div class="flex items-center gap-2">
-                                            @php
-                                                $typeLabels = ['deposit' => 'Пополнение', 'withdrawal' => 'Списание', 'purchase' => 'Оплата', 'refund' => 'Возврат', 'transfer_debit' => 'Перевод от вас', 'transfer_credit' => 'Перевод вам', 'cashback' => '💸 Кэшбек'];
-                                                $typeLabel = $typeLabels[$transaction->type] ?? $transaction->type;
-                                                $statusColors = ['completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100', 'pending' => 'bg-amber-50 text-amber-600 border-amber-100', 'failed' => 'bg-red-50 text-red-600 border-red-100'];
-                                                $statusClass = $statusColors[$transaction->status] ?? 'bg-zinc-50 text-zinc-500 border-zinc-100';
-                                            @endphp
-                          <span
-                                                class="text-[15px] font-black text-zinc-900 uppercase tracking-tight truncate">{{ $typeLabel }}</span>
-                                            <span
-                                                class="text-[9px] px-1.5 py-0.5 border {{ $statusClass }} uppercase tracking-[0.2em] font-black shrink-0">{{ $transaction->status }}</span>
-                                        </div>
-                                        @if($transaction->notes)
-                                            <div class="text-[12px] text-zinc-500 leading-tight">{{ $transaction->notes }}</div>
-                                        @endif
-                                        <div class="text-[11px] text-zinc-400 font-medium">
-                                            {{ $transaction->created_at->format('d.m.Y — H:i') }}
-                                        </div>
-                                    </div>
-                                    <div class="text-right shrink-0">
-                                        @php
-                                            $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
-                                            $isDebit = in_array($transaction->type, $debitTypes);
-                                            $sign = $isDebit ? '-' : '+';
-                                            $colorClass = $isDebit ? 'text-red-500' : 'text-emerald-500';
-                                        @endphp
-                                        <div class="text-[16px] font-black font-mono {{ $colorClass }} tracking-tight">
-                                            {{ $sign }}{{ core()->formatPrice($transaction->amount) }}
-                                        </div>
-                                        <div class="text-[10px] text-zinc-400 font-black mt-0.5 uppercase tracking-[0.1em]">
-                                            #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
-                                    </div>
+                        <div class="p-5 hover:bg-zinc-50/50 flex items-center justify-between">
+                            <div class="flex flex-col gap-1.5 min-w-0 pr-4">
+                                <div class="flex items-center gap-2">
+                                    @php
+                                        $typeLabels = ['deposit' => 'Пополнение', 'withdrawal' => 'Списание', 'purchase' => 'Оплата', 'refund' => 'Возврат', 'transfer_debit' => 'Перевод от вас', 'transfer_credit' => 'Перевод вам', 'cashback' => '💸 Кэшбек'];
+                                        $typeLabel = $typeLabels[$transaction->type] ?? $transaction->type;
+                                        $statusColors = ['completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100', 'pending' => 'bg-amber-50 text-amber-600 border-amber-100', 'failed' => 'bg-red-50 text-red-600 border-red-100'];
+                                        $statusClass = $statusColors[$transaction->status] ?? 'bg-zinc-50 text-zinc-500 border-zinc-100';
+                                    @endphp
+                                    <span
+                                        class="text-[15px] font-black text-zinc-900 uppercase tracking-tight truncate">{{ $typeLabel }}</span>
+                                    <span
+                                        class="text-[9px] px-1.5 py-0.5 border {{ $statusClass }} uppercase tracking-[0.2em] font-black shrink-0">{{ $transaction->status }}</span>
                                 </div>
+                                @if($transaction->notes)
+                                    <div class="text-[12px] text-zinc-500 leading-tight">{{ $transaction->notes }}</div>
+                                @endif
+                                <div class="text-[11px] text-zinc-400 font-medium">
+                                    {{ $transaction->created_at->format('d.m.Y — H:i') }}
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                @php
+                                    $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
+                                    $isDebit = in_array($transaction->type, $debitTypes);
+                                    $sign = $isDebit ? '-' : '+';
+                                    $colorClass = $isDebit ? 'text-red-500' : 'text-emerald-500';
+                                @endphp
+                                <div class="text-[16px] font-black font-mono {{ $colorClass }} tracking-tight">
+                                    {{ $sign }}{{ core()->formatPrice($transaction->amount) }}
+                                </div>
+                                <div class="text-[10px] text-zinc-400 font-black mt-0.5 uppercase tracking-[0.1em]">
+                                    #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
+                            </div>
+                        </div>
                     @endforeach
                 </div>
                 <div class="p-6 border-t border-zinc-50">
@@ -729,8 +729,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                    {{ $address->address }}
-                                                                                                                                                                                                </code>
+                                                                                                                                                                                                        {{ $address->address }}
+                                                                                                                                                                                                    </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -764,13 +764,15 @@
                     <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Выберите актив
                     </p>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        @foreach(['btc' => 'Bitcoin', 'eth' => 'Ethereum', 'usdt' => 'USDT', 'ton' => 'TON', 'dash' => 'Dash'] as $id => $name)
-                            <button type="button" id="coin-{{ $id }}" onclick="selCoin('{{ $id }}')"
+                        @foreach(['bitcoin' => 'Bitcoin', 'ethereum' => 'Ethereum', 'usdt' => 'USDT', 'ton' => 'TON', 'dash' => 'Dash'] as $id => $name)
+                            <button type="button"
+                                id="coin-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
+                                onclick="selCoin('{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}')"
                                 class="flex flex-col items-center justify-center p-5 border border-zinc-100 bg-white hover:border-violet-100 transition-all active:scale-95 group relative overflow-hidden">
                                 <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">
                                     {{ $allAssets[$id === 'usdt' ? 'usdt_ton' : $id]['icon'] }}
                                 </span>
-                                <span id="coin-label-{{ $id }}"
+                                <span id="coin-label-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
                                     class="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
                                     {{ $id }}
                                 </span>
@@ -1220,7 +1222,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                            });
+                                                                                                                                                                                });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
