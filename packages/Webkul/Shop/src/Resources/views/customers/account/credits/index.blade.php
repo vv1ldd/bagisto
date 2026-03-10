@@ -67,14 +67,13 @@
                         {{ core()->formatPrice($user->getTotalFiatBalance()) }}
                     </div>
                     <div class="flex items-center gap-3">
-                        <a href="{{ route('shop.customers.account.organizations.index') }}"
-                            class="flex flex-col items-center gap-1 group">
+                        <button onclick="goToOrganizations()" class="flex flex-col items-center gap-1 group">
                             <div
                                 class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-[#7C45F5] transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
                                 🏢</div>
                             <span
                                 class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">компании</span>
-                        </a>
+                        </button>
 
                         <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
                             <div
@@ -259,6 +258,173 @@
                         для оплаты от ваших организаций.</p>
                 </div>
             @endif
+        </div>
+
+        {{-- Step2.6: Organizations --}}
+        <div id="step-organizations" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm">
+            @if ($organizations->count() > 0)
+                <div class="flex flex-col divide-y divide-zinc-50">
+                    @foreach ($organizations as $organization)
+                        <div
+                            class="org-row flex items-start justify-between p-5 hover:bg-zinc-50/50 transition-colors group relative">
+                            <!-- Clickable Area -->
+                            <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
+                                class="flex-grow pr-4 block">
+                                <div class="mb-1">
+                                    <p class="text-[17px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-all">
+                                        {{ $organization->name }}
+                                    </p>
+                                </div>
+
+                                <div class="space-y-0.5">
+                                    <p class="text-[13px] text-zinc-500 font-medium" v-pre>
+                                        <span class="text-zinc-400">ИНН:</span>
+                                        <span class="text-zinc-700 font-mono">{{ $organization->inn }}</span>
+                                        <button type="button" onclick="copyValue('{{ $organization->inn }}', this, event)"
+                                            class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                            title="Копировать ИНН">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                        </button>
+
+                                        @if($organization->kpp)
+                                            <span class="text-zinc-400 ml-2">КПП:</span>
+                                            <span class="text-zinc-700 font-mono">{{ $organization->kpp }}</span>
+                                            <button type="button" onclick="copyValue('{{ $organization->kpp }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать КПП">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        @endif
+                                    </p>
+
+                                    @if($organization->bank_name)
+                                        <p class="text-[13px] text-zinc-500" v-pre>
+                                            <span class="text-zinc-400">Банк:</span>
+                                            <span>{{ $organization->bank_name }}</span>
+                                            <button type="button" onclick="copyValue('{{ $organization->bank_name }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать название банка">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+
+                                            <span class="text-zinc-400 ml-2">БИК:</span>
+                                            <span class="font-mono">{{ $organization->bic }}</span>
+                                            <button type="button" onclick="copyValue('{{ $organization->bic }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать БИК">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        </p>
+
+                                        @if($organization->settlement_account)
+                                            <p class="text-[13px] text-zinc-500 mt-0.5" v-pre>
+                                                <span class="text-zinc-400">Расч. счет:</span>
+                                                <span class="font-medium font-mono text-zinc-800">{{ $organization->settlement_account }}</span>
+                                                <button type="button"
+                                                    onclick="copyValue('{{ $organization->settlement_account }}', this, event)"
+                                                    class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                    title="Копировать расчетный счет">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                    </svg>
+                                                </button>
+                                            </p>
+                                        @endif
+                                    @endif
+
+                                    <p class="text-[13px] text-zinc-500 flex items-start gap-1.5 mt-1" v-pre>
+                                        <span class="icon-location text-[16px] text-zinc-300 mt-0.5"></span>
+                                        <span>
+                                            {{ $organization->address }}
+                                            <button type="button" onclick="copyValue('{{ $organization->address }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать адрес">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </p>
+                                </div>
+                            </a>
+
+                            <!-- Dropdown Actions -->
+                            <div class="shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 relative">
+                                <x-shop::dropdown
+                                    position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
+                                    <x-slot:toggle>
+                                        <button
+                                            class="p-2 hover:bg-white rounded shadow-sm border border-zinc-200 transition text-zinc-500 hover:text-zinc-900"
+                                            aria-label="More Options">
+                                            <span class="icon-more text-2xl"></span>
+                                        </button>
+                                    </x-slot:toggle>
+
+                                    <x-slot:menu class="!py-1 min-w-[140px] shadow-xl border-zinc-100">
+                                        <x-shop::dropdown.menu.item>
+                                            <a href="{{ route('shop.customers.account.organizations.edit', $organization->id) }}"
+                                                class="flex items-center gap-2 w-full text-[14px]">
+                                                <span class="icon-edit text-xl"></span>
+                                                @lang('shop::app.customers.account.organizations.index.edit')
+                                            </a>
+                                        </x-shop::dropdown.menu.item>
+
+                                        <x-shop::dropdown.menu.item class="text-red-500">
+                                            <form method="POST" id="delete-org-{{ $organization->id }}"
+                                                action="{{ route('shop.customers.account.organizations.delete', $organization->id) }}">
+                                                @method('DELETE')
+                                                @csrf
+                                            </form>
+                                            <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
+                                                onclick="
+                                                    event.preventDefault(); 
+                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                    } else if(innPrompt !== null) {
+                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                    }
+                                                ">
+                                                <span class="icon-bin text-xl"></span>
+                                                @lang('shop::app.customers.account.organizations.index.delete')
+                                            </a>
+                                        </x-shop::dropdown.menu.item>
+                                    </x-slot:menu>
+                                </x-shop::dropdown>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <a href="{{ route('shop.customers.account.organizations.create') }}"
+                class="flex items-center justify-center p-6 border-t border-zinc-50 hover:bg-violet-50/30 transition-all text-[14px] font-bold text-[#7C45F5] group bg-white">
+                <span
+                    class="w-10 h-10 bg-violet-100/50 text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all shadow-sm">
+                    <span class="icon-plus text-base"></span>
+                </span>
+                Добавить организацию
+            </a>
         </div>
 
         {{-- Step: Deposit Type Selection --}}
@@ -834,7 +1000,7 @@
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
-                ['step-dashboard', 'step-transactions', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -856,6 +1022,7 @@
                     if (backBtn) backBtn.style.display = 'flex';
                     if (titleEl) {
                         if (currentStep === 'transactions') titleEl.innerText = "История";
+                        if (currentStep === 'organizations') titleEl.innerText = "Мои компании";
                         if (currentStep === 'invoices') titleEl.innerText = "Выставленные счета";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
                         if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
@@ -872,6 +1039,7 @@
             function handleStepBack() {
                 if (currentStep === 'transactions') switchStep('dashboard');
                 else if (currentStep === 'invoices') switchStep('dashboard');
+                else if (currentStep === 'organizations') switchStep('dashboard');
                 else if (currentStep === 'deposit-type') switchStep('dashboard');
                 else if (currentStep === 'empty') switchStep('deposit-type');
                 else if (currentStep === 'details') switchStep('management');
@@ -883,6 +1051,7 @@
             }
 
             function goToDeposit() { switchStep('deposit-type'); }
+            function goToOrganizations() { switchStep('organizations'); }
             function goToCryptoManagement() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
             function goToB2BManagement() { switchStep('b2b-management'); }
             function goToB2CManagement() { switchStep('b2c-details'); }
@@ -1035,6 +1204,35 @@
                         setTimeout(() => btn.innerText = orig, 2000);
                     }
                 });
+            }
+
+            window.copyValue = function (text, btn, e) {
+                if(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                if (!navigator.clipboard) {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try { document.execCommand('copy'); } catch (err) {}
+                    document.body.removeChild(textArea);
+                } else {
+                    navigator.clipboard.writeText(text);
+                }
+
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<span class="text-[10px] font-bold text-green-500 uppercase ml-1">Скопировано!</span>';
+                btn.classList.remove('text-zinc-300');
+                btn.classList.add('text-green-500');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.add('text-zinc-300');
+                    btn.classList.remove('text-green-500');
+                }, 2000);
             }
 
             // Global alert handler to replace missing window.showAlert
