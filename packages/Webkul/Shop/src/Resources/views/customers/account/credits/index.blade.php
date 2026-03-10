@@ -400,14 +400,14 @@
                                             </form>
                                             <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
                                                 onclick="
-                                                            event.preventDefault(); 
-                                                            const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                            if(innPrompt === '{{ $organization->inn }}') { 
-                                                                document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                            } else if(innPrompt !== null) {
-                                                                alert('ИНН введен неверно. Удаление отменено.');
-                                                            }
-                                                        ">
+                                                                    event.preventDefault(); 
+                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                    } else if(innPrompt !== null) {
+                                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                                    }
+                                                                ">
                                                 <span class="icon-bin text-xl"></span>
                                                 @lang('shop::app.customers.account.organizations.index.delete')
                                             </a>
@@ -442,184 +442,178 @@
                 @csrf
                 <input type="hidden" name="from_wallet" value="1">
 
-                <!-- SECTION 1: Organization Details -->
-                <div class="text-left mb-5">
-                    <h3
-                        class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
-                        <span class="text-zinc-400 text-base">📁</span>
-                        Основные сведения
-                    </h3>
+                <!-- Step 1: Organization Details -->
+                <div id="add-org-step-1">
+                    <div class="text-left mb-5">
+                        <h3
+                            class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
+                            <span class="text-zinc-400 text-base">1</span>
+                            Поиск организации
+                        </h3>
 
-                    <div class="space-y-3">
-                        {{-- Row 1: Search --}}
-                        <div class="relative">
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="required uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    Поиск по названию или ИНН
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="name" id="org-name"
-                                    value="{{ old('name') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-1 focus:!ring-[#7C45F5] text-[13px] text-zinc-900 font-medium"
-                                    placeholder="Начните вводить данные для автозаполнения..." autocomplete="off" />
-
-                                <x-shop::form.control-group.error control-name="name" />
-                            </x-shop::form.control-group>
-
-                            <div id="org-suggestions"
-                                class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
-                            </div>
-                        </div>
-
-                        {{-- Row 2: INN | KPP --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="required uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    ИНН
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="inn" id="org-inn"
-                                    value="{{ old('inn') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
-                                    placeholder="10 или 12 цифр" />
-
-                                <x-shop::form.control-group.error control-name="inn" />
-                            </x-shop::form.control-group>
-
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    КПП
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="kpp" id="org-kpp"
-                                    value="{{ old('kpp') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
-                                    placeholder="9 цифр" />
-
-                                <x-shop::form.control-group.error control-name="kpp" />
-                            </x-shop::form.control-group>
-                        </div>
-
-                        {{-- Row 3: OGRN | Address --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    ОГРН
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="ogrn" id="org-ogrn"
-                                    value="{{ old('ogrn') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
-                                    placeholder="ОГРН" />
-
-                                <x-shop::form.control-group.error control-name="ogrn" />
-                            </x-shop::form.control-group>
-
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    Юридический адрес
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="address" id="org-address"
-                                    value="{{ old('address') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 text-[13px] text-zinc-900 focus:!border-[#7C45F5] truncate"
-                                    placeholder="Полный адрес" />
-
-                                <x-shop::form.control-group.error control-name="address" />
-                            </x-shop::form.control-group>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION 2: Bank Details -->
-                <div class="text-left mb-6">
-                    <h3
-                        class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
-                        <span class="text-zinc-400 text-base">🏦</span>
-                        Банковские реквизиты
-                    </h3>
-
-                    <div class="space-y-3">
-                        {{-- Row 1: BIC | Settlement Account --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="space-y-4">
+                            {{-- Row 1: Search --}}
                             <div class="relative">
-                                <x-shop::form.control-group class="!mb-0">
-                                    <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                        БИК или Название Банка
-                                    </x-shop::form.control-group.label>
+                                <label for="org-name"
+                                    class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                    Поиск по названию или ИНН
+                                </label>
+                                <input type="text" name="name" id="org-name" value="{{ old('name') }}"
+                                    class="w-full py-2.5 px-4 border border-zinc-200 rounded-none focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] text-[13px] text-zinc-900 font-medium transition-colors"
+                                    placeholder="Начните вводить данные для автозаполнения..." autocomplete="off"
+                                    required>
 
-                                    <x-shop::form.control-group.control type="text" name="bic" id="bank-bic"
-                                        value="{{ old('bic') }}"
-                                        class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
-                                        placeholder="БИК или название" autocomplete="off" />
-
-                                    <x-shop::form.control-group.error control-name="bic" />
-                                </x-shop::form.control-group>
-
-                                <div id="bank-suggestions"
+                                <div id="org-suggestions"
                                     class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
                                 </div>
                             </div>
 
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="required uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    Расчетный счет
-                                </x-shop::form.control-group.label>
+                            {{-- Row 2: INN | KPP --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="org-inn"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                        ИНН
+                                    </label>
+                                    <input type="text" name="inn" id="org-inn" value="{{ old('inn') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="10 или 12 цифр" required>
+                                </div>
 
-                                <x-shop::form.control-group.control type="text" name="settlement_account"
-                                    id="bank-account" value="{{ old('settlement_account') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
-                                    placeholder="20 цифр" />
+                                <div>
+                                    <label for="org-kpp"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        КПП
+                                    </label>
+                                    <input type="text" name="kpp" id="org-kpp" value="{{ old('kpp') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="9 цифр">
+                                </div>
+                            </div>
 
-                                <x-shop::form.control-group.error control-name="settlement_account" />
-                            </x-shop::form.control-group>
+                            {{-- Row 3: OGRN | Address --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="org-ogrn"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        ОГРН
+                                    </label>
+                                    <input type="text" name="ogrn" id="org-ogrn" value="{{ old('ogrn') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="ОГРН">
+                                </div>
+
+                                <div>
+                                    <label for="org-address"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        Юридический адрес
+                                    </label>
+                                    <input type="text" name="address" id="org-address" value="{{ old('address') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] truncate transition-colors"
+                                        placeholder="Полный адрес">
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        {{-- Row 2: Bank name | Correspondent Account --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    Название Банка
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="bank_name" id="bank-name"
-                                    value="{{ old('bank_name') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 text-[13px] text-zinc-900 bg-zinc-50 font-medium"
-                                    placeholder="Подтянется по БИК" readonly tabindex="-1" />
-                            </x-shop::form.control-group>
-
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
-                                    Корр. счет
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control type="text" name="correspondent_account"
-                                    id="bank-corr" value="{{ old('correspondent_account') }}"
-                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 bg-zinc-50"
-                                    placeholder="Подтянется по БИК" readonly tabindex="-1" />
-                            </x-shop::form.control-group>
-                        </div>
+                    <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
+                        <button type="button" onclick="switchStep('organizations')"
+                            class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                            Отмена
+                        </button>
+                        <button type="button" onclick="goToAddOrgStep2()"
+                            class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
+                            Далее к банку <span class="icon-arrow-right ml-1 text-[10px]"></span>
+                        </button>
                     </div>
                 </div>
 
-                <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
-                    <button type="button" onclick="switchStep('organizations')"
-                        class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
-                        Отмена
-                    </button>
-                    <button type="submit"
-                        class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
-                        Сохранить
-                    </button>
+                <!-- Step 2: Bank Details (Initially Hidden) -->
+                <div id="add-org-step-2" class="hidden">
+                    <div class="text-left mb-6">
+                        <h3
+                            class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
+                            <span class="text-zinc-400 text-base">2</span>
+                            Банковские реквизиты
+                        </h3>
+
+                        <!-- Minimalistic Org Card -->
+                        <div class="mb-5 p-4 border border-zinc-200 bg-zinc-50 relative">
+                            <button type="button" onclick="goToAddOrgStep1()"
+                                class="absolute top-4 right-4 text-xs text-zinc-400 hover:text-[#7C45F5] underline underline-offset-2 transition-colors">
+                                Изменить
+                            </button>
+                            <div id="selected-org-name" class="font-bold text-[14px] text-zinc-900 pr-16 truncate">
+                                Название организации</div>
+                            <div id="selected-org-inn" class="text-[11px] font-mono text-zinc-500 mt-1">ИНН: 0000000000
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            {{-- Row 1: BIC | Settlement Account --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="relative">
+                                    <label for="bank-bic"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        БИК или Название Банка
+                                    </label>
+                                    <input type="text" name="bic" id="bank-bic" value="{{ old('bic') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="БИК или название" autocomplete="off">
+
+                                    <div id="bank-suggestions"
+                                        class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="bank-account"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                        Расчетный счет
+                                    </label>
+                                    <input type="text" name="settlement_account" id="bank-account"
+                                        value="{{ old('settlement_account') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="20 цифр">
+                                </div>
+                            </div>
+
+                            {{-- Row 2: Bank name | Correspondent Account --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="bank-name"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        Название Банка
+                                    </label>
+                                    <input type="text" name="bank_name" id="bank-name" value="{{ old('bank_name') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 bg-zinc-50 font-medium cursor-not-allowed"
+                                        placeholder="Подтянется по БИК" readonly tabindex="-1">
+                                </div>
+
+                                <div>
+                                    <label for="bank-corr"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        Корр. счет
+                                    </label>
+                                    <input type="text" name="correspondent_account" id="bank-corr"
+                                        value="{{ old('correspondent_account') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 bg-zinc-50 cursor-not-allowed"
+                                        placeholder="Подтянется по БИК" readonly tabindex="-1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
+                        <button type="button" onclick="goToAddOrgStep1()"
+                            class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                            Назад
+                        </button>
+                        <button type="submit"
+                            class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
+                            Сохранить организацию
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1092,8 +1086,8 @@
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
                             onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                            {{ $address->address }}
-                                                                                                                                                                                                        </code>
+                                                                                                                                                                                                                {{ $address->address }}
+                                                                                                                                                                                                            </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
                                 <span class="copy-txt">Скопировать</span>
@@ -1251,10 +1245,47 @@
 
             function goToDeposit() { switchStep('deposit-type'); }
             function goToOrganizations() { switchStep('organizations'); }
-            function goToAddOrganization() { switchStep('add-organization'); }
+            function goToAddOrganization() {
+                switchStep('add-organization');
+                // Reset to step 1 when opening
+                goToAddOrgStep1();
+                document.getElementById('org-form').reset();
+            }
             function goToCryptoManagement() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
             function goToB2BManagement() { switchStep('b2b-management'); }
             function goToB2CManagement() { switchStep('b2c-details'); }
+
+            function goToAddOrgStep1() {
+                document.getElementById('add-org-step-1').classList.remove('hidden');
+                document.getElementById('add-org-step-2').classList.add('hidden');
+            }
+
+            function goToAddOrgStep2() {
+                const name = document.getElementById('org-name').value.trim();
+                const inn = document.getElementById('org-inn').value.trim();
+                const kpp = document.getElementById('org-kpp').value.trim();
+
+                if (!name || !inn) {
+                    alert('Пожалуйста, укажите хотя бы название организации и ИНН для продолжения.');
+                    // Outline inputs in red slightly
+                    if (!name) document.getElementById('org-name').classList.add('border-red-500');
+                    if (!inn) document.getElementById('org-inn').classList.add('border-red-500');
+
+                    setTimeout(() => {
+                        document.getElementById('org-name').classList.remove('border-red-500');
+                        document.getElementById('org-inn').classList.remove('border-red-500');
+                    }, 2000);
+                    return;
+                }
+
+                // Populate Step 2 Mini Card
+                document.getElementById('selected-org-name').innerText = name;
+                document.getElementById('selected-org-inn').innerText = 'ИНН: ' + inn + (kpp ? ' / КПП: ' + kpp : '');
+
+                document.getElementById('add-org-step-1').classList.add('hidden');
+                document.getElementById('add-org-step-2').classList.remove('hidden');
+            }
+
             function goToManagement() { switchStep('management'); }
             function goToAddWallet() { switchStep('add-wallet'); }
             function selectAsset(assetKey, walletId) {
@@ -1620,7 +1651,7 @@
                     @endif
                 @endif
 
-                                                                                                                                                                                    });
+                                                                                                                                                                                        });
 
             // --- ORGANIZATION WIZARD SCRIPTS ---
             window.isValidBankAccount = function (bic, account) {
