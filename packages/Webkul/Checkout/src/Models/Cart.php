@@ -168,12 +168,20 @@ class Cart extends Model implements CartContract
     public function hasGuestCheckoutItems(): bool
     {
         foreach ($this->items as $item) {
-            if (! $item->product->getAttribute('guest_checkout')) {
+            if (!$item->product->getAttribute('guest_checkout')) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * Get the billing entity associated with the cart.
+     */
+    public function billing_entity(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\Webkul\Core\Models\BillingEntityProxy::modelClass());
     }
 
     /**

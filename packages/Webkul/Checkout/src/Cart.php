@@ -1044,6 +1044,8 @@ class Cart
                 continue;
             }
 
+            $isOsno = !$this->cart->billing_entity || $this->cart->billing_entity->tax_regime === 'osno';
+
             $calculationBasedOn = core()->getConfigData('sales.taxes.calculation.based_on');
 
             $address = null;
@@ -1073,39 +1075,41 @@ class Cart
 
             $item->tax_percent = $item->tax_amount = $item->base_tax_amount = 0;
 
-            Tax::isTaxApplicableInCurrentAddress($taxCategories[$taxCategoryId], $address, function ($rate) use ($item, $taxCategoryId) {
-                $item->applied_tax_rate = $rate->identifier;
+            if ($isOsno) {
+                Tax::isTaxApplicableInCurrentAddress($taxCategories[$taxCategoryId], $address, function ($rate) use ($item, $taxCategoryId) {
+                    $item->applied_tax_rate = $rate->identifier;
 
-                $item->tax_category_id = $taxCategoryId;
+                    $item->tax_category_id = $taxCategoryId;
 
-                $item->tax_percent = $rate->tax_rate;
+                    $item->tax_percent = $rate->tax_rate;
 
-                if (Tax::isInclusiveTaxProductPrices()) {
-                    $item->tax_amount = round(($item->total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                    if (Tax::isInclusiveTaxProductPrices()) {
+                        $item->tax_amount = round(($item->total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                    $item->base_tax_amount = round(($item->base_total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                        $item->base_tax_amount = round(($item->base_total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                    $item->total = $item->total_incl_tax - $item->tax_amount;
+                        $item->total = $item->total_incl_tax - $item->tax_amount;
 
-                    $item->base_total = $item->base_total_incl_tax - $item->base_tax_amount;
+                        $item->base_total = $item->base_total_incl_tax - $item->base_tax_amount;
 
-                    $item->price = $item->total / $item->quantity;
+                        $item->price = $item->total / $item->quantity;
 
-                    $item->base_price = $item->base_total / $item->quantity;
-                } else {
-                    $item->tax_amount = round(($item->total * $rate->tax_rate) / 100, 4);
+                        $item->base_price = $item->base_total / $item->quantity;
+                    } else {
+                        $item->tax_amount = round(($item->total * $rate->tax_rate) / 100, 4);
 
-                    $item->base_tax_amount = round(($item->base_total * $rate->tax_rate) / 100, 4);
+                        $item->base_tax_amount = round(($item->base_total * $rate->tax_rate) / 100, 4);
 
-                    $item->total_incl_tax = $item->total + $item->tax_amount;
+                        $item->total_incl_tax = $item->total + $item->tax_amount;
 
-                    $item->base_total_incl_tax = $item->base_total + $item->base_tax_amount;
+                        $item->base_total_incl_tax = $item->base_total + $item->base_tax_amount;
 
-                    $item->price_incl_tax = $item->price + ($item->tax_amount / $item->quantity);
+                        $item->price_incl_tax = $item->price + ($item->tax_amount / $item->quantity);
 
-                    $item->base_price_incl_tax = $item->base_price + ($item->base_tax_amount / $item->quantity);
-                }
-            });
+                        $item->base_price_incl_tax = $item->base_price + ($item->base_tax_amount / $item->quantity);
+                    }
+                });
+            }
 
             if (empty($item->applied_tax_rate)) {
                 $item->price_incl_tax = $item->price;
@@ -1168,31 +1172,38 @@ class Cart
             $address = Tax::getDefaultAddress();
         }
 
+        $shippingRate->applied_tax_rate = null;
+        $shippingRate->tax_percent = $shippingRate->tax_amount = $shippingRate->base_tax_amount = 0;
+
         Event::dispatch('checkout.cart.calculate.shipping.tax.before', $this->cart);
 
-        Tax::isTaxApplicableInCurrentAddress($taxCategory, $address, function ($rate) use ($shippingRate) {
-            $shippingRate->applied_tax_rate = $rate->identifier;
+        $isOsno = !$this->cart->billing_entity || $this->cart->billing_entity->tax_regime === 'osno';
 
-            $shippingRate->tax_percent = $rate->tax_rate;
+        if ($isOsno) {
+            Tax::isTaxApplicableInCurrentAddress($taxCategory, $address, function ($rate) use ($shippingRate) {
+                $shippingRate->applied_tax_rate = $rate->identifier;
 
-            if (Tax::isInclusiveTaxShippingPrices()) {
-                $shippingRate->tax_amount = round(($shippingRate->price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                $shippingRate->tax_percent = $rate->tax_rate;
 
-                $shippingRate->base_tax_amount = round(($shippingRate->base_price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                if (Tax::isInclusiveTaxShippingPrices()) {
+                    $shippingRate->tax_amount = round(($shippingRate->price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                $shippingRate->price = $shippingRate->price_incl_tax - $shippingRate->tax_amount;
+                    $shippingRate->base_tax_amount = round(($shippingRate->base_price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                $shippingRate->base_price = $shippingRate->base_price_incl_tax - $shippingRate->base_tax_amount;
-            } else {
-                $shippingRate->tax_amount = round(($shippingRate->price * $rate->tax_rate) / 100, 4);
+                    $shippingRate->price = $shippingRate->price_incl_tax - $shippingRate->tax_amount;
 
-                $shippingRate->base_tax_amount = round(($shippingRate->base_price * $rate->tax_rate) / 100, 4);
+                    $shippingRate->base_price = $shippingRate->base_price_incl_tax - $shippingRate->base_tax_amount;
+                } else {
+                    $shippingRate->tax_amount = round(($shippingRate->price * $rate->tax_rate) / 100, 4);
 
-                $shippingRate->price_incl_tax = $shippingRate->price + $shippingRate->tax_amount;
+                    $shippingRate->base_tax_amount = round(($shippingRate->base_price * $rate->tax_rate) / 100, 4);
 
-                $shippingRate->base_price_incl_tax = $shippingRate->base_price + $shippingRate->base_tax_amount;
-            }
-        });
+                    $shippingRate->price_incl_tax = $shippingRate->price + $shippingRate->tax_amount;
+
+                    $shippingRate->base_price_incl_tax = $shippingRate->base_price + $shippingRate->base_tax_amount;
+                }
+            });
+        }
 
         if (empty($shippingRate->applied_tax_rate)) {
             $shippingRate->price_incl_tax = $shippingRate->price;
