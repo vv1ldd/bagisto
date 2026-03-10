@@ -1,13 +1,13 @@
 <x-shop::layouts.account :is-cardless="true" :has-header="false">
-    <div class="flex items-center justify-center min-h-[85vh] py-10">
-        <div class="w-full max-w-[700px] bg-white border border-zinc-100 shadow-xl relative pt-6 pb-4 px-8">
+    <div class="flex items-center justify-center min-h-[75vh] py-6">
+        <div class="w-full max-w-[700px] bg-white border border-zinc-100 shadow-xl relative pt-6 pb-4 px-6">
             <a href="{{ route('shop.customers.account.organizations.index') }}"
                 class="absolute top-0 right-0 p-4 text-zinc-400 hover:text-red-500 transition-colors group">
                 <span class="icon-cancel text-xl group-hover:scale-110 transition-transform"></span>
             </a>
 
-            <div class="pt-2 pb-4 flex border-b border-zinc-50 mb-6">
-                <h1 class="text-[18px] font-bold text-zinc-900 leading-tight">
+            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5">
+                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
                     Добавление организации
                 </h1>
             </div>
@@ -16,25 +16,25 @@
                 @csrf
 
                 <!-- SECTION 1: Organization Details -->
-                <div class="text-left mb-6">
+                <div class="text-left mb-5">
                     <h3
-                        class="text-[12px] font-bold uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2 border-b border-zinc-50 pb-2">
-                        <span class="text-zinc-400 text-lg">📁</span>
+                        class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
+                        <span class="text-zinc-400 text-base">📁</span>
                         Основные сведения
                     </h3>
 
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         {{-- Row 1: Search --}}
                         <div class="relative">
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="required uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     Поиск по названию или ИНН
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="name" id="org-name"
                                     value="{{ old('name') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-1 focus:!ring-[#7C45F5] text-[14px] text-zinc-900 font-medium"
+                                    class="!py-2 !px-4 !border-zinc-200 focus:!border-[#7C45F5] focus:!ring-1 focus:!ring-[#7C45F5] text-[13px] text-zinc-900 font-medium"
                                     placeholder="Начните вводить данные для автозаполнения..." autocomplete="off" />
 
                                 <x-shop::form.control-group.error control-name="name" />
@@ -46,16 +46,16 @@
                         </div>
 
                         {{-- Row 2: INN | KPP --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="required uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     ИНН
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="inn" id="org-inn"
                                     value="{{ old('inn') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
                                     placeholder="10 или 12 цифр" />
 
                                 <x-shop::form.control-group.error control-name="inn" />
@@ -63,13 +63,13 @@
 
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     КПП
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="kpp" id="org-kpp"
                                     value="{{ old('kpp') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
                                     placeholder="9 цифр" />
 
                                 <x-shop::form.control-group.error control-name="kpp" />
@@ -77,16 +77,16 @@
                         </div>
 
                         {{-- Row 3: OGRN | Address --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     ОГРН
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="ogrn" id="org-ogrn"
                                     value="{{ old('ogrn') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
                                     placeholder="ОГРН" />
 
                                 <x-shop::form.control-group.error control-name="ogrn" />
@@ -94,13 +94,13 @@
 
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     Юридический адрес
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="address" id="org-address"
                                     value="{{ old('address') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 text-[14px] text-zinc-900 focus:!border-[#7C45F5] truncate"
+                                    class="!py-2 !px-4 !border-zinc-200 text-[13px] text-zinc-900 focus:!border-[#7C45F5] truncate"
                                     placeholder="Полный адрес" />
 
                                 <x-shop::form.control-group.error control-name="address" />
@@ -112,24 +112,24 @@
                 <!-- SECTION 2: Bank Details -->
                 <div class="text-left mb-6">
                     <h3
-                        class="text-[12px] font-bold uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2 border-b border-zinc-50 pb-2">
-                        <span class="text-zinc-400 text-lg">🏦</span>
+                        class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
+                        <span class="text-zinc-400 text-base">🏦</span>
                         Банковские реквизиты
                     </h3>
 
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         {{-- Row 1: BIC | Settlement Account --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div class="relative">
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.label
-                                        class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                        class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                         БИК или Название Банка
                                     </x-shop::form.control-group.label>
 
                                     <x-shop::form.control-group.control type="text" name="bic" id="bank-bic"
                                         value="{{ old('bic') }}"
-                                        class="!py-2.5 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                        class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
                                         placeholder="БИК или название" autocomplete="off" />
 
                                     <x-shop::form.control-group.error control-name="bic" />
@@ -142,13 +142,13 @@
 
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="required uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="required uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     Расчетный счет
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="settlement_account"
                                     id="bank-account" value="{{ old('settlement_account') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 focus:!border-[#7C45F5]"
+                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 focus:!border-[#7C45F5]"
                                     placeholder="20 цифр" />
 
                                 <x-shop::form.control-group.error control-name="settlement_account" />
@@ -156,37 +156,37 @@
                         </div>
 
                         {{-- Row 2: Bank name | Correspondent Account --}}
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     Название Банка
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="bank_name" id="bank-name"
                                     value="{{ old('bank_name') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 text-[14px] text-zinc-900 bg-zinc-50 font-medium"
+                                    class="!py-2 !px-4 !border-zinc-200 text-[13px] text-zinc-900 bg-zinc-50 font-medium"
                                     placeholder="Подтянется по БИК" readonly tabindex="-1" />
                             </x-shop::form.control-group>
 
                             <x-shop::form.control-group class="!mb-0">
                                 <x-shop::form.control-group.label
-                                    class="uppercase tracking-widest text-[10px] font-bold text-zinc-400">
+                                    class="uppercase tracking-widest text-[9px] font-bold text-zinc-400">
                                     Корр. счет
                                 </x-shop::form.control-group.label>
 
                                 <x-shop::form.control-group.control type="text" name="correspondent_account"
                                     id="bank-corr" value="{{ old('correspondent_account') }}"
-                                    class="!py-2.5 !px-4 !border-zinc-200 font-mono text-[14px] text-zinc-900 bg-zinc-50"
+                                    class="!py-2 !px-4 !border-zinc-200 font-mono text-[13px] text-zinc-900 bg-zinc-50"
                                     placeholder="Подтянется по БИК" readonly tabindex="-1" />
                             </x-shop::form.control-group>
                         </div>
                     </div>
                 </div>
 
-                <div class="border-t border-zinc-50 mt-6 py-4 flex items-center justify-end gap-3">
+                <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
                     <a href="{{ route('shop.customers.account.organizations.index') }}"
-                        class="px-5 py-2.5 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                        class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
                         Отмена
                     </a>
                     <button type="submit"
@@ -276,7 +276,7 @@
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const div = document.createElement('div');
-                                        div.className = 'p-2.5 hover:bg-emerald-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                                        div.className = 'p-2 hover:bg-emerald-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         const itemName = item.name || '';
                                         const inn = item.inn || '';
@@ -285,10 +285,10 @@
                                         const ogrn = item.ogrn || '';
 
                                         div.innerHTML = `
-                                                                                    <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
-                                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
-                                                                                    <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
-                                                                                `;
+                                                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                                        `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault(); // Prevent input blur from hiding box before selection
@@ -360,12 +360,12 @@
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const div = document.createElement('div');
-                                        div.className = 'p-2.5 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                                        div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
-                                                                                    <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
-                                                                                    <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
-                                                                                `;
+                                                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                                        `;
 
                                         div.onmousedown = (event) => {
                                             event.preventDefault(); // Prevent input blur from hiding box before selection
