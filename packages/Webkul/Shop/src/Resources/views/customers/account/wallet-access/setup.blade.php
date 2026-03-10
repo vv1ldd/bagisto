@@ -47,7 +47,8 @@
             <!-- Rendered by JS -->
         </div>
 
-        <button type="button" onclick="togglePinLength()" id="pin-length-toggle" class="text-zinc-500 hover:text-zinc-900 font-medium text-[14px] mb-8 transition">
+        <button type="button" onclick="togglePinLength()" id="pin-length-toggle"
+            class="text-zinc-500 hover:text-zinc-900 font-medium text-[14px] mb-8 transition">
             Параметры кода
         </button>
 
@@ -97,7 +98,7 @@
             renderDots();
             updateSetupUI();
             const btn = document.getElementById('pin-length-toggle');
-            if(MAX_PIN_LENGTH === 6) {
+            if (MAX_PIN_LENGTH === 6) {
                 btn.innerText = 'Переключить на 4-значный код';
             } else {
                 btn.innerText = 'Параметры кода';
