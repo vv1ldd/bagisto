@@ -124,6 +124,11 @@ class DadataHelper
     {
         $apiKey = config('services.dadata.api_key');
 
+        if (!$apiKey) {
+            return [];
+        }
+
+        try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
