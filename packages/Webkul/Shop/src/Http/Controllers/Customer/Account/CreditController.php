@@ -8,6 +8,8 @@ use Webkul\Customer\Repositories\CustomerTransactionRepository;
 use Webkul\Customer\Repositories\OrganizationRepository;
 use Webkul\Core\Repositories\BillingEntityRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use Webkul\Shop\Mail\Customer\TopupInvoiceNotification;
 
 class CreditController extends Controller
 {
@@ -80,10 +82,20 @@ class CreditController extends Controller
     {
         $defaultBillingEntityId = core()->getConfigData('customer.settings.b2b.default_billing_entity');
 
+        if (!$defaultBillingEntityId) {
+            $defaultBillingEntityId = $this->billingEntityRepository->all()->first()?->id;
+        }
+
+        if (!$defaultBillingEntityId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No billing entity configured for top-ups.'
+            ], 400);
+        }
+
         $this->validate(request(), [
             'amount' => 'required|numeric|min:0.01',
             'organization_id' => 'required|exists:customer_organizations,id',
-            'billing_entity_id' => $defaultBillingEntityId ? 'nullable' : 'required|exists:billing_entities,id',
         ]);
 
         $customer = auth()->guard('customer')->user();
@@ -96,10 +108,25 @@ class CreditController extends Controller
             'notes' => 'Top-up via B2B Bank Transfer',
             'metadata' => [
                 'organization_id' => request('organization_id'),
-                'billing_entity_id' => request('billing_entity_id') ?: $defaultBillingEntityId,
+                'billing_entity_id' => $defaultBillingEntityId,
             ],
             'currency_code' => core()->getCurrentCurrencyCode(),
         ]);
+
+        try {
+            $organization = $this->organizationRepository->find($transaction->metadata['organization_id']);
+            $billingEntity = $this->billingEntityRepository->find($transaction->metadata['billing_entity_id']);
+
+            $pdf = PDF::loadView('shop::customers.account.credits.topup-pdf', [
+                'transaction' => $transaction,
+                'organization' => $organization,
+                'billingEntity' => $billingEntity,
+            ]);
+
+            Mail::queue(new TopupInvoiceNotification($transaction, $pdf->output()));
+        } catch (\Exception $e) {
+            report($e);
+        }
 
         return response()->json([
             'success' => true,

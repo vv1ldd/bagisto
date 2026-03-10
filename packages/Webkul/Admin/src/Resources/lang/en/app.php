@@ -2789,6 +2789,8 @@ return [
                     'inn' => 'TIN (INN)',
                     'bank' => 'Bank',
                     'default' => 'Default',
+                    'active' => 'Active',
+                    'inactive' => 'Inactive',
                     'edit' => 'Edit',
                     'delete' => 'Delete',
                     'set-default' => 'Set as Default',

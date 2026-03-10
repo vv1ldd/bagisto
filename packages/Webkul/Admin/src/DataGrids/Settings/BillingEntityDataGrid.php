@@ -14,12 +14,10 @@ class BillingEntityDataGrid extends DataGrid
      */
     public function prepareQueryBuilder()
     {
-        $queryBuilder = DB::table('billing_entities')
+        return DB::table('billing_entities')
             ->select('id', 'name', 'inn', 'bank_name', 'bic', 'is_default')
             ->orderBy('is_default', 'desc')
             ->orderBy('id', 'desc');
-
-        $this->setQueryBuilder($queryBuilder);
     }
 
     /**
@@ -58,7 +56,7 @@ class BillingEntityDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'bank_name',
-            'label' => trans('admin::app.settings.billing-entities.index.datagrid.bank-name'),
+            'label' => trans('admin::app.settings.billing-entities.index.datagrid.bank'),
             'type' => 'string',
             'searchable' => true,
             'sortable' => true,
@@ -67,7 +65,7 @@ class BillingEntityDataGrid extends DataGrid
 
         $this->addColumn([
             'index' => 'is_default',
-            'label' => trans('admin::app.settings.billing-entities.index.datagrid.is-default'),
+            'label' => trans('admin::app.settings.billing-entities.index.datagrid.default'),
             'type' => 'boolean',
             'searchable' => false,
             'sortable' => true,
