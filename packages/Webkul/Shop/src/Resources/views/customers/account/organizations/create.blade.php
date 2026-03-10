@@ -247,11 +247,11 @@
 
                 // DaData Organization Autocomplete
                 let orgTimeout = null;
-                const orgSuggestionsBox = document.getElementById('org-suggestions');
 
                 function handleOrgInput(e) {
                     clearTimeout(orgTimeout);
                     const query = e.target.value;
+                    const orgSuggestionsBox = document.getElementById('org-suggestions');
 
                     if (query.length < 3) {
                         if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
@@ -297,11 +297,9 @@
                                             if (ogrnInput && ogrn) ogrnInput.value = ogrn;
 
                                             // Manually trigger input events for Vue v-model to update
-                                            if (orgNameInput) orgNameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                            if (orgInnInput) orgInnInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                            if (kppInput && item.kpp) kppInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                            if (addressInput && address) addressInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                            if (ogrnInput && ogrn) ogrnInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            [orgNameInput, orgInnInput, kppInput, addressInput, ogrnInput].forEach(input => {
+                                                if (input) input.dispatchEvent(new Event('input', { bubbles: true }));
+                                            });
 
                                             orgSuggestionsBox.classList.add('hidden');
                                         };
@@ -327,13 +325,11 @@
 
                 // DaData Bank Autocomplete
                 let bankTimeout = null;
-                const bankSuggestionsBox = document.getElementById('bank-suggestions');
 
                 function handleBankInput(e) {
-                    const query = e.target.value;
-                    console.log('Bank Input Query:', query);
-
                     clearTimeout(bankTimeout);
+                    const query = e.target.value;
+                    const bankSuggestionsBox = document.getElementById('bank-suggestions');
 
                     if (query.length < 3) {
                         if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
@@ -342,10 +338,8 @@
 
                     bankTimeout = setTimeout(async () => {
                         try {
-                            console.log('Fetching Bank Suggestions for:', query);
                             const response = await fetch(`{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`);
                             const data = await response.json();
-                            console.log('Bank Data Received:', data);
 
                             if (bankSuggestionsBox) {
                                 bankSuggestionsBox.innerHTML = '';
@@ -369,9 +363,9 @@
                                             if (nameInput) nameInput.value = item.bank_name || item.name;
                                             if (corrInput) corrInput.value = item.correspondent_account;
 
-                                            if (bicInput) bicInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                            if (nameInput) nameInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                            if (corrInput) corrInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                            [bicInput, nameInput, corrInput].forEach(input => {
+                                                if (input) input.dispatchEvent(new Event('input', { bubbles: true }));
+                                            });
 
                                             bankSuggestionsBox.classList.add('hidden');
 
@@ -426,6 +420,7 @@
 
                 // Hide suggestions on outside click
                 document.addEventListener('click', function (e) {
+                    const orgSuggestionsBox = document.getElementById('org-suggestions');
                     const orgNameInput = document.getElementById('org-name');
                     const orgInnInput = document.getElementById('org-inn');
 
@@ -435,6 +430,7 @@
                         orgSuggestionsBox.classList.add('hidden');
                     }
 
+                    const bankSuggestionsBox = document.getElementById('bank-suggestions');
                     const bicInput = document.getElementById('bank-bic');
                     if (bankSuggestionsBox && !bankSuggestionsBox.contains(e.target) &&
                         (!bicInput || !bicInput.contains(e.target))) {

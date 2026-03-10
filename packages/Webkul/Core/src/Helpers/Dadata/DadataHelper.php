@@ -124,10 +124,6 @@ class DadataHelper
     {
         $apiKey = config('services.dadata.api_key');
 
-        if (!$apiKey) {
-            return [];
-        }
-
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -136,11 +132,8 @@ class DadataHelper
                         'query' => $query,
                     ]);
 
-            \Log::info('Dadata Bank Suggest Query: ' . $query);
-
             if ($response->successful()) {
                 $suggestions = $response->json('suggestions');
-                \Log::info('Dadata Bank Suggest Response count: ' . count($suggestions ?? []));
 
                 if (!empty($suggestions)) {
                     return array_map(function ($item) {
