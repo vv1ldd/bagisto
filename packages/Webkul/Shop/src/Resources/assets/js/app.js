@@ -33,7 +33,7 @@ if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
         wssPort: parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 443),
         forceTLS: (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https',
         enabledTransports: ['ws', 'wss'],
-        authEndpoint: '/api/broadcasting/auth',
+        authEndpoint: '/broadcasting/auth',
         disableStats: true,
         encrypted: true,
     });
