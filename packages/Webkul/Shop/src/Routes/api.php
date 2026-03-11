@@ -134,9 +134,5 @@ Route::group(['prefix' => 'api'], function () {
 
             Route::delete('{id}', 'destroy')->name('shop.api.customers.account.wishlist.destroy');
         });
-
-        Route::controller(CallController::class)->prefix('call')->group(function () {
-            Route::post('signal', 'signal')->name('shop.api.customers.account.call.signal');
-        });
     });
 });

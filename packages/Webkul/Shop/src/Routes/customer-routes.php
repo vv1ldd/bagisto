@@ -318,6 +318,7 @@ Route::prefix('customer')->group(function () {
                  */
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CallController::class)->prefix('calls')->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.calls.index');
+                    Route::post('signal', 'signal')->name('shop.customers.account.calls.signal');
                 });
 
                 /**

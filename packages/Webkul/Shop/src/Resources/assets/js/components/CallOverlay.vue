@@ -243,7 +243,7 @@ export default {
         },
 
         sendSignal(signalData) {
-            axios.post('/api/customer/call/signal', {
+            axios.post('/customer/account/calls/signal', {
                 to_user_id: this.remoteUserId,
                 signal_data: signalData
             }).catch(error => {
