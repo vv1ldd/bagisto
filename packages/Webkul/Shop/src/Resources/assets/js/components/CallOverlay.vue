@@ -21,8 +21,18 @@
                 <div class="absolute bottom-4 left-4 bg-black px-3 py-1 text-[10px] font-bold border border-white/20 uppercase">
                     {{ remoteUserName || 'Remote' }}
                 </div>
-                <div v-if="!isConnected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                    <span class="text-xs uppercase tracking-widest opacity-40 italic">Ожидание потока...</span>
+                <div v-if="!isConnected" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 z-10">
+                    <!-- Avatar placeholder -->
+                    <div class="w-24 h-24 rounded-full bg-zinc-800 flex items-center justify-center mb-6 relative">
+                        <span class="text-3xl uppercase font-black">{{ (remoteUserName || 'U')[0] }}</span>
+                        <!-- Ripple effect for calling out state -->
+                        <div v-if="!isIncoming" class="absolute inset-0 rounded-full border-2 border-[#00FF41] animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-20"></div>
+                    </div>
+                    
+                    <span class="text-lg font-bold uppercase tracking-widest mb-2">{{ remoteUserName || 'Пользователь' }}</span>
+                    
+                    <span v-if="!isIncoming" class="text-xs uppercase tracking-[0.2em] text-[#00FF41]">Ожидание ответа...</span>
+                    <span v-else class="text-xs uppercase tracking-[0.2em] text-white/50 animate-pulse">Нажмите принять, чтобы начать сеанс</span>
                 </div>
             </div>
 
