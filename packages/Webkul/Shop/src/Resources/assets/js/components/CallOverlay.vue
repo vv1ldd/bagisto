@@ -121,6 +121,16 @@ export default {
             }
             this.initiateCall(payload.userId, payload.userName);
         });
+
+        // Check for auto-join from email link
+        const urlParams = new URLSearchParams(window.location.search);
+        const callerId = urlParams.get('caller_id');
+        if (callerId && this.$shop.customer_id) {
+            // Short delay to ensure initialization and allow user to see the UI
+            setTimeout(() => {
+                this.initiateCall(parseInt(callerId), 'Собеседник (из уведомления)');
+            }, 1000);
+        }
     },
 
     methods: {

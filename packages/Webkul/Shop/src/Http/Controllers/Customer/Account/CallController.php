@@ -85,6 +85,20 @@ class CallController extends Controller
 
         try {
             event(new \Webkul\Shop\Events\CallSignal($toUserId, $fromUserId, $signalData));
+
+            // If this is an initial call (offer), send an email notification to the recipient
+            if (isset($signalData['type']) && $signalData['type'] === 'offer') {
+                $recipient = $this->customerRepository->find($toUserId);
+                $caller = auth()->guard('customer')->user();
+                $callerName = $caller->username ?? $caller->first_name;
+
+                if ($recipient && $recipient->email) {
+                    $recipient->notify(new \App\Notifications\CallInvitationNotification(
+                        $callerName,
+                        $fromUserId
+                    ));
+                }
+            }
         } catch (\Exception $e) {
             \Log::error('WebRTC Signaling Error: ' . $e->getMessage());
             return response()->json([
