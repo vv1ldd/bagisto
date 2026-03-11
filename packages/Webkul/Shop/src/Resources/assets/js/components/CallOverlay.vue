@@ -102,7 +102,8 @@ export default {
                     { urls: 'stun:stun4.l.google.com:19302' }
                 ]
             },
-            pendingOffer: null
+            pendingOffer: null,
+            pendingCandidates: []
         };
     },
 
@@ -223,10 +224,14 @@ export default {
             } else if (signal.type === 'answer') {
                 console.log('WebRTC: Answer received');
                 await this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
+                this.flushPendingCandidates();
             } else if (signal.type === 'candidate') {
-                if (this.peerConnection) {
-                    console.log('WebRTC: Remote candidate received');
+                if (this.peerConnection && this.peerConnection.remoteDescription) {
+                    console.log('WebRTC: Remote candidate received and added directly');
                     await this.peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                } else {
+                    console.log('WebRTC: Queueing remote candidate');
+                    this.pendingCandidates.push(signal.candidate);
                 }
             } else if (signal.type === 'hangup') {
                 console.log('WebRTC: Hangup received');
@@ -236,10 +241,13 @@ export default {
 
         async acceptCall() {
             this.isIncoming = false;
+            this.stopRingtone();
             await this.setupLocalMedia();
             this.createPeerConnection();
 
             await this.peerConnection.setRemoteDescription(new RTCSessionDescription(this.pendingOffer));
+            this.flushPendingCandidates();
+            
             const answer = await this.peerConnection.createAnswer();
             await this.peerConnection.setLocalDescription(answer);
 
@@ -282,6 +290,21 @@ export default {
             this.isConnected = false;
             this.localStream = null;
             this.peerConnection = null;
+            this.pendingCandidates = [];
+        },
+
+        async flushPendingCandidates() {
+            if (this.pendingCandidates.length > 0) {
+                console.log(`WebRTC: Flushing ${this.pendingCandidates.length} queued candidates`);
+                for (const cand of this.pendingCandidates) {
+                    try {
+                        await this.peerConnection.addIceCandidate(new RTCIceCandidate(cand));
+                    } catch (e) {
+                        console.error('WebRTC: Error adding queued candidate', e);
+                    }
+                }
+                this.pendingCandidates = [];
+            }
         },
 
         playRingtone() {
