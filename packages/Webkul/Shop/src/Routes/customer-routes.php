@@ -148,8 +148,7 @@ Route::prefix('customer')->group(function () {
                     Route::get('setup', 'setup')->name('shop.customers.account.wallet.setup');
                     Route::post('setup', 'storePin')->name('shop.customers.account.wallet.setup.post');
                     Route::get('unlock', 'unlock')->name('shop.customers.account.wallet.unlock');
-                    Route::post('unlock', 'verifyPin')->name('shop.customers.account.wallet.unlock.post');
-                    Route::post('passkey-auth', 'verifyPasskey')->name('shop.customers.account.wallet.passkey.post');
+                    Route::post('unlock', 'verifyPin')->name('shop.customers.account.wallet.verify_pin');
                 });
 
                 /**
