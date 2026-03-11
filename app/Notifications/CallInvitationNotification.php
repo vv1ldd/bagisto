@@ -41,13 +41,12 @@ class CallInvitationNotification extends Notification
         Log::info('Generating CallInvitation email for: ' . $notifiable->email);
 
         return (new MailMessage)
-            ->subject('Incoming Call Invitation - ' . config('app.name'))
-            ->greeting('Hello, ' . $notifiable->first_name . '!')
-            ->line('**' . $this->callerName . '** is inviting you to a secure P2P video call on Meanly.')
-            ->line('Click the button below to join the call.')
-            ->action('Join Call', $url)
-            ->line('If you are not logged in, you will be redirected to the login page first.')
-            ->line('Thank you for using Meanly!');
+            ->subject(trans('shop::app.emails.calls.invitation.subject', ['app_name' => config('app.name')]))
+            ->view('shop::emails.customers.call-invitation', [
+                'notifiable' => $notifiable,
+                'callerName' => $this->callerName,
+                'url'        => $url,
+            ]);
     }
 
     /**
