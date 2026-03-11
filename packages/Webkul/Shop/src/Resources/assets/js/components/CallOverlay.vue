@@ -146,6 +146,7 @@ export default {
             const offer = await this.peerConnection.createOffer();
             await this.peerConnection.setLocalDescription(offer);
 
+            console.log('WebRTC: Sending signal:', signalData.type);
             this.sendSignal({ type: 'offer', sdp: offer.sdp });
         },
 
@@ -169,14 +170,27 @@ export default {
             });
 
             this.peerConnection.ontrack = (event) => {
+                console.log('WebRTC: Track received!', event);
                 this.$refs.remoteVideo.srcObject = event.streams[0];
                 this.isConnected = true;
             };
 
             this.peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
+                    console.log('WebRTC: Local ICE candidate found:', event.candidate.type);
                     this.sendSignal({ type: 'candidate', candidate: event.candidate });
                 }
+            };
+
+            this.peerConnection.onconnectionstatechange = () => {
+                console.log('WebRTC: Connection state:', this.peerConnection.connectionState);
+                if (this.peerConnection.connectionState === 'connected') {
+                    this.isConnected = true;
+                }
+            };
+
+            this.peerConnection.oniceconnectionstatechange = () => {
+                console.log('WebRTC: ICE state:', this.peerConnection.iceConnectionState);
             };
         },
 
@@ -189,12 +203,15 @@ export default {
                 this.isIncoming = true;
                 this.pendingOffer = signal;
             } else if (signal.type === 'answer') {
+                console.log('WebRTC: Answer received');
                 await this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
             } else if (signal.type === 'candidate') {
                 if (this.peerConnection) {
+                    console.log('WebRTC: Remote candidate received');
                     await this.peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
                 }
             } else if (signal.type === 'hangup') {
+                console.log('WebRTC: Hangup received');
                 this.cleanup();
             }
         },

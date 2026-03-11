@@ -84,6 +84,8 @@ class CallController extends Controller
         }
 
         try {
+            \Log::info('WebRTC Signal Trace:', ['from' => $fromUserId, 'to' => $toUserId, 'type' => $signalData['type'] ?? 'unknown']);
+
             event(new \Webkul\Shop\Events\CallSignal($toUserId, $fromUserId, $signalData));
 
             // If this is an initial call (offer), send an email notification to the recipient
@@ -92,11 +94,19 @@ class CallController extends Controller
                 $caller = auth()->guard('customer')->user();
                 $callerName = $caller->username ?? $caller->first_name;
 
+                \Log::info('Attempting to send call notification:', [
+                    'recipient' => $recipient?->email,
+                    'caller'    => $callerName
+                ]);
+
                 if ($recipient && $recipient->email) {
                     $recipient->notify(new \App\Notifications\CallInvitationNotification(
                         $callerName,
                         $fromUserId
                     ));
+                    \Log::info('Notification dispatched to ' . $recipient->email);
+                } else {
+                    \Log::warning('Recipient not found or has no email:', ['id' => $toUserId]);
                 }
             }
         } catch (\Exception $e) {
