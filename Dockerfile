@@ -2,11 +2,16 @@
 FROM node:18-alpine AS frontend
 WORKDIR /app
 COPY package.json package-lock.json* ./
-# Cache NPM packages and install
+# Cache NPM packages and install root dependencies
 RUN --mount=type=cache,target=/root/.npm \
     npm i || true
 COPY . .
 RUN npm run build
+
+# Install and build Shop package frontend assets (Vue components)
+RUN --mount=type=cache,target=/root/.npm \
+    npm --prefix packages/Webkul/Shop install || true \
+    && npm --prefix packages/Webkul/Shop run build
 
 # Stage 2: PHP Application
 FROM php:8.3-fpm
