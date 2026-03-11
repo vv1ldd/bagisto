@@ -85,7 +85,11 @@ class CallController extends Controller
         }
 
         try {
-            \Log::info('WebRTC Signal Trace:', ['from' => $fromUserId, 'to' => $toUserId, 'type' => $signalData['type'] ?? 'unknown']);
+            Log::info('WebRTC: Signal Received', [
+                'from_user_id' => $fromUserId,
+                'to_user_id'   => $toUserId,
+                'signal_type'  => $signalData['type'] ?? 'unknown'
+            ]);
 
             event(new \Webkul\Shop\Events\CallSignal($toUserId, $fromUserId, $signalData));
 
@@ -95,23 +99,30 @@ class CallController extends Controller
                 $caller = auth()->guard('customer')->user();
                 $callerName = $caller->username ?? $caller->first_name;
 
-                \Log::info('Attempting to send call notification:', [
-                    'recipient' => $recipient?->email,
-                    'caller'    => $callerName
+                Log::info('WebRTC: Offer detected, preparing email notification', [
+                    'recipient_id'    => $toUserId,
+                    'recipient_email' => $recipient?->email,
+                    'caller_name'     => $callerName
                 ]);
 
                 if ($recipient && $recipient->email) {
-                    $recipient->notify(new \App\Notifications\CallInvitationNotification(
-                        $callerName,
-                        $fromUserId
-                    ));
-                    \Log::info('Notification dispatched to ' . $recipient->email);
+                    try {
+                        $recipient->notify(new \App\Notifications\CallInvitationNotification(
+                            $callerName,
+                            $fromUserId
+                        ));
+                        Log::info('WebRTC: Notification successfully sent to ' . $recipient->email);
+                    } catch (\Exception $notifyException) {
+                        Log::error('WebRTC: Notification failed to send: ' . $notifyException->getMessage());
+                    }
                 } else {
-                    \Log::warning('Recipient not found or has no email:', ['id' => $toUserId]);
+                    Log::warning('WebRTC: Cannot send notification. Recipient not found or has no email.', ['recipient_id' => $toUserId]);
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('WebRTC Signaling Error: ' . $e->getMessage());
+            Log::error('WebRTC Signaling Error: ' . $e->getMessage(), [
+                'stack' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'status' => 'error',
                 'message' => 'Ошибка бродкаста: ' . $e->getMessage() . ' (Убедитесь, что настроен Pusher в .env)'

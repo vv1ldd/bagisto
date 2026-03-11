@@ -38,7 +38,7 @@ class CallInvitationNotification extends Notification
     {
         $url = route('shop.customers.account.calls', ['caller_id' => $this->callerId]);
 
-        \Log::info('Generating CallInvitation email for: ' . $notifiable->email);
+        Log::info('Generating CallInvitation email for: ' . $notifiable->email);
 
         return (new MailMessage)
             ->subject('Incoming Call Invitation - ' . config('app.name'))

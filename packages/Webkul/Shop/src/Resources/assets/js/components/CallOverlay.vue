@@ -157,7 +157,7 @@ export default {
             const offer = await this.peerConnection.createOffer();
             await this.peerConnection.setLocalDescription(offer);
 
-            console.log('WebRTC: Sending signal:', signalData.type);
+            console.log('WebRTC: Sending offer signal');
             this.sendSignal({ type: 'offer', sdp: offer.sdp });
         },
 
@@ -243,6 +243,8 @@ export default {
             axios.post('/api/customer/call/signal', {
                 to_user_id: this.remoteUserId,
                 signal_data: signalData
+            }).catch(error => {
+                console.error('WebRTC: Signal sending failed:', error.response?.data || error.message);
             });
         },
 
