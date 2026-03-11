@@ -78,17 +78,22 @@ class CallController extends Controller
 
         $toUserId = $request->input('to_user_id');
         $signalData = $request->input('signal_data');
-        $fromUserId = auth()->guard('customer')->id();
+        $fromUser = auth()->guard('customer')->user();
+        $fromUserId = $fromUser?->id;
 
         if (!$fromUserId) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
         }
 
+        // Attach caller name for the frontend UI
+        $signalData['caller_name'] = $fromUser->username ?? $fromUser->first_name ?? 'Пользователь';
+
         try {
             Log::info('WebRTC: Signal Received', [
                 'from_user_id' => $fromUserId,
                 'to_user_id'   => $toUserId,
-                'signal_type'  => $signalData['type'] ?? 'unknown'
+                'signal_type'  => $signalData['type'] ?? 'unknown',
+                'caller_name'  => $signalData['caller_name']
             ]);
 
             event(new \Webkul\Shop\Events\CallSignal($toUserId, $fromUserId, $signalData));

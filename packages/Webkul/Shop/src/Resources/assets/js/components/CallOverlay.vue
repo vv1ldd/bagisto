@@ -222,6 +222,10 @@ export default {
         async handleSignal(data) {
             const signal = data.signal_data;
             this.remoteUserId = data.from_user_id;
+            
+            if (signal.caller_name) {
+                this.remoteUserName = signal.caller_name;
+            }
 
             if (signal.type === 'offer') {
                 this.isActive = true;
