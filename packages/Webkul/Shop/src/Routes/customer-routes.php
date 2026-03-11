@@ -20,6 +20,18 @@ use Spatie\LaravelPasskeys\Http\Controllers\GeneratePasskeyAuthenticationOptions
 use Webkul\Shop\Http\Controllers\Customer\Account\TransferController;
 
 Route::prefix('customer')->group(function () {
+    Route::get('/test-mail', function () {
+        try {
+            \Illuminate\Support\Facades\Mail::raw('This is a test email from Bagisto to verify mail configuration.', function ($message) {
+                $message->to(request('email', 'admin@example.com'))
+                        ->subject('Mail Configuration Test');
+            });
+            return 'Mail sent successfully! Check your inbox.';
+        } catch (\Exception $e) {
+            return 'Mail error: ' . $e->getMessage();
+        }
+    });
+
     /**
      * Forgot password routes.
      */

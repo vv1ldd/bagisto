@@ -216,6 +216,10 @@ export default {
                 this.isActive = true;
                 this.isIncoming = true;
                 this.pendingOffer = signal;
+                
+                // Play notification sound
+                this.playRingtone();
+                
             } else if (signal.type === 'answer') {
                 console.log('WebRTC: Answer received');
                 await this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
@@ -267,6 +271,7 @@ export default {
         },
 
         cleanup() {
+            this.stopRingtone();
             if (this.localStream) {
                 this.localStream.getTracks().forEach(track => track.stop());
             }
@@ -277,6 +282,22 @@ export default {
             this.isConnected = false;
             this.localStream = null;
             this.peerConnection = null;
+        },
+
+        playRingtone() {
+            if (!this.ringtoneAudio) {
+                // Using a standard data URI beep or link to a file if available
+                this.ringtoneAudio = new Audio('https://actions.google.com/sounds/v1/alarms/phone_ringing.ogg');
+                this.ringtoneAudio.loop = true;
+            }
+            this.ringtoneAudio.play().catch(e => console.warn('Autoplay prevented ringtone', e));
+        },
+
+        stopRingtone() {
+            if (this.ringtoneAudio) {
+                this.ringtoneAudio.pause();
+                this.ringtoneAudio.currentTime = 0;
+            }
         }
     }
 };
