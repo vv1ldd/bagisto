@@ -5,13 +5,13 @@ namespace Webkul\Shop\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Webkul\Shop\Events\CallSignal;
 
-class CallController extends Controller
+class CallController extends APIController
 {
     /**
      * Send signal to target user.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function signal(Request $request)
     {
@@ -22,6 +22,7 @@ class CallController extends Controller
 
         broadcast(new CallSignal(
             $request->to_user_id,
+            auth()->guard('customer')->id(),
             $request->signal_data
         ))->toOthers();
 
