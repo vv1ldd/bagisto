@@ -87,6 +87,9 @@ services:
       - bagisto-network
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.reverb.rule=Host(`ws.meanly.ru`)"
+      - "traefik.http.routers.reverb.entrypoints=websecure"
+      - "traefik.http.routers.reverb.tls=true"
       - "traefik.http.services.reverb.loadbalancer.server.port=8088"
 
   elasticsearch:

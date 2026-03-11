@@ -119,11 +119,13 @@ export default {
 
         // Global event to start a call
         this.$emitter.on('start-call', (payload) => {
+            console.log('CallOverlay: Event [start-call] received', payload);
             if (this.isActive) {
                 console.warn('Call already active or incoming');
                 return;
             }
             if (!this.$shop.customer_id) {
+                console.error('CallOverlay: cannot start call, customer_id missing');
                 this.$emitter.emit('add-flash', { 
                     type: 'warning', 
                     message: 'Пожалуйста, войдите в систему, чтобы совершить вызов' 
@@ -146,6 +148,7 @@ export default {
 
     methods: {
         async initiateCall(userId, userName) {
+            console.log('CallOverlay: Initializing call to', { userId, userName });
             this.remoteUserId = userId;
             this.remoteUserName = userName;
             this.isActive = true;
