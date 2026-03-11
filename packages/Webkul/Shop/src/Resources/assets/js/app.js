@@ -20,18 +20,26 @@ window.Pusher = Pusher;
 const laravelEnv = window.Laravel || {};
 
 if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
-    // Enable Pusher logging - don't include this in production
+    // Enable Pusher logging
     Pusher.logToConsole = true;
+
+    console.log('Echo: Initializing with host:', laravelEnv.reverbHost || laravelEnv.pusherHost);
 
     window.Echo = new Echo({
         broadcaster: 'reverb',
         key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
         wsHost: laravelEnv.reverbHost || laravelEnv.pusherHost || `ws-${laravelEnv.pusherCluster}.pusher.com`,
-        wsPort: laravelEnv.reverbPort || laravelEnv.pusherPort || 80,
-        wssPort: laravelEnv.reverbPort || laravelEnv.pusherPort || 443,
+        wsPort: parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 80),
+        wssPort: parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 443),
         forceTLS: (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https',
         enabledTransports: ['ws', 'wss'],
         authEndpoint: '/api/broadcasting/auth',
+        disableStats: true,
+        encrypted: true,
+    });
+
+    window.Echo.connector.pusher.connection.bind('state_change', (states) => {
+        console.log('Echo Connection State:', states.current);
     });
 } else {
     console.warn('Pusher/Reverb App Key is missing. P2P calls (incoming signals) will not work.');
