@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withBroadcasting(
         __DIR__ . '/../routes/channels.php',
-        ['prefix' => 'api', 'middleware' => ['web']],
+        ['middleware' => ['web']],
     )
     ->withMiddleware(function (Middleware $middleware) {
         /**
