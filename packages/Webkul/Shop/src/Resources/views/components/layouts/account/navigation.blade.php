@@ -7,15 +7,16 @@
         <div class="ios-nav-group !mb-6">
             @php
                 $hasPasskey = $customer->passkeys()->exists();
+                $hasPin = !empty($customer->wallet_pin);
                 $isUnlocked = session('logged_in_via_passkey');
             @endphp
             <div class="ios-nav-row !py-3 bg-zinc-50/50 cursor-pointer"
-                onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'') }}">
+                onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : ($hasPin ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'')) }}">
                 <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
                     Meanly Wallet
                 </span>
                 <span class="flex items-center gap-2">
-                    @if(!$hasPasskey)
+                    @if(!$hasPasskey && !$hasPin)
                         {{-- Indicate to user that passkey setup is required --}}
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">

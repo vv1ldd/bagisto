@@ -58,12 +58,27 @@ class CheckWalletAccess
             if ($request->routeIs('shop.customers.account.wallet.unlock*')) {
                 return $next($request);
             }
-            // Add intended url to session so we can return after unlock
-            if (!$request->expectsJson()) {
-                session()->put('url.intended', $request->url());
+
+            // If it's an AJAX request (e.g. from navigation click or SPA internal load), 
+            // the navigation helper `handleMeanlyWalletPasskey` handles it usually.
+            // But if they navigate directly via browser or a link that didn't intercept, 
+            // we show the unlock UI inline.
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Wallet locked',
+                    'locked'  => true,
+                    'redirect_url' => route('shop.customers.account.wallet.unlock'),
+                ], 403);
             }
 
-            return redirect()->route('shop.customers.account.wallet.unlock');
+            // Return the unlock view DIRECTLY. 
+            // This renders the lock UI on the same URL (/customer/account/credits)
+            $hasPasskey = $customer->passkeys()->count() > 0;
+            $hasPin = !empty($customer->wallet_pin);
+            $pinLength = $customer->wallet_pin_length ?? 4;
+
+            return response()->view('shop::customers.account.wallet-access.unlock', compact('hasPasskey', 'hasPin', 'pinLength'));
         }
 
         // 3. Update the unlocked timestamp to extend the session
