@@ -136,6 +136,10 @@ return [
                 ],
             ],
 
+            'credits' => [
+                'unlock-via-menu' => 'Please unlock your wallet through the profile menu.',
+            ],
+
             'invoice' => [
                 'amount' => 'Invoice Amount',
                 'select-billing-entity' => 'Select Billing Entity',

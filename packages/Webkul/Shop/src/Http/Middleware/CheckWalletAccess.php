@@ -83,10 +83,15 @@ class CheckWalletAccess
             // Return the unlock view DIRECTLY. 
             // This renders the lock UI on the same URL (/customer/account/credits)
             $hasPasskey = $customer->passkeys()->count() > 0;
-            $hasPin = !empty($customer->wallet_pin);
-            $pinLength = $customer->wallet_pin_length ?? 4;
+            // If no passkey or PIN, redirected to setup
+            if (!$hasPasskey && !$hasPin) {
+                return redirect()->route('shop.customers.account.wallet.setup');
+            }
 
-            return response()->view('shop::customers.account.wallet-access.unlock', compact('hasPasskey', 'hasPin', 'pinLength'));
+            // If locked and has passkey/pin, we now redirect back to the account dashboard.
+            // The user is expected to click "Wallet" in the menu to trigger the passkey/unlock flow.
+            return redirect()->route('shop.customers.account.index')
+                ->with('warning', trans('shop::app.customers.account.credits.unlock-via-menu'));
         }
 
         // 3. Update the unlocked timestamp to extend the session

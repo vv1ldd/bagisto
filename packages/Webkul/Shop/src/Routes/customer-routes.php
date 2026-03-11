@@ -147,8 +147,6 @@ Route::prefix('customer')->group(function () {
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\WalletAccessController::class)->prefix('wallet-access')->group(function () {
                     Route::get('setup', 'setup')->name('shop.customers.account.wallet.setup');
                     Route::post('setup', 'storePin')->name('shop.customers.account.wallet.setup.post');
-                    Route::get('unlock', 'unlock')->name('shop.customers.account.wallet.unlock');
-                    Route::post('unlock', 'verifyPin')->name('shop.customers.account.wallet.verify_pin');
                 });
 
                 /**
