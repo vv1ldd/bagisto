@@ -85,6 +85,9 @@ services:
       - "${REVERB_SERVER_PORT:-8088}:8088"
     networks:
       - bagisto-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.reverb.loadbalancer.server.port=8088"
 
   elasticsearch:
     image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.0'
