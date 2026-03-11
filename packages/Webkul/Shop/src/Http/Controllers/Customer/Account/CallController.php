@@ -4,6 +4,7 @@ namespace Webkul\Shop\Http\Controllers\Customer\Account;
 
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Customer\Repositories\CustomerRepository;
+use Illuminate\Support\Facades\Log;
 
 class CallController extends Controller
 {

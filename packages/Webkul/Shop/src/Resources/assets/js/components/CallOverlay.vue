@@ -94,8 +94,15 @@ export default {
             peerConnection: null,
             localStream: null,
             configuration: {
-                iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-            }
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' }
+                ]
+            },
+            pendingOffer: null
         };
     },
 
@@ -112,6 +119,10 @@ export default {
 
         // Global event to start a call
         this.$emitter.on('start-call', (payload) => {
+            if (this.isActive) {
+                console.warn('Call already active or incoming');
+                return;
+            }
             if (!this.$shop.customer_id) {
                 this.$emitter.emit('add-flash', { 
                     type: 'warning', 
