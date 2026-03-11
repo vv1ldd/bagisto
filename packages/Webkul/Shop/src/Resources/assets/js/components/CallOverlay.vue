@@ -46,34 +46,34 @@
         </div>
 
         <!-- Controls -->
-        <div class="flex flex-col items-center gap-6">
-            <div v-if="isIncoming && !isConnected" class="flex gap-4">
+        <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-6 z-50">
+            <div v-if="isIncoming && !isConnected" class="flex flex-wrap justify-center gap-4 py-4 w-full bg-black/60 backdrop-blur-md pb-8 pt-6 border-t border-white/20">
                 <button 
                     @click="acceptCall" 
-                    class="h-20 px-12 bg-[#00FF41] text-black hover:bg-[#00e63a] font-black uppercase tracking-widest transition-all"
+                    class="h-16 md:h-20 px-8 md:px-12 bg-[#00FF41] text-black hover:bg-[#00e63a] font-black uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(0,255,65,0.3)] rounded-sm"
                 >
                     Принять
                 </button>
                 <button 
                     @click="endCall" 
-                    class="h-20 px-12 border-2 border-white hover:bg-white hover:text-black text-white font-black uppercase tracking-widest transition-all"
+                    class="h-16 md:h-20 px-8 md:px-12 border-2 border-white hover:bg-white hover:text-black text-white font-black uppercase tracking-widest transition-all rounded-sm"
                 >
                     Отклонить
                 </button>
             </div>
 
-            <div v-else class="flex justify-center gap-6 pb-4">
+            <div v-else class="flex justify-center gap-6 pb-4 bg-black/60 backdrop-blur-md px-12 py-6 rounded-3xl border border-white/10 mx-auto w-max">
                 <button 
                     @click="toggleMic" 
                     :class="[isMicOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                    class="h-16 w-16 hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
+                    class="h-16 w-16 rounded-full hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
                 >
-                    <span class="text-xs font-bold uppercase">{{ isMicOn ? 'Mic On' : 'Muted' }}</span>
+                    <span class="text-[10px] font-bold uppercase">{{ isMicOn ? 'Mic On' : 'Muted' }}</span>
                 </button>
                 
                 <button 
                     @click="endCall" 
-                    class="h-16 px-12 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest transition-all"
+                    class="h-16 px-12 rounded-full bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-widest transition-all shadow-lg shadow-red-500/20"
                 >
                     Завершить
                 </button>
@@ -81,9 +81,9 @@
                 <button 
                     @click="toggleCamera" 
                     :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                    class="h-16 w-16 hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
+                    class="h-16 w-16 rounded-full hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
                 >
-                    <span class="text-xs font-bold uppercase">{{ isCameraOn ? 'Cam On' : 'Off' }}</span>
+                    <span class="text-[10px] font-bold uppercase">{{ isCameraOn ? 'Cam On' : 'Off' }}</span>
                 </button>
             </div>
         </div>
