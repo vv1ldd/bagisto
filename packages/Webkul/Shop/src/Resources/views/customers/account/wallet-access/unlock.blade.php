@@ -271,6 +271,15 @@
             }
 
             @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    backdrop-filter: blur(0px);
+                }
+                to {
+                    opacity: 1;
+                    backdrop-filter: blur(40px);
+                }
+            }
 
             /* Prevent scrolling while locked */
             body {

@@ -1,42 +1,50 @@
-<x-shop::layouts.account :has-header="true" :is-cardless="true">
-    <x-slot:title>
-        Meanly Wallet
-    </x-slot:title>
+<x-shop::layouts.account :has-header="false" :is-cardless="true">
+    <div class="mx-auto max-w-[600px] mt-8 mb-10">
+        {{-- Master Unified Tile --}}
+        <div class="bg-white shadow-2xl border border-zinc-100 overflow-hidden relative ios-tile-relative">
+            
+            {{-- Unified Header --}}
+            <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-50 bg-zinc-50/30">
+                <div class="flex items-center gap-3">
+                    <button id="step-back-btn" onclick="handleStepBack()" style="display: none;"
+                        class="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+                        <span class="icon-arrow-left text-xl"></span>
+                    </button>
+                    <h1 id="wallet-main-title" class="text-[20px] font-bold text-zinc-900 leading-tight">Meanly Wallet</h1>
+                </div>
 
-    <x-slot:headerActions>
-        <button id="step-back-btn" onclick="handleStepBack()" style="display: none;"
-            class="w-8 h-8 bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
-            <span class="icon-arrow-left text-xl"></span>
-        </button>
-    </x-slot:headerActions>
+                <a id="account-close-button"
+                    href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+                    <span class="icon-cancel text-xl"></span>
+                </a>
+            </div>
 
-    <div class="mx-auto py-6">
+            @php
+                $user = auth()->guard('customer')->user();
+                $balances = $user->balances;
+                $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
+                $netLabels = [
+                    'ton' => ['label' => 'TON', 'symbol' => '◎', 'color' => '#0098EA'],
+                    'usdt_ton' => ['label' => 'USDT', 'symbol' => '₮', 'color' => '#26A17B'],
+                    'bitcoin' => ['label' => 'BTC', 'symbol' => '₿', 'color' => '#F7931A'],
+                    'ethereum' => ['label' => 'ETH', 'symbol' => 'Ξ', 'color' => '#627EEA'],
+                    'dash' => ['label' => 'DASH', 'symbol' => 'D', 'color' => '#1c75bc'],
+                ];
 
-        @php
-            $user = auth()->guard('customer')->user();
-            $balances = $user->balances;
-            $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
-            $netLabels = [
-                'ton' => ['label' => 'TON', 'symbol' => '◎', 'color' => '#0098EA'],
-                'usdt_ton' => ['label' => 'USDT', 'symbol' => '₮', 'color' => '#26A17B'],
-                'bitcoin' => ['label' => 'BTC', 'symbol' => '₿', 'color' => '#F7931A'],
-                'ethereum' => ['label' => 'ETH', 'symbol' => 'Ξ', 'color' => '#627EEA'],
-                'dash' => ['label' => 'DASH', 'symbol' => 'D', 'color' => '#1c75bc'],
-            ];
+                $allAssets = [
+                    'ton' => ['name' => 'TON (Native)', 'symbol' => 'TON', 'icon' => '💎', 'network' => 'TON Network', 'color' => '#0098EA', 'color2' => '#33BFFF', 'address' => config('crypto.verification_addresses.ton')],
+                    'usdt_ton' => ['name' => 'USDT (TON)', 'symbol' => 'USDT', 'icon' => '₮', 'network' => 'TON Network', 'color' => '#0098EA', 'color2' => '#33BFFF', 'address' => config('crypto.verification_addresses.usdt_ton')],
+                    'bitcoin' => ['name' => 'Bitcoin', 'symbol' => 'BTC', 'icon' => '₿', 'network' => 'Bitcoin', 'color' => '#F7931A', 'color2' => '#FDB953', 'address' => config('crypto.verification_addresses.bitcoin')],
+                    'ethereum' => ['name' => 'Ethereum / USDT ERC20', 'symbol' => 'ETH', 'icon' => 'Ξ', 'network' => 'Ethereum', 'color' => '#627EEA', 'color2' => '#8FA4EF', 'address' => config('crypto.verification_addresses.ethereum')],
+                    'dash' => ['name' => 'Dash', 'symbol' => 'DASH', 'icon' => 'D', 'network' => 'Dash', 'color' => '#1c75bc', 'color2' => '#4DA3E0', 'address' => config('crypto.verification_addresses.dash')],
+                ];
+            @endphp
 
-            $allAssets = [
-                'ton' => ['name' => 'TON (Native)', 'symbol' => 'TON', 'icon' => '💎', 'network' => 'TON Network', 'color' => '#0098EA', 'color2' => '#33BFFF', 'address' => config('crypto.verification_addresses.ton')],
-                'usdt_ton' => ['name' => 'USDT (TON)', 'symbol' => 'USDT', 'icon' => '₮', 'network' => 'TON Network', 'color' => '#0098EA', 'color2' => '#33BFFF', 'address' => config('crypto.verification_addresses.usdt_ton')],
-                'bitcoin' => ['name' => 'Bitcoin', 'symbol' => 'BTC', 'icon' => '₿', 'network' => 'Bitcoin', 'color' => '#F7931A', 'color2' => '#FDB953', 'address' => config('crypto.verification_addresses.bitcoin')],
-                'ethereum' => ['name' => 'Ethereum / USDT ERC20', 'symbol' => 'ETH', 'icon' => 'Ξ', 'network' => 'Ethereum', 'color' => '#627EEA', 'color2' => '#8FA4EF', 'address' => config('crypto.verification_addresses.ethereum')],
-                'dash' => ['name' => 'Dash', 'symbol' => 'DASH', 'icon' => 'D', 'network' => 'Dash', 'color' => '#1c75bc', 'color2' => '#4DA3E0', 'address' => config('crypto.verification_addresses.dash')],
-            ];
-        @endphp
-
-        {{-- Step 1: Dashboard --}}
-        <div id="step-dashboard"
-            class="ios-group p-5 bg-white  shadow-md relative overflow-hidden active:scale-[0.99] transition-transform">
-            <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5  blur-3xl"></div>
+            {{-- Step 1: Dashboard --}}
+            <div id="step-dashboard"
+                class="p-5 bg-white relative overflow-hidden active:scale-[0.99] transition-transform">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5  blur-3xl"></div>
             <div class="flex flex-col gap-2 relative z-10">
                 {{-- Row 1: label + badges --}}
                 <div class="flex items-start justify-between gap-2">

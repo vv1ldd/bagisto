@@ -11,7 +11,7 @@
                 $isUnlocked = session('logged_in_via_passkey');
             @endphp
             <div class="ios-nav-row !py-3 bg-zinc-50/50 cursor-pointer"
-                onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : ($hasPin ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : 'window.location.href=\'' . route('shop.customers.account.passkeys.index') . '\'')) }}">
+                onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'') }}">
                 <span class="ios-nav-label text-xs uppercase tracking-wider text-zinc-500 font-bold">
                     Meanly Wallet
                 </span>

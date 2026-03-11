@@ -24,13 +24,21 @@ class CheckWalletAccess
         $hasPasskey = $customer->passkeys()->count() > 0;
         $hasPin = !empty($customer->wallet_pin);
 
-        // 1. If user has no passkey and no PIN, redirect to Setup
+        // 1. If user has no passkey and no PIN, show Setup inline
         if (!$hasPasskey && !$hasPin) {
-            // Check if we're already on setup routes to avoid infinite loop
             if ($request->routeIs('shop.customers.account.wallet.setup*')) {
                 return $next($request);
             }
-            return redirect()->route('shop.customers.account.wallet.setup');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Wallet setup required',
+                    'locked'  => true,
+                    'redirect_url' => route('shop.customers.account.wallet.setup'),
+                ], 403);
+            }
+
+            return response()->view('shop::customers.account.wallet-access.setup');
         }
 
         // 2. If user is locked out, redirect to Unlock screen
