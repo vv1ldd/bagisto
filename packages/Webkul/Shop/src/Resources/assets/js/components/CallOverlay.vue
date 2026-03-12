@@ -48,7 +48,8 @@
             </div>
         </div>
 
-        <!-- Controls -->
+        <!-- Controls Wrapper -->
+        <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-6 z-50">
             <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-6 py-8 w-full bg-black/80 backdrop-blur-xl border-t border-white/20 px-4">
                 <button 
                     @click="acceptCall" 
