@@ -55,9 +55,9 @@
             <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-6 py-8 w-full bg-black/90 backdrop-blur-2xl border-t border-white/20 px-6">
                 <button 
                     @click="acceptCall" 
-                    class="h-20 md:h-24 px-12 md:px-20 bg-[#00FF41] text-black hover:scale-105 active:scale-95 font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_80px_rgba(0,255,65,0.4)] rounded-full border-4 border-white/40 flex items-center justify-center gap-4 group"
+                    class="h-20 md:h-24 px-12 md:px-20 bg-green-500 text-white hover:bg-green-600 hover:scale-105 active:scale-95 font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_80px_rgba(34,197,94,0.5)] rounded-full border-4 border-white/40 flex items-center justify-center gap-4 group"
                 >
-                    <div class="w-3 h-3 rounded-full bg-black animate-ping"></div>
+                    <div class="w-3 h-3 rounded-full bg-white animate-ping"></div>
                     <span>Принять вызов</span>
                 </button>
                 <button 
@@ -277,7 +277,7 @@ export default {
                     this.pendingCandidates.push(signal.candidate);
                 }
             } else if (signal.type === 'hangup') {
-                console.log('WebRTC: Hangup received');
+                console.log('WebRTC: Hangup received from remote user');
                 this.cleanup();
             }
         },
@@ -339,6 +339,7 @@ export default {
         },
 
         endCall() {
+            console.log('WebRTC: Ending call, sending hangup to', this.remoteUserId);
             this.sendSignal({ type: 'hangup' });
             this.cleanup();
         },
