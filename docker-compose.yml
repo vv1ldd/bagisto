@@ -78,13 +78,11 @@ services:
       REVERB_APP_ID: "${REVERB_APP_ID}"
       REVERB_APP_KEY: "${REVERB_APP_KEY}"
       REVERB_APP_SECRET: "${REVERB_APP_SECRET}"
-      REVERB_HOST: "0.0.0.0"
-      REVERB_PORT: "8088"
-      REVERB_SCHEME: "https"
     ports:
       - "${REVERB_SERVER_PORT:-8088}:8088"
     networks:
       - bagisto-network
+      - coolify
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.reverb.rule=Host(`ws.meanly.ru`)"

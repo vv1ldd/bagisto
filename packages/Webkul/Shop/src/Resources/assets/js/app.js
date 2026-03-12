@@ -34,8 +34,7 @@ if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
         forceTLS: (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https',
         enabledTransports: ['ws', 'wss'],
         authEndpoint: '/broadcasting/auth',
-        disableStats: true,
-        encrypted: true,
+        enableStats: false,
     });
 
     window.Echo.connector.pusher.connection.bind('state_change', (states) => {
