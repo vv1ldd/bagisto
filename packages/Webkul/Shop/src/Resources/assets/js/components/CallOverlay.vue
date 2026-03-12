@@ -146,9 +146,10 @@ export default {
             // Update ICE servers with TURN if provided
             const laravel = window.Laravel || {};
             if (laravel.turnUrl) {
-                console.log('WebRTC: Adding TURN server relay');
-                this.configuration.iceServers.push({
-                    urls: laravel.turnUrl,
+                console.log('WebRTC: Adding TURN server relay (prioritized)');
+                // Put TURN at the beginning
+                this.configuration.iceServers.unshift({
+                    urls: [laravel.turnUrl, laravel.turnUrl.replace('turn:', 'stun:')],
                     username: laravel.turnUsername,
                     credential: laravel.turnPassword
                 });
@@ -323,8 +324,15 @@ export default {
 
         sanitizeSDP(sdp) {
             if (!sdp) return '';
-            // Just ensure CRLF line endings without trimming (which might corrupt some SDP tokens)
-            return sdp.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
+            
+            // 1. Handle potential literal \\n from double-escaping
+            let clean = sdp.replace(/\\n/g, '\n').replace(/\\r/g, '');
+            
+            // 2. Strict line-by-line cleanup
+            return clean.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0)
+                .join('\r\n') + '\r\n';
         },
 
         sendSignal(signalData) {
