@@ -156,6 +156,8 @@ services:
       - "-r"
       - "turn.meanly.ru"
       - "--realm=turn.meanly.ru"
+      - "--use-auth-secret"
+      - "--static-auth-secret=${TURN_SECRET:-meanly_secret_key}"
       - "--no-dtls"
       - "--no-tls"
     networks:
