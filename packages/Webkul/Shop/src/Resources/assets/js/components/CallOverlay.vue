@@ -86,6 +86,15 @@
                 </button>
  
                 <button 
+                    @click="toggleScreenShare" 
+                    :class="[isSharingScreen ? 'bg-[#00FF41] text-black' : 'bg-zinc-800 text-white opacity-40']"
+                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
+                    title="Демонстрация экрана"
+                >
+                    <span class="text-[8px] md:text-[10px] font-black uppercase">{{ isSharingScreen ? 'Stop' : 'Share' }}</span>
+                </button>
+ 
+                <button 
                     @click="toggleCamera" 
                     :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
                     class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
@@ -123,7 +132,9 @@ export default {
                 ]
             },
             pendingOffer: null,
-            pendingCandidates: []
+            pendingCandidates: [],
+            isSharingScreen: false,
+            screenStream: null
         };
     },
     
@@ -355,6 +366,58 @@ export default {
             });
         },
 
+        async toggleScreenShare() {
+            if (!this.isSharingScreen) {
+                try {
+                    this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+                        video: true 
+                    });
+
+                    const screenTrack = this.screenStream.getVideoTracks()[0];
+
+                    if (this.peerConnection) {
+                        const senders = this.peerConnection.getSenders();
+                        const videoSender = senders.find(s => s.track?.kind === 'video');
+                        
+                        if (videoSender) {
+                            await videoSender.replaceTrack(screenTrack);
+                        }
+                    }
+
+                    // Replace in local preview too
+                    this.$refs.localVideo.srcObject = this.screenStream;
+                    this.isSharingScreen = true;
+
+                    // Handle user clicking "Stop Sharing" in browser UI
+                    screenTrack.onended = () => {
+                        if (this.isSharingScreen) this.toggleScreenShare();
+                    };
+
+                } catch (error) {
+                    console.error('Error starting screen share:', error);
+                }
+            } else {
+                // Return to camera
+                if (this.screenStream) {
+                    this.screenStream.getTracks().forEach(track => track.stop());
+                }
+
+                if (this.peerConnection) {
+                    const senders = this.peerConnection.getSenders();
+                    const videoSender = senders.find(s => s.track?.kind === 'video');
+                    const cameraTrack = this.localStream.getVideoTracks()[0];
+                    
+                    if (videoSender && cameraTrack) {
+                        await videoSender.replaceTrack(cameraTrack);
+                    }
+                }
+
+                this.$refs.localVideo.srcObject = this.localStream;
+                this.isSharingScreen = false;
+                this.screenStream = null;
+            }
+        },
+
         toggleMic() {
             this.isMicOn = !this.isMicOn;
             this.localStream.getAudioTracks().forEach(track => track.enabled = this.isMicOn);
@@ -376,6 +439,9 @@ export default {
             if (this.localStream) {
                 this.localStream.getTracks().forEach(track => track.stop());
             }
+            if (this.screenStream) {
+                this.screenStream.getTracks().forEach(track => track.stop());
+            }
             if (this.peerConnection) {
                 this.peerConnection.close();
             }
@@ -386,6 +452,8 @@ export default {
             this.didIInitiate = false;
             this.isRemoteAccepted = false;
             this.localStream = null;
+            this.screenStream = null;
+            this.isSharingScreen = false;
             this.peerConnection = null;
             this.pendingCandidates = [];
         },
