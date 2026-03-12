@@ -67,6 +67,9 @@
                 pusherPort: '{{ config('broadcasting.connections.pusher.options.port') }}',
                 pusherScheme: '{{ config('broadcasting.connections.pusher.options.scheme') }}',
                 pusherCluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+                turnUrl: '{{ config('services.turn.url') }}',
+                turnUsername: '{{ config('services.turn.username') }}',
+                turnPassword: '{{ config('services.turn.password') }}',
             };
         </script>
 

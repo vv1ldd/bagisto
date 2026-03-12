@@ -83,4 +83,10 @@ return [
     'dadata' => [
         'api_key' => env('DADATA_API_KEY'),
     ],
+
+    'turn' => [
+        'url'      => env('TURN_URL', 'turn:meanly.ru:3478'),
+        'username' => env('TURN_USERNAME', 'meanly'),
+        'password' => env('TURN_PASSWORD', 'meanly_secret'),
+    ],
 ];

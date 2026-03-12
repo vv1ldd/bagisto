@@ -141,6 +141,17 @@ export default {
                 .listen('.call-signal', (data) => {
                     this.handleSignal(data);
                 });
+
+            // Update ICE servers with TURN if provided
+            const laravel = window.Laravel || {};
+            if (laravel.turnUrl) {
+                console.log('WebRTC: Adding TURN server relay');
+                this.configuration.iceServers.push({
+                    urls: laravel.turnUrl,
+                    username: laravel.turnUsername,
+                    credential: laravel.turnPassword
+                });
+            }
         }
 
         // Global event to start a call

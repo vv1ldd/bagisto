@@ -134,6 +134,34 @@ services:
       timeout: 30s
       retries: 5
 
+  coturn:
+    image: coturn/coturn:latest
+    container_name: bagisto-coturn
+    restart: always
+    # We use host networking for TURN to avoid NAT issues within Docker itself,
+    # but since this is Coolify, we'll try standard port mapping first.
+    # 3478 is the default port for STUN/TURN.
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+    command:
+      - "turnserver"
+      - "-L"
+      - "0.0.0.0"
+      - "-a"
+      - "-v"
+      - "-n"
+      - "-u"
+      - "${TURN_USERNAME:-meanly}:${TURN_PASSWORD:-meanly_secret}"
+      - "-r"
+      - "meanly.ru"
+      - "--realm=meanly.ru"
+      - "--no-dtls"
+      - "--no-tls"
+    networks:
+      - bagisto-network
+      - coolify
+
 networks:
   bagisto-network:
     driver: bridge
