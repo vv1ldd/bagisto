@@ -138,9 +138,19 @@ export default {
         
         if (window.Echo && customerId) {
             console.log('CallOverlay: Echo is present, subscribing to user.' + customerId);
+            console.log('CallOverlay: Echo connector options:', window.Echo.connector.options);
+
+            window.Echo.connector.pusher.connection.bind('state_change', (states) => {
+                console.log('CallOverlay: Echo connection state changed:', states.current);
+            });
+
             window.Echo.private(`user.${customerId}`)
                 .listen('.call-signal', (data) => {
+                    console.log('CallOverlay: Received signal on channel:', data);
                     this.handleSignal(data);
+                })
+                .error((error) => {
+                    console.error('CallOverlay: Echo subscription error:', error);
                 });
 
             // Update ICE servers with TURN if provided

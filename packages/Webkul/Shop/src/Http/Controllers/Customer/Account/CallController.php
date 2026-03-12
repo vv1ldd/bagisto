@@ -96,7 +96,14 @@ class CallController extends Controller
                 'caller_name'  => $signalData['caller_name']
             ]);
 
+            Log::info('WebRTC: Dispatching CallSignal event', [
+                'to_user_id'   => $toUserId,
+                'from_user_id' => $fromUserId
+            ]);
+
             event(new \Webkul\Shop\Events\CallSignal($toUserId, $fromUserId, $signalData));
+
+            Log::info('WebRTC: CallSignal event dispatched successfully');
 
             // If this is an initial call (offer), send an email notification to the recipient
             if (isset($signalData['type']) && $signalData['type'] === 'offer') {
