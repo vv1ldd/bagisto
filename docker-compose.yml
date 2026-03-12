@@ -54,7 +54,6 @@ services:
     depends_on:
       - elasticsearch
       - mailpit
-      - ollama
 
   reverb:
     build:
@@ -120,19 +119,6 @@ services:
     networks:
       - bagisto-network
 
-  ollama:
-    image: 'ollama/ollama:latest'
-    container_name: bagisto-ollama
-    restart: always
-    volumes:
-      - 'bagisto-ollama-data:/root/.ollama'
-    networks:
-      - bagisto-network
-    healthcheck:
-      test: [ "CMD", "ollama", "list" ]
-      interval: 10s
-      timeout: 30s
-      retries: 5
 
   coturn:
     image: coturn/coturn:latest
@@ -164,29 +150,6 @@ services:
       - bagisto-network
       - coolify
 
-  livekit:
-    image: livekit/livekit-server:latest
-    container_name: bagisto-livekit
-    restart: always
-    command: --config /etc/livekit.yaml
-    volumes:
-      - ./livekit.yaml:/etc/livekit.yaml
-    ports:
-      - "7880:7880"
-      - "7881:7881"
-      - "7882:7882/udp"
-      - "50000-50050:50000-50050/udp"
-    environment:
-      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.livekit.rule=Host(`livekit.meanly.ru`)"
-      - "traefik.http.routers.livekit.entrypoints=websecure"
-      - "traefik.http.routers.livekit.tls=true"
-      - "traefik.http.services.livekit.loadbalancer.server.port=7880"
-    networks:
-      - bagisto-network
-      - coolify
 
 networks:
   bagisto-network:
@@ -200,5 +163,4 @@ volumes:
     driver: local
   bagisto-storage:
     driver: local
-  bagisto-ollama-data:
-    driver: local
+
