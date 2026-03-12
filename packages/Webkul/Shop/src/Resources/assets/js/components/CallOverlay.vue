@@ -53,7 +53,7 @@
             <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-4 py-4 w-full bg-black/60 backdrop-blur-md pb-8 pt-6 border-t border-white/20">
                 <button 
                     @click="acceptCall" 
-                    class="h-16 md:h-20 px-8 md:px-12 bg-[#00FF41] text-black hover:bg-[#00e63a] font-black uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(0,255,65,0.3)] rounded-sm"
+                    class="h-16 md:h-20 px-8 md:px-12 bg-[#22c55e] text-white hover:bg-[#16a34a] font-black uppercase tracking-widest transition-all shadow-[0_0_50px_rgba(34,197,94,0.4)] rounded-full border-4 border-white/20"
                 >
                     Принять
                 </button>
@@ -250,7 +250,11 @@ export default {
                 
             } else if (signal.type === 'answer') {
                 console.log('WebRTC: Answer received');
-                await this.peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
+                const remoteDesc = new RTCSessionDescription({
+                    type: signal.type,
+                    sdp: signal.sdp
+                });
+                await this.peerConnection.setRemoteDescription(remoteDesc);
                 this.flushPendingCandidates();
             } else if (signal.type === 'candidate') {
                 if (this.peerConnection && this.peerConnection.remoteDescription) {
@@ -272,7 +276,11 @@ export default {
             await this.setupLocalMedia();
             this.createPeerConnection();
 
-            await this.peerConnection.setRemoteDescription(new RTCSessionDescription(this.pendingOffer));
+            const remoteDesc = new RTCSessionDescription({
+                type: this.pendingOffer.type,
+                sdp: this.pendingOffer.sdp
+            });
+            await this.peerConnection.setRemoteDescription(remoteDesc);
             this.flushPendingCandidates();
             
             const answer = await this.peerConnection.createAnswer();
