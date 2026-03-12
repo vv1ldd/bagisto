@@ -59,9 +59,9 @@
         <script>
             window.Laravel = {
                 reverbAppKey: '{{ config('broadcasting.connections.reverb.key') }}',
-                reverbHost: '{{ config('broadcasting.connections.reverb.frontend.host', config('broadcasting.connections.reverb.options.host')) }}',
-                reverbPort: '{{ config('broadcasting.connections.reverb.frontend.port', config('broadcasting.connections.reverb.options.port')) }}',
-                reverbScheme: '{{ config('broadcasting.connections.reverb.frontend.scheme', config('broadcasting.connections.reverb.options.scheme')) }}',
+                reverbHost: '{{ config('broadcasting.connections.reverb.frontend.host') && config('broadcasting.connections.reverb.frontend.host') !== '127.0.0.1' ? config('broadcasting.connections.reverb.frontend.host') : '' }}' || window.location.hostname,
+                reverbPort: '{{ config('broadcasting.connections.reverb.frontend.port') }}',
+                reverbScheme: '{{ config('broadcasting.connections.reverb.frontend.scheme') }}',
                 pusherAppKey: '{{ config('broadcasting.connections.pusher.key') }}',
                 pusherHost: '{{ config('broadcasting.connections.pusher.options.host') }}',
                 pusherPort: '{{ config('broadcasting.connections.pusher.options.port') }}',

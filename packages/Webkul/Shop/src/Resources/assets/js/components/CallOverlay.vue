@@ -137,6 +137,7 @@ export default {
         const customerId = this.$shop.customer_id;
         
         if (window.Echo && customerId) {
+            console.log('CallOverlay: Echo is present, subscribing to user.' + customerId);
             window.Echo.private(`user.${customerId}`)
                 .listen('.call-signal', (data) => {
                     this.handleSignal(data);
@@ -322,12 +323,8 @@ export default {
 
         sanitizeSDP(sdp) {
             if (!sdp) return '';
-            // Aggressive sanitization: remove all \r, split by \n, trim each line, remove empty ones, join with \r\n
-            return sdp.replace(/\r/g, '')
-                      .split('\n')
-                      .map(line => line.trim())
-                      .filter(line => line.length > 0)
-                      .join('\r\n') + '\r\n';
+            // Just ensure CRLF line endings without trimming (which might corrupt some SDP tokens)
+            return sdp.replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
         },
 
         sendSignal(signalData) {
