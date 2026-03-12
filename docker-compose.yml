@@ -154,8 +154,8 @@ services:
       - "-u"
       - "${TURN_USERNAME:-meanly}:${TURN_PASSWORD:-meanly_secret}"
       - "-r"
-      - "meanly.ru"
-      - "--realm=meanly.ru"
+      - "turn.meanly.ru"
+      - "--realm=turn.meanly.ru"
       - "--no-dtls"
       - "--no-tls"
     networks:
