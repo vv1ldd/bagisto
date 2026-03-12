@@ -4,9 +4,11 @@
         <div class="flex justify-between items-start border-b border-white/20 pb-6">
             <div>
                 <div class="text-[10px] uppercase tracking-[0.3em] opacity-60 mb-2">
-                    {{ isIncoming ? 'Входящий вызов' : (isConnected ? 'В эфире' : 'Соединение...') }}
+                    <span v-if="isConnected">В эфире</span>
+                    <span v-else-if="didIInitiate">Исходящий вызов</span>
+                    <span v-else>Входящий вызов</span>
                 </div>
-                <h2 class="text-4xl font-black uppercase italic tracking-tighter">{{ remoteUserName || 'Пользователь' }}</h2>
+                <h2 class="text-4xl font-black uppercase italic tracking-tighter">{{ displayUserName }}</h2>
             </div>
             <div v-if="isConnected" class="bg-[#00FF41] text-black px-4 py-1 font-bold text-xs uppercase tracking-widest animate-pulse">
                 Live
@@ -24,15 +26,16 @@
                 <div v-if="!isConnected" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 z-10">
                     <!-- Avatar placeholder -->
                     <div class="w-24 h-24 rounded-full bg-zinc-800 flex items-center justify-center mb-6 relative">
-                        <span class="text-3xl uppercase font-black">{{ (remoteUserName || 'U')[0] }}</span>
+                        <span class="text-3xl uppercase font-black">{{ (displayUserName || 'U')[0] }}</span>
                         <!-- Ripple effect for calling out state -->
-                        <div v-if="!isIncoming" class="absolute inset-0 rounded-full border-2 border-[#00FF41] animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-20"></div>
+                        <div v-if="didIInitiate" class="absolute inset-0 rounded-full border-2 border-[#00FF41] animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-20"></div>
                     </div>
                     
-                    <span class="text-lg font-bold uppercase tracking-widest mb-2">{{ remoteUserName || 'Пользователь' }}</span>
+                    <span class="text-lg font-bold uppercase tracking-widest mb-2">{{ displayUserName }}</span>
                     
-                    <span v-if="!isIncoming" class="text-xs uppercase tracking-[0.2em] text-[#00FF41]">Ожидание ответа...</span>
-                    <span v-else class="text-xs uppercase tracking-[0.2em] text-white/50 animate-pulse">Нажмите принять, чтобы начать сеанс</span>
+                    <span v-if="didIInitiate" class="text-xs uppercase tracking-[0.2em] text-[#00FF41]">Ожидание ответа...</span>
+                    <span v-else-if="isIncoming && !hasAccepted" class="text-xs uppercase tracking-[0.2em] text-white/50 animate-pulse">Нажмите принять, чтобы начать сеанс</span>
+                    <span v-else class="text-xs uppercase tracking-[0.2em] text-[#00FF41]">Установка соединения...</span>
                 </div>
             </div>
 
@@ -47,7 +50,7 @@
 
         <!-- Controls -->
         <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-6 z-50">
-            <div v-if="isIncoming && !isConnected" class="flex flex-wrap justify-center gap-4 py-4 w-full bg-black/60 backdrop-blur-md pb-8 pt-6 border-t border-white/20">
+            <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-4 py-4 w-full bg-black/60 backdrop-blur-md pb-8 pt-6 border-t border-white/20">
                 <button 
                     @click="acceptCall" 
                     class="h-16 md:h-20 px-8 md:px-12 bg-[#00FF41] text-black hover:bg-[#00e63a] font-black uppercase tracking-widest transition-all shadow-[0_0_30px_rgba(0,255,65,0.3)] rounded-sm"
@@ -96,6 +99,8 @@ export default {
         return {
             isActive: false,
             isIncoming: false,
+            hasAccepted: false,
+            didIInitiate: false,
             isConnected: false,
             isMicOn: true,
             isCameraOn: true,
@@ -115,6 +120,12 @@ export default {
             pendingOffer: null,
             pendingCandidates: []
         };
+    },
+    
+    computed: {
+        displayUserName() {
+            return this.remoteUserName || 'Пользователь';
+        }
     },
 
     mounted() {
@@ -164,6 +175,8 @@ export default {
             this.remoteUserName = userName;
             this.isActive = true;
             this.isIncoming = false;
+            this.didIInitiate = true;
+            this.hasAccepted = true;
 
             await this.setupLocalMedia();
             this.createPeerConnection();
@@ -254,7 +267,7 @@ export default {
         },
 
         async acceptCall() {
-            this.isIncoming = false;
+            this.hasAccepted = true;
             this.stopRingtone();
             await this.setupLocalMedia();
             this.createPeerConnection();
@@ -302,6 +315,9 @@ export default {
             }
             this.isActive = false;
             this.isConnected = false;
+            this.isIncoming = false;
+            this.hasAccepted = false;
+            this.didIInitiate = false;
             this.localStream = null;
             this.peerConnection = null;
             this.pendingCandidates = [];
