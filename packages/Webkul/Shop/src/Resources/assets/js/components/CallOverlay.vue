@@ -5,12 +5,12 @@
             <div>
                 <div class="text-[10px] uppercase tracking-[0.3em] opacity-60 mb-2">
                     <span v-if="isConnected">В эфире</span>
-                    <span v-else-if="didIInitiate">Исходящий вызов</span>
+                    <span v-else-if="didIInitiate">{{ isRemoteAccepted ? 'Соединение...' : 'Исходящий вызов' }}</span>
                     <span v-else>Входящий вызов</span>
                 </div>
                 <h2 class="text-4xl font-black uppercase italic tracking-tighter">{{ displayUserName }}</h2>
             </div>
-            <div v-if="isConnected" class="bg-[#00FF41] text-black px-4 py-1 font-bold text-xs uppercase tracking-widest animate-pulse">
+            <div v-if="isConnected" class="bg-[#00FF41] text-black px-4 py-1 font-bold text-xs uppercase tracking-widest animate-fade-in">
                 Live
             </div>
         </div>
@@ -33,7 +33,9 @@
                     
                     <span class="text-lg font-bold uppercase tracking-widest mb-2">{{ displayUserName }}</span>
                     
-                    <span v-if="didIInitiate" class="text-xs uppercase tracking-[0.2em] text-[#00FF41]">Ожидание ответа...</span>
+                    <span v-if="didIInitiate" class="text-xs uppercase tracking-[0.2em] text-[#00FF41]">
+                        {{ isRemoteAccepted ? 'Установка соединения...' : 'Ожидание ответа...' }}
+                    </span>
                     <span v-else-if="isIncoming && !hasAccepted" class="text-xs uppercase tracking-[0.2em] text-white/50 animate-pulse">Нажмите принять, чтобы начать сеанс</span>
                     <span v-else class="text-xs uppercase tracking-[0.2em] text-[#00FF41]">Установка соединения...</span>
                 </div>
@@ -50,17 +52,17 @@
 
         <!-- Controls Wrapper -->
         <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-6 z-50">
-            <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-6 py-8 w-full bg-black/80 backdrop-blur-xl border-t border-white/20 px-4">
+            <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-6 py-8 w-full bg-black/90 backdrop-blur-2xl border-t border-white/20 px-6">
                 <button 
                     @click="acceptCall" 
-                    class="h-20 md:h-24 px-12 md:px-16 bg-[#22c55e] text-white hover:bg-[#16a34a] font-black uppercase tracking-widest transition-all shadow-[0_0_60px_rgba(34,197,94,0.6)] rounded-full border-4 border-white/30 flex items-center justify-center gap-3 active:scale-95"
+                    class="h-20 md:h-24 px-12 md:px-20 bg-[#00FF41] text-black hover:scale-105 active:scale-95 font-black uppercase tracking-[0.2em] transition-all shadow-[0_0_80px_rgba(0,255,65,0.4)] rounded-full border-4 border-white/40 flex items-center justify-center gap-4 group"
                 >
-                    <span class="w-4 h-4 rounded-full bg-white animate-pulse"></span>
-                    Принять
+                    <div class="w-3 h-3 rounded-full bg-black animate-ping"></div>
+                    <span>Принять вызов</span>
                 </button>
                 <button 
                     @click="endCall" 
-                    class="h-20 md:h-24 px-12 md:px-16 border-4 border-white text-white hover:bg-white hover:text-black font-black uppercase tracking-widest transition-all rounded-full flex items-center justify-center active:scale-95"
+                    class="h-20 md:h-24 px-12 md:px-16 border-4 border-white/30 text-white hover:bg-white hover:text-black font-black uppercase tracking-widest transition-all rounded-full flex items-center justify-center opacity-80 hover:opacity-100"
                 >
                     Отклонить
                 </button>
@@ -103,6 +105,7 @@ export default {
             hasAccepted: false,
             didIInitiate: false,
             isConnected: false,
+            isRemoteAccepted: false,
             isMicOn: true,
             isCameraOn: true,
             remoteUserId: null,
@@ -249,6 +252,9 @@ export default {
                 // Play notification sound
                 this.playRingtone();
                 
+            } else if (signal.type === 'call-accepted') {
+                console.log('WebRTC: Remote user clicked Accept');
+                this.isRemoteAccepted = true;
             } else if (signal.type === 'answer') {
                 console.log('WebRTC: Answer received');
                 try {
@@ -278,6 +284,7 @@ export default {
 
         async acceptCall() {
             this.hasAccepted = true;
+            this.sendSignal({ type: 'call-accepted' });
             this.stopRingtone();
             await this.setupLocalMedia();
             this.createPeerConnection();
@@ -304,8 +311,12 @@ export default {
 
         sanitizeSDP(sdp) {
             if (!sdp) return '';
-            // Ensure CRLF and remove any suspicious leading/trailing whitespace
-            return sdp.trim().replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
+            // Aggressive sanitization: remove all \r, split by \n, trim each line, remove empty ones, join with \r\n
+            return sdp.replace(/\r/g, '')
+                      .split('\n')
+                      .map(line => line.trim())
+                      .filter(line => line.length > 0)
+                      .join('\r\n') + '\r\n';
         },
 
         sendSignal(signalData) {
@@ -345,6 +356,7 @@ export default {
             this.isIncoming = false;
             this.hasAccepted = false;
             this.didIInitiate = false;
+            this.isRemoteAccepted = false;
             this.localStream = null;
             this.peerConnection = null;
             this.pendingCandidates = [];
