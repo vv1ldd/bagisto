@@ -49,17 +49,17 @@
         </div>
 
         <!-- Controls -->
-        <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-6 z-50">
-            <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-4 py-4 w-full bg-black/60 backdrop-blur-md pb-8 pt-6 border-t border-white/20">
+            <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-6 py-8 w-full bg-black/80 backdrop-blur-xl border-t border-white/20 px-4">
                 <button 
                     @click="acceptCall" 
-                    class="h-16 md:h-20 px-8 md:px-12 bg-[#22c55e] text-white hover:bg-[#16a34a] font-black uppercase tracking-widest transition-all shadow-[0_0_50px_rgba(34,197,94,0.4)] rounded-full border-4 border-white/20"
+                    class="h-20 md:h-24 px-12 md:px-16 bg-[#22c55e] text-white hover:bg-[#16a34a] font-black uppercase tracking-widest transition-all shadow-[0_0_60px_rgba(34,197,94,0.6)] rounded-full border-4 border-white/30 flex items-center justify-center gap-3 active:scale-95"
                 >
+                    <span class="w-4 h-4 rounded-full bg-white animate-pulse"></span>
                     Принять
                 </button>
                 <button 
                     @click="endCall" 
-                    class="h-16 md:h-20 px-8 md:px-12 border-2 border-white hover:bg-white hover:text-black text-white font-black uppercase tracking-widest transition-all rounded-sm"
+                    class="h-20 md:h-24 px-12 md:px-16 border-4 border-white text-white hover:bg-white hover:text-black font-black uppercase tracking-widest transition-all rounded-full flex items-center justify-center active:scale-95"
                 >
                     Отклонить
                 </button>
@@ -250,12 +250,17 @@ export default {
                 
             } else if (signal.type === 'answer') {
                 console.log('WebRTC: Answer received');
-                const remoteDesc = new RTCSessionDescription({
-                    type: signal.type,
-                    sdp: signal.sdp
-                });
-                await this.peerConnection.setRemoteDescription(remoteDesc);
-                this.flushPendingCandidates();
+                try {
+                    const sanitizedSdp = this.sanitizeSDP(signal.sdp);
+                    const remoteDesc = new RTCSessionDescription({
+                        type: signal.type,
+                        sdp: sanitizedSdp
+                    });
+                    await this.peerConnection.setRemoteDescription(remoteDesc);
+                    this.flushPendingCandidates();
+                } catch (e) {
+                    console.error('WebRTC: Failed to set answer description', e, signal.sdp);
+                }
             } else if (signal.type === 'candidate') {
                 if (this.peerConnection && this.peerConnection.remoteDescription) {
                     console.log('WebRTC: Remote candidate received and added directly');
@@ -276,17 +281,30 @@ export default {
             await this.setupLocalMedia();
             this.createPeerConnection();
 
-            const remoteDesc = new RTCSessionDescription({
-                type: this.pendingOffer.type,
-                sdp: this.pendingOffer.sdp
-            });
-            await this.peerConnection.setRemoteDescription(remoteDesc);
-            this.flushPendingCandidates();
-            
-            const answer = await this.peerConnection.createAnswer();
-            await this.peerConnection.setLocalDescription(answer);
+            try {
+                const sanitizedSdp = this.sanitizeSDP(this.pendingOffer.sdp);
+                console.log('WebRTC: Setting remote offer', sanitizedSdp.substring(0, 100) + '...');
+                
+                const remoteDesc = new RTCSessionDescription({
+                    type: this.pendingOffer.type,
+                    sdp: sanitizedSdp
+                });
+                await this.peerConnection.setRemoteDescription(remoteDesc);
+                this.flushPendingCandidates();
+                
+                const answer = await this.peerConnection.createAnswer();
+                await this.peerConnection.setLocalDescription(answer);
+                this.sendSignal({ type: 'answer', sdp: answer.sdp });
+            } catch (e) {
+                console.error('WebRTC: Failed to set offer description', e, this.pendingOffer.sdp);
+                // Optionally alert user or reset state
+            }
+        },
 
-            this.sendSignal({ type: 'answer', sdp: answer.sdp });
+        sanitizeSDP(sdp) {
+            if (!sdp) return '';
+            // Ensure CRLF and remove any suspicious leading/trailing whitespace
+            return sdp.trim().replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
         },
 
         sendSignal(signalData) {
