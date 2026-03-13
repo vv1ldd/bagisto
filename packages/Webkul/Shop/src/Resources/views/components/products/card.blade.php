@@ -65,11 +65,11 @@
     </div>
 
     <!-- Content Area -->
-    <div class="flex flex-1 flex-col justify-between p-3 bg-transparent">
+    <div class="flex flex-1 flex-col justify-between p-3 bg-transparent text-center">
         <div class="mb-2">
             {!! view_render_event('bagisto.shop.components.products.card.name.before') !!}
             <h2
-                class="line-clamp-2 text-xs font-semibold leading-tight text-zinc-800 group-hover:text-[#7C45F5] transition-colors">
+                class="line-clamp-2 text-xs font-semibold leading-tight text-zinc-800 group-hover:text-[#7C45F5] transition-colors text-center">
                 <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`">
                     @{{ product.name }}
                 </a>
@@ -78,9 +78,9 @@
         </div>
 
         <div class="mt-auto">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-center">
                 {!! view_render_event('bagisto.shop.components.products.card.price.before') !!}
-                <div class="text-sm font-black tracking-tight text-[#7C45F5] [&>del]:text-[10px] [&>del]:font-normal [&>del]:text-zinc-400 [&>del]:opacity-80"
+                <div class="text-sm font-black tracking-tight text-[#7C45F5] text-center [&>del]:text-[10px] [&>del]:font-normal [&>del]:text-zinc-400 [&>del]:opacity-80"
                     v-html="product.price_html">
                 </div>
                 {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
