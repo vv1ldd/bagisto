@@ -142,6 +142,9 @@ export default {
     
     computed: {
         displayUserName() {
+            if (this.isRoomMode) {
+                return this.remoteUserName || 'Защищенная комната';
+            }
             return this.remoteUserName || 'Пользователь';
         }
     },
@@ -279,9 +282,13 @@ export default {
         createPeerConnection() {
             this.peerConnection = new RTCPeerConnection(this.configuration);
 
-            this.localStream.getTracks().forEach(track => {
-                this.peerConnection.addTrack(track, this.localStream);
-            });
+            if (this.localStream) {
+                this.localStream.getTracks().forEach(track => {
+                    this.peerConnection.addTrack(track, this.localStream);
+                });
+            } else {
+                console.warn('WebRTC: Proceeding without local media tracks');
+            }
 
             this.peerConnection.ontrack = (event) => {
                 console.log('WebRTC: Track received!', event);

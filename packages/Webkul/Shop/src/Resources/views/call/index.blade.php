@@ -60,21 +60,36 @@
                 const noticeDiv = document.getElementById('call-active-notice');
 
                 joinBtn.addEventListener('click', function() {
-                    console.log('Guest joining room: {{ $session->uuid }}');
+                    console.log('Join button clicked. $emitter:', !!window.$emitter);
                     
                     if (window.$emitter) {
                         const urlParams = new URLSearchParams(window.location.search);
                         const guestEmail = urlParams.get('email') || 'Гость';
-                        const userName = '{{ auth()->guard('customer')->check() ? (auth()->guard('customer')->user()->username ?? auth()->guard('customer')->user()->first_name) : "PLACEHOLDER_GUEST_EMAIL" }}'.replace('PLACEHOLDER_GUEST_EMAIL', guestEmail);
+                        
+                        @if (auth()->guard('customer')->check())
+                            const baseName = {!! json_encode(auth()->guard('customer')->user()->username ?? auth()->guard('customer')->user()->first_name) !!};
+                        @else
+                            const baseName = "PLACEHOLDER_GUEST_EMAIL";
+                        @endif
 
-                        window.$emitter.emit('join-room', {
-                            uuid: '{{ $session->uuid }}',
-                            userName: userName
-                        });
+                        const userName = baseName === "PLACEHOLDER_GUEST_EMAIL" ? guestEmail : baseName;
+                        console.log('Joining room as:', userName);
 
-                        entryDiv.classList.add('hidden');
-                        noticeDiv.classList.remove('hidden');
+                        try {
+                            window.$emitter.emit('join-room', {
+                                uuid: '{{ $session->uuid }}',
+                                userName: userName
+                            });
+
+                            entryDiv.classList.add('hidden');
+                            noticeDiv.classList.remove('hidden');
+                            console.log('UI transition triggered');
+                        } catch (e) {
+                            console.error('Error emitting join-room:', e);
+                            alert('Ошибка при запуске звонка: ' + e.message);
+                        }
                     } else {
+                        console.error('window.$emitter is missing');
                         alert('Критическая ошибка: система связи не инициализирована. Попробуйте обновить страницу.');
                     }
                 });
