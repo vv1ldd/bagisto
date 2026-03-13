@@ -124,9 +124,24 @@ services:
     image: livekit/livekit-server:latest
     container_name: bagisto-livekit
     restart: always
-    command: --config /etc/livekit-config/config.yaml
-    volumes:
-      - ./infrastructure/livekit/lk-config.yaml:/etc/livekit-config/config.yaml:ro
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        echo "port: 7880
+        bind_addresses:
+          - \"\"
+        rtc:
+          tcp_port: 7881
+          port_range_start: 7882
+          port_range_end: 7882
+          use_external_ip: true
+        keys:
+          $${LIVEKIT_API_KEY}: $${LIVEKIT_API_SECRET}
+        logging:
+          level: info" > /tmp/livekit.yaml
+        /livekit-server --config /tmp/livekit.yaml
+    # No volumes needed for config anymore, bypassing "is a directory" errors
     ports:
       - "7880:7880"
       - "7881:7881"
