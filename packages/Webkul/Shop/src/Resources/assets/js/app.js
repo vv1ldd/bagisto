@@ -199,10 +199,12 @@ import Flatpickr from "./plugins/flatpickr";
 import Debounce from "./directives/debounce";
 import CallOverlay from "./components/CallOverlay.vue";
 import Messenger from "./components/Messenger.vue";
+import RoomJoiner from "./components/RoomJoiner.vue";
 
 app.directive("debounce", Debounce);
 app.component("v-call-overlay", CallOverlay);
 app.component("v-messenger", Messenger);
+app.component("v-room-joiner", RoomJoiner);
 
 app.config.globalProperties.$emitter.on('start-matrix-call', (data) => {
     console.log('Starting Matrix call...', data);

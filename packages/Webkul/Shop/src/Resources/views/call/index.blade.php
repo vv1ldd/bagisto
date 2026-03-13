@@ -19,17 +19,31 @@
                     Нажмите кнопку ниже, чтобы начать сеанс.
                 </p>
 
-                <div class="space-y-4">
-                    <button id="join-call-btn"
-                        class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-sm shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98]">
-                        Войти в чат
-                    </button>
-                    
-                    <a href="{{ route('shop.home.index') }}"
-                        class="block w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 hover:text-zinc-400 transition-colors">
-                        Выйти
-                    </a>
-                </div>
+                @php
+                    $guestEmail = request()->get('email', 'Гость');
+                    if (auth()->guard('customer')->check()) {
+                        $baseName = auth()->guard('customer')->user()->username ?? auth()->guard('customer')->user()->first_name;
+                    } else {
+                        $baseName = $guestEmail;
+                    }
+                @endphp
+
+                <v-room-joiner 
+                    uuid="{{ $session->uuid }}" 
+                    user-name-initial="{{ $baseName }}"
+                    @joined="document.getElementById('guest-entry').classList.add('hidden'); document.getElementById('call-active-notice').classList.remove('hidden');"
+                >
+                    <div class="space-y-4">
+                        <button class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-sm shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98]">
+                            Войти в чат
+                        </button>
+                    </div>
+                </v-room-joiner>
+                
+                <a href="{{ route('shop.home.index') }}"
+                    class="block w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 hover:text-zinc-400 transition-colors">
+                    Выйти
+                </a>
             </div>
 
             <div id="call-active-notice" class="hidden">
@@ -55,76 +69,39 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const joinBtn = document.getElementById('join-call-btn');
-                const entryDiv = document.getElementById('guest-entry');
-                const noticeDiv = document.getElementById('call-active-notice');
-
-                joinBtn.addEventListener('click', function() {
-                    console.log('Join button clicked. $emitter:', !!window.$emitter);
-                    
-                    if (window.$emitter) {
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const guestEmail = urlParams.get('email') || 'Гость';
-                        
-                        @if (auth()->guard('customer')->check())
-                            const baseName = {!! json_encode(auth()->guard('customer')->user()->username ?? auth()->guard('customer')->user()->first_name) !!};
-                        @else
-                            const baseName = "PLACEHOLDER_GUEST_EMAIL";
-                        @endif
-
-                        const userName = baseName === "PLACEHOLDER_GUEST_EMAIL" ? guestEmail : baseName;
-                        console.log('Joining room as:', userName);
-
-                        try {
-                            window.$emitter.emit('join-room', {
-                                uuid: '{{ $session->uuid }}',
-                                userName: userName
-                            });
-
-                            entryDiv.classList.add('hidden');
-                            noticeDiv.classList.remove('hidden');
-                            console.log('UI transition triggered');
-                        } catch (e) {
-                            console.error('Error emitting join-room:', e);
-                            alert('Ошибка при запуске звонка: ' + e.message);
-                        }
-                    } else {
-                        console.error('window.$emitter is missing');
-                        alert('Критическая ошибка: система связи не инициализирована. Попробуйте обновить страницу.');
-                    }
-                });
-
                 // Invite logic
                 const inviteBtn = document.getElementById('send-invite-btn');
                 const inviteEmail = document.getElementById('invite-email');
                 const inviteStatus = document.getElementById('invite-status');
 
-                inviteBtn.addEventListener('click', function() {
-                    const email = inviteEmail.value;
-                    if (!email || !email.includes('@')) {
-                        showStatus('Введите корректный email', 'text-red-500');
-                        return;
-                    }
+                if (inviteBtn) {
+                    inviteBtn.addEventListener('click', function() {
+                        const email = inviteEmail.value;
+                        if (!email || !email.includes('@')) {
+                            showStatus('Введите корректный email', 'text-red-500');
+                            return;
+                        }
 
-                    inviteBtn.disabled = true;
-                    inviteBtn.innerText = '...';
+                        inviteBtn.disabled = true;
+                        inviteBtn.innerText = '...';
 
-                    axios.post('{{ route("shop.call.invite", $session->uuid) }}', {
-                        email: email
-                    })
-                    .then(response => {
-                        showStatus('Приглашение отправлено!', 'text-emerald-500');
-                        inviteEmail.value = '';
-                    })
-                    .catch(error => {
-                        showStatus('Ошибка отправки', 'text-red-500');
-                        console.error(error);
-                    })
-                    .finally(() => {
-                        inviteBtn.disabled = false;
-                        inviteBtn.innerText = 'Ок';
+                        axios.post('{{ route("shop.call.invite", $session->uuid) }}', {
+                            email: email
+                        })
+                        .then(response => {
+                            showStatus('Приглашение отправлено!', 'text-emerald-500');
+                            inviteEmail.value = '';
+                        })
+                        .catch(error => {
+                            showStatus('Ошибка отправки', 'text-red-500');
+                            console.error(error);
+                        })
+                        .finally(() => {
+                            inviteBtn.disabled = false;
+                            inviteBtn.innerText = 'Ок';
+                        });
                     });
-                });
+                }
 
                 function showStatus(text, colorClass) {
                     inviteStatus.innerText = text;
