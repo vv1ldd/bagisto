@@ -118,6 +118,32 @@ services:
       - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
     networks:
       - bagisto-network
+  coturn:
+    image: coturn/coturn:latest
+    container_name: bagisto-coturn
+    restart: always
+    ports:
+      - "3478:3478"
+      - "3478:3478/udp"
+    command:
+      - "turnserver"
+      - "-L"
+      - "0.0.0.0"
+      - "-a"
+      - "-v"
+      - "-n"
+      - "-u"
+      - "${TURN_USERNAME:-meanly}:${TURN_PASSWORD:-meanly_secret}"
+      - "-r"
+      - "turn.meanly.ru"
+      - "--realm=turn.meanly.ru"
+      - "--use-auth-secret"
+      - "--static-auth-secret=${TURN_SECRET:-meanly_secret_key}"
+      - "--no-dtls"
+      - "--no-tls"
+    networks:
+      - bagisto-network
+      - coolify
 
 
 
