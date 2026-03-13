@@ -216,18 +216,15 @@ export default {
             try {
                 this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 
-                // Temporary PC to get fingerprint if not already present
-                if (!this.localFingerprint) {
-                    const tempPC = new RTCPeerConnection(this.configuration);
-                    tempPC.addTransceiver('video');
-                    const offer = await tempPC.createOffer();
-                    const fingerprintMatch = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
-                    if (fingerprintMatch) {
-                        this.localFingerprint = fingerprintMatch[1];
-                        console.log('Room: Local fingerprint discovered:', this.localFingerprint);
-                    }
-                    tempPC.close();
+                // Fingerprint extraction
+                const tempPC = new RTCPeerConnection(this.configuration);
+                tempPC.addTransceiver('video');
+                const offer = await tempPC.createOffer();
+                const fingerprintMatch = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
+                if (fingerprintMatch) {
+                    this.localFingerprint = fingerprintMatch[1];
                 }
+                tempPC.close();
 
                 this.$nextTick(() => { 
                     if (this.$refs.localVideo) this.$refs.localVideo.srcObject = this.localStream;
@@ -276,56 +273,64 @@ export default {
 
         async initiateConnection(name, remoteFingerprint) {
             const pc = this.createPeerConnection(name);
-            if (remoteFingerprint) this.peers[name].fingerprint = remoteFingerprint;
+            if (remoteFingerprint && this.peers[name]) this.peers[name].fingerprint = remoteFingerprint;
             
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
             
-            // Re-discover fingerprint if somehow missed
-            if (!this.localFingerprint) {
-                const match = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
-                if (match) this.localFingerprint = match[1];
-            }
-
             this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name, fingerprint: this.localFingerprint });
         },
 
         async handleOffer(name, signal) {
             const pc = this.createPeerConnection(name);
-            if (signal.fingerprint) this.peers[name].fingerprint = signal.fingerprint;
+            if (signal.fingerprint && this.peers[name]) this.peers[name].fingerprint = signal.fingerprint;
 
-            await pc.setRemoteDescription(new RTCSessionDescription(signal));
-            
-            const peer = this.peers[name];
-            if (peer && peer.iceQueue) {
-                while (peer.iceQueue.length > 0) {
-                    const cand = peer.iceQueue.shift();
-                    await pc.addIceCandidate(new RTCIceCandidate(cand));
+            try {
+                // Be explicit to avoid "Invalid SDP line" errors with extra properties
+                const description = new RTCSessionDescription({
+                    type: 'offer',
+                    sdp: signal.sdp
+                });
+                await pc.setRemoteDescription(description);
+                
+                const peer = this.peers[name];
+                if (peer && peer.iceQueue) {
+                    while (peer.iceQueue.length > 0) {
+                        const cand = peer.iceQueue.shift();
+                        try {
+                            await pc.addIceCandidate(new RTCIceCandidate(cand));
+                        } catch (iceErr) { console.warn('ICE error', iceErr); }
+                    }
                 }
+
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name, fingerprint: this.localFingerprint });
+            } catch (err) {
+                console.error('Room: handleOffer failed', err);
             }
-
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-
-            // Discover fingerprint from answer if needed
-            if (!this.localFingerprint) {
-                const match = answer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
-                if (match) this.localFingerprint = match[1];
-            }
-
-            this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name, fingerprint: this.localFingerprint });
         },
 
         async handleAnswer(name, signal) {
             const peer = this.peers[name];
             if (peer && peer.pc) {
                 if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
-                await peer.pc.setRemoteDescription(new RTCSessionDescription(signal));
-                if (peer.iceQueue) {
-                    while (peer.iceQueue.length > 0) {
-                        const cand = peer.iceQueue.shift();
-                        await peer.pc.addIceCandidate(new RTCIceCandidate(cand));
+                try {
+                    const description = new RTCSessionDescription({
+                        type: 'answer',
+                        sdp: signal.sdp
+                    });
+                    await peer.pc.setRemoteDescription(description);
+                    if (peer.iceQueue) {
+                        while (peer.iceQueue.length > 0) {
+                            const cand = peer.iceQueue.shift();
+                            try {
+                                await peer.pc.addIceCandidate(new RTCIceCandidate(cand));
+                            } catch (iceErr) { console.warn('ICE error', iceErr); }
+                        }
                     }
+                } catch (err) {
+                    console.error('Room: handleAnswer failed', err);
                 }
             }
         },
@@ -334,7 +339,9 @@ export default {
             const peer = this.peers[name];
             if (peer && peer.pc) {
                 if (peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
-                    await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                    try {
+                        await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                    } catch (err) { console.warn('ICE error', err); }
                 } else {
                     peer.iceQueue.push(signal.candidate);
                 }
@@ -346,15 +353,19 @@ export default {
 
             const pc = new RTCPeerConnection(this.configuration);
             
-            this.peers[name] = { 
-                pc, 
-                stream: null, 
-                connected: false, 
-                streamReady: false, 
-                iceQueue: this.peers[name]?.iceQueue || [],
-                fingerprint: this.peers[name]?.fingerprint || null,
-                verified: false
-            };
+            if (!this.peers[name]) {
+                this.peers[name] = { 
+                    pc, 
+                    stream: null, 
+                    connected: false, 
+                    streamReady: false, 
+                    iceQueue: [],
+                    fingerprint: null,
+                    verified: false
+                };
+            } else {
+                this.peers[name].pc = pc;
+            }
 
             if (this.localStream) {
                 this.localStream.getTracks().forEach(t => pc.addTrack(t, this.localStream));
@@ -398,9 +409,6 @@ export default {
 
                 stats.forEach(report => {
                     if (report.type === 'certificate' && report.fingerprint) {
-                        // Usually, the report with fingerprint is the one we want.
-                        // We need to differentiate between local and remote certs if possible, 
-                        // but comparing with remote fingerprint from signaling is the key.
                         if (report.fingerprint.toLowerCase() === peer.fingerprint.toLowerCase()) {
                             actualRemoteFingerprint = report.fingerprint;
                         }
@@ -408,14 +416,7 @@ export default {
                 });
 
                 if (actualRemoteFingerprint) {
-                    console.log(`Security: Connection to ${name} verified!`);
                     peer.verified = true;
-                } else {
-                    console.warn(`Security: Fingerprint for ${name} mismatch or not found in stats`);
-                    // Fallback: check all certificates in stats
-                    stats.forEach(report => {
-                         if (report.type === 'certificate') console.log('Found cert fingerprint:', report.fingerprint);
-                    });
                 }
             } catch (e) { console.error('Security verification failed', e); }
         },
