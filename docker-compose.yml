@@ -124,9 +124,9 @@ services:
     image: livekit/livekit-server:latest
     container_name: bagisto-livekit
     restart: always
-    command: --config /etc/livekit.yaml
+    command: --config /etc/livekit/livekit.yaml
     volumes:
-      - ./infrastructure/livekit/livekit.yaml:/etc/livekit.yaml
+      - ./infrastructure/livekit:/etc/livekit
     ports:
       - "7880:7880"
       - "7881:7881"
