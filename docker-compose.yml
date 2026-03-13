@@ -137,13 +137,15 @@ services:
           port_range_end: 7882
           use_external_ip: true
         redis:
-          address: $${REDIS_HOST:-redis}:$${REDIS_PORT:-6379}
+          address: \"$${REDIS_HOST:-redis}:$${REDIS_PORT:-6379}\"
           password: $${REDIS_PASSWORD}
           db: 0
         keys:
           $${LIVEKIT_API_KEY}: $${LIVEKIT_API_SECRET}
         logging:
           level: info" > /tmp/livekit.yaml
+        echo "--- Generated Config ---"
+        cat /tmp/livekit.yaml
         /livekit-server --config /tmp/livekit.yaml
     # No volumes needed for config anymore, bypassing "is a directory" errors
     ports:
