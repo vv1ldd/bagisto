@@ -7,7 +7,7 @@
                     <span v-if="peerCount > 0">Групповая встреча</span>
                     <span v-else>Ожидание участников</span>
                 </div>
-                <h2 class="text-xl md:text-3xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : remoteUserName }}</h2>
+                <h2 class="text-xl md:text-3xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : (peerCount > 0 ? 'Встреча активна' : 'Комната пуста') }}</h2>
             </div>
             <div class="flex items-center gap-4">
                 <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-pulse">
@@ -16,7 +16,7 @@
                 <div class="flex -space-x-2">
                     <div v-for="name in peerNames" :key="name" 
                         class="w-6 h-6 rounded-full bg-zinc-800 border-2 border-black flex items-center justify-center text-[10px] font-bold uppercase transition-all"
-                        :class="{'border-emerald-500': peers[name].connected}"
+                        :class="{'border-emerald-500': peers[name]?.connected}"
                         :title="name">
                         {{ name[0] }}
                     </div>
@@ -44,7 +44,7 @@
                     </div>
                     
                     <!-- Connection Overlay -->
-                    <div v-if="!peers[name].connected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-20 transition-all">
+                    <div v-if="!peers[name]?.connected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-20 transition-all">
                         <div class="flex flex-col items-center gap-4">
                              <div class="w-10 h-10 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
                              <span class="text-[10px] uppercase font-black tracking-[0.3em] text-[#7C45F5]">Установка связи...</span>
@@ -52,7 +52,7 @@
                     </div>
                     
                     <!-- Signal Loss Overlay -->
-                    <div v-else-if="!peers[name].streamReady" class="absolute inset-0 flex items-center justify-center bg-zinc-900 z-20">
+                    <div v-else-if="!peers[name]?.streamReady" class="absolute inset-0 flex items-center justify-center bg-zinc-900 z-20">
                          <div class="text-center">
                              <div class="text-2xl mb-2 opacity-40">🎥</div>
                              <span class="text-[8px] uppercase font-bold tracking-widest opacity-40">Ожидание потока...</span>
@@ -166,7 +166,6 @@ export default {
             });
         }
 
-        // Global retry interval to fix missing video elements
         this.retryInterval = setInterval(() => this.rebindVideos(), 3000);
     },
 
@@ -228,7 +227,8 @@ export default {
                 if (isInitiator && !this.peers[senderName]) {
                     this.initiateConnection(senderName);
                 } else if (!this.peers[senderName]) {
-                    this.$set(this.peers, senderName, { pc: null, stream: null, connected: false, streamReady: false, iceQueue: [] });
+                    // Vue 3 direct assignment is reactive
+                    this.peers[senderName] = { pc: null, stream: null, connected: false, streamReady: false, iceQueue: [] };
                 }
             } else if (signal.type === 'offer') {
                 this.handleOffer(senderName, signal);
@@ -252,11 +252,12 @@ export default {
             const pc = this.createPeerConnection(name);
             await pc.setRemoteDescription(new RTCSessionDescription(signal));
             
-            // Process queued candidates
             const peer = this.peers[name];
-            while (peer.iceQueue.length > 0) {
-                const cand = peer.iceQueue.shift();
-                await pc.addIceCandidate(new RTCIceCandidate(cand));
+            if (peer && peer.iceQueue) {
+                while (peer.iceQueue.length > 0) {
+                    const cand = peer.iceQueue.shift();
+                    await pc.addIceCandidate(new RTCIceCandidate(cand));
+                }
             }
 
             const answer = await pc.createAnswer();
@@ -268,9 +269,11 @@ export default {
             const peer = this.peers[name];
             if (peer && peer.pc) {
                 await peer.pc.setRemoteDescription(new RTCSessionDescription(signal));
-                while (peer.iceQueue.length > 0) {
-                    const cand = peer.iceQueue.shift();
-                    await peer.pc.addIceCandidate(new RTCIceCandidate(cand));
+                if (peer.iceQueue) {
+                    while (peer.iceQueue.length > 0) {
+                        const cand = peer.iceQueue.shift();
+                        await peer.pc.addIceCandidate(new RTCIceCandidate(cand));
+                    }
                 }
             }
         },
@@ -290,13 +293,15 @@ export default {
             if (this.peers[name]?.pc) return this.peers[name].pc;
 
             const pc = new RTCPeerConnection(this.configuration);
-            this.$set(this.peers, name, { 
+            
+            // Vue 3 direct assignment
+            this.peers[name] = { 
                 pc, 
                 stream: null, 
                 connected: false, 
                 streamReady: false, 
                 iceQueue: this.peers[name]?.iceQueue || [] 
-            });
+            };
 
             if (this.localStream) {
                 this.localStream.getTracks().forEach(t => pc.addTrack(t, this.localStream));
@@ -309,9 +314,11 @@ export default {
             pc.ontrack = (e) => {
                 console.log(`WebRTC: Track received from ${name}`);
                 const stream = e.streams[0];
-                this.$set(this.peers[name], 'stream', stream);
-                this.$set(this.peers[name], 'streamReady', true);
-                this.$set(this.peers[name], 'connected', true);
+                if (this.peers[name]) {
+                    this.peers[name].stream = stream;
+                    this.peers[name].streamReady = true;
+                    this.peers[name].connected = true;
+                }
                 
                 this.attachStreamToVideo(name, stream);
             };
@@ -319,7 +326,7 @@ export default {
             pc.onconnectionstatechange = () => {
                 console.log(`WebRTC: State [${name}] -> ${pc.connectionState}`);
                 if (pc.connectionState === 'connected') {
-                    this.$set(this.peers[name], 'connected', true);
+                    if (this.peers[name]) this.peers[name].connected = true;
                 } else if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
                     this.removePeer(name);
                 }
@@ -330,14 +337,12 @@ export default {
 
         attachStreamToVideo(name, stream) {
             this.$nextTick(() => {
-                const el = document.getElementById('video_' + name) || (this.$refs['remoteVideo_' + name] ? this.$refs['remoteVideo_' + name][0] : null);
+                const el = document.getElementById('video_' + name);
                 if (el) {
                     if (el.srcObject !== stream) {
                         el.srcObject = stream;
                         console.log(`WebRTC: Stream attached to video_${name}`);
                     }
-                } else {
-                    console.warn(`WebRTC: Video element for ${name} not found yet`);
                 }
             });
         },
@@ -346,7 +351,7 @@ export default {
             if (!this.isActive) return;
             Object.keys(this.peers).forEach(name => {
                 const p = this.peers[name];
-                if (p.stream && p.connected) {
+                if (p && p.stream && p.connected) {
                     this.attachStreamToVideo(name, p.stream);
                 }
             });
@@ -355,7 +360,7 @@ export default {
         removePeer(name) {
             if (this.peers[name]) {
                 if (this.peers[name].pc) this.peers[name].pc.close();
-                this.$delete(this.peers, name);
+                delete this.peers[name];
             }
         },
 
