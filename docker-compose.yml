@@ -137,7 +137,7 @@ services:
           port_range_end: 7882
           use_external_ip: true
         redis:
-          address: $${REDIS_HOST}:$${REDIS_PORT}
+          address: $${REDIS_HOST:-redis}:$${REDIS_PORT:-6379}
           password: $${REDIS_PASSWORD}
           db: 0
         keys:
