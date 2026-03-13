@@ -12,7 +12,7 @@ use Webkul\Shop\Http\Controllers\Customer\GDPRController;
 use Webkul\Shop\Http\Controllers\Customer\RegistrationController;
 use Webkul\Shop\Http\Controllers\Customer\ResetPasswordController;
 use Webkul\Shop\Http\Controllers\Customer\SessionController;
-use Webkul\Shop\Http\Controllers\Customer\VerifyIpController;
+
 use Webkul\Shop\Http\Controllers\DataGridController;
 use Webkul\Shop\Http\Controllers\Customer\PasskeyController;
 use Spatie\LaravelPasskeys\Http\Controllers\AuthenticateUsingPasskeyController;
@@ -95,15 +95,7 @@ Route::prefix('customer')->group(function () {
         Route::get('resend/verification/{email}', 'resendVerificationEmail')->name('shop.customers.resend.verification_email');
     });
 
-    /**
-     * IP Verification routes.
-     */
-    Route::controller(VerifyIpController::class)->group(function () {
-        Route::get('verify-ip/code', 'showVerifyCode')->name('shop.customers.verify_ip.code');
-        Route::post('verify-ip/code', 'verifyByCode')->name('shop.customers.verify_ip.code.submit');
-        Route::get('verify-ip/link/{token}', 'verifyByLink')->name('shop.customers.verify_ip.link');
-        Route::get('verify-ip/resend', 'resendCode')->name('shop.customers.verify_ip.resend');
-    });
+
 
     /**
      * Customer authenticated routes. All the below routes only be accessible
