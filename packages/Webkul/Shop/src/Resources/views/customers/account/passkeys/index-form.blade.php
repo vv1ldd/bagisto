@@ -6,32 +6,48 @@
         @endif
 
             @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                <div class="ios-settings-wrapper mx-auto w-full">
-                    <div class=" bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-7 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
-                        <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10  blur-3xl"></div>
-                        <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10  blur-3xl"></div>
+                <div class="ios-settings-wrapper mx-auto w-full px-4 py-8 max-sm:px-2">
+                    <div class="bg-white border-2 border-zinc-100 p-8 flex flex-col items-center relative overflow-hidden w-full shadow-[0_20px_50px_rgba(124,69,245,0.08)]">
+                        <!-- Design Accents -->
+                        <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>
+                        <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-[#FF4D6D]/3 blur-3xl rounded-full"></div>
 
-                        <div class="w-full mx-auto z-10 relative">
-                            <h3 class="text-[#4A1D96] text-[26px] md:text-3xl font-extrabold mb-2 text-center tracking-tight leading-tight">Быстрый вход</h3>
+                        <div class="w-full mx-auto z-10 relative flex flex-col items-center">
+                            <!-- Icon/Brand Section -->
+                            <div class="mb-8 flex flex-col items-center">
+                                <div class="w-20 h-20 bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center mb-6 shadow-xl shadow-[#7C45F5]/20 rotate-3">
+                                    <span class="text-4xl">🔑</span>
+                                </div>
+                                <h3 class="text-zinc-900 text-3xl font-black uppercase tracking-tighter mb-3 balance">Настройка входа</h3>
+                                <div class="h-1.5 w-12 bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D]"></div>
+                            </div>
 
-                            <div class="space-y-2 mb-8">
-                                <p class="text-[14px] text-zinc-600 mb-4 text-center mx-auto max-w-[320px]">
-                                    Добавьте это устройство (отпечаток или FaceID) для мгновенного входа без пароля.
+                            <div class="space-y-4 mb-10">
+                                <p class="text-[15px] font-medium text-zinc-600 text-center leading-relaxed max-w-[340px]">
+                                    Используйте отпечаток или лицо для безопасного доступа к <span class="text-[#7C45F5] font-black uppercase tracking-tight">Meanly Wallet</span> без паролей.
                                 </p>
                             </div>
 
-                            <div class="w-full relative z-10 max-w-[320px] mx-auto flex flex-col gap-3">
+                            <!-- Buttons -->
+                            <div class="w-full max-w-[340px] flex flex-col gap-4">
                                 <button type="button" id="add-passkey-button"
                                     onclick="window.startPasskeyRegistration()"
-                                    class="flex w-full items-center justify-center gap-2  bg-[#7C45F5] px-8 py-3.5 text-[15px] font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50">
-                                    <span class="icon-add text-lg"></span>
-                                    <span id="add-passkey-button-text">Привязать устройство</span>
+                                    class="group relative flex w-full items-center justify-center h-16 bg-[#7C45F5] text-white transition-all hover:bg-[#6b35e4] active:scale-[0.98] shadow-lg shadow-[#7C45F5]/20 overflow-hidden">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                    <span class="icon-add-new text-xl mr-3 font-bold"></span>
+                                    <span id="add-passkey-button-text" class="text-sm font-black uppercase tracking-widest">Создать ключ</span>
                                 </button>
 
                                 <a href="{{ route('shop.customers.account.profile.complete_registration_success') }}"
-                                    class="flex w-full items-center justify-center  bg-white/60 px-8 py-3 text-[14px] font-medium text-[#4A1D96] transition-all hover:bg-white focus:ring-2 focus:ring-[#7C45F5] border border-[#7C45F5]/10">
-                                    Пропустить этот шаг
+                                    class="flex w-full items-center justify-center h-14 bg-zinc-50 text-zinc-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-zinc-100 hover:text-zinc-600 border border-zinc-100">
+                                    Пропустить
                                 </a>
+                            </div>
+
+                            <div class="mt-10 flex items-center justify-center gap-3">
+                                <div class="w-1.5 h-1.5 bg-[#7C45F5] opacity-20"></div>
+                                <div class="w-1.5 h-1.5 bg-[#7C45F5]"></div>
+                                <div class="w-1.5 h-1.5 bg-[#7C45F5] opacity-20"></div>
                             </div>
                         </div>
                     </div>
