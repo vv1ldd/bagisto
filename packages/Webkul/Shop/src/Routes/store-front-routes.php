@@ -93,3 +93,14 @@ Route::controller(TetrisController::class)->prefix('tetris')->group(function () 
     Route::get('', 'index')->name('shop.tetris.index')->middleware('customer');
     Route::post('score', 'store')->name('shop.tetris.store')->middleware('customer');
 });
+
+/**
+ * Guest Video Calls
+ */
+Route::controller(\Webkul\Shop\Http\Controllers\GuestCallController::class)->prefix('call')->group(function () {
+    Route::get('', 'create')->name('shop.call.create');
+    Route::post('start', 'store')->name('shop.call.store');
+    Route::get('{uuid}', 'index')->name('shop.call.index');
+    Route::post('{uuid}/signal', 'signal')->name('shop.call.signal');
+    Route::post('{uuid}/invite', 'invite')->name('shop.call.invite');
+});

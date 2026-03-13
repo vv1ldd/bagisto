@@ -255,7 +255,7 @@ class SessionController extends Controller
 
         session()->flash('success', 'Личность подтверждена. С возвращением!');
 
-        return redirect()->route('shop.customers.account.index');
+        return redirect()->intended(route('shop.customers.account.index'));
     }
 
 
@@ -325,10 +325,10 @@ class SessionController extends Controller
         Event::dispatch('customer.after.login', auth()->guard()->user());
 
         if (core()->getConfigData('customer.settings.login_options.redirected_to_page') == 'account') {
-            return redirect()->route('shop.customers.account.passkeys.index');
+            return redirect()->intended(route('shop.customers.account.passkeys.index'));
         }
 
-        return redirect()->route('shop.home.index');
+        return redirect()->intended(route('shop.home.index'));
     }
 
     /**

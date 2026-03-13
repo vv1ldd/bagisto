@@ -131,10 +131,12 @@ export default {
                     { urls: 'stun:stun4.l.google.com:19302' }
                 ]
             },
-            pendingOffer: null,
             pendingCandidates: [],
             isSharingScreen: false,
-            screenStream: null
+            screenStream: null,
+            roomUuid: null,
+            isRoomMode: false,
+            localUserName: ''
         };
     },
     
@@ -178,6 +180,16 @@ export default {
             }
         }
 
+        // Listen for room-based join event (for guests or direct links)
+        this.$emitter.on('join-room', (payload) => {
+            console.log('CallOverlay: Event [join-room] received', payload);
+            if (this.isActive) {
+                console.warn('Call already active');
+                return;
+            }
+            this.joinRoom(payload.uuid, payload.userName);
+        });
+
         // Global event to start a call
         this.$emitter.on('start-call', (payload) => {
             console.log('CallOverlay: Event [start-call] received', payload);
@@ -196,15 +208,6 @@ export default {
             this.initiateCall(payload.userId, payload.userName);
         });
 
-        // Check for auto-join from email link
-        const urlParams = new URLSearchParams(window.location.search);
-        const callerId = urlParams.get('caller_id');
-        if (callerId && this.$shop.customer_id) {
-            // Short delay to ensure initialization and allow user to see the UI
-            setTimeout(() => {
-                this.initiateCall(parseInt(callerId), 'Собеседник (из уведомления)');
-            }, 1000);
-        }
     },
 
     methods: {
@@ -225,6 +228,40 @@ export default {
 
             console.log('WebRTC: Sending offer signal');
             this.sendSignal({ type: 'offer', sdp: offer.sdp });
+        },
+
+        async joinRoom(uuid, userName) {
+            console.log('CallOverlay: Joining room', uuid, 'as', userName);
+            this.roomUuid = uuid;
+            this.localUserName = userName;
+            this.isRoomMode = true;
+            this.isActive = true;
+            this.isIncoming = false;
+            this.didIInitiate = true;
+            this.hasAccepted = true;
+            
+            // For room mode, our "local" user name is what we display to others
+            // The remote user name will come from the signals
+            
+            if (window.Echo) {
+                console.log('CallOverlay: Subscribing to room channel call.' + uuid);
+                window.Echo.channel(`call.${uuid}`)
+                    .listen('.call-signal', (data) => {
+                        // Ignore signals from self if we had a way to identify, 
+                        // but WebRTC offer/answer dance usually handles this
+                        console.log('CallOverlay: Received room signal:', data);
+                        this.handleSignal(data);
+                    });
+            }
+
+            await this.setupLocalMedia();
+            this.createPeerConnection();
+            
+            const offer = await this.peerConnection.createOffer();
+            await this.peerConnection.setLocalDescription(offer);
+
+            console.log('WebRTC: Sending room offer signal');
+            this.sendSignal({ type: 'offer', sdp: offer.sdp, caller_name: userName });
         },
 
         async setupLocalMedia() {
@@ -273,10 +310,17 @@ export default {
 
         async handleSignal(data) {
             const signal = data.signal_data;
-            this.remoteUserId = data.from_user_id;
             
-            if (signal.caller_name) {
-                this.remoteUserName = signal.caller_name;
+            // Normalize sender info
+            if (this.isRoomMode) {
+                if (data.sender_name) {
+                    this.remoteUserName = data.sender_name;
+                }
+            } else {
+                this.remoteUserId = data.from_user_id;
+                if (signal.caller_name) {
+                    this.remoteUserName = signal.caller_name;
+                }
             }
 
             if (signal.type === 'offer') {
@@ -358,12 +402,21 @@ export default {
         },
 
         sendSignal(signalData) {
-            axios.post('/customer/account/calls/signal', {
-                to_user_id: this.remoteUserId,
-                signal_data: signalData
-            }).catch(error => {
-                console.error('WebRTC: Signal sending failed:', error.response?.data || error.message);
-            });
+            if (this.isRoomMode) {
+                axios.post(`/call/${this.roomUuid}/signal`, {
+                    signal_data: signalData,
+                    sender_name: this.localUserName || (this.$shop.customer_id ? (this.$shop.customer_name || 'User') : 'Гость')
+                }).catch(error => {
+                    console.error('WebRTC: Room Signal sending failed:', error.response?.data || error.message);
+                });
+            } else {
+                axios.post('/customer/account/calls/signal', {
+                    to_user_id: this.remoteUserId,
+                    signal_data: signalData
+                }).catch(error => {
+                    console.error('WebRTC: Signal sending failed:', error.response?.data || error.message);
+                });
+            }
         },
 
         async toggleScreenShare() {

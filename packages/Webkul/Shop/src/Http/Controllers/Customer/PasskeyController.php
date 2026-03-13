@@ -225,7 +225,7 @@ class PasskeyController extends Controller
 
             return response()->json([
                 'message' => 'Successfully authenticated.',
-                'redirect_url' => route('shop.customers.account.index'),
+                'redirect_url' => redirect()->intended(route('shop.customers.account.index'))->getTargetUrl(),
             ]);
         } catch (\Exception $e) {
             Log::error('Passkey login error', [
