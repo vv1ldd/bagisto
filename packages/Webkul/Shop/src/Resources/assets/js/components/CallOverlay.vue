@@ -4,17 +4,17 @@
         <div class="flex justify-between items-center border-b border-white/20 pb-4 relative z-50">
             <div>
                 <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1">
-                    <span v-if="Object.keys(peers).length > 0">Групповая встреча</span>
+                    <span v-if="peerCount > 0">Групповая встреча</span>
                     <span v-else>Ожидание участников</span>
                 </div>
                 <h2 class="text-xl md:text-3xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : remoteUserName }}</h2>
             </div>
             <div class="flex items-center gap-4">
-                <div v-if="Object.keys(peers).length > 0" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-pulse">
-                    {{ Object.keys(peers).length + 1 }} в сети
+                <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-pulse">
+                    {{ peerCount + 1 }} в сети
                 </div>
                 <div class="flex -space-x-2">
-                    <div v-for="(peer, name) in peers" :key="name" 
+                    <div v-for="name in peerNames" :key="name" 
                         class="w-6 h-6 rounded-full bg-zinc-800 border-2 border-black flex items-center justify-center text-[10px] font-bold uppercase"
                         :title="name">
                         {{ name[0] }}
@@ -35,13 +35,13 @@
                 </div>
 
                 <!-- Remote Videos -->
-                <div v-for="(peer, name) in peers" :key="name" 
+                <div v-for="name in peerNames" :key="name" 
                     class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group">
                     <video :ref="'remoteVideo_' + name" autoplay playsinline class="w-full h-full object-cover"></video>
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80">
                         {{ name }}
                     </div>
-                    <div v-if="!peer.connected" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-20">
+                    <div v-if="!peers[name] || !peers[name].connected" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-20">
                         <div class="flex flex-col items-center gap-2">
                              <div class="w-2 h-2 rounded-full bg-[#00FF41] animate-ping"></div>
                              <span class="text-[8px] uppercase font-bold tracking-[0.2em] opacity-60">Соединение...</span>
@@ -51,7 +51,7 @@
             </div>
 
             <!-- Empty State -->
-            <div v-if="Object.keys(peers).length === 0" class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
+            <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
                 <div class="w-24 h-24 rounded-full bg-zinc-900/50 backdrop-blur-2xl border border-white/5 flex items-center justify-center mb-6 animate-pulse">
                     <span class="text-4xl">👥</span>
                 </div>
@@ -107,13 +107,20 @@ export default {
                     { urls: 'stun:stun.l.google.com:19302' },
                     { urls: 'stun:stun1.l.google.com:19302' },
                 ]
-            }
+            },
+            presenceInterval: null
         };
     },
 
     computed: {
+        peerNames() {
+            return Object.keys(this.peers);
+        },
+        peerCount() {
+            return this.peerNames.length;
+        },
         gridClass() {
-            const count = Object.keys(this.peers).length + 1;
+            const count = this.peerCount + 1;
             if (count === 1) return 'grid-cols-1';
             if (count === 2) return 'grid-cols-1 md:grid-cols-2';
             if (count <= 4) return 'grid-cols-2';
@@ -127,6 +134,7 @@ export default {
             this.joinRoom(payload.uuid, payload.userName);
         });
 
+        // Direct call listener (optional for room mode, but keeps it unified)
         const customerId = this.$shop?.customer_id;
         if (window.Echo && customerId) {
              window.Echo.private(`user.${customerId}`).listen('.call-signal', (data) => this.handleSignal(data));
@@ -142,6 +150,10 @@ export default {
         }
     },
 
+    beforeUnmount() {
+        this.stopPresence();
+    },
+
     methods: {
         async joinRoom(uuid, userName) {
             console.log('Room: Joining', uuid, 'as', userName);
@@ -153,11 +165,29 @@ export default {
             await this.setupLocalMedia();
 
             if (window.Echo) {
+                console.log(`Room: Subscribing to call.${uuid}`);
                 window.Echo.channel(`call.${uuid}`).listen('.call-signal', (data) => this.handleSignal(data));
+                
+                // Start periodic presence broadcasting to help catch late joiners or missed signals
+                this.startPresence();
             }
+        },
 
-            // Broadcast presence
+        startPresence() {
+            this.stopPresence();
+            // Initial presence
             this.sendSignal({ type: 'presence' });
+            // Periodic presence every 10 seconds if alone (or for robustness)
+            this.presenceInterval = setInterval(() => {
+                if (this.isActive) this.sendSignal({ type: 'presence' });
+            }, 10000);
+        },
+
+        stopPresence() {
+            if (this.presenceInterval) {
+                clearInterval(this.presenceInterval);
+                this.presenceInterval = null;
+            }
         },
 
         async setupLocalMedia() {
@@ -166,26 +196,31 @@ export default {
                 this.$nextTick(() => { 
                     if (this.$refs.localVideo) this.$refs.localVideo.srcObject = this.localStream;
                 });
-            } catch (e) { console.error('Media access error', e); }
+            } catch (e) { 
+                console.warn('Room: Media access denied or not available', e); 
+                // Don't die, just continue without stream
+            }
         },
 
         handleSignal(data) {
             const signal = data.signal_data;
-            const senderName = data.sender_name;
+            let senderName = data.sender_name || (signal.caller_name);
+            
+            // For direct calls, sender_name might be missing but from_user_id is there
+            if (!senderName && data.from_user_id) senderName = `User ${data.from_user_id}`;
+            
             if (!senderName || senderName === this.localUserName) return;
 
-            // Targeting: if target is set, check it
+            // Targeting logic
             if (signal.target && signal.target !== this.localUserName) return;
 
-            console.log(`Room: Signal [${signal.type}] from ${senderName}`, signal);
+            console.log(`Room: [${signal.type}] from ${senderName}`, signal);
 
             if (signal.type === 'presence') {
-                // Determine if I should initiate based on lexicographical order
                 const shouldIInitiate = this.localUserName.toLowerCase() < senderName.toLowerCase();
                 if (shouldIInitiate && !this.peers[senderName]) {
                     this.initiateConnection(senderName);
                 } else if (!this.peers[senderName]) {
-                    // Just record that they exist, wait for their offer
                     this.$set(this.peers, senderName, { pc: null, stream: null, connected: false });
                 }
             } else if (signal.type === 'offer') {
@@ -210,7 +245,10 @@ export default {
         async handleOffer(name, signal) {
             console.log(`WebRTC: Handling offer from ${name}`);
             const pc = this.createPeerConnection(name);
-            await pc.setRemoteDescription(new RTCSessionDescription(signal));
+            
+            const sanitizedSdp = this.sanitizeSDP(signal.sdp);
+            await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sanitizedSdp }));
+            
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
             this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name });
@@ -219,7 +257,8 @@ export default {
         async handleAnswer(name, signal) {
             const peer = this.peers[name];
             if (peer && peer.pc) {
-                await peer.pc.setRemoteDescription(new RTCSessionDescription(signal));
+                const sanitizedSdp = this.sanitizeSDP(signal.sdp);
+                await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sanitizedSdp }));
             }
         },
 
@@ -228,7 +267,7 @@ export default {
             if (peer && peer.pc) {
                 try {
                     await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-                } catch (e) { console.error('Candidate error', e); }
+                } catch (e) { console.warn('WebRTC: Candidate error', e); }
             }
         },
 
@@ -247,17 +286,25 @@ export default {
             };
 
             pc.ontrack = (e) => {
-                console.log(`WebRTC: Track from ${name}`);
-                this.peers[name].stream = e.streams[0];
-                this.peers[name].connected = true;
+                console.log(`WebRTC: Remote track received from ${name}`);
+                this.$set(this.peers[name], 'stream', e.streams[0]);
+                this.$set(this.peers[name], 'connected', true);
+                
                 this.$nextTick(() => {
                     const el = this.$refs['remoteVideo_' + name];
-                    if (el && el[0]) el[0].srcObject = e.streams[0];
+                    if (el && el[0]) {
+                        el[0].srcObject = e.streams[0];
+                    } else {
+                        console.warn(`WebRTC: Video ref not found for ${name}`);
+                    }
                 });
             };
 
             pc.onconnectionstatechange = () => {
-                if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                console.log(`WebRTC: Connection state with ${name}: ${pc.connectionState}`);
+                if (pc.connectionState === 'connected') {
+                    this.$set(this.peers[name], 'connected', true);
+                } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
                     this.removePeer(name);
                 }
             };
@@ -267,6 +314,7 @@ export default {
 
         removePeer(name) {
             if (this.peers[name]) {
+                console.log(`Room: Removing peer ${name}`);
                 if (this.peers[name].pc) this.peers[name].pc.close();
                 this.$delete(this.peers, name);
             }
@@ -281,14 +329,27 @@ export default {
             axios.post(endpoint, payload).catch(e => console.error('Signalling failed', e));
         },
 
+        sanitizeSDP(sdp) {
+            if (!sdp) return '';
+            let clean = sdp.replace(/\\n/g, '\n').replace(/\\r/g, '');
+            return clean.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0)
+                .join('\r\n') + '\r\n';
+        },
+
         toggleMic() {
             this.isMicOn = !this.isMicOn;
-            this.localStream.getAudioTracks().forEach(t => t.enabled = this.isMicOn);
+            if (this.localStream) {
+                this.localStream.getAudioTracks().forEach(t => t.enabled = this.isMicOn);
+            }
         },
 
         toggleCamera() {
             this.isCameraOn = !this.isCameraOn;
-            this.localStream.getVideoTracks().forEach(t => t.enabled = this.isCameraOn);
+            if (this.localStream) {
+                this.localStream.getVideoTracks().forEach(t => t.enabled = this.isCameraOn);
+            }
         },
 
         async toggleScreenShare() {
@@ -297,19 +358,23 @@ export default {
                     this.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
                     const track = this.screenStream.getVideoTracks()[0];
                     Object.values(this.peers).forEach(p => {
-                        const sender = p.pc.getSenders().find(s => s.track.kind === 'video');
-                        if (sender) sender.replaceTrack(track);
+                        if (p.pc) {
+                            const sender = p.pc.getSenders().find(s => s.track && s.track.kind === 'video');
+                            if (sender) sender.replaceTrack(track);
+                        }
                     });
                     this.$refs.localVideo.srcObject = this.screenStream;
                     this.isSharingScreen = true;
                     track.onended = () => this.toggleScreenShare();
                 } catch (e) { console.error('Screen share error', e); }
             } else {
-                this.screenStream.getTracks().forEach(t => t.stop());
-                const track = this.localStream.getVideoTracks()[0];
+                if (this.screenStream) this.screenStream.getTracks().forEach(t => t.stop());
+                const track = this.localStream?.getVideoTracks()[0];
                 Object.values(this.peers).forEach(p => {
-                    const sender = p.pc.getSenders().find(s => s.track.kind === 'video');
-                    if (sender) sender.replaceTrack(track);
+                    if (p.pc && track) {
+                        const sender = p.pc.getSenders().find(s => s.track && s.track.kind === 'video');
+                        if (sender) sender.replaceTrack(track);
+                    }
                 });
                 this.$refs.localVideo.srcObject = this.localStream;
                 this.isSharingScreen = false;
@@ -322,10 +387,15 @@ export default {
         },
 
         cleanup() {
+            this.stopPresence();
             if (this.localStream) this.localStream.getTracks().forEach(t => t.stop());
-            Object.values(this.peers).forEach(p => p.pc.close());
+            Object.values(this.peers).forEach(p => {
+                if (p.pc) p.pc.close();
+            });
             this.peers = {};
             this.isActive = false;
+            this.isSharingScreen = false;
+            window.location.reload(); // Optional: hard reload to clear all Echo listeners if needed
         }
     }
 };

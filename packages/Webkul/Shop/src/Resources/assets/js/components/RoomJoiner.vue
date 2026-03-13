@@ -44,11 +44,10 @@ export default {
             
             if (this.isGuest) {
                 finalName = this.customName.trim() || 'Гость';
-                // Add a small random suffix to prevent mesh collision if multiple "Гость" join
-                if (finalName === 'Гость') {
-                    finalName += ' ' + Math.random().toString(36).substring(2, 5).toUpperCase();
-                }
             }
+
+            // Always add a unique suffix for room participants to prevent Mesh WebRTC collisions
+            finalName += ' ' + Math.random().toString(36).substring(2, 5).toUpperCase();
 
             console.log('RoomJoiner: Joining as', finalName);
             
