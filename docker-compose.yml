@@ -136,6 +136,10 @@ services:
           port_range_start: 7882
           port_range_end: 7882
           use_external_ip: true
+        redis:
+          address: $${REDIS_HOST}:$${REDIS_PORT}
+          password: $${REDIS_PASSWORD}
+          db: 0
         keys:
           $${LIVEKIT_API_KEY}: $${LIVEKIT_API_SECRET}
         logging:
@@ -149,6 +153,9 @@ services:
     environment:
       - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
       - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     networks:
       - bagisto-network
       - coolify
