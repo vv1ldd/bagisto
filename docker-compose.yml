@@ -120,6 +120,84 @@ services:
       - bagisto-network
 
 
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: bagisto-synapse
+    restart: always
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+      - SYNAPSE_REPORT_STATS=${SYNAPSE_REPORT_STATS:-no}
+      - SYNAPSE_SERVER_NAME=matrix.wildflow.dev
+      - SYNAPSE_ENABLE_REGISTRATION=${ENABLE_REGISTRATION:-false}
+      - POSTGRES_DB=${POSTGRES_DB:-synapse-db}
+      - POSTGRES_USER=${SERVICE_USER_POSTGRESQL}
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRESQL}
+      - POSTGRES_HOST=postgres
+    volumes:
+      - ./infrastructure/matrix/data:/data
+    networks:
+      - bagisto-network
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.matrix.rule=Host(`matrix.wildflow.dev`)"
+      - "traefik.http.routers.matrix.entrypoints=websecure"
+      - "traefik.http.routers.matrix.tls=true"
+      - "traefik.http.services.matrix.loadbalancer.server.port=8008"
+
+  element-web:
+    image: vectorim/element-web:latest
+    container_name: bagisto-element
+    restart: always
+    volumes:
+      - ./infrastructure/matrix/element-config.json:/app/config.json
+    networks:
+      - bagisto-network
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.chat.rule=Host(`chat.wildflow.dev`)"
+      - "traefik.http.routers.chat.entrypoints=websecure"
+      - "traefik.http.routers.chat.tls=true"
+      - "traefik.http.services.chat.loadbalancer.server.port=80"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bagisto-postgres-synapse
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-synapse-db}
+      - POSTGRES_USER=${SERVICE_USER_POSTGRESQL}
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRESQL}
+    volumes:
+      - ./infrastructure/matrix/postgres-data:/var/lib/postgresql/data
+    networks:
+      - bagisto-network
+
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: bagisto-livekit
+    restart: always
+    command: --config /etc/livekit.yaml
+    volumes:
+      - ./infrastructure/livekit/livekit.yaml:/etc/livekit.yaml
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
+    environment:
+      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
+      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
+    networks:
+      - bagisto-network
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.livekit.rule=Host(`livekit.meanly.ru`)"
+      - "traefik.http.routers.livekit.entrypoints=websecure"
+      - "traefik.http.routers.livekit.tls=true"
+      - "traefik.http.services.livekit.loadbalancer.server.port=7880"
+
   coturn:
     image: coturn/coturn:latest
     container_name: bagisto-coturn

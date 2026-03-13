@@ -46,6 +46,12 @@
                                                                             Войти / Регистрация
                                                                         </a>
                                                                     @else
+                                                                        <div class="flex items-center gap-2 mr-2">
+                                                                            <button @click="$emitter.emit('open-messenger')" 
+                                                                                    class="flex h-7 w-7 items-center justify-center bg-zinc-100 text-zinc-600 hover:bg-[#7C45F5] hover:text-white transition-all active:scale-95 shadow-sm border border-zinc-200 group">
+                                                                                <span class="icon-chat text-base group-hover:scale-110 transition-transform"></span>
+                                                                            </button>
+                                                                        </div>
                                                                         <div class="flex items-center gap-2.5 bg-white/60 border border-white/80 backdrop-blur-md shadow-sm px-3 py-1.5 leading-none">
                                                                             {{-- Dynamic Avatar/Cart Box --}}
                                                                             <a :href="cart && cart.items.length > 0 ? '{{ route('shop.checkout.cart.index') }}' : '{{ route('shop.customers.account.index') }}'" class="relative group">

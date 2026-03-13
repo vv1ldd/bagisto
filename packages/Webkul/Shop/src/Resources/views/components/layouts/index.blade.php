@@ -483,5 +483,6 @@
                 </div>
             </div>
         </div>
+        <v-messenger></v-messenger>
     </body>
 </html>

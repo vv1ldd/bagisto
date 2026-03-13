@@ -13,6 +13,7 @@ use Webkul\Shop\Http\Controllers\API\OrganizationController;
 use Webkul\Shop\Http\Controllers\API\ProductController;
 use Webkul\Shop\Http\Controllers\API\ReviewController;
 use Webkul\Shop\Http\Controllers\API\WishlistController;
+use Webkul\Shop\Http\Controllers\API\MessengerController;
 
 Route::group(['prefix' => 'api'], function () {
     Route::controller(CoreController::class)->prefix('core')->group(function () {
@@ -134,5 +135,7 @@ Route::group(['prefix' => 'api'], function () {
 
             Route::delete('{id}', 'destroy')->name('shop.api.customers.account.wishlist.destroy');
         });
+
+        Route::get('messenger/credentials', [MessengerController::class, 'getCredentials']);
     });
 });

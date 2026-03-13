@@ -89,4 +89,8 @@ return [
         'username' => env('TURN_USERNAME', 'meanly'),
         'password' => env('TURN_PASSWORD', 'meanly_secret'),
     ],
+    'matrix' => [
+        'homeserver_url'             => env('MATRIX_SERVER_URL', 'https://matrix.wildflow.dev'),
+        'registration_shared_secret' => env('MATRIX_REGISTRATION_SHARED_SECRET'),
+    ],
 ];
