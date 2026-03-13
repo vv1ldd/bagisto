@@ -126,7 +126,7 @@ services:
     restart: always
     command: --config /etc/livekit-config/config.yaml
     volumes:
-      - ./infrastructure/livekit/livekit.yaml:/etc/livekit-config/config.yaml:ro
+      - ./infrastructure/livekit/lk-config.yaml:/etc/livekit-config/config.yaml:ro
     ports:
       - "7880:7880"
       - "7881:7881"
