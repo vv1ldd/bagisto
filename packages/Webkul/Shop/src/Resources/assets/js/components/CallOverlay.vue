@@ -1,104 +1,86 @@
 <template>
-    <div v-if="isActive" class="fixed inset-0 z-[10000] bg-black text-white p-8 flex flex-col justify-between font-sans">
+    <div v-if="isActive" class="fixed inset-0 z-[10000] bg-black text-white p-4 md:p-8 flex flex-col justify-between font-sans overflow-hidden">
         <!-- Header -->
-        <div class="flex justify-between items-center border-b border-white/20 pb-4 md:pb-6 relative z-50">
+        <div class="flex justify-between items-center border-b border-white/20 pb-4 relative z-50">
             <div>
-                <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1 md:mb-2">
-                    <span v-if="isConnected">В эфире</span>
-                    <span v-else-if="didIInitiate">{{ isRemoteAccepted ? 'Соединение...' : 'Исходящий вызов' }}</span>
-                    <span v-else>Входящий вызов</span>
+                <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1">
+                    <span v-if="Object.keys(peers).length > 0">Групповая встреча</span>
+                    <span v-else>Ожидание участников</span>
                 </div>
-                <h2 class="text-2xl md:text-4xl font-black uppercase italic tracking-tighter">{{ displayUserName }}</h2>
+                <h2 class="text-xl md:text-3xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : remoteUserName }}</h2>
             </div>
-            <div v-if="isConnected" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-fade-in">
-                Live
+            <div class="flex items-center gap-4">
+                <div v-if="Object.keys(peers).length > 0" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-pulse">
+                    {{ Object.keys(peers).length + 1 }} в сети
+                </div>
+                <div class="flex -space-x-2">
+                    <div v-for="(peer, name) in peers" :key="name" 
+                        class="w-6 h-6 rounded-full bg-zinc-800 border-2 border-black flex items-center justify-center text-[10px] font-bold uppercase"
+                        :title="name">
+                        {{ name[0] }}
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Video Grid -->
-        <div class="flex-grow relative my-4 md:my-8 overflow-hidden rounded-3xl border border-white/10 bg-zinc-950">
-            <!-- Remote Video (Full Size) -->
-            <div class="absolute inset-0 z-0">
-                <video ref="remoteVideo" autoplay playsinline class="w-full h-full object-cover"></video>
-                
-                <div v-if="!isConnected" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 backdrop-blur-3xl z-10">
-                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-zinc-800 flex items-center justify-center mb-6 relative">
-                        <span class="text-2xl md:text-3xl uppercase font-black">{{ (displayUserName || 'U')[0] }}</span>
-                        <div v-if="didIInitiate" class="absolute inset-0 rounded-full border-2 border-[#00FF41] animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] opacity-20"></div>
+        <div class="flex-grow relative my-4 overflow-hidden rounded-3xl bg-zinc-950">
+            <div :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
+                <!-- Local Video -->
+                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group">
+                    <video ref="localVideo" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
+                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10">
+                        Вы ({{ localUserName }})
                     </div>
-                    
-                    <span class="text-base md:text-lg font-bold uppercase tracking-widest mb-2">{{ displayUserName }}</span>
-                    
-                    <span v-if="didIInitiate" class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-[#00FF41]">
-                        {{ isRemoteAccepted ? 'Установка соединения...' : 'Ожидание ответа...' }}
-                    </span>
-                    <span v-else-if="isIncoming && !hasAccepted" class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/50 animate-pulse text-center px-4">Нажмите принять, чтобы начать сеанс</span>
-                    <span v-else class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-[#00FF41]">Установка соединения...</span>
+                </div>
+
+                <!-- Remote Videos -->
+                <div v-for="(peer, name) in peers" :key="name" 
+                    class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group">
+                    <video :ref="'remoteVideo_' + name" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80">
+                        {{ name }}
+                    </div>
+                    <div v-if="!peer.connected" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-20">
+                        <div class="flex flex-col items-center gap-2">
+                             <div class="w-2 h-2 rounded-full bg-[#00FF41] animate-ping"></div>
+                             <span class="text-[8px] uppercase font-bold tracking-[0.2em] opacity-60">Соединение...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Local Video (Floating PIP) -->
-            <div class="absolute top-4 right-4 w-32 md:w-48 aspect-video md:aspect-[3/4] rounded-2xl border-2 border-white/20 shadow-2xl overflow-hidden z-20 bg-zinc-800 transition-all duration-500">
-                <video ref="localVideo" autoplay muted playsinline class="w-full h-full object-cover"></video>
-                <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 text-[8px] font-bold border border-white/10 uppercase tracking-tighter">
-                    You
+            <!-- Empty State -->
+            <div v-if="Object.keys(peers).length === 0" class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
+                <div class="w-24 h-24 rounded-full bg-zinc-900/50 backdrop-blur-2xl border border-white/5 flex items-center justify-center mb-6 animate-pulse">
+                    <span class="text-4xl">👥</span>
                 </div>
-            </div>
-
-            <!-- Remote Name Tag -->
-            <div v-if="isConnected" class="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1 text-[10px] font-bold border border-white/10 uppercase tracking-widest z-10 transition-all">
-                {{ remoteUserName || 'Remote' }}
+                <span class="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-500 text-center px-8">
+                    Ожидание подключения других участников...
+                </span>
             </div>
         </div>
 
-        <!-- Controls Wrapper -->
-        <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-6 z-50">
-            <div v-if="isIncoming && !hasAccepted" class="flex flex-wrap justify-center gap-4 md:gap-6 py-8 w-full bg-black/90 backdrop-blur-2xl border-t border-white/20 px-6">
-                <button 
-                    @click="acceptCall" 
-                    class="h-16 md:h-24 px-8 md:px-20 bg-green-500 text-white hover:bg-green-600 hover:scale-105 active:scale-95 font-black uppercase tracking-[0.1em] md:tracking-[0.2em] transition-all shadow-[0_0_80px_rgba(34,197,94,0.5)] rounded-full border-2 md:border-4 border-white/40 flex items-center justify-center gap-3 md:gap-4 group text-sm md:text-base flex-1 md:flex-none"
-                >
-                    <div class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white animate-ping"></div>
-                    <span>Принять</span>
-                </button>
-                <button 
-                    @click="endCall" 
-                    class="h-16 md:h-24 px-8 md:px-16 border-2 md:border-4 border-white/30 text-white hover:bg-white hover:text-black font-black uppercase tracking-widest transition-all rounded-full flex items-center justify-center opacity-80 hover:opacity-100 text-sm md:text-base flex-1 md:flex-none"
-                >
-                    Отклонить
-                </button>
-            </div>
-
-            <div v-else class="flex justify-center gap-4 md:gap-6 pb-4 bg-black/60 backdrop-blur-xl px-6 md:px-12 py-4 md:py-6 rounded-full border border-white/10 mx-auto w-max mb-4 md:mb-0">
-                <button 
-                    @click="toggleMic" 
-                    :class="[isMicOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
-                >
+        <!-- Controls -->
+        <div class="relative z-50 flex justify-center gap-4 py-4 mt-auto">
+             <div class="flex justify-center gap-3 md:gap-6 pb-4 bg-black/60 backdrop-blur-xl px-6 md:px-12 py-4 md:py-6 rounded-full border border-white/10 mx-auto w-max">
+                <button @click="toggleMic" :class="[isMicOn ? 'bg-white text-black' : 'bg-red-500/20 text-red-500 border-red-500/40']"
+                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:scale-105 transition-all flex items-center justify-center border border-white/10">
                     <span class="text-[8px] md:text-[10px] font-black uppercase">{{ isMicOn ? 'On' : 'Off' }}</span>
                 </button>
                 
-                <button 
-                    @click="endCall" 
-                    class="h-12 px-8 md:h-16 md:px-12 rounded-full bg-red-600 hover:bg-red-700 text-white font-black uppercase text-xs md:text-sm tracking-widest transition-all shadow-lg shadow-red-500/20"
-                >
-                    Завершить
+                <button @click="endCall" 
+                    class="h-12 px-8 md:h-16 md:px-12 rounded-full bg-red-600 hover:bg-red-700 text-white font-black uppercase text-xs md:text-sm tracking-widest transition-all shadow-lg shadow-red-500/20 active:scale-95">
+                    Выйти
                 </button>
  
-                <button 
-                    @click="toggleScreenShare" 
-                    :class="[isSharingScreen ? 'bg-[#00FF41] text-black' : 'bg-zinc-800 text-white opacity-40']"
-                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
-                    title="Демонстрация экрана"
-                >
+                <button @click="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black' : 'bg-zinc-800 text-white opacity-40']"
+                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:scale-105 transition-all flex items-center justify-center border border-white/10">
                     <span class="text-[8px] md:text-[10px] font-black uppercase">{{ isSharingScreen ? 'Stop' : 'Share' }}</span>
                 </button>
  
-                <button 
-                    @click="toggleCamera" 
-                    :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:bg-zinc-200 hover:text-black transition-all flex items-center justify-center border border-white/10"
-                >
+                <button @click="toggleCamera" :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
+                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:scale-105 transition-all flex items-center justify-center border border-white/10">
                     <span class="text-[8px] md:text-[10px] font-black uppercase">{{ isCameraOn ? 'On' : 'Off' }}</span>
                 </button>
             </div>
@@ -111,442 +93,244 @@ export default {
     data() {
         return {
             isActive: false,
-            isIncoming: false,
-            hasAccepted: false,
-            didIInitiate: false,
-            isConnected: false,
-            isRemoteAccepted: false,
+            localStream: null,
+            localUserName: '',
+            roomUuid: null,
+            isRoomMode: false,
+            peers: {}, // { name: { pc, stream, connected } }
             isMicOn: true,
             isCameraOn: true,
-            remoteUserId: null,
-            remoteUserName: '',
-            peerConnection: null,
-            localStream: null,
+            isSharingScreen: false,
+            screenStream: null,
             configuration: {
                 iceServers: [
                     { urls: 'stun:stun.l.google.com:19302' },
                     { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'stun:stun3.l.google.com:19302' },
-                    { urls: 'stun:stun4.l.google.com:19302' }
                 ]
-            },
-            pendingCandidates: [],
-            isSharingScreen: false,
-            screenStream: null,
-            roomUuid: null,
-            isRoomMode: false,
-            localUserName: ''
+            }
         };
     },
-    
+
     computed: {
-        displayUserName() {
-            if (this.isRoomMode) {
-                return this.remoteUserName || 'Защищенная комната';
-            }
-            return this.remoteUserName || 'Пользователь';
+        gridClass() {
+            const count = Object.keys(this.peers).length + 1;
+            if (count === 1) return 'grid-cols-1';
+            if (count === 2) return 'grid-cols-1 md:grid-cols-2';
+            if (count <= 4) return 'grid-cols-2';
+            return 'grid-cols-2 md:grid-cols-3';
         }
     },
 
     mounted() {
-        // Listen for incoming call signals (only for logged in users)
-        const customerId = this.$shop.customer_id;
-        
-        if (window.Echo && customerId) {
-            console.log('CallOverlay: Echo is present, subscribing to user.' + customerId);
-            console.log('CallOverlay: Echo connector options:', window.Echo.connector.options);
-
-            window.Echo.connector.pusher.connection.bind('state_change', (states) => {
-                console.log('CallOverlay: Echo connection state changed:', states.current);
-            });
-
-            window.Echo.private(`user.${customerId}`)
-                .listen('.call-signal', (data) => {
-                    console.log('CallOverlay: Received signal on channel:', data);
-                    this.handleSignal(data);
-                })
-                .error((error) => {
-                    console.error('CallOverlay: Echo subscription error:', error);
-                });
-
-            // Update ICE servers with TURN if provided
-            const laravel = window.Laravel || {};
-            if (laravel.turnUrl) {
-                console.log('WebRTC: Adding TURN server relay (prioritized)');
-                // Put TURN at the beginning
-                this.configuration.iceServers.unshift({
-                    urls: [laravel.turnUrl, laravel.turnUrl.replace('turn:', 'stun:')],
-                    username: laravel.turnUsername,
-                    credential: laravel.turnPassword
-                });
-            }
-        }
-
-        // Listen for room-based join event (for guests or direct links)
         this.$emitter.on('join-room', (payload) => {
-            console.log('CallOverlay: Event [join-room] received', payload);
-            if (this.isActive) {
-                console.warn('Call already active');
-                return;
-            }
+            if (this.isActive) return;
             this.joinRoom(payload.uuid, payload.userName);
         });
 
-        // Global event to start a call
-        this.$emitter.on('start-call', (payload) => {
-            console.log('CallOverlay: Event [start-call] received', payload);
-            if (this.isActive) {
-                console.warn('Call already active or incoming');
-                return;
-            }
-            if (!this.$shop.customer_id) {
-                console.error('CallOverlay: cannot start call, customer_id missing');
-                this.$emitter.emit('add-flash', { 
-                    type: 'warning', 
-                    message: 'Пожалуйста, войдите в систему, чтобы совершить вызов' 
-                });
-                return;
-            }
-            this.initiateCall(payload.userId, payload.userName);
-        });
+        const customerId = this.$shop?.customer_id;
+        if (window.Echo && customerId) {
+             window.Echo.private(`user.${customerId}`).listen('.call-signal', (data) => this.handleSignal(data));
+        }
 
+        const laravel = window.Laravel || {};
+        if (laravel.turnUrl) {
+            this.configuration.iceServers.unshift({
+                urls: [laravel.turnUrl],
+                username: laravel.turnUsername,
+                credential: laravel.turnPassword
+            });
+        }
     },
 
     methods: {
-        async initiateCall(userId, userName) {
-            console.log('CallOverlay: Initializing call to', { userId, userName });
-            this.remoteUserId = userId;
-            this.remoteUserName = userName;
-            this.isActive = true;
-            this.isIncoming = false;
-            this.didIInitiate = true;
-            this.hasAccepted = true;
-
-            await this.setupLocalMedia();
-            this.createPeerConnection();
-            
-            const offer = await this.peerConnection.createOffer();
-            await this.peerConnection.setLocalDescription(offer);
-
-            console.log('WebRTC: Sending offer signal');
-            this.sendSignal({ type: 'offer', sdp: offer.sdp });
-        },
-
         async joinRoom(uuid, userName) {
-            console.log('CallOverlay: Joining room', uuid, 'as', userName);
+            console.log('Room: Joining', uuid, 'as', userName);
             this.roomUuid = uuid;
             this.localUserName = userName;
             this.isRoomMode = true;
             this.isActive = true;
-            this.isIncoming = false;
-            this.didIInitiate = true;
-            this.hasAccepted = true;
-            
-            // For room mode, our "local" user name is what we display to others
-            // The remote user name will come from the signals
-            
-            if (window.Echo) {
-                console.log('CallOverlay: Subscribing to room channel call.' + uuid);
-                window.Echo.channel(`call.${uuid}`)
-                    .listen('.call-signal', (data) => {
-                        // Ignore signals from self if we had a way to identify, 
-                        // but WebRTC offer/answer dance usually handles this
-                        console.log('CallOverlay: Received room signal:', data);
-                        this.handleSignal(data);
-                    });
-            }
 
             await this.setupLocalMedia();
-            this.createPeerConnection();
-            
-            const offer = await this.peerConnection.createOffer();
-            await this.peerConnection.setLocalDescription(offer);
 
-            console.log('WebRTC: Sending room offer signal');
-            this.sendSignal({ type: 'offer', sdp: offer.sdp, caller_name: userName });
+            if (window.Echo) {
+                window.Echo.channel(`call.${uuid}`).listen('.call-signal', (data) => this.handleSignal(data));
+            }
+
+            // Broadcast presence
+            this.sendSignal({ type: 'presence' });
         },
 
         async setupLocalMedia() {
             try {
-                this.localStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: true, 
-                    audio: true 
+                this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                this.$nextTick(() => { 
+                    if (this.$refs.localVideo) this.$refs.localVideo.srcObject = this.localStream;
                 });
-                this.$refs.localVideo.srcObject = this.localStream;
-            } catch (error) {
-                console.error('Error accessing media devices:', error);
+            } catch (e) { console.error('Media access error', e); }
+        },
+
+        handleSignal(data) {
+            const signal = data.signal_data;
+            const senderName = data.sender_name;
+            if (!senderName || senderName === this.localUserName) return;
+
+            // Targeting: if target is set, check it
+            if (signal.target && signal.target !== this.localUserName) return;
+
+            console.log(`Room: Signal [${signal.type}] from ${senderName}`, signal);
+
+            if (signal.type === 'presence') {
+                // Determine if I should initiate based on lexicographical order
+                const shouldIInitiate = this.localUserName.toLowerCase() < senderName.toLowerCase();
+                if (shouldIInitiate && !this.peers[senderName]) {
+                    this.initiateConnection(senderName);
+                } else if (!this.peers[senderName]) {
+                    // Just record that they exist, wait for their offer
+                    this.$set(this.peers, senderName, { pc: null, stream: null, connected: false });
+                }
+            } else if (signal.type === 'offer') {
+                this.handleOffer(senderName, signal);
+            } else if (signal.type === 'answer') {
+                this.handleAnswer(senderName, signal);
+            } else if (signal.type === 'candidate') {
+                this.handleCandidate(senderName, signal);
+            } else if (signal.type === 'hangup') {
+                this.removePeer(senderName);
             }
         },
 
-        createPeerConnection() {
-            this.peerConnection = new RTCPeerConnection(this.configuration);
+        async initiateConnection(name) {
+            console.log(`WebRTC: Initiating offer to ${name}`);
+            const pc = this.createPeerConnection(name);
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name });
+        },
+
+        async handleOffer(name, signal) {
+            console.log(`WebRTC: Handling offer from ${name}`);
+            const pc = this.createPeerConnection(name);
+            await pc.setRemoteDescription(new RTCSessionDescription(signal));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name });
+        },
+
+        async handleAnswer(name, signal) {
+            const peer = this.peers[name];
+            if (peer && peer.pc) {
+                await peer.pc.setRemoteDescription(new RTCSessionDescription(signal));
+            }
+        },
+
+        async handleCandidate(name, signal) {
+            const peer = this.peers[name];
+            if (peer && peer.pc) {
+                try {
+                    await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                } catch (e) { console.error('Candidate error', e); }
+            }
+        },
+
+        createPeerConnection(name) {
+            if (this.peers[name]?.pc) return this.peers[name].pc;
+
+            const pc = new RTCPeerConnection(this.configuration);
+            this.$set(this.peers, name, { pc, stream: null, connected: false });
 
             if (this.localStream) {
-                this.localStream.getTracks().forEach(track => {
-                    this.peerConnection.addTrack(track, this.localStream);
+                this.localStream.getTracks().forEach(t => pc.addTrack(t, this.localStream));
+            }
+
+            pc.onicecandidate = (e) => {
+                if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: name });
+            };
+
+            pc.ontrack = (e) => {
+                console.log(`WebRTC: Track from ${name}`);
+                this.peers[name].stream = e.streams[0];
+                this.peers[name].connected = true;
+                this.$nextTick(() => {
+                    const el = this.$refs['remoteVideo_' + name];
+                    if (el && el[0]) el[0].srcObject = e.streams[0];
                 });
-            } else {
-                console.warn('WebRTC: Proceeding without local media tracks');
-            }
-
-            this.peerConnection.ontrack = (event) => {
-                console.log('WebRTC: Track received!', event);
-                this.$refs.remoteVideo.srcObject = event.streams[0];
-                this.isConnected = true;
             };
 
-            this.peerConnection.onicecandidate = (event) => {
-                if (event.candidate) {
-                    console.log('WebRTC: Local ICE candidate found:', event.candidate.type);
-                    this.sendSignal({ type: 'candidate', candidate: event.candidate });
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                    this.removePeer(name);
                 }
             };
 
-            this.peerConnection.onconnectionstatechange = () => {
-                console.log('WebRTC: Connection state:', this.peerConnection.connectionState);
-                if (this.peerConnection.connectionState === 'connected') {
-                    this.isConnected = true;
-                }
-            };
-
-            this.peerConnection.oniceconnectionstatechange = () => {
-                console.log('WebRTC: ICE state:', this.peerConnection.iceConnectionState);
-            };
+            return pc;
         },
 
-        async handleSignal(data) {
-            const signal = data.signal_data;
-            
-            // Normalize sender info
-            if (this.isRoomMode) {
-                if (data.sender_name) {
-                    this.remoteUserName = data.sender_name;
-                }
-            } else {
-                this.remoteUserId = data.from_user_id;
-                if (signal.caller_name) {
-                    this.remoteUserName = signal.caller_name;
-                }
+        removePeer(name) {
+            if (this.peers[name]) {
+                if (this.peers[name].pc) this.peers[name].pc.close();
+                this.$delete(this.peers, name);
             }
-
-            if (signal.type === 'offer') {
-                this.isActive = true;
-                this.isIncoming = true;
-                this.pendingOffer = signal;
-                
-                // Play notification sound
-                this.playRingtone();
-                
-            } else if (signal.type === 'call-accepted') {
-                console.log('WebRTC: Remote user clicked Accept');
-                this.isRemoteAccepted = true;
-            } else if (signal.type === 'answer') {
-                console.log('WebRTC: Answer received');
-                try {
-                    const sanitizedSdp = this.sanitizeSDP(signal.sdp);
-                    const remoteDesc = new RTCSessionDescription({
-                        type: signal.type,
-                        sdp: sanitizedSdp
-                    });
-                    await this.peerConnection.setRemoteDescription(remoteDesc);
-                    this.flushPendingCandidates();
-                } catch (e) {
-                    console.error('WebRTC: Failed to set answer description', e, signal.sdp);
-                }
-            } else if (signal.type === 'candidate') {
-                if (this.peerConnection && this.peerConnection.remoteDescription) {
-                    console.log('WebRTC: Remote candidate received and added directly');
-                    await this.peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
-                } else {
-                    console.log('WebRTC: Queueing remote candidate');
-                    this.pendingCandidates.push(signal.candidate);
-                }
-            } else if (signal.type === 'hangup') {
-                console.log('WebRTC: Hangup received from remote user');
-                this.cleanup();
-            }
-        },
-
-        async acceptCall() {
-            this.hasAccepted = true;
-            this.sendSignal({ type: 'call-accepted' });
-            this.stopRingtone();
-            await this.setupLocalMedia();
-            this.createPeerConnection();
-
-            try {
-                const sanitizedSdp = this.sanitizeSDP(this.pendingOffer.sdp);
-                console.log('WebRTC: Setting remote offer', sanitizedSdp.substring(0, 100) + '...');
-                
-                const remoteDesc = new RTCSessionDescription({
-                    type: this.pendingOffer.type,
-                    sdp: sanitizedSdp
-                });
-                await this.peerConnection.setRemoteDescription(remoteDesc);
-                this.flushPendingCandidates();
-                
-                const answer = await this.peerConnection.createAnswer();
-                await this.peerConnection.setLocalDescription(answer);
-                this.sendSignal({ type: 'answer', sdp: answer.sdp });
-            } catch (e) {
-                console.error('WebRTC: Failed to set offer description', e, this.pendingOffer.sdp);
-                // Optionally alert user or reset state
-            }
-        },
-
-        sanitizeSDP(sdp) {
-            if (!sdp) return '';
-            
-            // 1. Handle potential literal \\n from double-escaping
-            let clean = sdp.replace(/\\n/g, '\n').replace(/\\r/g, '');
-            
-            // 2. Strict line-by-line cleanup
-            return clean.split('\n')
-                .map(line => line.trim())
-                .filter(line => line.length > 0)
-                .join('\r\n') + '\r\n';
         },
 
         sendSignal(signalData) {
-            if (this.isRoomMode) {
-                axios.post(`/call/${this.roomUuid}/signal`, {
-                    signal_data: signalData,
-                    sender_name: this.localUserName || (this.$shop.customer_id ? (this.$shop.customer_name || 'User') : 'Гость')
-                }).catch(error => {
-                    console.error('WebRTC: Room Signal sending failed:', error.response?.data || error.message);
-                });
-            } else {
-                axios.post('/customer/account/calls/signal', {
-                    to_user_id: this.remoteUserId,
-                    signal_data: signalData
-                }).catch(error => {
-                    console.error('WebRTC: Signal sending failed:', error.response?.data || error.message);
-                });
-            }
+            const payload = {
+                signal_data: signalData,
+                sender_name: this.localUserName
+            };
+            const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
+            axios.post(endpoint, payload).catch(e => console.error('Signalling failed', e));
+        },
+
+        toggleMic() {
+            this.isMicOn = !this.isMicOn;
+            this.localStream.getAudioTracks().forEach(t => t.enabled = this.isMicOn);
+        },
+
+        toggleCamera() {
+            this.isCameraOn = !this.isCameraOn;
+            this.localStream.getVideoTracks().forEach(t => t.enabled = this.isCameraOn);
         },
 
         async toggleScreenShare() {
             if (!this.isSharingScreen) {
                 try {
-                    this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
-                        video: true 
+                    this.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                    const track = this.screenStream.getVideoTracks()[0];
+                    Object.values(this.peers).forEach(p => {
+                        const sender = p.pc.getSenders().find(s => s.track.kind === 'video');
+                        if (sender) sender.replaceTrack(track);
                     });
-
-                    const screenTrack = this.screenStream.getVideoTracks()[0];
-
-                    if (this.peerConnection) {
-                        const senders = this.peerConnection.getSenders();
-                        const videoSender = senders.find(s => s.track?.kind === 'video');
-                        
-                        if (videoSender) {
-                            await videoSender.replaceTrack(screenTrack);
-                        }
-                    }
-
-                    // Replace in local preview too
                     this.$refs.localVideo.srcObject = this.screenStream;
                     this.isSharingScreen = true;
-
-                    // Handle user clicking "Stop Sharing" in browser UI
-                    screenTrack.onended = () => {
-                        if (this.isSharingScreen) this.toggleScreenShare();
-                    };
-
-                } catch (error) {
-                    console.error('Error starting screen share:', error);
-                }
+                    track.onended = () => this.toggleScreenShare();
+                } catch (e) { console.error('Screen share error', e); }
             } else {
-                // Return to camera
-                if (this.screenStream) {
-                    this.screenStream.getTracks().forEach(track => track.stop());
-                }
-
-                if (this.peerConnection) {
-                    const senders = this.peerConnection.getSenders();
-                    const videoSender = senders.find(s => s.track?.kind === 'video');
-                    const cameraTrack = this.localStream.getVideoTracks()[0];
-                    
-                    if (videoSender && cameraTrack) {
-                        await videoSender.replaceTrack(cameraTrack);
-                    }
-                }
-
+                this.screenStream.getTracks().forEach(t => t.stop());
+                const track = this.localStream.getVideoTracks()[0];
+                Object.values(this.peers).forEach(p => {
+                    const sender = p.pc.getSenders().find(s => s.track.kind === 'video');
+                    if (sender) sender.replaceTrack(track);
+                });
                 this.$refs.localVideo.srcObject = this.localStream;
                 this.isSharingScreen = false;
-                this.screenStream = null;
             }
         },
 
-        toggleMic() {
-            this.isMicOn = !this.isMicOn;
-            this.localStream.getAudioTracks().forEach(track => track.enabled = this.isMicOn);
-        },
-
-        toggleCamera() {
-            this.isCameraOn = !this.isCameraOn;
-            this.localStream.getVideoTracks().forEach(track => track.enabled = this.isCameraOn);
-        },
-
         endCall() {
-            console.log('WebRTC: Ending call, sending hangup to', this.remoteUserId);
             this.sendSignal({ type: 'hangup' });
             this.cleanup();
         },
 
         cleanup() {
-            this.stopRingtone();
-            if (this.localStream) {
-                this.localStream.getTracks().forEach(track => track.stop());
-            }
-            if (this.screenStream) {
-                this.screenStream.getTracks().forEach(track => track.stop());
-            }
-            if (this.peerConnection) {
-                this.peerConnection.close();
-            }
+            if (this.localStream) this.localStream.getTracks().forEach(t => t.stop());
+            Object.values(this.peers).forEach(p => p.pc.close());
+            this.peers = {};
             this.isActive = false;
-            this.isConnected = false;
-            this.isIncoming = false;
-            this.hasAccepted = false;
-            this.didIInitiate = false;
-            this.isRemoteAccepted = false;
-            this.localStream = null;
-            this.screenStream = null;
-            this.isSharingScreen = false;
-            this.peerConnection = null;
-            this.pendingCandidates = [];
-        },
-
-        async flushPendingCandidates() {
-            if (this.pendingCandidates.length > 0) {
-                console.log(`WebRTC: Flushing ${this.pendingCandidates.length} queued candidates`);
-                for (const cand of this.pendingCandidates) {
-                    try {
-                        await this.peerConnection.addIceCandidate(new RTCIceCandidate(cand));
-                    } catch (e) {
-                        console.error('WebRTC: Error adding queued candidate', e);
-                    }
-                }
-                this.pendingCandidates = [];
-            }
-        },
-
-        playRingtone() {
-            if (!this.ringtoneAudio) {
-                // Using a standard data URI beep or link to a file if available
-                this.ringtoneAudio = new Audio('https://actions.google.com/sounds/v1/alarms/phone_ringing.ogg');
-                this.ringtoneAudio.loop = true;
-            }
-            this.ringtoneAudio.play().catch(e => console.warn('Autoplay prevented ringtone', e));
-        },
-
-        stopRingtone() {
-            if (this.ringtoneAudio) {
-                this.ringtoneAudio.pause();
-                this.ringtoneAudio.currentTime = 0;
-            }
         }
     }
 };
 </script>
+
+<style scoped>
+.mirror { transform: scaleX(-1); }
+</style>

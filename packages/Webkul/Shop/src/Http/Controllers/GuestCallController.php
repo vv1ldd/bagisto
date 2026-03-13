@@ -29,40 +29,47 @@ class GuestCallController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'caller_name'     => 'required|string|max:255',
-            'caller_email'    => 'required|email',
-            'recipient_email' => 'required|email',
+            'caller_name'      => 'required|string|max:255',
+            'caller_email'     => 'required|email',
+            'recipient_emails' => 'required|array|min:1',
+            'recipient_emails.*' => 'email',
         ]);
 
+        $recipientEmails = array_values(array_unique(request('recipient_emails')));
         $uuid = (string) Str::uuid();
 
         $session = CallSession::create([
             'uuid'            => $uuid,
             'caller_name'     => request('caller_name'),
             'caller_email'    => request('caller_email'),
-            'recipient_email' => request('recipient_email'),
+            'recipient_email' => $recipientEmails[0], // Primary recipient
             'status'          => 'active',
+            'metadata'        => [
+                'all_recipients' => $recipientEmails,
+            ]
         ]);
 
         $callUrl = route('shop.call.index', $uuid);
 
         try {
-            // Send to recipient
-            Mail::to(request('recipient_email'))->queue(new GuestCallInvitation(
-                request('caller_name'),
-                $callUrl . '?email=' . urlencode(request('recipient_email'))
-            ));
+            // Send to all recipients
+            foreach ($recipientEmails as $email) {
+                Mail::to($email)->queue(new GuestCallInvitation(
+                    request('caller_name'),
+                    $callUrl
+                ));
+            }
 
             // Send to caller as well
             Mail::to(request('caller_email'))->queue(new GuestCallInvitation(
                 'Система Meanly',
-                $callUrl . '?email=' . urlencode(request('caller_email'))
+                $callUrl
             ));
 
-            session()->flash('success', 'Приглашения отправлены! Проверьте почту для входа в звонок.');
+            session()->flash('success', count($recipientEmails) . ' приглашений отправлено!');
         } catch (\Exception $e) {
             report($e);
-            session()->flash('error', 'Не удалось отправить приглашения, но сессия создана: ' . $callUrl);
+            session()->flash('error', 'Не удалось отправить часть приглашений, но сессия создана: ' . $callUrl);
         }
 
         return redirect()->route('shop.call.index', $uuid);
@@ -132,7 +139,7 @@ class GuestCallController extends Controller
             : ($session->caller_name ?? 'Гость');
 
         try {
-            Mail::to($email)->send(new GuestCallInvitation($callerName, $callUrl . '?email=' . urlencode($email)));
+            Mail::to($email)->send(new GuestCallInvitation($callerName, $callUrl));
             
             return response()->json(['message' => 'Приглашение отправлено ' . $email]);
         } catch (\Exception $e) {
