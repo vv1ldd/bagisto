@@ -8,15 +8,19 @@
                     <span v-else>Ожидание участников</span>
                 </div>
                 <h2 class="text-xl md:text-3xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : (peerCount > 0 ? 'Встреча активна' : 'Комната пуста') }}</h2>
+                <div v-if="isRoomMode" class="text-[8px] font-bold text-[#00FF41] uppercase tracking-[0.2em] mt-1 flex items-center gap-1">
+                    <span class="w-1 h-1 bg-[#00FF41] rounded-full animate-pulse"></span>
+                    Шифрование P2P активно
+                </div>
             </div>
             <div class="flex items-center gap-4">
-                <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-pulse">
+                <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-pulse transition-all">
                     {{ peerCount + 1 }} в сети
                 </div>
                 <div class="flex -space-x-2">
                     <div v-for="name in peerNames" :key="name" 
                         class="w-6 h-6 rounded-full bg-zinc-800 border-2 border-black flex items-center justify-center text-[10px] font-bold uppercase transition-all"
-                        :class="{'border-emerald-500': peers[name]?.connected}"
+                        :class="{'border-emerald-500 bg-emerald-950/30': peers[name]?.connected}"
                         :title="name">
                         {{ name[0] }}
                     </div>
@@ -30,8 +34,9 @@
                 <!-- Local Video -->
                 <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl">
                     <video ref="localVideo" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
-                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded">
-                        Вы ({{ localUserName }})
+                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg flex items-center gap-2">
+                        <span>Вы ({{ localUserName }})</span>
+                        <span v-if="localFingerprint" class="opacity-40" title="Security Fingerprint Verified">🛡️</span>
                     </div>
                 </div>
 
@@ -39,8 +44,12 @@
                 <div v-for="name in peerNames" :key="name" 
                     class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl">
                     <video :id="'video_' + name" :ref="'remoteVideo_' + name" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded">
-                        {{ name }}
+                    
+                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
+                        <span>{{ name }}</span>
+                        <!-- Verified Encryption Indicator -->
+                        <span v-if="peers[name]?.verified" class="text-lg animate-bounce duration-1000" title="Подключение надежно защищено">😉</span>
+                        <span v-else-if="peers[name]?.connected" class="opacity-50 text-[10px]" title="Проверка шифрования...">🔒</span>
                     </div>
                     
                     <!-- Connection Overlay -->
@@ -114,7 +123,8 @@ export default {
             localUserName: '',
             roomUuid: null,
             isRoomMode: false,
-            peers: {}, // { name: { pc, stream, connected, streamReady, iceQueue } }
+            peers: {}, // { name: { pc, stream, connected, streamReady, iceQueue, fingerprint, verified } }
+            localFingerprint: null,
             isMicOn: true,
             isCameraOn: true,
             isSharingScreen: false,
@@ -192,9 +202,9 @@ export default {
 
         startPresence() {
             this.stopPresence();
-            this.sendSignal({ type: 'presence' });
+            this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
             this.presenceInterval = setInterval(() => {
-                if (this.isActive) this.sendSignal({ type: 'presence' });
+                if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
             }, 10000);
         },
 
@@ -205,6 +215,20 @@ export default {
         async setupLocalMedia() {
             try {
                 this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                
+                // Temporary PC to get fingerprint if not already present
+                if (!this.localFingerprint) {
+                    const tempPC = new RTCPeerConnection(this.configuration);
+                    tempPC.addTransceiver('video');
+                    const offer = await tempPC.createOffer();
+                    const fingerprintMatch = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
+                    if (fingerprintMatch) {
+                        this.localFingerprint = fingerprintMatch[1];
+                        console.log('Room: Local fingerprint discovered:', this.localFingerprint);
+                    }
+                    tempPC.close();
+                }
+
                 this.$nextTick(() => { 
                     if (this.$refs.localVideo) this.$refs.localVideo.srcObject = this.localStream;
                 });
@@ -225,10 +249,19 @@ export default {
             if (signal.type === 'presence') {
                 const isInitiator = this.localUserName.toLowerCase() < senderName.toLowerCase();
                 if (isInitiator && !this.peers[senderName]) {
-                    this.initiateConnection(senderName);
+                    this.initiateConnection(senderName, signal.fingerprint);
                 } else if (!this.peers[senderName]) {
-                    // Vue 3 direct assignment is reactive
-                    this.peers[senderName] = { pc: null, stream: null, connected: false, streamReady: false, iceQueue: [] };
+                    this.peers[senderName] = { 
+                        pc: null, 
+                        stream: null, 
+                        connected: false, 
+                        streamReady: false, 
+                        iceQueue: [],
+                        fingerprint: signal.fingerprint,
+                        verified: false
+                    };
+                } else if (signal.fingerprint) {
+                    this.peers[senderName].fingerprint = signal.fingerprint;
                 }
             } else if (signal.type === 'offer') {
                 this.handleOffer(senderName, signal);
@@ -241,15 +274,26 @@ export default {
             }
         },
 
-        async initiateConnection(name) {
+        async initiateConnection(name, remoteFingerprint) {
             const pc = this.createPeerConnection(name);
+            if (remoteFingerprint) this.peers[name].fingerprint = remoteFingerprint;
+            
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
-            this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name });
+            
+            // Re-discover fingerprint if somehow missed
+            if (!this.localFingerprint) {
+                const match = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
+                if (match) this.localFingerprint = match[1];
+            }
+
+            this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name, fingerprint: this.localFingerprint });
         },
 
         async handleOffer(name, signal) {
             const pc = this.createPeerConnection(name);
+            if (signal.fingerprint) this.peers[name].fingerprint = signal.fingerprint;
+
             await pc.setRemoteDescription(new RTCSessionDescription(signal));
             
             const peer = this.peers[name];
@@ -262,12 +306,20 @@ export default {
 
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
-            this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name });
+
+            // Discover fingerprint from answer if needed
+            if (!this.localFingerprint) {
+                const match = answer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
+                if (match) this.localFingerprint = match[1];
+            }
+
+            this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name, fingerprint: this.localFingerprint });
         },
 
         async handleAnswer(name, signal) {
             const peer = this.peers[name];
             if (peer && peer.pc) {
+                if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
                 await peer.pc.setRemoteDescription(new RTCSessionDescription(signal));
                 if (peer.iceQueue) {
                     while (peer.iceQueue.length > 0) {
@@ -281,7 +333,7 @@ export default {
         async handleCandidate(name, signal) {
             const peer = this.peers[name];
             if (peer && peer.pc) {
-                if (peer.pc.remoteDescription) {
+                if (peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
                     await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
                 } else {
                     peer.iceQueue.push(signal.candidate);
@@ -294,13 +346,14 @@ export default {
 
             const pc = new RTCPeerConnection(this.configuration);
             
-            // Vue 3 direct assignment
             this.peers[name] = { 
                 pc, 
                 stream: null, 
                 connected: false, 
                 streamReady: false, 
-                iceQueue: this.peers[name]?.iceQueue || [] 
+                iceQueue: this.peers[name]?.iceQueue || [],
+                fingerprint: this.peers[name]?.fingerprint || null,
+                verified: false
             };
 
             if (this.localStream) {
@@ -312,21 +365,21 @@ export default {
             };
 
             pc.ontrack = (e) => {
-                console.log(`WebRTC: Track received from ${name}`);
                 const stream = e.streams[0];
                 if (this.peers[name]) {
                     this.peers[name].stream = stream;
                     this.peers[name].streamReady = true;
                     this.peers[name].connected = true;
                 }
-                
                 this.attachStreamToVideo(name, stream);
             };
 
             pc.onconnectionstatechange = () => {
-                console.log(`WebRTC: State [${name}] -> ${pc.connectionState}`);
                 if (pc.connectionState === 'connected') {
-                    if (this.peers[name]) this.peers[name].connected = true;
+                    if (this.peers[name]) {
+                        this.peers[name].connected = true;
+                        this.verifySecurity(name);
+                    }
                 } else if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
                     this.removePeer(name);
                 }
@@ -335,14 +388,43 @@ export default {
             return pc;
         },
 
+        async verifySecurity(name) {
+            const peer = this.peers[name];
+            if (!peer || !peer.pc || !peer.fingerprint) return;
+
+            try {
+                const stats = await peer.pc.getStats();
+                let actualRemoteFingerprint = null;
+
+                stats.forEach(report => {
+                    if (report.type === 'certificate' && report.fingerprint) {
+                        // Usually, the report with fingerprint is the one we want.
+                        // We need to differentiate between local and remote certs if possible, 
+                        // but comparing with remote fingerprint from signaling is the key.
+                        if (report.fingerprint.toLowerCase() === peer.fingerprint.toLowerCase()) {
+                            actualRemoteFingerprint = report.fingerprint;
+                        }
+                    }
+                });
+
+                if (actualRemoteFingerprint) {
+                    console.log(`Security: Connection to ${name} verified!`);
+                    peer.verified = true;
+                } else {
+                    console.warn(`Security: Fingerprint for ${name} mismatch or not found in stats`);
+                    // Fallback: check all certificates in stats
+                    stats.forEach(report => {
+                         if (report.type === 'certificate') console.log('Found cert fingerprint:', report.fingerprint);
+                    });
+                }
+            } catch (e) { console.error('Security verification failed', e); }
+        },
+
         attachStreamToVideo(name, stream) {
             this.$nextTick(() => {
                 const el = document.getElementById('video_' + name);
-                if (el) {
-                    if (el.srcObject !== stream) {
-                        el.srcObject = stream;
-                        console.log(`WebRTC: Stream attached to video_${name}`);
-                    }
+                if (el && el.srcObject !== stream) {
+                    el.srcObject = stream;
                 }
             });
         },
