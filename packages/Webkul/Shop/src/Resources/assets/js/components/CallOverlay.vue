@@ -1,7 +1,9 @@
 <template>
-    <div v-if="isActive" class="fixed inset-0 z-[10000] bg-black text-white p-4 md:p-8 flex flex-col justify-between font-sans overflow-hidden">
+    <div v-if="isActive" 
+         :class="[isFullscreen ? 'p-0' : 'p-4 md:p-8']"
+         class="fixed inset-0 z-[10000] bg-black text-white flex flex-col justify-between font-sans overflow-hidden transition-all duration-300">
         <!-- Header -->
-        <div class="flex justify-between items-center border-b border-white/20 pb-4 relative z-50">
+        <div v-if="!isFullscreen" class="flex justify-between items-center border-b border-white/20 pb-4 relative z-50">
             <div>
                 <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1 flex items-center gap-2">
                     <span v-if="peerCount === 1">Видеозвонок</span>
@@ -34,7 +36,8 @@
         </div>
 
         <!-- Video Grid Area -->
-        <div class="flex-grow relative my-4 overflow-hidden rounded-3xl bg-zinc-950">
+        <div :class="[isFullscreen ? 'm-0 rounded-none' : 'my-4 rounded-3xl']" 
+             class="flex-grow relative overflow-hidden bg-zinc-950 transition-all duration-300">
             
             <!-- 1-on-1 Mode: Cinema Layout with Swap Button -->
             <div v-if="peerCount === 1" class="relative w-full h-full overflow-hidden">
@@ -158,7 +161,7 @@
         </div>
 
         <!-- Controls -->
-        <div class="relative z-50 flex justify-center gap-4 py-4 mt-auto">
+        <div v-if="!isFullscreen" class="relative z-50 flex justify-center gap-4 py-4 mt-auto">
              <div class="flex justify-center gap-3 md:gap-6 pb-4 bg-black/60 backdrop-blur-2xl px-6 md:px-12 py-4 md:py-6 rounded-full border border-white/10 mx-auto w-max shadow-2xl">
                 <button @click="toggleMic" :class="[isMicOn ? 'bg-white text-black' : 'bg-red-500/20 text-red-500 border-red-500/40']"
                     class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:scale-105 transition-all flex items-center justify-center border border-white/10 group">
@@ -284,6 +287,8 @@ export default {
             }
         });
 
+        document.addEventListener('fullscreenchange', this.handleFullscreenChange);
+
         const laravel = window.Laravel || {};
         if (laravel.turnUrl) {
             this.configuration.iceServers.unshift({
@@ -299,6 +304,7 @@ export default {
 
     beforeUnmount() {
         this.stopPresence();
+        document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
         if (this.retryInterval) clearInterval(this.retryInterval);
         if (this.cleanupInterval) clearInterval(this.cleanupInterval);
     },
@@ -366,6 +372,10 @@ export default {
             this.zoomLevel = 1;
             this.panX = 0;
             this.panY = 0;
+        },
+
+        handleFullscreenChange() {
+            this.isFullscreen = !!document.fullscreenElement;
         },
 
         toggleFullscreen() {
