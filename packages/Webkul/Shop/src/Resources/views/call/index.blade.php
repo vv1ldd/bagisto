@@ -13,7 +13,7 @@
                 <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">Meanly P2P Encryption</p>
             </div>
 
-            <div id="guest-entry" class="bg-zinc-900 border border-white/5 p-8 shadow-2xl">
+            <div id="guest-entry" class="relative bg-zinc-900 border border-white/5 p-8 shadow-2xl">
                 <p class="text-[13px] text-zinc-400 mb-8 leading-relaxed">
                     Вы вошли в защищенную комнату звонка. 
                     Нажмите кнопку ниже, чтобы начать сеанс.
