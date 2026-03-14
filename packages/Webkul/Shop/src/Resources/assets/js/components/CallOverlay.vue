@@ -792,14 +792,14 @@ export default {
                 if (!this.isActive) return;
                 this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                 ticks++;
-                if (ticks > 15) {
+                if (ticks > 10) { // Slow down earlier to reduce server load
                     this.stopPresence();
                     console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 10s`);
                     this.presenceInterval = setInterval(() => {
                         if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                     }, 10000);
                 }
-            }, 2000); 
+            }, 4000); // 4s instead of 2s
         },
 
         stopPresence() {
@@ -839,7 +839,12 @@ export default {
         },
 
         async setupLocalMedia() {
-            // 1. Generate local fingerprint ASYNC - don't block rest of setup
+            if (this.localStream && this.localStream.active) {
+                console.log('Room: Local stream already active, skipping setup');
+                return;
+            }
+
+            // Generate fingerprint in background
             this.generateLocalFingerprint();
 
             try {
@@ -990,7 +995,12 @@ export default {
         },
 
         normalizeSDP(sdp) {
-            if (!sdp || typeof sdp !== 'string' || sdp.trim().length < 10) return null;
+            if (!sdp || typeof sdp !== 'string') return null;
+            const trimmed = sdp.trim();
+            if (trimmed.length < 10 || !trimmed.startsWith('v=0')) {
+                console.warn('WebRTC: Invalid SDP detected (missing v=0 or too short)');
+                return null;
+            }
             return sdp;
         },
 
@@ -1443,7 +1453,10 @@ export default {
 
         async sendSignal(signalData, attempt = 1) {
             if (!this.isActive || !this.sessionUniqueId) return;
-            if (!signalData.sender_session_id) signalData.sender_session_id = this.sessionUniqueId;
+            
+            // Add identifying metadata
+            signalData.sender_hash = this.localHash;
+            signalData.sender_session_id = this.sessionUniqueId;
 
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             // Ensure endpoint selection is robust: if roomUuid exists, we are likely in room/guest mode
