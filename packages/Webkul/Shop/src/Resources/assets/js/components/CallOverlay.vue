@@ -44,9 +44,9 @@
 
                 <!-- Floating Name Badge (1-on-1) -->
                 <div v-if="peers[peerIds[0]]?.connected" 
-                     class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-white/10 z-20 transition-all duration-500"
+                     class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 border-b-4 border-b-[#7C45F5]/50 z-20 transition-all duration-500 rounded-sm"
                      :class="{'opacity-0 translate-y-10': !controlsVisible}">
-                    <div class="text-[10px] font-black uppercase tracking-widest text-white/80">
+                    <div class="text-xs md:text-sm font-black uppercase italic tracking-tighter text-white">
                         {{ isFocusedOnSelf ? cleanLocalName : cleanPeerName(peers[peerIds[0]].name) }}
                     </div>
                 </div>
@@ -86,8 +86,10 @@
                            :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                            :style="isFocusedOnSelf ? zoomStyle : {}"
                            class="w-full h-full transition-all duration-700"></video>
-                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg text-white/60">
-                        {{ cleanLocalName }}
+                    <div class="absolute bottom-3 left-3 bg-black/40 backdrop-blur-xl px-3 py-1.5 border border-white/10 border-b-4 border-b-[#7C45F5]/50 z-10 rounded-sm">
+                        <div class="text-[10px] md:text-xs font-black uppercase italic tracking-tighter text-white">
+                            {{ cleanLocalName }}
+                        </div>
                     </div>
 
                 </div>
@@ -96,8 +98,10 @@
                     <video :id="'video_' + id" autoplay playsinline 
                            :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
                            class="w-full h-full transition-all duration-700"></video>
-                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg text-white/60">
-                        {{ cleanPeerName(peers[id].name) }}
+                    <div class="absolute bottom-3 left-3 bg-black/40 backdrop-blur-xl px-3 py-1.5 border border-white/10 border-b-4 border-b-[#7C45F5]/50 z-10 rounded-sm">
+                        <div class="text-[10px] md:text-xs font-black uppercase italic tracking-tighter text-white">
+                            {{ cleanPeerName(peers[id].name) }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -134,9 +138,9 @@
             
 
             <!-- Top Right Toolbar (Consolidated) -->
-            <div class="absolute top-6 right-6 flex items-center justify-end pointer-events-none z-[100]">
+            <div class="absolute top-8 right-8 flex items-center justify-end pointer-events-none z-[100]">
                 <div :class="{'opacity-0 -translate-y-10': !controlsVisible}"
-                     class="flex items-center gap-2 md:gap-3 p-2.5 bg-black/40 backdrop-blur-3xl rounded-[32px] border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
+                     class="flex items-center gap-2 md:gap-3 p-2.5 bg-black/40 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
                     <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-500/20 text-red-500 border-red-500/40']"
                         class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
@@ -153,16 +157,19 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                     </button>
 
-                    <button v-if="isMobile" @click.stop="toggleCameraFacing" 
-                            class="h-11 w-11 rounded-2xl bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                    </button>
-
                     <button @click.stop="endCall" 
                         class="h-11 w-11 rounded-2xl bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-600/30 hover:scale-105 active:scale-95">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
+            </div>
+
+            <!-- Mobile Swap Button (Bottom Left) -->
+            <div v-if="isMobile" class="absolute bottom-8 left-8 z-50 pointer-events-none">
+                <button @click.stop="toggleCameraFacing" :class="{'opacity-0 translate-y-10': !controlsVisible}"
+                        class="h-12 w-12 rounded-2xl bg-black/40 backdrop-blur-3xl border border-white/10 text-white flex items-center justify-center transition-all duration-700 pointer-events-auto hover:scale-105 active:scale-95 shadow-2xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                </button>
             </div>
         </div>
     </div>
@@ -334,8 +341,9 @@ export default {
     methods: {
         cleanPeerName(name) {
             if (!name) return '';
-            // Strip technical parts like hashtags, brackets or long hex-like strings at the end
-            return name.replace(/\s*[\[\(\#].*$/, '').trim();
+            // Strip everything after first non-word/space/dash character if it looks like technical garbage
+            // Or just strip common delimiters and technical ID suffixes
+            return name.split(/[\s[\]#()\-_{}]/)[0].trim() || 'Участник';
         },
         // Pinch-to-Zoom Handlers
         handleTouchStart(e, isLocalGrid = false) {
