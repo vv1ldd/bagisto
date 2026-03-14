@@ -47,13 +47,10 @@
                      class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
                      :class="{'opacity-0 -translate-y-10': !controlsVisible}">
                     <div class="flex items-center gap-3 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl">
-                        <!-- Red Exit Button replacing Avatar -->
-                        <button @click.stop="endCall" 
-                                class="flex h-10 w-10 items-center justify-center bg-red-600 text-white font-black shadow-lg shadow-red-600/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                        <!-- Peer Initial Badge (Restored) -->
+                        <div class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl">
+                            {{ getLetter(peers[peerIds[0]].name) }}
+                        </div>
                         
                         <div class="flex flex-col gap-0.5">
                             <span class="text-[12px] font-black uppercase italic tracking-tighter text-white/90 leading-tight">
@@ -212,6 +209,14 @@
                     <button v-if="isMobile" @click.stop="toggleCameraFacing"
                         class="h-11 w-11 rounded-2xl bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    </button>
+
+                    <!-- End Call Button (New in Toolbar) -->
+                    <button @click.stop="endCall" 
+                            class="h-11 w-11 rounded-2xl bg-red-600 text-white shadow-lg shadow-red-600/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
             </div>
