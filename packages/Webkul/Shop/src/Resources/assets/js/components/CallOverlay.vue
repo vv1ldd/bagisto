@@ -1077,25 +1077,94 @@ export default {
         },
 
         createPeerConnection(id, name = null) {
+            // If exists and not closed, reuse
             if (this.peers[id]?.pc && this.peers[id].pc.connectionState !== 'closed') {
                 return this.peers[id].pc;
             }
 
+            console.log(`WebRTC: Creating new PeerConnection for ${id}`);
             const pc = new RTCPeerConnection(this.configuration);
             
+            // Initialization: Ensure all reactive properties exist from the start
             if (!this.peers[id]) {
                 this.peers = {
                     ...this.peers,
                     [id]: { 
                         name: name || id,
                         pc, stream: null, connected: false, streamReady: false, 
-                        iceQueue: [], fingerprint: null, verified: false, lastSeen: Date.now()
+                        iceQueue: [], fingerprint: null, verified: false, 
+                        lastSeen: Date.now(),
+                        makingOffer: false, ignoreOffer: false, watchdog: null
                     }
                 };
             } else {
-                this.peers[id].pc = pc;
+                // Update existing peer object with new PC and reset states
+                const p = this.peers[id];
+                p.pc = pc;
+                p.connected = false;
+                p.streamReady = false;
+                p.iceQueue = [];
+                p.makingOffer = false;
+                p.ignoreOffer = false;
+                if (p.watchdog) clearTimeout(p.watchdog);
+                p.watchdog = null;
             }
 
+            // CRITICAL: Assignment of handlers BEFORE adding tracks
+            pc.onnegotiationneeded = async () => {
+                const peer = this.peers[id];
+                if (!peer || peer.ignoreOffer) return;
+                
+                try {
+                    console.log(`WebRTC: onnegotiationneeded for ${id}`);
+                    peer.makingOffer = true;
+                    const offer = await pc.createOffer();
+                    if (pc.signalingState !== 'stable') return;
+                    
+                    const cleanSdp = this.normalizeSDP(offer.sdp);
+                    await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
+                    this.sendSignal({ type: 'offer', sdp: cleanSdp, target: id, fingerprint: this.localFingerprint });
+                } catch (err) {
+                    console.warn(`WebRTC: onnegotiationneeded failed for ${id}`, err);
+                } finally {
+                    if (this.peers[id]) this.peers[id].makingOffer = false;
+                }
+            };
+
+            pc.onicecandidate = (e) => {
+                if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: id });
+            };
+
+            pc.ontrack = (e) => {
+                console.log(`WebRTC: Received remote track from ${id}`, e.track.kind);
+                if (e.streams && e.streams[0]) {
+                    this.peers[id].stream = e.streams[0];
+                    this.peers[id].streamReady = true;
+                    this.rebindVideos();
+                }
+            };
+
+            pc.onconnectionstatechange = () => {
+                const state = pc.connectionState;
+                console.log(`WebRTC: Connection state for ${id} -> ${state}`);
+                
+                if (state === 'connected' || state === 'completed') {
+                    this.updatePeerConnectedState(id, 'connected');
+                } else if (state === 'failed' || state === 'disconnected') {
+                    this.startConnectionWatchdog(id);
+                }
+            };
+
+            pc.oniceconnectionstatechange = () => {
+                const state = pc.iceConnectionState;
+                console.log(`WebRTC: ICE state for ${id} -> ${state}`);
+                this.updatePeerConnectedState(id, state);
+                if (state === 'failed' || state === 'disconnected') {
+                    this.startConnectionWatchdog(id);
+                }
+            };
+
+            // Now add tracks - this will trigger onnegotiationneeded (correctly assigned above)
             if (this.localStream) {
                 this.localStream.getTracks().forEach(t => {
                     let trackToUse = t;
@@ -1106,72 +1175,19 @@ export default {
                 });
             }
 
-            pc.onnegotiationneeded = async () => {
-                if (this.peers[id].ignoreOffer) return; // Don't initiate if we should be ignoring
-                
-                try {
-                    console.log(`WebRTC: Negotiation needed for ${id}`);
-                    this.peers[id].makingOffer = true;
-                    const offer = await pc.createOffer();
-                    if (pc.signalingState !== 'stable') return; // State changed, abort
-                    
-                    const cleanSdp = this.normalizeSDP(offer.sdp);
-                    await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
-                    this.sendSignal({ type: 'offer', sdp: cleanSdp, target: id, fingerprint: this.localFingerprint });
-                } catch (err) {
-                    console.warn(`WebRTC: onnegotiationneeded failed for ${id}`, err);
-                } finally {
-                    this.peers[id].makingOffer = false;
-                }
-            };
-
-            // Negotiation Poke: Force trigger if browser doesn't do it automatically within 2s
+            // Negotiation Poke: Fallback for browsers that don't trigger negotiation automatically
             setTimeout(() => {
                 const peer = this.peers[id];
                 if (peer && peer.pc && peer.pc.signalingState === 'stable' && !peer.connected) {
                     const isInitiator = this.sessionUniqueId < id;
                     if (isInitiator) {
-                        console.log(`WebRTC: Poke! Manually triggering negotiation for ${id}`);
-                        pc.onnegotiationneeded();
+                        console.log(`WebRTC: Poke! Triggering negotiation fallback for ${id}`);
+                        pc.dispatchEvent(new Event('negotiationneeded'));
                     }
                 }
-            }, 2000);
+            }, 3000);
 
-            pc.onicecandidate = (e) => {
-                if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: id });
-            };
-
-            pc.ontrack = (e) => {
-                const stream = e.streams[0];
-                if (this.peers[id]) {
-                    this.peers[id].stream = stream;
-                    this.peers[id].streamReady = true;
-                    this.peers[id].connected = true;
-                }
-                this.$nextTick(() => this.rebindVideos());
-            };
-
-            pc.onconnectionstatechange = () => {
-                const state = pc.connectionState;
-                console.log(`Room: Peer ${id} connection state: ${state}`);
-                this.updatePeerConnectedState(id, state);
-
-                if (state === 'failed') {
-                    console.log(`WebRTC: Connection failed for ${id}. Retrying in 2s...`);
-                    setTimeout(() => {
-                        if (this.peers[id] && pc.connectionState === 'failed') {
-                            pc.restartIce();
-                        }
-                    }, 2000);
-                }
-            };
-
-            pc.oniceconnectionstatechange = () => {
-                const state = pc.iceConnectionState;
-                console.log(`Room: Peer ${id} ICE connection state: ${state}`);
-                this.updatePeerConnectedState(id, state);
-            };
-
+            this.startConnectionWatchdog(id);
             return pc;
         },
 
