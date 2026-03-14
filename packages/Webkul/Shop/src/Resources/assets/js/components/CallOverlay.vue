@@ -42,23 +42,28 @@
                     </template>
                 </div>
 
-                <!-- New Shapik Style Badge (Top Left) -->
+                <!-- Unified Identity + End Call Badge (Top Left) -->
                 <div v-if="peers[peerIds[0]]?.connected" 
-                     class="absolute top-8 left-8 flex items-center gap-2.5 z-[100] transition-all duration-700 pointer-events-auto"
+                     class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
                      :class="{'opacity-0 -translate-y-10': !controlsVisible}">
-                    <div class="flex items-center gap-2.5 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl px-3 py-1.5 leading-none rounded-2xl">
-                        <div class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-black shadow-sm leading-none ring-1 ring-white/10 rounded-xl">
-                            <span class="text-[10px] uppercase">
-                                {{ getLetter(peers[peerIds[0]].name) }}
+                    <div class="flex items-center gap-3 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl">
+                        <!-- Red Exit Button replacing Avatar -->
+                        <button @click.stop="endCall" 
+                                class="flex h-10 w-10 items-center justify-center bg-red-600 text-white font-black shadow-lg shadow-red-600/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-[12px] font-black uppercase italic tracking-tighter text-white/90 leading-tight">
+                                @{{ cleanPeerName(peers[peerIds[0]].name) }}
                             </span>
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-1 h-1 bg-emerald-400 rounded-full animate-pulse"></div>
+                                <span class="text-[7px] font-black uppercase tracking-[0.2em] text-white/30">В эфире</span>
+                            </div>
                         </div>
-                        <span class="text-[10px] font-black uppercase italic tracking-tighter text-white/90">
-                            @{{ cleanPeerName(peers[peerIds[0]].name) }}
-                        </span>
-                        <!-- Signaling Pulse -->
-                        <div v-if="lastSignalReceivedAt" 
-                             :key="lastSignalReceivedAt"
-                             class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping ml-1 opacity-75"></div>
                     </div>
                 </div>
 
@@ -211,13 +216,6 @@
                 </div>
             </div>
 
-            <!-- Top Right: End Call (X) button -->
-            <div class="absolute top-8 right-8 z-[100] pointer-events-none">
-                <button @click.stop="endCall" :class="{'opacity-0 -translate-y-10': !controlsVisible}"
-                    class="h-12 w-12 rounded-2xl bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-600/30 transition-all duration-700 pointer-events-auto hover:scale-110 active:scale-90">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            </div>
         </div>
     </div>
 </template>
