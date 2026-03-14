@@ -42,9 +42,9 @@
                     </template>
                 </div>
 
-                <!-- New Shapik Style Badge (Top Right) -->
+                <!-- New Shapik Style Badge (Top Left) -->
                 <div v-if="peers[peerIds[0]]?.connected" 
-                     class="absolute top-8 right-8 flex items-center gap-2.5 z-[100] transition-all duration-700 pointer-events-auto"
+                     class="absolute top-8 left-8 flex items-center gap-2.5 z-[100] transition-all duration-700 pointer-events-auto"
                      :class="{'opacity-0 -translate-y-10': !controlsVisible}">
                     <div class="flex items-center gap-2.5 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl px-3 py-1.5 leading-none rounded-2xl">
                         <div class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-black shadow-sm leading-none ring-1 ring-white/10 rounded-xl">
@@ -176,10 +176,10 @@
         <div class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 md:p-8 landscape:flex-row landscape:justify-between items-stretch">
             
 
-            <!-- Vertical Control Bar (Bottom Right) -->
-            <div class="absolute bottom-8 right-8 flex flex-col items-center gap-3 z-[100] pointer-events-none">
+            <!-- Horizontal Control Bar (Bottom Center) -->
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center z-[100] pointer-events-none">
                 <div :class="{'opacity-0 translate-y-10': !controlsVisible}"
-                     class="flex flex-col items-center gap-2.5 p-2 bg-black/40 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
+                     class="flex items-center gap-2.5 p-2.5 bg-black/40 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
                     <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-500/20 text-red-500 border-red-500/40']"
                         class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
@@ -204,10 +204,10 @@
                 </div>
             </div>
 
-            <!-- Top Left: End Call (X) button -->
-            <div class="absolute top-8 left-8 z-[100] pointer-events-none">
+            <!-- Top Right: End Call (X) button -->
+            <div class="absolute top-8 right-8 z-[100] pointer-events-none">
                 <button @click.stop="endCall" :class="{'opacity-0 -translate-y-10': !controlsVisible}"
-                    class="h-12 w-12 rounded-2xl bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-600/30 transition-all duration-700 pointer-events-auto hover:scale-105 active:scale-95">
+                    class="h-12 w-12 rounded-2xl bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-600/30 transition-all duration-700 pointer-events-auto hover:scale-110 active:scale-90">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
