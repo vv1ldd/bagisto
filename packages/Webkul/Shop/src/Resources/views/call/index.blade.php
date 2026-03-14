@@ -13,38 +13,9 @@
                 <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">Meanly P2P Encryption</p>
             </div>
 
-            <div id="guest-entry" class="relative bg-zinc-900 border border-white/5 p-8 shadow-2xl">
-                <p class="text-[13px] text-zinc-400 mb-8 leading-relaxed">
-                    Вы вошли в защищенную комнату звонка. 
-                    Нажмите кнопку ниже, чтобы начать сеанс.
-                </p>
-
-                @php
-                    $guestEmail = request()->get('email', 'Гость');
-                    $participantHash = request()->get('h');
-                    
-                    if (auth()->guard('customer')->check()) {
-                        $customer = auth()->guard('customer')->user();
-                        $baseName = $customer->username ?? $customer->first_name;
-                        // If hash is missing (e.g. following old link), generate one from email
-                        $participantHash = $participantHash ?? md5($customer->email . $session->uuid);
-                    } else {
-                        $baseName = $guestEmail;
-                    }
-                @endphp
-
-                <v-room-joiner 
-                    uuid="{{ $session->uuid }}" 
-                    user-name-initial="{{ $baseName }}"
-                    participant-hash="{{ $participantHash }}"
-                >
-                    <div class="space-y-4">
-                        <button class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-sm shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98]">
-                            Войти в чат
-                        </button>
-                    </div>
-                </v-room-joiner>
-                
+            <!-- Hidden Preparation Logic (Triggers Overlay) -->
+            <div id="guest-entry" class="hidden">
+                 <!-- RoomJoiner removed as requested -->
             </div>
 
             <div id="call-active-notice" class="hidden">
@@ -70,12 +41,35 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // UI transition on join
+                // Prepare room data
+                @php
+                    $guestEmail = request()->get('email', 'Гость');
+                    $participantHash = request()->get('h');
+                    
+                    if (auth()->guard('customer')->check()) {
+                        $customer = auth()->guard('customer')->user();
+                        $baseName = $customer->username ?? $customer->first_name;
+                        $participantHash = $participantHash ?? md5($customer->email . $session->uuid);
+                    } else {
+                        $baseName = $guestEmail;
+                    }
+                @endphp
+
+                const roomData = {
+                    uuid: "{{ $session->uuid }}",
+                    userName: "{{ $baseName }}",
+                    hash: "{{ $participantHash }}"
+                };
+
+                // Trigger overlay immediately
                 if (window.$emitter) {
+                    // Slight delay to ensure CallOverlay is mounted and listening
+                    setTimeout(() => {
+                        window.$emitter.emit('join-room', roomData);
+                    }, 500);
+
                     window.$emitter.on('join-room', function() {
-                        const entry = document.getElementById('guest-entry');
                         const notice = document.getElementById('call-active-notice');
-                        if (entry) entry.classList.add('hidden');
                         if (notice) notice.classList.remove('hidden');
                     });
                 }

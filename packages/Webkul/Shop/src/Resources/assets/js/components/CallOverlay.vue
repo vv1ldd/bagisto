@@ -174,6 +174,48 @@
             </div>
         </div>
 
+        <!-- Lobby Layer (Shown before joining) -->
+        <div v-if="isActive && !isJoined" class="absolute inset-0 z-[20000] flex flex-col items-center justify-center p-6">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-3xl"></div>
+            
+            <!-- Local Preview in background of lobby -->
+            <video ref="localVideoLobby" autoplay muted playsinline 
+                   class="absolute inset-0 w-full h-full object-cover opacity-30 mirror transition-opacity duration-1000"></video>
+
+            <div class="relative z-10 w-full max-w-sm animate-fade-in-up">
+                <div class="text-center mb-10">
+                    <div class="w-16 h-16 bg-[#7C45F5] flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-[#7C45F5]/30 rounded-2xl">
+                        <span class="text-3xl">🛡️</span>
+                    </div>
+                    <h2 class="text-2xl font-black uppercase tracking-tighter mb-2 italic">Secured Lobby</h2>
+                    <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">Подготовьтесь к звонку</p>
+                </div>
+
+                <div class="bg-zinc-900/50 border border-white/10 p-8 rounded-[2.5rem] backdrop-blur-xl shadow-2xl">
+                    <!-- Name Input for Guests -->
+                    <div v-if="isGuest" class="mb-6">
+                        <label class="block text-[8px] uppercase tracking-[0.3em] text-zinc-500 mb-2 font-black pl-2">Ваше имя для участия</label>
+                        <input 
+                            type="text" 
+                            v-model="lobbyName" 
+                            placeholder="Напр. Алексей"
+                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-600"
+                            @keyup.enter="confirmJoin"
+                        >
+                    </div>
+
+                    <button @click="confirmJoin" 
+                        class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-sm shadow-xl shadow-[#7C45F5]/20 hover:bg-[#6b35e4] active:scale-95 transition-all rounded-2xl">
+                        Войти в чат
+                    </button>
+                    
+                    <button @click="isActive = false" class="w-full mt-4 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors">
+                        Отмена
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Interface Layer (Overlay) -->
         <div class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 md:p-8 landscape:flex-row landscape:justify-between items-stretch">
             
@@ -255,6 +297,8 @@ export default {
             retryInterval: null,
             interactionTimeout: null,
             isInteracting: false,
+            isJoined: false,
+            lobbyName: '',
             inactivityTimer: null,
             luminanceInterval: null,
             luminanceCooldown: 0,
@@ -323,6 +367,9 @@ export default {
         },
         isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        },
+        isGuest() {
+            return !this.localUserName || this.localUserName === 'Гость';
         },
         cleanLocalName() {
             return this.cleanPeerName(this.localUserName);
@@ -768,30 +815,49 @@ export default {
         },
 
         async joinRoom(uuid, userName, hash) {
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Joining room ${uuid} as ${userName} (Hash: ${hash})`);
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Preparing room ${uuid} as ${userName} (Hash: ${hash})`);
             this.roomUuid = uuid;
             this.localUserName = userName;
             this.localHash = hash || userName; 
+            this.lobbyName = userName !== 'Гость' ? userName : '';
             this.isRoomMode = true;
             this.isActive = true;
+            this.isJoined = false;
 
-            // Start signaling and media in parallel to avoid blocking connection on permission prompt
+            // Start media immediately for preview in lobby
             await this.setupLocalMedia(); 
+            
+            this.$nextTick(() => {
+                if (this.$refs.localVideoLobby) {
+                    this.$refs.localVideoLobby.srcObject = this.localStream;
+                }
+            });
+        },
+
+        confirmJoin() {
+            if (this.isGuest && this.lobbyName.trim()) {
+                this.localUserName = this.lobbyName.trim();
+                this.localHash = this.localUserName;
+            }
+            
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Confirming join as ${this.localUserName}`);
+            
             this.subscribeToChannels();
             this.startPresence();
-            this.lastSignalReceivedAt = Date.now(); // Initialize
+            this.lastSignalReceivedAt = Date.now();
             this.startInactivityTimer();
-            
             
             const customerId = this.$shop?.customer_id;
             if (window.Echo && customerId) {
-                 console.log(`CallOverlay [${this.sessionUniqueId}]: Subscribing to private user.${customerId}`);
                  window.Echo.private(`user.${customerId}`).listen('.call-signal', (data) => this.handleSignal(data));
             }
 
-            // Enter fullscreen by default on join
+            this.isJoined = true;
+
+            // Enter fullscreen and bind videos
             this.$nextTick(() => {
                 this.toggleFullscreen();
+                this.rebindVideos();
             });
         },
 
@@ -1565,5 +1631,24 @@ export default {
 }
 input, textarea {
     user-select: text;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>
