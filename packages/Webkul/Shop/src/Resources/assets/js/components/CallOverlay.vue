@@ -974,7 +974,15 @@ export default {
                     }
                 }
             } else if (['offer', 'answer', 'candidate', 'hangup'].includes(signal.type)) {
-                if (signal.type === 'offer') this.handleOffer(peerKey, senderName, signal);
+                if (signal.type === 'offer') {
+                    // Safety check: if we get an offer but have no PC, create one now
+                    const peer = this.peers[peerKey];
+                    if (peer && (!peer.pc || peer.pc.connectionState === 'closed')) {
+                        console.log(`WebRTC: Received offer for ${senderName} but no PC exists. Creating one...`);
+                        this.createPeerConnection(peerKey, senderName);
+                    }
+                    this.handleOffer(peerKey, senderName, signal);
+                }
                 else if (signal.type === 'answer') this.handleAnswer(peerKey, signal);
                 else if (signal.type === 'candidate') this.handleCandidate(peerKey, signal);
                 else if (signal.type === 'hangup') this.removePeer(peerKey);
@@ -1079,7 +1087,10 @@ export default {
 
         async handleOffer(id, name, signal) {
             const peer = this.peers[id];
-            if (!peer) return;
+            if (!peer || !peer.pc) {
+                console.warn(`WebRTC: handleOffer aborted - peer or pc is null for ${id}`);
+                return;
+            }
 
             const polite = this.sessionUniqueId < id; // Smaller session ID is polite
             
