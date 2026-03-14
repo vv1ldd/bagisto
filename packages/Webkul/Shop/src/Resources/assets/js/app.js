@@ -47,6 +47,15 @@ if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
             enableStats: false,
         });
 
+        // Diagnostic logs for Echo
+        window.Echo.connector.pusher.connection.bind('connected', () => {
+            console.log('Echo STATUS: Connected to signaling server');
+        });
+
+        window.Echo.connector.pusher.connection.bind('unavailable', () => {
+            console.warn('Echo STATUS: Signaling server unavailable');
+        });
+
         window.Echo.connector.pusher.connection.bind('state_change', (states) => {
             console.log('Echo Connection State Change:', states.previous, '->', states.current);
             window.$emitter.emit('echo-state-change', states.current);

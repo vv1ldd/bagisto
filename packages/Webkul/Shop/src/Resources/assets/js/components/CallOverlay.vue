@@ -42,6 +42,22 @@
                     </template>
                 </div>
 
+                <!-- Diagnostics (1-on-1) -->
+                <div v-if="peers[peerIds[0]]?.connected"
+                     class="absolute bottom-6 right-6 z-20 transition-all duration-500"
+                     :class="{'opacity-0 translate-y-10': !controlsVisible}">
+                    <div class="flex items-center gap-2">
+                        <div :class="statusColor" class="w-1.5 h-1.5 rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(0,0,0,0.5)]"></div>
+                        <span class="text-[9px] font-black uppercase tracking-[0.2em] text-white/90 drop-shadow-md">
+                            {{ signalingState === 'connected' ? 'Соединение' : signalingState }}
+                        </span>
+                        <!-- Signaling Pulse -->
+                        <div v-if="lastSignalReceivedAt" 
+                             :key="lastSignalReceivedAt"
+                             class="w-1 h-1 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
+                    </div>
+                </div>
+
                 <!-- Shapik Badge (1-on-1) -->
                 <div v-if="peers[peerIds[0]]?.connected" 
                      class="absolute bottom-6 left-6 flex items-center gap-2 z-20 transition-all duration-500"
@@ -264,7 +280,8 @@ export default {
             zoomCapabilities: null,
             isProximityClose: false,
             lastToggleTime: 0,
-            lastTapTime: 0
+            lastTapTime: 0,
+            lastSignalReceivedAt: null
         };
     },
 
@@ -711,6 +728,7 @@ export default {
             await this.setupLocalMedia(); 
             this.subscribeToChannels();
             this.startPresence();
+            this.lastSignalReceivedAt = Date.now(); // Initialize
             this.startInactivityTimer();
             
             
@@ -728,12 +746,16 @@ export default {
 
         subscribeToChannels() {
             if (window.Echo && this.roomUuid) {
-                console.log(`CallOverlay [${this.sessionUniqueId}]: Subscribing to call.${this.roomUuid}`);
-                window.Echo.channel(`call.${this.roomUuid}`)
+                const channelName = `call.${this.roomUuid}`;
+                console.log(`CallOverlay [${this.sessionUniqueId}]: Subscribing to ${channelName}`);
+                window.Echo.channel(channelName)
                     .stopListening('.call-signal')
                     .listen('.call-signal', (data) => {
                         this.handleSignal(data);
                     });
+                
+                // Debug log for subscription confirmation
+                console.log(`CallOverlay [${this.sessionUniqueId}]: Listening for .call-signal on ${channelName}`);
             }
         },
 
@@ -855,17 +877,23 @@ export default {
             const senderHash = signal.sender_hash || senderName; 
             const senderSessionId = signal.sender_session_id;
 
+            this.lastSignalReceivedAt = Date.now();
+            
             // Filter out self-signals
             if (senderSessionId === this.sessionUniqueId) return;
-            
+
             // If targeted and not for us
             if (signal.target && signal.target !== this.sessionUniqueId) {
-                // Also check if targeted to legacy hash/name only if target is not a session ID
                 const isTargetedToMe = signal.target === this.localHash || signal.target === this.localUserName;
                 if (!isTargetedToMe) return;
             }
 
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Receiving ${signal.type} from ${senderName} (Session: ${senderSessionId})`);
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Incoming signal [${signal.type}] from ${senderName} (Session: ${senderSessionId})`, {
+                target: signal.target,
+                hasSdp: !!signal.sdp,
+                hasCandidate: !!signal.candidate
+            });
+
             const peerKey = senderSessionId;
 
             if (signal.type === 'presence') {
@@ -927,12 +955,8 @@ export default {
         },
 
         normalizeSDP(sdp) {
-            if (!sdp) return '';
-            // Minimalist cleanup only - don't break the structure
-            return sdp.split(/\r?\n/)
-                      .map(line => line.trim())
-                      .filter(line => line.length > 0)
-                      .join('\r\n') + '\r\n';
+            // DEBUG: Neutral pass-through to avoid metadata corruption
+            return sdp;
         },
 
         async toggleCameraFacing() {
@@ -1372,11 +1396,16 @@ export default {
             signalData.sender_hash = this.localHash;
             signalData.sender_session_id = this.sessionUniqueId;
             
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Outgoing signal [${signalData.type}] to ${signalData.target || 'ROOM'}`, {
+                hasSdp: !!signalData.sdp,
+                hasCandidate: !!signalData.candidate
+            });
+
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
             
             axios.post(endpoint, payload).catch((err) => {
-                console.warn(`CallOverlay [${this.sessionUniqueId}]: sendSignal error`, err);
+                console.warn(`CallOverlay [${this.sessionUniqueId}]: sendSignal error [${signalData.type}]`, err);
             });
         },
 
