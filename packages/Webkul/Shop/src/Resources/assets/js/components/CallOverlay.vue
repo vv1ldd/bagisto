@@ -386,7 +386,7 @@ export default {
                 this.initialPanY = this.panY;
             } else if (e.touches.length === 1) {
                 const now = Date.now();
-                if (now - this.lastTapTime < 300) {
+                if (now - this.lastTapTime < 250) {
                     this.toggleFullscreen();
                 }
                 this.lastTapTime = now;
@@ -680,11 +680,17 @@ export default {
             this.startPresence();
             this.startInactivityTimer();
             
+            
             const customerId = this.$shop?.customer_id;
             if (window.Echo && customerId) {
                  console.log(`CallOverlay [${this.sessionUniqueId}]: Subscribing to private user.${customerId}`);
                  window.Echo.private(`user.${customerId}`).listen('.call-signal', (data) => this.handleSignal(data));
             }
+
+            // Enter fullscreen by default on join
+            this.$nextTick(() => {
+                this.toggleFullscreen();
+            });
         },
 
         subscribeToChannels() {
