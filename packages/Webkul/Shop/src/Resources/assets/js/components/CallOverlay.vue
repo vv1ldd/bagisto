@@ -38,20 +38,36 @@
             
             <!-- 1-on-1 Mode: Cinema Layout with Swap Button -->
             <div v-if="peerCount === 1" class="relative w-full h-full overflow-hidden">
-                <!-- Main View -->
-                <div class="absolute inset-0 transition-opacity duration-1000">
+                <!-- Main View Container for Gestures -->
+                <div class="absolute inset-0 transition-opacity duration-1000 flex items-center justify-center overflow-hidden touch-none"
+                     @touchstart="handleTouchStart"
+                     @touchmove="handleTouchMove"
+                     @touchend="handleTouchEnd">
+                    
                     <!-- If focused on Peer -->
                     <template v-if="!isFocusedOnSelf">
-                         <video :id="'video_' + peerIds[0]" autoplay playsinline class="w-full h-full object-cover"></video>
-                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl flex items-center gap-3">
+                         <video :id="'video_' + peerIds[0]" 
+                                autoplay playsinline 
+                                :style="zoomStyle"
+                                class="w-full h-full object-contain pointer-events-none"></video>
+                         
+                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl flex items-center gap-3 z-20">
                             <span class="text-xs font-black uppercase tracking-widest">{{ peers[peerIds[0]].name }}</span>
                             <span v-if="peers[peerIds[0]].verified" class="text-xl" title="Защищено">😉</span>
                          </div>
+
+                         <!-- Zoom Reset Badge -->
+                         <div v-if="zoomLevel > 1" @click="resetZoom" class="absolute top-6 left-6 bg-[#7C45F5] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer animate-bounce z-20">
+                             Zoom: {{ Math.round(zoomLevel * 100) }}% (Tap to Reset)
+                         </div>
                     </template>
+
                     <!-- If focused on Self -->
                     <template v-else>
-                         <video ref="localVideoMain" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
-                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl">
+                         <video ref="localVideoMain" 
+                                autoplay muted playsinline 
+                                class="w-full h-full object-contain mirror"></video>
+                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl z-20">
                             <span class="text-xs font-black uppercase tracking-widest">Вы (Предпросмотр)</span>
                          </div>
                     </template>
@@ -80,8 +96,8 @@
             <!-- Group Mode (split screen) -->
             <div v-else :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
                 <!-- Local Video -->
-                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl">
-                    <video ref="localVideoGrid" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
+                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
+                    <video ref="localVideoGrid" autoplay muted playsinline class="w-full h-full object-contain mirror"></video>
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg flex items-center gap-2">
                         <span>Вы ({{ localUserName }})</span>
                         <span v-if="localFingerprint" class="opacity-40" title="Security Fingerprint Verified">🛡️</span>
@@ -90,8 +106,8 @@
 
                 <!-- Remote Videos -->
                 <div v-for="id in peerIds" :key="id" 
-                    class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl">
-                    <video :id="'video_' + id" autoplay playsinline class="w-full h-full object-cover"></video>
+                    class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
+                    <video :id="'video_' + id" autoplay playsinline class="w-full h-full object-contain"></video>
                     
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
                         <span>{{ peers[id]?.name }}</span>
@@ -194,7 +210,17 @@ export default {
             },
             presenceInterval: null,
             cleanupInterval: null,
-            retryInterval: null
+            retryInterval: null,
+
+            // Gesture State
+            zoomLevel: 1,
+            panX: 0,
+            panY: 0,
+            initialDist: 0,
+            initialZoom: 1,
+            initialPanX: 0,
+            initialPanY: 0,
+            initialCenter: { x: 0, y: 0 }
         };
     },
 
@@ -220,14 +246,22 @@ export default {
                 case 'failed': return 'bg-red-500';
                 default: return 'bg-zinc-500';
             }
+        },
+        zoomStyle() {
+            return {
+                transform: `scale(${this.zoomLevel}) translate(${this.panX / this.zoomLevel}px, ${this.panY / this.zoomLevel}px)`,
+                transition: this.initialDist === 0 ? 'transform 0.1s ease-out' : 'none'
+            };
         }
     },
 
     watch: {
         isFocusedOnSelf() {
+            this.resetZoom();
             this.$nextTick(() => this.rebindVideos());
         },
         peerCount() {
+            this.resetZoom();
             this.$nextTick(() => this.rebindVideos());
         }
     },
@@ -266,6 +300,68 @@ export default {
     },
 
     methods: {
+        // Pinch-to-Zoom Handlers
+        handleTouchStart(e) {
+            if (e.touches.length === 2) {
+                this.initialDist = this.getDist(e.touches);
+                this.initialZoom = this.zoomLevel;
+                this.initialCenter = this.getCenter(e.touches);
+                this.initialPanX = this.panX;
+                this.initialPanY = this.panY;
+            } else if (e.touches.length === 1 && this.zoomLevel > 1) {
+                // One finger pan if zoomed
+                this.initialCenter = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                this.initialPanX = this.panX;
+                this.initialPanY = this.panY;
+            }
+        },
+
+        handleTouchMove(e) {
+            if (e.touches.length === 2 && this.initialDist > 0) {
+                const currentDist = this.getDist(e.touches);
+                const scale = currentDist / this.initialDist;
+                this.zoomLevel = Math.max(1, Math.min(5, this.initialZoom * scale));
+
+                // Adjust pan to follow center
+                const currentCenter = this.getCenter(e.touches);
+                this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
+                this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
+            } else if (e.touches.length === 1 && this.zoomLevel > 1) {
+                const deltaX = e.touches[0].clientX - this.initialCenter.x;
+                const deltaY = e.touches[0].clientY - this.initialCenter.y;
+                this.panX = this.initialPanX + deltaX;
+                this.panY = this.initialPanY + deltaY;
+            }
+        },
+
+        handleTouchEnd() {
+            this.initialDist = 0;
+            // Bound panning
+            if (this.zoomLevel === 1) {
+                this.panX = 0;
+                this.panY = 0;
+            }
+        },
+
+        getDist(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        },
+
+        getCenter(touches) {
+            return {
+                x: (touches[0].clientX + (touches[1] ? touches[1].clientX : touches[0].clientX)) / 2,
+                y: (touches[0].clientY + (touches[1] ? touches[1].clientY : touches[0].clientY)) / 2
+            };
+        },
+
+        resetZoom() {
+            this.zoomLevel = 1;
+            this.panX = 0;
+            this.panY = 0;
+        },
+
         async joinRoom(uuid, userName, hash) {
             console.log('Room: Joining', uuid, 'as', userName, 'ID:', hash);
             this.roomUuid = uuid;
