@@ -82,7 +82,7 @@
             <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                       class="absolute inset-0 w-full h-full opacity-40 brightness-50 grayscale transition-all duration-700 pointer-events-none"></video>
+                       class="absolute inset-0 w-full h-full opacity-60 brightness-75 transition-all duration-700 pointer-events-none"></video>
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
@@ -465,7 +465,7 @@ export default {
 
         handleSignalingStateChange(state) {
             this.signalingState = state;
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Signaling state actually changed to -> ${state}`);
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Signaling state -> ${state}`);
 
             if (state === 'connected') {
                 this.signalingGraceActive = false;
@@ -477,25 +477,21 @@ export default {
                     this.subscribeToChannels();
                     this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                 }
-            } else if (state === 'unavailable' || state === 'failed' || state === 'disconnected') {
+            } else if (['unavailable', 'failed', 'disconnected'].includes(state)) {
+                // DON'T interfere with Echo's internal retry logic for transient disconnects.
+                // Only start a "grace period" UI if it stays broken.
                 if (!this.signalingGraceActive) {
-                    console.log('CallOverlay: Signaling connection issue, starting grace period...');
+                    this.signalingGraceActive = true;
+                    console.log('CallOverlay: Signaling connection issue. Waiting for internal recovery...');
                     
-                    if (this.reconnectAttempts < 5) {
-                        this.reconnectAttempts++;
-                        const delay = Math.min(10000, 1000 * Math.pow(2, this.reconnectAttempts));
-                        console.log(`CallOverlay: Auto-reconnect attempt ${this.reconnectAttempts} in ${delay}ms...`);
-                        
-                        // Set grace active to prevent spam
-                        this.signalingGraceActive = true;
-                        if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
-                        this.signalingGraceTimeout = setTimeout(() => {
-                            this.signalingGraceActive = false;
-                            this.retryEcho();
-                        }, delay);
-                    } else {
-                        console.warn('CallOverlay: Max reconnect attempts reached.');
-                    }
+                    if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
+                    this.signalingGraceTimeout = setTimeout(() => {
+                        this.signalingGraceActive = false;
+                        // Manual check: if still not connected after 10s, maybe try a manual reset
+                        if (['unavailable', 'failed', 'disconnected'].includes(this.signalingState)) {
+                            console.warn('CallOverlay: Internal recovery failed. User may need to manual retry.');
+                        }
+                    }, 15000);
                 }
             }
         },
@@ -1025,17 +1021,17 @@ export default {
             
             if (localMain && activeLocalStream && localMain.srcObject !== activeLocalStream) {
                 localMain.srcObject = activeLocalStream;
-                localMain.play().catch(() => {});
+                localMain.play().catch(e => console.warn('Play error localMain', e));
             }
             if (localGrid && activeLocalStream && localGrid.srcObject !== activeLocalStream) {
                 localGrid.srcObject = activeLocalStream;
-                localGrid.play().catch(() => {});
+                localGrid.play().catch(e => console.warn('Play error localGrid', e));
             }
             
             const localWaiting = this.$refs.localVideoWaiting;
             if (localWaiting && this.localStream && localWaiting.srcObject !== this.localStream) {
                 localWaiting.srcObject = this.localStream;
-                localWaiting.play().catch(() => {});
+                localWaiting.play().catch(e => console.warn('Play error localWaiting', e));
             }
 
             // Rebind Peer Streams
