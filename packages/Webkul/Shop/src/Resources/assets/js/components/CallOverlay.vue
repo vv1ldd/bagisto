@@ -1,10 +1,16 @@
 <template>
     <div v-if="isActive" 
          @mousemove="userActivity"
-         @touchstart="userActivity"
+         @touchstart="handleGlobalTouch"
          @click="toggleControls"
-         class="fixed inset-0 z-[10000] bg-black text-white font-sans overflow-hidden transition-all duration-300">
+         class="fixed inset-0 z-[10000] bg-black text-white font-sans overflow-hidden transition-all duration-300 touch-none select-none">
         
+        <!-- Proximity Dimmer -->
+        <div v-if="isProximityClose" class="absolute inset-0 bg-black z-[20000] flex flex-col items-center justify-center pointer-events-auto">
+            <div class="w-16 h-16 rounded-full border-4 border-white/10 border-t-white/60 animate-spin mb-4"></div>
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Режим разговора</p>
+        </div>
+
         <!-- Video Layer (Base) -->
         <div class="absolute inset-0 bg-zinc-950">
             <!-- 1-on-1 Mode -->
@@ -13,7 +19,7 @@
                      @touchstart="handleTouchStart"
                      @touchmove="handleTouchMove"
                      @touchend="handleTouchEnd"
-                     @wheel.passive="handleWheel">
+                     @wheel="handleWheel">
                     
                     <template v-if="!isFocusedOnSelf">
                          <video :id="'video_' + peerIds[0]" 
@@ -33,23 +39,6 @@
                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                                :style="zoomStyle"
                                class="w-full h-full transition-all duration-700"></video>
-                        
-                        <!-- Zoom Slider for Main Local View -->
-                        <div v-if="zoomCapabilities && controlsVisible" class="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-black/40 backdrop-blur-3xl p-4 rounded-full border border-white/10 z-[60] group pointer-events-auto">
-                            <span class="text-[10px] font-bold text-white/40">🔭</span>
-                            <div class="h-48 w-1 bg-white/10 rounded-full relative overflow-hidden group-hover:w-2 transition-all">
-                                <input type="range" 
-                                       :min="zoomCapabilities.min" 
-                                       :max="zoomCapabilities.max" 
-                                       :step="zoomCapabilities.step || 0.1" 
-                                       :value="cameraZoom"
-                                       @input="applyCameraZoom($event.target.value)"
-                                       class="absolute inset-0 opacity-0 cursor-pointer z-10 [writing-mode:bt-lr] -rotate-180" 
-                                       style="appearance: slider-vertical; width: 100%; height: 100%;">
-                                <div class="absolute bottom-0 left-0 right-0 bg-[#7C45F5] transition-all" :style="{height: ((cameraZoom - zoomCapabilities.min) / (zoomCapabilities.max - zoomCapabilities.min) * 100) + '%'}"></div>
-                            </div>
-                            <span class="text-[8px] font-black text-white/60 tracking-tighter">{{ Math.round(cameraZoom * 10) / 10 }}x</span>
-                        </div>
                     </template>
                 </div>
 
@@ -70,7 +59,7 @@
                      @touchstart="handleTouchStart($event, true)"
                      @touchmove="handleTouchMove($event, true)"
                      @touchend="handleTouchEnd"
-                     @wheel.passive="handleWheel($event, true)">
+                     @wheel="handleWheel($event, true)">
                     <video ref="localVideoGrid" autoplay muted playsinline 
                            :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                            :style="isFocusedOnSelf ? zoomStyle : {}"
@@ -79,20 +68,6 @@
                         Вы ({{ localUserName }})
                     </div>
 
-                    <!-- Zoom Slider for Grid Local View -->
-                    <div v-if="zoomCapabilities && controlsVisible" class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-black/60 backdrop-blur-xl p-2 rounded-full border border-white/10 z-[60] pointer-events-auto">
-                        <div class="h-24 w-1 bg-white/10 rounded-full relative overflow-hidden">
-                            <input type="range" 
-                                   :min="zoomCapabilities.min" 
-                                   :max="zoomCapabilities.max" 
-                                   :step="zoomCapabilities.step || 0.1" 
-                                   :value="cameraZoom"
-                                   @input="applyCameraZoom($event.target.value)"
-                                   class="absolute inset-0 opacity-0 cursor-pointer z-10" 
-                                   style="appearance: slider-vertical; width: 100%; height: 100%;">
-                            <div class="absolute bottom-0 left-0 right-0 bg-[#7C45F5] transition-all" :style="{height: ((cameraZoom - zoomCapabilities.min) / (zoomCapabilities.max - zoomCapabilities.min) * 100) + '%'}"></div>
-                        </div>
-                    </div>
                 </div>
                 <div v-for="id in peerIds" :key="id" 
                     class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center">
@@ -146,7 +121,10 @@
                         <span>{{ peerCount === 1 ? 'Видеозвонок' : (peerCount > 1 ? 'Групповая встреча' : 'Ожидание') }}</span>
                         <span class="w-1.5 h-1.5 rounded-full" :class="statusColor"></span>
                     </div>
-                    <h2 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : 'Встреча активна' }}</h2>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-[8px] shadow-[0_0_100px_rgba(16,185,129,0.8)]">🔒</div>
+                        <h2 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter">{{ localUserName }}</h2>
+                    </div>
                 </div>
                 <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-4 py-2 font-bold text-[10px] uppercase tracking-widest rounded-2xl ml-4 shadow-[0_0_20px_rgba(0,255,65,0.3)] landscape:hidden">
                     {{ peerCount + 1 }} в сети
@@ -268,7 +246,9 @@ export default {
             initialCameraZoom: 1,
             cameraFacing: 'user', // 'user' or 'environment'
             zoomCapabilities: null,
-            roomLinkCopied: false
+            roomLinkCopied: false,
+            isProximityClose: false,
+            lastToggleTime: 0
         };
     },
 
@@ -346,6 +326,7 @@ export default {
 
         this.retryInterval = setInterval(() => this.rebindVideos(), 3000);
         this.cleanupInterval = setInterval(() => this.cleanupStalePeers(), 5000);
+        this.setupProximitySensor();
     },
 
     beforeUnmount() {
@@ -512,6 +493,11 @@ export default {
             this.userActivity();
         },
 
+        handleGlobalTouch() {
+            this.userActivity();
+            this.lastToggleTime = Date.now();
+        },
+
         userActivity() {
             this.controlsVisible = true;
             if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
@@ -566,11 +552,33 @@ export default {
         },
 
         toggleControls() {
+            const now = Date.now();
+            // Prevent accidental hide immediately after show by touch
+            if (now - this.lastToggleTime < 300) return;
+
             if (this.controlsVisible && this.isFullscreen) {
                 this.controlsVisible = false;
                 if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
             } else {
                 this.userActivity();
+            }
+            this.lastToggleTime = now;
+        },
+
+        setupProximitySensor() {
+            try {
+                if ('ProximitySensor' in window) {
+                    const sensor = new ProximitySensor({ frequency: 1 });
+                    sensor.addEventListener('reading', () => {
+                        this.isProximityClose = sensor.near;
+                        console.log('Proximity sensor reading:', sensor.near);
+                    });
+                    sensor.start();
+                } else {
+                    console.log('ProximitySensor API not available');
+                }
+            } catch (err) {
+                console.warn('Proximity sensor setup failed:', err);
             }
         },
 
@@ -1128,4 +1136,13 @@ export default {
 
 <style scoped>
 .mirror { transform: scaleX(-1); }
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+input, textarea {
+    user-select: text;
+}
 </style>
