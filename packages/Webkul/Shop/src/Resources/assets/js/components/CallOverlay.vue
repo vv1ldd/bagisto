@@ -786,6 +786,9 @@ export default {
                     this.localStream.getTracks().forEach(track => {
                         console.log(`Room: Local Track ${track.kind} (${track.label}): enabled=${track.enabled}, state=${track.readyState}`);
                     });
+                    
+                    // NEW: Force sync tracks to all existing peers in case they were created before media was ready
+                    this.syncTracksToAllPeers();
                 }
 
                 this.$nextTick(() => this.rebindVideos());
@@ -814,7 +817,16 @@ export default {
             if (signal.type === 'presence') {
                 const now = Date.now();
                 
-                // Compare session IDs to determine initiator
+                // Aggressive session deduplication: 
+                // If we see a newer session ID for the same user hash, immediately remove the old one.
+                Object.keys(this.peers).forEach(id => {
+                    const p = this.peers[id];
+                    if (p.hash === senderHash && id !== senderSessionId) {
+                        console.log(`Room: Deduplicating old session ${id} for user ${senderName}`);
+                        this.removePeer(id);
+                    }
+                });
+
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
                 if (!this.peers[peerKey]) {
@@ -1044,6 +1056,40 @@ export default {
             };
 
             return pc;
+        },
+
+        syncTracksToAllPeers() {
+            if (!this.localStream) return;
+            const tracks = this.localStream.getTracks();
+            
+            Object.keys(this.peers).forEach(id => {
+                const peer = this.peers[id];
+                if (peer.pc && peer.pc.connectionState !== 'closed') {
+                    let needsRenegotiation = false;
+                    const senders = peer.pc.getSenders();
+                    
+                    tracks.forEach(track => {
+                        const sender = senders.find(s => s.track && s.track.kind === track.kind);
+                        if (!sender) {
+                            console.log(`Room: Adding missing track ${track.kind} to peer ${id}`);
+                            peer.pc.addTrack(track, this.localStream);
+                            needsRenegotiation = true;
+                        } else if (sender.track !== track) {
+                            console.log(`Room: Updating track ${track.kind} for peer ${id}`);
+                            sender.replaceTrack(track);
+                        }
+                    });
+
+                    if (needsRenegotiation && peer.pc.signalingState === 'stable') {
+                        // If we are initiator, we can push a new offer
+                        const isInitiator = this.sessionUniqueId < id;
+                        if (isInitiator) {
+                            console.log(`Room: Renegotiating for missing tracks with ${id}`);
+                            this.initiateConnection(id, peer.fingerprint);
+                        }
+                    }
+                }
+            });
         },
 
         async verifySecurity(id) {
