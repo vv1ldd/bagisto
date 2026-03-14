@@ -1363,7 +1363,17 @@ export default {
             Object.values(this.peers).forEach(p => p.pc?.close());
             this.peers = {};
             this.isActive = false;
-            window.location.reload();
+            
+            // Intelligent Redirect: if on dedicated call page, go back or home
+            if (window.location.pathname.includes('/call/')) {
+                if (document.referrer && !document.referrer.includes('/call/')) {
+                    window.location.href = document.referrer;
+                } else {
+                    window.location.href = '/';
+                }
+            }
+            // If NOT on a dedicated call page (e.g. browsing product), 
+            // no need to reload or redirect, just close the overlay (already done via isActive=false)
         }
     }
 };
