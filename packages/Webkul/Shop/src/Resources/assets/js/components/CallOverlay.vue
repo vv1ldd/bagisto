@@ -325,25 +325,18 @@ export default {
 
         async setupLocalMedia() {
             try {
-                // Request advanced constraints for macOS/iOS and Android/Samsung native features
+                // Request balanced constraints for broad compatibility
                 const constraints = {
                     video: {
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
                         frameRate: { ideal: 30 },
                         
-                        // macOS/iOS specific (Center Stage, Blur)
+                        // macOS/iOS specific (Center Stage) - Keep stable ones
                         faceFraming: true,
-                        backgroundBlur: true,
                         
                         // Android/Samsung & Generic Mobile advanced controls
                         focusMode: { ideal: 'continuous' },
-                        whiteBalanceMode: { ideal: 'continuous' },
-                        exposureMode: { ideal: 'continuous' },
-                        
-                        // Hardware stabilization & enhancements
-                        videoStabilizationMode: { ideal: 'cinematic' },
-                        pointsOfInterest: true, // Allows tapping to focus if supported
                         
                         // Standard PTZ where available
                         pan: true,
@@ -353,20 +346,31 @@ export default {
                     audio: {
                         echoCancellation: true,
                         noiseSuppression: true,
-                        autoGainControl: true,
-                        // Voice isolation for supported mobile browsers
-                        voiceIsolation: true 
+                        autoGainControl: true
                     }
                 };
 
-                console.log('Room: Requesting media with advanced constraints', constraints);
-                this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                console.log('Room: Requesting media...', constraints);
+                try {
+                    this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (e) {
+                    console.warn('Room: Advanced constraints failed, falling back to simple', e);
+                    this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                }
                 
+                // Track states for debugging
+                this.localStream.getTracks().forEach(track => {
+                    console.log(`Room: Local Track ${track.kind} (${track.label}): enabled=${track.enabled}, state=${track.readyState}`);
+                    track.onmute = () => console.warn(`Room: Local Track ${track.kind} muted`);
+                    track.onunmute = () => console.log(`Room: Local Track ${track.kind} unmuted`);
+                });
+
                 // Log actual capabilities for debugging
                 try {
                     const videoTrack = this.localStream.getVideoTracks()[0];
                     if (videoTrack && videoTrack.getCapabilities) {
-                        console.log('Room: Camera Capabilities:', videoTrack.getCapabilities());
+                        const caps = videoTrack.getCapabilities();
+                        console.log('Room: Camera Capabilities:', caps);
                     }
                 } catch (capError) { }
                 
@@ -543,10 +547,12 @@ export default {
 
             pc.onconnectionstatechange = () => {
                 const state = pc.connectionState;
+                console.log(`Room: Peer ${id} connection state: ${state}`);
                 if (state === 'connected') {
                     if (this.peers[id]) {
                         this.peers[id].connected = true;
                         this.verifySecurity(id);
+                        this.$nextTick(() => this.rebindVideos());
                     }
                 } else if (['disconnected', 'failed', 'closed'].includes(state)) {
                     if (this.peers[id]) this.peers[id].connected = false;
@@ -581,9 +587,11 @@ export default {
             
             if (localMain && this.localStream && localMain.srcObject !== this.localStream) {
                 localMain.srcObject = this.localStream;
+                localMain.play().catch(() => {});
             }
             if (localGrid && this.localStream && localGrid.srcObject !== this.localStream) {
                 localGrid.srcObject = this.localStream;
+                localGrid.play().catch(() => {});
             }
 
             // Rebind Peer Streams
@@ -592,7 +600,10 @@ export default {
                 const mainEl = document.getElementById('video_' + id);
                 
                 if (p && p.stream && p.connected) {
-                    if (mainEl && mainEl.srcObject !== p.stream) mainEl.srcObject = p.stream;
+                    if (mainEl && mainEl.srcObject !== p.stream) {
+                        mainEl.srcObject = p.stream;
+                        mainEl.play().catch(() => {});
+                    }
                 }
             });
         },
