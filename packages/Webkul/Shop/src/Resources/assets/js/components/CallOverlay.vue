@@ -171,7 +171,6 @@
                         <template v-else>
                             <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
                             <div class="mt-4 flex flex-col items-center gap-3">
-                                <p class="text-[10px] uppercase tracking-widest text-zinc-600 font-bold max-w-xs mx-auto animate-pulse">Звонок начнется автоматически...</p>
                                 <button @click.stop="retryEcho" :disabled="isRetrying" 
                                     class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 active:scale-95 transition-all text-zinc-400 pointer-events-auto">
                                     {{ isRetrying ? '...' : 'Переподключиться' }}
@@ -192,13 +191,6 @@
                    class="absolute inset-0 w-full h-full object-cover opacity-30 mirror transition-opacity duration-1000"></video>
 
             <div class="relative z-10 w-full max-w-sm animate-fade-in-up">
-                <div class="text-center mb-10">
-                    <div class="w-16 h-16 bg-[#7C45F5] flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-[#7C45F5]/30 rounded-2xl">
-                        <span class="text-3xl">🛡️</span>
-                    </div>
-                    <h2 class="text-2xl font-black uppercase tracking-tighter mb-2 italic">Secured Lobby</h2>
-                    <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">Подготовьтесь к звонку</p>
-                </div>
 
                 <div class="bg-zinc-900/50 border border-white/10 p-8 rounded-[2.5rem] backdrop-blur-xl shadow-2xl">
                     <!-- Name Input for Guests -->
