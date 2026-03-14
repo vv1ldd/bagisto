@@ -191,6 +191,13 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                     </button>
 
+                    <!-- Swap Focus Button -->
+                    <button @click.stop="toggleFocus" :class="[isFocusedOnSelf ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-zinc-800 text-white opacity-40']"
+                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95"
+                        title="Swap Focus">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </button>
+
                     <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-zinc-800 text-white opacity-40']"
                         class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
@@ -1014,7 +1021,6 @@ export default {
                 const newVideoTrack = newStream.getVideoTracks()[0];
                 this.cameraFacing = newFacing;
                 
-                // Add the new track to localStream and remove the old one
                 const currentVideoTrack = this.localStream.getVideoTracks()[0];
                 if (currentVideoTrack) this.localStream.removeTrack(currentVideoTrack);
                 this.localStream.addTrack(newVideoTrack);
@@ -1044,6 +1050,10 @@ export default {
                     this.setupLocalMedia();
                 }
             }
+        },
+
+        toggleFocus() {
+            this.isFocusedOnSelf = !this.isFocusedOnSelf;
         },
 
         startConnectionWatchdog(id) {
