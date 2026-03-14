@@ -219,6 +219,7 @@ export default {
             signalingState: (window.Echo?.connector?.pusher?.connection?.state) || 'connecting',
             isMicOn: true,
             isCameraOn: true,
+            isCameraDenied: false,
             isSharingScreen: false,
             screenStream: null,
             configuration: {
