@@ -236,10 +236,8 @@ export default {
             screenStream: null,
             configuration: {
                 iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { urls: 'stun:stun2.l.google.com:19302' },
-                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun.meanly.ru:3478' },
+                    { urls: 'stun:stun.l.google.com:19302' }, // Secondary fallback
                 ],
                 iceCandidatePoolSize: 0
             },
@@ -932,11 +930,15 @@ export default {
                 const now = Date.now();
                 
                 // Aggressive session deduplication: 
-                // If we see a newer session ID for the same user hash, immediately remove the old one.
+                // If we see a session with the same hash OR name for the same user, remove the older one.
                 Object.keys(this.peers).forEach(id => {
+                    if (id === senderSessionId) return;
                     const p = this.peers[id];
-                    if (p.hash === senderHash && id !== senderSessionId) {
-                        console.log(`Room: Deduplicating old session ${id} for user ${senderName}`);
+                    const nameMatch = p.name && p.name === senderName;
+                    const hashMatch = p.hash && p.hash === senderHash;
+                    
+                    if (hashMatch || nameMatch) {
+                        console.log(`Room: deduplicating existing session ${id} for user ${senderName} (Match: hash=${hashMatch}, name=${nameMatch})`);
                         this.removePeer(id);
                     }
                 });

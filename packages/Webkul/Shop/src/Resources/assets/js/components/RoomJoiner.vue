@@ -53,8 +53,8 @@ export default {
                 finalName = this.customName.trim() || 'Гость';
             }
 
-            // Always add a unique suffix to the name display, but the hash will be the unique ID
-            finalName += ' ' + Math.random().toString(36).substring(2, 5).toUpperCase();
+            // Do not add random suffix if we want to deduplicate sessions effectively
+            // finalName += ' ' + Math.random().toString(36).substring(2, 5).toUpperCase();
 
             console.log('RoomJoiner: Joining as', finalName, 'with hash', this.participantHash);
             
