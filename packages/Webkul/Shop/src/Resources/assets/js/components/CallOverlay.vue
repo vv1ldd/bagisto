@@ -109,20 +109,11 @@
                        class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-3xl scale-105 opacity-50"></video>
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
-                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
-                         <div class="flex -space-x-4">
-                            <div v-if="signalingState === 'unavailable'" class="text-4xl">⚠️</div>
-                            <template v-else>
-                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-lg md:text-xl">👤</div>
-                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#7C45F5] border-2 border-[#7C45F5]/50 flex items-center justify-center text-lg md:text-xl shadow-lg">👥</div>
-                            </template>
-                         </div>
-                    </div>
                     <div class="text-center px-8 pointer-events-auto">
                         <template v-if="(signalingState === 'unavailable' || signalingState === 'failed') && !signalingGraceActive">
                             <div class="bg-black/80 backdrop-blur-3xl p-8 md:p-12 rounded-[40px] border border-red-500/20 flex flex-col items-center max-w-sm mx-auto shadow-[0_0_100px_rgba(239,68,68,0.2)]">
                                 <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
-                                <p class="mb-6 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">Проверьте соединение или повторите попытку</p>
+                                <p class="mb-6 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">Проверьте соединение или повторите попытку. Возможно, сервер временно недоступен.</p>
                                 <button @click="retryEcho" :disabled="isRetrying" 
                                     class="w-full py-4 bg-white text-black text-[10px] font-black uppercase rounded-2xl transition-all hover:bg-zinc-200 active:scale-95 disabled:opacity-50">
                                     {{ isRetrying ? 'Подключение...' : 'Переподключиться' }}
@@ -131,6 +122,7 @@
                         </template>
                         <template v-else>
                             <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
+                            <p class="mt-4 text-[10px] uppercase tracking-widest text-zinc-600 font-bold max-w-xs mx-auto animate-pulse">Звонок начнется автоматически...</p>
                         </template>
                     </div>
                 </div>
@@ -144,31 +136,31 @@
             <!-- Top Right Toolbar (Consolidated) -->
             <div class="absolute top-6 right-6 flex items-center justify-end pointer-events-none z-[100]">
                 <div :class="{'opacity-0 -translate-y-10': !controlsVisible}"
-                     class="flex items-center gap-2 md:gap-3 p-2 bg-black/40 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
+                     class="flex items-center gap-2 md:gap-3 p-2.5 bg-black/40 backdrop-blur-3xl rounded-[32px] border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
-                    <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/20' : 'bg-red-500/20 text-red-500 border-red-500/40']"
-                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
-                        M
+                    <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-500/20 text-red-500 border-red-500/40']"
+                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 10v1a7 7 0 01-14 0v-1m7 11v-3m0 0H8m4 0h4" /></svg>
                     </button>
 
-                    <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/20' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
-                        C
+                    <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-zinc-800 text-white opacity-40']"
+                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                     </button>
 
-                    <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
-                        S
+                    <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-zinc-800 text-white opacity-40']"
+                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                     </button>
 
                     <button v-if="isMobile" @click.stop="toggleCameraFacing" 
-                            class="h-10 w-10 rounded-full bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
-                        F
+                            class="h-11 w-11 rounded-2xl bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                     </button>
 
                     <button @click.stop="endCall" 
-                        class="h-10 w-10 rounded-full bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-500/20 hover:scale-110 active:scale-95">
-                        X
+                        class="h-11 w-11 rounded-2xl bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-600/30 hover:scale-105 active:scale-95">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
             </div>
