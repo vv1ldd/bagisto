@@ -990,7 +990,7 @@ export default {
         },
 
         normalizeSDP(sdp) {
-            // DEBUG: Neutral pass-through to avoid metadata corruption
+            if (!sdp || typeof sdp !== 'string' || sdp.trim().length < 10) return null;
             return sdp;
         },
 
@@ -1104,6 +1104,11 @@ export default {
                 }
 
                 const sdp = this.normalizeSDP(signal.sdp);
+                if (!sdp) {
+                    console.warn(`WebRTC: handleOffer aborted - invalid/empty SDP from ${id}`);
+                    return;
+                }
+                
                 await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
                 
                 while (peer.iceQueue.length > 0) {
@@ -1113,6 +1118,8 @@ export default {
 
                 const answer = await peer.pc.createAnswer();
                 const cleanAnswer = this.normalizeSDP(answer.sdp);
+                if (!cleanAnswer) throw new Error('Failed to generate local answer SDP');
+
                 await peer.pc.setLocalDescription({ type: 'answer', sdp: cleanAnswer });
                 this.sendSignal({ type: 'answer', sdp: cleanAnswer, target: id, fingerprint: this.localFingerprint });
             } catch (err) {
@@ -1126,6 +1133,10 @@ export default {
                 if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
                 try {
                     const sdp = this.normalizeSDP(signal.sdp);
+                    if (!sdp) {
+                        console.warn(`WebRTC: handleAnswer aborted - invalid SDP from ${id}`);
+                        return;
+                    }
                     await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
                     while (peer.iceQueue.length > 0) {
                         const cand = peer.iceQueue.shift();
@@ -1430,21 +1441,26 @@ export default {
             }
         },
 
-        sendSignal(signalData) {
-            signalData.sender_hash = this.localHash;
-            signalData.sender_session_id = this.sessionUniqueId;
-            
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Outgoing signal [${signalData.type}] to ${signalData.target || 'ROOM'}`, {
-                hasSdp: !!signalData.sdp,
-                hasCandidate: !!signalData.candidate
-            });
+        async sendSignal(signalData, attempt = 1) {
+            if (!this.isActive || !this.sessionUniqueId) return;
+            if (!signalData.sender_session_id) signalData.sender_session_id = this.sessionUniqueId;
 
             const payload = { signal_data: signalData, sender_name: this.localUserName };
-            const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
+            // Ensure endpoint selection is robust: if roomUuid exists, we are likely in room/guest mode
+            const endpoint = (this.isRoomMode || this.roomUuid) ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
             
-            axios.post(endpoint, payload).catch((err) => {
-                console.warn(`CallOverlay [${this.sessionUniqueId}]: sendSignal error [${signalData.type}]`, err);
-            });
+            try {
+                await axios.post(endpoint, payload);
+            } catch (err) {
+                const status = err.response ? err.response.status : 0;
+                console.warn(`CallOverlay [${this.sessionUniqueId}]: sendSignal [${signalData.type}] (Attempt ${attempt}/3) failed with status ${status}`);
+                
+                // Retry only for server errors (502, 503, 504) or network failures
+                if ((status >= 502 || status === 0) && attempt < 3) {
+                    const delay = 1000 * Math.pow(2, attempt - 1); // 1s, 2s
+                    setTimeout(() => this.sendSignal(signalData, attempt + 1), delay);
+                }
+            }
         },
 
 
