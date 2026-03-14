@@ -37,6 +37,7 @@
                     uuid="{{ $session->uuid }}" 
                     user-name-initial="{{ $baseName }}"
                     participant-hash="{{ $participantHash }}"
+                    :is-auto-join="true"
                 >
                     <div class="space-y-4">
                         <button class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-sm shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98]">

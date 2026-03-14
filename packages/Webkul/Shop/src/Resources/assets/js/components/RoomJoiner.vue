@@ -30,7 +30,7 @@
 
 <script>
 export default {
-    props: ['uuid', 'userNameInitial', 'participantHash'],
+    props: ['uuid', 'userNameInitial', 'participantHash', 'isAutoJoin'],
 
     data() {
         return {
@@ -42,6 +42,16 @@ export default {
     computed: {
         isGuest() {
             return !this.userNameInitial || this.userNameInitial === 'Гость';
+        }
+    },
+
+    mounted() {
+        if (this.isAutoJoin) {
+            console.log('RoomJoiner: Auto-joining as requested...');
+            // Delay slightly to ensure emitter is ready and UI has settled
+            setTimeout(() => {
+                this.join();
+            }, 500);
         }
     },
 
