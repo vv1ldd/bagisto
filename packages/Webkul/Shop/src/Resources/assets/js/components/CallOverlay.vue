@@ -3,9 +3,14 @@
         <!-- Header -->
         <div class="flex justify-between items-center border-b border-white/20 pb-4 relative z-50">
             <div>
-                <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1">
+                <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1 flex items-center gap-2">
                     <span v-if="peerCount > 0">Групповая встреча</span>
                     <span v-else>Ожидание участников</span>
+                    <!-- Signaling Status Dot -->
+                    <span class="flex items-center gap-1 ml-2 border-l border-white/20 pl-2">
+                        <span class="w-1.5 h-1.5 rounded-full" :class="statusColor"></span>
+                        <span class="text-[7px] tracking-widest opacity-40">{{ signalingState.toUpperCase() }}</span>
+                    </span>
                 </div>
                 <h2 class="text-xl md:text-3xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : (peerCount > 0 ? 'Встреча активна' : 'Комната пуста') }}</h2>
                 <div v-if="isRoomMode" class="text-[8px] font-bold text-[#00FF41] uppercase tracking-[0.2em] mt-1 flex items-center gap-1">
@@ -47,7 +52,6 @@
                     
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
                         <span>{{ name }}</span>
-                        <!-- Verified Encryption Indicator -->
                         <span v-if="peers[name]?.verified" class="text-lg animate-bounce duration-1000" title="Подключение надежно защищено">😉</span>
                         <span v-else-if="peers[name]?.connected" class="opacity-50 text-[10px]" title="Проверка шифрования...">🔒</span>
                     </div>
@@ -70,19 +74,33 @@
                 </div>
             </div>
 
-            <!-- Empty State -->
+            <!-- Empty State / Errors -->
             <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
                 <div class="w-32 h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
                      <div class="flex -space-x-4">
-                        <div class="w-12 h-12 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-xl">👤</div>
-                        <div class="w-12 h-12 rounded-full bg-[#7C45F5] border-2 border-[#7C45F5]/50 flex items-center justify-center text-xl shadow-lg">👥</div>
+                        <div v-if="signalingState === 'unavailable'" class="text-4xl">⚠️</div>
+                        <template v-else>
+                            <div class="w-12 h-12 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-xl">👤</div>
+                            <div class="w-12 h-12 rounded-full bg-[#7C45F5] border-2 border-[#7C45F5]/50 flex items-center justify-center text-xl shadow-lg">👥</div>
+                        </template>
                      </div>
                 </div>
-                <div class="text-center px-8">
-                    <h3 class="text-sm font-black uppercase tracking-[0.3em] text-white mb-2">Ожидание участников</h3>
-                    <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed">
-                        Пригласите коллег, отправив им ссылку на эту комнату.
-                    </p>
+                <div class="text-center px-8 pointer-events-auto">
+                    <template v-if="signalingState === 'unavailable'">
+                        <h3 class="text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
+                        <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mb-4">
+                            Не удалось подключиться к серверу сигналов. Проверьте соединение или обновите страницу.
+                        </p>
+                        <button @click="retryEcho" class="px-6 py-2 bg-zinc-800 text-[8px] font-black uppercase tracking-widest rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
+                            Повторить
+                        </button>
+                    </template>
+                    <template v-else>
+                        <h3 class="text-sm font-black uppercase tracking-[0.3em] text-white mb-2">Ожидание участников</h3>
+                        <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed">
+                            Пригласите коллег, отправив им ссылку на эту комнату.
+                        </p>
+                    </template>
                 </div>
             </div>
         </div>
@@ -123,8 +141,9 @@ export default {
             localUserName: '',
             roomUuid: null,
             isRoomMode: false,
-            peers: {}, // { name: { pc, stream, connected, streamReady, iceQueue, fingerprint, verified } }
+            peers: {}, 
             localFingerprint: null,
+            signalingState: 'connecting',
             isMicOn: true,
             isCameraOn: true,
             isSharingScreen: false,
@@ -155,14 +174,30 @@ export default {
             if (count === 2) return 'grid-cols-1 md:grid-cols-2';
             if (count <= 4) return 'grid-cols-2';
             return 'grid-cols-2 lg:grid-cols-3';
+        },
+        statusColor() {
+            switch(this.signalingState) {
+                case 'connected': return 'bg-emerald-500';
+                case 'connecting': return 'bg-amber-500 animate-pulse';
+                case 'unavailable': return 'bg-red-500';
+                case 'failed': return 'bg-red-500';
+                default: return 'bg-zinc-500';
+            }
         }
     },
 
     mounted() {
-        console.log('CallOverlay: Mounted');
         this.$emitter.on('join-room', (payload) => {
             if (this.isActive) return;
             this.joinRoom(payload.uuid, payload.userName);
+        });
+
+        this.$emitter.on('echo-state-change', (state) => {
+            console.log('CallOverlay: Echo state ->', state);
+            this.signalingState = state;
+            if (state === 'connected' && this.isActive && this.roomUuid) {
+                 this.subscribeToChannels();
+            }
         });
 
         const customerId = this.$shop?.customer_id;
@@ -196,24 +231,25 @@ export default {
             this.isActive = true;
 
             await this.setupLocalMedia();
+            this.subscribeToChannels();
+            this.startPresence();
+        },
 
-            if (window.Echo) {
-                window.Echo.channel(`call.${uuid}`).listen('.call-signal', (data) => this.handleSignal(data));
-                this.startPresence();
+        subscribeToChannels() {
+            if (window.Echo && this.roomUuid) {
+                window.Echo.channel(`call.${this.roomUuid}`).listen('.call-signal', (data) => this.handleSignal(data));
             }
         },
 
         startPresence() {
             this.stopPresence();
-            // Immediate broadcast
             this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
-            // High frequency for the first 30 seconds to ensure connection
             let fastTicks = 0;
             this.presenceInterval = setInterval(() => {
                 if (!this.isActive) return;
                 this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                 fastTicks++;
-                if (fastTicks > 10) { // After 20 seconds, slow down
+                if (fastTicks > 10) {
                     this.stopPresence();
                     this.presenceInterval = setInterval(() => {
                         if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
@@ -242,9 +278,7 @@ export default {
                 this.$nextTick(() => { 
                     if (this.$refs.localVideo) this.$refs.localVideo.srcObject = this.localStream;
                 });
-            } catch (e) { 
-                console.warn('Room: Media access denied', e); 
-            }
+            } catch (e) { console.warn('Room: Media access denied', e); }
         },
 
         handleSignal(data) {
@@ -254,18 +288,13 @@ export default {
             if (!senderName || senderName === this.localUserName) return;
             if (signal.target && signal.target !== this.localUserName) return;
 
-            console.log(`Room: [${signal.type}] from ${senderName}`);
-
             if (signal.type === 'presence') {
                 const isInitiator = this.localUserName.toLowerCase() < senderName.toLowerCase();
-                
                 if (!this.peers[senderName]) {
-                    // Reactive property assignment for Vue 3
                     this.peers[senderName] = { 
                         pc: null, stream: null, connected: false, streamReady: false, 
                         iceQueue: [], fingerprint: signal.fingerprint, verified: false
                     };
-                    // Reply to them proactively
                     this.sendSignal({ type: 'presence', target: senderName, fingerprint: this.localFingerprint });
                 } else if (signal.fingerprint) {
                     this.peers[senderName].fingerprint = signal.fingerprint;
@@ -286,40 +315,33 @@ export default {
         },
 
         async initiateConnection(name, remoteFingerprint) {
-            console.log(`Room: Initiating to ${name}`);
             const pc = this.createPeerConnection(name);
             if (remoteFingerprint) this.peers[name].fingerprint = remoteFingerprint;
-            
             try {
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
                 this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name, fingerprint: this.localFingerprint });
-            } catch (e) { console.error('Offer failed', e); }
+            } catch (e) { }
         },
 
         async handleOffer(name, signal) {
-            console.log(`Room: Offer from ${name}`);
             const pc = this.createPeerConnection(name);
             if (signal.fingerprint) this.peers[name].fingerprint = signal.fingerprint;
-
             try {
                 const sdp = signal.sdp.replace(/\n(?!\r)/g, '\r\n');
                 await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
-                
                 const peer = this.peers[name];
                 while (peer.iceQueue.length > 0) {
                     const cand = peer.iceQueue.shift();
                     await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                 }
-
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
                 this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name, fingerprint: this.localFingerprint });
-            } catch (err) { console.error('handleOffer error', err); }
+            } catch (err) { }
         },
 
         async handleAnswer(name, signal) {
-            console.log(`Room: Answer from ${name}`);
             const peer = this.peers[name];
             if (peer && peer.pc) {
                 if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
@@ -330,18 +352,15 @@ export default {
                         const cand = peer.iceQueue.shift();
                         await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                     }
-                } catch (err) { console.error('handleAnswer error', err); }
+                } catch (err) { }
             }
         },
 
         async handleCandidate(name, signal) {
             const peer = this.peers[name];
             if (!peer) return;
-
             if (peer.pc && peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
-                try {
-                    await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-                } catch (err) { }
+                await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate)).catch(() => {});
             } else {
                 peer.iceQueue.push(signal.candidate);
             }
@@ -349,29 +368,21 @@ export default {
 
         createPeerConnection(name) {
             if (this.peers[name]?.pc) return this.peers[name].pc;
-
             const pc = new RTCPeerConnection(this.configuration);
-            
             if (!this.peers[name]) {
                 this.peers[name] = { 
                     pc, stream: null, connected: false, streamReady: false, 
                     iceQueue: [], fingerprint: null, verified: false 
                 };
-            } else {
-                this.peers[name].pc = pc;
-            }
-
+            } else { this.peers[name].pc = pc; }
             if (this.localStream) {
                 this.localStream.getTracks().forEach(t => pc.addTrack(t, this.localStream));
             }
-
             pc.onicecandidate = (e) => {
                 if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: name });
             };
-
             pc.ontrack = (e) => {
                 const stream = e.streams[0];
-                console.log(`WebRTC: Track received from ${name}`);
                 if (this.peers[name]) {
                     this.peers[name].stream = stream;
                     this.peers[name].streamReady = true;
@@ -379,31 +390,22 @@ export default {
                 }
                 this.attachStreamToVideo(name, stream);
             };
-
             pc.onconnectionstatechange = () => {
-                const state = pc.connectionState;
-                console.log(`WebRTC: Connection state with ${name} -> ${state}`);
-                if (state === 'connected') {
+                if (pc.connectionState === 'connected') {
                     if (this.peers[name]) {
                         this.peers[name].connected = true;
                         this.verifySecurity(name);
                     }
-                } else if (['disconnected', 'failed', 'closed'].includes(state)) {
-                    // Try one recovery before removing
-                    if (state === 'failed') {
-                         console.warn(`WebRTC: Connection failed with ${name}, will retry on next presence`);
-                    }
+                } else if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
                     this.removePeer(name);
                 }
             };
-
             return pc;
         },
 
         async verifySecurity(name) {
             const peer = this.peers[name];
             if (!peer || !peer.pc || !peer.fingerprint) return;
-
             try {
                 const stats = await peer.pc.getStats();
                 let matched = false;
@@ -419,9 +421,7 @@ export default {
         attachStreamToVideo(name, stream) {
             this.$nextTick(() => {
                 const el = document.getElementById('video_' + name);
-                if (el) {
-                    if (el.srcObject !== stream) el.srcObject = stream;
-                }
+                if (el && el.srcObject !== stream) el.srcObject = stream;
             });
         },
 
@@ -442,9 +442,21 @@ export default {
         },
 
         sendSignal(signalData) {
+            if (this.signalingState !== 'connected') {
+                console.warn('Signal skipped: Echo not connected');
+                return;
+            }
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
             axios.post(endpoint, payload).catch(() => {});
+        },
+
+        retryEcho() {
+            if (window.Echo) {
+                window.Echo.connector.pusher.connection.connect();
+            } else {
+                window.location.reload();
+            }
         },
 
         toggleMic() {

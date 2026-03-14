@@ -23,22 +23,27 @@ if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
     // Enable Pusher logging
     Pusher.logToConsole = true;
 
-    console.log('Echo: Initializing with host:', laravelEnv.reverbHost || laravelEnv.pusherHost);
+    const wsPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 80);
+    const wssPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 443);
+    const forceTLS = (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https';
+
+    console.log(`Echo: Connecting to ${forceTLS ? 'wss' : 'ws'}://${laravelEnv.reverbHost || laravelEnv.pusherHost}:${forceTLS ? wssPort : wsPort}`);
 
     window.Echo = new Echo({
         broadcaster: 'reverb',
         key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
         wsHost: laravelEnv.reverbHost || laravelEnv.pusherHost || `ws-${laravelEnv.pusherCluster}.pusher.com`,
-        wsPort: parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 80),
-        wssPort: parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 443),
-        forceTLS: (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https',
+        wsPort: wsPort,
+        wssPort: wssPort,
+        forceTLS: forceTLS,
         enabledTransports: ['ws', 'wss'],
         authEndpoint: '/broadcasting/auth',
         enableStats: false,
     });
 
     window.Echo.connector.pusher.connection.bind('state_change', (states) => {
-        console.log('Echo Connection State:', states.current);
+        console.log('Echo Connection State Change:', states.previous, '->', states.current);
+        window.$emitter.emit('echo-state-change', states.current);
     });
 } else {
     console.warn('Pusher/Reverb App Key is missing. P2P calls (incoming signals) will not work.');
