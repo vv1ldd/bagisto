@@ -147,19 +147,22 @@
                      </div>
                 </div>
                 <div class="text-center px-8 pointer-events-auto">
-                    <template v-if="signalingState === 'unavailable'">
-                        <h3 class="text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mb-4">
-                            Не удалось подключиться к серверу сигналов.
-                        </p>
-                        <button @click="retryEcho" class="px-6 py-2 bg-zinc-800 text-[8px] font-black uppercase tracking-widest rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
-                            Повторить
-                        </button>
+                    <template v-if="signalingState === 'unavailable' && !signalingGraceActive">
+                        <div class="bg-black/40 backdrop-blur-3xl p-8 md:p-12 rounded-[40px] border border-white/10 flex flex-col items-center max-w-sm mx-auto shadow-2xl">
+                            <div class="text-5xl mb-6 animate-pulse">⚠️</div>
+                            <h3 class="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
+                            <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-zinc-400 leading-relaxed mb-8">
+                                Не удалось подключиться к серверу сигналов. Проверьте интернет или попробуйте еще раз.
+                            </p>
+                            <button @click="retryEcho" class="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-xl">
+                                Повторить подключение
+                            </button>
+                        </div>
                     </template>
                     <template v-else>
-                        <h3 class="text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mt-2 italic">
-                            Передайте ссылку собеседнику для начала разговора.
+                        <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
+                        <p class="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mt-4 italic">
+                            {{ signalingState === 'unavailable' ? 'Восстановление связи...' : 'Передайте ссылку собеседнику для начала разговора.' }}
                         </p>
                     </template>
                 </div>
@@ -233,7 +236,10 @@ export default {
             initialPanX: 0,
             initialPanY: 0,
             initialCenter: { x: 0, y: 0 },
-            isFullscreen: false
+            isFullscreen: false,
+            signalingGraceActive: false,
+            signalingGraceTimeout: null,
+            reconnectAttempts: 0
         };
     },
 
@@ -286,11 +292,8 @@ export default {
         });
 
         this.$emitter.on('echo-state-change', (state) => {
-            this.signalingState = state;
-            if (state === 'connected' && this.isActive && this.roomUuid) {
-                 this.subscribeToChannels();
-                 this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
-            }
+            console.log('CallOverlay: Echo state change ->', state);
+            this.handleSignalingStateChange(state);
         });
 
         document.addEventListener('fullscreenchange', this.handleFullscreenChange);
@@ -378,6 +381,37 @@ export default {
             this.zoomLevel = 1;
             this.panX = 0;
             this.panY = 0;
+        },
+
+        handleSignalingStateChange(state) {
+            this.signalingState = state;
+
+            if (state === 'connected') {
+                this.signalingGraceActive = false;
+                if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
+                this.reconnectAttempts = 0;
+                
+                if (this.isActive && this.roomUuid) {
+                    this.subscribeToChannels();
+                    this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                }
+            } else if (state === 'unavailable' || state === 'failed') {
+                if (!this.signalingGraceActive) {
+                    this.signalingGraceActive = true;
+                    console.log('CallOverlay: Signaling unavailable, starting grace period...');
+                    
+                    if (this.reconnectAttempts < 3) {
+                        this.reconnectAttempts++;
+                        console.log(`CallOverlay: Auto-reconnect attempt ${this.reconnectAttempts}...`);
+                        setTimeout(() => this.retryEcho(), 2000);
+                    }
+
+                    this.signalingGraceTimeout = setTimeout(() => {
+                        this.signalingGraceActive = false;
+                        console.log('CallOverlay: Signaling grace period expired.');
+                    }, 10000); 
+                }
+            }
         },
 
         handleFullscreenChange() {
