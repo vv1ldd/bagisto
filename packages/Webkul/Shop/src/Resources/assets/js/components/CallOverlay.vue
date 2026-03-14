@@ -44,6 +44,26 @@
                 </div>
 
 
+                <!-- Local PiP in 1-on-1 mode -->
+                <div v-if="!isFocusedOnSelf" 
+                     class="absolute bottom-24 right-6 w-32 md:w-48 aspect-video rounded-3xl bg-zinc-900 shadow-2xl border border-white/10 overflow-hidden z-40 transition-all active:scale-95 touch-none group/pip"
+                     @click.stop="isFocusedOnSelf = true">
+                    <video ref="localVideoPiP" autoplay muted playsinline 
+                           :class="[{mirror: !isSharingScreen}]"
+                           class="w-full h-full object-cover"></video>
+                    
+                    <div v-if="isCameraDenied" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60">
+                         <span class="text-2xl">🎥🚫</span>
+                         <span class="text-[8px] font-black uppercase tracking-tighter mt-1 text-red-500">Blocked</span>
+                    </div>
+
+                    <div class="absolute inset-0 bg-white/0 group-hover/pip:bg-white/5 transition-all flex items-center justify-center">
+                         <div class="opacity-0 group-hover/pip:opacity-100 transition-all bg-black/60 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest translate-y-2 group-hover/pip:translate-y-0 text-white border border-white/10">
+                             Focus self
+                         </div>
+                    </div>
+                </div>
+
                 <div v-if="!peers[peerIds[0]]?.connected" 
                     class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30">
                     <div class="flex flex-col items-center gap-6">
@@ -271,6 +291,7 @@ export default {
             initialCameraZoom: 1,
             cameraFacing: 'user', // 'user' or 'environment'
             zoomCapabilities: null,
+            isCameraDenied: false,
             roomLinkCopied: false,
             isProximityClose: false,
             lastToggleTime: 0,
@@ -676,9 +697,31 @@ export default {
 
         cleanupStalePeers() {
             const now = Date.now();
+            const seenHashes = new Map();
+
             Object.keys(this.peers).forEach(id => {
                 const peer = this.peers[id];
-                if (peer.lastSeen && now - peer.lastSeen > 25000 && !peer.connected) {
+                
+                // Aggressive deduplication: if we see two sessions with the same hash, 
+                // remove the older one if it's not connected.
+                if (peer.hash) {
+                    const existingId = seenHashes.get(peer.hash);
+                    if (existingId) {
+                        const existingPeer = this.peers[existingId];
+                        if (!peer.connected && existingPeer.lastSeen > peer.lastSeen) {
+                            this.removePeer(id);
+                            return;
+                        } else if (!existingPeer.connected && peer.lastSeen > existingPeer.lastSeen) {
+                            this.removePeer(existingId);
+                        }
+                    }
+                    seenHashes.set(peer.hash, id);
+                }
+
+                // Standard stale cleanup
+                const timeout = peer.connected ? 45000 : 15000;
+                if (peer.lastSeen && now - peer.lastSeen > timeout) {
+                    console.log(`Room: Cleaning up stale peer ${id} (${peer.name})`);
                     this.removePeer(id);
                 }
             });
@@ -686,21 +729,31 @@ export default {
 
         async setupLocalMedia() {
             try {
-                // Request balanced constraints for broad compatibility
+                // 1. Generate local fingerprint IMMEDIATELY even without media
+                // This ensures signaling works even if the camera is denied
+                try {
+                    const tempPC = new RTCPeerConnection(this.configuration);
+                    tempPC.addTransceiver('video', { direction: 'sendonly' });
+                    const offer = await tempPC.createOffer();
+                    const fingerprintMatch = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
+                    if (fingerprintMatch) {
+                        this.localFingerprint = fingerprintMatch[1];
+                        console.log('Room: Local fingerprint generated:', this.localFingerprint);
+                    }
+                    tempPC.close();
+                } catch (fpError) {
+                    console.error('Room: Fingerprint generation failed', fpError);
+                }
+
+                // 2. Request media
                 const constraints = {
                     video: {
                         width: { ideal: 1280 },
                         height: { ideal: 720 },
                         frameRate: { ideal: 30 },
                         facingMode: this.cameraFacing,
-                        
-                        // macOS/iOS specific (Center Stage) - Keep stable ones
                         faceFraming: true,
-                        
-                        // Android/Samsung & Generic Mobile advanced controls
                         focusMode: { ideal: 'continuous' },
-                        
-                        // Standard PTZ where available
                         pan: true,
                         tilt: true,
                         zoom: true
@@ -715,41 +768,30 @@ export default {
                 console.log('Room: Requesting media...', constraints);
                 try {
                     this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                    this.isCameraDenied = false;
                 } catch (e) {
                     console.warn('Room: Advanced constraints failed, falling back to simple', e);
-                    this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                }
-                
-                // Detect Zoom capabilities
-                this.detectZoomCapabilities();
-
-                // Track states for debugging
-                this.localStream.getTracks().forEach(track => {
-                    console.log(`Room: Local Track ${track.kind} (${track.label}): enabled=${track.enabled}, state=${track.readyState}`);
-                    track.onmute = () => console.warn(`Room: Local Track ${track.kind} muted`);
-                    track.onunmute = () => console.log(`Room: Local Track ${track.kind} unmuted`);
-                });
-
-                // Log actual capabilities for debugging
-                try {
-                    const videoTrack = this.localStream.getVideoTracks()[0];
-                    if (videoTrack && videoTrack.getCapabilities) {
-                        const caps = videoTrack.getCapabilities();
-                        console.log('Room: Camera Capabilities:', caps);
+                    try {
+                        this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                        this.isCameraDenied = false;
+                    } catch (fallbackError) {
+                        console.error('Room: Media access denied', fallbackError);
+                        this.isCameraDenied = true;
                     }
-                } catch (capError) { }
-                
-                const tempPC = new RTCPeerConnection(this.configuration);
-                tempPC.addTransceiver('video');
-                const offer = await tempPC.createOffer();
-                const fingerprintMatch = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
-                if (fingerprintMatch) {
-                    this.localFingerprint = fingerprintMatch[1];
                 }
-                tempPC.close();
+                
+                if (this.localStream) {
+                    this.detectZoomCapabilities();
+
+                    this.localStream.getTracks().forEach(track => {
+                        console.log(`Room: Local Track ${track.kind} (${track.label}): enabled=${track.enabled}, state=${track.readyState}`);
+                    });
+                }
 
                 this.$nextTick(() => this.rebindVideos());
-            } catch (e) { console.warn('Room: Media access denied', e); }
+            } catch (globalError) { 
+                console.error('Room: setupLocalMedia critical failure', globalError); 
+            }
         },
 
         handleSignal(data) {
@@ -1042,6 +1084,12 @@ export default {
             if (localWaiting && this.localStream && localWaiting.srcObject !== this.localStream) {
                 localWaiting.srcObject = this.localStream;
                 localWaiting.play().catch(e => console.warn('Play error localWaiting', e));
+            }
+
+            const localPiP = this.$refs.localVideoPiP;
+            if (localPiP && activeLocalStream && localPiP.srcObject !== activeLocalStream) {
+                localPiP.srcObject = activeLocalStream;
+                localPiP.play().catch(e => console.warn('Play error localPiP', e));
             }
 
             // Rebind Peer Streams
