@@ -237,7 +237,6 @@ export default {
             configuration: {
                 iceServers: [
                     { urls: 'stun:stun.meanly.ru:3478' },
-                    { urls: 'stun:stun.cloudflare.com:3478' },
                 ],
                 iceCandidatePoolSize: 10
             },
