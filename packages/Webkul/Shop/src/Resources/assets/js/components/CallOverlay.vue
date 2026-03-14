@@ -239,7 +239,8 @@ export default {
             isFullscreen: false,
             signalingGraceActive: false,
             signalingGraceTimeout: null,
-            reconnectAttempts: 0
+            reconnectAttempts: 0,
+            sessionUniqueId: Math.random().toString(36).substring(7)
         };
     },
 
@@ -431,7 +432,7 @@ export default {
         },
 
         async joinRoom(uuid, userName, hash) {
-            console.log('Room: Joining', uuid, 'as', userName, 'ID:', hash);
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Joining room ${uuid} as ${userName} (Hash: ${hash})`);
             this.roomUuid = uuid;
             this.localUserName = userName;
             this.localHash = hash || userName; 
@@ -444,20 +445,25 @@ export default {
             
             const customerId = this.$shop?.customer_id;
             if (window.Echo && customerId) {
+                 console.log(`CallOverlay [${this.sessionUniqueId}]: Subscribing to private user.${customerId}`);
                  window.Echo.private(`user.${customerId}`).listen('.call-signal', (data) => this.handleSignal(data));
             }
         },
 
         subscribeToChannels() {
             if (window.Echo && this.roomUuid) {
+                console.log(`CallOverlay [${this.sessionUniqueId}]: Subscribing to call.${this.roomUuid}`);
                 window.Echo.channel(`call.${this.roomUuid}`)
                     .stopListening('.call-signal')
-                    .listen('.call-signal', (data) => this.handleSignal(data));
+                    .listen('.call-signal', (data) => {
+                        this.handleSignal(data);
+                    });
             }
         },
 
         startPresence() {
             this.stopPresence();
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Starting presence ticks...`);
             this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
             let ticks = 0;
             this.presenceInterval = setInterval(() => {
@@ -466,6 +472,7 @@ export default {
                 ticks++;
                 if (ticks > 15) {
                     this.stopPresence();
+                    console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 10s`);
                     this.presenceInterval = setInterval(() => {
                         if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                     }, 10000);
@@ -555,12 +562,17 @@ export default {
             const signal = data.signal_data;
             const senderName = data.sender_name;
             const senderHash = signal.sender_hash || senderName; 
+            const senderSessionId = signal.sender_session_id;
+
+            // Filter out self-signals using sessionUniqueId
+            if (senderSessionId === this.sessionUniqueId) return;
             
-            if (senderHash === this.localHash || senderName === this.localUserName) return;
+            // If the signal is targeted and not for us, filter it
             if (signal.target && signal.target !== this.localHash && signal.target !== this.localUserName) return;
 
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Signal ${signal.type} from ${senderName} (Session: ${senderSessionId})`);
+
             if (signal.type === 'presence') {
-                const now = Date.now();
                 const isInitiator = this.localHash.toLowerCase() < senderHash.toLowerCase();
                 
                 if (!this.peers[senderHash]) {
@@ -784,9 +796,14 @@ export default {
 
         sendSignal(signalData) {
             signalData.sender_hash = this.localHash;
+            signalData.sender_session_id = this.sessionUniqueId;
+            
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
-            axios.post(endpoint, payload).catch(() => {});
+            
+            axios.post(endpoint, payload).catch((err) => {
+                console.warn(`CallOverlay [${this.sessionUniqueId}]: sendSignal error`, err);
+            });
         },
 
         retryEcho() {
