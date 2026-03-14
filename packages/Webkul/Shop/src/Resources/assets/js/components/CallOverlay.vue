@@ -1,148 +1,130 @@
 <template>
     <div v-if="isActive" 
-         :class="[isFullscreen ? 'p-0' : 'p-4 md:p-8']"
-         class="fixed inset-0 z-[10000] bg-black text-white flex flex-col justify-between font-sans overflow-hidden transition-all duration-300">
-        <!-- Header -->
-        <div v-if="!isFullscreen" class="flex justify-between items-center border-b border-white/20 pb-4 relative z-50">
-            <div>
-                <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1 flex items-center gap-2">
-                    <span v-if="peerCount === 1">Видеозвонок</span>
-                    <span v-else-if="peerCount > 1">Групповая встреча</span>
-                    <span v-else>Ожидание участников</span>
-                    <span class="flex items-center gap-1 ml-2 border-l border-white/20 pl-2">
-                        <span class="w-1.5 h-1.5 rounded-full" :class="statusColor"></span>
-                        <span class="text-[7px] tracking-widest opacity-40">{{ signalingState.toUpperCase() }}</span>
-                    </span>
-                </div>
-                <h2 class="text-xl md:text-3xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : (peerCount > 0 ? 'Встреча активна' : 'Комната пуста') }}</h2>
-                <div v-if="isRoomMode" class="text-[8px] font-bold text-[#00FF41] uppercase tracking-[0.2em] mt-1 flex items-center gap-1">
-                    <span class="w-1 h-1 bg-[#00FF41] rounded-full animate-pulse"></span>
-                    Шифрование P2P активно
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-3 md:px-4 py-1 font-bold text-[10px] md:text-xs uppercase tracking-widest animate-pulse transition-all">
-                    {{ peerCount + 1 }} в сети
-                </div>
-                <div class="flex -space-x-2">
-                    <div v-for="id in peerIds" :key="id" 
-                        class="w-6 h-6 rounded-full bg-zinc-800 border-2 border-black flex items-center justify-center text-[10px] font-bold uppercase transition-all"
-                        :class="{'border-emerald-500 bg-emerald-950/30': peers[id]?.connected}"
-                        :title="peers[id]?.name">
-                        {{ peers[id]?.name?.[0] || '?' }}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Video Grid Area -->
-        <div :class="[isFullscreen ? 'm-0 rounded-none' : 'my-4 rounded-3xl']" 
-             class="flex-grow relative overflow-hidden bg-zinc-950 transition-all duration-300">
-            
-            <!-- 1-on-1 Mode: Cinema Layout with Swap Button -->
-            <div v-if="peerCount === 1" class="relative w-full h-full overflow-hidden">
-                <!-- Main View Container for Gestures -->
-                <div class="absolute inset-0 transition-opacity duration-1000 flex items-center justify-center overflow-hidden touch-none"
+         @mousemove="userActivity"
+         @touchstart="userActivity"
+         @click="toggleControls"
+         class="fixed inset-0 z-[10000] bg-black text-white font-sans overflow-hidden transition-all duration-300">
+        
+        <!-- Video Layer (Base) -->
+        <div class="absolute inset-0 bg-zinc-950">
+            <!-- 1-on-1 Mode -->
+            <div v-if="peerCount === 1" class="w-full h-full relative overflow-hidden">
+                <div class="absolute inset-0 flex items-center justify-center overflow-hidden touch-none"
                      @touchstart="handleTouchStart"
                      @touchmove="handleTouchMove"
                      @touchend="handleTouchEnd">
                     
-                    <!-- If focused on Peer -->
                     <template v-if="!isFocusedOnSelf">
                          <video :id="'video_' + peerIds[0]" 
                                 autoplay playsinline 
                                 :style="zoomStyle"
-                                 :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
-                                 class="w-full h-full pointer-events-none transition-all duration-700"></video>
+                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
+                                class="w-full h-full pointer-events-none transition-all duration-700"></video>
                          
-                         <!-- Subtle Security Indicator in corner -->
-                         <div v-if="peers[peerIds[0]].verified" class="absolute top-6 right-6 text-xl opacity-40 z-20" title="Защищено">😉</div>
-
-                         <!-- Zoom Reset Badge -->
-                         <div v-if="zoomLevel > 1" @click="resetZoom" class="absolute top-6 left-6 bg-[#7C45F5] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer animate-bounce z-20">
+                         <div v-if="zoomLevel > 1" @click.stop="resetZoom" class="absolute top-24 left-6 bg-[#7C45F5] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer animate-bounce z-20">
                              {{ Math.round(zoomLevel * 100) }}% (Reset)
                          </div>
                     </template>
 
-                    <!-- If focused on Self -->
-                     <template v-else>
-                          <video ref="localVideoMain" 
-                                 autoplay muted playsinline 
-                                 :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
-                                 class="w-full h-full mirror transition-all duration-700"></video>
-                     </template>
+                    <template v-else>
+                        <video ref="localVideoMain" 
+                               autoplay muted playsinline 
+                               :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                               class="w-full h-full transition-all duration-700"></video>
+                        
+                        <!-- Zoom Slider for Main Local View -->
+                        <div v-if="zoomCapabilities && controlsVisible" class="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-black/40 backdrop-blur-3xl p-4 rounded-full border border-white/10 z-[60] group pointer-events-auto">
+                            <span class="text-[10px] font-bold text-white/40">🔭</span>
+                            <div class="h-48 w-1 bg-white/10 rounded-full relative overflow-hidden group-hover:w-2 transition-all">
+                                <input type="range" 
+                                       :min="zoomCapabilities.min" 
+                                       :max="zoomCapabilities.max" 
+                                       :step="zoomCapabilities.step || 0.1" 
+                                       :value="cameraZoom"
+                                       @input="applyCameraZoom($event.target.value)"
+                                       class="absolute inset-0 opacity-0 cursor-pointer z-10 [writing-mode:bt-lr] -rotate-180" 
+                                       style="appearance: slider-vertical; width: 100%; height: 100%;">
+                                <div class="absolute bottom-0 left-0 right-0 bg-[#7C45F5] transition-all" :style="{height: ((cameraZoom - zoomCapabilities.min) / (zoomCapabilities.max - zoomCapabilities.min) * 100) + '%'}"></div>
+                            </div>
+                            <span class="text-[8px] font-black text-white/60 tracking-tighter">{{ Math.round(cameraZoom * 10) / 10 }}x</span>
+                        </div>
+                    </template>
                 </div>
 
-                <!-- Swap & Fullscreen Controls -->
-                <div class="absolute bottom-6 right-6 flex flex-col gap-3 z-20">
-                    <div @click="scalingMode = (scalingMode === 'cover' ? 'contain' : 'cover')" 
-                         class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group"
-                         :title="scalingMode === 'cover' ? 'Подогнать (Fit)' : 'Заполнить (Fill)'">
-                         <span class="text-lg md:text-xl">{{ scalingMode === 'cover' ? '⬛' : '⬜' }}</span>
+                <!-- Floating Pip for Self (When focused on Peer) -->
+                <div v-if="!isFocusedOnSelf && !isSharingScreen" 
+                     class="absolute bottom-24 right-6 w-32 h-48 md:w-48 md:h-72 rounded-[32px] overflow-hidden border-2 border-white/20 shadow-2xl z-40 bg-zinc-900 group transition-all hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto"
+                     @click.stop="isFocusedOnSelf = true">
+                    <video ref="localVideoPip" 
+                           autoplay muted playsinline 
+                           class="w-full h-full object-cover mirror"></video>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
+                        <span class="text-[8px] font-black uppercase tracking-widest text-white/80">Вы</span>
                     </div>
 
-                    <div @click="toggleFullscreen" 
-                         class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group"
-                         title="Полный экран">
-                         <span class="text-lg md:text-xl">{{ isFullscreen ? '◢◣' : '⛶' }}</span>
-                    </div>
-
-                    <div @click="isFocusedOnSelf = !isFocusedOnSelf" 
-                         class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.6)] flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group"
-                         title="Сменить вид">
-                        <span class="text-xl md:text-2xl group-hover:rotate-180 transition-transform duration-700">🔄</span>
+                    <!-- Zoom Slider for Pip -->
+                    <div v-if="zoomCapabilities && controlsVisible" @click.stop 
+                         class="absolute left-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-black/60 backdrop-blur-xl p-2 rounded-full border border-white/10 z-[60] pointer-events-auto">
+                        <div class="h-24 w-1 bg-white/10 rounded-full relative overflow-hidden">
+                            <input type="range" 
+                                   :min="zoomCapabilities.min" 
+                                   :max="zoomCapabilities.max" 
+                                   :step="zoomCapabilities.step || 0.1" 
+                                   :value="cameraZoom"
+                                   @input="applyCameraZoom($event.target.value)"
+                                   class="absolute inset-0 opacity-0 cursor-pointer z-10" 
+                                   style="appearance: slider-vertical; width: 100%; height: 100%;">
+                            <div class="absolute bottom-0 left-0 right-0 bg-[#7C45F5] transition-all" :style="{height: ((cameraZoom - zoomCapabilities.min) / (zoomCapabilities.max - zoomCapabilities.min) * 100) + '%'}"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Waiting for Peer to connect/stream -->
                 <div v-if="!peers[peerIds[0]]?.connected || !peers[peerIds[0]]?.streamReady" 
-                    class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30 transition-all">
+                    class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30">
                     <div class="flex flex-col items-center gap-6">
                          <div class="w-16 h-16 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
                          <div class="text-center">
-                            <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white">{{ peers[peerIds[0]]?.connected ? 'Получение видео...' : 'Установка связи...' }}</h3>
-                            <p class="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mt-2">P2P Тоннель строится напрямую</p>
+                            <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white">Установка связи...</h3>
                          </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Group Mode (split screen) -->
-            <div v-else :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
-                <!-- Local Video -->
-                 <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
+            <div v-else-if="peerCount > 1" :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
+                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center group/local">
                     <video ref="localVideoGrid" autoplay muted playsinline 
-                           :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
-                           class="w-full h-full mirror transition-all duration-700"></video>
-                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg flex items-center gap-2">
-                        <span>Вы ({{ localUserName }})</span>
-                        <span v-if="localFingerprint" class="opacity-40" title="Security Fingerprint Verified">🛡️</span>
+                           :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                           class="w-full h-full transition-all duration-700"></video>
+                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg text-white/60">
+                        Вы ({{ localUserName }})
+                    </div>
+
+                    <!-- Zoom Slider for Grid Local View -->
+                    <div v-if="zoomCapabilities && controlsVisible" class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-black/60 backdrop-blur-xl p-2 rounded-full border border-white/10 z-[60] pointer-events-auto">
+                        <div class="h-24 w-1 bg-white/10 rounded-full relative overflow-hidden">
+                            <input type="range" 
+                                   :min="zoomCapabilities.min" 
+                                   :max="zoomCapabilities.max" 
+                                   :step="zoomCapabilities.step || 0.1" 
+                                   :value="cameraZoom"
+                                   @input="applyCameraZoom($event.target.value)"
+                                   class="absolute inset-0 opacity-0 cursor-pointer z-10" 
+                                   style="appearance: slider-vertical; width: 100%; height: 100%;">
+                            <div class="absolute bottom-0 left-0 right-0 bg-[#7C45F5] transition-all" :style="{height: ((cameraZoom - zoomCapabilities.min) / (zoomCapabilities.max - zoomCapabilities.min) * 100) + '%'}"></div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Remote Videos -->
                 <div v-for="id in peerIds" :key="id" 
-                    class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
+                    class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center">
                     <video :id="'video_' + id" autoplay playsinline 
                            :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
                            class="w-full h-full transition-all duration-700"></video>
-                    
-                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
-                        <span>{{ peers[id]?.name }}</span>
-                        <span v-if="peers[id]?.verified" class="text-lg animate-bounce duration-1000">😉</span>
-                        <span v-else-if="peers[id]?.connected" class="opacity-50 text-[10px]">🔒</span>
-                    </div>
-                    
-                    <div v-if="!peers[id]?.connected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-20">
-                        <div class="flex flex-col items-center gap-2">
-                             <div class="w-6 h-6 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Empty State -->
             <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
+                <!-- (Same empty state content as before) -->
                 <div class="w-32 h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
                      <div class="flex -space-x-4">
                         <div v-if="signalingState === 'unavailable'" class="text-4xl">⚠️</div>
@@ -155,51 +137,92 @@
                 <div class="text-center px-8 pointer-events-auto">
                     <template v-if="(signalingState === 'unavailable' || signalingState === 'failed') && !signalingGraceActive">
                         <div class="bg-black/80 backdrop-blur-3xl p-8 md:p-12 rounded-[40px] border border-red-500/20 flex flex-col items-center max-w-sm mx-auto shadow-[0_0_100px_rgba(239,68,68,0.2)]">
-                            <div class="text-6xl mb-6 scale-110">🛰️</div>
-                            <h3 class="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
-                            <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-zinc-400 leading-relaxed mb-8">
-                                Сигнальный сервер недоступен. Проверьте соединение или повторите попытку.
-                            </p>
-                            <button @click="retryEcho" 
-                                :disabled="isRetrying"
-                                class="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-xl disabled:opacity-50 flex items-center justify-center gap-3">
-                                <div v-if="isRetrying" class="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                                {{ isRetrying ? 'Подключение...' : 'Переподключиться' }}
-                            </button>
+                            <h3 class="text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
+                            <button @click="retryEcho" :disabled="isRetrying" class="w-full py-4 bg-white text-black text-[10px] font-black uppercase rounded-2xl">Переподключиться</button>
                         </div>
                     </template>
                     <template v-else>
                         <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
-                        <p class="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mt-4 italic">
-                            {{ (signalingState === 'unavailable' || signalingState === 'failed') ? 'Восстановление связи...' : 'Передайте ссылку собеседнику для начала разговора.' }}
+                        <p class="mt-4 text-[8px] uppercase tracking-widest text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">
+                            Поделитесь ссылкой, чтобы начать разговор прямо сейчас
                         </p>
+                        <button @click="copyRoomLink" 
+                                class="mt-6 px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white transition-all active:scale-95">
+                            {{ roomLinkCopied ? 'Ссылка скопирована! ✅' : 'Скопировать ссылку' }}
+                        </button>
                     </template>
                 </div>
             </div>
         </div>
 
-        <!-- Controls -->
-        <div v-if="!isFullscreen" class="relative z-50 flex justify-center gap-4 py-4 mt-auto">
-             <div class="flex justify-center gap-3 md:gap-6 pb-4 bg-black/60 backdrop-blur-2xl px-6 md:px-12 py-4 md:py-6 rounded-full border border-white/10 mx-auto w-max shadow-2xl">
-                <button @click="toggleMic" :class="[isMicOn ? 'bg-white text-black' : 'bg-red-500/20 text-red-500 border-red-500/40']"
-                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:scale-105 transition-all flex items-center justify-center border border-white/10 group">
-                    <span class="text-[8px] md:text-[10px] font-black uppercase group-hover:tracking-widest transition-all">{{ isMicOn ? 'Mic On' : 'Muted' }}</span>
-                </button>
+        <!-- Interface Layer (Overlay) -->
+        <div class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 md:p-8 landscape:flex-row landscape:justify-between items-stretch">
+            
+            <!-- Top Header (Floating) -->
+            <div :class="{'opacity-0 -translate-y-10': !controlsVisible}"
+                 class="flex justify-between items-start w-full transition-all duration-700 pointer-events-auto landscape:w-auto landscape:max-w-[300px]">
+                <div class="bg-black/40 backdrop-blur-xl p-4 rounded-3xl border border-white/10 border-b-4 border-b-[#7C45F5]/50">
+                    <div class="text-[8px] uppercase tracking-[0.3em] opacity-60 mb-1 flex items-center gap-2">
+                        <span>{{ peerCount === 1 ? 'Видеозвонок' : (peerCount > 1 ? 'Групповая встреча' : 'Ожидание') }}</span>
+                        <span class="w-1.5 h-1.5 rounded-full" :class="statusColor"></span>
+                    </div>
+                    <h2 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter">{{ isRoomMode ? 'Защищенная комната' : 'Встреча активна' }}</h2>
+                </div>
+                <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-4 py-2 font-bold text-[10px] uppercase tracking-widest rounded-2xl ml-4 shadow-[0_0_20px_rgba(0,255,65,0.3)] landscape:hidden">
+                    {{ peerCount + 1 }} в сети
+                </div>
+            </div>
+
+            <!-- Side/Bottom Controls (Adaptive) -->
+            <div class="flex flex-col items-center justify-end pointer-events-none landscape:flex-row-reverse landscape:items-center landscape:justify-end gap-6 h-full landscape:w-full">
                 
-                <button @click="endCall" 
-                    class="h-12 px-8 md:h-16 md:px-12 rounded-full bg-red-600 hover:bg-red-700 text-white font-black uppercase text-xs md:text-sm tracking-widest transition-all shadow-xl shadow-red-500/30 active:scale-95">
-                    Выйти
-                </button>
- 
-                <button @click="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black' : 'bg-zinc-800 text-white opacity-40']"
-                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:scale-105 transition-all flex items-center justify-center border border-white/10 group">
-                    <span class="text-[8px] md:text-[10px] font-black uppercase group-hover:tracking-widest transition-all">{{ isSharingScreen ? 'Stop' : 'Share' }}</span>
-                </button>
- 
-                <button @click="toggleCamera" :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                    class="h-12 w-12 md:h-16 md:w-16 rounded-full hover:scale-105 transition-all flex items-center justify-center border border-white/10 group">
-                    <span class="text-[8px] md:text-[10px] font-black uppercase group-hover:tracking-widest transition-all">{{ isCameraOn ? 'Cam On' : 'Cam Off' }}</span>
-                </button>
+                <!-- Main System Buttons (Floating circle cluster) -->
+                <div :class="{'opacity-0 translate-y-10 landscape:translate-x-10 landscape:translate-y-0': !controlsVisible}"
+                     class="flex justify-center flex-wrap gap-3 p-3 bg-black/40 backdrop-blur-3xl rounded-[40px] border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto landscape:flex-col">
+                    
+                    <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-white text-black' : 'bg-red-500/20 text-red-500 border-red-500/40']"
+                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                        <span class="text-[8px] font-black uppercase">{{ isMicOn ? 'On' : 'Off' }}</span>
+                    </button>
+                    
+                    <button @click.stop="endCall" 
+                        class="h-12 w-12 md:h-14 md:w-14 rounded-full bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-500/20 hover:scale-110 active:scale-95">
+                        X
+                    </button>
+     
+                    <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
+                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                        <span class="text-[8px] font-black uppercase">Cam</span>
+                    </button>
+
+                    <button @click.stop="copyRoomLink" :class="[roomLinkCopied ? 'bg-[#7C45F5] text-white scale-110 shadow-[0_0_20px_rgba(124,69,245,0.4)]' : 'bg-zinc-800 text-white']"
+                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95"
+                        title="Скопировать ссылку">
+                        <span class="text-[10px] font-black uppercase leading-none">{{ roomLinkCopied ? '✅' : '🔗' }}</span>
+                    </button>
+
+                    <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black' : 'bg-zinc-800 text-white opacity-40']"
+                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 landscape:hidden md:flex">
+                        <span class="text-[8px] font-black uppercase">S</span>
+                    </button>
+                </div>
+
+                <!-- Secondary Control Strip (Scaling, Fullscreen, Swap) -->
+                <div :class="{'opacity-0 -translate-x-10': !controlsVisible}"
+                     class="flex gap-2 p-2 bg-white/5 backdrop-blur-3xl rounded-full border border-white/10 transition-all duration-700 pointer-events-auto landscape:flex-col">
+                    <button @click.stop="scalingMode = (scalingMode === 'cover' ? 'contain' : 'cover')" 
+                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                        <span class="text-sm">{{ scalingMode === 'cover' ? '⬛' : '⬜' }}</span>
+                    </button>
+                    <button @click.stop="toggleFullscreen" 
+                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                        <span class="text-sm">{{ isFullscreen ? '◢◣' : '⛶' }}</span>
+                    </button>
+                    <button v-if="peerCount === 1" @click.stop="isFocusedOnSelf = !isFocusedOnSelf" 
+                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                        <span class="text-sm">🔄</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -246,12 +269,18 @@ export default {
             initialPanY: 0,
             initialCenter: { x: 0, y: 0 },
             isFullscreen: false,
+            controlsVisible: true,
+            controlsTimeout: null,
             signalingGraceActive: false,
             signalingGraceTimeout: null,
             reconnectAttempts: 0,
             isRetrying: false,
-            scalingMode: 'cover', // 'cover' (Fill) or 'contain' (Fit)
-            sessionUniqueId: Math.random().toString(36).substring(7)
+            scalingMode: 'contain', // 'contain' (Fit) by default to avoid initial cropping
+            sessionUniqueId: Math.random().toString(36).substring(7),
+            isLandscape: window.innerWidth > window.innerHeight,
+            cameraZoom: 1,
+            zoomCapabilities: null,
+            roomLinkCopied: false
         };
     },
 
@@ -315,6 +344,8 @@ export default {
         this.handleSignalingStateChange(this.signalingState);
 
         document.addEventListener('fullscreenchange', this.handleFullscreenChange);
+        window.addEventListener('resize', this.updateOrientation);
+        window.addEventListener('orientationchange', this.updateOrientation);
 
         const laravel = window.Laravel || {};
         if (laravel.turnUrl) {
@@ -332,6 +363,8 @@ export default {
     beforeUnmount() {
         this.stopPresence();
         document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
+        window.removeEventListener('resize', this.updateOrientation);
+        window.removeEventListener('orientationchange', this.updateOrientation);
         if (this.retryInterval) clearInterval(this.retryInterval);
         if (this.cleanupInterval) clearInterval(this.cleanupInterval);
     },
@@ -436,17 +469,90 @@ export default {
 
         handleFullscreenChange() {
             this.isFullscreen = !!document.fullscreenElement;
+            if (!this.isFullscreen) {
+                this.controlsVisible = true;
+                if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
+            }
         },
 
         toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
                 this.isFullscreen = true;
+                this.userActivity(); 
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen().catch(() => {});
                     this.isFullscreen = false;
+                    this.controlsVisible = true;
                 }
+            }
+        },
+
+        updateOrientation() {
+            this.isLandscape = window.innerWidth > window.innerHeight;
+            this.userActivity();
+        },
+
+        userActivity() {
+            this.controlsVisible = true;
+            if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
+            if (this.isFullscreen) {
+                this.controlsTimeout = setTimeout(() => {
+                    this.controlsVisible = false;
+                }, 4000);
+            }
+        },
+
+        async applyCameraZoom(value) {
+            try {
+                const videoTrack = this.localStream?.getVideoTracks()[0];
+                if (videoTrack && this.zoomCapabilities) {
+                    await videoTrack.applyConstraints({
+                        advanced: [{ zoom: parseFloat(value) }]
+                    });
+                    this.cameraZoom = value;
+                }
+            } catch (e) {
+                console.warn('Apply zoom failed', e);
+            }
+        },
+
+        async copyRoomLink() {
+            try {
+                const url = `${window.location.origin}/call/${this.roomUuid}`;
+                await navigator.clipboard.writeText(url);
+                this.roomLinkCopied = true;
+                setTimeout(() => this.roomLinkCopied = false, 3000);
+            } catch (e) {
+                console.error('Copy room link failed', e);
+            }
+        },
+
+        detectZoomCapabilities() {
+            try {
+                const videoTrack = this.localStream?.getVideoTracks()[0];
+                if (videoTrack && videoTrack.getCapabilities) {
+                    const caps = videoTrack.getCapabilities();
+                    console.log('Camera capabilities detected:', caps);
+                    if (caps.zoom) {
+                        this.zoomCapabilities = caps.zoom;
+                        // Initialize with current or min
+                        const current = videoTrack.getSettings().zoom || caps.zoom.min || 1;
+                        this.cameraZoom = current;
+                    }
+                }
+            } catch (e) {
+                console.warn('Detect zoom failed', e);
+            }
+        },
+
+        toggleControls() {
+            if (this.controlsVisible && this.isFullscreen) {
+                this.controlsVisible = false;
+                if (this.controlsTimeout) clearTimeout(this.controlsTimeout);
+            } else {
+                this.userActivity();
             }
         },
 
@@ -548,6 +654,9 @@ export default {
                     this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 }
                 
+                // Detect Zoom capabilities
+                this.detectZoomCapabilities();
+
                 // Track states for debugging
                 this.localStream.getTracks().forEach(track => {
                     console.log(`Room: Local Track ${track.kind} (${track.label}): enabled=${track.enabled}, state=${track.readyState}`);
@@ -728,7 +837,13 @@ export default {
             }
 
             if (this.localStream) {
-                this.localStream.getTracks().forEach(t => pc.addTrack(t, this.localStream));
+                this.localStream.getTracks().forEach(t => {
+                    let trackToUse = t;
+                    if (t.kind === 'video' && this.isSharingScreen && this.screenStream) {
+                        trackToUse = this.screenStream.getVideoTracks()[0] || t;
+                    }
+                    pc.addTrack(trackToUse, this.isSharingScreen ? this.screenStream : this.localStream);
+                });
             }
 
             pc.onicecandidate = (e) => {
@@ -784,14 +899,21 @@ export default {
             // Rebind Local Streams
             const localMain = this.$refs.localVideoMain;
             const localGrid = this.$refs.localVideoGrid;
+            const localPip = this.$refs.localVideoPip;
             
-            if (localMain && this.localStream && localMain.srcObject !== this.localStream) {
-                localMain.srcObject = this.localStream;
+            const activeLocalStream = this.isSharingScreen ? this.screenStream : this.localStream;
+            
+            if (localMain && activeLocalStream && localMain.srcObject !== activeLocalStream) {
+                localMain.srcObject = activeLocalStream;
                 localMain.play().catch(() => {});
             }
-            if (localGrid && this.localStream && localGrid.srcObject !== this.localStream) {
-                localGrid.srcObject = this.localStream;
+            if (localGrid && activeLocalStream && localGrid.srcObject !== activeLocalStream) {
+                localGrid.srcObject = activeLocalStream;
                 localGrid.play().catch(() => {});
+            }
+            if (localPip && activeLocalStream && localPip.srcObject !== activeLocalStream) {
+                localPip.srcObject = activeLocalStream;
+                localPip.play().catch(() => {});
             }
 
             // Rebind Peer Streams
@@ -869,26 +991,57 @@ export default {
         async toggleScreenShare() {
             try {
                 if (!this.isSharingScreen) {
+                    console.log('ScreenShare: Requesting display media...');
                     this.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                    const track = this.screenStream.getVideoTracks()[0];
+                    const screenTrack = this.screenStream.getVideoTracks()[0];
+                    
+                    if (!screenTrack) throw new Error('No screen track obtained');
+
+                    console.log('ScreenShare: Replacing tracks for peers:', Object.keys(this.peers));
                     Object.values(this.peers).forEach(p => {
                         const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
-                        if (sender) sender.replaceTrack(track);
+                        if (sender) {
+                            sender.replaceTrack(screenTrack).catch(err => {
+                                console.warn(`ScreenShare: replaceTrack failed for peer`, err);
+                            });
+                        }
                     });
+
                     this.isSharingScreen = true;
                     this.$nextTick(() => this.rebindVideos());
-                    track.onended = () => this.toggleScreenShare();
+                    
+                    screenTrack.onended = () => {
+                        console.log('ScreenShare: Track ended by user/system');
+                        if (this.isSharingScreen) this.toggleScreenShare();
+                    };
                 } else {
-                    if (this.screenStream) this.screenStream.getTracks().forEach(t => t.stop());
-                    const track = this.localStream?.getVideoTracks()[0];
-                    Object.values(this.peers).forEach(p => {
-                        const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
-                        if (sender && track) sender.replaceTrack(track);
-                    });
+                    console.log('ScreenShare: Stopping display media...');
+                    if (this.screenStream) {
+                        this.screenStream.getTracks().forEach(t => t.stop());
+                        this.screenStream = null;
+                    }
+                    
+                    const camTrack = this.localStream?.getVideoTracks()[0];
+                    if (camTrack) {
+                        Object.values(this.peers).forEach(p => {
+                            const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
+                            if (sender) {
+                                sender.replaceTrack(camTrack).catch(err => {
+                                    console.warn(`ScreenShare: restore camera track failed`, err);
+                                });
+                            }
+                        });
+                    }
+                    
                     this.isSharingScreen = false;
                     this.$nextTick(() => this.rebindVideos());
                 }
-            } catch (e) { }
+            } catch (e) { 
+                console.warn('ScreenShare: Failed', e);
+                this.isSharingScreen = false;
+                if (this.screenStream) this.screenStream.getTracks().forEach(t => t.stop());
+                this.screenStream = null;
+            }
         },
 
         endCall() {
