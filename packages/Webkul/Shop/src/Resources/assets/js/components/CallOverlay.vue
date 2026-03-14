@@ -44,25 +44,6 @@
                 </div>
 
 
-                <!-- Local PiP in 1-on-1 mode -->
-                <div v-if="!isFocusedOnSelf" 
-                     class="absolute bottom-24 right-6 w-32 md:w-48 aspect-video rounded-3xl bg-zinc-900 shadow-2xl border border-white/10 overflow-hidden z-40 transition-all active:scale-95 touch-none group/pip"
-                     @click.stop="isFocusedOnSelf = true">
-                    <video ref="localVideoPiP" autoplay muted playsinline 
-                           :class="[{mirror: !isSharingScreen}]"
-                           class="w-full h-full object-cover"></video>
-                    
-                    <div v-if="isCameraDenied" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60">
-                         <span class="text-2xl">🎥🚫</span>
-                         <span class="text-[8px] font-black uppercase tracking-tighter mt-1 text-red-500">Blocked</span>
-                    </div>
-
-                    <div class="absolute inset-0 bg-white/0 group-hover/pip:bg-white/5 transition-all flex items-center justify-center">
-                         <div class="opacity-0 group-hover/pip:opacity-100 transition-all bg-black/60 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest translate-y-2 group-hover/pip:translate-y-0 text-white border border-white/10">
-                             Focus self
-                         </div>
-                    </div>
-                </div>
 
                 <div v-if="!peers[peerIds[0]]?.connected" 
                     class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30">
@@ -111,7 +92,7 @@
             <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                       class="absolute inset-0 w-full h-full opacity-80 transition-all duration-700 pointer-events-none"></video>
+                       class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none"></video>
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
@@ -267,6 +248,7 @@ export default {
             presenceInterval: null,
             cleanupInterval: null,
             retryInterval: null,
+            inactivityTimer: null,
 
             // Gesture State
             zoomLevel: 1,
@@ -335,9 +317,15 @@ export default {
             this.resetZoom();
             this.$nextTick(() => this.rebindVideos());
         },
-        peerCount() {
+        peerCount(newCount) {
             this.resetZoom();
             this.$nextTick(() => this.rebindVideos());
+            
+            if (newCount > 0) {
+                this.stopInactivityTimer();
+            } else {
+                this.startInactivityTimer();
+            }
         }
     },
 
@@ -378,6 +366,7 @@ export default {
 
     beforeUnmount() {
         this.stopPresence();
+        this.stopInactivityTimer();
         document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
         window.removeEventListener('resize', this.updateOrientation);
         window.removeEventListener('orientationchange', this.updateOrientation);
@@ -423,32 +412,47 @@ export default {
                     const newZoom = Math.max(this.zoomCapabilities.min, Math.min(this.zoomCapabilities.max, this.initialCameraZoom * scale));
                     this.applyCameraZoom(newZoom);
                     
-                    // Allow panning even during hardware zoom
                     const currentCenter = this.getCenter(e.touches);
                     this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
                     this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
                 } else {
-                    // CSS Digital Zoom
-                    this.zoomLevel = Math.max(1, Math.min(5, this.initialZoom * scale));
+                    // CSS Digital Zoom - with point centering
+                    const nextZoom = Math.max(1, Math.min(5, this.initialZoom * scale));
                     const currentCenter = this.getCenter(e.touches);
-                    this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
-                    this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
+                    
+                    // Zoom towards pinch center
+                    if (nextZoom > 1) {
+                        const zoomRatio = nextZoom / this.zoomLevel;
+                        this.panX = (this.panX - (currentCenter.x - window.innerWidth/2)) * zoomRatio + (currentCenter.x - window.innerWidth/2);
+                        this.panY = (this.panY - (currentCenter.y - window.innerHeight/2)) * zoomRatio + (currentCenter.y - window.innerHeight/2);
+                    } else {
+                        this.panX = 0;
+                        this.panY = 0;
+                    }
+                    
+                    this.zoomLevel = nextZoom;
+                    // Additionally allow panning during zoom
+                    const deltaX = currentCenter.x - this.initialCenter.x;
+                    const deltaY = currentCenter.y - this.initialCenter.y;
+                    this.panX += deltaX * 0.1; // Subtle pan during zoom
+                    this.panY += deltaY * 0.1;
                 }
+                this.clampPan();
             } else if (e.touches.length === 1 && (this.zoomLevel > 1 || this.cameraZoom > 1)) {
                 e.preventDefault(); 
-                const deltaX = e.touches[0].clientX - this.initialCenter.x;
-                const deltaY = e.touches[0].clientY - this.initialCenter.y;
+                const deltaX = (e.touches[0].clientX - this.initialCenter.x);
+                const deltaY = (e.touches[0].clientY - this.initialCenter.y);
                 this.panX = this.initialPanX + deltaX;
                 this.panY = this.initialPanY + deltaY;
+                this.clampPan();
             }
         },
 
         handleWheel(e, isLocalGrid = false) {
-            // Trackpad pinch is usually ctrl + wheel
             if (e.ctrlKey) {
                 e.preventDefault();
                 const delta = -e.deltaY;
-                const factor = 1.1;
+                const factor = 1.05;
                 const scale = delta > 0 ? factor : 1/factor;
                 const isTargetingLocal = isLocalGrid || this.isFocusedOnSelf;
 
@@ -456,13 +460,19 @@ export default {
                     const newZoom = Math.max(this.zoomCapabilities.min, Math.min(this.zoomCapabilities.max, this.cameraZoom * scale));
                     this.applyCameraZoom(newZoom);
                 } else {
-                    this.zoomLevel = Math.max(1, Math.min(5, this.zoomLevel * scale));
+                    const nextZoom = Math.max(1, Math.min(5, this.zoomLevel * scale));
+                    // Zoom towards mouse point
+                    const zoomRatio = nextZoom / this.zoomLevel;
+                    this.panX = (this.panX - (e.clientX - window.innerWidth/2)) * zoomRatio + (e.clientX - window.innerWidth/2);
+                    this.panY = (this.panY - (e.clientY - window.innerHeight/2)) * zoomRatio + (e.clientY - window.innerHeight/2);
+                    this.zoomLevel = nextZoom;
                 }
             } else if (this.zoomLevel > 1) {
                 e.preventDefault();
                 this.panX -= e.deltaX;
                 this.panY -= e.deltaY;
             }
+            this.clampPan();
         },
 
         handleTouchEnd() {
@@ -491,6 +501,20 @@ export default {
             this.zoomLevel = 1;
             this.panX = 0;
             this.panY = 0;
+        },
+
+        clampPan() {
+            if (this.zoomLevel <= 1) {
+                this.panX = 0;
+                this.panY = 0;
+                return;
+            }
+
+            const maxPanX = (window.innerWidth * this.zoomLevel - window.innerWidth) / 2;
+            const maxPanY = (window.innerHeight * this.zoomLevel - window.innerHeight) / 2;
+
+            this.panX = Math.max(-maxPanX, Math.min(maxPanX, this.panX));
+            this.panY = Math.max(-maxPanY, Math.min(maxPanY, this.panY));
         },
 
         handleSignalingStateChange(state) {
@@ -651,9 +675,10 @@ export default {
             this.isActive = true;
 
             // Start signaling and media in parallel to avoid blocking connection on permission prompt
-            this.setupLocalMedia(); 
+            await this.setupLocalMedia(); 
             this.subscribeToChannels();
             this.startPresence();
+            this.startInactivityTimer();
             
             const customerId = this.$shop?.customer_id;
             if (window.Echo && customerId) {
@@ -1120,11 +1145,6 @@ export default {
                 if (localWaiting.paused) localWaiting.play().catch(() => {});
             }
 
-            const localPiP = this.$refs.localVideoPiP;
-            if (localPiP && activeLocalStream) {
-                if (localPiP.srcObject !== activeLocalStream) localPiP.srcObject = activeLocalStream;
-                if (localPiP.paused) localPiP.play().catch(() => {});
-            }
 
             // Rebind Peer Streams
             Object.keys(this.peers).forEach(id => {
@@ -1163,6 +1183,28 @@ export default {
                 const newPeers = { ...this.peers };
                 delete newPeers[id];
                 this.peers = newPeers;
+            }
+            
+            if (this.peerCount === 0) {
+                this.startInactivityTimer();
+            }
+        },
+
+        startInactivityTimer() {
+            this.stopInactivityTimer();
+            if (this.peerCount > 0) return;
+            
+            console.log('Room: Starting 5-minute inactivity timer');
+            this.inactivityTimer = setTimeout(() => {
+                console.log('Room: 5-minute inactivity reached. Closing room.');
+                this.cleanup();
+            }, 5 * 60 * 1000); 
+        },
+
+        stopInactivityTimer() {
+            if (this.inactivityTimer) {
+                clearTimeout(this.inactivityTimer);
+                this.inactivityTimer = null;
             }
         },
 
