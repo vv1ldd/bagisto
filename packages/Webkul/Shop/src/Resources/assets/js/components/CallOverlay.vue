@@ -42,6 +42,15 @@
                     </template>
                 </div>
 
+                <!-- Floating Name Badge (1-on-1) -->
+                <div v-if="peers[peerIds[0]]?.connected" 
+                     class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-white/10 z-20 transition-all duration-500"
+                     :class="{'opacity-0 translate-y-10': !controlsVisible}">
+                    <div class="text-[10px] font-black uppercase tracking-widest text-white/80">
+                        {{ isFocusedOnSelf ? cleanLocalName : cleanPeerName(peers[peerIds[0]].name) }}
+                    </div>
+                </div>
+
 
 
                 <div v-if="!peers[peerIds[0]]?.connected" 
@@ -78,7 +87,7 @@
                            :style="isFocusedOnSelf ? zoomStyle : {}"
                            class="w-full h-full transition-all duration-700"></video>
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg text-white/60">
-                        Вы ({{ localUserName }})
+                        {{ cleanLocalName }}
                     </div>
 
                 </div>
@@ -87,6 +96,9 @@
                     <video :id="'video_' + id" autoplay playsinline 
                            :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
                            class="w-full h-full transition-all duration-700"></video>
+                    <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg text-white/60">
+                        {{ cleanPeerName(peers[id].name) }}
+                    </div>
                 </div>
             </div>
 
@@ -135,54 +147,35 @@
         <!-- Interface Layer (Overlay) -->
         <div class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 md:p-8 landscape:flex-row landscape:justify-between items-stretch">
             
-            <!-- Top Header (Floating) -->
-            <div :class="{'opacity-0 -translate-y-10': !controlsVisible}"
-                 class="flex justify-between items-start w-full transition-all duration-700 pointer-events-auto landscape:w-auto landscape:max-w-[300px]">
-                <div class="bg-black/40 backdrop-blur-xl p-4 rounded-3xl border border-white/10 border-b-4 border-b-[#7C45F5]/50">
-                    <div class="text-[8px] uppercase tracking-[0.3em] opacity-60 mb-1 flex items-center gap-2">
-                        <span>{{ peerCount === 1 ? 'Видеозвонок' : (peerCount > 1 ? 'Групповая встреча' : 'Ожидание') }}</span>
-                        <span class="w-1.5 h-1.5 rounded-full" :class="statusColor"></span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-[8px] shadow-[0_0_100px_rgba(16,185,129,0.8)]">🔒</div>
-                        <h2 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter">{{ localUserName }}</h2>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Single Row Controls (Adaptive) -->
-            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-full px-4 pointer-events-none z-50">
-                <div :class="{'opacity-0 translate-y-20': !controlsVisible}"
-                     class="flex items-center gap-1.5 md:gap-3 p-2 md:p-3 bg-black/40 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto flex-wrap justify-center max-w-[95%]">
+            <!-- Top Right Toolbar (Consolidated) -->
+            <div class="absolute top-6 right-6 flex items-center justify-end pointer-events-none z-[100]">
+                <div :class="{'opacity-0 -translate-y-10': !controlsVisible}"
+                     class="flex items-center gap-2 md:gap-3 p-2 bg-black/40 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
                     <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-white text-black' : 'bg-red-500/20 text-red-500 border-red-500/40']"
-                        class="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[8px] font-black uppercase">{{ isMicOn ? 'On' : 'Off' }}</span>
                     </button>
 
                     <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[8px] font-black uppercase">Cam</span>
                     </button>
 
-                    <button @click.stop="endCall" 
-                        class="h-12 w-12 md:h-14 md:w-14 rounded-full bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-500/20 hover:scale-110 active:scale-95 mx-1 md:mx-2">
-                        X
-                    </button>
-
                     <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black shadow-[0_0_20px_rgba(0,255,65,0.4)]' : 'bg-zinc-800 text-white']"
-                        class="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[8px] font-black uppercase">S</span>
                     </button>
 
-                    <button @click.stop="toggleCameraFacing" 
-                            class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                    <button v-if="isMobile" @click.stop="toggleCameraFacing" 
+                            class="h-10 w-10 rounded-full bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[14px]">📱</span>
                     </button>
-                    
-                    <button v-if="peerCount === 1" @click.stop="isFocusedOnSelf = !isFocusedOnSelf" 
-                            class="w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all opacity-60 hover:opacity-100">
-                        <span class="text-xs">🔄</span>
+
+                    <button @click.stop="endCall" 
+                        class="h-10 w-10 rounded-full bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-500/20 hover:scale-110 active:scale-95">
+                        X
                     </button>
                 </div>
             </div>
@@ -286,6 +279,9 @@ export default {
         },
         isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        },
+        cleanLocalName() {
+            return this.cleanPeerName(this.localUserName);
         }
     },
 
@@ -353,6 +349,11 @@ export default {
     },
 
     methods: {
+        cleanPeerName(name) {
+            if (!name) return '';
+            // Strip technical parts like hashtags, brackets or long hex-like strings at the end
+            return name.replace(/\s*[\[\(\#].*$/, '').trim();
+        },
         // Pinch-to-Zoom Handlers
         handleTouchStart(e, isLocalGrid = false) {
             if (e.touches.length === 2) {
