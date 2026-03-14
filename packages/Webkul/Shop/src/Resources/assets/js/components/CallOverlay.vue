@@ -147,22 +147,22 @@
                      </div>
                 </div>
                 <div class="text-center px-8 pointer-events-auto">
-                    <template v-if="signalingState === 'unavailable' && !signalingGraceActive">
-                        <div class="bg-black/40 backdrop-blur-3xl p-8 md:p-12 rounded-[40px] border border-white/10 flex flex-col items-center max-w-sm mx-auto shadow-2xl">
-                            <div class="text-5xl mb-6 animate-pulse">⚠️</div>
+                    <template v-if="(signalingState === 'unavailable' || signalingState === 'failed') && !signalingGraceActive">
+                        <div class="bg-black/80 backdrop-blur-3xl p-8 md:p-12 rounded-[40px] border border-red-500/20 flex flex-col items-center max-w-sm mx-auto shadow-[0_0_100px_rgba(239,68,68,0.2)]">
+                            <div class="text-6xl mb-6 scale-110">🛰️</div>
                             <h3 class="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
                             <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-zinc-400 leading-relaxed mb-8">
-                                Не удалось подключиться к серверу сигналов. Проверьте интернет или попробуйте еще раз.
+                                Сигнальный сервер недоступен. Проверьте соединение или повторите попытку.
                             </p>
                             <button @click="retryEcho" class="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-xl">
-                                Повторить подключение
+                                Переподключиться
                             </button>
                         </div>
                     </template>
                     <template v-else>
                         <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
                         <p class="text-[8px] md:text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mt-4 italic">
-                            {{ signalingState === 'unavailable' ? 'Восстановление связи...' : 'Передайте ссылку собеседнику для начала разговора.' }}
+                            {{ (signalingState === 'unavailable' || signalingState === 'failed') ? 'Восстановление связи...' : 'Передайте ссылку собеседнику для начала разговора.' }}
                         </p>
                     </template>
                 </div>
@@ -296,6 +296,9 @@ export default {
             console.log('CallOverlay: Echo state change ->', state);
             this.handleSignalingStateChange(state);
         });
+
+        // Handle initial state immediately
+        this.handleSignalingStateChange(this.signalingState);
 
         document.addEventListener('fullscreenchange', this.handleFullscreenChange);
 
@@ -573,7 +576,12 @@ export default {
             console.log(`CallOverlay [${this.sessionUniqueId}]: Signal ${signal.type} from ${senderName} (Session: ${senderSessionId})`);
 
             if (signal.type === 'presence') {
-                const isInitiator = this.localHash.toLowerCase() < senderHash.toLowerCase();
+                const now = Date.now();
+                
+                // Solve initiator deadlock for identical hashes (shared URLs)
+                const isInitiator = this.localHash.toLowerCase() !== senderHash.toLowerCase()
+                    ? this.localHash.toLowerCase() < senderHash.toLowerCase()
+                    : this.sessionUniqueId < senderSessionId;
                 
                 if (!this.peers[senderHash]) {
                     this.peers = {
@@ -807,6 +815,16 @@ export default {
         },
 
         retryEcho() {
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Manual retry initiated`);
+            
+            // Re-enable grace period on manual retry to show "Restoring..." instead of error card
+            this.signalingGraceActive = true;
+            this.reconnectAttempts = 0;
+            if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
+            this.signalingGraceTimeout = setTimeout(() => {
+                this.signalingGraceActive = false;
+            }, 10000);
+
             if (window.Echo) {
                 window.Echo.connector.pusher.connection.connect();
             } else {
