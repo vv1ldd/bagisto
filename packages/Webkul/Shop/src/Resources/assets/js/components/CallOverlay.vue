@@ -325,7 +325,27 @@ export default {
 
         async setupLocalMedia() {
             try {
-                this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                // Request advanced constraints for macOS/iOS native features (Center Stage, Background Blur)
+                const constraints = {
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        frameRate: { ideal: 30 },
+                        // Proposed standards supported by Safari/macOS and high-end cameras
+                        faceFraming: true,
+                        backgroundBlur: true,
+                        pan: true,
+                        tilt: true,
+                        zoom: true
+                    },
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                };
+
+                this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
                 
                 const tempPC = new RTCPeerConnection(this.configuration);
                 tempPC.addTransceiver('video');
