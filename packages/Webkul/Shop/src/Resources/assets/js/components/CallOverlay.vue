@@ -32,12 +32,69 @@
             </div>
         </div>
 
-        <!-- Video Grid -->
+        <!-- Video Grid Area -->
         <div class="flex-grow relative my-4 overflow-hidden rounded-3xl bg-zinc-950">
-            <div :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
+            
+            <!-- 1-on-1 Mode: Cinema Layout with PiP -->
+            <div v-if="peerCount === 1" class="relative w-full h-full overflow-hidden">
+                <!-- Main View -->
+                <div class="absolute inset-0 transition-opacity duration-1000">
+                    <!-- If focused on Peer -->
+                    <template v-if="!isFocusedOnSelf">
+                         <video :id="'video_' + peerIds[0]" autoplay playsinline class="w-full h-full object-cover"></video>
+                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl flex items-center gap-3">
+                            <span class="text-xs font-black uppercase tracking-widest">{{ peers[peerIds[0]].name }}</span>
+                            <span v-if="peers[peerIds[0]].verified" class="text-xl" title="Защищено">😉</span>
+                         </div>
+                    </template>
+                    <!-- If focused on Self -->
+                    <template v-else>
+                         <video ref="localVideoMain" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
+                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl">
+                            <span class="text-xs font-black uppercase tracking-widest">Вы (Предпросмотр)</span>
+                         </div>
+                    </template>
+                </div>
+
+                <!-- Picture-in-Picture (PiP) -->
+                <div @click="isFocusedOnSelf = !isFocusedOnSelf" 
+                     class="absolute bottom-6 right-6 w-32 h-44 md:w-56 md:h-72 rounded-[2rem] overflow-hidden border-2 border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-pointer hover:scale-105 transition-all z-20 group">
+                    <template v-if="isFocusedOnSelf">
+                         <video :id="'video_pip_' + peerIds[0]" autoplay playsinline class="w-full h-full object-cover"></video>
+                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
+                         <div class="absolute bottom-3 left-3 text-[7px] font-black uppercase tracking-widest opacity-60">{{ peers[peerIds[0]].name }}</div>
+                    </template>
+                    <template v-else>
+                         <video ref="localVideoPip" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
+                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
+                         <div class="absolute bottom-3 left-3 text-[7px] font-black uppercase tracking-widest opacity-60">Вы</div>
+                    </template>
+                    <!-- Swap indicator -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div class="bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20">
+                            <span class="text-lg">🔄</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waiting for Peer to connect/stream -->
+                <div v-if="!peers[peerIds[0]]?.connected || !peers[peerIds[0]]?.streamReady" 
+                    class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30 transition-all">
+                    <div class="flex flex-col items-center gap-6">
+                         <div class="w-16 h-16 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
+                         <div class="text-center">
+                            <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white">{{ peers[peerIds[0]]?.connected ? 'Получение видео...' : 'Установка связи...' }}</h3>
+                            <p class="text-[8px] uppercase tracking-[0.2em] text-zinc-500 mt-2">P2P Тоннель строится напрямую</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Group Mode (split screen) -->
+            <div v-else :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
                 <!-- Local Video -->
                 <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl">
-                    <video ref="localVideo" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
+                    <video ref="localVideoGrid" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg flex items-center gap-2">
                         <span>Вы ({{ localUserName }})</span>
                         <span v-if="localFingerprint" class="opacity-40" title="Security Fingerprint Verified">🛡️</span>
@@ -47,33 +104,23 @@
                 <!-- Remote Videos -->
                 <div v-for="id in peerIds" :key="id" 
                     class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl">
-                    <video :id="'video_' + id" :ref="'remoteVideo_' + id" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <video :id="'video_' + id" autoplay playsinline class="w-full h-full object-cover"></video>
                     
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
                         <span>{{ peers[id]?.name }}</span>
-                        <span v-if="peers[id]?.verified" class="text-lg animate-bounce duration-1000" title="Подключение надежно защищено">😉</span>
-                        <span v-else-if="peers[id]?.connected" class="opacity-50 text-[10px]" title="Проверка шифрования...">🔒</span>
+                        <span v-if="peers[id]?.verified" class="text-lg animate-bounce duration-1000">😉</span>
+                        <span v-else-if="peers[id]?.connected" class="opacity-50 text-[10px]">🔒</span>
                     </div>
                     
-                    <!-- Connection Overlay -->
-                    <div v-if="!peers[id]?.connected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-20 transition-all">
-                        <div class="flex flex-col items-center gap-4">
-                             <div class="w-10 h-10 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
-                             <span class="text-[10px] uppercase font-black tracking-[0.3em] text-[#7C45F5]">Установка связи...</span>
+                    <div v-if="!peers[id]?.connected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-20">
+                        <div class="flex flex-col items-center gap-2">
+                             <div class="w-6 h-6 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
                         </div>
-                    </div>
-                    
-                    <!-- Signal Loss Overlay -->
-                    <div v-else-if="!peers[id]?.streamReady" class="absolute inset-0 flex items-center justify-center bg-zinc-900 z-20">
-                         <div class="text-center">
-                             <div class="text-2xl mb-2 opacity-40">🎥</div>
-                             <span class="text-[8px] uppercase font-bold tracking-widest opacity-40">Ожидание потока...</span>
-                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Empty State / Errors -->
+            <!-- Empty State -->
             <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
                 <div class="w-32 h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
                      <div class="flex -space-x-4">
@@ -88,16 +135,16 @@
                     <template v-if="signalingState === 'unavailable'">
                         <h3 class="text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
                         <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mb-4">
-                            Не удалось подключиться к серверу сигналов. Проверьте соединение или обновите страницу.
+                            Не удалось подключиться к серверу сигналов.
                         </p>
                         <button @click="retryEcho" class="px-6 py-2 bg-zinc-800 text-[8px] font-black uppercase tracking-widest rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
                             Повторить
                         </button>
                     </template>
                     <template v-else>
-                        <h3 class="text-sm font-black uppercase tracking-[0.3em] text-white mb-2">Ожидание участников</h3>
-                        <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed">
-                            Пригласите коллег, отправив им ссылку на эту комнату.
+                        <h3 class="text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
+                        <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 max-w-xs leading-relaxed mt-2 italic">
+                            Передайте ссылку собеседнику для начала разговора.
                         </p>
                     </template>
                 </div>
@@ -138,10 +185,11 @@ export default {
             isActive: false,
             localStream: null,
             localUserName: '',
-            localHash: '', // Unique participant ID derived from email
+            localHash: '', 
             roomUuid: null,
             isRoomMode: false,
-            peers: {}, // { id: { name, pc, stream, connected, streamReady, iceQueue, fingerprint, verified, lastSeen } }
+            peers: {}, 
+            isFocusedOnSelf: false, // For 1-on-1 mode swap
             localFingerprint: null,
             signalingState: (window.Echo?.connector?.pusher?.connection?.state) || 'connecting',
             isMicOn: true,
@@ -188,6 +236,16 @@ export default {
         }
     },
 
+    watch: {
+        // Automatically sync videos when layout changes
+        isFocusedOnSelf() {
+            this.$nextTick(() => this.rebindVideos());
+        },
+        peerCount() {
+            this.$nextTick(() => this.rebindVideos());
+        }
+    },
+
     mounted() {
         this.$emitter.on('join-room', (payload) => {
             if (this.isActive) return;
@@ -226,7 +284,7 @@ export default {
             console.log('Room: Joining', uuid, 'as', userName, 'ID:', hash);
             this.roomUuid = uuid;
             this.localUserName = userName;
-            this.localHash = hash || userName; // Fallback to name if hash missing
+            this.localHash = hash || userName; 
             this.isRoomMode = true;
             this.isActive = true;
 
@@ -274,7 +332,6 @@ export default {
             Object.keys(this.peers).forEach(id => {
                 const peer = this.peers[id];
                 if (peer.lastSeen && now - peer.lastSeen > 25000 && !peer.connected) {
-                    console.log(`Room: Peer ID ${id} stale, removing.`);
                     this.removePeer(id);
                 }
             });
@@ -293,16 +350,14 @@ export default {
                 }
                 tempPC.close();
 
-                this.$nextTick(() => { 
-                    if (this.$refs.localVideo) this.$refs.localVideo.srcObject = this.localStream;
-                });
+                this.$nextTick(() => this.rebindVideos());
             } catch (e) { console.warn('Room: Media access denied', e); }
         },
 
         handleSignal(data) {
             const signal = data.signal_data;
             const senderName = data.sender_name;
-            const senderHash = signal.sender_hash || senderName; // Unique ID
+            const senderHash = signal.sender_hash || senderName; 
             
             if (senderHash === this.localHash || senderName === this.localUserName) return;
             if (signal.target && signal.target !== this.localHash && signal.target !== this.localUserName) return;
@@ -312,7 +367,6 @@ export default {
                 const isInitiator = this.localHash.toLowerCase() < senderHash.toLowerCase();
                 
                 if (!this.peers[senderHash]) {
-                    console.log(`Room: New participant discovered: ${senderName} (${senderHash})`);
                     this.peers = {
                         ...this.peers,
                         [senderHash]: { 
@@ -325,7 +379,7 @@ export default {
                     this.sendSignal({ type: 'presence', target: senderHash, fingerprint: this.localFingerprint });
                 } else {
                     this.peers[senderHash].lastSeen = now;
-                    this.peers[senderHash].name = senderName; // Update name in case it changed (suffix)
+                    this.peers[senderHash].name = senderName; 
                     if (signal.fingerprint) this.peers[senderHash].fingerprint = signal.fingerprint;
                 }
 
@@ -360,7 +414,6 @@ export default {
         },
 
         async initiateConnection(id, remoteFingerprint) {
-            console.log(`Room: Initiating to ${this.peers[id]?.name || id}`);
             const pc = this.createPeerConnection(id);
             if (remoteFingerprint) this.peers[id].fingerprint = remoteFingerprint;
             
@@ -373,7 +426,6 @@ export default {
         },
 
         async handleOffer(id, name, signal) {
-            console.log(`Room: Offer from ${name}`);
             const pc = this.createPeerConnection(id, name);
             if (signal.fingerprint) this.peers[id].fingerprint = signal.fingerprint;
 
@@ -391,9 +443,7 @@ export default {
                 const cleanAnswer = this.normalizeSDP(answer.sdp);
                 await pc.setLocalDescription({ type: 'answer', sdp: cleanAnswer });
                 this.sendSignal({ type: 'answer', sdp: cleanAnswer, target: id, fingerprint: this.localFingerprint });
-            } catch (err) { 
-                console.error(`Room: handleOffer failed:`, err.message);
-            }
+            } catch (err) { }
         },
 
         async handleAnswer(id, signal) {
@@ -459,7 +509,7 @@ export default {
                     this.peers[id].streamReady = true;
                     this.peers[id].connected = true;
                 }
-                this.attachStreamToVideo(id, stream);
+                this.$nextTick(() => this.rebindVideos());
             };
 
             pc.onconnectionstatechange = () => {
@@ -493,18 +543,28 @@ export default {
             } catch (e) { }
         },
 
-        attachStreamToVideo(id, stream) {
-            this.$nextTick(() => {
-                const el = document.getElementById('video_' + id);
-                if (el && el.srcObject !== stream) el.srcObject = stream;
-            });
-        },
-
         rebindVideos() {
             if (!this.isActive) return;
+            
+            // Rebind Local Streams
+            const localMain = this.$refs.localVideoMain;
+            const localPip = this.$refs.localVideoPip;
+            const localGrid = this.$refs.localVideoGrid;
+            
+            if (localMain && this.localStream) localMain.srcObject = this.localStream;
+            if (localPip && this.localStream) localPip.srcObject = this.localStream;
+            if (localGrid && this.localStream) localGrid.srcObject = this.localStream;
+
+            // Rebind Peer Streams
             Object.keys(this.peers).forEach(id => {
                 const p = this.peers[id];
-                if (p && p.stream && p.connected) this.attachStreamToVideo(id, p.stream);
+                const mainEl = document.getElementById('video_' + id);
+                const pipEl = document.getElementById('video_pip_' + id);
+                
+                if (p && p.stream && p.connected) {
+                    if (mainEl && mainEl.srcObject !== p.stream) mainEl.srcObject = p.stream;
+                    if (pipEl && pipEl.srcObject !== p.stream) pipEl.srcObject = p.stream;
+                }
             });
         },
 
@@ -519,7 +579,6 @@ export default {
         },
 
         sendSignal(signalData) {
-            // Include sender_hash for unique identification
             signalData.sender_hash = this.localHash;
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
@@ -553,8 +612,8 @@ export default {
                         const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
                         if (sender) sender.replaceTrack(track);
                     });
-                    this.$refs.localVideo.srcObject = this.screenStream;
                     this.isSharingScreen = true;
+                    this.$nextTick(() => this.rebindVideos());
                     track.onended = () => this.toggleScreenShare();
                 } else {
                     if (this.screenStream) this.screenStream.getTracks().forEach(t => t.stop());
@@ -563,8 +622,8 @@ export default {
                         const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
                         if (sender && track) sender.replaceTrack(track);
                     });
-                    this.$refs.localVideo.srcObject = this.localStream;
                     this.isSharingScreen = false;
+                    this.$nextTick(() => this.rebindVideos());
                 }
             } catch (e) { }
         },
