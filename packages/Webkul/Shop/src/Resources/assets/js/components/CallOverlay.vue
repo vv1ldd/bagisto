@@ -12,7 +12,8 @@
                 <div class="absolute inset-0 flex items-center justify-center overflow-hidden touch-none"
                      @touchstart="handleTouchStart"
                      @touchmove="handleTouchMove"
-                     @touchend="handleTouchEnd">
+                     @touchend="handleTouchEnd"
+                     @wheel.passive="handleWheel">
                     
                     <template v-if="!isFocusedOnSelf">
                          <video :id="'video_' + peerIds[0]" 
@@ -30,6 +31,7 @@
                         <video ref="localVideoMain" 
                                autoplay muted playsinline 
                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                               :style="zoomStyle"
                                class="w-full h-full transition-all duration-700"></video>
                         
                         <!-- Zoom Slider for Main Local View -->
@@ -51,33 +53,6 @@
                     </template>
                 </div>
 
-                <!-- Floating Pip for Self (When focused on Peer) -->
-                <div v-if="!isFocusedOnSelf && !isSharingScreen" 
-                     class="absolute bottom-24 right-6 w-32 h-48 md:w-48 md:h-72 rounded-[32px] overflow-hidden border-2 border-white/20 shadow-2xl z-40 bg-zinc-900 group transition-all hover:scale-105 active:scale-95 cursor-pointer pointer-events-auto"
-                     @click.stop="isFocusedOnSelf = true">
-                    <video ref="localVideoPip" 
-                           autoplay muted playsinline 
-                           class="w-full h-full object-cover mirror"></video>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
-                        <span class="text-[8px] font-black uppercase tracking-widest text-white/80">Вы</span>
-                    </div>
-
-                    <!-- Zoom Slider for Pip -->
-                    <div v-if="zoomCapabilities && controlsVisible" @click.stop 
-                         class="absolute left-3 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 bg-black/60 backdrop-blur-xl p-2 rounded-full border border-white/10 z-[60] pointer-events-auto">
-                        <div class="h-24 w-1 bg-white/10 rounded-full relative overflow-hidden">
-                            <input type="range" 
-                                   :min="zoomCapabilities.min" 
-                                   :max="zoomCapabilities.max" 
-                                   :step="zoomCapabilities.step || 0.1" 
-                                   :value="cameraZoom"
-                                   @input="applyCameraZoom($event.target.value)"
-                                   class="absolute inset-0 opacity-0 cursor-pointer z-10" 
-                                   style="appearance: slider-vertical; width: 100%; height: 100%;">
-                            <div class="absolute bottom-0 left-0 right-0 bg-[#7C45F5] transition-all" :style="{height: ((cameraZoom - zoomCapabilities.min) / (zoomCapabilities.max - zoomCapabilities.min) * 100) + '%'}"></div>
-                        </div>
-                    </div>
-                </div>
 
                 <div v-if="!peers[peerIds[0]]?.connected || !peers[peerIds[0]]?.streamReady" 
                     class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30">
@@ -91,9 +66,14 @@
             </div>
 
             <div v-else-if="peerCount > 1" :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
-                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center group/local">
+                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center group/local touch-none"
+                     @touchstart="handleTouchStart($event, true)"
+                     @touchmove="handleTouchMove($event, true)"
+                     @touchend="handleTouchEnd"
+                     @wheel.passive="handleWheel($event, true)">
                     <video ref="localVideoGrid" autoplay muted playsinline 
                            :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                           :style="isFocusedOnSelf ? zoomStyle : {}"
                            class="w-full h-full transition-all duration-700"></video>
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg text-white/60">
                         Вы ({{ localUserName }})
@@ -219,8 +199,14 @@
                         <span class="text-sm">{{ isFullscreen ? '◢◣' : '⛶' }}</span>
                     </button>
                     <button v-if="peerCount === 1" @click.stop="isFocusedOnSelf = !isFocusedOnSelf" 
-                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
+                            title="Переключить фокус">
                         <span class="text-sm">🔄</span>
+                    </button>
+                    <button @click.stop="toggleCameraFacing" 
+                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
+                            title="Сменить камеру">
+                        <span class="text-[14px]">📱</span>
                     </button>
                 </div>
             </div>
@@ -279,6 +265,8 @@ export default {
             sessionUniqueId: Math.random().toString(36).substring(7),
             isLandscape: window.innerWidth > window.innerHeight,
             cameraZoom: 1,
+            initialCameraZoom: 1,
+            cameraFacing: 'user', // 'user' or 'environment'
             zoomCapabilities: null,
             roomLinkCopied: false
         };
@@ -371,10 +359,11 @@ export default {
 
     methods: {
         // Pinch-to-Zoom Handlers
-        handleTouchStart(e) {
+        handleTouchStart(e, isLocalGrid = false) {
             if (e.touches.length === 2) {
                 this.initialDist = this.getDist(e.touches);
                 this.initialZoom = this.zoomLevel;
+                this.initialCameraZoom = this.cameraZoom;
                 this.initialCenter = this.getCenter(e.touches);
                 this.initialPanX = this.panX;
                 this.initialPanY = this.panY;
@@ -386,23 +375,52 @@ export default {
             }
         },
 
-        handleTouchMove(e) {
+        handleTouchMove(e, isLocalGrid = false) {
             if (e.touches.length === 2 && this.initialDist > 0) {
-                e.preventDefault(); // Block browser native zoom
+                e.preventDefault(); 
                 const currentDist = this.getDist(e.touches);
                 const scale = currentDist / this.initialDist;
-                this.zoomLevel = Math.max(1, Math.min(5, this.initialZoom * scale));
+                const isTargetingLocal = isLocalGrid || this.isFocusedOnSelf;
 
-                // Adjust pan to follow center
-                const currentCenter = this.getCenter(e.touches);
-                this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
-                this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
+                if (isTargetingLocal && this.zoomCapabilities) {
+                    // Hardware Zoom
+                    const newZoom = Math.max(this.zoomCapabilities.min, Math.min(this.zoomCapabilities.max, this.initialCameraZoom * scale));
+                    this.applyCameraZoom(newZoom);
+                } else {
+                    // CSS Digital Zoom
+                    this.zoomLevel = Math.max(1, Math.min(5, this.initialZoom * scale));
+                    const currentCenter = this.getCenter(e.touches);
+                    this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
+                    this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
+                }
             } else if (e.touches.length === 1 && this.zoomLevel > 1) {
-                e.preventDefault(); // Block scroll when zoomed
+                e.preventDefault(); 
                 const deltaX = e.touches[0].clientX - this.initialCenter.x;
                 const deltaY = e.touches[0].clientY - this.initialCenter.y;
                 this.panX = this.initialPanX + deltaX;
                 this.panY = this.initialPanY + deltaY;
+            }
+        },
+
+        handleWheel(e, isLocalGrid = false) {
+            // Trackpad pinch is usually ctrl + wheel
+            if (e.ctrlKey) {
+                e.preventDefault();
+                const delta = -e.deltaY;
+                const factor = 1.1;
+                const scale = delta > 0 ? factor : 1/factor;
+                const isTargetingLocal = isLocalGrid || this.isFocusedOnSelf;
+
+                if (isTargetingLocal && this.zoomCapabilities) {
+                    const newZoom = Math.max(this.zoomCapabilities.min, Math.min(this.zoomCapabilities.max, this.cameraZoom * scale));
+                    this.applyCameraZoom(newZoom);
+                } else {
+                    this.zoomLevel = Math.max(1, Math.min(5, this.zoomLevel * scale));
+                }
+            } else if (this.zoomLevel > 1) {
+                e.preventDefault();
+                this.panX -= e.deltaX;
+                this.panY -= e.deltaY;
             }
         },
 
@@ -627,6 +645,7 @@ export default {
                         width: { ideal: 1280 },
                         height: { ideal: 720 },
                         frameRate: { ideal: 30 },
+                        facingMode: this.cameraFacing,
                         
                         // macOS/iOS specific (Center Stage) - Keep stable ones
                         faceFraming: true,
@@ -753,6 +772,57 @@ export default {
                 return line;
             });
             return lines.join('\r\n') + '\r\n';
+        },
+
+        async toggleCameraFacing() {
+            if (this.isSharingScreen) return;
+            
+            this.cameraFacing = this.cameraFacing === 'user' ? 'environment' : 'user';
+            console.log(`Room: Switching camera facing to ${this.cameraFacing}`);
+            
+            try {
+                // Keep the old audio track
+                const oldTracks = this.localStream.getTracks();
+                const videoTrack = oldTracks.find(t => t.kind === 'video');
+                
+                // Get new video track with updated facingMode
+                const newStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: this.cameraFacing,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                
+                const newVideoTrack = newStream.getVideoTracks()[0];
+                
+                // Replace track in existing peer connections
+                Object.values(this.peers).forEach(peer => {
+                    if (peer.pc) {
+                        const senders = peer.pc.getSenders();
+                        const videoSender = senders.find(s => s.track && s.track.kind === 'video');
+                        if (videoSender) {
+                            videoSender.replaceTrack(newVideoTrack);
+                        }
+                    }
+                });
+                
+                // Update localStream
+                if (videoTrack) {
+                    videoTrack.stop();
+                    this.localStream.removeTrack(videoTrack);
+                }
+                this.localStream.addTrack(newVideoTrack);
+                
+                // Detect Zoom again for the new camera
+                this.detectZoomCapabilities();
+                
+                this.$nextTick(() => this.rebindVideos());
+            } catch (e) {
+                console.error('Room: Camera flip failed', e);
+                // Revert state if failed
+                this.cameraFacing = this.cameraFacing === 'user' ? 'environment' : 'user';
+            }
         },
 
         async initiateConnection(id, remoteFingerprint) {
@@ -899,7 +969,6 @@ export default {
             // Rebind Local Streams
             const localMain = this.$refs.localVideoMain;
             const localGrid = this.$refs.localVideoGrid;
-            const localPip = this.$refs.localVideoPip;
             
             const activeLocalStream = this.isSharingScreen ? this.screenStream : this.localStream;
             
@@ -910,10 +979,6 @@ export default {
             if (localGrid && activeLocalStream && localGrid.srcObject !== activeLocalStream) {
                 localGrid.srcObject = activeLocalStream;
                 localGrid.play().catch(() => {});
-            }
-            if (localPip && activeLocalStream && localPip.srcObject !== activeLocalStream) {
-                localPip.srcObject = activeLocalStream;
-                localPip.play().catch(() => {});
             }
 
             // Rebind Peer Streams
