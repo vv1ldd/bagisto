@@ -26,13 +26,17 @@ if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
     const wsPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 80);
     const wssPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 443);
     const forceTLS = (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https';
+    const host = laravelEnv.reverbHost || laravelEnv.pusherHost || `ws-${laravelEnv.pusherCluster}.pusher.com`;
 
-    console.log(`Echo: Connecting to ${forceTLS ? 'wss' : 'ws'}://${laravelEnv.reverbHost || laravelEnv.pusherHost}:${forceTLS ? wssPort : wsPort}`);
+    console.log(`Echo: Connecting to ${forceTLS ? 'wss' : 'ws'}://${host}:${forceTLS ? wssPort : wsPort}`);
+
+    // Store for UI diagnostics
+    window.$signalingServer = { host, port: forceTLS ? wssPort : wsPort, scheme: forceTLS ? 'wss' : 'ws' };
 
     window.Echo = new Echo({
-        broadcaster: 'reverb',
+        broadcaster: 'pusher', // Use standard pusher broadcaster for better proxy compatibility
         key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
-        wsHost: laravelEnv.reverbHost || laravelEnv.pusherHost || `ws-${laravelEnv.pusherCluster}.pusher.com`,
+        wsHost: host,
         wsPort: wsPort,
         wssPort: wssPort,
         forceTLS: forceTLS,
