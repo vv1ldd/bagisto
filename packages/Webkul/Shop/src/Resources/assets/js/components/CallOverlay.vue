@@ -794,14 +794,14 @@ export default {
                 if (!this.isActive) return;
                 this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                 ticks++;
-                if (ticks > 15) {
+                if (ticks > 10) {
                     this.stopPresence();
                     console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 10s`);
                     this.presenceInterval = setInterval(() => {
                         if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                     }, 10000);
                 }
-            }, 2000); 
+            }, 1000); // 1s ticks for first 10 seconds
         },
 
         stopPresence() {
@@ -966,10 +966,15 @@ export default {
                             this.localStream.getTracks().forEach(track => pc.addTrack(track, this.localStream));
                         }
                         
+                        peer.makingOffer = true;
                         const offer = await pc.createOffer();
                         const cleanSdp = this.normalizeSDP(offer.sdp);
                         await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
                         this.sendSignal({ type: 'offer', sdp: cleanSdp, target: peerKey, fingerprint: this.localFingerprint });
+                        peer.makingOffer = false;
+
+                        // ENSURE WATCHDOG STARTS
+                        this.startConnectionWatchdog(peerKey);
                     }
                 }
             } else if (['offer', 'answer', 'candidate', 'hangup'].includes(signal.type)) {
@@ -1086,9 +1091,25 @@ export default {
         },
 
         async handleOffer(id, name, signal) {
-            const pc = this.createPeerConnection(id, name);
             const peer = this.peers[id];
+            if (!peer) return;
+
+            const pc = this.createPeerConnection(id, name);
+            const isPolite = this.sessionUniqueId > id; 
             
+            // Glare handling: if we are also making an offer
+            const offerCollision = (signal.type === 'offer') && 
+                                   (peer.makingOffer || pc.signalingState !== 'stable');
+
+            peer.ignoreOffer = !isPolite && offerCollision;
+            if (peer.ignoreOffer) {
+                console.warn(`WebRTC: Glare detected with ${id}. I am IMPOLITE. Ignoring incoming offer.`);
+                return;
+            }
+
+            console.log(`WebRTC: Handling offer from ${id} (Polite: ${isPolite})`);
+            this.startConnectionWatchdog(id);
+
             try {
                 const sdp = this.normalizeSDP(signal.sdp);
                 if (!sdp) return;
@@ -1097,7 +1118,12 @@ export default {
                 
                 // Add tracks BEFORE creating answer
                 if (this.localStream) {
-                    this.localStream.getTracks().forEach(track => pc.addTrack(track, this.localStream));
+                    this.localStream.getTracks().forEach(track => {
+                        const senders = pc.getSenders();
+                        if (!senders.find(s => s.track && s.track.kind === track.kind)) {
+                            pc.addTrack(track, this.localStream);
+                        }
+                    });
                 }
                 
                 const answer = await pc.createAnswer();
@@ -1125,10 +1151,13 @@ export default {
                         console.warn(`WebRTC: handleAnswer aborted - invalid SDP from ${id}`);
                         return;
                     }
+                    console.log(`WebRTC: Handling answer from ${id}`);
                     try {
                         await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
                     } catch (sdpErr) {
-                        console.error(`WebRTC: setRemoteDescription (ANSWER) failed for ${id}. Length: ${sdp.length}. Start: "${sdp.substring(0, 100)}..."`, sdpErr);
+                        console.error(`WebRTC: setRemoteDescription (ANSWER) failed for ${id}.`, sdpErr);
+                        // If it fails, let watchdog handle it or force restart
+                        peer.pc.restartIce();
                         throw sdpErr;
                     }
                     while (peer.iceQueue.length > 0) {
@@ -1178,7 +1207,8 @@ export default {
                         name: name || id,
                         pc, stream: null, connected: false, streamReady: false, 
                         iceQueue: [], fingerprint: null, verified: false, 
-                        lastSeen: Date.now()
+                        lastSeen: Date.now(),
+                        makingOffer: false, ignoreOffer: false, watchdog: null
                     }
                 };
             } else {
