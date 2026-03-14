@@ -106,7 +106,7 @@
             <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                       class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none"></video>
+                       class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-3xl scale-105 opacity-50"></video>
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
@@ -130,14 +130,7 @@
                             </div>
                         </template>
                         <template v-else>
-                            <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
-                            <p class="mt-4 text-[8px] uppercase tracking-widest text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">
-                                Поделитесь ссылкой, чтобы начать разговор прямо сейчас
-                            </p>
-                            <button @click="copyRoomLink" 
-                                    class="mt-6 px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white transition-all active:scale-95">
-                                {{ roomLinkCopied ? 'Ссылка скопирована! ✅' : 'Скопировать ссылку' }}
-                            </button>
+                            <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
                         </template>
                     </div>
                 </div>
@@ -153,24 +146,24 @@
                 <div :class="{'opacity-0 -translate-y-10': !controlsVisible}"
                      class="flex items-center gap-2 md:gap-3 p-2 bg-black/40 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
-                    <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-white text-black' : 'bg-red-500/20 text-red-500 border-red-500/40']"
-                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
-                        <span class="text-[8px] font-black uppercase">{{ isMicOn ? 'On' : 'Off' }}</span>
+                    <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/20' : 'bg-red-500/20 text-red-500 border-red-500/40']"
+                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
+                        M
                     </button>
 
-                    <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
-                        <span class="text-[8px] font-black uppercase">Cam</span>
+                    <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/20' : 'bg-zinc-800 text-white opacity-40']"
+                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
+                        C
                     </button>
 
-                    <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black shadow-[0_0_20px_rgba(0,255,65,0.4)]' : 'bg-zinc-800 text-white']"
-                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
-                        <span class="text-[8px] font-black uppercase">S</span>
+                    <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-zinc-800 text-white opacity-40']"
+                        class="h-10 w-10 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
+                        S
                     </button>
 
                     <button v-if="isMobile" @click.stop="toggleCameraFacing" 
-                            class="h-10 w-10 rounded-full bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
-                        <span class="text-[14px]">📱</span>
+                            class="h-10 w-10 rounded-full bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 text-[10px] font-black uppercase">
+                        F
                     </button>
 
                     <button @click.stop="endCall" 
@@ -240,8 +233,6 @@ export default {
             initialCameraZoom: 1,
             cameraFacing: 'user', // 'user' or 'environment'
             zoomCapabilities: null,
-            isCameraDenied: false,
-            roomLinkCopied: false,
             isProximityClose: false,
             lastToggleTime: 0,
             lastTapTime: 0
@@ -582,16 +573,6 @@ export default {
             }
         },
 
-        async copyRoomLink() {
-            try {
-                const url = `${window.location.origin}/call/${this.roomUuid}`;
-                await navigator.clipboard.writeText(url);
-                this.roomLinkCopied = true;
-                setTimeout(() => this.roomLinkCopied = false, 3000);
-            } catch (e) {
-                console.error('Copy room link failed', e);
-            }
-        },
 
         detectZoomCapabilities() {
             try {
