@@ -44,7 +44,7 @@
                 </div>
 
 
-                <div v-if="!peers[peerIds[0]]?.connected || !peers[peerIds[0]]?.streamReady" 
+                <div v-if="!peers[peerIds[0]]?.connected" 
                     class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30">
                     <div class="flex flex-col items-center gap-6">
                          <div class="w-16 h-16 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
@@ -52,6 +52,15 @@
                             <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white">Установка связи...</h3>
                          </div>
                     </div>
+                </div>
+
+                <!-- No Camera Warning for Peer -->
+                <div v-if="peers[peerIds[0]]?.connected && !peers[peerIds[0]]?.streamReady" 
+                     class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 z-20">
+                     <div class="w-20 h-20 rounded-full bg-black/40 flex items-center justify-center mb-4">
+                        <span class="text-4xl opacity-40">🎥🚫</span>
+                     </div>
+                     <p class="text-[10px] font-black uppercase tracking-widest text-white/40">Камера участника отключена</p>
                 </div>
             </div>
 
@@ -82,7 +91,7 @@
             <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                       class="absolute inset-0 w-full h-full opacity-60 brightness-75 transition-all duration-700 pointer-events-none"></video>
+                       class="absolute inset-0 w-full h-full opacity-80 transition-all duration-700 pointer-events-none"></video>
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
@@ -749,53 +758,54 @@ export default {
             const senderHash = signal.sender_hash || senderName; 
             const senderSessionId = signal.sender_session_id;
 
-            // Filter out self-signals using sessionUniqueId
+            // Filter out self-signals
             if (senderSessionId === this.sessionUniqueId) return;
             
-            // If the signal is targeted and not for us, filter it
-            if (signal.target && signal.target !== this.localHash && signal.target !== this.localUserName) return;
+            // If targeted and not for us
+            if (signal.target && signal.target !== this.sessionUniqueId && 
+                signal.target !== this.localHash && signal.target !== this.localUserName) return;
 
             console.log(`CallOverlay [${this.sessionUniqueId}]: Signal ${signal.type} from ${senderName} (Session: ${senderSessionId})`);
+
+            const peerKey = senderSessionId;
 
             if (signal.type === 'presence') {
                 const now = Date.now();
                 
-                // Solve initiator deadlock for identical hashes (shared URLs)
-                const isInitiator = this.localHash.toLowerCase() !== senderHash.toLowerCase()
-                    ? this.localHash.toLowerCase() < senderHash.toLowerCase()
-                    : this.sessionUniqueId < senderSessionId;
+                // Compare session IDs to determine initiator
+                const isInitiator = this.sessionUniqueId < senderSessionId;
                 
-                if (!this.peers[senderHash]) {
+                if (!this.peers[peerKey]) {
                     this.peers = {
                         ...this.peers,
-                        [senderHash]: { 
+                        [peerKey]: { 
                             name: senderName,
+                            hash: senderHash,
                             pc: null, stream: null, connected: false, streamReady: false, 
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
                             lastSeen: now
                         }
                     };
-                    this.sendSignal({ type: 'presence', target: senderHash, fingerprint: this.localFingerprint });
+                    this.sendSignal({ type: 'presence', target: senderSessionId, fingerprint: this.localFingerprint });
                 } else {
-                    this.peers[senderHash].lastSeen = now;
-                    this.peers[senderHash].name = senderName; 
-                    if (signal.fingerprint) this.peers[senderHash].fingerprint = signal.fingerprint;
+                    const p = this.peers[peerKey];
+                    p.lastSeen = now;
+                    p.name = senderName; 
+                    p.hash = senderHash;
+                    if (signal.fingerprint) p.fingerprint = signal.fingerprint;
                 }
 
                 if (isInitiator) {
-                    const peer = this.peers[senderHash];
+                    const peer = this.peers[peerKey];
                     if (!peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState)) {
-                        this.initiateConnection(senderHash, signal.fingerprint);
+                        this.initiateConnection(peerKey, signal.fingerprint);
                     }
                 }
-            } else if (signal.type === 'offer') {
-                this.handleOffer(senderHash, senderName, signal);
-            } else if (signal.type === 'answer') {
-                this.handleAnswer(senderHash, signal);
-            } else if (signal.type === 'candidate') {
-                this.handleCandidate(senderHash, signal);
-            } else if (signal.type === 'hangup') {
-                this.removePeer(senderHash);
+            } else if (['offer', 'answer', 'candidate', 'hangup'].includes(signal.type)) {
+                if (signal.type === 'offer') this.handleOffer(peerKey, senderName, signal);
+                else if (signal.type === 'answer') this.handleAnswer(peerKey, signal);
+                else if (signal.type === 'candidate') this.handleCandidate(peerKey, signal);
+                else if (signal.type === 'hangup') this.removePeer(peerKey);
             }
         },
 
