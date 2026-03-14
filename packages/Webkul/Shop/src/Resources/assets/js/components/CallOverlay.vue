@@ -1001,7 +1001,9 @@ export default {
                 console.warn('WebRTC: Invalid SDP detected (missing v=0 or too short)');
                 return null;
             }
-            return sdp;
+            // CRITICAL for Safari: Ensure CRLF (\r\n) line endings. 
+            // Some proxies or event broadcasters might convert them to solo \n.
+            return trimmed.replace(/\r?\n/g, '\r\n');
         },
 
         async toggleCameraFacing() {
@@ -1119,7 +1121,12 @@ export default {
                     return;
                 }
                 
-                await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+                try {
+                    await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+                } catch (sdpErr) {
+                    console.error(`WebRTC: setRemoteDescription (OFFER) failed for ${id}. Length: ${sdp.length}. Start: "${sdp.substring(0, 100)}..."`, sdpErr);
+                    throw sdpErr;
+                }
                 
                 while (peer.iceQueue.length > 0) {
                     const cand = peer.iceQueue.shift();
@@ -1147,7 +1154,12 @@ export default {
                         console.warn(`WebRTC: handleAnswer aborted - invalid SDP from ${id}`);
                         return;
                     }
-                    await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
+                    try {
+                        await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
+                    } catch (sdpErr) {
+                        console.error(`WebRTC: setRemoteDescription (ANSWER) failed for ${id}. Length: ${sdp.length}. Start: "${sdp.substring(0, 100)}..."`, sdpErr);
+                        throw sdpErr;
+                    }
                     while (peer.iceQueue.length > 0) {
                         const cand = peer.iceQueue.shift();
                         await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
