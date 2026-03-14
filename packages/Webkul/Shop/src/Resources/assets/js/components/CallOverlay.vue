@@ -22,11 +22,11 @@
                     {{ peerCount + 1 }} в сети
                 </div>
                 <div class="flex -space-x-2">
-                    <div v-for="name in peerNames" :key="name" 
+                    <div v-for="id in peerIds" :key="id" 
                         class="w-6 h-6 rounded-full bg-zinc-800 border-2 border-black flex items-center justify-center text-[10px] font-bold uppercase transition-all"
-                        :class="{'border-emerald-500 bg-emerald-950/30': peers[name]?.connected}"
-                        :title="name">
-                        {{ name[0] }}
+                        :class="{'border-emerald-500 bg-emerald-950/30': peers[id]?.connected}"
+                        :title="peers[id]?.name">
+                        {{ peers[id]?.name?.[0] || '?' }}
                     </div>
                 </div>
             </div>
@@ -45,18 +45,18 @@
                 </div>
 
                 <!-- Remote Videos -->
-                <div v-for="name in peerNames" :key="name" 
+                <div v-for="id in peerIds" :key="id" 
                     class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl">
-                    <video :id="'video_' + name" :ref="'remoteVideo_' + name" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <video :id="'video_' + id" :ref="'remoteVideo_' + id" autoplay playsinline class="w-full h-full object-cover"></video>
                     
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
-                        <span>{{ name }}</span>
-                        <span v-if="peers[name]?.verified" class="text-lg animate-bounce duration-1000" title="Подключение надежно защищено">😉</span>
-                        <span v-else-if="peers[name]?.connected" class="opacity-50 text-[10px]" title="Проверка шифрования...">🔒</span>
+                        <span>{{ peers[id]?.name }}</span>
+                        <span v-if="peers[id]?.verified" class="text-lg animate-bounce duration-1000" title="Подключение надежно защищено">😉</span>
+                        <span v-else-if="peers[id]?.connected" class="opacity-50 text-[10px]" title="Проверка шифрования...">🔒</span>
                     </div>
                     
                     <!-- Connection Overlay -->
-                    <div v-if="!peers[name]?.connected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-20 transition-all">
+                    <div v-if="!peers[id]?.connected" class="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md z-20 transition-all">
                         <div class="flex flex-col items-center gap-4">
                              <div class="w-10 h-10 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
                              <span class="text-[10px] uppercase font-black tracking-[0.3em] text-[#7C45F5]">Установка связи...</span>
@@ -64,7 +64,7 @@
                     </div>
                     
                     <!-- Signal Loss Overlay -->
-                    <div v-else-if="!peers[name]?.streamReady" class="absolute inset-0 flex items-center justify-center bg-zinc-900 z-20">
+                    <div v-else-if="!peers[id]?.streamReady" class="absolute inset-0 flex items-center justify-center bg-zinc-900 z-20">
                          <div class="text-center">
                              <div class="text-2xl mb-2 opacity-40">🎥</div>
                              <span class="text-[8px] uppercase font-bold tracking-widest opacity-40">Ожидание потока...</span>
@@ -138,9 +138,10 @@ export default {
             isActive: false,
             localStream: null,
             localUserName: '',
+            localHash: '', // Unique participant ID derived from email
             roomUuid: null,
             isRoomMode: false,
-            peers: {}, // { name: { pc, stream, connected, streamReady, iceQueue, fingerprint, verified, lastSeen } }
+            peers: {}, // { id: { name, pc, stream, connected, streamReady, iceQueue, fingerprint, verified, lastSeen } }
             localFingerprint: null,
             signalingState: (window.Echo?.connector?.pusher?.connection?.state) || 'connecting',
             isMicOn: true,
@@ -163,11 +164,11 @@ export default {
     },
 
     computed: {
-        peerNames() {
+        peerIds() {
             return Object.keys(this.peers);
         },
         peerCount() {
-            return this.peerNames.length;
+            return this.peerIds.length;
         },
         gridClass() {
             const count = this.peerCount + 1;
@@ -190,7 +191,7 @@ export default {
     mounted() {
         this.$emitter.on('join-room', (payload) => {
             if (this.isActive) return;
-            this.joinRoom(payload.uuid, payload.userName);
+            this.joinRoom(payload.uuid, payload.userName, payload.hash);
         });
 
         this.$emitter.on('echo-state-change', (state) => {
@@ -221,10 +222,11 @@ export default {
     },
 
     methods: {
-        async joinRoom(uuid, userName) {
-            console.log('Room: Joining', uuid, 'as', userName);
+        async joinRoom(uuid, userName, hash) {
+            console.log('Room: Joining', uuid, 'as', userName, 'ID:', hash);
             this.roomUuid = uuid;
             this.localUserName = userName;
+            this.localHash = hash || userName; // Fallback to name if hash missing
             this.isRoomMode = true;
             this.isActive = true;
 
@@ -269,12 +271,11 @@ export default {
 
         cleanupStalePeers() {
             const now = Date.now();
-            Object.keys(this.peers).forEach(name => {
-                const peer = this.peers[name];
-                // If no presence for 25 seconds, remove
+            Object.keys(this.peers).forEach(id => {
+                const peer = this.peers[id];
                 if (peer.lastSeen && now - peer.lastSeen > 25000 && !peer.connected) {
-                    console.log(`Room: Peer ${name} stale, removing.`);
-                    this.removePeer(name);
+                    console.log(`Room: Peer ID ${id} stale, removing.`);
+                    this.removePeer(id);
                 }
             });
         },
@@ -301,98 +302,86 @@ export default {
         handleSignal(data) {
             const signal = data.signal_data;
             const senderName = data.sender_name;
+            const senderHash = signal.sender_hash || senderName; // Unique ID
             
-            if (!senderName || senderName === this.localUserName) return;
-            if (signal.target && signal.target !== this.localUserName) return;
+            if (senderHash === this.localHash || senderName === this.localUserName) return;
+            if (signal.target && signal.target !== this.localHash && signal.target !== this.localUserName) return;
 
             if (signal.type === 'presence') {
-                const baseName = senderName.split(' ')[0];
                 const now = Date.now();
-
-                // Deduplicate: If same base name but different suffix, remove old one if not connected
-                Object.keys(this.peers).forEach(existingName => {
-                    if (existingName !== senderName && existingName.startsWith(baseName) && !this.peers[existingName].connected) {
-                        console.log(`Room: Deduplicating ${existingName} in favor of ${senderName}`);
-                        this.removePeer(existingName);
-                    }
-                });
-
-                const isInitiator = this.localUserName.toLowerCase() < senderName.toLowerCase();
+                const isInitiator = this.localHash.toLowerCase() < senderHash.toLowerCase();
                 
-                if (!this.peers[senderName]) {
+                if (!this.peers[senderHash]) {
+                    console.log(`Room: New participant discovered: ${senderName} (${senderHash})`);
                     this.peers = {
                         ...this.peers,
-                        [senderName]: { 
+                        [senderHash]: { 
+                            name: senderName,
                             pc: null, stream: null, connected: false, streamReady: false, 
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
                             lastSeen: now
                         }
                     };
-                    this.sendSignal({ type: 'presence', target: senderName, fingerprint: this.localFingerprint });
+                    this.sendSignal({ type: 'presence', target: senderHash, fingerprint: this.localFingerprint });
                 } else {
-                    this.peers[senderName].lastSeen = now;
-                    if (signal.fingerprint) this.peers[senderName].fingerprint = signal.fingerprint;
+                    this.peers[senderHash].lastSeen = now;
+                    this.peers[senderHash].name = senderName; // Update name in case it changed (suffix)
+                    if (signal.fingerprint) this.peers[senderHash].fingerprint = signal.fingerprint;
                 }
 
                 if (isInitiator) {
-                    const peer = this.peers[senderName];
+                    const peer = this.peers[senderHash];
                     if (!peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState)) {
-                        this.initiateConnection(senderName, signal.fingerprint);
+                        this.initiateConnection(senderHash, signal.fingerprint);
                     }
                 }
             } else if (signal.type === 'offer') {
-                this.handleOffer(senderName, signal);
+                this.handleOffer(senderHash, senderName, signal);
             } else if (signal.type === 'answer') {
-                this.handleAnswer(senderName, signal);
+                this.handleAnswer(senderHash, signal);
             } else if (signal.type === 'candidate') {
-                this.handleCandidate(senderName, signal);
+                this.handleCandidate(senderHash, signal);
             } else if (signal.type === 'hangup') {
-                this.removePeer(senderName);
+                this.removePeer(senderHash);
             }
         },
 
         normalizeSDP(sdp) {
             if (!sdp) return '';
-            // 1. Ensure \r\n endings and remove trailing whitespace per line
             let lines = sdp.split(/\r?\n/);
             lines = lines.map(line => line.trim()).filter(line => line.length > 0);
-            
-            // 2. Fix potential BUNDLE parsing issues by ensuring mid values are clean
-            // Some browsers fail if a=group:BUNDLE has extra spaces
             lines = lines.map(line => {
                 if (line.startsWith('a=group:BUNDLE')) {
                     return line.replace(/\s+/g, ' ').trim();
                 }
                 return line;
             });
-
             return lines.join('\r\n') + '\r\n';
         },
 
-        async initiateConnection(name, remoteFingerprint) {
-            console.log(`Room: Initiating to ${name}`);
-            const pc = this.createPeerConnection(name);
-            if (remoteFingerprint) this.peers[name].fingerprint = remoteFingerprint;
+        async initiateConnection(id, remoteFingerprint) {
+            console.log(`Room: Initiating to ${this.peers[id]?.name || id}`);
+            const pc = this.createPeerConnection(id);
+            if (remoteFingerprint) this.peers[id].fingerprint = remoteFingerprint;
             
             try {
                 const offer = await pc.createOffer();
                 const cleanSdp = this.normalizeSDP(offer.sdp);
                 await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
-                this.sendSignal({ type: 'offer', sdp: cleanSdp, target: name, fingerprint: this.localFingerprint });
+                this.sendSignal({ type: 'offer', sdp: cleanSdp, target: id, fingerprint: this.localFingerprint });
             } catch (e) { console.error('Room: Offer generation failed', e); }
         },
 
-        async handleOffer(name, signal) {
+        async handleOffer(id, name, signal) {
             console.log(`Room: Offer from ${name}`);
-            const pc = this.createPeerConnection(name);
-            if (signal.fingerprint) this.peers[name].fingerprint = signal.fingerprint;
+            const pc = this.createPeerConnection(id, name);
+            if (signal.fingerprint) this.peers[id].fingerprint = signal.fingerprint;
 
             try {
                 const sdp = this.normalizeSDP(signal.sdp);
-                console.log(`Room: Setting remote offer for ${name}`);
                 await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
                 
-                const peer = this.peers[name];
+                const peer = this.peers[id];
                 while (peer.iceQueue.length > 0) {
                     const cand = peer.iceQueue.shift();
                     await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
@@ -401,17 +390,14 @@ export default {
                 const answer = await pc.createAnswer();
                 const cleanAnswer = this.normalizeSDP(answer.sdp);
                 await pc.setLocalDescription({ type: 'answer', sdp: cleanAnswer });
-                this.sendSignal({ type: 'answer', sdp: cleanAnswer, target: name, fingerprint: this.localFingerprint });
+                this.sendSignal({ type: 'answer', sdp: cleanAnswer, target: id, fingerprint: this.localFingerprint });
             } catch (err) { 
-                console.error(`Room: handleOffer failed for ${name}:`, err.message);
-                // If BUNDLE fails, try to fallback by recreating PC without BUNDLE if needed, 
-                // but usually normalization fixes it.
+                console.error(`Room: handleOffer failed:`, err.message);
             }
         },
 
-        async handleAnswer(name, signal) {
-            console.log(`Room: Answer from ${name}`);
-            const peer = this.peers[name];
+        async handleAnswer(id, signal) {
+            const peer = this.peers[id];
             if (peer && peer.pc) {
                 if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
                 try {
@@ -421,12 +407,12 @@ export default {
                         const cand = peer.iceQueue.shift();
                         await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                     }
-                } catch (err) { console.error(`Room: handleAnswer failed for ${name}:`, err.message); }
+                } catch (err) { }
             }
         },
 
-        async handleCandidate(name, signal) {
-            const peer = this.peers[name];
+        async handleCandidate(id, signal) {
+            const peer = this.peers[id];
             if (!peer) return;
 
             if (peer.pc && peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
@@ -438,23 +424,24 @@ export default {
             }
         },
 
-        createPeerConnection(name) {
-            if (this.peers[name]?.pc && this.peers[name].pc.connectionState !== 'closed') {
-                return this.peers[name].pc;
+        createPeerConnection(id, name = null) {
+            if (this.peers[id]?.pc && this.peers[id].pc.connectionState !== 'closed') {
+                return this.peers[id].pc;
             }
 
             const pc = new RTCPeerConnection(this.configuration);
             
-            if (!this.peers[name]) {
+            if (!this.peers[id]) {
                 this.peers = {
                     ...this.peers,
-                    [name]: { 
+                    [id]: { 
+                        name: name || id,
                         pc, stream: null, connected: false, streamReady: false, 
                         iceQueue: [], fingerprint: null, verified: false, lastSeen: Date.now()
                     }
                 };
             } else {
-                this.peers[name].pc = pc;
+                this.peers[id].pc = pc;
             }
 
             if (this.localStream) {
@@ -462,38 +449,36 @@ export default {
             }
 
             pc.onicecandidate = (e) => {
-                if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: name });
+                if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: id });
             };
 
             pc.ontrack = (e) => {
                 const stream = e.streams[0];
-                if (this.peers[name]) {
-                    this.peers[name].stream = stream;
-                    this.peers[name].streamReady = true;
-                    this.peers[name].connected = true;
+                if (this.peers[id]) {
+                    this.peers[id].stream = stream;
+                    this.peers[id].streamReady = true;
+                    this.peers[id].connected = true;
                 }
-                this.attachStreamToVideo(name, stream);
+                this.attachStreamToVideo(id, stream);
             };
 
             pc.onconnectionstatechange = () => {
                 const state = pc.connectionState;
-                console.log(`WebRTC: State [${name}] -> ${state}`);
                 if (state === 'connected') {
-                    if (this.peers[name]) {
-                        this.peers[name].connected = true;
-                        this.verifySecurity(name);
+                    if (this.peers[id]) {
+                        this.peers[id].connected = true;
+                        this.verifySecurity(id);
                     }
                 } else if (['disconnected', 'failed', 'closed'].includes(state)) {
-                    // Don't immediately remove, wait for stale timeout or explicit hangup
-                    if (this.peers[name]) this.peers[name].connected = false;
+                    if (this.peers[id]) this.peers[id].connected = false;
                 }
             };
 
             return pc;
         },
 
-        async verifySecurity(name) {
-            const peer = this.peers[name];
+        async verifySecurity(id) {
+            const peer = this.peers[id];
             if (!peer || !peer.pc || !peer.fingerprint) return;
 
             try {
@@ -508,32 +493,34 @@ export default {
             } catch (e) { }
         },
 
-        attachStreamToVideo(name, stream) {
+        attachStreamToVideo(id, stream) {
             this.$nextTick(() => {
-                const el = document.getElementById('video_' + name);
+                const el = document.getElementById('video_' + id);
                 if (el && el.srcObject !== stream) el.srcObject = stream;
             });
         },
 
         rebindVideos() {
             if (!this.isActive) return;
-            Object.keys(this.peers).forEach(name => {
-                const p = this.peers[name];
-                if (p && p.stream && p.connected) this.attachStreamToVideo(name, p.stream);
+            Object.keys(this.peers).forEach(id => {
+                const p = this.peers[id];
+                if (p && p.stream && p.connected) this.attachStreamToVideo(id, p.stream);
             });
         },
 
-        removePeer(name) {
-            const peer = this.peers[name];
+        removePeer(id) {
+            const peer = this.peers[id];
             if (peer) {
                 if (peer.pc) peer.pc.close();
                 const newPeers = { ...this.peers };
-                delete newPeers[name];
+                delete newPeers[id];
                 this.peers = newPeers;
             }
         },
 
         sendSignal(signalData) {
+            // Include sender_hash for unique identification
+            signalData.sender_hash = this.localHash;
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
             axios.post(endpoint, payload).catch(() => {});

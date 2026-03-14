@@ -23,7 +23,7 @@
 
 <script>
 export default {
-    props: ['uuid', 'userNameInitial'],
+    props: ['uuid', 'userNameInitial', 'participantHash'],
 
     data() {
         return {
@@ -46,14 +46,15 @@ export default {
                 finalName = this.customName.trim() || 'Гость';
             }
 
-            // Always add a unique suffix for room participants to prevent Mesh WebRTC collisions
+            // Always add a unique suffix to the name display, but the hash will be the unique ID
             finalName += ' ' + Math.random().toString(36).substring(2, 5).toUpperCase();
 
-            console.log('RoomJoiner: Joining as', finalName);
+            console.log('RoomJoiner: Joining as', finalName, 'with hash', this.participantHash);
             
             this.$emitter.emit('join-room', {
                 uuid: this.uuid,
-                userName: finalName
+                userName: finalName,
+                hash: this.participantHash
             });
 
             this.isActive = true;

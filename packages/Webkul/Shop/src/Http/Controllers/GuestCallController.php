@@ -54,16 +54,18 @@ class GuestCallController extends Controller
         try {
             // Send to all recipients
             foreach ($recipientEmails as $email) {
+                $hash = md5($email . $uuid);
                 Mail::to($email)->queue(new GuestCallInvitation(
                     request('caller_name'),
-                    $callUrl
+                    $callUrl . '?h=' . $hash
                 ));
             }
 
             // Send to caller as well
+            $callerHash = md5(request('caller_email') . $uuid);
             Mail::to(request('caller_email'))->queue(new GuestCallInvitation(
                 'Система Meanly',
-                $callUrl
+                $callUrl . '?h=' . $callerHash
             ));
 
             session()->flash('success', count($recipientEmails) . ' приглашений отправлено!');
@@ -72,7 +74,8 @@ class GuestCallController extends Controller
             session()->flash('error', 'Не удалось отправить часть приглашений, но сессия создана: ' . $callUrl);
         }
 
-        return redirect()->route('shop.call.index', $uuid);
+        $callerHash = md5(request('caller_email') . $uuid);
+        return redirect()->route('shop.call.index', ['uuid' => $uuid, 'h' => $callerHash]);
     }
 
     /**
@@ -139,7 +142,8 @@ class GuestCallController extends Controller
             : ($session->caller_name ?? 'Гость');
 
         try {
-            Mail::to($email)->send(new GuestCallInvitation($callerName, $callUrl));
+            $hash = md5($email . $uuid);
+            Mail::to($email)->send(new GuestCallInvitation($callerName, $callUrl . '?h=' . $hash));
             
             return response()->json(['message' => 'Приглашение отправлено ' . $email]);
         } catch (\Exception $e) {
