@@ -207,13 +207,6 @@
                     </button>
                 </div>
             </div>
-{'bg-[#7C45F5] text-white': isProximityClose}"
-                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
-                            title="Режим разговора">
-                        <span class="text-[14px]">👂</span>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 </template>
