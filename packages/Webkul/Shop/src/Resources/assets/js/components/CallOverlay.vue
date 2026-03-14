@@ -3,13 +3,12 @@
          @mousemove="userActivity"
          @touchstart="handleGlobalTouch"
          @click="toggleControls"
-         @dblclick="toggleFullscreen"
          class="fixed inset-0 z-[10000] bg-black text-white font-sans overflow-hidden transition-all duration-300 touch-none select-none">
         
         <!-- Proximity Dimmer -->
-        <div v-if="isProximityClose" class="absolute inset-0 bg-black z-[20000] flex flex-col items-center justify-center pointer-events-auto">
+        <div v-if="isProximityClose" @click="isProximityClose = false" class="absolute inset-0 bg-black z-[20000] flex flex-col items-center justify-center pointer-events-auto">
             <div class="w-16 h-16 rounded-full border-4 border-white/10 border-t-white/60 animate-spin mb-4"></div>
-            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Режим разговора</p>
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Режим разговора (Тапните для выхода)</p>
         </div>
 
         <!-- Video Layer (Base) -->
@@ -46,11 +45,14 @@
 
 
                 <div v-if="!peers[peerIds[0]]?.connected" 
-                    class="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-md z-30">
+                    class="absolute inset-0 flex items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
                     <div class="flex flex-col items-center gap-6">
-                         <div class="w-16 h-16 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
+                         <div class="w-12 h-12 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
                          <div class="text-center">
-                            <h3 class="text-lg font-black uppercase tracking-[0.4em] text-white">Установка связи...</h3>
+                            <h3 class="text-sm font-black uppercase tracking-[0.4em] text-white/80">Установка связи...</h3>
+                            <button @click.stop="retryEcho" class="mt-4 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[8px] font-black uppercase tracking-widest hover:bg-white/10 active:scale-95 transition-all">
+                                Повторить сейчас
+                            </button>
                          </div>
                     </div>
                 </div>
@@ -146,68 +148,66 @@
                         <h2 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter">{{ localUserName }}</h2>
                     </div>
                 </div>
-                <div v-if="peerCount > 0" class="bg-[#00FF41] text-black px-4 py-2 font-bold text-[10px] uppercase tracking-widest rounded-2xl ml-4 shadow-[0_0_20px_rgba(0,255,65,0.3)] landscape:hidden">
-                    {{ peerCount + 1 }} в сети
-                </div>
-            </div>
-
-            <!-- Side/Bottom Controls (Adaptive) -->
-            <div class="flex flex-col items-center justify-end pointer-events-none landscape:flex-row-reverse landscape:items-center landscape:justify-end gap-6 h-full landscape:w-full">
-                
-                <!-- Main System Buttons (Floating circle cluster) -->
-                <div :class="{'opacity-0 translate-y-10 landscape:translate-x-10 landscape:translate-y-0': !controlsVisible}"
-                     class="flex justify-center flex-wrap gap-3 p-3 bg-black/40 backdrop-blur-3xl rounded-[40px] border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto landscape:flex-col">
+                      <!-- Single Row Controls (Adaptive) -->
+            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-full px-4 pointer-events-none z-50">
+                <div :class="{'opacity-0 translate-y-20': !controlsVisible}"
+                     class="flex items-center gap-1.5 md:gap-3 p-2 md:p-3 bg-black/40 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto flex-wrap justify-center max-w-[95%]">
                     
                     <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-white text-black' : 'bg-red-500/20 text-red-500 border-red-500/40']"
-                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                        class="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[8px] font-black uppercase">{{ isMicOn ? 'On' : 'Off' }}</span>
                     </button>
-                    
-                    <button @click.stop="endCall" 
-                        class="h-12 w-12 md:h-14 md:w-14 rounded-full bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-500/20 hover:scale-110 active:scale-95">
-                        X
-                    </button>
-     
+
                     <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-white text-black' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                        class="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[8px] font-black uppercase">Cam</span>
                     </button>
 
-                    <button @click.stop="copyRoomLink" :class="[roomLinkCopied ? 'bg-[#7C45F5] text-white scale-110 shadow-[0_0_20px_rgba(124,69,245,0.4)]' : 'bg-zinc-800 text-white']"
-                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95"
-                        title="Скопировать ссылку">
+                    <button v-if="peerCount === 0" @click.stop="copyRoomLink" :class="[roomLinkCopied ? 'bg-[#7C45F5] text-white scale-110 shadow-[0_0_20px_rgba(124,69,245,0.4)]' : 'bg-zinc-800 text-white']"
+                        class="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[10px] font-black uppercase leading-none">{{ roomLinkCopied ? '✅' : '🔗' }}</span>
                     </button>
 
-                    <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black shadow-[0_0_20px_rgba(0,255,65,0.4)]' : 'bg-zinc-800 text-white']"
-                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
+                    <button @click.stop="endCall" 
+                        class="h-12 w-12 md:h-14 md:w-14 rounded-full bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-500/20 hover:scale-110 active:scale-95 mx-1 md:mx-2">
+                        X
+                    </button>
+
+                    <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black shadow-[0_0_20px_rgba(0,255,65,0.4)]' : 'bg-zinc-800 text-white']"
+                        class="h-10 w-10 md:h-12 md:w-12 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[8px] font-black uppercase">S</span>
                     </button>
-                </div>
 
-                <!-- Secondary Control Strip (Scaling, Fullscreen, Swap) -->
-                <div :class="{'opacity-0 -translate-x-10': !controlsVisible}"
-                     class="flex gap-2 p-2 bg-white/5 backdrop-blur-3xl rounded-full border border-white/10 transition-all duration-700 pointer-events-auto landscape:flex-col">
-                    <button @click.stop="scalingMode = (scalingMode === 'cover' ? 'contain' : 'cover')" 
-                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
-                        <span class="text-sm">{{ scalingMode === 'cover' ? '⬛' : '⬜' }}</span>
-                    </button>
-                    <button @click.stop="toggleFullscreen" 
-                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
-                        <span class="text-sm">{{ isFullscreen ? '◢◣' : '⛶' }}</span>
-                    </button>
-                    <button v-if="peerCount === 1" @click.stop="isFocusedOnSelf = !isFocusedOnSelf" 
-                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
-                            title="Переключить фокус">
-                        <span class="text-sm">🔄</span>
-                    </button>
                     <button @click.stop="toggleCameraFacing" 
-                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
-                            title="Сменить камеру">
+                            class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[14px]">📱</span>
                     </button>
+
                     <button @click.stop="isProximityClose = !isProximityClose" 
                             :class="{'bg-[#7C45F5] text-white': isProximityClose}"
+                            class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all active:scale-95">
+                        <span class="text-[14px]">👂</span>
+                    </button>
+
+                    <div class="hidden md:block w-px h-6 bg-white/10 mx-1"></div>
+
+                    <button @click.stop="scalingMode = (scalingMode === 'cover' ? 'contain' : 'cover')" 
+                            class="w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all opacity-60 hover:opacity-100">
+                        <span class="text-xs">{{ scalingMode === 'cover' ? '⬛' : '⬜' }}</span>
+                    </button>
+
+                    <button @click.stop="toggleFullscreen" 
+                            class="w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all opacity-60 hover:opacity-100">
+                        <span class="text-xs">{{ isFullscreen ? '◢◣' : '⛶' }}</span>
+                    </button>
+                    
+                    <button v-if="peerCount === 1" @click.stop="isFocusedOnSelf = !isFocusedOnSelf" 
+                            class="w-8 h-8 md:w-10 md:h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all opacity-60 hover:opacity-100">
+                        <span class="text-xs">🔄</span>
+                    </button>
+                </div>
+            </div>
+{'bg-[#7C45F5] text-white': isProximityClose}"
                             class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
                             title="Режим разговора">
                         <span class="text-[14px]">👂</span>
@@ -309,6 +309,9 @@ export default {
                 transform: `scale(${this.zoomLevel}) translate(${this.panX / this.zoomLevel}px, ${this.panY / this.zoomLevel}px)`,
                 transition: this.initialDist === 0 ? 'transform 0.1s ease-out' : 'none'
             };
+        },
+        isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
     },
 
@@ -386,9 +389,6 @@ export default {
                 this.initialPanY = this.panY;
             } else if (e.touches.length === 1) {
                 const now = Date.now();
-                if (now - this.lastTapTime < 250) {
-                    this.toggleFullscreen();
-                }
                 this.lastTapTime = now;
 
                 if (this.zoomLevel > 1 || (this.cameraZoom > 1 && (isLocalGrid || this.isFocusedOnSelf))) {
