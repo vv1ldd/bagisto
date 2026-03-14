@@ -650,7 +650,8 @@ export default {
             this.isRoomMode = true;
             this.isActive = true;
 
-            await this.setupLocalMedia();
+            // Start signaling and media in parallel to avoid blocking connection on permission prompt
+            this.setupLocalMedia(); 
             this.subscribeToChannels();
             this.startPresence();
             
@@ -728,23 +729,10 @@ export default {
         },
 
         async setupLocalMedia() {
-            try {
-                // 1. Generate local fingerprint IMMEDIATELY even without media
-                // This ensures signaling works even if the camera is denied
-                try {
-                    const tempPC = new RTCPeerConnection(this.configuration);
-                    tempPC.addTransceiver('video', { direction: 'sendonly' });
-                    const offer = await tempPC.createOffer();
-                    const fingerprintMatch = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
-                    if (fingerprintMatch) {
-                        this.localFingerprint = fingerprintMatch[1];
-                        console.log('Room: Local fingerprint generated:', this.localFingerprint);
-                    }
-                    tempPC.close();
-                } catch (fpError) {
-                    console.error('Room: Fingerprint generation failed', fpError);
-                }
+            // 1. Generate local fingerprint ASYNC - don't block rest of setup
+            this.generateLocalFingerprint();
 
+            try {
                 // 2. Request media
                 const constraints = {
                     video: {
@@ -1117,25 +1105,25 @@ export default {
             
             const activeLocalStream = this.isSharingScreen ? this.screenStream : this.localStream;
             
-            if (localMain && activeLocalStream && localMain.srcObject !== activeLocalStream) {
-                localMain.srcObject = activeLocalStream;
-                localMain.play().catch(e => console.warn('Play error localMain', e));
+            if (localMain && activeLocalStream) {
+                if (localMain.srcObject !== activeLocalStream) localMain.srcObject = activeLocalStream;
+                if (localMain.paused) localMain.play().catch(() => {});
             }
-            if (localGrid && activeLocalStream && localGrid.srcObject !== activeLocalStream) {
-                localGrid.srcObject = activeLocalStream;
-                localGrid.play().catch(e => console.warn('Play error localGrid', e));
+            if (localGrid && activeLocalStream) {
+                if (localGrid.srcObject !== activeLocalStream) localGrid.srcObject = activeLocalStream;
+                if (localGrid.paused) localGrid.play().catch(() => {});
             }
             
             const localWaiting = this.$refs.localVideoWaiting;
-            if (localWaiting && this.localStream && localWaiting.srcObject !== this.localStream) {
-                localWaiting.srcObject = this.localStream;
-                localWaiting.play().catch(e => console.warn('Play error localWaiting', e));
+            if (localWaiting && this.localStream) {
+                if (localWaiting.srcObject !== this.localStream) localWaiting.srcObject = this.localStream;
+                if (localWaiting.paused) localWaiting.play().catch(() => {});
             }
 
             const localPiP = this.$refs.localVideoPiP;
-            if (localPiP && activeLocalStream && localPiP.srcObject !== activeLocalStream) {
-                localPiP.srcObject = activeLocalStream;
-                localPiP.play().catch(e => console.warn('Play error localPiP', e));
+            if (localPiP && activeLocalStream) {
+                if (localPiP.srcObject !== activeLocalStream) localPiP.srcObject = activeLocalStream;
+                if (localPiP.paused) localPiP.play().catch(() => {});
             }
 
             // Rebind Peer Streams
@@ -1150,6 +1138,22 @@ export default {
                     }
                 }
             });
+        },
+
+        async generateLocalFingerprint() {
+            if (this.localFingerprint) return;
+            try {
+                const pc = new RTCPeerConnection(this.configuration);
+                pc.addTransceiver('video', { direction: 'sendonly' });
+                const offer = await pc.createOffer();
+                const match = offer.sdp.match(/a=fingerprint:sha-256\s+(.*)/i);
+                if (match) {
+                    this.localFingerprint = match[1];
+                    console.log('Room: Initial fingerprint generated:', this.localFingerprint);
+                    if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                }
+                pc.close();
+            } catch (e) { console.warn('Room: Background fingerprint failed', e); }
         },
 
         removePeer(id) {
