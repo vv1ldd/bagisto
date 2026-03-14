@@ -33,22 +33,27 @@ if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
     // Store for UI diagnostics
     window.$signalingServer = { host, port: forceTLS ? wssPort : wsPort, scheme: forceTLS ? 'wss' : 'ws' };
 
-    window.Echo = new Echo({
-        broadcaster: 'pusher', // Use standard pusher broadcaster for better proxy compatibility
-        key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
-        wsHost: host,
-        wsPort: wsPort,
-        wssPort: wssPort,
-        forceTLS: forceTLS,
-        enabledTransports: ['ws', 'wss'],
-        authEndpoint: '/broadcasting/auth',
-        enableStats: false,
-    });
+    try {
+        window.Echo = new Echo({
+            broadcaster: 'pusher', // Use standard pusher broadcaster for better proxy compatibility
+            key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
+            wsHost: host,
+            wsPort: wsPort,
+            wssPort: wssPort,
+            forceTLS: forceTLS,
+            cluster: laravelEnv.reverbAppCluster || laravelEnv.pusherCluster || 'mt1',
+            enabledTransports: ['ws', 'wss'],
+            authEndpoint: '/broadcasting/auth',
+            enableStats: false,
+        });
 
-    window.Echo.connector.pusher.connection.bind('state_change', (states) => {
-        console.log('Echo Connection State Change:', states.previous, '->', states.current);
-        window.$emitter.emit('echo-state-change', states.current);
-    });
+        window.Echo.connector.pusher.connection.bind('state_change', (states) => {
+            console.log('Echo Connection State Change:', states.previous, '->', states.current);
+            window.$emitter.emit('echo-state-change', states.current);
+        });
+    } catch (e) {
+        console.error('Echo: Failed to initialize signaling connection (Cluster or Config error)', e);
+    }
 } else {
     console.warn('Pusher/Reverb App Key is missing. P2P calls (incoming signals) will not work.');
 }
