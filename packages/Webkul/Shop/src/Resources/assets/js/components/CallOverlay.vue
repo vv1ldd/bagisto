@@ -51,14 +51,12 @@
                                 :style="zoomStyle"
                                 class="w-full h-full object-contain pointer-events-none"></video>
                          
-                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl flex items-center gap-3 z-20">
-                            <span class="text-xs font-black uppercase tracking-widest">{{ peers[peerIds[0]].name }}</span>
-                            <span v-if="peers[peerIds[0]].verified" class="text-xl" title="Защищено">😉</span>
-                         </div>
+                         <!-- Subtle Security Indicator in corner -->
+                         <div v-if="peers[peerIds[0]].verified" class="absolute top-6 right-6 text-xl opacity-40 z-20" title="Защищено">😉</div>
 
                          <!-- Zoom Reset Badge -->
                          <div v-if="zoomLevel > 1" @click="resetZoom" class="absolute top-6 left-6 bg-[#7C45F5] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer animate-bounce z-20">
-                             Zoom: {{ Math.round(zoomLevel * 100) }}% (Tap to Reset)
+                             {{ Math.round(zoomLevel * 100) }}% (Reset)
                          </div>
                     </template>
 
@@ -67,17 +65,22 @@
                          <video ref="localVideoMain" 
                                 autoplay muted playsinline 
                                 class="w-full h-full object-contain mirror"></video>
-                         <div class="absolute bottom-6 left-6 bg-black/40 backdrop-blur-xl px-4 py-2 border border-white/10 rounded-2xl z-20">
-                            <span class="text-xs font-black uppercase tracking-widest">Вы (Предпросмотр)</span>
-                         </div>
                     </template>
                 </div>
 
-                <!-- Swap Button (Minimalist Icon) -->
-                <div @click="isFocusedOnSelf = !isFocusedOnSelf" 
-                     class="absolute bottom-6 right-6 w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.6)] flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all z-20 group"
-                     title="Сменить вид">
-                    <span class="text-xl md:text-2xl group-hover:rotate-180 transition-transform duration-700">🔄</span>
+                <!-- Swap & Fullscreen Controls -->
+                <div class="absolute bottom-6 right-6 flex flex-col gap-3 z-20">
+                    <div @click="toggleFullscreen" 
+                         class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group"
+                         title="Полный экран">
+                         <span class="text-lg md:text-xl">{{ isFullscreen ? '◢◣' : '⛶' }}</span>
+                    </div>
+
+                    <div @click="isFocusedOnSelf = !isFocusedOnSelf" 
+                         class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.6)] flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group"
+                         title="Сменить вид">
+                        <span class="text-xl md:text-2xl group-hover:rotate-180 transition-transform duration-700">🔄</span>
+                    </div>
                 </div>
 
                 <!-- Waiting for Peer to connect/stream -->
@@ -220,7 +223,8 @@ export default {
             initialZoom: 1,
             initialPanX: 0,
             initialPanY: 0,
-            initialCenter: { x: 0, y: 0 }
+            initialCenter: { x: 0, y: 0 },
+            isFullscreen: false
         };
     },
 
@@ -318,6 +322,7 @@ export default {
 
         handleTouchMove(e) {
             if (e.touches.length === 2 && this.initialDist > 0) {
+                e.preventDefault(); // Block browser native zoom
                 const currentDist = this.getDist(e.touches);
                 const scale = currentDist / this.initialDist;
                 this.zoomLevel = Math.max(1, Math.min(5, this.initialZoom * scale));
@@ -327,6 +332,7 @@ export default {
                 this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
                 this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
             } else if (e.touches.length === 1 && this.zoomLevel > 1) {
+                e.preventDefault(); // Block scroll when zoomed
                 const deltaX = e.touches[0].clientX - this.initialCenter.x;
                 const deltaY = e.touches[0].clientY - this.initialCenter.y;
                 this.panX = this.initialPanX + deltaX;
@@ -360,6 +366,18 @@ export default {
             this.zoomLevel = 1;
             this.panX = 0;
             this.panY = 0;
+        },
+
+        toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                this.isFullscreen = true;
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                    this.isFullscreen = false;
+                }
+            }
         },
 
         async joinRoom(uuid, userName, hash) {
