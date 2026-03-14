@@ -3,6 +3,7 @@
          @mousemove="userActivity"
          @touchstart="handleGlobalTouch"
          @click="toggleControls"
+         @dblclick="toggleFullscreen"
          class="fixed inset-0 z-[10000] bg-black text-white font-sans overflow-hidden transition-all duration-300 touch-none select-none">
         
         <!-- Proximity Dimmer -->
@@ -159,8 +160,8 @@
                         <span class="text-[10px] font-black uppercase leading-none">{{ roomLinkCopied ? '✅' : '🔗' }}</span>
                     </button>
 
-                    <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95 landscape:hidden md:flex">
+                    <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#00FF41] text-black shadow-[0_0_20px_rgba(0,255,65,0.4)]' : 'bg-zinc-800 text-white']"
+                        class="h-12 w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center border border-white/10 transition-all hover:scale-110 active:scale-95">
                         <span class="text-[8px] font-black uppercase">S</span>
                     </button>
                 </div>
@@ -185,6 +186,12 @@
                             class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
                             title="Сменить камеру">
                         <span class="text-[14px]">📱</span>
+                    </button>
+                    <button @click.stop="isProximityClose = !isProximityClose" 
+                            :class="{'bg-[#7C45F5] text-white': isProximityClose}"
+                            class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-all"
+                            title="Режим разговора">
+                        <span class="text-[14px]">👂</span>
                     </button>
                 </div>
             </div>
@@ -248,7 +255,8 @@ export default {
             zoomCapabilities: null,
             roomLinkCopied: false,
             isProximityClose: false,
-            lastToggleTime: 0
+            lastToggleTime: 0,
+            lastTapTime: 0
         };
     },
 
@@ -348,11 +356,19 @@ export default {
                 this.initialCenter = this.getCenter(e.touches);
                 this.initialPanX = this.panX;
                 this.initialPanY = this.panY;
-            } else if (e.touches.length === 1 && this.zoomLevel > 1) {
-                // One finger pan if zoomed
-                this.initialCenter = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-                this.initialPanX = this.panX;
-                this.initialPanY = this.panY;
+            } else if (e.touches.length === 1) {
+                const now = Date.now();
+                if (now - this.lastTapTime < 300) {
+                    this.toggleFullscreen();
+                }
+                this.lastTapTime = now;
+
+                if (this.zoomLevel > 1 || (this.cameraZoom > 1 && (isLocalGrid || this.isFocusedOnSelf))) {
+                    // One finger pan if zoomed
+                    this.initialCenter = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                    this.initialPanX = this.panX;
+                    this.initialPanY = this.panY;
+                }
             }
         },
 
@@ -360,13 +376,18 @@ export default {
             if (e.touches.length === 2 && this.initialDist > 0) {
                 e.preventDefault(); 
                 const currentDist = this.getDist(e.touches);
-                const scale = currentDist / this.initialDist;
+                const scale = Math.max(0.5, Math.min(2, currentDist / this.initialDist));
                 const isTargetingLocal = isLocalGrid || this.isFocusedOnSelf;
 
                 if (isTargetingLocal && this.zoomCapabilities) {
                     // Hardware Zoom
                     const newZoom = Math.max(this.zoomCapabilities.min, Math.min(this.zoomCapabilities.max, this.initialCameraZoom * scale));
                     this.applyCameraZoom(newZoom);
+                    
+                    // Allow panning even during hardware zoom
+                    const currentCenter = this.getCenter(e.touches);
+                    this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
+                    this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
                 } else {
                     // CSS Digital Zoom
                     this.zoomLevel = Math.max(1, Math.min(5, this.initialZoom * scale));
@@ -374,7 +395,7 @@ export default {
                     this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
                     this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
                 }
-            } else if (e.touches.length === 1 && this.zoomLevel > 1) {
+            } else if (e.touches.length === 1 && (this.zoomLevel > 1 || this.cameraZoom > 1)) {
                 e.preventDefault(); 
                 const deltaX = e.touches[0].clientX - this.initialCenter.x;
                 const deltaY = e.touches[0].clientY - this.initialCenter.y;
@@ -785,51 +806,60 @@ export default {
         async toggleCameraFacing() {
             if (this.isSharingScreen) return;
             
-            this.cameraFacing = this.cameraFacing === 'user' ? 'environment' : 'user';
-            console.log(`Room: Switching camera facing to ${this.cameraFacing}`);
+            const newFacing = this.cameraFacing === 'user' ? 'environment' : 'user';
+            console.log(`Room: Attempting to switch camera facing to ${newFacing}`);
             
             try {
-                // Keep the old audio track
-                const oldTracks = this.localStream.getTracks();
-                const videoTrack = oldTracks.find(t => t.kind === 'video');
-                
+                // CRITICAL: Stop existing video tracks BEFORE requesting new ones on mobile
+                if (this.localStream) {
+                    this.localStream.getVideoTracks().forEach(track => {
+                        console.log(`Room: Stopping old ${track.label} track`);
+                        track.stop();
+                    });
+                }
+
                 // Get new video track with updated facingMode
                 const newStream = await navigator.mediaDevices.getUserMedia({
                     video: {
-                        facingMode: this.cameraFacing,
+                        facingMode: newFacing,
                         width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        height: { ideal: 720 },
+                        zoom: true // Keep zoom capability if possible
                     }
                 });
                 
                 const newVideoTrack = newStream.getVideoTracks()[0];
+                this.cameraFacing = newFacing;
                 
+                // Add the new track to localStream and remove the old one
+                const currentVideoTrack = this.localStream.getVideoTracks()[0];
+                if (currentVideoTrack) this.localStream.removeTrack(currentVideoTrack);
+                this.localStream.addTrack(newVideoTrack);
+
+                // Update zoom capabilities for the new camera
+                this.detectZoomCapabilities();
+
                 // Replace track in existing peer connections
                 Object.values(this.peers).forEach(peer => {
                     if (peer.pc) {
                         const senders = peer.pc.getSenders();
                         const videoSender = senders.find(s => s.track && s.track.kind === 'video');
                         if (videoSender) {
-                            videoSender.replaceTrack(newVideoTrack);
+                            videoSender.replaceTrack(newVideoTrack).catch(err => {
+                                console.warn('Room: peer.replaceTrack failed after flip', err);
+                            });
                         }
                     }
                 });
-                
-                // Update localStream
-                if (videoTrack) {
-                    videoTrack.stop();
-                    this.localStream.removeTrack(videoTrack);
-                }
-                this.localStream.addTrack(newVideoTrack);
-                
-                // Detect Zoom again for the new camera
-                this.detectZoomCapabilities();
-                
+
                 this.$nextTick(() => this.rebindVideos());
-            } catch (e) {
-                console.error('Room: Camera flip failed', e);
-                // Revert state if failed
-                this.cameraFacing = this.cameraFacing === 'user' ? 'environment' : 'user';
+            } catch (err) {
+                console.error('Room: toggleCameraFacing failed', err);
+                // Fallback attempt to restore user camera
+                if (this.cameraFacing !== 'user') {
+                    this.cameraFacing = 'user';
+                    this.setupLocalMedia();
+                }
             }
         },
 
@@ -1065,56 +1095,66 @@ export default {
             try {
                 if (!this.isSharingScreen) {
                     console.log('ScreenShare: Requesting display media...');
-                    this.screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                    const screenTrack = this.screenStream.getVideoTracks()[0];
+                    // Use standard options for better compatibility
+                    this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+                        video: { cursor: "always" },
+                        audio: false 
+                    });
                     
+                    const screenTrack = this.screenStream.getVideoTracks()[0];
                     if (!screenTrack) throw new Error('No screen track obtained');
+
+                    this.isSharingScreen = true; // Set state BEFORE replacing tracks
 
                     console.log('ScreenShare: Replacing tracks for peers:', Object.keys(this.peers));
                     Object.values(this.peers).forEach(p => {
-                        const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
-                        if (sender) {
-                            sender.replaceTrack(screenTrack).catch(err => {
-                                console.warn(`ScreenShare: replaceTrack failed for peer`, err);
-                            });
+                        if (p.pc) {
+                            const senders = p.pc.getSenders();
+                            const videoSender = senders.find(s => s.track?.kind === 'video');
+                            if (videoSender) {
+                                videoSender.replaceTrack(screenTrack).catch(err => {
+                                    console.warn(`ScreenShare: replaceTrack failed for peer`, err);
+                                });
+                            }
                         }
                     });
 
-                    this.isSharingScreen = true;
                     this.$nextTick(() => this.rebindVideos());
                     
                     screenTrack.onended = () => {
                         console.log('ScreenShare: Track ended by user/system');
-                        if (this.isSharingScreen) this.toggleScreenShare();
+                        if (this.isSharingScreen) this.stopScreenShare();
                     };
                 } else {
-                    console.log('ScreenShare: Stopping display media...');
-                    if (this.screenStream) {
-                        this.screenStream.getTracks().forEach(t => t.stop());
-                        this.screenStream = null;
-                    }
-                    
-                    const camTrack = this.localStream?.getVideoTracks()[0];
-                    if (camTrack) {
-                        Object.values(this.peers).forEach(p => {
-                            const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
-                            if (sender) {
-                                sender.replaceTrack(camTrack).catch(err => {
-                                    console.warn(`ScreenShare: restore camera track failed`, err);
-                                });
-                            }
-                        });
-                    }
-                    
-                    this.isSharingScreen = false;
-                    this.$nextTick(() => this.rebindVideos());
+                    this.stopScreenShare();
                 }
             } catch (e) { 
                 console.warn('ScreenShare: Failed', e);
-                this.isSharingScreen = false;
-                if (this.screenStream) this.screenStream.getTracks().forEach(t => t.stop());
+                this.stopScreenShare();
+            }
+        },
+
+        stopScreenShare() {
+            console.log('ScreenShare: Stopping display media...');
+            if (this.screenStream) {
+                this.screenStream.getTracks().forEach(t => t.stop());
                 this.screenStream = null;
             }
+            
+            this.isSharingScreen = false;
+            const camTrack = this.localStream?.getVideoTracks()[0];
+            
+            if (camTrack) {
+                Object.values(this.peers).forEach(p => {
+                    const sender = p.pc?.getSenders().find(s => s.track?.kind === 'video');
+                    if (sender) {
+                        sender.replaceTrack(camTrack).catch(err => {
+                            console.warn(`ScreenShare: restore camera track failed`, err);
+                        });
+                    }
+                });
+            }
+            this.$nextTick(() => this.rebindVideos());
         },
 
         endCall() {
