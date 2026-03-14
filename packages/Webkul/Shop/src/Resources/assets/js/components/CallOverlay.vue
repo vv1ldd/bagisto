@@ -154,8 +154,11 @@
                             <p class="text-[10px] md:text-xs uppercase tracking-[0.2em] text-zinc-400 leading-relaxed mb-8">
                                 Сигнальный сервер недоступен. Проверьте соединение или повторите попытку.
                             </p>
-                            <button @click="retryEcho" class="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-xl">
-                                Переподключиться
+                            <button @click="retryEcho" 
+                                :disabled="isRetrying"
+                                class="w-full py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-xl disabled:opacity-50 flex items-center justify-center gap-3">
+                                <div v-if="isRetrying" class="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                                {{ isRetrying ? 'Подключение...' : 'Переподключиться' }}
                             </button>
                         </div>
                     </template>
@@ -240,6 +243,7 @@ export default {
             signalingGraceActive: false,
             signalingGraceTimeout: null,
             reconnectAttempts: 0,
+            isRetrying: false,
             sessionUniqueId: Math.random().toString(36).substring(7)
         };
     },
@@ -298,6 +302,9 @@ export default {
         });
 
         // Handle initial state immediately
+        if (window.Echo && window.Echo.connector && window.Echo.connector.pusher) {
+            this.signalingState = window.Echo.connector.pusher.connection.state;
+        }
         this.handleSignalingStateChange(this.signalingState);
 
         document.addEventListener('fullscreenchange', this.handleFullscreenChange);
@@ -389,9 +396,11 @@ export default {
 
         handleSignalingStateChange(state) {
             this.signalingState = state;
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Signaling state actually changed to -> ${state}`);
 
             if (state === 'connected') {
                 this.signalingGraceActive = false;
+                this.isRetrying = false;
                 if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
                 this.reconnectAttempts = 0;
                 
@@ -816,17 +825,25 @@ export default {
 
         retryEcho() {
             console.log(`CallOverlay [${this.sessionUniqueId}]: Manual retry initiated`);
+            this.isRetrying = true;
             
-            // Re-enable grace period on manual retry to show "Restoring..." instead of error card
+            // Show "Restoring..." UI immediately
             this.signalingGraceActive = true;
             this.reconnectAttempts = 0;
             if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
+            
             this.signalingGraceTimeout = setTimeout(() => {
                 this.signalingGraceActive = false;
+                this.isRetrying = false;
             }, 10000);
 
-            if (window.Echo) {
-                window.Echo.connector.pusher.connection.connect();
+            if (window.Echo && window.Echo.connector && window.Echo.connector.pusher) {
+                const conn = window.Echo.connector.pusher.connection;
+                console.log(`CallOverlay [${this.sessionUniqueId}]: Resetting connection. state was: ${conn.state}`);
+                conn.disconnect();
+                setTimeout(() => {
+                    conn.connect();
+                }, 1000);
             } else {
                 window.location.reload();
             }
