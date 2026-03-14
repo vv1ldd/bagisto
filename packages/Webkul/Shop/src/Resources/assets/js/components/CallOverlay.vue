@@ -253,6 +253,8 @@ export default {
             presenceInterval: null,
             cleanupInterval: null,
             retryInterval: null,
+            interactionTimeout: null,
+            isInteracting: false,
             inactivityTimer: null,
             luminanceInterval: null,
             luminanceCooldown: 0,
@@ -313,8 +315,10 @@ export default {
         },
         zoomStyle() {
             return {
-                transform: `scale(${this.zoomLevel}) translate(${this.panX / this.zoomLevel}px, ${this.panY / this.zoomLevel}px)`,
-                transition: this.initialDist === 0 ? 'transform 0.1s ease-out' : 'none'
+                transform: `scale(${this.zoomLevel}) translate3d(${this.panX / this.zoomLevel}px, ${this.panY / this.zoomLevel}px, 0)`,
+                transition: this.isInteracting ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                willChange: this.isInteracting ? 'transform' : 'auto',
+                pointerEvents: 'none'
             };
         },
         isMobile() {
@@ -422,6 +426,7 @@ export default {
         },
 
         handleTouchMove(e, isLocalGrid = false) {
+            this.setInteracting();
             if (e.touches.length === 2 && this.initialDist > 0) {
                 e.preventDefault(); 
                 const currentDist = this.getDist(e.touches);
@@ -470,10 +475,12 @@ export default {
         },
 
         handleWheel(e, isLocalGrid = false) {
-            if (e.ctrlKey) {
+            this.setInteracting();
+            if (e.ctrlKey || e.metaKey) {
                 e.preventDefault();
+                // Mac trackpad pinch-to-zoom uses wheel with ctrlKey or metaKey
                 const delta = -e.deltaY;
-                const factor = 1.05;
+                const factor = 1.02; // More subtle for high-freq wheel events
                 const scale = delta > 0 ? factor : 1/factor;
                 const isTargetingLocal = isLocalGrid || this.isFocusedOnSelf;
 
@@ -484,16 +491,29 @@ export default {
                     const nextZoom = Math.max(1, Math.min(5, this.zoomLevel * scale));
                     // Zoom towards mouse point
                     const zoomRatio = nextZoom / this.zoomLevel;
-                    this.panX = (this.panX - (e.clientX - window.innerWidth/2)) * zoomRatio + (e.clientX - window.innerWidth/2);
-                    this.panY = (this.panY - (e.clientY - window.innerHeight/2)) * zoomRatio + (e.clientY - window.innerHeight/2);
+                    // Center offsets relative to viewport center
+                    const centerX = e.clientX - window.innerWidth/2;
+                    const centerY = e.clientY - window.innerHeight/2;
+                    
+                    this.panX = (this.panX - centerX) * zoomRatio + centerX;
+                    this.panY = (this.panY - centerY) * zoomRatio + centerY;
                     this.zoomLevel = nextZoom;
                 }
             } else if (this.zoomLevel > 1) {
                 e.preventDefault();
+                // Natural scroll direction on Mac usually means we subtract
                 this.panX -= e.deltaX;
                 this.panY -= e.deltaY;
             }
             this.clampPan();
+        },
+
+        setInteracting() {
+            this.isInteracting = true;
+            if (this.interactionTimeout) clearTimeout(this.interactionTimeout);
+            this.interactionTimeout = setTimeout(() => {
+                this.isInteracting = false;
+            }, 150); // Short grace period to maintain "none" transition while scrolling/zooming
         },
 
         handleTouchEnd() {
