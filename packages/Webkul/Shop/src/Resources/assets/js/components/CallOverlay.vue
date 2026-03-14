@@ -203,9 +203,10 @@ export default {
         startPresence() {
             this.stopPresence();
             this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+            // More frequent presence during startup
             this.presenceInterval = setInterval(() => {
                 if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
-            }, 10000);
+            }, 5000); 
         },
 
         stopPresence() {
@@ -216,7 +217,6 @@ export default {
             try {
                 this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 
-                // Fingerprint extraction
                 const tempPC = new RTCPeerConnection(this.configuration);
                 tempPC.addTransceiver('video');
                 const offer = await tempPC.createOffer();
@@ -241,24 +241,21 @@ export default {
             if (!senderName || senderName === this.localUserName) return;
             if (signal.target && signal.target !== this.localUserName) return;
 
-            console.log(`Room: [${signal.type}] from ${senderName}`);
-
             if (signal.type === 'presence') {
                 const isInitiator = this.localUserName.toLowerCase() < senderName.toLowerCase();
-                if (isInitiator && !this.peers[senderName]) {
-                    this.initiateConnection(senderName, signal.fingerprint);
-                } else if (!this.peers[senderName]) {
+                if (!this.peers[senderName]) {
                     this.peers[senderName] = { 
-                        pc: null, 
-                        stream: null, 
-                        connected: false, 
-                        streamReady: false, 
-                        iceQueue: [],
-                        fingerprint: signal.fingerprint,
-                        verified: false
+                        pc: null, stream: null, connected: false, streamReady: false, 
+                        iceQueue: [], fingerprint: signal.fingerprint, verified: false
                     };
+                    // Immediately notify them that we are here too
+                    this.sendSignal({ type: 'presence', target: senderName, fingerprint: this.localFingerprint });
                 } else if (signal.fingerprint) {
                     this.peers[senderName].fingerprint = signal.fingerprint;
+                }
+
+                if (isInitiator && (!this.peers[senderName].pc || this.peers[senderName].pc.connectionState === 'failed')) {
+                    this.initiateConnection(senderName, signal.fingerprint);
                 }
             } else if (signal.type === 'offer') {
                 this.handleOffer(senderName, signal);
@@ -272,79 +269,65 @@ export default {
         },
 
         async initiateConnection(name, remoteFingerprint) {
+            console.log(`Room: Initiating to ${name}`);
             const pc = this.createPeerConnection(name);
-            if (remoteFingerprint && this.peers[name]) this.peers[name].fingerprint = remoteFingerprint;
+            if (remoteFingerprint) this.peers[name].fingerprint = remoteFingerprint;
             
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-            
-            this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name, fingerprint: this.localFingerprint });
+            try {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name, fingerprint: this.localFingerprint });
+            } catch (e) { console.error('Offer creation failed', e); }
         },
 
         async handleOffer(name, signal) {
+            console.log(`Room: Offer from ${name}`);
             const pc = this.createPeerConnection(name);
-            if (signal.fingerprint && this.peers[name]) this.peers[name].fingerprint = signal.fingerprint;
+            if (signal.fingerprint) this.peers[name].fingerprint = signal.fingerprint;
 
             try {
-                // Be explicit to avoid "Invalid SDP line" errors with extra properties
-                const description = new RTCSessionDescription({
-                    type: 'offer',
-                    sdp: signal.sdp
-                });
-                await pc.setRemoteDescription(description);
+                // Sanitize SDP line endings
+                const sdp = signal.sdp.replace(/\n(?!\r)/g, '\r\n');
+                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
                 
                 const peer = this.peers[name];
-                if (peer && peer.iceQueue) {
-                    while (peer.iceQueue.length > 0) {
-                        const cand = peer.iceQueue.shift();
-                        try {
-                            await pc.addIceCandidate(new RTCIceCandidate(cand));
-                        } catch (iceErr) { console.warn('ICE error', iceErr); }
-                    }
+                while (peer.iceQueue.length > 0) {
+                    const cand = peer.iceQueue.shift();
+                    await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
                 }
 
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
                 this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name, fingerprint: this.localFingerprint });
-            } catch (err) {
-                console.error('Room: handleOffer failed', err);
-            }
+            } catch (err) { console.error('Room: handleOffer failed', err); }
         },
 
         async handleAnswer(name, signal) {
+            console.log(`Room: Answer from ${name}`);
             const peer = this.peers[name];
             if (peer && peer.pc) {
                 if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
                 try {
-                    const description = new RTCSessionDescription({
-                        type: 'answer',
-                        sdp: signal.sdp
-                    });
-                    await peer.pc.setRemoteDescription(description);
-                    if (peer.iceQueue) {
-                        while (peer.iceQueue.length > 0) {
-                            const cand = peer.iceQueue.shift();
-                            try {
-                                await peer.pc.addIceCandidate(new RTCIceCandidate(cand));
-                            } catch (iceErr) { console.warn('ICE error', iceErr); }
-                        }
+                    const sdp = signal.sdp.replace(/\n(?!\r)/g, '\r\n');
+                    await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
+                    while (peer.iceQueue.length > 0) {
+                        const cand = peer.iceQueue.shift();
+                        await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
                     }
-                } catch (err) {
-                    console.error('Room: handleAnswer failed', err);
-                }
+                } catch (err) { console.error('Room: handleAnswer failed', err); }
             }
         },
 
         async handleCandidate(name, signal) {
             const peer = this.peers[name];
-            if (peer && peer.pc) {
-                if (peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
-                    try {
-                        await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-                    } catch (err) { console.warn('ICE error', err); }
-                } else {
-                    peer.iceQueue.push(signal.candidate);
-                }
+            if (!peer) return;
+
+            if (peer.pc && peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
+                try {
+                    await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                } catch (err) { console.warn('ICE error', err); }
+            } else {
+                peer.iceQueue.push(signal.candidate);
             }
         },
 
@@ -355,13 +338,8 @@ export default {
             
             if (!this.peers[name]) {
                 this.peers[name] = { 
-                    pc, 
-                    stream: null, 
-                    connected: false, 
-                    streamReady: false, 
-                    iceQueue: [],
-                    fingerprint: null,
-                    verified: false
+                    pc, stream: null, connected: false, streamReady: false, 
+                    iceQueue: [], fingerprint: null, verified: false 
                 };
             } else {
                 this.peers[name].pc = pc;
@@ -376,6 +354,7 @@ export default {
             };
 
             pc.ontrack = (e) => {
+                console.log(`WebRTC: Track from ${name}`);
                 const stream = e.streams[0];
                 if (this.peers[name]) {
                     this.peers[name].stream = stream;
@@ -386,6 +365,7 @@ export default {
             };
 
             pc.onconnectionstatechange = () => {
+                console.log(`WebRTC: ${name} state -> ${pc.connectionState}`);
                 if (pc.connectionState === 'connected') {
                     if (this.peers[name]) {
                         this.peers[name].connected = true;
@@ -418,7 +398,7 @@ export default {
                 if (actualRemoteFingerprint) {
                     peer.verified = true;
                 }
-            } catch (e) { console.error('Security verification failed', e); }
+            } catch (e) { }
         },
 
         attachStreamToVideo(name, stream) {
