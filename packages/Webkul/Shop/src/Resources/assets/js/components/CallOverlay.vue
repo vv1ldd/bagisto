@@ -325,15 +325,27 @@ export default {
 
         async setupLocalMedia() {
             try {
-                // Request advanced constraints for macOS/iOS native features (Center Stage, Background Blur)
+                // Request advanced constraints for macOS/iOS and Android/Samsung native features
                 const constraints = {
                     video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
                         frameRate: { ideal: 30 },
-                        // Proposed standards supported by Safari/macOS and high-end cameras
+                        
+                        // macOS/iOS specific (Center Stage, Blur)
                         faceFraming: true,
                         backgroundBlur: true,
+                        
+                        // Android/Samsung & Generic Mobile advanced controls
+                        focusMode: { ideal: 'continuous' },
+                        whiteBalanceMode: { ideal: 'continuous' },
+                        exposureMode: { ideal: 'continuous' },
+                        
+                        // Hardware stabilization & enhancements
+                        videoStabilizationMode: { ideal: 'cinematic' },
+                        pointsOfInterest: true, // Allows tapping to focus if supported
+                        
+                        // Standard PTZ where available
                         pan: true,
                         tilt: true,
                         zoom: true
@@ -341,11 +353,22 @@ export default {
                     audio: {
                         echoCancellation: true,
                         noiseSuppression: true,
-                        autoGainControl: true
+                        autoGainControl: true,
+                        // Voice isolation for supported mobile browsers
+                        voiceIsolation: true 
                     }
                 };
 
+                console.log('Room: Requesting media with advanced constraints', constraints);
                 this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+                
+                // Log actual capabilities for debugging
+                try {
+                    const videoTrack = this.localStream.getVideoTracks()[0];
+                    if (videoTrack && videoTrack.getCapabilities) {
+                        console.log('Room: Camera Capabilities:', videoTrack.getCapabilities());
+                    }
+                } catch (capError) { }
                 
                 const tempPC = new RTCPeerConnection(this.configuration);
                 tempPC.addTransceiver('video');
