@@ -215,7 +215,7 @@ export default {
                     { urls: 'stun:stun2.l.google.com:19302' },
                     { urls: 'stun:stun3.l.google.com:19302' },
                 ],
-                iceCandidatePoolSize: 10
+                iceCandidatePoolSize: 0
             },
             presenceInterval: null,
             cleanupInterval: null,
@@ -240,8 +240,8 @@ export default {
             signalingGraceTimeout: null,
             reconnectAttempts: 0,
             isRetrying: false,
-            scalingMode: 'contain', // 'contain' (Fit) by default to avoid initial cropping
-            sessionUniqueId: Math.random().toString(36).substring(7),
+            scalingMode: 'contain',
+            sessionUniqueId: Math.random().toString(36).substring(2, 10) + Date.now().toString(36),
             isLandscape: window.innerWidth > window.innerHeight,
             cameraZoom: 1,
             initialCameraZoom: 1,
@@ -841,11 +841,13 @@ export default {
             if (senderSessionId === this.sessionUniqueId) return;
             
             // If targeted and not for us
-            if (signal.target && signal.target !== this.sessionUniqueId && 
-                signal.target !== this.localHash && signal.target !== this.localUserName) return;
+            if (signal.target && signal.target !== this.sessionUniqueId) {
+                // Also check if targeted to legacy hash/name only if target is not a session ID
+                const isTargetedToMe = signal.target === this.localHash || signal.target === this.localUserName;
+                if (!isTargetedToMe) return;
+            }
 
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Signal ${signal.type} from ${senderName} (Session: ${senderSessionId})`);
-
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Receiving ${signal.type} from ${senderName} (Session: ${senderSessionId})`);
             const peerKey = senderSessionId;
 
             if (signal.type === 'presence') {
@@ -885,7 +887,11 @@ export default {
 
                 if (isInitiator) {
                     const peer = this.peers[peerKey];
-                    if (!peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState)) {
+                    // If no PC yet, or failed, or stuck in 'new' for too long
+                    const shouldInitiate = !peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState);
+                    
+                    if (shouldInitiate) {
+                        console.log(`Room: I am initiator for ${senderName} (${peerKey}). Starting connection...`);
                         this.initiateConnection(peerKey, signal.fingerprint);
                     }
                 }
@@ -899,15 +905,11 @@ export default {
 
         normalizeSDP(sdp) {
             if (!sdp) return '';
-            let lines = sdp.split(/\r?\n/);
-            lines = lines.map(line => line.trim()).filter(line => line.length > 0);
-            lines = lines.map(line => {
-                if (line.startsWith('a=group:BUNDLE')) {
-                    return line.replace(/\s+/g, ' ').trim();
-                }
-                return line;
-            });
-            return lines.join('\r\n') + '\r\n';
+            // Minimalist cleanup only - don't break the structure
+            return sdp.split(/\r?\n/)
+                      .map(line => line.trim())
+                      .filter(line => line.length > 0)
+                      .join('\r\n') + '\r\n';
         },
 
         async toggleCameraFacing() {
@@ -1078,18 +1080,31 @@ export default {
             pc.onconnectionstatechange = () => {
                 const state = pc.connectionState;
                 console.log(`Room: Peer ${id} connection state: ${state}`);
-                if (state === 'connected') {
-                    if (this.peers[id]) {
-                        this.peers[id].connected = true;
-                        this.verifySecurity(id);
-                        this.$nextTick(() => this.rebindVideos());
-                    }
-                } else if (['disconnected', 'failed', 'closed'].includes(state)) {
-                    if (this.peers[id]) this.peers[id].connected = false;
-                }
+                this.updatePeerConnectedState(id, state);
+            };
+
+            pc.oniceconnectionstatechange = () => {
+                const state = pc.iceConnectionState;
+                console.log(`Room: Peer ${id} ICE connection state: ${state}`);
+                this.updatePeerConnectedState(id, state);
             };
 
             return pc;
+        },
+
+        updatePeerConnectedState(id, state) {
+            if (!this.peers[id]) return;
+            
+            if (['connected', 'completed'].includes(state)) {
+                this.peers[id].connected = true;
+                this.verifySecurity(id);
+                this.$nextTick(() => this.rebindVideos());
+            } else if (['disconnected', 'failed', 'closed'].includes(state)) {
+                // Don't immediately set to false on 'disconnected' as it might recover
+                if (state !== 'disconnected') {
+                    this.peers[id].connected = false;
+                }
+            }
         },
 
         syncTracksToAllPeers() {
@@ -1254,6 +1269,11 @@ export default {
                 this.isRetrying = false;
             }, 15000);
 
+            // NEW: Clear peers to force re-initiation of WebRTC
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Clearing existing peer connections for retry`);
+            Object.values(this.peers).forEach(p => p.pc?.close());
+            this.peers = {};
+            
             if (window.Echo && window.Echo.connector && window.Echo.connector.pusher) {
                 const conn = window.Echo.connector.pusher.connection;
                 console.log(`CallOverlay [${this.sessionUniqueId}]: Resetting connection. state was: ${conn.state}`);
