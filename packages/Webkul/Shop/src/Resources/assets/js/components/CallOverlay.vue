@@ -52,7 +52,8 @@
                          <video :id="'video_' + peerIds[0]" 
                                 autoplay playsinline 
                                 :style="zoomStyle"
-                                class="w-full h-full object-contain pointer-events-none"></video>
+                                :class="[isFullscreen ? 'object-cover' : 'object-contain']"
+                                class="w-full h-full pointer-events-none"></video>
                          
                          <!-- Subtle Security Indicator in corner -->
                          <div v-if="peers[peerIds[0]].verified" class="absolute top-6 right-6 text-xl opacity-40 z-20" title="Защищено">😉</div>
@@ -67,7 +68,8 @@
                     <template v-else>
                          <video ref="localVideoMain" 
                                 autoplay muted playsinline 
-                                class="w-full h-full object-contain mirror"></video>
+                                :class="[isFullscreen ? 'object-cover' : 'object-contain']"
+                                class="w-full h-full mirror"></video>
                     </template>
                 </div>
 
@@ -103,7 +105,9 @@
             <div v-else :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
                 <!-- Local Video -->
                 <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
-                    <video ref="localVideoGrid" autoplay muted playsinline class="w-full h-full object-contain mirror"></video>
+                    <video ref="localVideoGrid" autoplay muted playsinline 
+                           :class="[isFullscreen ? 'object-cover' : 'object-contain']"
+                           class="w-full h-full mirror"></video>
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg flex items-center gap-2">
                         <span>Вы ({{ localUserName }})</span>
                         <span v-if="localFingerprint" class="opacity-40" title="Security Fingerprint Verified">🛡️</span>
@@ -113,7 +117,9 @@
                 <!-- Remote Videos -->
                 <div v-for="id in peerIds" :key="id" 
                     class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
-                    <video :id="'video_' + id" autoplay playsinline class="w-full h-full object-contain"></video>
+                    <video :id="'video_' + id" autoplay playsinline 
+                           :class="[isFullscreen ? 'object-cover' : 'object-contain']"
+                           class="w-full h-full"></video>
                     
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
                         <span>{{ peers[id]?.name }}</span>
