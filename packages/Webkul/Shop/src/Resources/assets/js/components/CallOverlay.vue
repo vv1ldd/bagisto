@@ -855,7 +855,10 @@ export default {
                             hash: senderHash,
                             pc: null, stream: null, connected: false, streamReady: false, 
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
-                            lastSeen: now
+                            lastSeen: now,
+                            makingOffer: false,
+                            ignoreOffer: false,
+                            watchdog: null
                         }
                     };
                     this.sendSignal({ type: 'presence', target: senderSessionId, fingerprint: this.localFingerprint });
@@ -873,8 +876,10 @@ export default {
                     const shouldInitiate = !peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState);
                     
                     if (shouldInitiate) {
-                        console.log(`Room: I am initiator for ${senderName} (${peerKey}). Starting connection...`);
-                        this.initiateConnection(peerKey, signal.fingerprint);
+                        console.log(`Room: I am initiator for ${senderName} (${peerKey}). Creating session...`);
+                        this.createPeerConnection(peerKey, senderName);
+                        if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
+                        this.startConnectionWatchdog(peerKey);
                     }
                 }
             } else if (['offer', 'answer', 'candidate', 'hangup'].includes(signal.type)) {
@@ -954,37 +959,57 @@ export default {
             }
         },
 
-        async initiateConnection(id, remoteFingerprint) {
-            const pc = this.createPeerConnection(id);
-            if (remoteFingerprint) this.peers[id].fingerprint = remoteFingerprint;
-            
-            try {
-                const offer = await pc.createOffer();
-                const cleanSdp = this.normalizeSDP(offer.sdp);
-                await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
-                this.sendSignal({ type: 'offer', sdp: cleanSdp, target: id, fingerprint: this.localFingerprint });
-            } catch (e) { console.error('Room: Offer generation failed', e); }
+        startConnectionWatchdog(id) {
+            const peer = this.peers[id];
+            if (!peer || peer.watchdog) return;
+
+            console.log(`WebRTC: Starting watchdog for ${id}`);
+            peer.watchdog = setTimeout(() => {
+                if (this.peers[id]) {
+                    const pc = this.peers[id].pc;
+                    if (pc && pc.connectionState !== 'connected' && pc.connectionState !== 'completed') {
+                        console.warn(`WebRTC: Watchdog triggered for ${id}. Current state: ${pc.connectionState}. Force restart...`);
+                        pc.restartIce();
+                        // Reset watchdog to try again later if still failing
+                        peer.watchdog = null;
+                        this.startConnectionWatchdog(id);
+                    } else {
+                        peer.watchdog = null;
+                    }
+                }
+            }, 10000); // 10 second timeout
         },
 
         async handleOffer(id, name, signal) {
-            const pc = this.createPeerConnection(id, name);
-            if (signal.fingerprint) this.peers[id].fingerprint = signal.fingerprint;
+            const peer = this.peers[id];
+            if (!peer) return;
 
+            const polite = this.sessionUniqueId < id; // Smaller session ID is polite
+            
             try {
-                const sdp = this.normalizeSDP(signal.sdp);
-                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
-                
-                const peer = this.peers[id];
-                while (peer.iceQueue.length > 0) {
-                    const cand = peer.iceQueue.shift();
-                    await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+                const offerCollision = signal.type === 'offer' && (peer.makingOffer || peer.pc.signalingState !== 'stable');
+                peer.ignoreOffer = !polite && offerCollision;
+
+                if (peer.ignoreOffer) {
+                    console.log(`WebRTC: Glare detected. Ignoring offer from ${id} (I am impolite)`);
+                    return;
                 }
 
-                const answer = await pc.createAnswer();
+                const sdp = this.normalizeSDP(signal.sdp);
+                await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+                
+                while (peer.iceQueue.length > 0) {
+                    const cand = peer.iceQueue.shift();
+                    await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+                }
+
+                const answer = await peer.pc.createAnswer();
                 const cleanAnswer = this.normalizeSDP(answer.sdp);
-                await pc.setLocalDescription({ type: 'answer', sdp: cleanAnswer });
+                await peer.pc.setLocalDescription({ type: 'answer', sdp: cleanAnswer });
                 this.sendSignal({ type: 'answer', sdp: cleanAnswer, target: id, fingerprint: this.localFingerprint });
-            } catch (err) { }
+            } catch (err) {
+                console.warn(`WebRTC: handleOffer failed for ${id}`, err);
+            }
         },
 
         async handleAnswer(id, signal) {
@@ -998,20 +1023,28 @@ export default {
                         const cand = peer.iceQueue.shift();
                         await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                     }
-                } catch (err) { }
+                } catch (err) { 
+                    console.warn(`WebRTC: handleAnswer failed for ${id}`, err);
+                }
             }
         },
 
         async handleCandidate(id, signal) {
             const peer = this.peers[id];
-            if (!peer) return;
+            if (!peer || !peer.pc) return;
 
-            if (peer.pc && peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
-                try {
-                    await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-                } catch (err) { }
-            } else {
-                peer.iceQueue.push(signal.candidate);
+            try {
+                if (signal.candidate) {
+                    if (peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
+                        await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
+                    } else {
+                        peer.iceQueue.push(signal.candidate);
+                    }
+                }
+            } catch (err) {
+                if (!peer.ignoreOffer) {
+                    console.warn(`WebRTC: handleCandidate failed for ${id}`, err);
+                }
             }
         },
 
@@ -1045,6 +1078,21 @@ export default {
                 });
             }
 
+            pc.onnegotiationneeded = async () => {
+                try {
+                    console.log(`WebRTC: Negotiation needed for ${id}`);
+                    this.peers[id].makingOffer = true;
+                    const offer = await pc.createOffer();
+                    const cleanSdp = this.normalizeSDP(offer.sdp);
+                    await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
+                    this.sendSignal({ type: 'offer', sdp: cleanSdp, target: id, fingerprint: this.localFingerprint });
+                } catch (err) {
+                    console.warn(`WebRTC: onnegotiationneeded failed for ${id}`, err);
+                } finally {
+                    this.peers[id].makingOffer = false;
+                }
+            };
+
             pc.onicecandidate = (e) => {
                 if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: id });
             };
@@ -1063,6 +1111,15 @@ export default {
                 const state = pc.connectionState;
                 console.log(`Room: Peer ${id} connection state: ${state}`);
                 this.updatePeerConnectedState(id, state);
+
+                if (state === 'failed') {
+                    console.log(`WebRTC: Connection failed for ${id}. Retrying in 2s...`);
+                    setTimeout(() => {
+                        if (this.peers[id] && pc.connectionState === 'failed') {
+                            pc.restartIce();
+                        }
+                    }, 2000);
+                }
             };
 
             pc.oniceconnectionstatechange = () => {
@@ -1081,6 +1138,12 @@ export default {
                 this.peers[id].connected = true;
                 this.verifySecurity(id);
                 this.$nextTick(() => this.rebindVideos());
+                
+                // Success! Clear watchdog
+                if (this.peers[id].watchdog) {
+                    clearTimeout(this.peers[id].watchdog);
+                    this.peers[id].watchdog = null;
+                }
             } else if (['disconnected', 'failed', 'closed'].includes(state)) {
                 // Don't immediately set to false on 'disconnected' as it might recover
                 if (state !== 'disconnected') {
@@ -1116,7 +1179,7 @@ export default {
                         const isInitiator = this.sessionUniqueId < id;
                         if (isInitiator) {
                             console.log(`Room: Renegotiating for missing tracks with ${id}`);
-                            this.initiateConnection(id, peer.fingerprint);
+                            // onnegotiationneeded handles this automatically when tracks are added
                         }
                     }
                 }
@@ -1198,6 +1261,7 @@ export default {
             const peer = this.peers[id];
             if (peer) {
                 if (peer.pc) peer.pc.close();
+                if (peer.watchdog) clearTimeout(peer.watchdog);
                 const newPeers = { ...this.peers };
                 delete newPeers[id];
                 this.peers = newPeers;
@@ -1360,7 +1424,10 @@ export default {
         cleanup() {
             this.stopPresence();
             if (this.localStream) this.localStream.getTracks().forEach(t => t.stop());
-            Object.values(this.peers).forEach(p => p.pc?.close());
+            Object.values(this.peers).forEach(p => {
+                if (p.pc) p.pc.close();
+                if (p.watchdog) clearTimeout(p.watchdog);
+            });
             this.peers = {};
             this.isActive = false;
             
