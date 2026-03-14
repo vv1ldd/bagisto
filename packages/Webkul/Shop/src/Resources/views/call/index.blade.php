@@ -45,10 +45,6 @@
                     </div>
                 </v-room-joiner>
                 
-                <a href="{{ route('shop.home.index') }}"
-                    class="block w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 hover:text-zinc-400 transition-colors">
-                    Выйти
-                </a>
             </div>
 
             <div id="call-active-notice" class="hidden">

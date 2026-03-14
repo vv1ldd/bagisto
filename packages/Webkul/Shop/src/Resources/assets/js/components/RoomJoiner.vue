@@ -1,8 +1,8 @@
 <template>
     <div v-if="!isActive" class="relative">
         <!-- Close Button (Absolute Top Right) -->
-        <button v-if="isGuest" @click="goBack" class="absolute -top-4 -right-4 h-10 w-10 bg-zinc-800 text-white rounded-2xl flex items-center justify-center border border-white/10 hover:bg-zinc-700 active:scale-95 transition-all z-20 shadow-xl">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+        <button v-if="isGuest" @click="goBack" class="absolute top-0 right-0 h-8 w-8 bg-zinc-800 text-white rounded-xl flex items-center justify-center border border-white/10 hover:bg-red-600 active:scale-90 transition-all z-[100] shadow-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 
         <div class="space-y-4">
