@@ -79,34 +79,43 @@
             </div>
 
             <!-- Empty State -->
-            <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
-                <!-- (Same empty state content as before) -->
-                <div class="w-32 h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
-                     <div class="flex -space-x-4">
-                        <div v-if="signalingState === 'unavailable'" class="text-4xl">⚠️</div>
-                        <template v-else>
-                            <div class="w-12 h-12 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-xl">👤</div>
-                            <div class="w-12 h-12 rounded-full bg-[#7C45F5] border-2 border-[#7C45F5]/50 flex items-center justify-center text-xl shadow-lg">👥</div>
+            <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
+                <video ref="localVideoWaiting" autoplay muted playsinline 
+                       :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                       class="absolute inset-0 w-full h-full opacity-40 brightness-50 grayscale transition-all duration-700 pointer-events-none"></video>
+
+                <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-zinc-900/50 backdrop-blur-3xl border border-white/5 flex items-center justify-center mb-8 animate-pulse shadow-2xl">
+                         <div class="flex -space-x-4">
+                            <div v-if="signalingState === 'unavailable'" class="text-4xl">⚠️</div>
+                            <template v-else>
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-lg md:text-xl">👤</div>
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#7C45F5] border-2 border-[#7C45F5]/50 flex items-center justify-center text-lg md:text-xl shadow-lg">👥</div>
+                            </template>
+                         </div>
+                    </div>
+                    <div class="text-center px-8 pointer-events-auto">
+                        <template v-if="(signalingState === 'unavailable' || signalingState === 'failed') && !signalingGraceActive">
+                            <div class="bg-black/80 backdrop-blur-3xl p-8 md:p-12 rounded-[40px] border border-red-500/20 flex flex-col items-center max-w-sm mx-auto shadow-[0_0_100px_rgba(239,68,68,0.2)]">
+                                <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
+                                <p class="mb-6 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">Проверьте соединение или повторите попытку</p>
+                                <button @click="retryEcho" :disabled="isRetrying" 
+                                    class="w-full py-4 bg-white text-black text-[10px] font-black uppercase rounded-2xl transition-all hover:bg-zinc-200 active:scale-95 disabled:opacity-50">
+                                    {{ isRetrying ? 'Подключение...' : 'Переподключиться' }}
+                                </button>
+                            </div>
                         </template>
-                     </div>
-                </div>
-                <div class="text-center px-8 pointer-events-auto">
-                    <template v-if="(signalingState === 'unavailable' || signalingState === 'failed') && !signalingGraceActive">
-                        <div class="bg-black/80 backdrop-blur-3xl p-8 md:p-12 rounded-[40px] border border-red-500/20 flex flex-col items-center max-w-sm mx-auto shadow-[0_0_100px_rgba(239,68,68,0.2)]">
-                            <h3 class="text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
-                            <button @click="retryEcho" :disabled="isRetrying" class="w-full py-4 bg-white text-black text-[10px] font-black uppercase rounded-2xl">Переподключиться</button>
-                        </div>
-                    </template>
-                    <template v-else>
-                        <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
-                        <p class="mt-4 text-[8px] uppercase tracking-widest text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">
-                            Поделитесь ссылкой, чтобы начать разговор прямо сейчас
-                        </p>
-                        <button @click="copyRoomLink" 
-                                class="mt-6 px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white transition-all active:scale-95">
-                            {{ roomLinkCopied ? 'Ссылка скопирована! ✅' : 'Скопировать ссылку' }}
-                        </button>
-                    </template>
+                        <template v-else>
+                            <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white">Ожидание участников</h3>
+                            <p class="mt-4 text-[8px] uppercase tracking-widest text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">
+                                Поделитесь ссылкой, чтобы начать разговор прямо сейчас
+                            </p>
+                            <button @click="copyRoomLink" 
+                                    class="mt-6 px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-[#7C45F5] hover:bg-[#7C45F5] hover:text-white transition-all active:scale-95">
+                                {{ roomLinkCopied ? 'Ссылка скопирована! ✅' : 'Скопировать ссылку' }}
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
@@ -468,21 +477,25 @@ export default {
                     this.subscribeToChannels();
                     this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                 }
-            } else if (state === 'unavailable' || state === 'failed') {
+            } else if (state === 'unavailable' || state === 'failed' || state === 'disconnected') {
                 if (!this.signalingGraceActive) {
-                    this.signalingGraceActive = true;
-                    console.log('CallOverlay: Signaling unavailable, starting grace period...');
+                    console.log('CallOverlay: Signaling connection issue, starting grace period...');
                     
-                    if (this.reconnectAttempts < 3) {
+                    if (this.reconnectAttempts < 5) {
                         this.reconnectAttempts++;
-                        console.log(`CallOverlay: Auto-reconnect attempt ${this.reconnectAttempts}...`);
-                        setTimeout(() => this.retryEcho(), 2000);
+                        const delay = Math.min(10000, 1000 * Math.pow(2, this.reconnectAttempts));
+                        console.log(`CallOverlay: Auto-reconnect attempt ${this.reconnectAttempts} in ${delay}ms...`);
+                        
+                        // Set grace active to prevent spam
+                        this.signalingGraceActive = true;
+                        if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
+                        this.signalingGraceTimeout = setTimeout(() => {
+                            this.signalingGraceActive = false;
+                            this.retryEcho();
+                        }, delay);
+                    } else {
+                        console.warn('CallOverlay: Max reconnect attempts reached.');
                     }
-
-                    this.signalingGraceTimeout = setTimeout(() => {
-                        this.signalingGraceActive = false;
-                        console.log('CallOverlay: Signaling grace period expired.');
-                    }, 10000); 
                 }
             }
         },
@@ -1018,6 +1031,12 @@ export default {
                 localGrid.srcObject = activeLocalStream;
                 localGrid.play().catch(() => {});
             }
+            
+            const localWaiting = this.$refs.localVideoWaiting;
+            if (localWaiting && this.localStream && localWaiting.srcObject !== this.localStream) {
+                localWaiting.srcObject = this.localStream;
+                localWaiting.play().catch(() => {});
+            }
 
             // Rebind Peer Streams
             Object.keys(this.peers).forEach(id => {
@@ -1056,27 +1075,34 @@ export default {
         },
 
         retryEcho() {
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Manual retry initiated`);
+            if (this.isRetrying) return;
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Retry initiated. Attempts: ${this.reconnectAttempts}`);
             this.isRetrying = true;
             
-            // Show "Restoring..." UI immediately
             this.signalingGraceActive = true;
-            this.reconnectAttempts = 0;
             if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
             
             this.signalingGraceTimeout = setTimeout(() => {
                 this.signalingGraceActive = false;
                 this.isRetrying = false;
-            }, 10000);
+            }, 15000);
 
             if (window.Echo && window.Echo.connector && window.Echo.connector.pusher) {
                 const conn = window.Echo.connector.pusher.connection;
                 console.log(`CallOverlay [${this.sessionUniqueId}]: Resetting connection. state was: ${conn.state}`);
-                conn.disconnect();
-                setTimeout(() => {
-                    conn.connect();
-                }, 1000);
+                
+                try {
+                    conn.disconnect();
+                    setTimeout(() => {
+                        console.log(`CallOverlay [${this.sessionUniqueId}]: Reconnecting...`);
+                        conn.connect();
+                    }, 500);
+                } catch (e) {
+                    console.error('Reset connection failed', e);
+                    window.location.reload();
+                }
             } else {
+                console.warn('window.Echo not found, reloading page');
                 window.location.reload();
             }
         },
