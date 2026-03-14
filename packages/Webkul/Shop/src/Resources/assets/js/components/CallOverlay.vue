@@ -237,9 +237,9 @@ export default {
             configuration: {
                 iceServers: [
                     { urls: 'stun:stun.meanly.ru:3478' },
-                    { urls: 'stun:stun.l.google.com:19302' }, // Secondary fallback
+                    { urls: 'stun:stun.cloudflare.com:3478' },
                 ],
-                iceCandidatePoolSize: 0
+                iceCandidatePoolSize: 10
             },
             presenceInterval: null,
             cleanupInterval: null,
@@ -806,29 +806,11 @@ export default {
 
         cleanupStalePeers() {
             const now = Date.now();
-            const seenHashes = new Map();
-
             Object.keys(this.peers).forEach(id => {
                 const peer = this.peers[id];
                 
-                // Aggressive deduplication: if we see two sessions with the same hash, 
-                // remove the older one if it's not connected.
-                if (peer.hash) {
-                    const existingId = seenHashes.get(peer.hash);
-                    if (existingId) {
-                        const existingPeer = this.peers[existingId];
-                        if (!peer.connected && existingPeer.lastSeen > peer.lastSeen) {
-                            this.removePeer(id);
-                            return;
-                        } else if (!existingPeer.connected && peer.lastSeen > existingPeer.lastSeen) {
-                            this.removePeer(existingId);
-                        }
-                    }
-                    seenHashes.set(peer.hash, id);
-                }
-
                 // Standard stale cleanup
-                const timeout = peer.connected ? 45000 : 15000;
+                const timeout = peer.connected ? 45000 : 12000;
                 if (peer.lastSeen && now - peer.lastSeen > timeout) {
                     console.log(`Room: Cleaning up stale peer ${id} (${peer.name})`);
                     this.removePeer(id);
@@ -929,19 +911,14 @@ export default {
             if (signal.type === 'presence') {
                 const now = Date.now();
                 
-                // Aggressive session deduplication: 
-                // If we see a session with the same hash OR name for the same user, remove the older one.
+                // Dedup strategy: Rely on cleanup() for old sessions.
+                // Flip-flop removal here kills connections between devices sharing a link.
+                /*
                 Object.keys(this.peers).forEach(id => {
                     if (id === senderSessionId) return;
-                    const p = this.peers[id];
-                    const nameMatch = p.name && p.name === senderName;
-                    const hashMatch = p.hash && p.hash === senderHash;
-                    
-                    if (hashMatch || nameMatch) {
-                        console.log(`Room: deduplicating existing session ${id} for user ${senderName} (Match: hash=${hashMatch}, name=${nameMatch})`);
-                        this.removePeer(id);
-                    }
+                    ...
                 });
+                */
 
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
@@ -1100,10 +1077,11 @@ export default {
         },
 
         async handleOffer(id, name, signal) {
-            const peer = this.peers[id];
+            let peer = this.peers[id];
             if (!peer || !peer.pc) {
-                console.warn(`WebRTC: handleOffer aborted - peer or pc is null for ${id}`);
-                return;
+                console.log(`WebRTC: Receiving offer for mission peer - creating PC for ${id}`);
+                this.createPeerConnection(id, name);
+                peer = this.peers[id];
             }
 
             const polite = this.sessionUniqueId < id; // Smaller session ID is polite
@@ -1173,7 +1151,12 @@ export default {
         },
 
         async handleCandidate(id, signal) {
-            const peer = this.peers[id];
+            let peer = this.peers[id];
+            if (!peer || !peer.pc) {
+                console.log(`WebRTC: Receiving candidate for missing peer - creating PC for ${id}`);
+                this.createPeerConnection(id);
+                peer = this.peers[id];
+            }
             if (!peer || !peer.pc) return;
 
             try {
