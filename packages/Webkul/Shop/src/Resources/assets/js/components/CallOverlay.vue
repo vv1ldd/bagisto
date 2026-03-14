@@ -133,6 +133,8 @@ export default {
                 iceServers: [
                     { urls: 'stun:stun.l.google.com:19302' },
                     { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
                 ]
             },
             presenceInterval: null,
@@ -157,6 +159,7 @@ export default {
     },
 
     mounted() {
+        console.log('CallOverlay: Mounted');
         this.$emitter.on('join-room', (payload) => {
             if (this.isActive) return;
             this.joinRoom(payload.uuid, payload.userName);
@@ -202,11 +205,21 @@ export default {
 
         startPresence() {
             this.stopPresence();
+            // Immediate broadcast
             this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
-            // More frequent presence during startup
+            // High frequency for the first 30 seconds to ensure connection
+            let fastTicks = 0;
             this.presenceInterval = setInterval(() => {
-                if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
-            }, 5000); 
+                if (!this.isActive) return;
+                this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                fastTicks++;
+                if (fastTicks > 10) { // After 20 seconds, slow down
+                    this.stopPresence();
+                    this.presenceInterval = setInterval(() => {
+                        if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                    }, 8000);
+                }
+            }, 2000); 
         },
 
         stopPresence() {
@@ -241,20 +254,24 @@ export default {
             if (!senderName || senderName === this.localUserName) return;
             if (signal.target && signal.target !== this.localUserName) return;
 
+            console.log(`Room: [${signal.type}] from ${senderName}`);
+
             if (signal.type === 'presence') {
                 const isInitiator = this.localUserName.toLowerCase() < senderName.toLowerCase();
+                
                 if (!this.peers[senderName]) {
+                    // Reactive property assignment for Vue 3
                     this.peers[senderName] = { 
                         pc: null, stream: null, connected: false, streamReady: false, 
                         iceQueue: [], fingerprint: signal.fingerprint, verified: false
                     };
-                    // Immediately notify them that we are here too
+                    // Reply to them proactively
                     this.sendSignal({ type: 'presence', target: senderName, fingerprint: this.localFingerprint });
                 } else if (signal.fingerprint) {
                     this.peers[senderName].fingerprint = signal.fingerprint;
                 }
 
-                if (isInitiator && (!this.peers[senderName].pc || this.peers[senderName].pc.connectionState === 'failed')) {
+                if (isInitiator && (!this.peers[senderName].pc || ['failed', 'closed'].includes(this.peers[senderName].pc.connectionState))) {
                     this.initiateConnection(senderName, signal.fingerprint);
                 }
             } else if (signal.type === 'offer') {
@@ -277,7 +294,7 @@ export default {
                 const offer = await pc.createOffer();
                 await pc.setLocalDescription(offer);
                 this.sendSignal({ type: 'offer', sdp: offer.sdp, target: name, fingerprint: this.localFingerprint });
-            } catch (e) { console.error('Offer creation failed', e); }
+            } catch (e) { console.error('Offer failed', e); }
         },
 
         async handleOffer(name, signal) {
@@ -286,20 +303,19 @@ export default {
             if (signal.fingerprint) this.peers[name].fingerprint = signal.fingerprint;
 
             try {
-                // Sanitize SDP line endings
                 const sdp = signal.sdp.replace(/\n(?!\r)/g, '\r\n');
                 await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
                 
                 const peer = this.peers[name];
                 while (peer.iceQueue.length > 0) {
                     const cand = peer.iceQueue.shift();
-                    await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+                    await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                 }
 
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
                 this.sendSignal({ type: 'answer', sdp: answer.sdp, target: name, fingerprint: this.localFingerprint });
-            } catch (err) { console.error('Room: handleOffer failed', err); }
+            } catch (err) { console.error('handleOffer error', err); }
         },
 
         async handleAnswer(name, signal) {
@@ -312,9 +328,9 @@ export default {
                     await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
                     while (peer.iceQueue.length > 0) {
                         const cand = peer.iceQueue.shift();
-                        await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(e => {});
+                        await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                     }
-                } catch (err) { console.error('Room: handleAnswer failed', err); }
+                } catch (err) { console.error('handleAnswer error', err); }
             }
         },
 
@@ -325,7 +341,7 @@ export default {
             if (peer.pc && peer.pc.remoteDescription && peer.pc.remoteDescription.type) {
                 try {
                     await peer.pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-                } catch (err) { console.warn('ICE error', err); }
+                } catch (err) { }
             } else {
                 peer.iceQueue.push(signal.candidate);
             }
@@ -354,8 +370,8 @@ export default {
             };
 
             pc.ontrack = (e) => {
-                console.log(`WebRTC: Track from ${name}`);
                 const stream = e.streams[0];
+                console.log(`WebRTC: Track received from ${name}`);
                 if (this.peers[name]) {
                     this.peers[name].stream = stream;
                     this.peers[name].streamReady = true;
@@ -365,13 +381,18 @@ export default {
             };
 
             pc.onconnectionstatechange = () => {
-                console.log(`WebRTC: ${name} state -> ${pc.connectionState}`);
-                if (pc.connectionState === 'connected') {
+                const state = pc.connectionState;
+                console.log(`WebRTC: Connection state with ${name} -> ${state}`);
+                if (state === 'connected') {
                     if (this.peers[name]) {
                         this.peers[name].connected = true;
                         this.verifySecurity(name);
                     }
-                } else if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
+                } else if (['disconnected', 'failed', 'closed'].includes(state)) {
+                    // Try one recovery before removing
+                    if (state === 'failed') {
+                         console.warn(`WebRTC: Connection failed with ${name}, will retry on next presence`);
+                    }
                     this.removePeer(name);
                 }
             };
@@ -385,27 +406,21 @@ export default {
 
             try {
                 const stats = await peer.pc.getStats();
-                let actualRemoteFingerprint = null;
-
+                let matched = false;
                 stats.forEach(report => {
                     if (report.type === 'certificate' && report.fingerprint) {
-                        if (report.fingerprint.toLowerCase() === peer.fingerprint.toLowerCase()) {
-                            actualRemoteFingerprint = report.fingerprint;
-                        }
+                        if (report.fingerprint.toLowerCase() === peer.fingerprint.toLowerCase()) matched = true;
                     }
                 });
-
-                if (actualRemoteFingerprint) {
-                    peer.verified = true;
-                }
+                if (matched) peer.verified = true;
             } catch (e) { }
         },
 
         attachStreamToVideo(name, stream) {
             this.$nextTick(() => {
                 const el = document.getElementById('video_' + name);
-                if (el && el.srcObject !== stream) {
-                    el.srcObject = stream;
+                if (el) {
+                    if (el.srcObject !== stream) el.srcObject = stream;
                 }
             });
         },
@@ -414,15 +429,14 @@ export default {
             if (!this.isActive) return;
             Object.keys(this.peers).forEach(name => {
                 const p = this.peers[name];
-                if (p && p.stream && p.connected) {
-                    this.attachStreamToVideo(name, p.stream);
-                }
+                if (p && p.stream && p.connected) this.attachStreamToVideo(name, p.stream);
             });
         },
 
         removePeer(name) {
-            if (this.peers[name]) {
-                if (this.peers[name].pc) this.peers[name].pc.close();
+            const peer = this.peers[name];
+            if (peer) {
+                if (peer.pc) peer.pc.close();
                 delete this.peers[name];
             }
         },
@@ -430,7 +444,7 @@ export default {
         sendSignal(signalData) {
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             const endpoint = this.isRoomMode ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
-            axios.post(endpoint, payload).catch(e => {});
+            axios.post(endpoint, payload).catch(() => {});
         },
 
         toggleMic() {
@@ -465,7 +479,7 @@ export default {
                     this.$refs.localVideo.srcObject = this.localStream;
                     this.isSharingScreen = false;
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { }
         },
 
         endCall() {

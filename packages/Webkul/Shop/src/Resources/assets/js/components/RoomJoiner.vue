@@ -57,7 +57,7 @@ export default {
             });
 
             this.isActive = true;
-            this.$emit('joined');
+            this.$emit('room-joined');
         }
     }
 }
