@@ -229,6 +229,34 @@ return [
         ],
     ],
     [
+        'key' => 'general.content.chatwoot',
+        'name' => 'Chatwoot',
+        'info' => 'Настройки интеграции Chatwoot',
+        'sort' => 3,
+        'fields' => [
+            [
+                'name' => 'enabled',
+                'title' => 'Включить Chatwoot',
+                'type' => 'boolean',
+                'default' => false,
+                'channel_based' => true,
+            ],
+            [
+                'name' => 'website_token',
+                'title' => 'Website Token',
+                'type' => 'text',
+                'channel_based' => true,
+            ],
+            [
+                'name' => 'base_url',
+                'title' => 'Base URL',
+                'type' => 'text',
+                'default' => 'https://support.wildcloud.ru',
+                'channel_based' => true,
+            ],
+        ],
+    ],
+    [
         'key' => 'general.design',
         'name' => 'admin::app.configuration.index.general.design.title',
         'info' => 'admin::app.configuration.index.general.design.info',

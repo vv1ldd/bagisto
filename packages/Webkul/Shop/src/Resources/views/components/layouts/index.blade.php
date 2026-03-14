@@ -416,21 +416,30 @@
             });
         </script>
 
-        <script>
-          (function(d,t) {
-            var BASE_URL="https://support.wildcloud.ru";
-            var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=BASE_URL+"/packs/js/sdk.js";
-            g.async = true;
-            s.parentNode.insertBefore(g,s);
-            g.onload=function(){
-              window.chatwootSDK.run({
-                websiteToken: 'CiwXQPuAVsbf6bPh5XEstDjP',
-                baseUrl: BASE_URL
-              })
-            }
-          })(document,"script");
-        </script>
+        @php
+            $chatwootEnabled = core()->getConfigData('general.content.chatwoot.enabled');
+            $chatwootToken = core()->getConfigData('general.content.chatwoot.website_token');
+            $chatwootBaseUrl = core()->getConfigData('general.content.chatwoot.base_url') ?? 'https://support.wildcloud.ru';
+            $isCallPage = request()->routeIs('shop.call.index');
+        @endphp
+
+        @if ($chatwootEnabled && $chatwootToken && !$isCallPage)
+            <script>
+              (function(d,t) {
+                var BASE_URL="{{ $chatwootBaseUrl }}";
+                var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=BASE_URL+"/packs/js/sdk.js";
+                g.async = true;
+                s.parentNode.insertBefore(g,s);
+                g.onload=function(){
+                  window.chatwootSDK.run({
+                    websiteToken: '{{ $chatwootToken }}',
+                    baseUrl: BASE_URL
+                  })
+                }
+              })(document,"script");
+            </script>
+        @endif
         {{-- Global Verification Modal --}}
         <div id="verify-modal"
             class="hidden fixed inset-0 z-[9999] items-center justify-center p-4 bg-black/60 backdrop-blur-xl">
