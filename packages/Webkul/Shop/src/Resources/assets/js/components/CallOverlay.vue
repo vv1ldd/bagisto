@@ -4,7 +4,8 @@
         <div class="flex justify-between items-center border-b border-white/20 pb-4 relative z-50">
             <div>
                 <div class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] opacity-60 mb-1 flex items-center gap-2">
-                    <span v-if="peerCount > 0">Групповая встреча</span>
+                    <span v-if="peerCount === 1">Видеозвонок</span>
+                    <span v-else-if="peerCount > 1">Групповая встреча</span>
                     <span v-else>Ожидание участников</span>
                     <span class="flex items-center gap-1 ml-2 border-l border-white/20 pl-2">
                         <span class="w-1.5 h-1.5 rounded-full" :class="statusColor"></span>
@@ -56,11 +57,11 @@
                     </template>
                 </div>
 
-                <!-- Swap Button (Instead of PiP) -->
+                <!-- Swap Button (Minimalist Icon) -->
                 <div @click="isFocusedOnSelf = !isFocusedOnSelf" 
-                     class="absolute bottom-6 right-6 w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all z-20 group">
-                    <span class="text-2xl md:text-3xl mb-1 group-hover:rotate-180 transition-transform duration-500">🔄</span>
-                    <span class="text-[7px] font-black uppercase tracking-widest opacity-40">Swap</span>
+                     class="absolute bottom-6 right-6 w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.6)] flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all z-20 group"
+                     title="Сменить вид">
+                    <span class="text-xl md:text-2xl group-hover:rotate-180 transition-transform duration-700">🔄</span>
                 </div>
 
                 <!-- Waiting for Peer to connect/stream -->
