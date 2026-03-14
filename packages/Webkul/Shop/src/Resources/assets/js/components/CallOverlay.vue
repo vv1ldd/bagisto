@@ -35,7 +35,7 @@
         <!-- Video Grid Area -->
         <div class="flex-grow relative my-4 overflow-hidden rounded-3xl bg-zinc-950">
             
-            <!-- 1-on-1 Mode: Cinema Layout with PiP -->
+            <!-- 1-on-1 Mode: Cinema Layout with Swap Button -->
             <div v-if="peerCount === 1" class="relative w-full h-full overflow-hidden">
                 <!-- Main View -->
                 <div class="absolute inset-0 transition-opacity duration-1000">
@@ -56,25 +56,11 @@
                     </template>
                 </div>
 
-                <!-- Picture-in-Picture (PiP) -->
+                <!-- Swap Button (Instead of PiP) -->
                 <div @click="isFocusedOnSelf = !isFocusedOnSelf" 
-                     class="absolute bottom-6 right-6 w-32 h-44 md:w-56 md:h-72 rounded-[2rem] overflow-hidden border-2 border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.8)] cursor-pointer hover:scale-105 transition-all z-20 group">
-                    <template v-if="isFocusedOnSelf">
-                         <video :id="'video_pip_' + peerIds[0]" autoplay playsinline class="w-full h-full object-cover"></video>
-                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
-                         <div class="absolute bottom-3 left-3 text-[7px] font-black uppercase tracking-widest opacity-60">{{ peers[peerIds[0]].name }}</div>
-                    </template>
-                    <template v-else>
-                         <video ref="localVideoPip" autoplay muted playsinline class="w-full h-full object-cover mirror"></video>
-                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
-                         <div class="absolute bottom-3 left-3 text-[7px] font-black uppercase tracking-widest opacity-60">Вы</div>
-                    </template>
-                    <!-- Swap indicator -->
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div class="bg-white/20 backdrop-blur-md rounded-full p-3 border border-white/20">
-                            <span class="text-lg">🔄</span>
-                        </div>
-                    </div>
+                     class="absolute bottom-6 right-6 w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all z-20 group">
+                    <span class="text-2xl md:text-3xl mb-1 group-hover:rotate-180 transition-transform duration-500">🔄</span>
+                    <span class="text-[7px] font-black uppercase tracking-widest opacity-40">Swap</span>
                 </div>
 
                 <!-- Waiting for Peer to connect/stream -->
@@ -237,7 +223,6 @@ export default {
     },
 
     watch: {
-        // Automatically sync videos when layout changes
         isFocusedOnSelf() {
             this.$nextTick(() => this.rebindVideos());
         },
@@ -548,22 +533,18 @@ export default {
             
             // Rebind Local Streams
             const localMain = this.$refs.localVideoMain;
-            const localPip = this.$refs.localVideoPip;
             const localGrid = this.$refs.localVideoGrid;
             
             if (localMain && this.localStream) localMain.srcObject = this.localStream;
-            if (localPip && this.localStream) localPip.srcObject = this.localStream;
             if (localGrid && this.localStream) localGrid.srcObject = this.localStream;
 
             // Rebind Peer Streams
             Object.keys(this.peers).forEach(id => {
                 const p = this.peers[id];
                 const mainEl = document.getElementById('video_' + id);
-                const pipEl = document.getElementById('video_pip_' + id);
                 
                 if (p && p.stream && p.connected) {
                     if (mainEl && mainEl.srcObject !== p.stream) mainEl.srcObject = p.stream;
-                    if (pipEl && pipEl.srcObject !== p.stream) pipEl.srcObject = p.stream;
                 }
             });
         },
