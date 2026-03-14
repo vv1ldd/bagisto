@@ -148,7 +148,9 @@
                         <h2 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter">{{ localUserName }}</h2>
                     </div>
                 </div>
-                      <!-- Single Row Controls (Adaptive) -->
+            </div>
+
+            <!-- Single Row Controls (Adaptive) -->
             <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center w-full px-4 pointer-events-none z-50">
                 <div :class="{'opacity-0 translate-y-20': !controlsVisible}"
                      class="flex items-center gap-1.5 md:gap-3 p-2 md:p-3 bg-black/40 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto flex-wrap justify-center max-w-[95%]">
