@@ -42,33 +42,23 @@
                     </template>
                 </div>
 
-                <!-- Diagnostics (1-on-1) -->
-                <div v-if="peers[peerIds[0]]?.connected"
-                     class="absolute bottom-6 right-6 z-20 transition-all duration-500"
-                     :class="{'opacity-0 translate-y-10': !controlsVisible}">
-                    <div class="flex items-center gap-2">
-                        <div :class="statusColor" class="w-1.5 h-1.5 rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(0,0,0,0.5)]"></div>
-                        <span class="text-[9px] font-black uppercase tracking-[0.2em] text-white/90 drop-shadow-md">
-                            {{ signalingState === 'connected' ? 'Соединение' : signalingState }}
+                <!-- New Shapik Style Badge (Top Right) -->
+                <div v-if="peers[peerIds[0]]?.connected" 
+                     class="absolute top-8 right-8 flex items-center gap-2.5 z-[100] transition-all duration-700 pointer-events-auto"
+                     :class="{'opacity-0 -translate-y-10': !controlsVisible}">
+                    <div class="flex items-center gap-2.5 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl px-3 py-1.5 leading-none rounded-2xl">
+                        <div class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-black shadow-sm leading-none ring-1 ring-white/10 rounded-xl">
+                            <span class="text-[10px] uppercase">
+                                {{ getLetter(peers[peerIds[0]].name) }}
+                            </span>
+                        </div>
+                        <span class="text-[10px] font-black uppercase italic tracking-tighter text-white/90">
+                            @{{ cleanPeerName(peers[peerIds[0]].name) }}
                         </span>
                         <!-- Signaling Pulse -->
                         <div v-if="lastSignalReceivedAt" 
                              :key="lastSignalReceivedAt"
-                             class="w-1 h-1 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
-                    </div>
-                </div>
-
-                <!-- Shapik Badge (1-on-1) -->
-                <div v-if="peers[peerIds[0]]?.connected" 
-                     class="absolute bottom-6 left-6 flex items-center gap-2 z-20 transition-all duration-500"
-                     :class="{'opacity-0 translate-y-10': !controlsVisible}">
-                    <div class="flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2.5 py-1.5 shadow-2xl rounded-sm">
-                        <div class="flex h-6 w-6 items-center justify-center bg-[#7C45F5] text-white text-[10px] font-black rounded-sm shadow-sm ring-1 ring-white/20">
-                            {{ getLetter(isFocusedOnSelf ? localUserName : peers[peerIds[0]].name) }}
-                        </div>
-                        <div class="text-[10px] md:text-xs font-black uppercase italic tracking-tighter text-white/90">
-                            @{{ isFocusedOnSelf ? cleanLocalName : cleanPeerName(peers[peerIds[0]].name) }}
-                        </div>
+                             class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping ml-1 opacity-75"></div>
                     </div>
                 </div>
 
@@ -169,7 +159,13 @@
                         </template>
                         <template v-else>
                             <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
-                            <p class="mt-4 text-[10px] uppercase tracking-widest text-zinc-600 font-bold max-w-xs mx-auto animate-pulse">Звонок начнется автоматически...</p>
+                            <div class="mt-4 flex flex-col items-center gap-3">
+                                <p class="text-[10px] uppercase tracking-widest text-zinc-600 font-bold max-w-xs mx-auto animate-pulse">Звонок начнется автоматически...</p>
+                                <button @click.stop="retryEcho" :disabled="isRetrying" 
+                                    class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 active:scale-95 transition-all text-zinc-400 pointer-events-auto">
+                                    {{ isRetrying ? '...' : 'Переподключиться' }}
+                                </button>
+                            </div>
                         </template>
                     </div>
                 </div>
@@ -180,8 +176,8 @@
         <div class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 md:p-8 landscape:flex-row landscape:justify-between items-stretch">
             
 
-            <!-- Vertical Control Bar (Bottom Left) -->
-            <div class="absolute bottom-8 left-8 flex flex-col items-center gap-3 z-[100] pointer-events-none">
+            <!-- Vertical Control Bar (Bottom Right) -->
+            <div class="absolute bottom-8 right-8 flex flex-col items-center gap-3 z-[100] pointer-events-none">
                 <div :class="{'opacity-0 translate-y-10': !controlsVisible}"
                      class="flex flex-col items-center gap-2.5 p-2 bg-black/40 backdrop-blur-3xl rounded-3xl border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
@@ -208,8 +204,8 @@
                 </div>
             </div>
 
-            <!-- Top Right: Only End Call (X) button -->
-            <div class="absolute top-8 right-8 z-[100] pointer-events-none">
+            <!-- Top Left: End Call (X) button -->
+            <div class="absolute top-8 left-8 z-[100] pointer-events-none">
                 <button @click.stop="endCall" :class="{'opacity-0 -translate-y-10': !controlsVisible}"
                     class="h-12 w-12 rounded-2xl bg-red-600 text-white font-black flex items-center justify-center shadow-xl shadow-red-600/30 transition-all duration-700 pointer-events-auto hover:scale-105 active:scale-95">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -524,7 +520,6 @@ export default {
         clampPan() {
             if (this.zoomLevel <= 1) {
                 this.panX = 0;
-                this.panY = 0;
                 return;
             }
 
@@ -533,6 +528,35 @@ export default {
 
             this.panX = Math.max(-maxPanX, Math.min(maxPanX, this.panX));
             this.panY = Math.max(-maxPanY, Math.min(maxPanY, this.panY));
+        },
+
+        retryEcho() {
+            if (this.isRetrying) return;
+            this.isRetrying = true;
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Manual signaling retry triggered.`);
+            
+            if (window.Echo) {
+                window.Echo.disconnect();
+                setTimeout(() => {
+                    window.Echo.connect();
+                    this.isRetrying = false;
+                    this.reconnectAttempts = 0;
+                    this.signalingGraceActive = false;
+                    
+                    // Force clean peers state
+                    Object.keys(this.peers).forEach(id => {
+                        this.removePeer(id);
+                    });
+                    
+                    // Re-broadcast presence immediately
+                    this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                    
+                    // Re-subscribe to channels to ensure fresh listeners
+                    this.subscribeToChannels();
+                }, 1000);
+            } else {
+                this.isRetrying = false;
+            }
         },
 
         handleSignalingStateChange(state) {
@@ -879,8 +903,11 @@ export default {
 
             this.lastSignalReceivedAt = Date.now();
             
-            // Filter out self-signals
-            if (senderSessionId === this.sessionUniqueId) return;
+            // Filter out self-signals OR signals without session ID (robustness)
+            if (!senderSessionId || senderSessionId === this.sessionUniqueId) {
+                if (!senderSessionId) console.warn('CallOverlay: Signal missing sender_session_id. Ignoring.');
+                return;
+            }
 
             // If targeted and not for us
             if (signal.target && signal.target !== this.sessionUniqueId) {
@@ -1409,43 +1436,6 @@ export default {
             });
         },
 
-        retryEcho() {
-            if (this.isRetrying) return;
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Retry initiated. Attempts: ${this.reconnectAttempts}`);
-            this.isRetrying = true;
-            
-            this.signalingGraceActive = true;
-            if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
-            
-            this.signalingGraceTimeout = setTimeout(() => {
-                this.signalingGraceActive = false;
-                this.isRetrying = false;
-            }, 15000);
-
-            // NEW: Clear peers to force re-initiation of WebRTC
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Clearing existing peer connections for retry`);
-            Object.values(this.peers).forEach(p => p.pc?.close());
-            this.peers = {};
-            
-            if (window.Echo && window.Echo.connector && window.Echo.connector.pusher) {
-                const conn = window.Echo.connector.pusher.connection;
-                console.log(`CallOverlay [${this.sessionUniqueId}]: Resetting connection. state was: ${conn.state}`);
-                
-                try {
-                    conn.disconnect();
-                    setTimeout(() => {
-                        console.log(`CallOverlay [${this.sessionUniqueId}]: Reconnecting...`);
-                        conn.connect();
-                    }, 500);
-                } catch (e) {
-                    console.error('Reset connection failed', e);
-                    window.location.reload();
-                }
-            } else {
-                console.warn('window.Echo not found, reloading page');
-                window.location.reload();
-            }
-        },
 
         toggleMic() {
             this.isMicOn = !this.isMicOn;
