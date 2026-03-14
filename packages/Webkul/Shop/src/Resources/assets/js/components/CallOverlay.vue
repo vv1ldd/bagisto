@@ -47,10 +47,19 @@
                      class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
                      :class="{'opacity-0 -translate-y-10': !controlsVisible}">
                     <div class="flex items-center gap-3 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl">
-                        <!-- Peer Initial Badge (Restored) -->
-                        <div class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl">
-                            {{ getLetter(peers[peerIds[0]].name) }}
-                        </div>
+                        <!-- Focus Toggle Button (Replaces Avatar/Initial) -->
+                        <button @click.stop="toggleFocus" 
+                                class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all group">
+                            <!-- Eye icon (switching to peer) if focused on self -->
+                            <svg v-if="isFocusedOnSelf" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <!-- User icon (switching to self) if focused on peer -->
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </button>
                         
                         <div class="flex flex-col gap-0.5">
                             <span class="text-[12px] font-black uppercase italic tracking-tighter text-white/90 leading-tight">
@@ -225,41 +234,55 @@
                 <div :class="{'opacity-0 translate-y-10': !controlsVisible}"
                      class="flex items-center gap-2.5 p-2.5 bg-black/40 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
-                    <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-500/20 text-red-500 border-red-500/40']"
-                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 10v1a7 7 0 01-14 0v-1m7 11v-3m0 0H8m4 0h4" /></svg>
-                    </button>
+                    <!-- Mic Toggle -->
+                    <div class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
+                            class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg v-if="isMicOn" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Mic</span>
+                    </div>
 
-                    <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                    </button>
+                    <!-- Camera Toggle -->
+                    <div class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
+                            class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg v-if="isCameraOn" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Cam</span>
+                    </div>
 
-                    <!-- Swap Focus Button -->
-                    <button @click.stop="toggleFocus" :class="[isFocusedOnSelf ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95"
-                        title="Swap Focus">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                    </button>
-
-                    <button v-if="!isMobile" @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-zinc-800 text-white opacity-40']"
-                        class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                    </button>
+                    <!-- Redundant Focus Button Removed (Now in Badge) -->
+                    <!-- Screen Share Toggle -->
+                    <div v-if="!isMobile" class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-zinc-800 text-white opacity-40']"
+                            class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Share</span>
+                    </div>
 
                     <!-- Camera Swap (Now inside the vertical bar on mobile) -->
-                    <button v-if="isMobile" @click.stop="toggleCameraFacing"
-                        class="h-11 w-11 rounded-2xl bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                    </button>
+                    <div v-if="isMobile" class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="toggleCameraFacing"
+                            class="h-11 w-11 rounded-2xl bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Swap</span>
+                    </div>
 
                     <!-- End Call Button (New in Toolbar) -->
-                    <button @click.stop="endCall" 
-                            class="h-11 w-11 rounded-2xl bg-red-600 text-white shadow-lg shadow-red-600/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="endCall" 
+                                class="h-11 w-11 rounded-2xl bg-red-600 text-white shadow-lg shadow-red-600/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">End</span>
+                    </div>
                 </div>
             </div>
 
@@ -368,6 +391,9 @@ export default {
         isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         },
+        activeLocalStream() {
+            return this.isSharingScreen ? this.screenStream : this.localStream;
+        },
         isGuest() {
             return !this.localUserName || this.localUserName === 'Гость';
         },
@@ -452,6 +478,15 @@ export default {
         },
         // Pinch-to-Zoom Handlers
         handleTouchStart(e, isLocalGrid = false) {
+            const now = Date.now();
+            if (this.lastTapTime && (now - this.lastTapTime < 300) && e.touches.length === 1) {
+                console.log('CallOverlay: Double tap detected -> Swapping camera');
+                this.toggleCameraFacing();
+                this.lastTapTime = 0;
+                return;
+            }
+            this.lastTapTime = now;
+
             if (e.touches.length === 2) {
                 this.initialDist = this.getDist(e.touches);
                 this.initialZoom = this.zoomLevel;
@@ -1053,8 +1088,8 @@ export default {
                         const pc = this.createPeerConnection(peerKey, senderName);
                         
                         // Add tracks and create offer manually
-                        if (this.localStream) {
-                            this.localStream.getTracks().forEach(track => pc.addTrack(track, this.localStream));
+                        if (this.activeLocalStream) {
+                            this.activeLocalStream.getTracks().forEach(track => pc.addTrack(track, this.activeLocalStream));
                         }
                         
                         peer.makingOffer = true;
@@ -1208,11 +1243,11 @@ export default {
                 await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
                 
                 // Add tracks BEFORE creating answer
-                if (this.localStream) {
-                    this.localStream.getTracks().forEach(track => {
+                if (this.activeLocalStream) {
+                    this.activeLocalStream.getTracks().forEach(track => {
                         const senders = pc.getSenders();
                         if (!senders.find(s => s.track && s.track.kind === track.kind)) {
-                            pc.addTrack(track, this.localStream);
+                            pc.addTrack(track, this.activeLocalStream);
                         }
                     });
                 }
@@ -1365,7 +1400,7 @@ export default {
                         const sender = senders.find(s => s.track && s.track.kind === track.kind);
                         if (!sender) {
                             console.log(`Room: Adding missing track ${track.kind} to peer ${id}`);
-                            peer.pc.addTrack(track, this.localStream);
+                            peer.pc.addTrack(track, this.activeLocalStream);
                             needsRenegotiation = true;
                         } else if (sender.track !== track) {
                             console.log(`Room: Updating track ${track.kind} for peer ${id}`);
