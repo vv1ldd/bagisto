@@ -536,8 +536,12 @@ export default {
             const localMain = this.$refs.localVideoMain;
             const localGrid = this.$refs.localVideoGrid;
             
-            if (localMain && this.localStream) localMain.srcObject = this.localStream;
-            if (localGrid && this.localStream) localGrid.srcObject = this.localStream;
+            if (localMain && this.localStream && localMain.srcObject !== this.localStream) {
+                localMain.srcObject = this.localStream;
+            }
+            if (localGrid && this.localStream && localGrid.srcObject !== this.localStream) {
+                localGrid.srcObject = this.localStream;
+            }
 
             // Rebind Peer Streams
             Object.keys(this.peers).forEach(id => {
