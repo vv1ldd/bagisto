@@ -81,9 +81,6 @@
                          <div class="w-12 h-12 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
                          <div class="text-center">
                              <h3 class="text-sm font-black uppercase tracking-[0.4em] text-white/80">Соединение...</h3>
-                            <button @click.stop="retryEcho" class="mt-4 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[8px] font-black uppercase tracking-widest hover:bg-white/10 active:scale-95 transition-all">
-                                Повторить сейчас
-                            </button>
                          </div>
                     </div>
                 </div>
@@ -162,19 +159,12 @@
                                     </div>
                                 </div>
 
-                                <button @click="retryEcho" :disabled="isRetrying" 
-                                    class="w-full py-4 bg-white text-black text-[10px] font-black uppercase rounded-2xl transition-all hover:bg-zinc-200 active:scale-95 disabled:opacity-50">
-                                    {{ isRetrying ? 'Подключение...' : 'Переподключиться' }}
-                                </button>
                             </div>
                         </template>
                         <template v-else>
                             <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
                             <div class="mt-4 flex flex-col items-center gap-3">
-                                <button @click.stop="retryEcho" :disabled="isRetrying" 
-                                    class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 active:scale-95 transition-all text-zinc-400 pointer-events-auto">
-                                    {{ isRetrying ? '...' : 'Переподключиться' }}
-                                </button>
+                                <!-- Reconnect button removed -->
                             </div>
                         </template>
                     </div>
