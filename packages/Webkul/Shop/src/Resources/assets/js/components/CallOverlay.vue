@@ -52,8 +52,8 @@
                          <video :id="'video_' + peerIds[0]" 
                                 autoplay playsinline 
                                 :style="zoomStyle"
-                                :class="[isFullscreen ? 'object-cover' : 'object-contain']"
-                                class="w-full h-full pointer-events-none"></video>
+                                 :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
+                                 class="w-full h-full pointer-events-none transition-all duration-700"></video>
                          
                          <!-- Subtle Security Indicator in corner -->
                          <div v-if="peers[peerIds[0]].verified" class="absolute top-6 right-6 text-xl opacity-40 z-20" title="Защищено">😉</div>
@@ -65,16 +65,22 @@
                     </template>
 
                     <!-- If focused on Self -->
-                    <template v-else>
-                         <video ref="localVideoMain" 
-                                autoplay muted playsinline 
-                                :class="[isFullscreen ? 'object-cover' : 'object-contain']"
-                                class="w-full h-full mirror"></video>
-                    </template>
+                     <template v-else>
+                          <video ref="localVideoMain" 
+                                 autoplay muted playsinline 
+                                 :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
+                                 class="w-full h-full mirror transition-all duration-700"></video>
+                     </template>
                 </div>
 
                 <!-- Swap & Fullscreen Controls -->
                 <div class="absolute bottom-6 right-6 flex flex-col gap-3 z-20">
+                    <div @click="scalingMode = (scalingMode === 'cover' ? 'contain' : 'cover')" 
+                         class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group"
+                         :title="scalingMode === 'cover' ? 'Подогнать (Fit)' : 'Заполнить (Fill)'">
+                         <span class="text-lg md:text-xl">{{ scalingMode === 'cover' ? '⬛' : '⬜' }}</span>
+                    </div>
+
                     <div @click="toggleFullscreen" 
                          class="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 flex items-center justify-center cursor-pointer hover:bg-white/20 hover:scale-110 active:scale-95 transition-all group"
                          title="Полный экран">
@@ -104,10 +110,10 @@
             <!-- Group Mode (split screen) -->
             <div v-else :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
                 <!-- Local Video -->
-                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
+                 <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
                     <video ref="localVideoGrid" autoplay muted playsinline 
-                           :class="[isFullscreen ? 'object-cover' : 'object-contain']"
-                           class="w-full h-full mirror"></video>
+                           :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
+                           class="w-full h-full mirror transition-all duration-700"></video>
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 rounded-lg flex items-center gap-2">
                         <span>Вы ({{ localUserName }})</span>
                         <span v-if="localFingerprint" class="opacity-40" title="Security Fingerprint Verified">🛡️</span>
@@ -118,8 +124,8 @@
                 <div v-for="id in peerIds" :key="id" 
                     class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 group shadow-2xl flex items-center justify-center">
                     <video :id="'video_' + id" autoplay playsinline 
-                           :class="[isFullscreen ? 'object-cover' : 'object-contain']"
-                           class="w-full h-full"></video>
+                           :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
+                           class="w-full h-full transition-all duration-700"></video>
                     
                     <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] font-bold border border-white/10 uppercase tracking-tighter z-10 transition-all group-hover:bg-[#7C45F5]/80 rounded-lg flex items-center gap-2">
                         <span>{{ peers[id]?.name }}</span>
@@ -244,6 +250,7 @@ export default {
             signalingGraceTimeout: null,
             reconnectAttempts: 0,
             isRetrying: false,
+            scalingMode: 'cover', // 'cover' (Fill) or 'contain' (Fit)
             sessionUniqueId: Math.random().toString(36).substring(7)
         };
     },
