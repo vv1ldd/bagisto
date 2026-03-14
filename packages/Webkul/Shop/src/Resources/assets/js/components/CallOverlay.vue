@@ -238,7 +238,7 @@ export default {
                 iceServers: [
                     { urls: 'stun:stun.meanly.ru:3478' },
                 ],
-                iceCandidatePoolSize: 10
+                iceCandidatePoolSize: 0
             },
             presenceInterval: null,
             cleanupInterval: null,
@@ -789,14 +789,14 @@ export default {
                 if (!this.isActive) return;
                 this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                 ticks++;
-                if (ticks > 10) { // Slow down earlier to reduce server load
+                if (ticks > 15) {
                     this.stopPresence();
                     console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 10s`);
                     this.presenceInterval = setInterval(() => {
                         if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                     }, 10000);
                 }
-            }, 4000); // 4s instead of 2s
+            }, 2000); 
         },
 
         stopPresence() {
@@ -805,11 +805,29 @@ export default {
 
         cleanupStalePeers() {
             const now = Date.now();
+            const seenFingerprints = new Map();
+
             Object.keys(this.peers).forEach(id => {
                 const peer = this.peers[id];
                 
-                // Standard stale cleanup
-                const timeout = peer.connected ? 45000 : 12000;
+                // Fingerprint-based deduplication: if we see two sessions with the same fingerprint,
+                // remove the older one if it's not connected.
+                if (peer.fingerprint) {
+                    const existingId = seenFingerprints.get(peer.fingerprint);
+                    if (existingId) {
+                        const existingPeer = this.peers[existingId];
+                        if (!peer.connected && existingPeer.lastSeen > peer.lastSeen) {
+                            this.removePeer(id);
+                            return;
+                        } else if (!existingPeer.connected && peer.lastSeen > existingPeer.lastSeen) {
+                            this.removePeer(existingId);
+                        }
+                    }
+                    seenFingerprints.set(peer.fingerprint, id);
+                }
+
+                // Standard stale cleanup (45s for connected, 15s for new)
+                const timeout = peer.connected ? 45000 : 15000;
                 if (peer.lastSeen && now - peer.lastSeen > timeout) {
                     console.log(`Room: Cleaning up stale peer ${id} (${peer.name})`);
                     this.removePeer(id);
@@ -879,7 +897,7 @@ export default {
             }
         },
 
-        handleSignal(data) {
+        async handleSignal(data) {
             const signal = data.signal_data;
             const senderName = data.sender_name;
             const senderHash = signal.sender_hash || senderName; 
@@ -909,16 +927,6 @@ export default {
 
             if (signal.type === 'presence') {
                 const now = Date.now();
-                
-                // Dedup strategy: Rely on cleanup() for old sessions.
-                // Flip-flop removal here kills connections between devices sharing a link.
-                /*
-                Object.keys(this.peers).forEach(id => {
-                    if (id === senderSessionId) return;
-                    ...
-                });
-                */
-
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
                 if (!this.peers[peerKey]) {
@@ -930,9 +938,7 @@ export default {
                             pc: null, stream: null, connected: false, streamReady: false, 
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
                             lastSeen: now,
-                            makingOffer: false,
-                            ignoreOffer: false,
-                            watchdog: null
+                            makingOffer: false, ignoreOffer: false, watchdog: null
                         }
                     };
                     this.sendSignal({ type: 'presence', target: senderSessionId, fingerprint: this.localFingerprint });
@@ -946,24 +952,23 @@ export default {
 
                 if (isInitiator) {
                     const peer = this.peers[peerKey];
-                    // If no PC yet, or failed, or stuck in 'new' for too long
-                    const shouldInitiate = !peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState);
-                    
-                    if (shouldInitiate) {
+                    if (!peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState)) {
                         console.log(`Room: I am initiator for ${senderName} (${peerKey}). Creating session...`);
-                        this.createPeerConnection(peerKey, senderName);
-                        if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
-                        this.startConnectionWatchdog(peerKey);
+                        const pc = this.createPeerConnection(peerKey, senderName);
+                        
+                        // Add tracks and create offer manually
+                        if (this.localStream) {
+                            this.localStream.getTracks().forEach(track => pc.addTrack(track, this.localStream));
+                        }
+                        
+                        const offer = await pc.createOffer();
+                        const cleanSdp = this.normalizeSDP(offer.sdp);
+                        await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
+                        this.sendSignal({ type: 'offer', sdp: cleanSdp, target: peerKey, fingerprint: this.localFingerprint });
                     }
                 }
             } else if (['offer', 'answer', 'candidate', 'hangup'].includes(signal.type)) {
                 if (signal.type === 'offer') {
-                    // Safety check: if we get an offer but have no PC, create one now
-                    const peer = this.peers[peerKey];
-                    if (peer && (!peer.pc || peer.pc.connectionState === 'closed')) {
-                        console.log(`WebRTC: Received offer for ${senderName} but no PC exists. Creating one...`);
-                        this.createPeerConnection(peerKey, senderName);
-                    }
                     this.handleOffer(peerKey, senderName, signal);
                 }
                 else if (signal.type === 'answer') this.handleAnswer(peerKey, signal);
@@ -973,15 +978,12 @@ export default {
         },
 
         normalizeSDP(sdp) {
-            if (!sdp || typeof sdp !== 'string') return null;
-            const trimmed = sdp.trim();
-            if (trimmed.length < 10 || !trimmed.startsWith('v=0')) {
-                console.warn('WebRTC: Invalid SDP detected (missing v=0 or too short)');
-                return null;
-            }
-            // CRITICAL for Safari: Ensure CRLF (\r\n) line endings. 
-            // Some proxies or event broadcasters might convert them to solo \n.
-            return trimmed.replace(/\r?\n/g, '\r\n');
+            if (!sdp) return '';
+            // Minimalist cleanup for broad compatibility - ensures CRLF and trims lines
+            return sdp.split(/\r?\n/)
+                      .map(line => line.trim())
+                      .filter(line => line.length > 0)
+                      .join('\r\n') + '\r\n';
         },
 
         async toggleCameraFacing() {
@@ -1076,48 +1078,30 @@ export default {
         },
 
         async handleOffer(id, name, signal) {
-            let peer = this.peers[id];
-            if (!peer || !peer.pc) {
-                console.log(`WebRTC: Receiving offer for mission peer - creating PC for ${id}`);
-                this.createPeerConnection(id, name);
-                peer = this.peers[id];
-            }
-
-            const polite = this.sessionUniqueId < id; // Smaller session ID is polite
+            const pc = this.createPeerConnection(id, name);
+            const peer = this.peers[id];
             
             try {
-                const offerCollision = signal.type === 'offer' && (peer.makingOffer || peer.pc.signalingState !== 'stable');
-                peer.ignoreOffer = !polite && offerCollision;
-
-                if (peer.ignoreOffer) {
-                    console.log(`WebRTC: Glare detected. Ignoring offer from ${id} (I am impolite)`);
-                    return;
-                }
-
                 const sdp = this.normalizeSDP(signal.sdp);
-                if (!sdp) {
-                    console.warn(`WebRTC: handleOffer aborted - invalid/empty SDP from ${id}`);
-                    return;
+                if (!sdp) return;
+
+                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+                
+                // Add tracks BEFORE creating answer
+                if (this.localStream) {
+                    this.localStream.getTracks().forEach(track => pc.addTrack(track, this.localStream));
                 }
                 
-                try {
-                    await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
-                } catch (sdpErr) {
-                    console.error(`WebRTC: setRemoteDescription (OFFER) failed for ${id}. Length: ${sdp.length}. Start: "${sdp.substring(0, 100)}..."`, sdpErr);
-                    throw sdpErr;
-                }
+                const answer = await pc.createAnswer();
+                const cleanAnswer = this.normalizeSDP(answer.sdp);
+                await pc.setLocalDescription({ type: 'answer', sdp: cleanAnswer });
+                this.sendSignal({ type: 'answer', sdp: cleanAnswer, target: id, fingerprint: this.localFingerprint });
                 
+                // Process queued candidates
                 while (peer.iceQueue.length > 0) {
                     const cand = peer.iceQueue.shift();
-                    await peer.pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+                    await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                 }
-
-                const answer = await peer.pc.createAnswer();
-                const cleanAnswer = this.normalizeSDP(answer.sdp);
-                if (!cleanAnswer) throw new Error('Failed to generate local answer SDP');
-
-                await peer.pc.setLocalDescription({ type: 'answer', sdp: cleanAnswer });
-                this.sendSignal({ type: 'answer', sdp: cleanAnswer, target: id, fingerprint: this.localFingerprint });
             } catch (err) {
                 console.warn(`WebRTC: handleOffer failed for ${id}`, err);
             }
@@ -1174,15 +1158,11 @@ export default {
         },
 
         createPeerConnection(id, name = null) {
-            // If exists and not closed, reuse
-            if (this.peers[id]?.pc && this.peers[id].pc.connectionState !== 'closed') {
-                return this.peers[id].pc;
-            }
+            if (this.peers[id]?.pc) return this.peers[id].pc;
 
             console.log(`WebRTC: Creating new PeerConnection for ${id}`);
             const pc = new RTCPeerConnection(this.configuration);
             
-            // Initialization: Ensure all reactive properties exist from the start
             if (!this.peers[id]) {
                 this.peers = {
                     ...this.peers,
@@ -1190,43 +1170,12 @@ export default {
                         name: name || id,
                         pc, stream: null, connected: false, streamReady: false, 
                         iceQueue: [], fingerprint: null, verified: false, 
-                        lastSeen: Date.now(),
-                        makingOffer: false, ignoreOffer: false, watchdog: null
+                        lastSeen: Date.now()
                     }
                 };
             } else {
-                // Update existing peer object with new PC and reset states
-                const p = this.peers[id];
-                p.pc = pc;
-                p.connected = false;
-                p.streamReady = false;
-                p.iceQueue = [];
-                p.makingOffer = false;
-                p.ignoreOffer = false;
-                if (p.watchdog) clearTimeout(p.watchdog);
-                p.watchdog = null;
+                this.peers[id].pc = pc;
             }
-
-            // CRITICAL: Assignment of handlers BEFORE adding tracks
-            pc.onnegotiationneeded = async () => {
-                const peer = this.peers[id];
-                if (!peer || peer.ignoreOffer) return;
-                
-                try {
-                    console.log(`WebRTC: onnegotiationneeded for ${id}`);
-                    peer.makingOffer = true;
-                    const offer = await pc.createOffer();
-                    if (pc.signalingState !== 'stable') return;
-                    
-                    const cleanSdp = this.normalizeSDP(offer.sdp);
-                    await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
-                    this.sendSignal({ type: 'offer', sdp: cleanSdp, target: id, fingerprint: this.localFingerprint });
-                } catch (err) {
-                    console.warn(`WebRTC: onnegotiationneeded failed for ${id}`, err);
-                } finally {
-                    if (this.peers[id]) this.peers[id].makingOffer = false;
-                }
-            };
 
             pc.onicecandidate = (e) => {
                 if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: id });
@@ -1242,49 +1191,13 @@ export default {
             };
 
             pc.onconnectionstatechange = () => {
-                const state = pc.connectionState;
-                console.log(`WebRTC: Connection state for ${id} -> ${state}`);
-                
-                if (state === 'connected' || state === 'completed') {
-                    this.updatePeerConnectedState(id, 'connected');
-                } else if (state === 'failed' || state === 'disconnected') {
-                    this.startConnectionWatchdog(id);
-                }
+                this.updatePeerConnectedState(id, pc.connectionState);
             };
 
             pc.oniceconnectionstatechange = () => {
-                const state = pc.iceConnectionState;
-                console.log(`WebRTC: ICE state for ${id} -> ${state}`);
-                this.updatePeerConnectedState(id, state);
-                if (state === 'failed' || state === 'disconnected') {
-                    this.startConnectionWatchdog(id);
-                }
+                this.updatePeerConnectedState(id, pc.iceConnectionState);
             };
 
-            // Now add tracks - this will trigger onnegotiationneeded (correctly assigned above)
-            if (this.localStream) {
-                this.localStream.getTracks().forEach(t => {
-                    let trackToUse = t;
-                    if (t.kind === 'video' && this.isSharingScreen && this.screenStream) {
-                        trackToUse = this.screenStream.getVideoTracks()[0] || t;
-                    }
-                    pc.addTrack(trackToUse, this.isSharingScreen ? this.screenStream : this.localStream);
-                });
-            }
-
-            // Negotiation Poke: Fallback for browsers that don't trigger negotiation automatically
-            setTimeout(() => {
-                const peer = this.peers[id];
-                if (peer && peer.pc && peer.pc.signalingState === 'stable' && !peer.connected) {
-                    const isInitiator = this.sessionUniqueId < id;
-                    if (isInitiator) {
-                        console.log(`WebRTC: Poke! Triggering negotiation fallback for ${id}`);
-                        pc.dispatchEvent(new Event('negotiationneeded'));
-                    }
-                }
-            }, 3000);
-
-            this.startConnectionWatchdog(id);
             return pc;
         },
 
