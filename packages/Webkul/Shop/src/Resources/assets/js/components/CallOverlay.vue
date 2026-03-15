@@ -234,10 +234,30 @@
                         </div>
                     </div>
                 </div>
+                </div>
+            </div>
+
+            <!-- Call Ended Overlay -->
+            <div v-if="isCallEnded" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-zinc-950 text-white animate-fade-in">
+                <div class="flex flex-col items-center max-w-sm text-center px-8">
+                    <div class="w-24 h-24 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 shadow-2xl">
+                         <span class="text-4xl">🛑</span>
+                    </div>
+                    <h2 class="text-2xl font-black uppercase tracking-widest mb-4">Звонок окончен</h2>
+                    <p class="text-xs text-zinc-500 font-bold uppercase tracking-widest leading-relaxed mb-8">
+                        {{ callEndedReason || 'Сессия была завершена. Вы можете вернуться на главную или закрыть это окно.' }}
+                    </p>
+                    <button @click="forceHome" class="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl">
+                        На главную
+                    </button>
+                    <button @click="isCallEnded = false; isActive = false" class="mt-4 text-[8px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-all">
+                        Остаться на странице
+                    </button>
+                </div>
             </div>
 
             <!-- Empty State -->
-            <div v-if="peerCount === 0" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
+            <div v-if="peerCount === 0 && !isCallEnded" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                        class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-3xl scale-105 opacity-50"></video>
@@ -424,7 +444,9 @@ export default {
             signalingGraceTimeout: null,
             reconnectAttempts: 0,
             isRetrying: false,
-            scalingMode: 'contain',
+            scalingMode: 'cover', // 'cover' or 'contain',
+            isCallEnded: false,
+            callEndedReason: '',
             sessionUniqueId: Math.random().toString(36).substring(2, 10) + Date.now().toString(36),
             isLandscape: window.innerWidth > window.innerHeight,
             signalingServer: window.$signalingServer || { host: 'unknown', port: '?', scheme: '?' },
@@ -777,13 +799,13 @@ export default {
                     this.signalingGraceTimeout = setTimeout(() => {
                         this.signalingGraceActive = false;
                         
-                        // AUTO RECOVERY: If still unavailable after 15s, try one manual reset with backoff
+                        // AUTO RECOVERY: If still unavailable after 60s, try one manual reset with backoff
                         if (['unavailable', 'failed', 'disconnected'].includes(this.signalingState) && this.reconnectAttempts < 5) {
                             console.warn(`CallOverlay [${this.sessionUniqueId}]: Signaling hang detected. Attempting automated recovery...`);
                             this.reconnectAttempts++;
                             this.retryEcho();
                         }
-                    }, 15000); // Increased from 10s to 15s to be safer
+                    }, 60000); // 60s grace period for mobile networks
                 }
             }
         },
@@ -1783,11 +1805,11 @@ export default {
             this.stopInactivityTimer();
             if (this.peerCount > 0) return;
             
-            console.log('Room: Starting 30-minute inactivity timer');
+            console.log('Room: Starting 1-hour inactivity timer');
             this.inactivityTimer = setTimeout(() => {
-                console.log('Room: 30-minute inactivity reached. Closing room.');
-                this.cleanup();
-            }, 30 * 60 * 1000); 
+                console.log('Room: 1-hour inactivity reached. Closing room.');
+                this.cleanup('Ваша сессия была завершена из-за длительного отсутствия активности.');
+            }, 60 * 60 * 1000); 
         },
 
         stopInactivityTimer() {
@@ -1921,7 +1943,7 @@ export default {
 
 
 
-        cleanup() {
+        cleanup(reason = '') {
             this.stopPresence();
             if (this.localStream) this.localStream.getTracks().forEach(t => t.stop());
             Object.values(this.peers).forEach(p => {
@@ -1929,18 +1951,20 @@ export default {
                 if (p.watchdog) clearTimeout(p.watchdog);
             });
             this.peers = {};
-            this.isActive = false;
-            
-            // Intelligent Redirect: if on dedicated call page, go back or home
-            if (window.location.pathname.includes('/call/')) {
-                if (document.referrer && !document.referrer.includes('/call/')) {
-                    window.location.href = document.referrer;
-                } else {
-                    window.location.href = '/';
-                }
+            this.isActive = true; // KEEP IT TRUE SO WE CAN SHOW END SCREEN
+            this.isCallEnded = true;
+            this.callEndedReason = reason;
+
+            // NO AUTOMATIC REDIRECT!
+            // Let the user choose when to leave.
+        },
+
+        forceHome() {
+            if (document.referrer && !document.referrer.includes('/call/')) {
+                window.location.href = document.referrer;
+            } else {
+                window.location.href = '/';
             }
-            // If NOT on a dedicated call page (e.g. browsing product), 
-            // no need to reload or redirect, just close the overlay (already done via isActive=false)
         }
     }
 };
