@@ -44,10 +44,10 @@
                 </div>
 
                 <!-- Unified Identity + End Call Badge (Top Left) -->
-                <div v-if="peers[peerIds[0]]?.connected" 
-                     class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
-                     :class="{'opacity-0 -translate-y-10': !controlsVisible}">
-                    <div class="flex items-center gap-2 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl pointer-events-auto">
+        <div v-if="peers[peerIds[0]]?.connected" 
+             class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
+             :class="{'opacity-0 -translate-y-10': !controlsVisible}">
+            <div class="flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl pointer-events-auto">
                         <!-- Focus Toggle Button -->
                         <button @click.stop="toggleFocus" 
                                 class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all group">
@@ -158,7 +158,7 @@
 
                         <!-- Focus Badge (Top Left) -->
                         <div class="absolute top-8 left-8 flex items-center gap-2 z-20">
-                            <div class="flex items-center gap-2 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl">
+                            <div class="flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl">
                                 <button @click.stop="togglePeerFocus(null)" 
                                         class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -260,7 +260,7 @@
             <div v-if="peerCount === 0 && !isCallEnded" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                       class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-3xl scale-105 opacity-50"></video>
+                       class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-xl scale-105 opacity-50"></video>
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="text-center px-8 pointer-events-auto">
@@ -539,6 +539,10 @@ export default {
 
         // Handle initial state immediately
         if (window.Echo && window.Echo.connector && window.Echo.connector.pusher) {
+            // Disable verbose logging in production to save memory/CPU
+            if (typeof Pusher !== 'undefined') {
+                Pusher.logToConsole = false; 
+            }
             this.signalingState = window.Echo.connector.pusher.connection.state;
         }
         this.handleSignalingStateChange(this.signalingState);
@@ -927,8 +931,9 @@ export default {
                 // Skip if cooldown is active or signaling isn't connected
                 if (Date.now() < this.luminanceCooldown) return;
                 
-                // Only analyze if call is active and camera is on
-                if (!this.isActive || !this.isCameraOn) return;
+                
+                // Only analyze if call is active, camera is on, and it's a 1-on-1 call (likely near ear)
+                if (!this.isActive || !this.isCameraOn || this.peerCount !== 1) return;
 
                 const video = this.$refs.localVideoMain || this.$refs.localVideoWaiting || this.$refs.localVideoGrid;
                 
