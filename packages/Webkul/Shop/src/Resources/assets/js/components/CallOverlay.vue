@@ -261,9 +261,9 @@
             </div>
         </div>
 
-        <!-- PIP Self-View (Floating Top-Right) -->
-        <div v-show="isActive && (peerCount > 0 || isJoined) && isCameraOn && !isFocusedOnSelf" 
-             class="absolute top-8 right-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700"
+        <!-- Local PIP (Self View) - Only shown in 1-on-1 calls -->
+        <div v-show="isActive && peerCount === 1 && isCameraOn && !isFocusedOnSelf" 
+             ref="localPipWindow" class="absolute top-8 right-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
              <video ref="localVideoPip" 
                     autoplay muted playsinline 
@@ -416,7 +416,7 @@ export default {
 
     computed: {
         peerIds() {
-            return Object.keys(this.peers);
+            return Object.keys(this.peers).sort(); // Stable sorting
         },
         peerCount() {
             return this.peerIds.length;
@@ -1178,9 +1178,12 @@ export default {
                     Object.keys(this.peers).forEach(id => {
                         const p = this.peers[id];
                         if (id !== peerKey && ((signal.fingerprint && p.fingerprint === signal.fingerprint) || (senderHash && p.hash === senderHash))) {
+                            const wasFocused = (this.focusedPeerId === id);
+
                             if (!p.connected && now - p.lastSeen > 5000) {
                                 console.log(`Room: Cleaning up stale duplicate ${id} for ${senderName}`);
                                 this.removePeer(id);
+                                if (wasFocused) this.focusedPeerId = peerKey; // Retention
                             }
                         }
                     });
@@ -1718,6 +1721,10 @@ export default {
                 const newPeers = { ...this.peers };
                 delete newPeers[id];
                 this.peers = newPeers;
+                
+                if (this.focusedPeerId === id) {
+                    this.focusedPeerId = null;
+                }
             }
             
             if (this.peerCount === 0) {
