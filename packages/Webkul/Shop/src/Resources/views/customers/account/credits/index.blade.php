@@ -79,7 +79,7 @@
                         @if ($user->is_b2b_enabled)
                             <button onclick="goToOrganizations()" class="flex flex-col items-center gap-1 group">
                                 <div
-                                    class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-[#7C45F5] transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
+                                    class="w-12 h-12 bg-white flex items-center justify-center text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white transition-all border border-zinc-200 group-hover:border-[#7C45F5] shadow-md group-active:scale-90 rounded-2xl text-[22px]">
                                     🏢</div>
                                 <span
                                     class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">компании</span>
@@ -88,10 +88,10 @@
 
                         <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
                             <div
-                                class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
+                                class="w-12 h-12 bg-white flex items-center justify-center text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white transition-all border border-zinc-200 group-hover:border-[#7C45F5] shadow-md group-active:scale-90 rounded-2xl text-[22px]">
                                 📜</div>
                             <span
-                                class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
+                                class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">история</span>
                         </button>
 
 
