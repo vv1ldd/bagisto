@@ -1,5 +1,5 @@
-<template>
     <div v-if="isActive" 
+         ref="overlayRoot"
          @mousemove="userActivity"
          @touchstart="handleGlobalTouch"
          @click="toggleControls"
@@ -281,42 +281,36 @@
 
         </div>
 
-        <!-- Invitation Modal -->
-        <div v-if="isInviteOpen" class="absolute inset-0 z-[30000] flex items-center justify-center p-6 bg-black/40 backdrop-blur-md" @click="isInviteOpen = false">
-            <div class="w-full max-w-xs bg-zinc-900 border border-white/10 p-8 rounded-[2.5rem] shadow-2xl animate-fade-in-up" @click.stop>
-                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-6 flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full"></span>
-                    Пригласить участника
-                </h3>
-                
-                <div class="space-y-4">
+        <!-- Compact Invitation Menu -->
+        <div v-if="isInviteOpen" class="absolute top-24 left-1/2 -translate-x-1/2 z-[30000] w-full max-w-sm px-4 animate-fade-in-up">
+            <div class="bg-black/60 backdrop-blur-3xl border border-white/10 p-1.5 rounded-2xl shadow-2xl flex items-center gap-2 group" 
+                 @click.stop @mousedown.stop @touchstart.stop>
+                <div class="flex-grow relative flex items-center pl-4 bg-white/5 rounded-xl border border-white/5 focus-within:border-[#7C45F5]/50 transition-all">
                     <input 
                         type="email" 
                         v-model="inviteEmail" 
-                        placeholder="email@example.com"
-                        class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-600"
+                        placeholder="Пригласить по email..."
+                        class="w-full bg-transparent py-3 text-[11px] text-white focus:outline-none placeholder:text-zinc-600 font-bold"
                         @keyup.enter="sendInvite"
+                        @focus.stop @click.stop
                     >
-                    
-                    <button 
-                        @click="sendInvite"
-                        :disabled="isInviteLoading"
-                        class="w-full h-14 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98] disabled:opacity-50 rounded-2xl"
-                    >
-                        {{ isInviteLoading ? 'Отправка...' : 'Отправить' }}
-                    </button>
-                    
-                    <button 
-                        @click="isInviteOpen = false"
-                        class="w-full h-10 text-zinc-500 font-black uppercase tracking-widest text-[8px] hover:text-white transition-all"
-                    >
-                        Отмена
-                    </button>
                 </div>
-
-                <div v-if="inviteStatus" class="mt-6 text-center animate-fade-in-up">
-                    <p class="text-[9px] font-black uppercase tracking-widest" :class="inviteStatusClass">{{ inviteStatus }}</p>
-                </div>
+                <button 
+                    @click.stop="sendInvite"
+                    :disabled="isInviteLoading"
+                    class="whitespace-nowrap bg-[#7C45F5] h-11 px-6 rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-95 disabled:opacity-50"
+                >
+                    {{ isInviteLoading ? '...' : 'Ок' }}
+                </button>
+                <button @click.stop="isInviteOpen = false" class="p-2.5 text-zinc-500 hover:text-white transition-colors hover:scale-110 active:scale-90">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            
+            <div v-if="inviteStatus" class="mt-3 text-center animate-fade-in-up">
+                <p class="text-[9px] font-black uppercase tracking-widest px-4 py-1.5 bg-black/40 backdrop-blur-md rounded-full inline-block border border-white/5" :class="inviteStatusClass">
+                    {{ inviteStatus }}
+                </p>
             </div>
         </div>
     </div>
@@ -750,7 +744,12 @@ export default {
 
         toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
+                const element = this.$refs.overlayRoot || document.documentElement;
+                if (element.requestFullscreen) {
+                    element.requestFullscreen().catch(() => {});
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                }
                 this.isFullscreen = true;
                 this.userActivity(); 
             } else {
