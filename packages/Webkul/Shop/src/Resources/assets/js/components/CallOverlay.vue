@@ -47,16 +47,14 @@
                 <div v-if="peers[peerIds[0]]?.connected" 
                      class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
                      :class="{'opacity-0 -translate-y-10': !controlsVisible}">
-                    <div class="flex items-center gap-3 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl">
-                        <!-- Focus Toggle Button (Replaces Avatar/Initial) -->
+                    <div class="flex items-center gap-2 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl pointer-events-auto">
+                        <!-- Focus Toggle Button -->
                         <button @click.stop="toggleFocus" 
                                 class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all group">
-                            <!-- Eye icon (switching to peer) if focused on self -->
                             <svg v-if="isFocusedOnSelf" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
-                            <!-- User icon (switching to self) if focused on peer -->
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
@@ -71,6 +69,17 @@
                                 <span class="text-[7px] font-black uppercase tracking-[0.2em] text-white/30">В эфире</span>
                             </div>
                         </div>
+
+                        <!-- Fullscreen Toggle Button -->
+                        <button @click.stop="toggleFullscreen" 
+                                class="ml-2 flex h-8 w-8 items-center justify-center bg-white/5 text-white/40 hover:text-white border border-white/10 rounded-lg hover:bg-white/10 transition-all">
+                            <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                            </svg>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 15l-6 6m0 0l6-6M3 21v-6m0 6h6m6-6l6 6m0 0l-6-6m6 6v-6m0 6h-6" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -225,16 +234,6 @@
                         <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Share</span>
                     </div>
 
-                    <!-- Invite Button -->
-                    <div class="flex flex-col items-center gap-1.5">
-                        <button @click.stop="isInviteOpen = !isInviteOpen" :class="[isInviteOpen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-black/40 text-white']"
-                                class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </button>
-                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Invite</span>
-                    </div>
 
                     <!-- Camera Swap (Now inside the vertical bar on mobile) -->
                     <div v-if="isMobile" class="flex flex-col items-center gap-1.5">
@@ -260,38 +259,6 @@
 
         </div>
 
-        <!-- Compact Invitation Menu -->
-        <div v-if="isInviteOpen" class="absolute top-24 left-1/2 -translate-x-1/2 z-[30000] w-full max-w-sm px-4 animate-fade-in-up">
-            <div class="bg-black/60 backdrop-blur-3xl border border-white/10 p-1.5 rounded-2xl shadow-2xl flex items-center gap-2 group" 
-                 @click.stop @mousedown.stop @touchstart.stop>
-                <div class="flex-grow relative flex items-center pl-4 bg-white/5 rounded-xl border border-white/5 focus-within:border-[#7C45F5]/50 transition-all">
-                    <input 
-                        type="email" 
-                        v-model="inviteEmail" 
-                        placeholder="Пригласить по email..."
-                        class="w-full bg-transparent py-3 text-[11px] text-white focus:outline-none placeholder:text-zinc-600 font-bold"
-                        @keyup.enter="sendInvite"
-                        @focus.stop @click.stop
-                    >
-                </div>
-                <button 
-                    @click.stop="sendInvite"
-                    :disabled="isInviteLoading"
-                    class="whitespace-nowrap bg-[#7C45F5] h-11 px-6 rounded-xl text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-95 disabled:opacity-50"
-                >
-                    {{ isInviteLoading ? '...' : 'Ок' }}
-                </button>
-                <button @click.stop="isInviteOpen = false" class="p-2.5 text-zinc-500 hover:text-white transition-colors hover:scale-110 active:scale-90">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            </div>
-            
-            <div v-if="inviteStatus" class="mt-3 text-center animate-fade-in-up">
-                <p class="text-[9px] font-black uppercase tracking-widest px-4 py-1.5 bg-black/40 backdrop-blur-md rounded-full inline-block border border-white/5" :class="inviteStatusClass">
-                    {{ inviteStatus }}
-                </p>
-            </div>
-        </div>
 
     </div>
 </template>
@@ -315,11 +282,6 @@ export default {
             isCameraDenied: false,
             isSharingScreen: false,
             screenStream: null,
-            isInviteOpen: false,
-            inviteEmail: '',
-            inviteStatus: '',
-            inviteStatusClass: '',
-            isInviteLoading: false,
             configuration: {
                 iceServers: [
                     { urls: 'stun:stun.meanly.ru:3478' },
@@ -1667,9 +1629,9 @@ export default {
 
             try {
                 if (!this.isSharingScreen) {
-                    console.log('ScreenShare: Requesting display media...');
+                    console.log('ScreenShare: Full start sequence initiated...');
                     
-                    // Ultra-standard constraints for maximum compatibility
+                    // Mac/Safari often requires very clean constraints
                     this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
                         video: true,
                         audio: false 
@@ -1678,39 +1640,39 @@ export default {
                     const screenTrack = this.screenStream.getVideoTracks()[0];
                     if (!screenTrack) throw new Error('No screen track obtained');
 
-                    console.log('ScreenShare: Obtained track:', screenTrack.label);
+                    console.log(`ScreenShare: Obtained track "${screenTrack.label}"`);
 
                     this.isSharingScreen = true;
 
-                    // Replace tracks for all active peers
-                    const peerIds = Object.keys(this.peers);
-                    console.log(`ScreenShare: Replacing tracks for ${peerIds.length} peers`);
+                    // Manual track replacement loop
+                    const activePeers = Object.entries(this.peers).filter(([, p]) => p.pc && p.connected);
+                    console.log(`ScreenShare: Replacing video tracks for ${activePeers.length} active peers`);
                     
-                    peerIds.forEach(id => {
-                        const p = this.peers[id];
-                        if (p && p.pc && p.connected) {
-                            const senders = p.pc.getSenders();
-                            const videoSender = senders.find(s => s.track?.kind === 'video');
+                    for (const [id, p] of activePeers) {
+                        try {
+                            const videoSender = p.pc.getSenders().find(s => s.track?.kind === 'video');
                             if (videoSender) {
-                                console.log(`ScreenShare: Replacing track for peer ${id}`);
-                                videoSender.replaceTrack(screenTrack).catch(err => {
-                                    console.warn(`ScreenShare: replaceTrack failed for peer ${id}`, err);
-                                });
+                                console.log(`ScreenShare: Replacing track for peer ${id}...`);
+                                await videoSender.replaceTrack(screenTrack);
+                                console.log(`ScreenShare: Replacement SUCCESS for peer ${id}`);
                             }
+                        } catch (err) {
+                            console.warn(`ScreenShare: Replacement FAILED for peer ${id}`, err);
                         }
-                    });
+                    }
 
                     this.$nextTick(() => this.rebindVideos());
                     
                     screenTrack.onended = () => {
-                        console.log('ScreenShare: Track ended externally');
+                        console.log('ScreenShare: Track ended by system action');
                         if (this.isSharingScreen) this.stopScreenShare();
                     };
                 } else {
                     this.stopScreenShare();
                 }
             } catch (e) { 
-                console.warn('ScreenShare: User canceled or error occurred', e);
+                console.error('ScreenShare: EXCEPTION during start:', e);
+                // On Safari, this often catches "Aborted" or "Interrupted" if user cancels
                 this.stopScreenShare();
             }
         },
@@ -1743,32 +1705,7 @@ export default {
             this.cleanup();
         },
 
-        async sendInvite() {
-            if (!this.inviteEmail || !this.inviteEmail.includes('@')) {
-                this.showInviteStatus('Введите корректный email', 'text-red-500');
-                return;
-            }
 
-            this.isInviteLoading = true;
-            try {
-                await axios.post(`/call/${this.roomUuid}/invite`, {
-                    email: this.inviteEmail
-                });
-                this.showInviteStatus('Приглашение отправлено!', 'text-emerald-500');
-                this.inviteEmail = '';
-                setTimeout(() => { this.isInviteOpen = false; }, 1500);
-            } catch (error) {
-                this.showInviteStatus('Ошибка отправки', 'text-red-500');
-            } finally {
-                this.isInviteLoading = false;
-            }
-        },
-
-        showInviteStatus(text, colorClass) {
-            this.inviteStatus = text;
-            this.inviteStatusClass = colorClass;
-            setTimeout(() => { this.inviteStatus = ''; }, 5000);
-        },
 
         cleanup() {
             this.stopPresence();
