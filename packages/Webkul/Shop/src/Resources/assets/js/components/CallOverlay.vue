@@ -79,16 +79,18 @@
                     </div>
                 </div>
 
-
-
-                <!-- Connection/Track Loading Overlay -->
+                <!-- "Connecting..." Overlay for 1-on-1 -->
                 <div v-if="!peers[peerIds[0]]?.connected || (!peers[peerIds[0]]?.hasVideo && (Date.now() - peers[peerIds[0]]?.connectedAt <= 3000))" 
-                    class="absolute inset-0 flex items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
-                    <div class="flex flex-col items-center gap-6">
-                         <div class="w-12 h-12 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
-                         <div class="text-center">
-                             <h3 class="text-sm font-black uppercase tracking-[0.4em] text-white/80">Соединение...</h3>
-                         </div>
+                    class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
+                    <div class="w-8 h-8 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-2"></div>
+                    <div class="text-center px-2">
+                        <h3 class="text-[8px] font-black uppercase tracking-[0.2em] text-white/80">Соединение...</h3>
+                        <!-- Reconnect Button if stuck -->
+                        <button v-if="!peers[peerIds[0]]?.connected" 
+                                @click.stop="pokePeer(peerIds[0])"
+                                class="mt-2 text-[6px] font-black uppercase tracking-widest text-white/50 border border-white/20 px-2 py-1 rounded-md hover:bg-white/10 transition-all">
+                            Переподключить
+                        </button>
                     </div>
                 </div>
 
@@ -127,6 +129,14 @@
                              :class="{'ring-2 ring-[#7C45F5] scale-[1.02]': focusedPeerId === id}"
                              class="flex-shrink-0 w-full aspect-video rounded-xl bg-zinc-950 border border-white/10 overflow-hidden relative cursor-pointer hover:border-white/20 transition-all">
                             <video :id="'video_thumb_' + id" autoplay playsinline class="w-full h-full object-cover opacity-60"></video>
+                            
+                            <!-- Thumbnail Connection Overlay -->
+                            <div v-if="!peers[id]?.connected" 
+                                 class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-[1px] z-30">
+                                 <div class="w-4 h-4 border border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
+                                 <button @click.stop="pokePeer(id)" class="mt-1 text-[4px] font-black uppercase text-white/40">Relink</button>
+                            </div>
+
                             <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5 text-[8px] font-black uppercase text-white/90">
                                 @{{ cleanPeerName(peers[id].name) }}
                             </div>
@@ -196,6 +206,21 @@
                         <video :id="'video_' + id" autoplay playsinline 
                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
                                class="w-full h-full transition-all duration-700"></video>
+
+                        <!-- Grid Connection Overlay -->
+                        <div v-if="!peers[id]?.connected || (!peers[id]?.hasVideo && (Date.now() - peers[id]?.connectedAt <= 3000))" 
+                             class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
+                             <div class="w-8 h-8 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-2"></div>
+                             <div class="text-center px-4">
+                                 <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Соединение...</h3>
+                                 <button v-if="!peers[id]?.connected" 
+                                         @click.stop="pokePeer(id)"
+                                         class="mt-2 text-[8px] font-black uppercase tracking-widest text-white/50 border border-white/20 px-3 py-1 rounded-md hover:bg-white/10 transition-all">
+                                     Переподключить
+                                 </button>
+                             </div>
+                        </div>
+
                         <!-- Shapik Badge (Grid Peer) -->
                         <div class="absolute top-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
                             <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm shadow-sm ring-1 ring-white/10">
@@ -1207,16 +1232,14 @@ export default {
 
                 if (isInitiator) {
                     const peer = this.peers[peerKey];
-                    if (!peer.pc || ['failed', 'closed'].includes(peer.pc.connectionState)) {
+                    const state = peer.pc?.connectionState || 'none';
+                    if (!peer.pc || ['failed', 'closed'].includes(state)) {
                         console.log(`Room: I am initiator for ${senderName} (${peerKey}). Creating session...`);
                         const pc = this.createPeerConnection(peerKey, senderName);
                         
-                        // Adding tracks will now automatically trigger onnegotiationneeded (initiator logic)
                         if (this.activeLocalStream) {
                             this.activeLocalStream.getTracks().forEach(track => pc.addTrack(track, this.activeLocalStream));
                         } else {
-                            // If no tracks yet, manually trigger an empty offer to start state machine
-                            // This ensures the peer is created and we're ready when tracks arrive
                             peer.makingOffer = true;
                             pc.createOffer().then(offer => {
                                 const cleanSdp = this.normalizeSDP(offer.sdp);
@@ -1225,17 +1248,24 @@ export default {
                             }).finally(() => { peer.makingOffer = false; });
                         }
 
-                        // ENSURE WATCHDOG STARTS
                         this.startConnectionWatchdog(peerKey);
+                    } else if (state === 'new') {
+                         console.warn(`Room: I am initiator but session ${peerKey} stuck in NEW. Poking negotiation...`);
+                         this.syncTracksToAllPeers(); 
                     }
                 }
-            } else if (['offer', 'answer', 'candidate', 'hangup'].includes(signal.type)) {
+            } else if (['offer', 'answer', 'candidate', 'hangup', 'poke'].includes(signal.type)) {
                 if (signal.type === 'offer') {
                     this.handleOffer(peerKey, senderName, signal);
                 }
                 else if (signal.type === 'answer') this.handleAnswer(peerKey, signal);
                 else if (signal.type === 'candidate') this.handleCandidate(peerKey, signal);
                 else if (signal.type === 'hangup') this.removePeer(peerKey);
+                else if (signal.type === 'poke') {
+                    console.log(`WebRTC: Received POKE from ${senderName}. Restarting ICE...`);
+                    const peer = this.peers[peerKey];
+                    if (peer && peer.pc) peer.pc.restartIce();
+                }
             }
         },
 
@@ -1334,26 +1364,24 @@ export default {
                     const state = pc?.connectionState || 'none';
                     const iceState = pc?.iceConnectionState || 'none';
                     
-                    // Don't kill if it's actually trying or partially connected
-                    const isPotentiallyActive = ['connecting', 'checking'].includes(state) || ['checking'].includes(iceState);
-                    
-                    if (state !== 'connected' && state !== 'completed' && !isPotentiallyActive) {
-                        console.warn(`WebRTC: Watchdog triggered for ${id}. Current state: ${state}/${iceState}. Action: ${state === 'new' ? 'Recreate' : 'Restart ICE'}`);
+                    if (state !== 'connected' && state !== 'completed') {
+                        console.warn(`WebRTC: Watchdog triggered for ${id}. Current state: ${state}/${iceState}.`);
                         
                         if (state === 'new' || state === 'closed' || state === 'failed') {
+                            console.log(`WebRTC: Re-creating connection for ${id}`);
                             this.removePeer(id);
                         } else {
+                            console.log(`WebRTC: Restarting ICE for ${id}`);
                             pc.restartIce();
                         }
                         
-                        // Reset watchdog to try again later if still failing
                         peer.watchdog = null;
                         this.startConnectionWatchdog(id);
                     } else {
                         peer.watchdog = null;
                     }
                 }
-            }, 30000); // 30 second timeout (relaxed from 15s to prevent flickering)
+            }, 20000); // 20 second timeout for stuck states
         },
 
         async handleOffer(id, name, signal) {
@@ -1741,6 +1769,15 @@ export default {
             
             if (this.peerCount === 0) {
                 this.startInactivityTimer();
+            }
+        },
+
+        pokePeer(id) {
+            console.log(`WebRTC: Poking peer ${id} for forced reconnection`);
+            this.sendSignal({ type: 'poke', target: id });
+            // Also restart our side just in case
+            if (this.peers[id] && this.peers[id].pc) {
+                this.peers[id].pc.restartIce();
             }
         },
 
