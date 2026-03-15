@@ -159,7 +159,18 @@
                                     <div class="text-[8px] font-mono text-zinc-600 truncate text-left">
                                         {{ signalingServer.scheme }}://{{ signalingServer.host }}:{{ signalingServer.port }}
                                     </div>
+                                    <div class="mt-2 pt-2 border-t border-red-500/10 text-[7px] font-mono text-zinc-500 space-y-1">
+                                        <p>Client: window.Laravel.reverbAppKey = {{ window.Laravel?.reverbAppKey ? 'OK' : 'MISSING' }}</p>
+                                        <p>Protocol: {{ window.location.protocol === 'https:' ? 'WSS (Secure)' : 'WS' }}</p>
+                                        <p>Attempt: {{ reconnectAttempts }} / 5</p>
+                                    </div>
                                 </div>
+
+                                <button @click="retryEcho" 
+                                        :disabled="isRetrying"
+                                        class="mt-4 px-6 py-2.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-red-500/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50">
+                                    {{ isRetrying ? 'Подключение...' : 'Попробовать снова' }}
+                                </button>
 
                             </div>
                         </template>
@@ -710,22 +721,24 @@ export default {
                     this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                 }
             } else if (['unavailable', 'failed', 'disconnected'].includes(state)) {
-                // DON'T interfere with Echo's internal retry logic for transient disconnects immediately.
-                // Only start a "grace period" UI if it stays broken.
+                // If we are already retrying manually, don't trigger automatic logic again
+                if (this.isRetrying) return;
+
                 if (!this.signalingGraceActive) {
                     this.signalingGraceActive = true;
-                    console.log('CallOverlay: Signaling connection issue. Waiting for internal recovery...');
+                    console.log(`CallOverlay [${this.sessionUniqueId}]: Signaling issue detected (${state}). Grace period active.`);
                     
                     if (this.signalingGraceTimeout) clearTimeout(this.signalingGraceTimeout);
                     this.signalingGraceTimeout = setTimeout(() => {
                         this.signalingGraceActive = false;
                         
-                        // AUTO RECOVERY: If still unavailable after 10s, try one manual reset
-                        if (['unavailable', 'failed', 'disconnected'].includes(this.signalingState)) {
-                            console.warn('CallOverlay: Internal recovery failed. Attempting automated reconnection...');
+                        // AUTO RECOVERY: If still unavailable after 15s, try one manual reset with backoff
+                        if (['unavailable', 'failed', 'disconnected'].includes(this.signalingState) && this.reconnectAttempts < 5) {
+                            console.warn(`CallOverlay [${this.sessionUniqueId}]: Signaling hang detected. Attempting automated recovery...`);
+                            this.reconnectAttempts++;
                             this.retryEcho();
                         }
-                    }, 10000);
+                    }, 15000); // Increased from 10s to 15s to be safer
                 }
             }
         },
@@ -891,14 +904,15 @@ export default {
             this.isActive = true;
             this.isJoined = false;
 
-            // Start media immediately for preview in lobby
-            await this.setupLocalMedia(); 
-            
-            this.$nextTick(() => {
+            // Start media preview in background (NOT awaited to avoid signaling hang)
+            this.setupLocalMedia().then(() => {
                 if (this.$refs.localVideoWaiting) {
                     this.$refs.localVideoWaiting.srcObject = this.localStream;
                 }
-            });
+            }); 
+            
+            // Re-subscribe and start presence as soon as joined
+            this.subscribeToChannels();
 
             // AUTO-JOIN for registered users
             if (!this.isGuest) {
