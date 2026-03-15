@@ -163,34 +163,9 @@
                             </div>
                         </template>
                         <template v-else>
-                            <div v-if="isGuest && !isJoined" class="bg-black/60 backdrop-blur-3xl border border-white/10 p-8 rounded-[2.5rem] shadow-2xl animate-fade-in-up pointer-events-auto max-w-xs mx-auto">
-                                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-6 flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full"></span>
-                                    Ваше имя для участия
-                                </h3>
-                                
-                                <input 
-                                    type="text" 
-                                    v-model="lobbyName" 
-                                    placeholder="Напр. Алексей"
-                                    class="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-sm text-white mb-4 focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-600"
-                                    @keyup.enter="confirmJoin"
-                                >
-
-                                <button @click="confirmJoin" 
-                                    class="w-full h-14 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] active:scale-95 transition-all rounded-2xl">
-                                    Войти в чат
-                                </button>
-                                
-                                <button @click="isActive = false" class="w-full mt-4 text-[8px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors">
-                                    Отмена
-                                </button>
-                            </div>
-                            <div v-else>
-                                <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
-                                <div class="mt-4 flex flex-col items-center gap-3">
-                                    <!-- Reconnect button removed -->
-                                </div>
+                            <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
+                            <div class="mt-4 flex flex-col items-center gap-3">
+                                <!-- Reconnect button removed -->
                             </div>
                         </template>
                     </div>
@@ -303,6 +278,32 @@
                 <p class="text-[9px] font-black uppercase tracking-widest px-4 py-1.5 bg-black/40 backdrop-blur-md rounded-full inline-block border border-white/5" :class="inviteStatusClass">
                     {{ inviteStatus }}
                 </p>
+            </div>
+        <!-- Global Identity Prompt for Guests -->
+        <div v-if="isActive && !isJoined && isGuest" class="absolute inset-0 z-[20000] flex flex-col items-center justify-center p-6 bg-black/40 backdrop-blur-3xl animate-fade-in">
+            <div class="relative w-full max-w-xs animate-fade-in-up pointer-events-auto">
+                <div class="bg-zinc-900/60 border border-white/10 p-10 rounded-[3rem] shadow-2xl backdrop-blur-3xl text-center">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8">Представьтесь для участия</h3>
+                    
+                    <div class="space-y-6">
+                        <input 
+                            type="text" 
+                            v-model="lobbyName" 
+                            placeholder="Ваше имя..."
+                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-sm text-white focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-700 font-bold"
+                            @keyup.enter="confirmJoin"
+                        >
+
+                        <button @click="confirmJoin" 
+                            class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-[#7C45F5]/30 hover:bg-[#6b35e4] active:scale-[0.97] transition-all rounded-2xl">
+                            Присоединиться
+                        </button>
+                        
+                        <button @click="isActive = false" class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 hover:text-zinc-400 transition-colors">
+                            Вернуться назад
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
