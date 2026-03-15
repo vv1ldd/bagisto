@@ -94,16 +94,7 @@
                                 class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
                         </button>
 
-@if ($user->is_call_enabled)
-                            <button onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'"
-                                class="flex flex-col items-center gap-1 group">
-                                <div
-                                    class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-all border border-zinc-100 group-hover:border-emerald-100 shadow-sm text-[20px]">
-                                    📞</div>
-                                <span
-                                    class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-emerald-500 transition-colors">звонки</span>
-                            </button>
-                        @endif
+
                     </div>
                 </div>
 
