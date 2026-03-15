@@ -239,11 +239,22 @@
                     <!-- Redundant Focus Button Removed (Now in Badge) -->
                     <!-- Screen Share Toggle -->
                     <div v-if="!isMobile" class="flex flex-col items-center gap-1.5">
-                        <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-zinc-800 text-white opacity-40']"
+                        <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-black/40 text-white']"
                             class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                         </button>
                         <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Share</span>
+                    </div>
+
+                    <!-- Invite Button -->
+                    <div class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="isInviteOpen = !isInviteOpen" :class="[isInviteOpen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-black/40 text-white']"
+                                class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Invite</span>
                     </div>
 
                     <!-- Camera Swap (Now inside the vertical bar on mobile) -->
@@ -269,6 +280,45 @@
             </div>
 
         </div>
+
+        <!-- Invitation Modal -->
+        <div v-if="isInviteOpen" class="absolute inset-0 z-[30000] flex items-center justify-center p-6 bg-black/40 backdrop-blur-md" @click="isInviteOpen = false">
+            <div class="w-full max-w-xs bg-zinc-900 border border-white/10 p-8 rounded-[2.5rem] shadow-2xl animate-fade-in-up" @click.stop>
+                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-6 flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full"></span>
+                    Пригласить участника
+                </h3>
+                
+                <div class="space-y-4">
+                    <input 
+                        type="email" 
+                        v-model="inviteEmail" 
+                        placeholder="email@example.com"
+                        class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-600"
+                        @keyup.enter="sendInvite"
+                    >
+                    
+                    <button 
+                        @click="sendInvite"
+                        :disabled="isInviteLoading"
+                        class="w-full h-14 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98] disabled:opacity-50 rounded-2xl"
+                    >
+                        {{ isInviteLoading ? 'Отправка...' : 'Отправить' }}
+                    </button>
+                    
+                    <button 
+                        @click="isInviteOpen = false"
+                        class="w-full h-10 text-zinc-500 font-black uppercase tracking-widest text-[8px] hover:text-white transition-all"
+                    >
+                        Отмена
+                    </button>
+                </div>
+
+                <div v-if="inviteStatus" class="mt-6 text-center animate-fade-in-up">
+                    <p class="text-[9px] font-black uppercase tracking-widest" :class="inviteStatusClass">{{ inviteStatus }}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -291,6 +341,11 @@ export default {
             isCameraDenied: false,
             isSharingScreen: false,
             screenStream: null,
+            isInviteOpen: false,
+            inviteEmail: '',
+            inviteStatus: '',
+            inviteStatusClass: '',
+            isInviteLoading: false,
             configuration: {
                 iceServers: [
                     { urls: 'stun:stun.meanly.ru:3478' },
@@ -1611,6 +1666,33 @@ export default {
         endCall() {
             this.sendSignal({ type: 'hangup' });
             this.cleanup();
+        },
+
+        async sendInvite() {
+            if (!this.inviteEmail || !this.inviteEmail.includes('@')) {
+                this.showInviteStatus('Введите корректный email', 'text-red-500');
+                return;
+            }
+
+            this.isInviteLoading = true;
+            try {
+                await axios.post(`/call/${this.roomUuid}/invite`, {
+                    email: this.inviteEmail
+                });
+                this.showInviteStatus('Приглашение отправлено!', 'text-emerald-500');
+                this.inviteEmail = '';
+                setTimeout(() => { this.isInviteOpen = false; }, 1500);
+            } catch (error) {
+                this.showInviteStatus('Ошибка отправки', 'text-red-500');
+            } finally {
+                this.isInviteLoading = false;
+            }
+        },
+
+        showInviteStatus(text, colorClass) {
+            this.inviteStatus = text;
+            this.inviteStatusClass = colorClass;
+            setTimeout(() => { this.inviteStatus = ''; }, 5000);
         },
 
         cleanup() {
