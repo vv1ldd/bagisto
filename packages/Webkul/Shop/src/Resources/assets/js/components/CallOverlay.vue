@@ -1140,17 +1140,19 @@ export default {
                         console.log(`Room: I am initiator for ${senderName} (${peerKey}). Creating session...`);
                         const pc = this.createPeerConnection(peerKey, senderName);
                         
-                        // Add tracks and create offer manually
+                        // Adding tracks will now automatically trigger onnegotiationneeded (initiator logic)
                         if (this.activeLocalStream) {
                             this.activeLocalStream.getTracks().forEach(track => pc.addTrack(track, this.activeLocalStream));
+                        } else {
+                            // If no tracks yet, manually trigger an empty offer to start state machine
+                            // This ensures the peer is created and we're ready when tracks arrive
+                            peer.makingOffer = true;
+                            pc.createOffer().then(offer => {
+                                const cleanSdp = this.normalizeSDP(offer.sdp);
+                                pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
+                                this.sendSignal({ type: 'offer', sdp: cleanSdp, target: peerKey, fingerprint: this.localFingerprint });
+                            }).finally(() => { peer.makingOffer = false; });
                         }
-                        
-                        peer.makingOffer = true;
-                        const offer = await pc.createOffer();
-                        const cleanSdp = this.normalizeSDP(offer.sdp);
-                        await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
-                        this.sendSignal({ type: 'offer', sdp: cleanSdp, target: peerKey, fingerprint: this.localFingerprint });
-                        peer.makingOffer = false;
 
                         // ENSURE WATCHDOG STARTS
                         this.startConnectionWatchdog(peerKey);
@@ -1399,6 +1401,38 @@ export default {
                 if (e.candidate) this.sendSignal({ type: 'candidate', candidate: e.candidate, target: id });
             };
 
+            pc.onnegotiationneeded = async () => {
+                try {
+                    const peer = this.peers[id];
+                    if (!peer) return;
+
+                    console.log(`WebRTC: Negotiation needed for ${id}`);
+                    if (peer.makingOffer || pc.signalingState !== 'stable') return;
+                    
+                    peer.makingOffer = true;
+                    // Reset ignoreOffer state when starting a new negotiation
+                    peer.ignoreOffer = false;
+
+                    const offer = await pc.createOffer();
+                    
+                    // State might change during await
+                    if (pc.signalingState !== 'stable') return;
+
+                    const cleanSdp = this.normalizeSDP(offer.sdp);
+                    await pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
+                    
+                    this.sendSignal({ 
+                        type: 'offer', 
+                        sdp: cleanSdp, 
+                        target: id 
+                    });
+                } catch (err) {
+                    console.error(`WebRTC: Negotiation failed for ${id}`, err);
+                } finally {
+                    if (this.peers[id]) this.peers[id].makingOffer = false;
+                }
+            };
+
             pc.ontrack = (e) => {
                 console.log(`WebRTC: Received remote track from ${id}`, e.track.kind);
                 
@@ -1465,35 +1499,29 @@ export default {
         },
 
         syncTracksToAllPeers() {
-            if (!this.localStream) return;
-            const tracks = this.localStream.getTracks();
+            const stream = this.activeLocalStream;
+            if (!stream) {
+                console.log('Room: No active local stream to sync.');
+                return;
+            }
+            const tracks = stream.getTracks();
             
             Object.keys(this.peers).forEach(id => {
                 const peer = this.peers[id];
                 if (peer.pc && peer.pc.connectionState !== 'closed') {
-                    let needsRenegotiation = false;
                     const senders = peer.pc.getSenders();
                     
                     tracks.forEach(track => {
                         const sender = senders.find(s => s.track && s.track.kind === track.kind);
                         if (!sender) {
                             console.log(`Room: Adding missing track ${track.kind} to peer ${id}`);
-                            peer.pc.addTrack(track, this.activeLocalStream);
-                            needsRenegotiation = true;
+                            peer.pc.addTrack(track, stream);
+                            // pc.onnegotiationneeded will handle triggering the offer
                         } else if (sender.track !== track) {
                             console.log(`Room: Updating track ${track.kind} for peer ${id}`);
                             sender.replaceTrack(track);
                         }
                     });
-
-                    if (needsRenegotiation && peer.pc.signalingState === 'stable') {
-                        // If we are initiator, we can push a new offer
-                        const isInitiator = this.sessionUniqueId < id;
-                        if (isInitiator) {
-                            console.log(`Room: Renegotiating for missing tracks with ${id}`);
-                            // onnegotiationneeded handles this automatically when tracks are added
-                        }
-                    }
                 }
             });
         },
