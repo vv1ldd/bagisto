@@ -737,12 +737,10 @@ export default {
                     this.reconnectAttempts = 0;
                     this.signalingGraceActive = false;
                     
-                    // Force clean peers state
-                    Object.keys(this.peers).forEach(id => {
-                        this.removePeer(id);
-                    });
+                    // DON'T forcefully clean peers anymore - let existing WebRTC connections persist
+                    // if signaling recovers. Only stale peers will be removed by cleanupStalePeers.
                     
-                    // Re-broadcast presence immediately
+                    // Re-broadcast presence immediately to re-sync with any surviving peers
                     this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
                     
                     // Re-subscribe to channels to ensure fresh listeners
@@ -1039,10 +1037,10 @@ export default {
                 ticks++;
                 if (ticks > 10) {
                     this.stopPresence();
-                    console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 10s`);
+                    console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 8s`);
                     this.presenceInterval = setInterval(() => {
                         if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
-                    }, 10000);
+                    }, 8000); // 8s heartbeat for better stale protection
                 }
             }, 1000); // 1s ticks for first 10 seconds
         },
@@ -1785,11 +1783,11 @@ export default {
             this.stopInactivityTimer();
             if (this.peerCount > 0) return;
             
-            console.log('Room: Starting 5-minute inactivity timer');
+            console.log('Room: Starting 30-minute inactivity timer');
             this.inactivityTimer = setTimeout(() => {
-                console.log('Room: 5-minute inactivity reached. Closing room.');
+                console.log('Room: 30-minute inactivity reached. Closing room.');
                 this.cleanup();
-            }, 5 * 60 * 1000); 
+            }, 30 * 60 * 1000); 
         },
 
         stopInactivityTimer() {
