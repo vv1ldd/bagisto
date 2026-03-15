@@ -108,7 +108,7 @@
                            :style="isFocusedOnSelf ? zoomStyle : {}"
                            class="w-full h-full transition-all duration-700"></video>
                     <!-- Shapik Badge (Grid Local) -->
-                    <div class="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
+                    <div class="absolute bottom-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
                         <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white text-[8px] font-black rounded-sm shadow-sm ring-1 ring-white/10">
                             {{ getLetter(localUserName) }}
                         </div>
@@ -124,7 +124,7 @@
                            :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
                            class="w-full h-full transition-all duration-700"></video>
                     <!-- Shapik Badge (Grid Peer) -->
-                    <div class="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
+                    <div class="absolute bottom-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
                         <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white text-[8px] font-black rounded-sm shadow-sm ring-1 ring-white/10">
                             {{ getLetter(peers[id].name) }}
                         </div>
