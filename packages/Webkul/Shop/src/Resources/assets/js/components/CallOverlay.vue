@@ -293,33 +293,6 @@
             </div>
         </div>
 
-        <!-- Global Identity Prompt for Guests -->
-        <div v-if="isActive && !isJoined && isGuest" class="absolute inset-0 z-[20000] flex flex-col items-center justify-center p-6 bg-black/40 backdrop-blur-3xl animate-fade-in">
-            <div class="relative w-full max-w-xs animate-fade-in-up pointer-events-auto">
-                <div class="bg-zinc-900/60 border border-white/10 p-10 rounded-[3rem] shadow-2xl backdrop-blur-3xl text-center">
-                    <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 mb-8">Представьтесь для участия</h3>
-                    
-                    <div class="space-y-6">
-                        <input 
-                            type="text" 
-                            v-model="lobbyName" 
-                            placeholder="Ваше имя..."
-                            class="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-5 text-sm text-white focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-700 font-bold"
-                            @keyup.enter="confirmJoin"
-                        >
-
-                        <button @click="confirmJoin" 
-                            class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-[#7C45F5]/30 hover:bg-[#6b35e4] active:scale-[0.97] transition-all rounded-2xl">
-                            Присоединиться
-                        </button>
-                        
-                        <button @click="isActive = false" class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 hover:text-zinc-400 transition-colors">
-                            Вернуться назад
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -896,10 +869,19 @@ export default {
 
         async joinRoom(uuid, userName, hash) {
             console.log(`CallOverlay [${this.sessionUniqueId}]: Preparing room ${uuid} as ${userName} (Hash: ${hash})`);
+            
+            // Auto-generate name for guests if generic
+            if (!userName || userName === 'Гость') {
+                userName = this.generateBeautifulName();
+            } else if (userName.includes('@')) {
+                // Derived from email
+                userName = userName.split('@')[0];
+            }
+
             this.roomUuid = uuid;
             this.localUserName = userName;
             this.localHash = hash || userName; 
-            this.lobbyName = userName !== 'Гость' ? userName : '';
+            this.lobbyName = userName;
             this.isRoomMode = true;
             this.isActive = true;
             this.isJoined = false;
@@ -914,11 +896,20 @@ export default {
             // Re-subscribe and start presence as soon as joined
             this.subscribeToChannels();
 
-            // AUTO-JOIN for registered users
-            if (!this.isGuest) {
-                console.log(`CallOverlay [${this.sessionUniqueId}]: Registered user detected. Auto-joining...`);
-                this.confirmJoin();
-            }
+            // AUTO-JOIN for everyone (Guests no longer need to enter name)
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Auto-joining as ${userName}...`);
+            this.confirmJoin();
+        },
+
+        generateBeautifulName() {
+            const words = [
+                'Алмаз', 'Сапфир', 'Рубин', 'Изумруд', 'Топаз', 'Опал', 'Агат', 'Аметист', 'Янтарь', 'Никель',
+                'Феникс', 'Орион', 'Сириус', 'Вега', 'Альтаир', 'Арктур', 'Спика', 'Регул', 'Марс', 'Юпитер',
+                'Лотос', 'Ирис', 'Жасмин', 'Пион', 'Орхидея', 'Лилия', 'Астра', 'Вербена', 'Атлант', 'Титан'
+            ];
+            const randomWord = words[Math.floor(Math.random() * words.length)];
+            const randomNum = Math.floor(100 + Math.random() * 899);
+            return `${randomWord} ${randomNum}`;
         },
 
         confirmJoin() {
