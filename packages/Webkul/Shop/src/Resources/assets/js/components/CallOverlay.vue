@@ -1,3 +1,4 @@
+<template>
     <div v-if="isActive" 
          ref="overlayRoot"
          @mousemove="userActivity"
