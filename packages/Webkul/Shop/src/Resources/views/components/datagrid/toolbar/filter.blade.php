@@ -36,15 +36,19 @@
                 >
                     <x-slot:toggle>
                         <div
-                            class="flex w-full max-w-[200px] cursor-pointer items-center justify-between gap-4  border border-zinc-200 bg-white py-2 text-sm transition-all hover:border-gray-400 focus:border-gray-400 max-md:w-fit ltr:pl-3 ltr:pr-4 max-md:ltr:pl-2.5 max-md:ltr:pr-2.5 rtl:pl-4 rtl:pr-3 max-md:rtl:pl-2.5 max-md:rtl:pr-2.5"
-                            :class="{'[&>*]:text-blue-600': filters.columns.length > 0}"
+                            class="flex w-full max-w-[200px] cursor-pointer items-center justify-between gap-4 border border-zinc-200 bg-white py-2.5 px-4 text-[14px] font-medium text-zinc-600 transition-all hover:bg-zinc-50 hover:border-zinc-300 focus:border-[#7C45F5] rounded-2xl"
+                            :class="{'border-[#7C45F5]/30 bg-violet-50/30': filters.columns.length > 0}"
                         >
-                            <span class="flex items-center justify-between gap-1.5">
-                                <span class="icon-filter text-2xl"></span>
+                            <span class="flex items-center justify-between gap-2">
+                                <span class="icon-filter text-2xl" :class="{'text-[#7C45F5]': filters.columns.length > 0}"></span>
 
-                                <span class="max-md:hidden">
+                                <span class="max-md:hidden" :class="{'text-[#7C45F5]': filters.columns.length > 0}">
                                     @lang('shop::app.components.datagrid.toolbar.filter.title')
                                 </span>
+                            </span>
+
+                            <span v-if="filters.columns.length > 0" class="flex items-center justify-center w-5 h-5 bg-[#7C45F5] text-white text-[10px] font-bold rounded-full">
+                                @{{ filters.columns.length }}
                             </span>
                         </div>
                     </x-slot>
@@ -87,7 +91,7 @@
                                                 <x-slot:toggle>
                                                     <button
                                                         type="button"
-                                                        class="flex w-full cursor-pointer items-center justify-between gap-4  border border-zinc-200 bg-white py-2 text-sm transition-all hover:border-gray-400 focus:border-gray-400 max-md:w-full max-md:!py-1.5 ltr:pl-4 ltr:pr-3 max-md:ltr:pl-2.5 max-md:ltr:pr-2.5 rtl:pl-3 rtl:pr-4 max-md:rtl:pl-2.5 max-md:rtl:pr-2.5"
+                                                        class="flex w-full cursor-pointer items-center justify-between gap-4 border border-zinc-200 bg-zinc-50 py-2 px-3 text-[13px] font-medium text-zinc-600 transition-all hover:bg-white hover:border-zinc-300 focus:border-[#7C45F5] rounded-xl outline-none"
                                                     >
                                                         <!-- If Allow Multiple Values -->
                                                         <span
@@ -103,7 +107,7 @@
                                                         >
                                                         </span>
 
-                                                        <span class="icon-sort-down text-2xl"></span>
+                                                        <span class="icon-sort-down text-2xl text-zinc-400"></span>
                                                     </button>
                                                 </x-slot>
 
@@ -574,7 +578,7 @@
                             <!-- Apply Filter Button -->
                             <button
                                 type="button"
-                                class="primary-button w-full max-w-full p-2.5 text-sm font-medium"
+                                class="w-full bg-[#7C45F5] text-white p-3 text-[14px] font-bold rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-violet-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:shadow-none disabled:active:scale-100"
                                 @click="applyFilters"
                                 :disabled="! isFilterDirty"
                             >

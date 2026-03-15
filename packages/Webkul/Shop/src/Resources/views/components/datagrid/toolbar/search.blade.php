@@ -27,25 +27,25 @@
                 <div class="flex w-full items-center gap-x-1">
                     <!-- Search Panel -->
                     <div class="flex max-w-[445px] items-center max-md:w-full max-md:max-w-[250px]">
-                        <div class="relative w-full">
+                        <div class="relative w-full group">
                             <input
                                 type="text"
                                 name="search"
                                 :value="getSearchedValues('all')"
-                                class=" border border-gray-300 bg-white px-3 py-2 text-base text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 max-md:max-w-[250px] max-md:py-2 max-sm:py-1.5 ltr:pr-8 rtl:pl-8"
+                                class="w-full border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-[14px] text-zinc-600 transition-all hover:bg-white hover:border-zinc-300 focus:bg-white focus:border-[#7C45F5] focus:ring-2 focus:ring-[#7C45F5]/10 rounded-2xl outline-none"
                                 placeholder="@lang('shop::app.components.datagrid.toolbar.search.title')"
                                 autocomplete="off"
                                 @keyup.enter="search"
                             >
 
-                            <div class="icon-search pointer-events-none absolute top-2.5 flex items-center text-xl max-sm:top-2 ltr:right-2.5 rtl:left-2.5">
+                            <div class="icon-search pointer-events-none absolute top-3 flex items-center text-xl text-zinc-400 group-focus-within:text-[#7C45F5] transition-colors ltr:right-4 rtl:left-4">
                             </div>
                         </div>
                     </div>
 
                     <!-- Information Panel -->
-                    <div class="max-md:hidden ltr:pl-2.5 rtl:pr-2.5">
-                        <p class="text-sm font-light text-gray-800 max-md:w-full">
+                    <div class="max-md:hidden ltr:pl-4 rtl:pr-4">
+                        <p class="text-[13px] font-medium text-zinc-400 tracking-wide uppercase">
                             @{{ "@lang('shop::app.components.datagrid.toolbar.results')".replace(':total', available.meta.total) }}
                         </p>
                     </div>

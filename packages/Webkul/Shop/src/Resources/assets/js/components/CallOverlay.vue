@@ -22,7 +22,7 @@
                      @touchend="handleTouchEnd"
                      @wheel="handleWheel">
                     
-                    <template v-if="!isFocusedOnSelf">
+                    <div class="w-full h-full relative overflow-hidden" v-show="!isFocusedOnSelf">
                          <video :id="'video_' + peerIds[0]" 
                                 autoplay playsinline 
                                 :style="zoomStyle"
@@ -32,15 +32,15 @@
                          <div v-if="zoomLevel > 1" @click.stop="resetZoom" class="absolute top-24 left-6 bg-[#7C45F5] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer animate-bounce z-20">
                              {{ Math.round(zoomLevel * 100) }}% (Reset)
                          </div>
-                    </template>
+                    </div>
 
-                    <template v-else>
+                    <div class="w-full h-full relative overflow-hidden" v-show="isFocusedOnSelf">
                         <video ref="localVideoMain" 
                                autoplay muted playsinline 
                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                                :style="zoomStyle"
                                class="w-full h-full transition-all duration-700"></video>
-                    </template>
+                    </div>
                 </div>
 
                 <!-- Unified Identity + End Call Badge (Top Left) -->
@@ -51,12 +51,8 @@
                         <!-- Focus Toggle Button -->
                         <button @click.stop="toggleFocus" 
                                 class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all group">
-                            <svg v-if="isFocusedOnSelf" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
                         </button>
                         
@@ -106,39 +102,110 @@
                 </div>
             </div>
 
-            <div v-else-if="peerCount > 1" :class="gridClass" class="grid w-full h-full p-2 md:p-4 gap-2 md:gap-4 transition-all duration-500">
-                <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center group/local touch-none"
-                     @touchstart="handleTouchStart($event, true)"
-                     @touchmove="handleTouchMove($event, true)"
-                     @touchend="handleTouchEnd"
-                     @wheel="handleWheel($event, true)">
-                    <video ref="localVideoGrid" autoplay muted playsinline 
-                           :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                           :style="isFocusedOnSelf ? zoomStyle : {}"
-                           class="w-full h-full transition-all duration-700"></video>
-                    <!-- Shapik Badge (Grid Local) -->
-                    <div class="absolute bottom-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
-                        <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white text-[8px] font-black rounded-sm shadow-sm ring-1 ring-white/10">
-                            {{ getLetter(localUserName) }}
-                        </div>
-                        <div class="text-[9px] md:text-[10px] font-black uppercase italic tracking-tighter text-white/90">
-                            @{{ cleanLocalName }}
+            <div v-else-if="peerCount > 1" class="w-full h-full relative p-2 md:p-4 transition-all duration-500">
+                <!-- Focused Layout -->
+                <div v-if="focusedPeerId" class="flex flex-col w-full h-full gap-2 md:gap-4">
+                    <!-- Main Area -->
+                    <div class="flex-grow relative overflow-hidden rounded-[2.5rem] bg-zinc-900 border border-white/10 flex items-center justify-center group/main">
+                        <template v-if="isFocusedOnSelf">
+                            <video ref="localVideoFocused" autoplay muted playsinline 
+                                   :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                                   class="w-full h-full transition-all duration-700"></video>
+                        </template>
+                        <template v-else>
+                            <video :id="'video_focused_' + focusedPeerId" autoplay playsinline 
+                                   :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
+                                   class="w-full h-full transition-all duration-700"></video>
+                        </template>
+
+                        <!-- Focus Badge (Top Left) -->
+                        <div class="absolute top-8 left-8 flex items-center gap-2 z-20">
+                            <div class="flex items-center gap-2 bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl">
+                                <button @click.stop="togglePeerFocus(null)" 
+                                        class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                                    </svg>
+                                </button>
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="text-[12px] font-black uppercase italic tracking-tighter text-white/90 leading-tight">
+                                        @{{ isFocusedOnSelf ? cleanLocalName : cleanPeerName(peers[focusedPeerId]?.name) }}
+                                    </span>
+                                    <span class="text-[7px] font-black uppercase tracking-[0.2em] text-[#7C45F5]">В ФОКУСЕ</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                </div>
-                <div v-for="id in peerIds" :key="id" 
-                    class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center">
-                    <video :id="'video_' + id" autoplay playsinline 
-                           :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
-                           class="w-full h-full transition-all duration-700"></video>
-                    <!-- Shapik Badge (Grid Peer) -->
-                    <div class="absolute bottom-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
-                        <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white text-[8px] font-black rounded-sm shadow-sm ring-1 ring-white/10">
-                            {{ getLetter(peers[id].name) }}
+                    <!-- Thumbnail Strip -->
+                    <div class="h-24 md:h-32 flex items-center gap-2 md:gap-4 overflow-x-auto overflow-y-hidden px-1 py-1 no-scrollbar">
+                        <!-- Local Thumb -->
+                        <div @click="togglePeerFocus('local')" 
+                             :class="{'ring-2 ring-[#7C45F5] scale-[1.02]': isFocusedOnSelf}"
+                             class="flex-shrink-0 h-full aspect-video rounded-xl bg-zinc-950 border border-white/10 overflow-hidden relative cursor-pointer hover:border-white/20 transition-all">
+                            <video ref="localVideoThumb" autoplay muted playsinline 
+                                   :class="[{mirror: !isSharingScreen}]"
+                                   class="w-full h-full object-cover opacity-60"></video>
+                            <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5">
+                                <div class="flex h-3 w-3 items-center justify-center bg-[#7C45F5] text-white rounded-[2px]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-[9px] md:text-[10px] font-black uppercase italic tracking-tighter text-white/90">
-                            @{{ cleanPeerName(peers[id].name) }}
+
+                        <!-- Peer Thumbs -->
+                        <div v-for="id in peerIds" :key="'thumb_' + id" 
+                             @click="togglePeerFocus(id)"
+                             :class="{'ring-2 ring-[#7C45F5] scale-[1.02]': focusedPeerId === id}"
+                             class="flex-shrink-0 h-full aspect-video rounded-xl bg-zinc-950 border border-white/10 overflow-hidden relative cursor-pointer hover:border-white/20 transition-all">
+                            <video :id="'video_thumb_' + id" autoplay playsinline class="w-full h-full object-cover opacity-60"></video>
+                            <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5 text-[8px] font-black uppercase text-white/90">
+                                @{{ cleanPeerName(peers[id].name) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Layout (Normal) -->
+                <div v-else :class="gridClass" class="grid w-full h-full gap-2 md:gap-4 transition-all duration-500">
+                    <div class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center group/local touch-none cursor-pointer"
+                         @click="togglePeerFocus('local')"
+                         @touchstart="handleTouchStart($event, true)"
+                         @touchmove="handleTouchMove($event, true)"
+                         @touchend="handleTouchEnd"
+                         @wheel="handleWheel($event, true)">
+                        <video ref="localVideoGrid" autoplay muted playsinline 
+                               :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                               :style="isFocusedOnSelf ? zoomStyle : {}"
+                               class="w-full h-full transition-all duration-700"></video>
+                        <!-- Shapik Badge (Grid Local) -->
+                        <div class="absolute top-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
+                            <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm shadow-sm ring-1 ring-white/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div class="text-[9px] md:text-[10px] font-black uppercase italic tracking-tighter text-white/90">
+                                @{{ cleanLocalName }}
+                            </div>
+                        </div>
+                    </div>
+                    <div v-for="id in peerIds" :key="id" 
+                        @click="togglePeerFocus(id)"
+                        class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center cursor-pointer">
+                        <video :id="'video_' + id" autoplay playsinline 
+                               :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
+                               class="w-full h-full transition-all duration-700"></video>
+                        <!-- Shapik Badge (Grid Peer) -->
+                        <div class="absolute top-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
+                            <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm shadow-sm ring-1 ring-white/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div class="text-[9px] md:text-[10px] font-black uppercase italic tracking-tighter text-white/90">
+                                @{{ cleanPeerName(peers[id].name) }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -194,6 +261,24 @@
             </div>
         </div>
 
+        <!-- PIP Self-View (Floating Top-Right) -->
+        <div v-show="isActive && (peerCount > 0 || isJoined) && isCameraOn && !isFocusedOnSelf" 
+             class="absolute top-8 right-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700"
+             :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
+             <video ref="localVideoPip" 
+                    autoplay muted playsinline 
+                    :class="[{mirror: !isSharingScreen}]"
+                    class="w-full h-full object-cover"></video>
+             
+             <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-sm flex items-center gap-1.5">
+                 <div class="flex h-3 w-3 items-center justify-center bg-[#7C45F5] text-white rounded-[2px]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                 </div>
+                 <span class="text-[8px] font-black uppercase tracking-tighter text-white/90">ВЫ</span>
+             </div>
+        </div>
 
         <!-- Interface Layer (Overlay) -->
         <div class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-between p-4 md:p-8 landscape:flex-row landscape:justify-between items-stretch">
@@ -274,7 +359,7 @@ export default {
             roomUuid: null,
             isRoomMode: false,
             peers: {}, 
-            isFocusedOnSelf: false, // For 1-on-1 mode swap
+            focusedPeerId: null, // 'local' or peerKey
             localFingerprint: null,
             signalingState: (window.Echo?.connector?.pusher?.connection?.state) || 'connecting',
             isMicOn: true,
@@ -361,6 +446,9 @@ export default {
                 pointerEvents: 'none'
             };
         },
+        isFocusedOnSelf() {
+            return this.focusedPeerId === 'local';
+        },
         isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         },
@@ -376,7 +464,7 @@ export default {
     },
 
     watch: {
-        isFocusedOnSelf() {
+        focusedPeerId() {
             this.resetZoom();
             this.$nextTick(() => this.rebindVideos());
         },
@@ -942,24 +1030,45 @@ export default {
         cleanupStalePeers() {
             const now = Date.now();
             const seenFingerprints = new Map();
+            const seenHashes = new Map();
 
             Object.keys(this.peers).forEach(id => {
                 const peer = this.peers[id];
                 
-                // Fingerprint-based deduplication: if we see two sessions with the same fingerprint,
-                // remove the older one if it's not connected.
+                // Fingerprint-based deduplication
                 if (peer.fingerprint) {
                     const existingId = seenFingerprints.get(peer.fingerprint);
                     if (existingId) {
                         const existingPeer = this.peers[existingId];
-                        if (!peer.connected && existingPeer.lastSeen > peer.lastSeen) {
+                        // If both are connected, keep the newer one. If one is connected, keep that one.
+                        if (peer.connected && !existingPeer.connected) {
+                            this.removePeer(existingId);
+                        } else if (!peer.connected && existingPeer.connected) {
                             this.removePeer(id);
                             return;
-                        } else if (!existingPeer.connected && peer.lastSeen > existingPeer.lastSeen) {
+                        } else if (peer.lastSeen > existingPeer.lastSeen) {
                             this.removePeer(existingId);
+                        } else {
+                            this.removePeer(id);
+                            return;
                         }
                     }
                     seenFingerprints.set(peer.fingerprint, id);
+                }
+
+                // Hash-based deduplication (fallback for guests/no-fingerprint)
+                if (peer.hash) {
+                    const existingId = seenHashes.get(peer.hash);
+                    if (existingId && existingId !== id) {
+                        const existingPeer = this.peers[existingId];
+                        if (peer.lastSeen > existingPeer.lastSeen) {
+                            this.removePeer(existingId);
+                        } else {
+                            this.removePeer(id);
+                            return;
+                        }
+                    }
+                    seenHashes.set(peer.hash, id);
                 }
 
                 // Standard stale cleanup (45s for connected, 15s for new)
@@ -1066,6 +1175,17 @@ export default {
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
                 if (!this.peers[peerKey]) {
+                    // Pre-emptive deduplication on presence
+                    Object.keys(this.peers).forEach(id => {
+                        const p = this.peers[id];
+                        if ((signal.fingerprint && p.fingerprint === signal.fingerprint) || (senderHash && p.hash === senderHash)) {
+                            console.log(`Room: Pre-emptively removing duplicate session ${id} for ${senderName}`);
+                            if (!p.connected || (signal.fingerprint && p.fingerprint === signal.fingerprint)) {
+                                this.removePeer(id);
+                            }
+                        }
+                    });
+
                     this.peers = {
                         ...this.peers,
                         [peerKey]: { 
@@ -1189,8 +1309,20 @@ export default {
             }
         },
 
+        togglePeerFocus(id) {
+            if (this.focusedPeerId === id) {
+                this.focusedPeerId = null;
+            } else {
+                this.focusedPeerId = id;
+            }
+        },
+
         toggleFocus() {
-            this.isFocusedOnSelf = !this.isFocusedOnSelf;
+            if (this.peerCount === 1) {
+                this.focusedPeerId = this.isFocusedOnSelf ? null : 'local';
+            } else {
+                this.focusedPeerId = null; // Exit focus mode in group
+            }
         },
 
         startConnectionWatchdog(id) {
@@ -1512,6 +1644,24 @@ export default {
                 if (localGrid.srcObject !== activeLocalStream) localGrid.srcObject = activeLocalStream;
                 if (localGrid.paused) localGrid.play().catch(() => {});
             }
+
+            const localFocused = this.$refs.localVideoFocused;
+            if (localFocused && activeLocalStream) {
+                if (localFocused.srcObject !== activeLocalStream) localFocused.srcObject = activeLocalStream;
+                if (localFocused.paused) localFocused.play().catch(() => {});
+            }
+
+            const localThumb = this.$refs.localVideoThumb;
+            if (localThumb && activeLocalStream) {
+                if (localThumb.srcObject !== activeLocalStream) localThumb.srcObject = activeLocalStream;
+                if (localThumb.paused) localThumb.play().catch(() => {});
+            }
+            
+            const localPip = this.$refs.localVideoPip;
+            if (localPip && activeLocalStream) {
+                if (localPip.srcObject !== activeLocalStream) localPip.srcObject = activeLocalStream;
+                if (localPip.paused) localPip.play().catch(() => {});
+            }
             
             const localWaiting = this.$refs.localVideoWaiting;
             if (localWaiting && this.localStream) {
@@ -1523,13 +1673,24 @@ export default {
             // Rebind Peer Streams
             Object.keys(this.peers).forEach(id => {
                 const p = this.peers[id];
+                if (!p || !p.stream || !p.connected) return;
+
                 const mainEl = document.getElementById('video_' + id);
-                
-                if (p && p.stream && p.connected) {
-                    if (mainEl && mainEl.srcObject !== p.stream) {
-                        mainEl.srcObject = p.stream;
-                        mainEl.play().catch(() => {});
-                    }
+                if (mainEl && mainEl.srcObject !== p.stream) {
+                    mainEl.srcObject = p.stream;
+                    mainEl.play().catch(() => {});
+                }
+
+                const focusedEl = document.getElementById('video_focused_' + id);
+                if (focusedEl && focusedEl.srcObject !== p.stream) {
+                    focusedEl.srcObject = p.stream;
+                    focusedEl.play().catch(() => {});
+                }
+
+                const thumbEl = document.getElementById('video_thumb_' + id);
+                if (thumbEl && thumbEl.srcObject !== p.stream) {
+                    thumbEl.srcObject = p.stream;
+                    thumbEl.play().catch(() => {});
                 }
             });
         },

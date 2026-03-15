@@ -3,9 +3,9 @@
 </template>
 
 <template v-else>
-    <div class="mt-7 flex items-center justify-between gap-4 max-md:block">
+    <div class="mt-4 flex items-center justify-between gap-4 max-md:block">
         <!-- Left Toolbar -->
-        <div class="flex w-full gap-x-1">
+        <div class="flex w-full gap-x-2">
             <!-- Mass Actions Panel -->
             <template v-if="applied.massActions.indices.length">
                 <x-shop::datagrid.toolbar.mass-action>
@@ -84,7 +84,7 @@
         </div>
 
         <!-- Right Toolbar -->
-        <div class="flex gap-x-4 max-md:my-4 max-md:items-center max-md:justify-between">
+        <div class="flex gap-x-2 items-center max-md:my-4 max-md:justify-between">
             <!-- Pagination Panel -->
             <x-shop::datagrid.toolbar.pagination>
                 <template #pagination="{
