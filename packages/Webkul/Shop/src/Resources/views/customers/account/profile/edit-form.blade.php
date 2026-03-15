@@ -335,6 +335,19 @@
 
                 </div>
 
+                <div class="ios-row !py-4 border-t border-zinc-50 opacity-80">
+                    <div class="flex flex-col gap-0.5">
+                        <label class="ios-label">B2B возможности</label>
+                        <span class="text-[11px] text-zinc-400">Включается администратором</span>
+                    </div>
+                    <div class="ios-toggle-container">
+                        <label class="ios-switch cursor-not-allowed">
+                            <input type="checkbox" disabled @checked($customer->is_b2b_enabled)>
+                            <span class="ios-slider !cursor-not-allowed {{ $customer->is_b2b_enabled ? '' : '!bg-zinc-200' }}"></span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="flex justify-center mt-6">
                     <button type="submit"
                         :disabled="!meta.valid || !!usernameError"
@@ -482,6 +495,22 @@
 
         </div>
 
+        <!-- B2B Toggle (Read-only) -->
+        <div class="ios-switch-row !mb-4 opacity-80">
+            <div class="flex flex-col gap-0.5">
+                <label class="text-[15px] font-medium text-zinc-900 select-none m-0">
+                    B2B возможности
+                </label>
+                <span class="text-[11px] text-zinc-400">Статус управляется администратором</span>
+            </div>
+            <div class="ios-toggle-container">
+                <label class="ios-switch cursor-not-allowed">
+                    <input type="checkbox" disabled @checked($customer->is_b2b_enabled)>
+                    <span class="ios-slider !cursor-not-allowed {{ $customer->is_b2b_enabled ? '' : '!bg-zinc-200' }}"></span>
+                </label>
+            </div>
+        </div>
+
         <!-- Newsletter Toggle -->
         <div class="ios-switch-row">
             <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0" for="is-subscribed">
@@ -491,20 +520,6 @@
                 <label class="ios-switch">
                     <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed"
                         @checked($customer->subscribed_to_news_letter)>
-                    <span class="ios-slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <!-- B2B Toggle -->
-        <div class="ios-switch-row !mt-0 !border-t-0">
-            <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0" for="is-b2b">
-                B2B возможности
-            </label>
-            <div class="ios-toggle-container">
-                <label class="ios-switch">
-                    <input type="checkbox" name="is_b2b_enabled" id="is-b2b"
-                        @checked($customer->is_b2b_enabled)>
                     <span class="ios-slider"></span>
                 </label>
             </div>

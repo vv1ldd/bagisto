@@ -186,6 +186,18 @@
                                     label="Инвестор" ::checked="customer.is_investor" />
                             </x-admin::form.control-group>
 
+                            <!-- B2B possibilities Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    🏢 B2B возможности
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_b2b_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_b2b_enabled" :value="1"
+                                    label="B2B возможности" ::checked="customer.is_b2b_enabled" />
+                            </x-admin::form.control-group>
+
                             <!-- P2P Call Status -->
                             <x-admin::form.control-group class="!mb-0">
                                 <x-admin::form.control-group.label>

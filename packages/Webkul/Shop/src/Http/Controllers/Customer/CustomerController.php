@@ -157,7 +157,6 @@ class CustomerController extends Controller
         }
 
         $data['subscribed_to_news_letter'] = isset($data['subscribed_to_news_letter']);
-        $data['is_b2b_enabled'] = isset($data['is_b2b_enabled']);
 
 
 
