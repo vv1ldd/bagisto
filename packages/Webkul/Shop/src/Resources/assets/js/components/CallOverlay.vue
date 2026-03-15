@@ -104,7 +104,35 @@
 
             <div v-else-if="peerCount > 1" class="w-full h-full relative p-2 md:p-4 transition-all duration-500">
                 <!-- Focused Layout -->
-                <div v-if="focusedPeerId" class="flex flex-col w-full h-full gap-2 md:gap-4">
+                <div v-if="focusedPeerId" class="flex flex-row w-full h-full gap-2 md:gap-4">
+                    <!-- Vertical Thumbnail Strip (Left) -->
+                    <div class="w-24 md:w-32 flex flex-col items-center gap-2 md:gap-4 overflow-y-auto overflow-x-hidden py-1 px-1 no-scrollbar shrink-0">
+                        <!-- Local Thumb -->
+                        <div @click="togglePeerFocus('local')" 
+                             :class="{'ring-2 ring-[#7C45F5] scale-[1.02]': isFocusedOnSelf}"
+                             class="flex-shrink-0 w-full aspect-video rounded-xl bg-zinc-950 border border-white/10 overflow-hidden relative cursor-pointer hover:border-white/20 transition-all">
+                            <video ref="localVideoThumb" autoplay muted playsinline 
+                                   :class="[{mirror: !isSharingScreen}]"
+                                   class="w-full h-full object-cover opacity-60"></video>
+                            <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5">
+                                <div class="flex h-3 w-3 items-center justify-center bg-[#7C45F5] text-white rounded-[2px]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Peer Thumbs -->
+                        <div v-for="id in peerIds" :key="'thumb_' + id" 
+                             @click="togglePeerFocus(id)"
+                             :class="{'ring-2 ring-[#7C45F5] scale-[1.02]': focusedPeerId === id}"
+                             class="flex-shrink-0 w-full aspect-video rounded-xl bg-zinc-950 border border-white/10 overflow-hidden relative cursor-pointer hover:border-white/20 transition-all">
+                            <video :id="'video_thumb_' + id" autoplay playsinline class="w-full h-full object-cover opacity-60"></video>
+                            <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5 text-[8px] font-black uppercase text-white/90">
+                                @{{ cleanPeerName(peers[id].name) }}
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Main Area -->
                     <div class="flex-grow relative overflow-hidden rounded-[2.5rem] bg-zinc-900 border border-white/10 flex items-center justify-center group/main">
                         <template v-if="isFocusedOnSelf">
@@ -133,34 +161,6 @@
                                     </span>
                                     <span class="text-[7px] font-black uppercase tracking-[0.2em] text-[#7C45F5]">В ФОКУСЕ</span>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Thumbnail Strip -->
-                    <div class="h-24 md:h-32 flex items-center gap-2 md:gap-4 overflow-x-auto overflow-y-hidden px-1 py-1 no-scrollbar">
-                        <!-- Local Thumb -->
-                        <div @click="togglePeerFocus('local')" 
-                             :class="{'ring-2 ring-[#7C45F5] scale-[1.02]': isFocusedOnSelf}"
-                             class="flex-shrink-0 h-full aspect-video rounded-xl bg-zinc-950 border border-white/10 overflow-hidden relative cursor-pointer hover:border-white/20 transition-all">
-                            <video ref="localVideoThumb" autoplay muted playsinline 
-                                   :class="[{mirror: !isSharingScreen}]"
-                                   class="w-full h-full object-cover opacity-60"></video>
-                            <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5">
-                                <div class="flex h-3 w-3 items-center justify-center bg-[#7C45F5] text-white rounded-[2px]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Peer Thumbs -->
-                        <div v-for="id in peerIds" :key="'thumb_' + id" 
-                             @click="togglePeerFocus(id)"
-                             :class="{'ring-2 ring-[#7C45F5] scale-[1.02]': focusedPeerId === id}"
-                             class="flex-shrink-0 h-full aspect-video rounded-xl bg-zinc-950 border border-white/10 overflow-hidden relative cursor-pointer hover:border-white/20 transition-all">
-                            <video :id="'video_thumb_' + id" autoplay playsinline class="w-full h-full object-cover opacity-60"></video>
-                            <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5 text-[8px] font-black uppercase text-white/90">
-                                @{{ cleanPeerName(peers[id].name) }}
                             </div>
                         </div>
                     </div>
@@ -270,13 +270,12 @@
                     :class="[{mirror: !isSharingScreen}]"
                     class="w-full h-full object-cover"></video>
              
-             <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-sm flex items-center gap-1.5">
+             <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-sm flex items-center justify-center">
                  <div class="flex h-3 w-3 items-center justify-center bg-[#7C45F5] text-white rounded-[2px]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                  </div>
-                 <span class="text-[8px] font-black uppercase tracking-tighter text-white/90">ВЫ</span>
              </div>
         </div>
 
@@ -1175,12 +1174,12 @@ export default {
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
                 if (!this.peers[peerKey]) {
-                    // Pre-emptive deduplication on presence
+                    // Pre-emptive deduplication on presence: ONLY remove if there's a clear older duplicate
                     Object.keys(this.peers).forEach(id => {
                         const p = this.peers[id];
-                        if ((signal.fingerprint && p.fingerprint === signal.fingerprint) || (senderHash && p.hash === senderHash)) {
-                            console.log(`Room: Pre-emptively removing duplicate session ${id} for ${senderName}`);
-                            if (!p.connected || (signal.fingerprint && p.fingerprint === signal.fingerprint)) {
+                        if (id !== peerKey && ((signal.fingerprint && p.fingerprint === signal.fingerprint) || (senderHash && p.hash === senderHash))) {
+                            if (!p.connected && now - p.lastSeen > 5000) {
+                                console.log(`Room: Cleaning up stale duplicate ${id} for ${senderName}`);
                                 this.removePeer(id);
                             }
                         }
@@ -1353,7 +1352,7 @@ export default {
                         peer.watchdog = null;
                     }
                 }
-            }, 15000); // 15 second timeout
+            }, 30000); // 30 second timeout (relaxed from 15s to prevent flickering)
         },
 
         async handleOffer(id, name, signal) {
