@@ -280,6 +280,8 @@
                     {{ inviteStatus }}
                 </p>
             </div>
+        </div>
+
         <!-- Global Identity Prompt for Guests -->
         <div v-if="isActive && !isJoined && isGuest" class="absolute inset-0 z-[20000] flex flex-col items-center justify-center p-6 bg-black/40 backdrop-blur-3xl animate-fade-in">
             <div class="relative w-full max-w-xs animate-fade-in-up pointer-events-auto">
