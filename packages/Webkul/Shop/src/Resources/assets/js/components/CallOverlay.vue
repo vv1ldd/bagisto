@@ -1065,8 +1065,8 @@ export default {
                     seenHashes.set(peer.hash, id);
                 }
 
-                // Standard stale cleanup (45s for connected, 15s for new)
-                const timeout = peer.connected ? 45000 : 15000;
+                // Standard stale cleanup (60s for connected, 30s for new/connecting)
+                const timeout = peer.connected ? 60000 : 30000;
                 if (peer.lastSeen && now - peer.lastSeen > timeout) {
                     console.log(`Room: Cleaning up stale peer ${id} (${peer.name})`);
                     this.removePeer(id);
@@ -1169,14 +1169,18 @@ export default {
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
                 if (!this.peers[peerKey]) {
-                    // Pre-emptive deduplication on presence: Kill OLD sessions for same identity NOW
                     Object.keys(this.peers).forEach(id => {
                         const p = this.peers[id];
                         if (id !== peerKey && ((signal.fingerprint && p.fingerprint === signal.fingerprint) || (senderHash && p.hash === senderHash))) {
-                            const wasFocused = (this.focusedPeerId === id);
-                            console.log(`Room: Pre-emptively removing old session ${id} for same identity ${senderName}`);
+                            console.log(`Room: Pre-emptively swapping old session ${id} for new session ${peerKey}`);
+                            
+                            // ATOMIC FOCUS SWAP: Set focus to new ID BEFORE removing old
+                            // This prevents removePeer from nullifying focusedPeerId
+                            if (this.focusedPeerId === id) {
+                                this.focusedPeerId = peerKey;
+                            }
+                            
                             this.removePeer(id);
-                            if (wasFocused) this.focusedPeerId = peerKey; // Retention
                         }
                     });
 
@@ -1328,14 +1332,16 @@ export default {
                 if (this.peers[id]) {
                     const pc = this.peers[id].pc;
                     const state = pc?.connectionState || 'none';
+                    const iceState = pc?.iceConnectionState || 'none';
                     
-                    if (state !== 'connected' && state !== 'completed') {
-                        console.warn(`WebRTC: Watchdog triggered for ${id}. Current state: ${state}. Action: ${state === 'new' ? 'Recreate' : 'Restart ICE'}`);
+                    // Don't kill if it's actually trying or partially connected
+                    const isPotentiallyActive = ['connecting', 'checking'].includes(state) || ['checking'].includes(iceState);
+                    
+                    if (state !== 'connected' && state !== 'completed' && !isPotentiallyActive) {
+                        console.warn(`WebRTC: Watchdog triggered for ${id}. Current state: ${state}/${iceState}. Action: ${state === 'new' ? 'Recreate' : 'Restart ICE'}`);
                         
-                        if (state === 'new' || state === 'closed') {
-                            // If it never even started, recreate the connection entirely
+                        if (state === 'new' || state === 'closed' || state === 'failed') {
                             this.removePeer(id);
-                            // It will be recreated by presence broadcast or manual poke
                         } else {
                             pc.restartIce();
                         }
@@ -1575,9 +1581,9 @@ export default {
                     this.peers[id].connected = false;
                 }
                 
-                // Connection is dead - auto cleanup if it doesn't recover in 7 seconds
+                // Connection is dead - auto cleanup if it doesn't recover in 15 seconds
                 if (!this.peers[id].deathTimer) {
-                    console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (7s).`);
+                    console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (15s).`);
                     this.peers[id].deathTimer = setTimeout(() => {
                         if (this.peers[id] && !['connected', 'completed'].includes(this.peers[id].pc?.connectionState)) {
                             console.error(`WebRTC: Cleaning up dead peer ${id} after ${state} state timeout.`);
@@ -1585,7 +1591,7 @@ export default {
                         } else if (this.peers[id]) {
                             this.peers[id].deathTimer = null; // Recovered
                         }
-                    }, 7000);
+                    }, 15000);
                 }
             }
         },
