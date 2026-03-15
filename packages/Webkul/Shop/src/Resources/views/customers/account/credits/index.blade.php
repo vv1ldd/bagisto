@@ -76,13 +76,15 @@
                     </div>
                     <div class="flex items-center gap-3">
 
-                        <button onclick="goToOrganizations()" class="flex flex-col items-center gap-1 group">
-                            <div
-                                class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-[#7C45F5] transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
-                                🏢</div>
-                            <span
-                                class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">компании</span>
-                        </button>
+                        @if ($user->is_b2b_enabled)
+                            <button onclick="goToOrganizations()" class="flex flex-col items-center gap-1 group">
+                                <div
+                                    class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-[#7C45F5] transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
+                                    🏢</div>
+                                <span
+                                    class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">компании</span>
+                            </button>
+                        @endif
 
                         <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
                             <div
@@ -92,15 +94,7 @@
                                 class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
                         </button>
 
-                        <button onclick="switchStep('invoices')" class="flex flex-col items-center gap-1 group">
-                            <div
-                                class="w-10 h-10 bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-all border border-zinc-100 group-hover:border-blue-100 shadow-sm text-[20px]">
-                                📄</div>
-                            <span
-                                class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-blue-500 transition-colors">счета</span>
-                        </button>
-
-                        @if ($user->is_call_enabled)
+@if ($user->is_call_enabled)
                             <button onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'"
                                 class="flex flex-col items-center gap-1 group">
                                 <div
@@ -233,66 +227,7 @@
             @endif
         </div>
 
-        {{-- Step 2.5: Invoices (Счета) --}}
-        <div id="step-invoices" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm">
-            @php
-                $b2bInvoices = $transactions->filter(function ($t) {
-                    return isset($t->metadata['organization_id']);
-                });
-            @endphp
 
-            @if($b2bInvoices->count() > 0)
-                <div class="flex flex-col divide-y divide-zinc-50">
-                    @foreach($b2bInvoices as $inv)
-                        @php
-                            $org = $organizations->firstWhere('id', $inv->metadata['organization_id']);
-                        @endphp
-                        <div
-                            class="p-5 hover:bg-zinc-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4 group">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="w-12 h-12 bg-violet-50 text-[#7C45F5] flex items-center justify-center text-xl font-bold shrink-0">
-                                    📄
-                                </div>
-                                <div class="flex flex-col">
-                                    <div
-                                        class="text-[15px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors">
-                                        Счет #{{ $inv->id }}</div>
-                                    <div class="text-[12px] text-zinc-500 font-mono">
-                                        {{ core()->formatBasePrice($inv->amount) }} •
-                                        {{ $inv->created_at->format('d.m.Y') }}
-                                    </div>
-                                    @if($org)
-                                        <div class="text-[10px] text-zinc-400 mt-1 uppercase font-black tracking-[0.15em]">
-                                            {{ $org->name }}
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 max-md:w-full max-md:mt-2">
-                                <a href="{{ route('shop.customers.account.credits.invoice.print', $inv->id) }}" target="_blank"
-                                    class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-50 hover:bg-violet-50 text-zinc-600 hover:text-[#7C45F5] font-bold text-[12px] uppercase tracking-wider transition-all">
-                                    <span class="icon-download text-lg"></span>
-                                    <span class="max-md:hidden">Скачать</span>
-                                </a>
-                                <button type="button" onclick="sendInvoiceEmail({{ $inv->id }}, this)"
-                                    class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-zinc-50 border border-zinc-100 hover:bg-zinc-900 hover:border-zinc-900 text-zinc-600 hover:text-white font-bold text-[12px] uppercase tracking-wider transition-all">
-                                    <span class="icon-mail text-lg pr-1"></span>
-                                    <span class="max-md:hidden">Отправить Email</span>
-                                </button>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="flex flex-col items-center justify-center py-24 text-zinc-400 px-10 text-center bg-white">
-                    <div class="w-16 h-16 bg-zinc-50 flex items-center justify-center mb-6 text-3xl">📄</div>
-                    <p class="text-[16px] font-black text-zinc-600 mb-2 tracking-tight">Выставленных счетов пока нет</p>
-                    <p class="text-[13px] text-zinc-400 max-w-[250px] leading-relaxed">Здесь будут отображаться счета
-                        для оплаты от ваших организаций.</p>
-                </div>
-            @endif
-        </div>
 
         {{-- Step2.6: Organizations --}}
         <div id="step-organizations" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm">
@@ -794,6 +729,62 @@
                     </div>
                     <div id="org-details-bank-accounts" class="space-y-3">
                         <!-- Loaded via JS -->
+                    </div>
+                </div>
+
+                <!-- Invoice History List -->
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-3 border-b border-zinc-50 pb-2">
+                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-400">
+                            История счетов
+                        </h3>
+                    </div>
+                    
+                    @php
+                        $b2bInvoices = $transactions->filter(function ($t) {
+                            return isset($t->metadata['organization_id']);
+                        });
+                    @endphp
+
+                    <div id="org-details-invoices" class="flex flex-col divide-y divide-zinc-50 border border-zinc-100">
+                        @forelse($b2bInvoices as $inv)
+                            <div class="invoice-row p-4 hover:bg-zinc-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4 group" 
+                                 data-org-id="{{ $inv->metadata['organization_id'] }}">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-violet-50 text-[#7C45F5] flex items-center justify-center text-lg font-bold shrink-0">
+                                        📄
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <div class="text-[14px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors">
+                                            Счет #{{ $inv->id }}
+                                        </div>
+                                        <div class="text-[11px] text-zinc-500 font-mono">
+                                            {{ core()->formatBasePrice($inv->amount) }} • {{ $inv->created_at->format('d.m.Y') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 max-md:w-full">
+                                    <a href="{{ route('shop.customers.account.credits.invoice.print', $inv->id) }}" target="_blank"
+                                        class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-violet-50 text-zinc-600 hover:text-[#7C45F5] font-bold text-[11px] uppercase tracking-wider transition-all">
+                                        <span class="icon-download text-lg"></span>
+                                        <span>Скачать</span>
+                                    </a>
+                                    <button type="button" onclick="sendInvoiceEmail({{ $inv->id }}, this)"
+                                        class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-zinc-50 border border-zinc-100 hover:bg-zinc-900 hover:border-zinc-900 text-zinc-600 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-all">
+                                        <span class="icon-mail text-lg pr-1"></span>
+                                        <span>Email</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div id="no-invoices-msg" class="p-8 text-center text-zinc-400 text-[13px]">
+                                Счетов пока нет
+                            </div>
+                        @endforelse
+                        
+                        <div id="no-filtered-invoices-msg" class="hidden p-8 text-center text-zinc-400 text-[13px]">
+                            Для этой организации счетов нет
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1379,7 +1370,7 @@
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
-                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-invoices', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -1405,7 +1396,6 @@
                         if (currentStep === 'add-organization') titleEl.innerText = "Новая компания";
                         if (currentStep === 'add-bank-account') titleEl.innerText = "Новый счет";
                         if (currentStep === 'organization-details') titleEl.innerText = "Детали";
-                        if (currentStep === 'invoices') titleEl.innerText = "Выставленные счета";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
                         if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
                         if (currentStep === 'details') titleEl.innerText = "Детали пополнения";
@@ -1420,7 +1410,6 @@
 
             function handleStepBack() {
                 if (currentStep === 'transactions') switchStep('dashboard');
-                else if (currentStep === 'invoices') switchStep('dashboard');
                 else if (currentStep === 'organizations') switchStep('dashboard');
                 else if (currentStep === 'add-organization') switchStep('organizations');
                 else if (currentStep === 'add-bank-account') switchStep('organizations');
@@ -1476,6 +1465,61 @@
 
                 document.getElementById('add-org-step-1').classList.add('hidden');
                 document.getElementById('add-org-step-2').classList.remove('hidden');
+            }
+
+            function openOrganizationDetails(id, name, inn, kpp, ogrn, address) {
+                document.getElementById('org-details-name').innerText = name;
+                document.getElementById('org-details-inn').innerText = inn;
+                document.getElementById('org-details-kpp').innerText = kpp || '-';
+                document.getElementById('org-details-ogrn').innerText = ogrn || '-';
+                document.getElementById('org-details-address').innerText = address || '-';
+
+                // Load bank accounts via AJAX
+                const container = document.getElementById('org-details-bank-accounts');
+                container.innerHTML = '<div class="p-4 text-center text-zinc-400 text-[12px]">Загрузка счетов...</div>';
+
+                fetch(`/customer/account/credits/organizations/${id}/bank-accounts`)
+                    .then(res => res.json())
+                    .then(data => {
+                        container.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(acc => {
+                                const div = document.createElement('div');
+                                div.className = 'p-4 border border-zinc-100 bg-zinc-50/50 flex flex-col gap-1';
+                                div.innerHTML = `
+                                    <div class="text-[14px] font-mono font-bold text-zinc-900">${acc.settlement_account}</div>
+                                    <div class="text-[11px] text-zinc-500">${acc.bank_name} (БИК: ${acc.bic})</div>
+                                `;
+                                container.appendChild(div);
+                            });
+                        } else {
+                            container.innerHTML = '<div class="p-4 text-center text-zinc-400 text-[12px] italic">Счета не добавлены</div>';
+                        }
+                    });
+
+                // Filter Invoices
+                let hasInvoices = false;
+                document.querySelectorAll('.invoice-row').forEach(row => {
+                    if (row.getAttribute('data-org-id') == id) {
+                        row.classList.remove('hidden');
+                        hasInvoices = true;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+
+                const noInvoicesMsg = document.getElementById('no-invoices-msg');
+                const noFilteredMsg = document.getElementById('no-filtered-invoices-msg');
+
+                if (noInvoicesMsg) noInvoicesMsg.classList.add('hidden');
+                
+                if (hasInvoices) {
+                    if(noFilteredMsg) noFilteredMsg.classList.add('hidden');
+                } else {
+                    if(noFilteredMsg) noFilteredMsg.classList.remove('hidden');
+                }
+
+                switchStep('organization-details');
             }
 
             function openAddBankAccount(orgId, orgName, orgInn) {

@@ -496,6 +496,20 @@
             </div>
         </div>
 
+        <!-- B2B Toggle -->
+        <div class="ios-switch-row !mt-0 !border-t-0">
+            <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0" for="is-b2b">
+                B2B возможности
+            </label>
+            <div class="ios-toggle-container">
+                <label class="ios-switch">
+                    <input type="checkbox" name="is_b2b_enabled" id="is-b2b"
+                        @checked($customer->is_b2b_enabled)>
+                    <span class="ios-slider"></span>
+                </label>
+            </div>
+        </div>
+
         <div class="flex justify-center mt-6">
             <button type="submit"
                 :disabled="!meta.valid || !!usernameError"

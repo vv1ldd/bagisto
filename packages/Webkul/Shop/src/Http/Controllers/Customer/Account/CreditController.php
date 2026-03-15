@@ -225,4 +225,21 @@ class CreditController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get bank accounts for an organization.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBankAccounts($id)
+    {
+        $organization = $this->organizationRepository->find($id);
+
+        if (!$organization || $organization->customer_id != auth()->guard('customer')->id()) {
+            return response()->json([], 403);
+        }
+
+        return response()->json($organization->bank_accounts);
+    }
 }

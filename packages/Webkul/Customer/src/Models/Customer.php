@@ -46,6 +46,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'balance' => 'decimal:4',
         'is_investor' => 'boolean',
         'is_call_enabled' => 'boolean',
+        'is_b2b_enabled' => 'boolean',
     ];
 
     /**
@@ -83,6 +84,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'credits_alias',
         'wallet_pin',
         'wallet_pin_length',
+        'is_b2b_enabled',
     ];
 
     /**

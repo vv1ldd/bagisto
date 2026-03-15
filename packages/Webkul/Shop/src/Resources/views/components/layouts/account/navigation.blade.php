@@ -62,6 +62,9 @@
         @if ($menuItem->haveChildren())
             <div class="glass-card !bg-white/40 mb-6 overflow-hidden ">
                 @foreach ($menuItem->getChildren() as $subMenuItem)
+                    @if ($subMenuItem->getKey() === 'account.organizations' && !$customer->is_b2b_enabled)
+                        @continue
+                    @endif
 
                     <a href="{{ $subMenuItem->getUrl() }}" class="ios-nav-row">
                         <span class="ios-nav-label {{ $subMenuItem->isActive() ? 'font-semibold text-[#7C45F5]' : '' }}">

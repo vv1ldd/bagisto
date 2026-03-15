@@ -42,6 +42,7 @@ class ProfileRequest extends FormRequest
             'phone' => ['nullable', new PhoneNumber, 'unique:customers,phone,' . $id],
             'subscribed_to_news_letter' => 'nullable',
             'is_complete_registration' => 'boolean|nullable',
+            'is_b2b_enabled' => 'boolean|nullable',
         ];
     }
 

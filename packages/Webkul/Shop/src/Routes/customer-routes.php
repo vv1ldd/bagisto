@@ -164,6 +164,7 @@ Route::prefix('customer')->group(function () {
                     Route::post('credits/invoice', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'storeInvoice'])->name('shop.customers.account.credits.invoice.store');
                     Route::get('credits/invoice/print/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'printInvoice'])->name('shop.customers.account.credits.invoice.print');
                     Route::post('credits/invoice/email/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'emailInvoice'])->name('shop.customers.account.credits.invoice.email');
+                    Route::get('credits/organizations/{id}/bank-accounts', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'getBankAccounts'])->name('shop.customers.account.credits.organizations.bank_accounts');
 
                     // Credits Transfer
                     Route::controller(TransferController::class)->prefix('credits')->group(function () {
