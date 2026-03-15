@@ -338,7 +338,7 @@
                 <div class="ios-row !py-4 border-t border-zinc-50 opacity-80">
                     <div class="flex flex-col gap-0.5">
                         <label class="ios-label">B2B возможности</label>
-                        <span class="text-[11px] text-zinc-400">Включается администратором</span>
+                        <span class="text-[11px] text-zinc-400">для подключения возможностей для бизнеса напишите в поддержку</span>
                     </div>
                     <div class="ios-toggle-container">
                         <label class="ios-switch cursor-not-allowed">
@@ -501,7 +501,7 @@
                 <label class="text-[15px] font-medium text-zinc-900 select-none m-0">
                     B2B возможности
                 </label>
-                <span class="text-[11px] text-zinc-400">Статус управляется администратором</span>
+                <span class="text-[11px] text-zinc-400">для подключения возможностей для бизнеса напишите в поддержку</span>
             </div>
             <div class="ios-toggle-container">
                 <label class="ios-switch cursor-not-allowed">
