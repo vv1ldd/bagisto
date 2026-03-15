@@ -1658,28 +1658,43 @@ export default {
         },
 
         async toggleScreenShare() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                console.warn('ScreenShare: getDisplayMedia not supported');
+                // Use a subtle visual feedback instead of alert if possible, but alert is fine for debug
+                alert('Ваш браузер или текущее соединение не поддерживают демонстрацию экрана. Проверьте HTTPS.');
+                return;
+            }
+
             try {
                 if (!this.isSharingScreen) {
                     console.log('ScreenShare: Requesting display media...');
-                    // Use standard options for better compatibility
+                    
+                    // Ultra-standard constraints for maximum compatibility
                     this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
-                        video: { cursor: "always" },
+                        video: true,
                         audio: false 
                     });
                     
                     const screenTrack = this.screenStream.getVideoTracks()[0];
                     if (!screenTrack) throw new Error('No screen track obtained');
 
-                    this.isSharingScreen = true; // Set state BEFORE replacing tracks
+                    console.log('ScreenShare: Obtained track:', screenTrack.label);
 
-                    console.log('ScreenShare: Replacing tracks for peers:', Object.keys(this.peers));
-                    Object.values(this.peers).forEach(p => {
-                        if (p.pc) {
+                    this.isSharingScreen = true;
+
+                    // Replace tracks for all active peers
+                    const peerIds = Object.keys(this.peers);
+                    console.log(`ScreenShare: Replacing tracks for ${peerIds.length} peers`);
+                    
+                    peerIds.forEach(id => {
+                        const p = this.peers[id];
+                        if (p && p.pc && p.connected) {
                             const senders = p.pc.getSenders();
                             const videoSender = senders.find(s => s.track?.kind === 'video');
                             if (videoSender) {
+                                console.log(`ScreenShare: Replacing track for peer ${id}`);
                                 videoSender.replaceTrack(screenTrack).catch(err => {
-                                    console.warn(`ScreenShare: replaceTrack failed for peer`, err);
+                                    console.warn(`ScreenShare: replaceTrack failed for peer ${id}`, err);
                                 });
                             }
                         }
@@ -1688,14 +1703,14 @@ export default {
                     this.$nextTick(() => this.rebindVideos());
                     
                     screenTrack.onended = () => {
-                        console.log('ScreenShare: Track ended by user/system');
+                        console.log('ScreenShare: Track ended externally');
                         if (this.isSharingScreen) this.stopScreenShare();
                     };
                 } else {
                     this.stopScreenShare();
                 }
             } catch (e) { 
-                console.warn('ScreenShare: Failed', e);
+                console.warn('ScreenShare: User canceled or error occurred', e);
                 this.stopScreenShare();
             }
         },
