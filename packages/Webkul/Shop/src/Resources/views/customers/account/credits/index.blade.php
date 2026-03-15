@@ -138,15 +138,7 @@
                     <p class="text-[11px] text-zinc-400 text-center mt-2">Методы пополнения пока недоступны</p>
                 @endif
 
-                {{-- Cashback Info (only for non-investors) --}}
-                @if(!auth()->guard('customer')->user()->is_investor)
-                    <div class="mt-6 p-4 bg-emerald-50  border border-emerald-100 flex gap-3">
-                        <div class="text-xl">💸</div>
-                        <div class="text-[12px] text-emerald-800 leading-snug">
-                            Мы начисляем кэшбек за покупки на баланс вашего кошелька.
-                        </div>
-                    </div>
-                @endif
+
             </div>
         </div>
 
