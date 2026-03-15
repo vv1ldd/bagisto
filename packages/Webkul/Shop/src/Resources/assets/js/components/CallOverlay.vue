@@ -1119,6 +1119,7 @@ export default {
                             name: senderName,
                             hash: senderHash,
                             pc: null, stream: null, connected: false, streamReady: false, 
+                            hasVideo: false, hasAudio: false, connectedAt: 0,
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
                             lastSeen: now,
                             makingOffer: false, ignoreOffer: false, watchdog: null
@@ -1401,8 +1402,14 @@ export default {
             pc.ontrack = (e) => {
                 console.log(`WebRTC: Received remote track from ${id}`, e.track.kind);
                 
-                if (e.track.kind === 'video') this.peers[id].hasVideo = true;
-                if (e.track.kind === 'audio') this.peers[id].hasAudio = true;
+                if (e.track.kind === 'video') {
+                    console.log(`WebRTC: Video track confirmed for ${id}`);
+                    this.peers[id].hasVideo = true;
+                }
+                if (e.track.kind === 'audio') {
+                    console.log(`WebRTC: Audio track confirmed for ${id}`);
+                    this.peers[id].hasAudio = true;
+                }
 
                 if (e.streams && e.streams[0]) {
                     this.peers[id].stream = e.streams[0];
