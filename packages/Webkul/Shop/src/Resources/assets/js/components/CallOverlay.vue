@@ -76,7 +76,8 @@
 
 
 
-                <div v-if="!peers[peerIds[0]]?.connected" 
+                <!-- Connection/Track Loading Overlay -->
+                <div v-if="!peers[peerIds[0]]?.connected || (!peers[peerIds[0]]?.hasVideo && (Date.now() - peers[peerIds[0]]?.connectedAt <= 3000))" 
                     class="absolute inset-0 flex items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
                     <div class="flex flex-col items-center gap-6">
                          <div class="w-12 h-12 border-4 border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
@@ -86,8 +87,8 @@
                     </div>
                 </div>
 
-                <!-- No Camera Warning for Peer -->
-                <div v-if="peers[peerIds[0]]?.connected && !peers[peerIds[0]]?.streamReady" 
+                <!-- No Camera Warning for Peer (with 3s grace period) -->
+                <div v-if="peers[peerIds[0]]?.connected && !peers[peerIds[0]]?.hasVideo && (Date.now() - peers[peerIds[0]]?.connectedAt > 3000)" 
                      class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 z-20">
                      <div class="w-20 h-20 rounded-full bg-black/40 flex items-center justify-center mb-4">
                         <span class="text-4xl opacity-40">🎥🚫</span>
@@ -1367,6 +1368,7 @@ export default {
                     [id]: { 
                         name: name || id,
                         pc, stream: null, connected: false, streamReady: false, 
+                        hasVideo: false, hasAudio: false, connectedAt: 0,
                         iceQueue: [], fingerprint: null, verified: false, 
                         lastSeen: Date.now(),
                         makingOffer: false, ignoreOffer: false, watchdog: null
@@ -1382,11 +1384,26 @@ export default {
 
             pc.ontrack = (e) => {
                 console.log(`WebRTC: Received remote track from ${id}`, e.track.kind);
+                
+                if (e.track.kind === 'video') this.peers[id].hasVideo = true;
+                if (e.track.kind === 'audio') this.peers[id].hasAudio = true;
+
                 if (e.streams && e.streams[0]) {
                     this.peers[id].stream = e.streams[0];
-                    this.peers[id].streamReady = true;
-                    this.rebindVideos();
+                } else {
+                    // Safari/Older browsers might not provide streams array
+                    if (!this.peers[id].stream) {
+                        this.peers[id].stream = new MediaStream();
+                    }
+                    this.peers[id].stream.addTrack(e.track);
                 }
+
+                // Consider stream ready if we have a video track or if we've been connected long enough
+                if (this.peers[id].hasVideo) {
+                    this.peers[id].streamReady = true;
+                }
+                
+                this.rebindVideos();
             };
 
             pc.onconnectionstatechange = () => {
@@ -1404,6 +1421,9 @@ export default {
             if (!this.peers[id]) return;
             
             if (['connected', 'completed'].includes(state)) {
+                if (!this.peers[id].connected) {
+                    this.peers[id].connectedAt = Date.now();
+                }
                 this.peers[id].connected = true;
                 this.verifySecurity(id);
                 this.$nextTick(() => this.rebindVideos());
