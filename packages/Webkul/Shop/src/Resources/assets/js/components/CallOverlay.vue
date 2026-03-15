@@ -904,6 +904,12 @@ export default {
                     this.$refs.localVideoLobby.srcObject = this.localStream;
                 }
             });
+
+            // AUTO-JOIN for registered users
+            if (!this.isGuest) {
+                console.log(`CallOverlay [${this.sessionUniqueId}]: Registered user detected. Auto-joining...`);
+                this.confirmJoin();
+            }
         },
 
         confirmJoin() {
