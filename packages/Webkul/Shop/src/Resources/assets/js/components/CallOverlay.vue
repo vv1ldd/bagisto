@@ -1039,13 +1039,8 @@ export default {
                     const existingId = seenFingerprints.get(peer.fingerprint);
                     if (existingId) {
                         const existingPeer = this.peers[existingId];
-                        // If both are connected, keep the newer one. If one is connected, keep that one.
-                        if (peer.connected && !existingPeer.connected) {
-                            this.removePeer(existingId);
-                        } else if (!peer.connected && existingPeer.connected) {
-                            this.removePeer(id);
-                            return;
-                        } else if (peer.lastSeen > existingPeer.lastSeen) {
+                        // Decisively keep newer
+                        if (peer.lastSeen > existingPeer.lastSeen) {
                             this.removePeer(existingId);
                         } else {
                             this.removePeer(id);
@@ -1055,7 +1050,7 @@ export default {
                     seenFingerprints.set(peer.fingerprint, id);
                 }
 
-                // Hash-based deduplication (fallback for guests/no-fingerprint)
+                // Hash-based deduplication
                 if (peer.hash) {
                     const existingId = seenHashes.get(peer.hash);
                     if (existingId && existingId !== id) {
@@ -1174,17 +1169,14 @@ export default {
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
                 if (!this.peers[peerKey]) {
-                    // Pre-emptive deduplication on presence: ONLY remove if there's a clear older duplicate
+                    // Pre-emptive deduplication on presence: Kill OLD sessions for same identity NOW
                     Object.keys(this.peers).forEach(id => {
                         const p = this.peers[id];
                         if (id !== peerKey && ((signal.fingerprint && p.fingerprint === signal.fingerprint) || (senderHash && p.hash === senderHash))) {
                             const wasFocused = (this.focusedPeerId === id);
-
-                            if (!p.connected && now - p.lastSeen > 5000) {
-                                console.log(`Room: Cleaning up stale duplicate ${id} for ${senderName}`);
-                                this.removePeer(id);
-                                if (wasFocused) this.focusedPeerId = peerKey; // Retention
-                            }
+                            console.log(`Room: Pre-emptively removing old session ${id} for same identity ${senderName}`);
+                            this.removePeer(id);
+                            if (wasFocused) this.focusedPeerId = peerKey; // Retention
                         }
                     });
 
@@ -1578,9 +1570,22 @@ export default {
                     this.peers[id].watchdog = null;
                 }
             } else if (['disconnected', 'failed', 'closed'].includes(state)) {
-                // Don't immediately set to false on 'disconnected' as it might recover
+                // If it's a hard fail, mark as disconnected
                 if (state !== 'disconnected') {
                     this.peers[id].connected = false;
+                }
+                
+                // Connection is dead - auto cleanup if it doesn't recover in 7 seconds
+                if (!this.peers[id].deathTimer) {
+                    console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (7s).`);
+                    this.peers[id].deathTimer = setTimeout(() => {
+                        if (this.peers[id] && !['connected', 'completed'].includes(this.peers[id].pc?.connectionState)) {
+                            console.error(`WebRTC: Cleaning up dead peer ${id} after ${state} state timeout.`);
+                            this.removePeer(id);
+                        } else if (this.peers[id]) {
+                            this.peers[id].deathTimer = null; // Recovered
+                        }
+                    }, 7000);
                 }
             }
         },
@@ -1718,6 +1723,7 @@ export default {
             if (peer) {
                 if (peer.pc) peer.pc.close();
                 if (peer.watchdog) clearTimeout(peer.watchdog);
+                if (peer.deathTimer) clearTimeout(peer.deathTimer);
                 const newPeers = { ...this.peers };
                 delete newPeers[id];
                 this.peers = newPeers;
