@@ -274,12 +274,12 @@
         <!-- Unified Top Header Bar (Integrated Frame) -->
         <div class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
-            <div class="relative bg-black/40 backdrop-blur-3xl border-b border-white/10 pointer-events-auto overflow-hidden">
-                <!-- PiP Section (Full Width on Mobile, Fixed on Desktop) -->
+            <div class="flex items-start justify-between bg-black/40 backdrop-blur-3xl border-b border-white/10 pointer-events-auto overflow-hidden">
+                <!-- PiP Section (Fixed Corner on Mobile & Desktop) -->
                 <div v-show="isActive && peerCount === 1" 
                      @click.stop="toggleFocus"
                      ref="localPipWindow" 
-                     class="w-full h-[40vh] md:w-40 md:h-56 border-white/10 shadow-2xl md:border-r overflow-hidden cursor-pointer active:scale-95 transition-all relative">
+                     class="w-32 h-24 md:w-40 md:h-56 border-r border-white/10 shadow-2xl overflow-hidden cursor-pointer active:scale-95 transition-all relative">
                      
                      <!-- Self view in PIP (when focused on peer) -->
                      <video v-show="!isFocusedOnSelf && isCameraOn" 
@@ -303,14 +303,14 @@
                      <div v-if="isFocusedOnSelf" class="absolute bottom-3 left-3 h-2.5 w-2.5 bg-[#7C45F5] rounded-full shadow-lg ring-1 ring-white/20"></div>
                 </div>
 
-                <!-- Spacer if no PiP (Mobile only padding if PiP hidden) -->
-                <div v-if="!(isActive && peerCount === 1)" class="h-16 md:h-0"></div>
+                <!-- Spacer if no PiP -->
+                <div v-if="!(isActive && peerCount === 1)" class="w-16"></div>
 
-                <!-- Header Controls Section (Absolute overlay for Mobile/Desktop) -->
-                <div class="absolute top-0 right-0 flex items-center gap-2 p-4 md:p-6 z-[10]">
+                <!-- Header Controls Section (Right) -->
+                <div class="flex items-center gap-2 p-4 md:p-6">
                     <!-- Fullscreen Toggle -->
                     <button @click.stop="toggleFullscreen" 
-                            class="h-10 w-10 rounded-xl bg-black/40 backdrop-blur-md text-white/40 hover:text-white hover:bg-black/60 border border-white/10 flex items-center justify-center transition-all active:scale-90">
+                            class="h-10 w-10 rounded-xl bg-white/5 text-white/40 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all active:scale-90">
                         <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                         </svg>
@@ -321,7 +321,7 @@
 
                     <!-- End Call (Meanly Style) -->
                     <button @click.stop="endCall" 
-                            class="h-10 w-10 rounded-xl bg-red-600/40 backdrop-blur-md text-red-500 hover:bg-red-600 hover:text-white border border-red-500/20 flex items-center justify-center transition-all active:scale-90 shadow-lg shadow-red-600/10">
+                            class="h-10 w-10 rounded-xl bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all active:scale-90 shadow-lg shadow-red-600/10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
                         </svg>
