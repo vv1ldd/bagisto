@@ -1272,7 +1272,10 @@ export default {
                 }
                 else if (signal.type === 'answer') this.handleAnswer(peerKey, signal);
                 else if (signal.type === 'candidate') this.handleCandidate(peerKey, signal);
-                else if (signal.type === 'hangup') this.removePeer(peerKey);
+                else if (signal.type === 'hangup') {
+                    console.log(`WebRTC: Received HANGUP from ${senderName}. Terminating call.`);
+                    this.cleanup('Собеседник завершил звонок.');
+                }
                 else if (signal.type === 'poke') {
                     console.log(`WebRTC: Received POKE from ${senderName}. Restarting ICE...`);
                     const peer = this.peers[peerKey];
