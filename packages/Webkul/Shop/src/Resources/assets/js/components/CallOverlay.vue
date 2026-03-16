@@ -222,7 +222,7 @@
             </div>
 
             <!-- Empty State -->
-            <div v-if="peerCount === 0 && !isCallEnded" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
+            <div v-if="peerCount === 0 && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                        class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-xl scale-105 opacity-50"></video>
