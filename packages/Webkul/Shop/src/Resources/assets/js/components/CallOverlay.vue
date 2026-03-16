@@ -1581,8 +1581,7 @@ export default {
 
                 // Consider stream ready if we have a video track or if we've been connected long enough
                 if (this.peers[id].hasVideo) {
-                    const updatedPeer = { ...this.peers[id], streamReady: true };
-                    this.$set(this.peers, id, updatedPeer);
+                    this.peers[id].streamReady = true;
                 }
                 
                 this.rebindVideos();
@@ -1612,8 +1611,7 @@ export default {
                 if (!this.peers[id].videoTimeout) {
                     this.peers[id].videoTimeout = setTimeout(() => {
                         if (this.peers[id]) {
-                            const updatedPeer = { ...this.peers[id], streamReady: true };
-                            this.$set(this.peers, id, updatedPeer);
+                            this.peers[id].streamReady = true;
                         }
                     }, 3000);
                 }
