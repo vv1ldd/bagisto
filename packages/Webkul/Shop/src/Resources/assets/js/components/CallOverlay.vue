@@ -261,19 +261,11 @@
                             </div>
                         </template>
                         <template v-else>
-                            <template v-if="isLocalReady && peers[peerIds[0]] && !peers[peerIds[0]].isReady">
-                                <div class="w-12 h-12 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-6 mx-auto"></div>
-                                <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">Ожидание собеседника...</h3>
-                                <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
-                                    Второй участник еще не нажал кнопку «Начать».
-                                </p>
-                            </template>
-                            <template v-else>
-                                <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
-                                <div class="mt-4 flex flex-col items-center gap-3">
-                                    <!-- Reconnect button removed -->
-                                </div>
-                            </template>
+                            <div class="w-12 h-12 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-6 mx-auto"></div>
+                            <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">Ожидание других участников...</h3>
+                            <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
+                                Соединение установится автоматически.
+                            </p>
                         </template>
                     </div>
                 </div>
