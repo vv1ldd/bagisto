@@ -306,21 +306,37 @@
             </div>
         </div>
 
-        <!-- Local PIP (Self View) - Only shown in 1-on-1 calls -->
-        <div v-show="isActive && peerCount === 1 && isCameraOn && !isFocusedOnSelf" 
+        <!-- Swapping PIP (Picture-in-Picture) - Only shown in 1-on-1 calls -->
+        <div v-show="isActive && peerCount === 1" 
              ref="localPipWindow" class="absolute top-8 right-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
-             <video ref="localVideoPip" 
+             
+             <!-- Self view in PIP (when focused on peer) -->
+             <video v-show="!isFocusedOnSelf && isCameraOn" 
+                    ref="localVideoPip" 
                     autoplay muted playsinline 
                     :class="[{mirror: !isSharingScreen}]"
                     class="w-full h-full object-cover"></video>
              
-             <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-sm flex items-center justify-center">
+             <!-- Peer view in PIP (when focused on self) -->
+             <video v-if="isFocusedOnSelf" 
+                    :id="'video_pip_' + peerIds[0]" 
+                    autoplay playsinline 
+                    class="w-full h-full object-cover"></video>
+
+             <!-- Video Off Indicator for Self -->
+             <div v-if="!isFocusedOnSelf && !isCameraOn" class="w-full h-full flex items-center justify-center bg-zinc-950">
+                <span class="text-2xl opacity-20">🎥🚫</span>
+             </div>
+
+             <!-- Badge Overlay -->
+             <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-sm flex items-center justify-center pointer-events-none">
                  <div class="flex h-3 w-3 items-center justify-center bg-[#7C45F5] text-white rounded-[2px]">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                  </div>
+                 <span v-if="isFocusedOnSelf" class="ml-1.5 text-[6px] font-black uppercase text-white/60 tracking-tighter">Собеседник</span>
              </div>
         </div>
 
@@ -1762,6 +1778,12 @@ export default {
                 if (thumbEl && thumbEl.srcObject !== p.stream) {
                     thumbEl.srcObject = p.stream;
                     thumbEl.play().catch(() => {});
+                }
+
+                const pipPeerEl = document.getElementById('video_pip_' + id);
+                if (pipPeerEl && pipPeerEl.srcObject !== p.stream) {
+                    pipPeerEl.srcObject = p.stream;
+                    pipPeerEl.play().catch(() => {});
                 }
             });
         },
