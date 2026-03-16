@@ -272,7 +272,7 @@
         </div>
 
         <!-- Unified Top Header Bar (Integrated Frame) -->
-        <div v-show="!isCallEnded" class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
+        <div v-show="!isCallEnded && !showStartButton" class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
             <div class="flex items-start justify-between pointer-events-auto overflow-hidden">
                 <!-- PiP Section (Fixed Corner on Mobile & Desktop) -->
@@ -320,7 +320,7 @@
         </div>
 
         <!-- Unified Bottom Media Bar (Integrated Frame) -->
-        <div v-show="!isCallEnded" class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
+        <div v-show="!isCallEnded && !showStartButton" class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[100%]': !controlsVisible}">
             <div class="flex items-center justify-center p-2 md:p-4 pointer-events-auto">
                 <div class="flex items-center gap-4">
@@ -1581,7 +1581,8 @@ export default {
 
                 // Consider stream ready if we have a video track or if we've been connected long enough
                 if (this.peers[id].hasVideo) {
-                    this.peers[id].streamReady = true;
+                    const updatedPeer = { ...this.peers[id], streamReady: true };
+                    this.$set(this.peers, id, updatedPeer);
                 }
                 
                 this.rebindVideos();
@@ -1610,7 +1611,10 @@ export default {
                 // Allow up to 3 seconds for video tracks to arrive before deciding they have no camera
                 if (!this.peers[id].videoTimeout) {
                     this.peers[id].videoTimeout = setTimeout(() => {
-                        if (this.peers[id]) this.peers[id].streamReady = true;
+                        if (this.peers[id]) {
+                            const updatedPeer = { ...this.peers[id], streamReady: true };
+                            this.$set(this.peers, id, updatedPeer);
+                        }
                     }, 3000);
                 }
 
