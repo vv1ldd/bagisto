@@ -274,7 +274,7 @@
         <!-- Swapping PIP (Picture-in-Picture) - Only shown in 1-on-1 calls -->
         <div v-show="isActive && peerCount === 1" 
              @click.stop="toggleFocus"
-             ref="localPipWindow" class="absolute top-10 left-10 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
+             ref="localPipWindow" class="absolute top-0 left-0 w-24 h-32 md:w-40 md:h-56 rounded-none rounded-br-3xl bg-black/40 backdrop-blur-3xl border-b border-r border-white/10 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
              
              <!-- Self view in PIP (when focused on peer) -->
@@ -300,9 +300,9 @@
         </div>
 
         <!-- Secondary Controls Header (Top Right) -->
-        <div class="absolute top-10 right-10 flex items-center gap-2 z-[200] transition-all duration-700 pointer-events-auto"
+        <div class="absolute top-0 right-0 flex items-center gap-2 z-[200] transition-all duration-700 pointer-events-auto"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
-            <div class="flex items-center gap-1.5 bg-black/40 backdrop-blur-3xl rounded-2xl p-1.5 border border-white/10 shadow-2xl">
+            <div class="flex items-center gap-1.5 bg-black/40 backdrop-blur-3xl rounded-none rounded-bl-3xl p-2 border-b border-l border-white/10 shadow-2xl">
                 <!-- Fullscreen Toggle -->
                 <button @click.stop="toggleFullscreen" 
                         class="h-10 w-10 rounded-xl bg-white/5 text-white/40 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all active:scale-90">
