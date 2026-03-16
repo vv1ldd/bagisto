@@ -274,7 +274,7 @@
         <!-- Swapping PIP (Picture-in-Picture) - Only shown in 1-on-1 calls -->
         <div v-show="isActive && peerCount === 1" 
              @click.stop="toggleFocus"
-             ref="localPipWindow" class="absolute top-8 left-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
+             ref="localPipWindow" class="absolute top-10 left-10 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
              
              <!-- Self view in PIP (when focused on peer) -->
@@ -300,7 +300,7 @@
         </div>
 
         <!-- Secondary Controls Header (Top Right) -->
-        <div class="absolute top-8 right-8 flex items-center gap-2 z-[200] transition-all duration-700 pointer-events-auto"
+        <div class="absolute top-10 right-10 flex items-center gap-2 z-[200] transition-all duration-700 pointer-events-auto"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
             <div class="flex items-center gap-1.5 bg-black/40 backdrop-blur-3xl rounded-2xl p-1.5 border border-white/10 shadow-2xl">
                 <!-- Fullscreen Toggle -->
