@@ -43,42 +43,7 @@
                     </div>
                 </div>
 
-                <!-- Unified Identity + End Call Badge (Top Left) -->
-        <div v-if="peers[peerIds[0]]?.connected" 
-             class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
-             :class="{'opacity-0 -translate-y-10': !controlsVisible}">
-            <div class="flex items-center gap-2.5 bg-black/60 backdrop-blur-md border border-white/10 shadow-2xl pl-1 pr-1.5 py-1.5 leading-none rounded-2xl pointer-events-auto overflow-visible">
-                        <!-- Focus Toggle Button -->
-                        <button @click.stop="toggleFocus" 
-                                class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all group">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4l3 3m0 0l3-3m-3 3v6" />
-                            </svg>
-                        </button>
-                        
-                        <div class="flex flex-col gap-0.5">
-                            <span class="text-[12px] font-black uppercase italic tracking-tighter text-white/90 leading-tight">
-                                @{{ cleanPeerName(peers[peerIds[0]].name) }}
-                            </span>
-                            <div class="flex items-center gap-1.5">
-                                <div class="w-1 h-1 bg-emerald-400 rounded-full animate-pulse"></div>
-                                <span class="text-[7px] font-black uppercase tracking-[0.2em] text-white/30">В эфире</span>
-                            </div>
-                        </div>
 
-                        <!-- Fullscreen Toggle Button -->
-                        <button @click.stop="toggleFullscreen" 
-                                class="flex h-8 w-8 items-center justify-center bg-white/5 text-white/40 hover:text-white border border-white/10 rounded-lg hover:bg-white/10 transition-all">
-                            <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9V4.5M15 9h4.5M15 9l5.25-5.25M15 15v4.5M15 15h4.5M15 15l5.25 5.25" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
 
                 <!-- "Connecting..." Overlay for 1-on-1 -->
                 <div v-if="!peers[peerIds[0]]?.connected || (!peers[peerIds[0]]?.hasVideo && (Date.now() - peers[peerIds[0]]?.connectedAt <= 3000))" 
@@ -386,6 +351,20 @@
                             </svg>
                         </button>
                         <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Flip</span>
+                    </div>
+
+                    <!-- Fullscreen Toggle -->
+                    <div v-if="!isMobile" class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="toggleFullscreen" 
+                                class="h-11 w-11 rounded-2xl bg-black/40 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                            </svg>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9V4.5M15 9h4.5M15 9l5.25-5.25M15 15v4.5M15 15h4.5M15 15l5.25 5.25" />
+                            </svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Full</span>
                     </div>
 
                     <!-- End Call Button (New in Toolbar) -->
