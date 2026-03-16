@@ -798,13 +798,11 @@ export default {
                 } else if (element.webkitRequestFullscreen) {
                     element.webkitRequestFullscreen();
                 }
-                this.isFullscreen = true;
                 this.wantsFullscreen = false;
                 this.userActivity(); 
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen().catch(() => {});
-                    this.isFullscreen = false;
                     this.controlsVisible = true;
                 }
             }
@@ -1608,7 +1606,10 @@ export default {
                 this.$nextTick(() => {
                     this.rebindVideos();
                     // Show start button if not fullscreen (to handle browser gesture requirements)
-                    if (!this.isFullscreen && !this.showStartButton) {
+                    // We check document.fullscreenElement directly for absolute certainty
+                    const actuallyFullscreen = !!document.fullscreenElement;
+                    if (!actuallyFullscreen && !this.showStartButton) {
+                        console.log('UI: Connection stable, showing START gesture gate');
                         this.showStartButton = true;
                     }
                 });
