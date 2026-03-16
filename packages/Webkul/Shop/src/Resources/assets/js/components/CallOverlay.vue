@@ -330,15 +330,8 @@
                 <span class="text-2xl opacity-20">🎥🚫</span>
              </div>
 
-             <!-- Badge Overlay -->
-             <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2 py-1 rounded-sm flex items-center justify-center pointer-events-none">
-                 <div class="flex h-3 w-3 items-center justify-center bg-[#7C45F5] text-white rounded-[2px]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                 </div>
-                 <span v-if="isFocusedOnSelf" class="ml-1.5 text-[6px] font-black uppercase text-white/60 tracking-tighter">Собеседник</span>
-             </div>
+             <!-- Minimalist Indicator (Peer Only) -->
+             <div v-if="isFocusedOnSelf" class="absolute bottom-3 left-3 h-2.5 w-2.5 bg-[#7C45F5] rounded-full shadow-lg ring-1 ring-white/20"></div>
         </div>
 
         <!-- Interface Layer (Overlay) -->
