@@ -274,8 +274,8 @@
         <!-- Swapping PIP (Picture-in-Picture) - Only shown in 1-on-1 calls -->
         <div v-show="isActive && peerCount === 1" 
              @click.stop="toggleFocus"
-             ref="localPipWindow" class="absolute top-8 left-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
-             :class="{'opacity-0 -translate-y-10': !controlsVisible}">
+             ref="localPipWindow" class="absolute top-0 left-0 w-24 h-32 md:w-40 md:h-56 rounded-none rounded-br-3xl bg-black/40 backdrop-blur-3xl border-b border-r border-white/10 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
+             :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
              
              <!-- Self view in PIP (when focused on peer) -->
              <video v-show="!isFocusedOnSelf && isCameraOn" 
@@ -329,9 +329,9 @@
             
 
             <!-- Horizontal Control Bar (Bottom Center) -->
-            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center z-[100] pointer-events-none">
-                <div :class="{'opacity-0 translate-y-10': !controlsVisible}"
-                     class="flex items-center gap-2.5 p-2.5 bg-black/40 backdrop-blur-3xl rounded-[2rem] border border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 flex items-center z-[100] pointer-events-none">
+                <div :class="{'opacity-0 translate-y-[100%]': !controlsVisible}"
+                     class="flex items-center gap-2.5 p-2.5 bg-black/40 backdrop-blur-3xl rounded-none rounded-t-[2rem] border-t border-x border-white/10 shadow-2xl transition-all duration-700 pointer-events-auto">
                     
                     <div class="flex flex-col items-center">
                         <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
