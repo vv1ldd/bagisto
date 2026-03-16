@@ -274,7 +274,7 @@
         <!-- Unified Top Header Bar (Integrated Frame) -->
         <div class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
-            <div class="flex items-start justify-between bg-black/40 backdrop-blur-3xl pointer-events-auto overflow-hidden">
+            <div class="flex items-start justify-between pointer-events-auto overflow-hidden">
                 <!-- PiP Section (Fixed Corner on Mobile & Desktop) -->
                 <div v-show="isActive && peerCount === 1" 
                      @click.stop="toggleFocus"
@@ -333,7 +333,7 @@
         <!-- Unified Bottom Media Bar (Integrated Frame) -->
         <div class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[100%]': !controlsVisible}">
-            <div class="flex items-center justify-center bg-black/40 backdrop-blur-3xl p-4 md:p-6 pointer-events-auto">
+            <div class="flex items-center justify-center p-4 md:p-6 pointer-events-auto">
                 <div class="flex items-center gap-4">
                     
                     <div class="flex flex-col items-center">
