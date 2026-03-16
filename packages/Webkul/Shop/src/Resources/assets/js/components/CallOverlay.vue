@@ -53,6 +53,7 @@
                                 class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all group">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4l3 3m0 0l3-3m-3 3v6" />
                             </svg>
                         </button>
                         
@@ -352,16 +353,7 @@
                         <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Cam</span>
                     </div>
 
-                    <!-- Swap (Focus) Toggle -->
-                    <div class="flex flex-col items-center gap-1.5">
-                        <button @click.stop="toggleFocus" 
-                            class="h-11 w-11 rounded-2xl flex items-center justify-center bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30 border border-white/10 transition-all hover:scale-105 active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                            </svg>
-                        </button>
-                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Swap</span>
-                    </div>
+
 
                     <!-- Redundant Focus Button Removed (Now in Badge) -->
                     <!-- Screen Share Toggle -->
