@@ -27,7 +27,7 @@
                                 autoplay playsinline 
                                 :style="zoomStyle"
                                 :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
-                                class="w-full h-full pointer-events-none transition-all duration-700"></video>
+                                class="w-full h-full pointer-events-none"></video>
                          
                          <div v-if="zoomLevel > 1" @click.stop="resetZoom" class="absolute top-24 left-6 bg-[#7C45F5] text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer animate-bounce z-20">
                              {{ Math.round(zoomLevel * 100) }}% (Reset)
@@ -39,7 +39,7 @@
                                autoplay muted playsinline 
                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                                :style="zoomStyle"
-                               class="w-full h-full transition-all duration-700"></video>
+                               class="w-full h-full"></video>
                     </div>
                 </div>
 
@@ -149,12 +149,12 @@
                         <template v-if="isFocusedOnSelf">
                             <video ref="localVideoFocused" autoplay muted playsinline 
                                    :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                                   class="w-full h-full transition-all duration-700"></video>
+                                   class="w-full h-full"></video>
                         </template>
                         <template v-else>
                             <video :id="'video_focused_' + focusedPeerId" autoplay playsinline 
                                    :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
-                                   class="w-full h-full transition-all duration-700"></video>
+                                   class="w-full h-full"></video>
                         </template>
 
                         <!-- Focus Badge (Top Left) -->
@@ -188,7 +188,7 @@
                         <video ref="localVideoGrid" autoplay muted playsinline 
                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                                :style="isFocusedOnSelf ? zoomStyle : {}"
-                               class="w-full h-full transition-all duration-700"></video>
+                               class="w-full h-full"></video>
                         <!-- Shapik Badge (Grid Local) -->
                         <div class="absolute top-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
                             <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm shadow-sm ring-1 ring-white/10">
@@ -206,7 +206,7 @@
                         class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center cursor-pointer">
                         <video :id="'video_' + id" autoplay playsinline 
                                :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain']"
-                               class="w-full h-full transition-all duration-700"></video>
+                               class="w-full h-full"></video>
 
                         <!-- Grid Connection Overlay -->
                         <div v-if="!peers[id]?.connected || (!peers[id]?.hasVideo && (Date.now() - peers[id]?.connectedAt <= 3000))" 
@@ -611,6 +611,7 @@ export default {
         },
         // Pinch-to-Zoom Handlers
         handleTouchStart(e, isLocalGrid = false) {
+            this.setInteracting();
             const now = Date.now();
             if (this.lastTapTime && (now - this.lastTapTime < 300) && e.touches.length === 1) {
                 console.log('CallOverlay: Double tap detected -> Swapping camera');
@@ -661,11 +662,17 @@ export default {
                     const nextZoom = Math.max(1, Math.min(6, this.initialZoom * scale));
                     const currentCenter = this.getCenter(e.touches);
                     
-                    if (nextZoom > 1) {
+                    if (nextZoom > 1.01) {
                         const zoomRatio = nextZoom / this.zoomLevel;
-                        this.panX = (this.panX - (currentCenter.x - window.innerWidth/2)) * zoomRatio + (currentCenter.x - window.innerWidth/2);
-                        this.panY = (this.panY - (currentCenter.y - window.innerHeight/2)) * zoomRatio + (currentCenter.y - window.innerHeight/2);
-                    } else {
+                        
+                        // Use a more stable pivot point (center of the screen) to reduce jitter,
+                        // while still allowing some offset based on initial pinch center.
+                        const pivotX = window.innerWidth / 2;
+                        const pivotY = window.innerHeight / 2;
+                        
+                        this.panX = (this.panX - (currentCenter.x - pivotX)) * zoomRatio + (currentCenter.x - pivotX);
+                        this.panY = (this.panY - (currentCenter.y - pivotY)) * zoomRatio + (currentCenter.y - pivotY);
+                    } else if (nextZoom <= 1.01) {
                         this.panX = 0;
                         this.panY = 0;
                     }
