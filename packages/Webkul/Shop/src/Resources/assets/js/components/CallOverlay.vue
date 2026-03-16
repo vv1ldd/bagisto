@@ -51,12 +51,6 @@
                     <div class="w-8 h-8 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-2"></div>
                     <div class="text-center px-2">
                         <h3 class="text-[8px] font-black uppercase tracking-[0.2em] text-white/80">Соединение...</h3>
-                        <!-- Reconnect Button if stuck -->
-                        <button v-if="!peers[peerIds[0]]?.connected" 
-                                @click.stop="pokePeer(peerIds[0])"
-                                class="mt-2 text-[6px] font-black uppercase tracking-widest text-white/50 border border-white/20 px-2 py-1 rounded-md hover:bg-white/10 transition-all">
-                            Переподключить
-                        </button>
                     </div>
                 </div>
 
@@ -100,7 +94,6 @@
                             <div v-if="!peers[id]?.connected" 
                                  class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-[1px] z-30">
                                  <div class="w-4 h-4 border border-t-[#7C45F5] border-white/10 rounded-full animate-spin"></div>
-                                 <button @click.stop="pokePeer(id)" class="mt-1 text-[4px] font-black uppercase text-white/40">Relink</button>
                             </div>
 
                             <div class="absolute top-2 left-2 flex items-center gap-1 bg-black/40 backdrop-blur-md px-1.5 py-0.5 rounded-sm border border-white/5 text-[8px] font-black uppercase text-white/90">
@@ -179,11 +172,6 @@
                              <div class="w-8 h-8 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-2"></div>
                              <div class="text-center px-4">
                                  <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Соединение...</h3>
-                                 <button v-if="!peers[id]?.connected" 
-                                         @click.stop="pokePeer(id)"
-                                         class="mt-2 text-[8px] font-black uppercase tracking-widest text-white/50 border border-white/20 px-3 py-1 rounded-md hover:bg-white/10 transition-all">
-                                     Переподключить
-                                 </button>
                              </div>
                         </div>
 
@@ -1380,15 +1368,10 @@ export default {
                     const iceState = pc?.iceConnectionState || 'none';
                     
                     if (state !== 'connected' && state !== 'completed') {
-                        console.warn(`WebRTC: Watchdog triggered for ${id}. Current state: ${state}/${iceState}.`);
+                        console.warn(`WebRTC: Watchdog triggered for ${id}. Current state: ${state}/${iceState}. Auto-reconnecting...`);
                         
-                        if (state === 'new' || state === 'closed' || state === 'failed') {
-                            console.log(`WebRTC: Re-creating connection for ${id}`);
-                            this.removePeer(id);
-                        } else {
-                            console.log(`WebRTC: Restarting ICE for ${id}`);
-                            pc.restartIce();
-                        }
+                        // Use pokePeer for more robust reconnection (sends signal + ICE restart)
+                        this.pokePeer(id);
                         
                         peer.watchdog = null;
                         this.startConnectionWatchdog(id);
@@ -1396,7 +1379,7 @@ export default {
                         peer.watchdog = null;
                     }
                 }
-            }, 20000); // 20 second timeout for stuck states
+            }, 8000); // 8 second timeout for automatic recovery
         },
 
         async handleOffer(id, name, signal) {
