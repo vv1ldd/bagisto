@@ -46,7 +46,7 @@
 
 
                 <!-- "Connecting..." Overlay for 1-on-1 -->
-                <div v-if="!peers[peerIds[0]]?.connected || (!peers[peerIds[0]]?.hasVideo && (Date.now() - peers[peerIds[0]]?.connectedAt <= 3000))" 
+                <div v-if="!peers[peerIds[0]]?.connected || !peers[peerIds[0]]?.streamReady" 
                     class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
                     <div class="w-8 h-8 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-2"></div>
                     <div class="text-center px-2">
@@ -55,7 +55,7 @@
                 </div>
 
                 <!-- No Camera Warning for Peer (with 3s grace period) -->
-                <div v-if="peers[peerIds[0]]?.connected && !peers[peerIds[0]]?.hasVideo && (Date.now() - peers[peerIds[0]]?.connectedAt > 3000)" 
+                <div v-if="peers[peerIds[0]]?.connected && peers[peerIds[0]]?.streamReady && !peers[peerIds[0]]?.hasVideo" 
                      class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 z-20">
                      <div class="w-20 h-20 rounded-full bg-black/40 flex items-center justify-center mb-4">
                         <span class="text-4xl opacity-40">🎥🚫</span>
@@ -167,7 +167,7 @@
                                class="w-full h-full"></video>
 
                         <!-- Grid Connection Overlay -->
-                        <div v-if="!peers[id]?.connected || (!peers[id]?.hasVideo && (Date.now() - peers[id]?.connectedAt <= 3000))" 
+                        <div v-if="!peers[id]?.connected || !peers[id]?.streamReady" 
                              class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
                              <div class="w-8 h-8 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-2"></div>
                              <div class="text-center px-4">
@@ -1226,7 +1226,7 @@ export default {
                             hasVideo: false, hasAudio: false, connectedAt: 0,
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
                             lastSeen: now, reconnecting: false,
-                            makingOffer: false, ignoreOffer: false, watchdog: null
+                            makingOffer: false, ignoreOffer: false, watchdog: null, videoTimeout: null
                         }
                     };
                     this.sendSignal({ type: 'presence', target: senderSessionId, fingerprint: this.localFingerprint });
@@ -1513,8 +1513,8 @@ export default {
                         pc, stream: null, connected: false, streamReady: false, 
                         hasVideo: false, hasAudio: false, connectedAt: 0,
                         iceQueue: [], fingerprint: null, verified: false, 
-                        lastSeen: Date.now(),
-                        makingOffer: false, ignoreOffer: false, watchdog: null
+                        lastSeen: Date.now(), reconnecting: false,
+                        makingOffer: false, ignoreOffer: false, watchdog: null, videoTimeout: null
                     }
                 };
             } else {
@@ -1606,6 +1606,14 @@ export default {
                     this.peers[id].connectedAt = Date.now();
                 }
                 this.peers[id].connected = true;
+                
+                // Allow up to 3 seconds for video tracks to arrive before deciding they have no camera
+                if (!this.peers[id].videoTimeout) {
+                    this.peers[id].videoTimeout = setTimeout(() => {
+                        if (this.peers[id]) this.peers[id].streamReady = true;
+                    }, 3000);
+                }
+
                 this.verifySecurity(id);
                 this.$nextTick(() => {
                     this.rebindVideos();
@@ -1632,6 +1640,7 @@ export default {
                 if (state === 'disconnected' || state === 'failed') {
                     if (!this.peers[id].reconnecting) {
                         console.warn(`WebRTC: Peer ${id} disconnected! Triggering immediate ICE Restart to unfreeze video.`);
+                        if (this.peers[id].videoTimeout) clearTimeout(this.peers[id].videoTimeout);
                         this.peers[id].reconnecting = true;
                         this.pokePeer(id);
                     }
@@ -1746,32 +1755,32 @@ export default {
                 if (!p || !p.stream || !p.connected) return;
 
                 const mainEl = document.getElementById('video_' + id);
-                if (mainEl && mainEl.srcObject !== p.stream) {
-                    mainEl.srcObject = p.stream;
+                if (mainEl) {
+                    if (mainEl.srcObject !== p.stream) mainEl.srcObject = p.stream;
                     mainEl.muted = mutePeers;
-                    mainEl.play().catch(() => {});
-                } else if (mainEl) { mainEl.muted = mutePeers; }
+                    if (mainEl.paused) mainEl.play().catch(() => {});
+                }
 
                 const focusedEl = document.getElementById('video_focused_' + id);
-                if (focusedEl && focusedEl.srcObject !== p.stream) {
-                    focusedEl.srcObject = p.stream;
+                if (focusedEl) {
+                    if (focusedEl.srcObject !== p.stream) focusedEl.srcObject = p.stream;
                     focusedEl.muted = mutePeers;
-                    focusedEl.play().catch(() => {});
-                } else if (focusedEl) { focusedEl.muted = mutePeers; }
+                    if (focusedEl.paused) focusedEl.play().catch(() => {});
+                }
 
                 const thumbEl = document.getElementById('video_thumb_' + id);
-                if (thumbEl && thumbEl.srcObject !== p.stream) {
-                    thumbEl.srcObject = p.stream;
+                if (thumbEl) {
+                    if (thumbEl.srcObject !== p.stream) thumbEl.srcObject = p.stream;
                     thumbEl.muted = mutePeers;
-                    thumbEl.play().catch(() => {});
-                } else if (thumbEl) { thumbEl.muted = mutePeers; }
+                    if (thumbEl.paused) thumbEl.play().catch(() => {});
+                }
 
                 const pipPeerEl = document.getElementById('video_pip_' + id);
-                if (pipPeerEl && pipPeerEl.srcObject !== p.stream) {
-                    pipPeerEl.srcObject = p.stream;
+                if (pipPeerEl) {
+                    if (pipPeerEl.srcObject !== p.stream) pipPeerEl.srcObject = p.stream;
                     pipPeerEl.muted = mutePeers;
-                    pipPeerEl.play().catch(() => {});
-                } else if (pipPeerEl) { pipPeerEl.muted = mutePeers; }
+                    if (pipPeerEl.paused) pipPeerEl.play().catch(() => {});
+                }
             });
         },
 
