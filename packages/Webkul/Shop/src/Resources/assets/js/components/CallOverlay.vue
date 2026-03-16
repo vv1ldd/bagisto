@@ -449,6 +449,8 @@ export default {
             inactivityTimer: null,
             luminanceInterval: null,
             luminanceCooldown: 0,
+            wantsFullscreen: false, // Added by instruction
+            lastTapTime: 0, // Moved by instruction
 
             // Gesture State
             zoomLevel: 1,
@@ -849,11 +851,15 @@ export default {
             if (!document.fullscreenElement) {
                 const element = this.$refs.overlayRoot || document.documentElement;
                 if (element.requestFullscreen) {
-                    element.requestFullscreen().catch(() => {});
+                    element.requestFullscreen().catch(() => {
+                        console.warn('Fullscreen request blocked, waiting for next gesture');
+                        this.wantsFullscreen = true;
+                    });
                 } else if (element.webkitRequestFullscreen) {
                     element.webkitRequestFullscreen();
                 }
                 this.isFullscreen = true;
+                this.wantsFullscreen = false;
                 this.userActivity(); 
             } else {
                 if (document.exitFullscreen) {
@@ -919,6 +925,12 @@ export default {
 
         toggleControls() {
             const now = Date.now();
+            
+            // Fulfill a pending fullscreen intent if blocked earlier
+            if (this.wantsFullscreen && !this.isFullscreen && !this.isMobile) {
+                this.toggleFullscreen();
+            }
+
             // Prevent accidental hide immediately after show by touch
             if (now - this.lastToggleTime < 300) return;
 
@@ -1021,6 +1033,11 @@ export default {
             // AUTO-JOIN for everyone (Guests no longer need to enter name)
             console.log(`CallOverlay [${this.sessionUniqueId}]: Auto-joining as ${userName}...`);
             this.confirmJoin();
+
+            // Try to enter fullscreen immediately while we still have the user gesture from the "Join" button
+            if (!this.isMobile && !this.isFullscreen) {
+                this.toggleFullscreen();
+            }
         },
 
         generateBeautifulName() {
