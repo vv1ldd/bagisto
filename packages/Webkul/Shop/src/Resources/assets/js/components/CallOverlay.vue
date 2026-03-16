@@ -70,10 +70,10 @@
                         <button @click.stop="toggleFullscreen" 
                                 class="ml-2 flex h-8 w-8 items-center justify-center bg-white/5 text-white/40 hover:text-white border border-white/10 rounded-lg hover:bg-white/10 transition-all">
                             <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
                             </svg>
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 15l-6 6m0 0l6-6M3 21v-6m0 6h6m6-6l6 6m0 0l-6-6m6 6v-6m0 6h-6" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 15l-6 6m0 0l6-6M3 21v-6m0 6h6m6-6l6 6m0 0l-6-6m6 6v-6m0 6h-6" />
                             </svg>
                         </button>
                     </div>
@@ -342,14 +342,15 @@
                         <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Mic</span>
                     </div>
 
-                    <!-- Camera Toggle -->
+                    <!-- Swap (Focus) Toggle (Replaced Camera Toggle) -->
                     <div class="flex flex-col items-center gap-1.5">
-                        <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
-                            class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                            <svg v-if="isCameraOn" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                        <button @click.stop="toggleFocus" 
+                            class="h-11 w-11 rounded-2xl flex items-center justify-center bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30 border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                            </svg>
                         </button>
-                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Cam</span>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Swap</span>
                     </div>
 
                     <!-- Redundant Focus Button Removed (Now in Badge) -->
@@ -363,13 +364,16 @@
                     </div>
 
 
-                    <!-- Camera Swap (Now inside the vertical bar on mobile) -->
+                    <!-- Camera Facing Swap (Mobile Only) -->
                     <div v-if="isMobile" class="flex flex-col items-center gap-1.5">
                         <button @click.stop="toggleCameraFacing"
-                            class="h-11 w-11 rounded-2xl bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            class="h-11 w-11 rounded-2xl bg-zinc-800 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
                         </button>
-                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Swap</span>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Flip</span>
                     </div>
 
                     <!-- End Call Button (New in Toolbar) -->
@@ -443,7 +447,7 @@ export default {
             signalingGraceTimeout: null,
             reconnectAttempts: 0,
             isRetrying: false,
-            scalingMode: 'cover', // 'cover' or 'contain',
+            scalingMode: 'contain', // 'cover' or 'contain',
             isCallEnded: false,
             callEndedReason: '',
             sessionUniqueId: Math.random().toString(36).substring(2, 10) + Date.now().toString(36),
@@ -622,7 +626,7 @@ export default {
             if (e.touches.length === 2 && this.initialDist > 0) {
                 e.preventDefault(); 
                 const currentDist = this.getDist(e.touches);
-                const scale = Math.max(0.5, Math.min(2, currentDist / this.initialDist));
+                const scale = currentDist / this.initialDist;
                 const isTargetingLocal = isLocalGrid || this.isFocusedOnSelf;
 
                 if (isTargetingLocal && this.zoomCapabilities) {
@@ -634,11 +638,10 @@ export default {
                     this.panX = this.initialPanX + (currentCenter.x - this.initialCenter.x);
                     this.panY = this.initialPanY + (currentCenter.y - this.initialCenter.y);
                 } else {
-                    // CSS Digital Zoom - with point centering
-                    const nextZoom = Math.max(1, Math.min(5, this.initialZoom * scale));
+                    // Digital Zoom
+                    const nextZoom = Math.max(1, Math.min(6, this.initialZoom * scale));
                     const currentCenter = this.getCenter(e.touches);
                     
-                    // Zoom towards pinch center
                     if (nextZoom > 1) {
                         const zoomRatio = nextZoom / this.zoomLevel;
                         this.panX = (this.panX - (currentCenter.x - window.innerWidth/2)) * zoomRatio + (currentCenter.x - window.innerWidth/2);
@@ -649,11 +652,6 @@ export default {
                     }
                     
                     this.zoomLevel = nextZoom;
-                    // Additionally allow panning during zoom
-                    const deltaX = currentCenter.x - this.initialCenter.x;
-                    const deltaY = currentCenter.y - this.initialCenter.y;
-                    this.panX += deltaX * 0.1; // Subtle pan during zoom
-                    this.panY += deltaY * 0.1;
                 }
                 this.clampPan();
             } else if (e.touches.length === 1 && (this.zoomLevel > 1 || this.cameraZoom > 1)) {
@@ -1620,7 +1618,13 @@ export default {
                 }
                 this.peers[id].connected = true;
                 this.verifySecurity(id);
-                this.$nextTick(() => this.rebindVideos());
+                this.$nextTick(() => {
+                    this.rebindVideos();
+                    // Auto-fullscreen on connection
+                    if (!this.isFullscreen && !this.isMobile) {
+                        this.toggleFullscreen();
+                    }
+                });
                 
                 // Success! Clear watchdog
                 if (this.peers[id].watchdog) {
@@ -1871,16 +1875,22 @@ export default {
                 if (!this.isSharingScreen) {
                     console.log('ScreenShare: Full start sequence initiated...');
                     
-                    // Mac/Safari often requires very clean constraints
+                    // Safari requires very clean constraints. On macOS, simpler is often better.
                     this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
-                        video: true,
+                        video: {
+                            displaySurface: 'monitor',
+                            logicalSurface: true
+                        },
                         audio: false 
+                    }).catch(async (err) => {
+                        console.warn('ScreenShare: Primary constraints failed, retrying with fallback', err);
+                        return await navigator.mediaDevices.getDisplayMedia({ video: true });
                     });
                     
                     const screenTrack = this.screenStream.getVideoTracks()[0];
                     if (!screenTrack) throw new Error('No screen track obtained');
 
-                    console.log(`ScreenShare: Obtained track "${screenTrack.label}"`);
+                    console.log(`ScreenShare: Obtained track "${screenTrack.label}" from stream ID: ${this.screenStream.id}`);
 
                     this.isSharingScreen = true;
 
