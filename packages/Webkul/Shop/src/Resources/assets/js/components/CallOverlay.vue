@@ -308,7 +308,8 @@
 
         <!-- Swapping PIP (Picture-in-Picture) - Only shown in 1-on-1 calls -->
         <div v-show="isActive && peerCount === 1" 
-             ref="localPipWindow" class="absolute top-8 right-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700"
+             @click.stop="toggleFocus"
+             ref="localPipWindow" class="absolute top-8 right-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
              
              <!-- Self view in PIP (when focused on peer) -->
