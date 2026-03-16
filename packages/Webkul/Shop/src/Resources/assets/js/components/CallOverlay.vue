@@ -310,7 +310,7 @@
         <!-- Unified Bottom Media Bar (Integrated Frame) -->
         <div class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[100%]': !controlsVisible}">
-            <div class="flex items-center justify-center p-4 md:p-6 pointer-events-auto">
+            <div class="flex items-center justify-center p-2 md:p-4 pointer-events-auto">
                 <div class="flex items-center gap-4">
                     
                     <div class="flex flex-col items-center">
