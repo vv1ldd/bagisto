@@ -274,12 +274,12 @@
         <!-- Unified Top Header Bar (Integrated Frame) -->
         <div class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
-            <div class="flex items-start justify-between bg-black/40 backdrop-blur-3xl border-b border-white/10 pointer-events-auto overflow-hidden">
+            <div class="flex items-start justify-between bg-black/40 backdrop-blur-3xl pointer-events-auto overflow-hidden">
                 <!-- PiP Section (Fixed Corner on Mobile & Desktop) -->
                 <div v-show="isActive && peerCount === 1" 
                      @click.stop="toggleFocus"
                      ref="localPipWindow" 
-                     class="w-20 h-14 md:w-32 md:h-44 border-r border-white/10 shadow-2xl overflow-hidden cursor-pointer active:scale-95 transition-all relative">
+                     class="w-20 h-14 md:w-32 md:h-44 shadow-2xl overflow-hidden cursor-pointer active:scale-95 transition-all relative">
                      
                      <!-- Self view in PIP (when focused on peer) -->
                      <video v-show="!isFocusedOnSelf && isCameraOn" 
@@ -333,12 +333,12 @@
         <!-- Unified Bottom Media Bar (Integrated Frame) -->
         <div class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[100%]': !controlsVisible}">
-            <div class="flex items-center justify-center bg-black/40 backdrop-blur-3xl border-t border-white/10 p-4 md:p-6 pointer-events-auto">
+            <div class="flex items-center justify-center bg-black/40 backdrop-blur-3xl p-4 md:p-6 pointer-events-auto">
                 <div class="flex items-center gap-4">
                     
                     <div class="flex flex-col items-center">
                         <button @click.stop="toggleMic" :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
-                            class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            class="h-12 w-12 rounded-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95">
                             <svg v-if="isMicOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                         </button>
@@ -346,7 +346,7 @@
 
                     <div class="flex flex-col items-center">
                         <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
-                            class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            class="h-12 w-12 rounded-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95">
                             <svg v-if="isCameraOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
                             <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                         </button>
@@ -354,7 +354,7 @@
 
                     <div v-if="!isMobile" class="flex flex-col items-center">
                         <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-black/40 text-white']"
-                            class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            class="h-12 w-12 rounded-2xl flex items-center justify-center transition-all hover:scale-105 active:scale-95">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                         </button>
                     </div>
