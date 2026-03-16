@@ -294,12 +294,12 @@
                 <!-- Spacer if no PiP -->
                 <div v-if="!(isActive && peerCount === 1)" class="w-16"></div>
 
-                <!-- Header Controls Section (Right) -->
-                <div class="flex items-center gap-2 p-4 md:p-6">
+                <!-- Header Controls Section (Right Corner) -->
+                <div class="absolute top-0 right-0 p-2 md:p-4">
                     <!-- End Call (Meanly Style) -->
                     <button @click.stop="endCall" 
-                            class="h-10 w-10 rounded-xl bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all active:scale-90 shadow-lg shadow-red-600/10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            class="h-8 w-8 rounded-lg bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all active:scale-90 shadow-lg shadow-red-600/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
