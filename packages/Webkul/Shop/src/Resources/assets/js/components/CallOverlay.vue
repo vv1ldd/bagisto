@@ -1221,6 +1221,13 @@ export default {
                         }
                     });
 
+                    // Strict 1-on-1 Enforcement
+                    if (Object.keys(this.peers).length >= 1) {
+                        console.warn(`CallOverlay: Room is full (1-on-1 limit). Rejecting ${senderName} (${peerKey}).`);
+                        this.sendSignal({ type: 'busy', target: senderSessionId });
+                        return; // Abort adding new peer
+                    }
+
                     this.peers = {
                         ...this.peers,
                         [peerKey]: { 
@@ -1275,6 +1282,10 @@ export default {
                 else if (signal.type === 'hangup') {
                     console.log(`WebRTC: Received HANGUP from ${senderName}. Terminating call.`);
                     this.cleanup('Собеседник завершил звонок.');
+                }
+                else if (signal.type === 'busy') {
+                    console.warn(`WebRTC: Received BUSY from ${senderName}. Room is full.`);
+                    this.cleanup('Комната занята. В звонке уже участвуют два человека.');
                 }
                 else if (signal.type === 'poke') {
                     console.log(`WebRTC: Received POKE from ${senderName}. Restarting ICE...`);
