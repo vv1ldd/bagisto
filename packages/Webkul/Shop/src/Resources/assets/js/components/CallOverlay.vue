@@ -296,17 +296,6 @@
 
                 <!-- Header Controls Section (Right) -->
                 <div class="flex items-center gap-2 p-4 md:p-6">
-                    <!-- Fullscreen Toggle -->
-                    <button @click.stop="toggleFullscreen" 
-                            class="h-10 w-10 rounded-xl bg-white/5 text-white/40 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all active:scale-90">
-                        <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                        </svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9V4.5M15 9h4.5M15 9l5.25-5.25M15 15v4.5M15 15h4.5M15 15l5.25 5.25" />
-                        </svg>
-                    </button>
-
                     <!-- End Call (Meanly Style) -->
                     <button @click.stop="endCall" 
                             class="h-10 w-10 rounded-xl bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all active:scale-90 shadow-lg shadow-red-600/10">
@@ -387,7 +376,7 @@ export default {
             inactivityTimer: null,
             luminanceInterval: null,
             luminanceCooldown: 0,
-            wantsFullscreen: false, // Added by instruction
+            wantsFullscreen: true, // Start in fullscreen by default🕵️‍♂️📺🚀
             lastTapTime: 0, // Moved by instruction
 
             // Gesture State
@@ -1597,7 +1586,7 @@ export default {
                 this.$nextTick(() => {
                     this.rebindVideos();
                     // Auto-fullscreen on connection
-                    if (!this.isFullscreen && !this.isMobile) {
+                    if (!this.isFullscreen) {
                         this.toggleFullscreen();
                     }
                 });
