@@ -1225,7 +1225,7 @@ export default {
                             pc: null, stream: null, connected: false, streamReady: false, 
                             hasVideo: false, hasAudio: false, connectedAt: 0,
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
-                            lastSeen: now,
+                            lastSeen: now, reconnecting: false,
                             makingOffer: false, ignoreOffer: false, watchdog: null
                         }
                     };
@@ -1389,9 +1389,10 @@ export default {
                         this.startConnectionWatchdog(id);
                     } else {
                         peer.watchdog = null;
+                        peer.reconnecting = false;
                     }
                 }
-            }, 8000); // 8 second timeout for automatic recovery
+            }, 5000); // 5 second timeout for automatic recovery
         },
 
         async handleOffer(id, name, signal) {
@@ -1622,12 +1623,20 @@ export default {
                     clearTimeout(this.peers[id].watchdog);
                     this.peers[id].watchdog = null;
                 }
-            } else if (['disconnected', 'failed', 'closed'].includes(state)) {
                 // If it's a hard fail, mark as disconnected
                 if (state !== 'disconnected') {
                     this.peers[id].connected = false;
                 }
                 
+                // Immediate aggressive reconnect
+                if (state === 'disconnected' || state === 'failed') {
+                    if (!this.peers[id].reconnecting) {
+                        console.warn(`WebRTC: Peer ${id} disconnected! Triggering immediate ICE Restart to unfreeze video.`);
+                        this.peers[id].reconnecting = true;
+                        this.pokePeer(id);
+                    }
+                }
+
                 // Connection is dead - auto cleanup if it doesn't recover in 15 seconds
                 if (!this.peers[id].deathTimer) {
                     console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (15s).`);
