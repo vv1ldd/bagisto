@@ -274,8 +274,8 @@
         <!-- Swapping PIP (Picture-in-Picture) - Only shown in 1-on-1 calls -->
         <div v-show="isActive && peerCount === 1" 
              @click.stop="toggleFocus"
-             ref="localPipWindow" class="absolute top-8 right-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
-             :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
+             ref="localPipWindow" class="absolute top-8 left-8 w-24 h-32 md:w-40 md:h-56 rounded-2xl bg-zinc-900 border border-white/20 shadow-2xl overflow-hidden z-[200] transition-all duration-700 cursor-pointer active:scale-95"
+             :class="{'opacity-0 -translate-y-10': !controlsVisible}">
              
              <!-- Self view in PIP (when focused on peer) -->
              <video v-show="!isFocusedOnSelf && isCameraOn" 
@@ -297,6 +297,31 @@
 
              <!-- Minimalist Indicator (Peer Only) -->
              <div v-if="isFocusedOnSelf" class="absolute bottom-3 left-3 h-2.5 w-2.5 bg-[#7C45F5] rounded-full shadow-lg ring-1 ring-white/20"></div>
+        </div>
+
+        <!-- Secondary Controls Header (Top Right) -->
+        <div class="absolute top-8 right-8 flex items-center gap-2 z-[200] transition-all duration-700 pointer-events-auto"
+             :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
+            <div class="flex items-center gap-1.5 bg-black/40 backdrop-blur-3xl rounded-2xl p-1.5 border border-white/10 shadow-2xl">
+                <!-- Fullscreen Toggle -->
+                <button @click.stop="toggleFullscreen" 
+                        class="h-10 w-10 rounded-xl bg-white/5 text-white/40 hover:text-white hover:bg-white/10 flex items-center justify-center transition-all active:scale-90">
+                    <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                    </svg>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9V4.5M15 9h4.5M15 9l5.25-5.25M15 15v4.5M15 15h4.5M15 15l5.25 5.25" />
+                    </svg>
+                </button>
+
+                <!-- End Call (Meanly Style) -->
+                <button @click.stop="endCall" 
+                        class="h-10 w-10 rounded-xl bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all active:scale-90 shadow-lg shadow-red-600/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- Interface Layer (Overlay) -->
@@ -353,30 +378,6 @@
                         <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Flip</span>
                     </div>
 
-                    <!-- Fullscreen Toggle -->
-                    <div v-if="!isMobile" class="flex flex-col items-center gap-1.5">
-                        <button @click.stop="toggleFullscreen" 
-                                class="h-11 w-11 rounded-2xl bg-black/40 text-white flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                            <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9V4.5M15 9h4.5M15 9l5.25-5.25M15 15v4.5M15 15h4.5M15 15l5.25 5.25" />
-                            </svg>
-                        </button>
-                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Full</span>
-                    </div>
-
-                    <!-- End Call Button (New in Toolbar) -->
-                    <div class="flex flex-col items-center gap-1.5">
-                        <button @click.stop="endCall" 
-                                class="h-11 w-11 rounded-2xl bg-red-600 text-white shadow-lg shadow-red-600/30 flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">End</span>
-                    </div>
                 </div>
             </div>
 
