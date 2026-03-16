@@ -279,7 +279,7 @@
                 <div v-show="isActive && peerCount === 1" 
                      @click.stop="toggleFocus"
                      ref="localPipWindow" 
-                     class="w-32 h-24 md:w-40 md:h-56 border-r border-white/10 shadow-2xl overflow-hidden cursor-pointer active:scale-95 transition-all relative">
+                     class="w-20 h-14 md:w-32 md:h-44 border-r border-white/10 shadow-2xl overflow-hidden cursor-pointer active:scale-95 transition-all relative">
                      
                      <!-- Self view in PIP (when focused on peer) -->
                      <video v-show="!isFocusedOnSelf && isCameraOn" 
