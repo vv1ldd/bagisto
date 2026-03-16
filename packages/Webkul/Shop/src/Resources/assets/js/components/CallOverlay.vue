@@ -47,7 +47,7 @@
         <div v-if="peers[peerIds[0]]?.connected" 
              class="absolute top-8 left-8 flex items-center gap-2 z-[100] transition-all duration-700 pointer-events-auto"
              :class="{'opacity-0 -translate-y-10': !controlsVisible}">
-            <div class="flex items-center gap-2 bg-black/60 backdrop-blur-md border border-white/10 shadow-2xl pl-1 pr-4 py-1.5 leading-none rounded-2xl pointer-events-auto">
+            <div class="flex items-center gap-2.5 bg-black/60 backdrop-blur-md border border-white/10 shadow-2xl pl-1 pr-1.5 py-1.5 leading-none rounded-2xl pointer-events-auto overflow-visible">
                         <!-- Focus Toggle Button -->
                         <button @click.stop="toggleFocus" 
                                 class="flex h-10 w-10 items-center justify-center bg-[#7C45F5] text-white font-black shadow-lg shadow-[#7C45F5]/20 leading-none ring-1 ring-white/10 rounded-xl hover:scale-105 active:scale-95 transition-all group">
@@ -68,12 +68,12 @@
 
                         <!-- Fullscreen Toggle Button -->
                         <button @click.stop="toggleFullscreen" 
-                                class="ml-2 flex h-8 w-8 items-center justify-center bg-white/5 text-white/40 hover:text-white border border-white/10 rounded-lg hover:bg-white/10 transition-all">
-                            <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                                class="flex h-8 w-8 items-center justify-center bg-white/5 text-white/40 hover:text-white border border-white/10 rounded-lg hover:bg-white/10 transition-all">
+                            <svg v-if="!isFullscreen" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                             </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 15l-6 6m0 0l6-6M3 21v-6m0 6h6m6-6l6 6m0 0l-6-6m6 6v-6m0 6h-6" />
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9V4.5M15 9h4.5M15 9l5.25-5.25M15 15v4.5M15 15h4.5M15 15l5.25 5.25" />
                             </svg>
                         </button>
                     </div>
@@ -1875,15 +1875,14 @@ export default {
                 if (!this.isSharingScreen) {
                     console.log('ScreenShare: Full start sequence initiated...');
                     
-                    // Safari requires very clean constraints. On macOS, simpler is often better.
+                    // Safari/Mac display media constraints can be very strict. Simpler is usually better for cross-browser.
                     this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
                         video: {
-                            displaySurface: 'monitor',
-                            logicalSurface: true
+                            displaySurface: 'monitor'
                         },
                         audio: false 
                     }).catch(async (err) => {
-                        console.warn('ScreenShare: Primary constraints failed, retrying with fallback', err);
+                        console.warn('ScreenShare: monitor-specific constraints failed, retrying generic video', err);
                         return await navigator.mediaDevices.getDisplayMedia({ video: true });
                     });
                     
