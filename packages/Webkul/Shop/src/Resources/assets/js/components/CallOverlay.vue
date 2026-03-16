@@ -342,7 +342,17 @@
                         <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Mic</span>
                     </div>
 
-                    <!-- Swap (Focus) Toggle (Replaced Camera Toggle) -->
+                    <!-- Camera Toggle -->
+                    <div class="flex flex-col items-center gap-1.5">
+                        <button @click.stop="toggleCamera" :class="[isCameraOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
+                            class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10 transition-all hover:scale-105 active:scale-95">
+                            <svg v-if="isCameraOn" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                        </button>
+                        <span class="text-[7px] font-black uppercase tracking-widest text-white/40">Cam</span>
+                    </div>
+
+                    <!-- Swap (Focus) Toggle -->
                     <div class="flex flex-col items-center gap-1.5">
                         <button @click.stop="toggleFocus" 
                             class="h-11 w-11 rounded-2xl flex items-center justify-center bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30 border border-white/10 transition-all hover:scale-105 active:scale-95">
