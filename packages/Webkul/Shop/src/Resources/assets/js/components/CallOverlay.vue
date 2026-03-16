@@ -234,7 +234,6 @@
                         </div>
                     </div>
                 </div>
-                </div>
             </div>
 
             <!-- Call Ended Overlay -->
