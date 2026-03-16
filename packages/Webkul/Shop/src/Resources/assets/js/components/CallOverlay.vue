@@ -190,6 +190,18 @@
                 </div>
             </div>
 
+            <!-- Start Conversation Overlay (Mandatory Gesture) -->
+            <div v-if="showStartButton" class="absolute inset-0 z-[120] flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-xl animate-fade-in">
+                <button @click="startConversation" class="group relative flex flex-col items-center gap-6 p-12 rounded-full hover:scale-105 active:scale-95 transition-all duration-500">
+                    <div class="w-24 h-24 md:w-32 md:h-32 rounded-full bg-[#7C45F5] flex items-center justify-center shadow-[0_0_50px_rgba(124,69,245,0.4)] group-hover:shadow-[0_0_80px_rgba(124,69,245,0.6)] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 md:w-16 md:h-16 text-white translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        </svg>
+                    </div>
+                    <span class="text-2xl md:text-3xl font-black uppercase tracking-[0.3em] text-white/90 drop-shadow-2xl">Начать</span>
+                </button>
+            </div>
+
             <!-- Call Ended Overlay -->
             <div v-if="isCallEnded" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-zinc-950 text-white animate-fade-in">
                 <div class="flex flex-col items-center max-w-sm text-center px-8">
@@ -398,6 +410,7 @@ export default {
             scalingMode: 'contain', // 'cover' or 'contain',
             isCallEnded: false,
             callEndedReason: '',
+            showStartButton: false, // For mandatory fullscreen gesture🕵️‍♂️📺🔘🚀
             sessionUniqueId: Math.random().toString(36).substring(2, 10) + Date.now().toString(36),
             isLandscape: window.innerWidth > window.innerHeight,
             signalingServer: window.$signalingServer || { host: 'unknown', port: '?', scheme: '?' },
@@ -800,6 +813,15 @@ export default {
         updateOrientation() {
             this.isLandscape = window.innerWidth > window.innerHeight;
             this.userActivity();
+        },
+
+        startConversation() {
+            console.log('UI: Starting conversation via user gesture');
+            this.showStartButton = false;
+            this.toggleFullscreen();
+            this.$nextTick(() => {
+                this.rebindVideos();
+            });
         },
 
         handleGlobalTouch() {
@@ -1585,9 +1607,9 @@ export default {
                 this.verifySecurity(id);
                 this.$nextTick(() => {
                     this.rebindVideos();
-                    // Auto-fullscreen on connection
-                    if (!this.isFullscreen) {
-                        this.toggleFullscreen();
+                    // Show start button if not fullscreen (to handle browser gesture requirements)
+                    if (!this.isFullscreen && !this.showStartButton) {
+                        this.showStartButton = true;
                     }
                 });
                 
