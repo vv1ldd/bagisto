@@ -272,7 +272,7 @@
         </div>
 
         <!-- Unified Top Header Bar (Integrated Frame) -->
-        <div class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
+        <div v-show="!isCallEnded" class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
             <div class="flex items-start justify-between pointer-events-auto overflow-hidden">
                 <!-- PiP Section (Fixed Corner on Mobile & Desktop) -->
@@ -320,7 +320,7 @@
         </div>
 
         <!-- Unified Bottom Media Bar (Integrated Frame) -->
-        <div class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
+        <div v-show="!isCallEnded" class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
              :class="{'opacity-0 translate-y-[100%]': !controlsVisible}">
             <div class="flex items-center justify-center p-2 md:p-4 pointer-events-auto">
                 <div class="flex items-center gap-4">
@@ -1742,6 +1742,7 @@ export default {
 
 
             // Rebind Peer Streams
+            const mutePeers = this.showStartButton;
             Object.keys(this.peers).forEach(id => {
                 const p = this.peers[id];
                 if (!p || !p.stream || !p.connected) return;
@@ -1749,26 +1750,30 @@ export default {
                 const mainEl = document.getElementById('video_' + id);
                 if (mainEl && mainEl.srcObject !== p.stream) {
                     mainEl.srcObject = p.stream;
+                    mainEl.muted = mutePeers;
                     mainEl.play().catch(() => {});
-                }
+                } else if (mainEl) { mainEl.muted = mutePeers; }
 
                 const focusedEl = document.getElementById('video_focused_' + id);
                 if (focusedEl && focusedEl.srcObject !== p.stream) {
                     focusedEl.srcObject = p.stream;
+                    focusedEl.muted = mutePeers;
                     focusedEl.play().catch(() => {});
-                }
+                } else if (focusedEl) { focusedEl.muted = mutePeers; }
 
                 const thumbEl = document.getElementById('video_thumb_' + id);
                 if (thumbEl && thumbEl.srcObject !== p.stream) {
                     thumbEl.srcObject = p.stream;
+                    thumbEl.muted = mutePeers;
                     thumbEl.play().catch(() => {});
-                }
+                } else if (thumbEl) { thumbEl.muted = mutePeers; }
 
                 const pipPeerEl = document.getElementById('video_pip_' + id);
                 if (pipPeerEl && pipPeerEl.srcObject !== p.stream) {
                     pipPeerEl.srcObject = p.stream;
+                    pipPeerEl.muted = mutePeers;
                     pipPeerEl.play().catch(() => {});
-                }
+                } else if (pipPeerEl) { pipPeerEl.muted = mutePeers; }
             });
         },
 
