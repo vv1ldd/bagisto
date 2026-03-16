@@ -55,7 +55,7 @@
                 </div>
 
                 <!-- No Camera Warning for Peer (with 3s grace period) -->
-                <div v-if="peers[peerIds[0]]?.connected && peers[peerIds[0]]?.streamReady && !peers[peerIds[0]]?.hasVideo" 
+                <div v-if="peers[peerIds[0]]?.connected && peers[peerIds[0]]?.streamReady && !peers[peerIds[0]]?.hasVideo && peers[peerIds[0]]?.isReady" 
                      class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 z-20">
                      <div class="w-20 h-20 rounded-full bg-black/40 flex items-center justify-center mb-4">
                         <span class="text-4xl opacity-40">🎥🚫</span>
@@ -261,10 +261,19 @@
                             </div>
                         </template>
                         <template v-else>
-                            <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
-                            <div class="mt-4 flex flex-col items-center gap-3">
-                                <!-- Reconnect button removed -->
-                            </div>
+                            <template v-if="isLocalReady && peers[peerIds[0]] && !peers[peerIds[0]].isReady">
+                                <div class="w-12 h-12 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-6 mx-auto"></div>
+                                <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">Ожидание собеседника...</h3>
+                                <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
+                                    Второй участник еще не нажал кнопку «Начать».
+                                </p>
+                            </template>
+                            <template v-else>
+                                <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/40">Ожидание других участников</h3>
+                                <div class="mt-4 flex flex-col items-center gap-3">
+                                    <!-- Reconnect button removed -->
+                                </div>
+                            </template>
                         </template>
                     </div>
                 </div>
@@ -411,6 +420,7 @@ export default {
             isCallEnded: false,
             callEndedReason: '',
             showStartButton: false, // For mandatory fullscreen gesture🕵️‍♂️📺🔘🚀
+            isLocalReady: false,    // Sent 'ready' signal to peers
             sessionUniqueId: Math.random().toString(36).substring(2, 10) + Date.now().toString(36),
             isLandscape: window.innerWidth > window.innerHeight,
             signalingServer: window.$signalingServer || { host: 'unknown', port: '?', scheme: '?' },
@@ -816,6 +826,21 @@ export default {
         startConversation() {
             console.log('UI: Starting conversation via user gesture');
             this.showStartButton = false;
+            this.isLocalReady = true;
+
+            // Send ready signal to any existing peers
+            Object.keys(this.peers).forEach(id => {
+                this.sendSignal({ type: 'ready', target: id, fingerprint: this.localFingerprint });
+                
+                // If the remote peer is already ready, start negotiation
+                if (this.peers[id] && this.peers[id].isReady) {
+                    const isInitiator = this.sessionUniqueId > id;
+                    if (isInitiator) {
+                        this.initiateNegotiation(id, this.peers[id].name);
+                    }
+                }
+            });
+
             this.toggleFullscreen();
             this.$nextTick(() => {
                 this.rebindVideos();
@@ -1225,8 +1250,9 @@ export default {
                             pc: null, stream: null, connected: false, streamReady: false, 
                             hasVideo: false, hasAudio: false, connectedAt: 0,
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
+                            iceQueue: [], fingerprint: signal.fingerprint, verified: false,
                             lastSeen: now, reconnecting: false,
-                            makingOffer: false, ignoreOffer: false, watchdog: null, videoTimeout: null
+                            makingOffer: false, ignoreOffer: false, watchdog: null, videoTimeout: null, isReady: false
                         }
                     };
                     this.sendSignal({ type: 'presence', target: senderSessionId, fingerprint: this.localFingerprint });
@@ -1239,27 +1265,22 @@ export default {
                 }
 
                 if (isInitiator) {
-                    const peer = this.peers[peerKey];
-                    const state = peer.pc?.connectionState || 'none';
-                    if (!peer.pc || ['failed', 'closed'].includes(state)) {
-                        console.log(`Room: I am initiator for ${senderName} (${peerKey}). Creating session...`);
-                        const pc = this.createPeerConnection(peerKey, senderName);
-                        
-                        if (this.activeLocalStream) {
-                            this.activeLocalStream.getTracks().forEach(track => pc.addTrack(track, this.activeLocalStream));
-                        } else {
-                            peer.makingOffer = true;
-                            pc.createOffer().then(offer => {
-                                const cleanSdp = this.normalizeSDP(offer.sdp);
-                                pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
-                                this.sendSignal({ type: 'offer', sdp: cleanSdp, target: peerKey, fingerprint: this.localFingerprint });
-                            }).finally(() => { peer.makingOffer = false; });
+                    // Send out our readiness state if we have pressed start
+                    if (this.isLocalReady) {
+                        this.sendSignal({ type: 'ready', target: peerKey, fingerprint: this.localFingerprint });
+                    }
+                }
+            } else if (signal.type === 'ready') {
+                console.log(`WebRTC: Received READY from ${senderName}.`);
+                const peer = this.peers[peerKey];
+                if (peer) {
+                    peer.isReady = true;
+                    if (this.isLocalReady) {
+                        // Both are ready! Start the connection if initiator.
+                        const isInitiator = this.sessionUniqueId > peerKey;
+                        if (isInitiator) {
+                            this.initiateNegotiation(peerKey, senderName);
                         }
-
-                        this.startConnectionWatchdog(peerKey);
-                    } else if (state === 'new') {
-                         console.warn(`Room: I am initiator but session ${peerKey} stuck in NEW. Poking negotiation...`);
-                         this.syncTracksToAllPeers(); 
                     }
                 }
             } else if (['offer', 'answer', 'candidate', 'hangup', 'poke'].includes(signal.type)) {
@@ -1291,6 +1312,33 @@ export default {
                       .map(line => line.trim())
                       .filter(line => line.length > 0)
                       .join('\r\n') + '\r\n';
+        },
+
+        initiateNegotiation(peerKey, senderName) {
+            const peer = this.peers[peerKey];
+            if (!peer) return;
+
+            const state = peer.pc?.connectionState || 'none';
+            if (!peer.pc || ['failed', 'closed'].includes(state)) {
+                console.log(`Room: Initiating WebRTC negotiation with ${senderName} (${peerKey}). Both sides READY.`);
+                const pc = this.createPeerConnection(peerKey, senderName);
+                
+                if (this.activeLocalStream) {
+                    this.activeLocalStream.getTracks().forEach(track => pc.addTrack(track, this.activeLocalStream));
+                } else {
+                    peer.makingOffer = true;
+                    pc.createOffer().then(offer => {
+                        const cleanSdp = this.normalizeSDP(offer.sdp);
+                        pc.setLocalDescription({ type: 'offer', sdp: cleanSdp });
+                        this.sendSignal({ type: 'offer', sdp: cleanSdp, target: peerKey, fingerprint: this.localFingerprint });
+                    }).finally(() => { peer.makingOffer = false; });
+                }
+
+                this.startConnectionWatchdog(peerKey);
+            } else if (state === 'new') {
+                 console.warn(`Room: Attempted negotiation for ${peerKey} but stuck in NEW. Poking negotiation...`);
+                 this.syncTracksToAllPeers(); 
+            }
         },
 
         async toggleCameraFacing() {
