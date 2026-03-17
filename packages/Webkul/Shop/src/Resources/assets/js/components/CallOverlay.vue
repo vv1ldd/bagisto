@@ -275,76 +275,61 @@
                 </div>
             </div>
 
-            <!-- Unified Top Header Bar (Integrated Frame) -->
-            <div v-show="!isCallEnded && !showStartButton" class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
-                 :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
-                <div class="flex items-center justify-between p-2 md:p-4 pointer-events-auto overflow-hidden">
-                    <!-- Left Section: Focus Toggle (Replaced PiP) -->
-                    <div class="w-12 md:w-16 flex justify-start">
-                        <button v-show="peerCount >= 1" 
-                                @click.stop="toggleFocus()"
-                                :class="[isFocusedOnSelf ? 'bg-white/10 text-white' : 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30']"
-                                class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/10 backdrop-blur-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Center Section: Camera Toggle -->
-                    <div class="flex-1 flex justify-center">
-                        <button @click.stop="toggleCamera" 
-                                :class="[isCameraOn ? 'bg-white/10 text-white backdrop-blur-xl border-white/10' : 'bg-red-600 text-white shadow-lg shadow-red-600/30 border-red-500/50']"
-                                class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border">
-                            <svg v-if="isCameraOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Right Section: End Call -->
-                    <div class="w-12 md:w-16 flex justify-end">
-                        <button @click.stop="endCall" 
-                                class="h-12 w-12 md:h-16 md:w-16 bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all active:scale-90 shadow-lg border border-red-500/20">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Unified Corner Controls (Bottom) -->
-            <div v-show="!isCallEnded && !showStartButton" class="absolute bottom-0 left-0 right-0 z-[100] transition-all duration-700 pointer-events-none"
+            <!-- Unified Bottom Toolbar (Integrated Controls) -->
+            <div v-show="!isCallEnded && !showStartButton" class="absolute bottom-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none pb-4 md:pb-8"
                  :class="{'opacity-0 translate-y-[100%]': !controlsVisible}">
-                <div class="flex items-end justify-between p-4 md:p-8 pointer-events-auto">
-                    <!-- Bottom Left: Screen Share -->
-                    <div class="flex flex-col items-center">
-                        <button v-if="!isMobile" @click.stop="toggleScreenShare" 
-                                :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-white/10 text-white backdrop-blur-xl border border-white/10']"
-                                class="h-12 w-12 md:h-14 md:w-14 flex items-center justify-center transition-all hover:scale-110 active:scale-90 shadow-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </button>
-                    </div>
+                <div class="flex flex-wrap items-center justify-center gap-3 md:gap-5 pointer-events-auto p-4 max-w-2xl mx-auto">
+                    
+                    <!-- 1. Focus Toggle -->
+                    <button v-show="peerCount >= 1" 
+                            @click.stop="toggleFocus()"
+                            :class="[isFocusedOnSelf ? 'bg-white/10 text-white' : 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30']"
+                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/10 backdrop-blur-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </button>
 
-                    <!-- Bottom Right: Microphone -->
-                    <div class="flex flex-col items-center">
-                        <button @click.stop="toggleMic" 
-                                :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600 text-white shadow-lg shadow-red-600/30']"
-                                class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 shadow-2xl scale-110 md:scale-100">
-                            <svg v-if="isMicOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                            </svg>
-                            <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                            </svg>
-                        </button>
-                    </div>
+                    <!-- 2. Screen Share -->
+                    <button v-if="!isMobile" @click.stop="toggleScreenShare" 
+                            :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-white/10 text-white backdrop-blur-xl border border-white/10']"
+                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 shadow-2xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </button>
+
+                    <!-- 3. Camera Toggle -->
+                    <button @click.stop="toggleCamera" 
+                            :class="[isCameraOn ? 'bg-white/10 text-white backdrop-blur-xl border-white/10' : 'bg-red-600/90 text-white shadow-lg shadow-red-600/30 border-red-500/50']"
+                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border">
+                        <svg v-if="isCameraOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                    </button>
+
+                    <!-- 4. Microphone Toggle -->
+                    <button @click.stop="toggleMic" 
+                            :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600/90 text-white shadow-lg shadow-red-600/30 border-red-500/50']"
+                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border">
+                        <svg v-if="isMicOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                    </button>
+
+                    <!-- 5. End Call (Distinct Red) -->
+                    <button @click.stop="endCall" 
+                            class="h-12 w-12 md:h-16 md:w-16 bg-red-600 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xl border border-red-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
