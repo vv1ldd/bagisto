@@ -36,12 +36,7 @@ return [
         'icon' => 'icon-orders',
         'sort' => 5,
     ],
-    [
-        'key' => 'account.reviews',
-        'name' => 'shop::app.layouts.reviews',
-        'route' => 'shop.customers.account.reviews.index',
-        'icon' => 'icon-star',
-        'sort' => 6,
-    ],
+
+
 
 ];
