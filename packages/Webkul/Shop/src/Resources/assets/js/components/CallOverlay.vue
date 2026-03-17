@@ -265,7 +265,7 @@
                             </div>
                         </template>
                         <template v-else>
-                            <div class="w-12 h-12 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin-slow mb-6 mx-auto shadow-[0_0_20px_rgba(124,69,245,0.2)]"></div>
+                            <div class="w-10 h-10 md:w-12 md:h-12 border-2 border-[#7C45F5] border-r-transparent animate-spin-robust mb-6 mx-auto shadow-[0_0_20px_rgba(124,69,245,0.2)]"></div>
                             <h3 v-if="peerCount > 0" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
                                 Ждём @{{ cleanPeerName(peers[peerIds[0]].name) }}...
                             </h3>
@@ -2076,15 +2076,14 @@ input, textarea {
     animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+@keyframes spin-robust {
+    0% { transform: rotate(0deg) translate3d(0,0,0); }
+    100% { transform: rotate(360deg) translate3d(0,0,0); }
 }
 
-.animate-spin-slow {
-    animation: spin 1.5s linear infinite;
+.animate-spin-robust {
+    animation: spin-robust 1.2s linear infinite;
     will-change: transform;
-    transform: translateZ(0); /* Force GPU layer */
 }
 
 @keyframes fadeInUp {
