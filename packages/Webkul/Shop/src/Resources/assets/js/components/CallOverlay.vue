@@ -1299,6 +1299,13 @@ export default {
                     if (this.isLocalReady) {
                         // Both are ready! Start the connection if initiator.
                         const isInitiator = this.sessionUniqueId < peerKey; // STANDARD: Lower ID initiates
+                        
+                        // AUTOMATIC RE-ENTRY: If we are in the lobby but both are ready, join automatically.🕵️‍♂️🔄🚀
+                        if (!this.isJoined) {
+                            console.log('Room: Auto-joining call because both sides are READY');
+                            this.isJoined = true;
+                        }
+
                         if (isInitiator) {
                             this.initiateNegotiation(peerKey, senderName);
                         }
@@ -1498,6 +1505,13 @@ export default {
             }
 
             console.log(`WebRTC: Handling offer from ${id} (Polite: ${isPolite})`);
+            
+            // AUTOMATIC RE-ENTRY: If we receive an offer while waiting and we are ready, join automatically.🕵️‍♂️🔄🚀
+            if (!this.isJoined && this.isLocalReady) {
+                console.log('Room: Auto-joining call due to incoming OFFER');
+                this.isJoined = true;
+            }
+
             this.startConnectionWatchdog(id);
 
             try {
@@ -2116,9 +2130,10 @@ export default {
             this.peerIds = []; // Ensure ID list is also cleared
             this.isCallEnded = false;
             this.isJoined = false;
-            this.isLocalReady = true; // Still ready
+            this.isLocalReady = true; // Still ready for immediate re-shakhand
+            this.showStartButton = false; // Bypass gesture gate on re-entry
             
-            // Re-broadcast presence
+            // Re-broadcast presence immediately to let returnees know we are waiting
             this.startPresence();
             
             // Re-bind waiting video
