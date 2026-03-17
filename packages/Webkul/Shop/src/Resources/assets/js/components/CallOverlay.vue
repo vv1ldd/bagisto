@@ -222,10 +222,15 @@
             </div>
 
             <!-- Empty/Wait State: Shows when room is empty OR when waiting for the first peer to click Start -->
-            <div v-if="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/40 backdrop-blur-xl">
-                <video ref="localVideoWaiting" autoplay muted playsinline 
-                       :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
-                       class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-xl scale-105 opacity-50"></video>
+            <div v-if="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/20">
+                <!-- Blurred Background Video Layer -->
+                <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                    <video ref="localVideoWaiting" autoplay muted playsinline 
+                           :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
+                           class="absolute inset-0 w-full h-full transition-all duration-700 blur-video opacity-50"></video>
+                    <!-- Extra darkening/blurring overlay -->
+                    <div class="absolute inset-0 bg-black/40 backdrop-blur-xl"></div>
+                </div>
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="text-center px-8 pointer-events-auto">
@@ -2045,6 +2050,18 @@ export default {
 
 <style scoped>
 .mirror { transform: scaleX(-1); }
+.blur-video { 
+    filter: blur(40px) brightness(0.6) scale(1.1);
+    -webkit-filter: blur(40px) brightness(0.6) scale(1.1);
+}
+.backdrop-blur-xl {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+}
+.backdrop-blur-3xl {
+    backdrop-filter: blur(64px);
+    -webkit-backdrop-filter: blur(64px);
+}
 * {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
