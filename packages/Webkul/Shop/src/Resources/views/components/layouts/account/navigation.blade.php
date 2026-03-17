@@ -33,13 +33,24 @@
 {{-- ONE SOLID CARD with 2-column grids inside --}}
 <div class="relative w-full bg-white border border-[#e9e8f5] shadow-[0_1px_3px_rgba(124,69,245,0.05)] overflow-hidden">
 
-    {{-- Close button --}}
-    <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '/'"
-       class="absolute top-0 right-0 w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-600 transition-colors z-20">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-    </a>
+    {{-- Navigation Buttons --}}
+    <div class="absolute top-0 left-0 right-0 h-10 flex items-center justify-between z-20 pointer-events-none">
+        {{-- Back button (Left) --}}
+        <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+           class="w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-600 transition-colors pointer-events-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </a>
+
+        {{-- Close button (Right) --}}
+        <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '/'"
+           class="w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-600 transition-colors pointer-events-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </a>
+    </div>
 
     {{-- ── Logo Area ── --}}
     <div class="flex flex-col items-center justify-center pt-8 pb-4">
@@ -52,7 +63,7 @@
     </div>
 
     {{-- ── Финансы ── --}}
-    @if ($customer?->username)
+    @if ($customer && $customer->username)
         @php
             $hasPasskey = $customer->passkeys()->exists();
             $hasPin     = !empty($customer->wallet_pin);

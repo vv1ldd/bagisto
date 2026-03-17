@@ -187,17 +187,28 @@
                                         <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
                                     @endif
 
-                                    <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-2">
                                         @if (isset($headerActions))
                                             {{ $headerActions }}
                                         @endif
 
                                         @if ($showBack)
-                                            <a id="account-close-button"
-                                                href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
-                                                class="w-8 h-8 bg-white border border-gray-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
-                                                <span class="icon-cancel text-xl"></span>
-                                            </a>
+                                            <div class="flex items-center bg-white border border-gray-200 shadow-sm overflow-hidden">
+                                                {{-- Back Arrow (Left) --}}
+                                                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
+                                                    class="w-8 h-8 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform hover:text-[#7C45F5] border-r border-gray-100">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                                                    </svg>
+                                                </a>
+
+                                                {{-- Close Button (Right) --}}
+                                                <a id="account-close-button"
+                                                    href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
+                                                    class="w-8 h-8 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform hover:text-[#7C45F5]">
+                                                    <span class="icon-cancel text-xl"></span>
+                                                </a>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>

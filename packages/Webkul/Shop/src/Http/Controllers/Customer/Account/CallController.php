@@ -31,15 +31,7 @@ class CallController extends Controller
             abort(403, 'P2P Calls are not enabled for your account.');
         }
 
-        $contacts = [
-            [
-                'id' => 1,
-                'name' => 'Поддержка',
-                'type' => 'support',
-                'description' => 'Техническая поддержка Meanly',
-                'icon' => '🎧'
-            ]
-        ];
+        $contacts = [];
 
         if ($customer->is_investor) {
             $otherInvestors = $this->customerRepository->findWhere([
