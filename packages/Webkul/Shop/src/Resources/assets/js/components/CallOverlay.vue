@@ -354,8 +354,10 @@ export default {
             configuration: {
                 iceServers: [
                     { urls: 'stun:stun.meanly.ru:3478' },
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
                 ],
-                iceCandidatePoolSize: 0
+                iceCandidatePoolSize: 2
             },
             presenceInterval: null,
             cleanupInterval: null,
@@ -1110,15 +1112,11 @@ export default {
                 // 2. Request media
                 const constraints = {
                     video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        frameRate: { ideal: 30 },
+                        width: { min: 640, ideal: 1280, max: 1920 },
+                        height: { min: 480, ideal: 720, max: 1080 },
+                        frameRate: { ideal: 30, max: 60 },
                         facingMode: this.cameraFacing,
-                        faceFraming: true,
-                        focusMode: { ideal: 'continuous' },
-                        pan: true,
-                        tilt: true,
-                        zoom: true
+                        aspectRatio: { ideal: 1.7777777778 }
                     },
                     audio: {
                         echoCancellation: true,
@@ -1289,11 +1287,23 @@ export default {
 
         normalizeSDP(sdp) {
             if (!sdp) return '';
-            // Minimalist cleanup for broad compatibility - ensures CRLF and trims lines
-            return sdp.split(/\r?\n/)
-                      .map(line => line.trim())
-                      .filter(line => line.length > 0)
-                      .join('\r\n') + '\r\n';
+            let lines = sdp.split(/\r?\n/)
+                           .map(line => line.trim())
+                           .filter(line => line.length > 0);
+            
+            // BITRATE MANGLING: Find video m-line and inject bitrate parameters
+            let newLines = [];
+            for (let i = 0; i < lines.length; i++) {
+                newLines.push(lines[i]);
+                if (lines[i].startsWith('m=video')) {
+                    // Inject Google-specific bitrate parameters immediately after the m=video line
+                    // 2500kbps = 2.5Mbps
+                    newLines.push('b=AS:2500');
+                    newLines.push('b=TIAS:2500000');
+                }
+            }
+            
+            return newLines.join('\r\n') + '\r\n';
         },
 
         initiateNegotiation(peerKey, senderName) {
@@ -1695,10 +1705,8 @@ export default {
 
         syncTracksToAllPeers() {
             const stream = this.activeLocalStream;
-            if (!stream) {
-                console.log('Room: No active local stream to sync.');
-                return;
-            }
+            if (!stream) return;
+            
             const tracks = stream.getTracks();
             
             Object.keys(this.peers).forEach(id => {
@@ -1709,16 +1717,40 @@ export default {
                     tracks.forEach(track => {
                         const sender = senders.find(s => s.track && s.track.kind === track.kind);
                         if (!sender) {
-                            console.log(`Room: Adding missing track ${track.kind} to peer ${id}`);
                             peer.pc.addTrack(track, stream);
-                            // pc.onnegotiationneeded will handle triggering the offer
                         } else if (sender.track !== track) {
-                            console.log(`Room: Updating track ${track.kind} for peer ${id}`);
                             sender.replaceTrack(track);
                         }
                     });
+
+                    // Force High Quality 🚀
+                    this.enforceHighBitrate(peer.pc);
                 }
             });
+        },
+
+        async enforceHighBitrate(pc) {
+            try {
+                const senders = pc.getSenders();
+                for (const sender of senders) {
+                    if (sender.track && sender.track.kind === 'video') {
+                        const parameters = sender.getParameters();
+                        if (!parameters.encodings || parameters.encodings.length === 0) {
+                            parameters.encodings = [{}];
+                        }
+                        
+                        // 2500000 bps = 2.5 Mbps
+                        parameters.encodings[0].maxBitrate = 2500000;
+                        parameters.encodings[0].networkPriority = 'high';
+                        parameters.encodings[0].priority = 'high';
+                        
+                        await sender.setParameters(parameters);
+                        console.log('WebRTC: High bitrate enforced for video sender');
+                    }
+                }
+            } catch (e) {
+                console.warn('WebRTC: Failed to enforce bitrate', e);
+            }
         },
 
         async verifySecurity(id) {
