@@ -1,5 +1,5 @@
 # Stage 1: Frontend Build
-FROM node:18-alpine AS frontend
+FROM mirror.gcr.io/library/node:18-alpine AS frontend
 WORKDIR /app
 COPY package.json package-lock.json* ./
 # Cache NPM packages and install root dependencies
@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/root/.npm \
     && npm --prefix packages/Webkul/Shop run build
 
 # Stage 2: PHP Application
-FROM php:8.3-fpm
+FROM mirror.gcr.io/library/php:8.3-fpm
 
 # Use cache for apt to speed up rebuilds and switch to a faster debian mirror
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
