@@ -203,19 +203,29 @@
             </div>
 
             <!-- Call Ended Overlay -->
-            <div v-if="isCallEnded" class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-zinc-950 text-white animate-fade-in">
+            <div v-if="isCallEnded" class="absolute inset-0 z-[120] flex flex-col items-center justify-center bg-zinc-950 text-white animate-fade-in">
                 <div class="flex flex-col items-center max-w-sm text-center px-8">
                     <div class="w-24 h-24 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 shadow-2xl">
-                         <span class="text-4xl">🛑</span>
+                         <span class="text-4xl" :class="{'animate-pulse': !isJoined}">🛑</span>
                     </div>
-                    <h2 class="text-2xl font-black uppercase tracking-widest mb-4">Звонок окончен</h2>
-                    <p class="text-xs text-zinc-500 font-bold uppercase tracking-widest leading-relaxed mb-8">
-                        {{ callEndedReason || 'Сессия была завершена. Вы можете вернуться на главную или закрыть это окно.' }}
+                    <h2 class="text-2xl font-black uppercase tracking-widest mb-4">
+                        {{ peerCount === 0 && isActive ? 'Собеседник вышел' : 'Звонок окончен' }}
+                    </h2>
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] leading-relaxed mb-10 px-4">
+                        {{ callEndedReason || 'Сессия была завершена. Вы можете вернуться на главную или подождать возвращения.' }}
                     </p>
-                    <button @click="forceHome" class="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:scale-105 active:scale-95 transition-all shadow-xl">
-                        На главную
-                    </button>
-                    <button @click="isCallEnded = false; isActive = false" class="mt-4 text-[8px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-all">
+                    
+                    <div class="flex flex-col gap-4 w-full">
+                        <button @click="resumeWaiting" class="w-full px-8 py-5 bg-[#7C45F5] text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(124,69,245,0.3)] hover:shadow-[0_0_40px_rgba(124,69,245,0.5)]">
+                            Ждать возвращения
+                        </button>
+                        
+                        <button @click="forceHome" class="w-full px-8 py-5 bg-white/5 text-white/50 text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-white/10 hover:text-white transition-all border border-white/5">
+                            На главную
+                        </button>
+                    </div>
+
+                    <button @click="isCallEnded = false; isActive = false" class="mt-8 text-[8px] font-black uppercase tracking-widest text-zinc-700 hover:text-zinc-500 transition-all">
                         Остаться на странице
                     </button>
                 </div>
@@ -1167,6 +1177,15 @@ export default {
 
                     this.localStream.getTracks().forEach(track => {
                         console.log(`Room: Local Track ${track.kind} (${track.label}): enabled=${track.enabled}, state=${track.readyState}`);
+                        
+                        // PERFORMANCE TUNING 🕵️‍♂️📹⚡🚀
+                        if (track.kind === 'video') {
+                            // Prioritize motion for camera
+                            if (track.contentHint !== undefined) {
+                                track.contentHint = 'motion';
+                            }
+                        }
+
                         // ATTEMPT: Mute audio immediately on acquisition to prevent bleed 🔇
                         if (track.kind === 'audio') {
                             track.enabled = false;
@@ -1293,7 +1312,7 @@ export default {
                 else if (signal.type === 'candidate') this.handleCandidate(peerKey, signal);
                 else if (signal.type === 'hangup') {
                     console.log(`WebRTC: Received HANGUP from ${senderName}. Terminating call.`);
-                    this.cleanup('Собеседник завершил звонок.');
+                    this.cleanup('Собеседник вышел. Подождать его возвращения?', false); // SOFT CLEANUP 🕵️‍♂️🔄🚀
                 }
                 else if (signal.type === 'busy') {
                     console.warn(`WebRTC: Received BUSY from ${senderName}. Room is full.`);
@@ -1766,8 +1785,11 @@ export default {
                         parameters.encodings[0].networkPriority = 'high';
                         parameters.encodings[0].priority = 'high';
                         
+                        // DEGRADATION PREFERENCE 🕵️‍♂️📹⚡🚀
+                        parameters.degradationPreference = 'maintain-resolution';
+                        
                         await sender.setParameters(parameters);
-                        console.log('WebRTC: High bitrate enforced for video sender');
+                        console.log('WebRTC: High bitrate and resolution enforced for video sender');
                     }
                 }
             } catch (e) {
@@ -2062,9 +2084,14 @@ export default {
 
 
 
-        cleanup(reason = '') {
+        cleanup(reason = '', stopMedia = true) {
             this.stopPresence();
-            if (this.localStream) this.localStream.getTracks().forEach(t => t.stop());
+            
+            if (stopMedia && this.localStream) {
+                this.localStream.getTracks().forEach(t => t.stop());
+                this.localStream = null;
+            }
+
             Object.values(this.peers).forEach(p => {
                 if (p.pc) p.pc.close();
                 if (p.watchdog) clearTimeout(p.watchdog);
@@ -2076,6 +2103,24 @@ export default {
 
             // NO AUTOMATIC REDIRECT!
             // Let the user choose when to leave.
+        },
+
+        resumeWaiting() {
+            console.log('Room: Resuming waiting state (Session Continuity) 🕵️‍♂️🔄🚀');
+            this.isCallEnded = false;
+            this.isJoined = false;
+            this.peers = {};
+            
+            // Re-broadcast presence
+            this.startPresence();
+            
+            // Re-bind waiting video
+            this.$nextTick(() => {
+                if (this.$refs.localVideoWaiting && this.localStream) {
+                    this.$refs.localVideoWaiting.srcObject = this.localStream;
+                }
+                this.rebindVideos();
+            });
         },
 
         forceHome() {
