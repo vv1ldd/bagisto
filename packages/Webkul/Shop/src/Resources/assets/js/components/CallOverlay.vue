@@ -270,7 +270,7 @@
                                 Ждём @{{ cleanPeerName(peers[peerIds[0]].name) }}...
                             </h3>
                             <h3 v-else class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
-                                Ожидание других участников...
+                                Ожидание @{{ cleanLocalName }}...
                             </h3>
                             <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
                                 Соединение установится автоматически.
@@ -950,12 +950,12 @@ export default {
         async joinRoom(uuid, userName, hash) {
             console.log(`CallOverlay [${this.sessionUniqueId}]: Preparing room ${uuid} as ${userName} (Hash: ${hash})`);
             
-            // Auto-generate name for guests if generic
-            if (!userName || userName === 'Гость') {
-                userName = this.generateBeautifulName();
-            } else if (userName.includes('@')) {
-                // Derived from email
+            // Handle technical names or emails
+            if (userName.includes('@')) {
                 userName = userName.split('@')[0];
+            } else if (!userName || userName === 'Гость') {
+                // If it's a generic guest, just use 'Гость' or session ID prefix to keep it professional
+                userName = 'Гость';
             }
 
             this.roomUuid = uuid;
