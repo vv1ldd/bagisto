@@ -20,7 +20,10 @@
                         $baseName = $customer->username ?? $customer->first_name;
                         $participantHash = $participantHash ?? md5($customer->email . $session->uuid);
                     } else {
-                        $baseName = $guestEmail;
+                        // Use recipient email as fallback if guest name is generic
+                        $baseName = ($guestEmail === 'Гость' && $session->recipient_email) 
+                            ? $session->recipient_email 
+                            : $guestEmail;
                     }
                 @endphp
 
