@@ -45,8 +45,8 @@
 
 
 
-                <!-- "Connecting..." Overlay for 1-on-1 -->
-                <div v-if="!peers[peerIds[0]]?.connected || !peers[peerIds[0]]?.streamReady" 
+                <!-- "Connecting..." Overlay for 1-on-1 (Only show when handshake is complete) -->
+                <div v-if="peers[peerIds[0]]?.isReady && (!peers[peerIds[0]]?.connected || !peers[peerIds[0]]?.streamReady)" 
                     class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-[2px] z-30 transition-all duration-500">
                     <div class="w-8 h-8 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-2"></div>
                     <div class="text-center px-2">
@@ -221,8 +221,8 @@
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div v-if="peerCount === 0 && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
+            <!-- Empty/Wait State: Shows when room is empty OR when waiting for the first peer to click Start -->
+            <div v-if="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0">
                 <video ref="localVideoWaiting" autoplay muted playsinline 
                        :class="[scalingMode === 'cover' ? 'object-cover' : 'object-contain', {mirror: !isSharingScreen}]"
                        class="absolute inset-0 w-full h-full transition-all duration-700 pointer-events-none blur-xl scale-105 opacity-50"></video>
