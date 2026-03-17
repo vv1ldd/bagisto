@@ -55,7 +55,7 @@
                 </div>
 
                 <!-- No Camera Warning for Peer (with 3s grace period) -->
-                <div v-if="peers[peerIds[0]]?.connected && peers[peerIds[0]]?.streamReady && !peers[peerIds[0]]?.hasVideo && peers[peerIds[0]]?.isReady" 
+                <div v-if="peers[peerIds[0]]?.connected && (peers[peerIds[0]]?.pc?.iceConnectionState === 'connected' || peers[peerIds[0]]?.pc?.iceConnectionState === 'completed') && peers[peerIds[0]]?.streamReady && !peers[peerIds[0]]?.hasVideo && peers[peerIds[0]]?.isReady" 
                      class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 z-20">
                      <div class="w-20 h-20 rounded-full bg-black/40 flex items-center justify-center mb-4">
                         <span class="text-4xl opacity-40">🎥🚫</span>
@@ -2103,9 +2103,20 @@ export default {
 
         resumeWaiting() {
             console.log('Room: Resuming waiting state (Session Continuity) 🕵️‍♂️🔄🚀');
+            
+            // Explicitly clear all peer data and timeouts to prevent stale state errors
+            Object.values(this.peers).forEach(p => {
+                if (p.pc) p.pc.close();
+                if (p.watchdog) clearTimeout(p.watchdog);
+                if (p.videoTimeout) clearTimeout(p.videoTimeout);
+                if (p.deathTimer) clearTimeout(p.deathTimer);
+            });
+
+            this.peers = {};
+            this.peerIds = []; // Ensure ID list is also cleared
             this.isCallEnded = false;
             this.isJoined = false;
-            this.peers = {};
+            this.isLocalReady = true; // Still ready
             
             // Re-broadcast presence
             this.startPresence();
