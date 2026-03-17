@@ -1028,7 +1028,12 @@ export default {
             console.log(`CallOverlay [${this.sessionUniqueId}]: Confirming join as ${this.localUserName}`);
             
             this.subscribeToChannels();
+            
+            // AGGRESSIVE SIGNALING: Send 3 immediate signals to ensure delivery during transitions 🕵️‍♂️📲🔄🚀
             this.startPresence();
+            setTimeout(() => this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint }), 500);
+            setTimeout(() => this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint }), 2000);
+
             this.lastSignalReceivedAt = Date.now();
             this.startInactivityTimer();
             
@@ -1216,6 +1221,13 @@ export default {
                 return;
             }
 
+            // AUTOMATED HANDOVER WAKEUP: If we are on "Call Ended" screen but see participant activity 🕵️‍♂️📲🔄🚀
+            // This allows the "staying" person to auto-join when the other person returns on a new device.
+            if (this.isCallEnded && signal.type === 'presence') {
+                console.log(`Room: Detected participant activity. Auto-resuming...`);
+                this.resumeWaiting();
+            }
+
             // If targeted and not for us
             if (signal.target && signal.target !== this.sessionUniqueId) {
                 const isTargetedToMe = signal.target === this.localHash || signal.target === this.localUserName;
@@ -1239,7 +1251,7 @@ export default {
                 // it means we are taking over from a new device. This original device must EXIT.
                 if (senderHash && senderHash === this.localHash && senderSessionId !== this.sessionUniqueId) {
                     console.warn(`Room: Detected self-replacement from session ${senderSessionId}. Kicking local session.`);
-                    this.cleanup('Вы переключились на другое устройство');
+                    this.cleanup('Вы перешли в звонок с другого устройства');
                     return;
                 }
 

@@ -15,7 +15,7 @@
     "name": "vue"
   },
   "node_modules/matrix-js-sdk/lib/rust-crypto/index.js": {
-    "file": "assets/index-D0yXL91w.js",
+    "file": "assets/index-D0bWzPaE.js",
     "name": "index",
     "src": "node_modules/matrix-js-sdk/lib/rust-crypto/index.js",
     "isDynamicEntry": true,
@@ -108,7 +108,7 @@
     "src": "src/Resources/assets/images/wishlist.png"
   },
   "src/Resources/assets/js/app.js": {
-    "file": "assets/app-Bvb_SjIs.js",
+    "file": "assets/app-CJnEpr2J.js",
     "name": "app",
     "src": "src/Resources/assets/js/app.js",
     "isEntry": true,
@@ -121,7 +121,7 @@
       "node_modules/matrix-js-sdk/lib/rust-crypto/index.js"
     ],
     "css": [
-      "assets/app-CPa0BLQY.css"
+      "assets/app-DM7l8I6s.css"
     ]
   }
 }
