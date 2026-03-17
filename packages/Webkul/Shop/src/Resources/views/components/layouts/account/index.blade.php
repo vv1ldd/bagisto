@@ -63,8 +63,14 @@
                     display: grid !important;
                     grid-template-columns: repeat(2, 1fr) !important;
                     gap: 1px !important;
-                    background-color: #e9e8f5 !important;
-                    border-bottom: 1px solid #e9e8f5 !important;
+                    background-color: #f5f4fc !important;
+                    border-bottom: 1px solid #f5f4fc !important;
+                }
+
+                @media (max-width: 380px) {
+                    .nav-grid {
+                        grid-template-columns: 1fr !important;
+                    }
                 }
 
                 .nav-item {
@@ -153,7 +159,7 @@
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container px-[60px] max-lg:px-8 max-md:px-0 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-72px)] flex flex-col pb-2 pt-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
+            class="container px-[60px] max-lg:px-8 max-md:px-4 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-80px)] flex flex-col justify-center pb-10 pt-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
 
             @php
                 $customer = auth()->guard('customer')->user();
