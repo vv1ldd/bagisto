@@ -234,50 +234,38 @@
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="text-center px-8 pointer-events-auto">
+                        <!-- Permanent, Hardware-Accelerated Spinner -->
+                        <div class="w-10 h-10 md:w-12 md:h-12 border-2 border-[#7C45F5] border-r-transparent animate-spin-robust mb-6 mx-auto shadow-[0_0_20px_rgba(124,69,245,0.2)]"></div>
+
                         <template v-if="(signalingState === 'unavailable' || signalingState === 'failed') && !signalingGraceActive">
-                            <div class="bg-black/80 backdrop-blur-3xl p-8 md:p-10 rounded-[40px] border border-red-500/20 flex flex-col items-center max-w-sm mx-auto shadow-[0_0_100px_rgba(239,68,68,0.2)]">
-                                <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
-                                <p class="mb-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center leading-relaxed">
-                                    Соединение с сервером потеряно. <br>
-                                    <span class="text-zinc-600 font-normal normal-case tracking-normal">Вероятно, сервер ws.meanly.ru временно недоступен или блокируется провайдером.</span>
+                            <div class="bg-black/40 backdrop-blur-3xl p-6 rounded-[32px] border border-red-500/10 max-w-xs mx-auto animate-fade-in-up">
+                                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-red-500 mb-2">Ошибка сети</h3>
+                                <p class="mb-4 text-[8px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
+                                    Соединение потеряно.
                                 </p>
                                 
-                                <div class="w-full mb-6 p-3 bg-red-500/5 rounded-xl border border-red-500/10">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-[7px] uppercase font-black text-red-500/40">Диагностика</span>
-                                        <span class="text-[7px] font-mono text-red-500/60 transition-all duration-300">{{ signalingState }}</span>
-                                    </div>
-                                    <div class="text-[8px] font-mono text-zinc-600 truncate text-left">
-                                        {{ signalingServer.scheme }}://{{ signalingServer.host }}:{{ signalingServer.port }}
-                                    </div>
-                                    <div class="mt-2 pt-2 border-t border-red-500/10 text-[7px] font-mono text-zinc-500 space-y-1">
-                                        <p>Client: window.Laravel.reverbAppKey = {{ window.Laravel?.reverbAppKey ? 'OK' : 'MISSING' }}</p>
-                                        <p>Protocol: {{ window.location.protocol === 'https:' ? 'WSS (Secure)' : 'WS' }}</p>
-                                        <p>Attempt: {{ reconnectAttempts }} / 5</p>
-                                    </div>
-                                </div>
-
                                 <button @click="retryEcho" 
                                         :disabled="isRetrying"
-                                        class="mt-4 px-6 py-2.5 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-red-500/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50">
-                                    {{ isRetrying ? 'Подключение...' : 'Попробовать снова' }}
+                                        class="px-6 py-2.5 bg-red-500 text-white text-[8px] font-black uppercase tracking-widest rounded-none shadow-lg shadow-red-500/20 hover:scale-105 active:scale-95 transition-all">
+                                    {{ isRetrying ? 'Ждём...' : 'Повторить' }}
                                 </button>
                             </div>
                         </template>
                         <template v-else>
-                            <div class="w-10 h-10 md:w-12 md:h-12 border-2 border-[#7C45F5] border-r-transparent animate-spin-robust mb-6 mx-auto shadow-[0_0_20px_rgba(124,69,245,0.2)]"></div>
-                            <h3 v-if="signalingGraceActive" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-amber-500 animate-pulse">
-                                Соединение с сетью...
-                            </h3>
-                            <h3 v-else-if="peerCount > 0" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
-                                Ждём @{{ (cleanPeerName(peers[peerIds[0]].name) === 'Гость' && remoteParticipantName) ? cleanPeerName(remoteParticipantName) : cleanPeerName(peers[peerIds[0]].name) }}...
-                            </h3>
-                            <h3 v-else class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
-                                Ожидаем @{{ cleanPeerName(remoteParticipantName) || 'собеседника' }}...
-                            </h3>
-                            <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
-                                {{ signalingGraceActive ? 'Проверяем настройки связи.' : 'Соединение установится автоматически.' }}
-                            </p>
+                            <div class="animate-fade-in-up">
+                                <h3 v-if="signalingGraceActive" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-amber-500 animate-pulse">
+                                    Соединение с сетью...
+                                </h3>
+                                <h3 v-else-if="peerCount > 0" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
+                                    Ждём @{{ (cleanPeerName(peers[peerIds[0]].name) === 'Гость' && remoteParticipantName) ? cleanPeerName(remoteParticipantName) : cleanPeerName(peers[peerIds[0]].name) }}...
+                                </h3>
+                                <h3 v-else class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
+                                    Ожидаем @{{ cleanPeerName(remoteParticipantName) || 'собеседника' }}...
+                                </h3>
+                                <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
+                                    {{ signalingGraceActive ? 'Проверяем настройки связи.' : 'Соединение установится автоматически.' }}
+                                </p>
+                            </div>
                         </template>
                     </div>
                 </div>
