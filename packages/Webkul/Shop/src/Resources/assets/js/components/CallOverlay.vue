@@ -1994,30 +1994,27 @@ export default {
         async toggleScreenShare() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
                 console.warn('ScreenShare: getDisplayMedia not supported');
-                // Use a subtle visual feedback instead of alert if possible, but alert is fine for debug
                 alert('Ваш браузер или текущее соединение не поддерживают демонстрацию экрана. Проверьте HTTPS.');
                 return;
             }
 
             try {
                 if (!this.isSharingScreen) {
-                    console.log('ScreenShare: Full start sequence initiated...');
+                    console.log('ScreenShare: Starting capture...');
                     
-                    // Safari/Mac display media constraints can be very strict. Simpler is usually better for cross-browser.
+                    // SAFARI FIX: We must call getDisplayMedia as directly as possible.
+                    // Complex constraints like {displaySurface: 'monitor'} can cause immediate failure on some browsers,
+                    // and retrying in a .catch() loses the "User Gesture" context on Safari.
+                    // We use the most compatible constraints by default.
                     this.screenStream = await navigator.mediaDevices.getDisplayMedia({ 
-                        video: {
-                            displaySurface: 'monitor'
-                        },
+                        video: true,
                         audio: false 
-                    }).catch(async (err) => {
-                        console.warn('ScreenShare: monitor-specific constraints failed, retrying generic video', err);
-                        return await navigator.mediaDevices.getDisplayMedia({ video: true });
                     });
                     
                     const screenTrack = this.screenStream.getVideoTracks()[0];
                     if (!screenTrack) throw new Error('No screen track obtained');
 
-                    console.log(`ScreenShare: Obtained track "${screenTrack.label}" from stream ID: ${this.screenStream.id}`);
+                    console.log(`ScreenShare: Obtained track "${screenTrack.label}"`);
 
                     this.isSharingScreen = true;
 
@@ -2031,7 +2028,6 @@ export default {
                             if (videoSender) {
                                 console.log(`ScreenShare: Replacing track for peer ${id}...`);
                                 await videoSender.replaceTrack(screenTrack);
-                                console.log(`ScreenShare: Replacement SUCCESS for peer ${id}`);
                             }
                         } catch (err) {
                             console.warn(`ScreenShare: Replacement FAILED for peer ${id}`, err);
