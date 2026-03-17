@@ -411,7 +411,7 @@ export default {
             scalingMode: 'contain', // 'cover' or 'contain',
             isCallEnded: false,
             callEndedReason: '',
-            showStartButton: false, // For mandatory fullscreen gesture🕵️‍♂️📺🔘🚀
+            showStartButton: true,  // MANDATORY: This MUST be true by default to show the gesture gate🕵️‍♂️📺🔘🚀
             isLocalReady: false,    // Sent 'ready' signal to peers
             sessionUniqueId: Math.random().toString(36).substring(2, 10) + Date.now().toString(36),
             isLandscape: window.innerWidth > window.innerHeight,
@@ -826,7 +826,7 @@ export default {
                 
                 // If the remote peer is already ready, start negotiation
                 if (this.peers[id] && this.peers[id].isReady) {
-                    const isInitiator = this.sessionUniqueId > id;
+                    const isInitiator = this.sessionUniqueId < id; // STANDARD: Lower ID initiates
                     if (isInitiator) {
                         this.initiateNegotiation(id, this.peers[id].name);
                     }
@@ -1259,7 +1259,13 @@ export default {
                 if (isInitiator) {
                     // Send out our readiness state if we have pressed start
                     if (this.isLocalReady) {
+                        console.log(`Room: I am initiator and ready for ${peerKey}. Sending ready signal.`);
                         this.sendSignal({ type: 'ready', target: peerKey, fingerprint: this.localFingerprint });
+                    }
+                } else {
+                    // If we are not initiator but we are ready, we should also send ready if we haven't already
+                    if (this.isLocalReady) {
+                         this.sendSignal({ type: 'ready', target: peerKey, fingerprint: this.localFingerprint });
                     }
                 }
             } else if (signal.type === 'ready') {
@@ -1269,7 +1275,7 @@ export default {
                     peer.isReady = true;
                     if (this.isLocalReady) {
                         // Both are ready! Start the connection if initiator.
-                        const isInitiator = this.sessionUniqueId > peerKey;
+                        const isInitiator = this.sessionUniqueId < peerKey; // STANDARD: Lower ID initiates
                         if (isInitiator) {
                             this.initiateNegotiation(peerKey, senderName);
                         }
@@ -1659,13 +1665,6 @@ export default {
                 this.verifySecurity(id);
                 this.$nextTick(() => {
                     this.rebindVideos();
-                    // Show start button if not fullscreen (to handle browser gesture requirements)
-                    // We check document.fullscreenElement directly for absolute certainty
-                    const actuallyFullscreen = !!document.fullscreenElement;
-                    if (!actuallyFullscreen && !this.showStartButton) {
-                        console.log('UI: Connection stable, showing START gesture gate');
-                        this.showStartButton = true;
-                    }
                 });
                 
                 // Success! Clear watchdog
