@@ -1,4 +1,14 @@
-<div class="flex flex-col w-full">
+<div class="flex flex-col w-full relative">
+
+    {{-- Close / Back button --}}
+    <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '/'"
+       class="absolute top-0 right-0 w-9 h-9 flex items-center justify-center bg-white border border-zinc-100 text-zinc-400 hover:text-zinc-700 hover:border-zinc-200 transition-all shadow-sm z-10"
+       title="Закрыть">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+    </a>
+
     @php
         $customer = auth()->guard('customer')->user();
     @endphp
@@ -130,6 +140,7 @@
             </a>
         </div>
     </div>
+
 </div>
 
 @push('scripts')
