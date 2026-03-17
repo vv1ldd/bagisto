@@ -222,7 +222,7 @@
             </div>
 
             <!-- Empty/Wait State: Shows when room is empty OR when waiting for the first peer to click Start -->
-            <div v-if="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/20">
+            <div v-if="(!peerCount || !peers[peerIds[0]]?.connected) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/20">
                 <!-- Blurred Background Video Layer -->
                 <div class="absolute inset-0 overflow-hidden pointer-events-none">
                     <video ref="localVideoWaiting" autoplay muted playsinline 
@@ -279,20 +279,16 @@
             <div v-show="!isCallEnded && !showStartButton" class="absolute top-0 left-0 right-0 z-[200] transition-all duration-700 pointer-events-none"
                  :class="{'opacity-0 translate-y-[-100%]': !controlsVisible}">
                 <div class="flex items-center justify-between p-2 md:p-4 pointer-events-auto overflow-hidden">
-                    <!-- Left Section: PiP (Sized to match buttons) -->
+                    <!-- Left Section: Focus Toggle (Replaced PiP) -->
                     <div class="w-12 md:w-16 flex justify-start">
-                        <div v-show="isActive && peerCount === 1" 
-                             class="h-12 w-12 md:h-16 md:w-16 rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-zinc-950 transition-all duration-500 hover:scale-105 active:scale-95 cursor-pointer isolate"
-                             @click.stop="toggleFocus('local')">
-                            <video ref="localVideoPip"
-                                    :class="[{mirror: !isSharingScreen}]"
-                                    autoplay playsinline 
-                                    class="w-full h-full object-cover"></video>
-                            <div v-if="!isFocusedOnSelf && !isCameraOn" class="w-full h-full flex items-center justify-center bg-zinc-950">
-                                <span class="text-xl md:text-2xl opacity-20">🎥🚫</span>
-                            </div>
-                            <div v-if="isFocusedOnSelf" class="absolute bottom-2 left-2 h-2 w-2 bg-[#7C45F5] rounded-full shadow-lg ring-1 ring-white/20"></div>
-                        </div>
+                        <button v-show="peerCount >= 1" 
+                                @click.stop="toggleFocus()"
+                                :class="[isFocusedOnSelf ? 'bg-white/10 text-white' : 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30']"
+                                class="h-12 w-12 md:h-16 md:w-16 rounded-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/10 backdrop-blur-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                        </button>
                     </div>
 
                     <!-- Center Section: Camera Toggle -->
@@ -1168,6 +1164,10 @@ export default {
 
                     this.localStream.getTracks().forEach(track => {
                         console.log(`Room: Local Track ${track.kind} (${track.label}): enabled=${track.enabled}, state=${track.readyState}`);
+                        // ATTEMPT: Mute audio immediately on acquisition to prevent bleed 🔇
+                        if (track.kind === 'audio') {
+                            track.enabled = false;
+                        }
                     });
                     
                     // NEW: Force sync tracks to all existing peers in case they were created before media was ready
@@ -1323,6 +1323,10 @@ export default {
                 const pc = this.createPeerConnection(peerKey, senderName);
                 
                 if (this.activeLocalStream) {
+                    // ACTIVATE AUDIO: Handshake complete 🔈
+                    if (this.isMicOn) {
+                        this.activeLocalStream.getAudioTracks().forEach(t => t.enabled = true);
+                    }
                     this.activeLocalStream.getTracks().forEach(track => pc.addTrack(track, this.activeLocalStream));
                 } else {
                     peer.makingOffer = true;
@@ -1470,6 +1474,10 @@ export default {
                 
                 // Add tracks BEFORE creating answer
                 if (this.activeLocalStream) {
+                    // ACTIVATE AUDIO: Handshake complete 🔈
+                    if (this.isMicOn) {
+                        this.activeLocalStream.getAudioTracks().forEach(t => t.enabled = true);
+                    }
                     this.activeLocalStream.getTracks().forEach(track => {
                         const senders = pc.getSenders();
                         if (!senders.find(s => s.track && s.track.kind === track.kind)) {
