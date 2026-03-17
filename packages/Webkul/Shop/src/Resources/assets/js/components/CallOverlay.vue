@@ -54,8 +54,8 @@
                     </div>
                 </div>
 
-                <!-- No Camera Warning for Peer (with 3s grace period) -->
-                <div v-if="peers[peerIds[0]]?.connected && (peers[peerIds[0]]?.pc?.iceConnectionState === 'connected' || peers[peerIds[0]]?.pc?.iceConnectionState === 'completed') && peers[peerIds[0]]?.streamReady && !peers[peerIds[0]]?.hasVideo && peers[peerIds[0]]?.isReady" 
+                <!-- No Camera Warning for Peer (with 10s grace period and safety check) -->
+                <div v-if="peers[peerIds[0]]?.connected && peers[peerIds[0]]?.streamReady && !peers[peerIds[0]]?.hasVideo && peers[peerIds[0]]?.isReady" 
                      class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/40 z-20">
                      <div class="w-20 h-20 rounded-full bg-black/40 flex items-center justify-center mb-4">
                         <span class="text-4xl opacity-40">🎥🚫</span>
@@ -1696,13 +1696,13 @@ export default {
                 }
                 this.peers[id].connected = true;
                 
-                // Allow up to 3 seconds for video tracks to arrive before deciding they have no camera
+                // Allow up to 10 seconds for video tracks to arrive before deciding they have no camera
                 if (!this.peers[id].videoTimeout) {
                     this.peers[id].videoTimeout = setTimeout(() => {
                         if (this.peers[id]) {
                             this.peers[id].streamReady = true;
                         }
-                    }, 3000);
+                    }, 10000);
                 }
 
                 this.verifySecurity(id);
