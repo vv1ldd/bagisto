@@ -24,15 +24,15 @@
             <div class="ios-nav-group-inner">
                 <div class="ios-nav-row cursor-pointer"
                     onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'') }}">
-                    <span class="ios-nav-label flex items-center gap-3">
-                        <span class="w-8 h-8 flex items-center justify-center bg-[#7C45F5]/10 shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                        </span>
+                    <span class="w-8 h-8 flex items-center justify-center bg-[#7C45F5]/10 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                    </span>
+                    <span class="ios-nav-label">
                         Meanly Wallet
                     </span>
-                    <span class="flex items-center gap-2">
+                    <span class="ios-nav-row-arrow flex items-center gap-1 ml-auto">
                         @if(!$hasPasskey && !$hasPin)
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -53,13 +53,10 @@
                 @if ($customer->is_call_enabled)
                     <div class="ios-nav-row cursor-pointer"
                         onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
-                        <span class="ios-nav-label flex items-center gap-3">
-                            <span class="w-8 h-8 flex items-center justify-center bg-zinc-50 shrink-0">
-                                <span class="text-base">📞</span>
-                            </span>
-                            Звонки P2P
+                        <span class="w-8 h-8 flex items-center justify-center bg-zinc-50 shrink-0">
+                            <span class="text-base">📞</span>
                         </span>
-                        <span class="icon-arrow-right text-zinc-200 text-lg"></span>
+                        <span class="ios-nav-label">Звонки P2P</span>
                     </div>
                 @endif
             </div>
@@ -111,17 +108,16 @@
                         @endphp
 
                         <a href="{{ $subMenuItem->getUrl() }}" class="ios-nav-row">
-                            <span class="ios-nav-label flex items-center gap-3 {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : '' }}">
-                                @if ($icon)
-                                    <span class="w-8 h-8 flex items-center justify-center {{ $icon['bg'] }} shrink-0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $icon['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            {!! $icon['svg'] !!}
-                                        </svg>
-                                    </span>
-                                @endif
+                            @if ($icon)
+                                <span class="w-8 h-8 flex items-center justify-center {{ $icon['bg'] }} shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $icon['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        {!! $icon['svg'] !!}
+                                    </svg>
+                                </span>
+                            @endif
+                            <span class="ios-nav-label {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : '' }}">
                                 {{ $subMenuItem->getName() }}
                             </span>
-                            <span class="icon-arrow-right text-zinc-200 text-lg rtl:icon-arrow-left"></span>
                         </a>
                     @endforeach
                 </div>
@@ -130,13 +126,13 @@
     @endforeach
 
 
-    {{-- Logout in its own group --}}
+    {{-- Logout in its own group (single-column) --}}
     <div class="ios-nav-group">
         <span class="ios-section-label">Сессия</span>
-        <div class="ios-nav-group-inner">
+        <div class="ios-nav-group-inner ios-nav-group-inner--full">
             <a href="{{ route('shop.customer.session.destroy.get') }}" class="ios-nav-row">
                 <span class="ios-nav-label !text-red-500">Выйти</span>
-                <span class="icon-arrow-right text-red-200 text-lg rtl:icon-arrow-left"></span>
+                <span class="ios-nav-row-arrow icon-arrow-right text-red-200 text-lg rtl:icon-arrow-left"></span>
             </a>
         </div>
     </div>
