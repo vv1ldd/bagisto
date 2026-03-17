@@ -49,6 +49,29 @@
                     <div class="hidden"></div>
                 </template>
 
+                <!-- Simplify Toolbar: Keep only search -->
+                <template #search="{ available, applied, search, getSearchedValues }">
+                    <div class="flex items-center w-full bg-white border border-zinc-200">
+                        <span class="icon-search text-[20px] text-zinc-400 ml-4"></span>
+                        
+                        <input 
+                            type="text" 
+                            class="w-full px-4 py-3 text-[14px] text-zinc-700 bg-transparent outline-none placeholder:text-zinc-400"
+                            :value="getSearchedValues()"
+                            placeholder="@lang('shop::app.components.datagrid.toolbar.search-title')"
+                            @input="search($event.target.value)"
+                        >
+                    </div>
+                </template>
+
+                <template #pagination>
+                    <div class="hidden"></div>
+                </template>
+
+                <template #filter>
+                    <div class="hidden"></div>
+                </template>
+
                 <!-- Unified iOS-style body -->
                 <template #body="{ isLoading, available, applied, sort, performAction }">
                     <template v-if="isLoading">
