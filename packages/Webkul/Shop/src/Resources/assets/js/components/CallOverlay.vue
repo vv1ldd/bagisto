@@ -1234,6 +1234,15 @@ export default {
                 const now = Date.now();
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
+                // SELF-REPLACEMENT DETECTION: Different device, same identity 🕵️‍♂️📲🔄🚀
+                // If we see a 'presence' from another session BUT with our own hash,
+                // it means we are taking over from a new device. This original device must EXIT.
+                if (senderHash && senderHash === this.localHash && senderSessionId !== this.sessionUniqueId) {
+                    console.warn(`Room: Detected self-replacement from session ${senderSessionId}. Kicking local session.`);
+                    this.cleanup('Вы переключились на другое устройство');
+                    return;
+                }
+
                 if (!this.peers[peerKey]) {
                     Object.keys(this.peers).forEach(id => {
                         const p = this.peers[id];

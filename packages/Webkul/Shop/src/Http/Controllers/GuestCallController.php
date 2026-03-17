@@ -122,23 +122,21 @@ class GuestCallController extends Controller
             $metadata = $session->metadata ?? [];
             $claimedToken = $metadata['claimed_guest_token'] ?? null;
 
-            if (!$claimedToken) {
-                // Only allow claiming if they have a valid initial request (hash or auth)
-                if ($isValidGuestRequest) {
-                    $newToken = Str::random(60);
-                    $metadata['claimed_guest_token'] = $newToken;
-                    $metadata['claimed_at'] = now()->toDateTimeString();
-                    
-                    $session->metadata = $metadata;
-                    $session->save();
+            // DEVICE HANDOVER: If they have a valid link hash, they can "RE-CLAIM" the slot 🕵️‍♂️📲🔄🚀
+            // This allows switching from PC to Phone using the same link.
+            if ($isValidGuestRequest || !$claimedToken) {
+                // Generative or Refreshative token
+                $newToken = Str::random(60);
+                $metadata['claimed_guest_token'] = $newToken;
+                $metadata['claimed_at'] = now()->toDateTimeString();
+                
+                $session->metadata = $metadata;
+                $session->save();
 
-                    // Set cookie for 24 hours
-                    \Illuminate\Support\Facades\Cookie::queue($cookieName, $newToken, 1440);
-                } else {
-                    return abort(403, 'You do not have access to this call.');
-                }
+                // Set cookie for 24 hours
+                \Illuminate\Support\Facades\Cookie::queue($cookieName, $newToken, 1440);
             } else {
-                // Slot already claimed, verify the browser cookie matches
+                // They don't have a valid hash AND the browser token doesn't match the claim
                 if ($browserToken !== $claimedToken) {
                     return abort(403, 'This invitation link has already been used by another participant. Only 1-on-1 calls are permitted.');
                 }
