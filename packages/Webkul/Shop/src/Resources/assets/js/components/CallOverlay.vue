@@ -1018,11 +1018,14 @@ export default {
             const randomNum = Math.floor(100 + Math.random() * 899);
             return `${randomWord} ${randomNum}`;
         },
-
         confirmJoin() {
             if (this.isGuest && this.lobbyName.trim()) {
                 this.localUserName = this.lobbyName.trim();
-                this.localHash = this.localUserName;
+                // CRITICAL: DO NOT overwrite localHash if it was already set from the link/auth.
+                // Overwriting with "Гость" breaks device handover links.
+                if (!this.localHash || this.localHash === 'Гость') {
+                    this.localHash = this.localUserName;
+                }
             }
             
             console.log(`CallOverlay [${this.sessionUniqueId}]: Confirming join as ${this.localUserName}`);
@@ -1247,10 +1250,10 @@ export default {
                 const isInitiator = this.sessionUniqueId < senderSessionId;
                 
                 // SELF-REPLACEMENT DETECTION: Different device, same identity 🕵️‍♂️📲🔄🚀
-                // If we see a 'presence' from another session BUT with our own hash,
-                // it means we are taking over from a new device. This original device must EXIT.
-                if (senderHash && senderHash === this.localHash && senderSessionId !== this.sessionUniqueId) {
-                    console.warn(`Room: Detected self-replacement from session ${senderSessionId}. Kicking local session.`);
+                // We only kick if the incoming session is NEWER than ours (higher session ID string).
+                // This prevents race conditions where both devices kick themselves.
+                if (senderHash && senderHash === this.localHash && senderSessionId > this.sessionUniqueId) {
+                    console.warn(`Room: Detected newer self-replacement session ${senderSessionId}. Kicking local session.`);
                     this.cleanup('Вы перешли в звонок с другого устройства');
                     return;
                 }
