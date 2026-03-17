@@ -1368,7 +1368,12 @@ export default {
                     if (this.isMicOn) {
                         this.activeLocalStream.getAudioTracks().forEach(t => t.enabled = true);
                     }
-                    this.activeLocalStream.getTracks().forEach(track => pc.addTrack(track, this.activeLocalStream));
+                    this.activeLocalStream.getTracks().forEach(track => {
+                        // Ensure tracks are enabled based on UI state before adding
+                        if (track.kind === 'audio') track.enabled = this.isMicOn;
+                        if (track.kind === 'video') track.enabled = this.isCameraOn;
+                        pc.addTrack(track, this.activeLocalStream);
+                    });
                 } else {
                     peer.makingOffer = true;
                     pc.createOffer().then(offer => {
@@ -1529,6 +1534,9 @@ export default {
                     this.activeLocalStream.getTracks().forEach(track => {
                         const senders = pc.getSenders();
                         if (!senders.find(s => s.track && s.track.kind === track.kind)) {
+                            // Ensure tracks are enabled based on UI state before adding
+                            if (track.kind === 'audio') track.enabled = this.isMicOn;
+                            if (track.kind === 'video') track.enabled = this.isCameraOn;
                             pc.addTrack(track, this.activeLocalStream);
                         }
                     });
@@ -1675,13 +1683,32 @@ export default {
             };
 
             pc.ontrack = (e) => {
-                console.log(`WebRTC: Received remote track from ${id}`, e.track.kind);
+                const track = e.track;
+                console.log(`WebRTC: Received remote track from ${id}`, track.kind);
                 
-                if (e.track.kind === 'video') {
-                    console.log(`WebRTC: Video track confirmed for ${id}`);
-                    this.peers[id].hasVideo = true;
+                if (track.kind === 'video') {
+                    console.log(`WebRTC: Video track detected for ${id}`);
+                    this.peers[id].hasVideo = !track.muted;
+                    
+                    // REACTIVE MONITORING: Listen for mute/unmute events 🕵️‍♂️🎥🚀
+                    track.onmute = () => {
+                        console.log(`WebRTC: Remote video track MUTED for ${id}`);
+                        if (this.peers[id]) this.peers[id].hasVideo = false;
+                    };
+                    track.onunmute = () => {
+                        console.log(`WebRTC: Remote video track UNMUTED for ${id}`);
+                        if (this.peers[id]) {
+                            this.peers[id].hasVideo = true;
+                            this.peers[id].streamReady = true;
+                        }
+                    };
+                    
+                    if (this.peers[id].hasVideo) {
+                        this.peers[id].streamReady = true;
+                    }
                 }
-                if (e.track.kind === 'audio') {
+
+                if (track.kind === 'audio') {
                     console.log(`WebRTC: Audio track confirmed for ${id}`);
                     this.peers[id].hasAudio = true;
                 }
@@ -1693,12 +1720,7 @@ export default {
                     if (!this.peers[id].stream) {
                         this.peers[id].stream = new MediaStream();
                     }
-                    this.peers[id].stream.addTrack(e.track);
-                }
-
-                // Consider stream ready if we have a video track or if we've been connected long enough
-                if (this.peers[id].hasVideo) {
-                    this.peers[id].streamReady = true;
+                    this.peers[id].stream.addTrack(track);
                 }
                 
                 this.rebindVideos();
@@ -2147,6 +2169,9 @@ export default {
             this.isLocalReady = true; // Still ready for immediate re-shakhand
             this.showStartButton = false; // Bypass gesture gate on re-entry
             
+            // REFRESH MEDIA: Ensure camera is alive and ready after "Waiting" 🕵️‍♂️🎥🚀
+            this.setupLocalMedia();
+
             // Re-broadcast presence immediately to let returnees know we are waiting
             this.startPresence();
             
