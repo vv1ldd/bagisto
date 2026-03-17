@@ -41,6 +41,16 @@
         </svg>
     </a>
 
+    {{-- ── Logo Area ── --}}
+    <div class="flex flex-col items-center justify-center pt-8 pb-4">
+        <a href="{{ route('shop.home.index') }}" class="group flex flex-col items-center gap-1 transition-transform active:scale-95">
+            <span class="text-2xl font-black tracking-tighter text-[#7C45F5] leading-none mb-0.5">
+                {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}
+            </span>
+            <div class="h-1 w-8 bg-[#7C45F5]/20 rounded-full"></div>
+        </a>
+    </div>
+
     {{-- ── Финансы ── --}}
     @if ($customer?->username)
         @php
