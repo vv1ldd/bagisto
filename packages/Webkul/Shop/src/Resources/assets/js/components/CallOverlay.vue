@@ -1672,13 +1672,13 @@ export default {
                     clearTimeout(this.peers[id].watchdog);
                     this.peers[id].watchdog = null;
                 }
-                // If it's a hard fail, mark as disconnected
-                if (state !== 'disconnected') {
-                    this.peers[id].connected = false;
-                }
-                
-                // Immediate aggressive reconnect
-                if (state === 'disconnected' || state === 'failed') {
+            } else if (['disconnected', 'failed', 'closed'].includes(state)) {
+                console.warn(`WebRTC: Peer ${id} entered ${state} state.`);
+                this.peers[id].connected = false;
+            }
+
+            // Recovery logic
+            if (['disconnected', 'failed'].includes(state)) {
                     if (!this.peers[id].reconnecting) {
                         console.warn(`WebRTC: Peer ${id} disconnected! Triggering immediate ICE Restart to unfreeze video.`);
                         if (this.peers[id].videoTimeout) clearTimeout(this.peers[id].videoTimeout);
@@ -1687,18 +1687,17 @@ export default {
                     }
                 }
 
-                // Connection is dead - auto cleanup if it doesn't recover in 15 seconds
-                if (!this.peers[id].deathTimer) {
-                    console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (15s).`);
-                    this.peers[id].deathTimer = setTimeout(() => {
-                        if (this.peers[id] && !['connected', 'completed'].includes(this.peers[id].pc?.connectionState)) {
-                            console.error(`WebRTC: Cleaning up dead peer ${id} after ${state} state timeout.`);
-                            this.removePeer(id);
-                        } else if (this.peers[id]) {
-                            this.peers[id].deathTimer = null; // Recovered
-                        }
-                    }, 15000);
-                }
+            // Connection is dead - auto cleanup if it doesn't recover in 15 seconds
+            if (['disconnected', 'failed'].includes(state) && !this.peers[id].deathTimer) {
+                console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (15s).`);
+                this.peers[id].deathTimer = setTimeout(() => {
+                    if (this.peers[id] && !['connected', 'completed'].includes(this.peers[id].pc?.connectionState)) {
+                        console.error(`WebRTC: Cleaning up dead peer ${id} after ${state} state timeout.`);
+                        this.removePeer(id);
+                    } else if (this.peers[id]) {
+                        this.peers[id].deathTimer = null; // Recovered
+                    }
+                }, 15000);
             }
         },
 
