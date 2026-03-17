@@ -1,147 +1,145 @@
-<div class="flex flex-col w-full relative">
+@php
+    $customer = auth()->guard('customer')->user();
 
-    {{-- Close / Back button --}}
+    $menuIcons = [
+        'account.profile' => [
+            'bg'    => 'bg-violet-50',
+            'color' => 'text-violet-400',
+            'svg'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>',
+        ],
+        'account.passkeys' => [
+            'bg'    => 'bg-blue-50',
+            'color' => 'text-blue-400',
+            'svg'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>',
+        ],
+        'account.login_activity' => [
+            'bg'    => 'bg-amber-50',
+            'color' => 'text-amber-400',
+            'svg'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+        ],
+        'account.orders' => [
+            'bg'    => 'bg-emerald-50',
+            'color' => 'text-emerald-500',
+            'svg'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
+        ],
+        'account.organizations' => [
+            'bg'    => 'bg-zinc-50',
+            'color' => 'text-zinc-400',
+            'svg'   => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>',
+        ],
+    ];
+@endphp
+
+{{-- ONE SOLID CARD --}}
+<div class="relative w-full bg-white border border-[#e9e8f5] shadow-[0_1px_3px_rgba(124,69,245,0.05)] overflow-hidden">
+
+    {{-- ✕ Close / Back button pinned inside card top-right --}}
     <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '/'"
-       class="absolute top-0 right-0 w-9 h-9 flex items-center justify-center bg-white border border-zinc-100 text-zinc-400 hover:text-zinc-700 hover:border-zinc-200 transition-all shadow-sm z-10"
+       class="absolute top-0 right-0 w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-600 transition-colors z-20"
        title="Закрыть">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
         </svg>
     </a>
 
-    @php
-        $customer = auth()->guard('customer')->user();
-    @endphp
-
+    {{-- ── Финансы ─────────────────────────────────────── --}}
     @if ($customer?->username)
         @php
             $hasPasskey = $customer->passkeys()->exists();
-            $hasPin = !empty($customer->wallet_pin);
+            $hasPin     = !empty($customer->wallet_pin);
             $isUnlocked = session('logged_in_via_passkey');
         @endphp
-        <div class="ios-nav-group">
-            <span class="ios-section-label">Финансы</span>
-            <div class="ios-nav-group-inner">
-                <div class="ios-nav-row cursor-pointer"
-                    onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'') }}">
-                    <span class="w-8 h-8 flex items-center justify-center bg-[#7C45F5]/10 shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
-                    </span>
-                    <span class="ios-nav-label">
-                        Meanly Wallet
-                    </span>
-                    <span class="ios-nav-row-arrow flex items-center gap-1 ml-auto">
-                        @if(!$hasPasskey && !$hasPin)
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                        @elseif ($isUnlocked)
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
-                            </svg>
-                        @else
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                        @endif
-                        <span class="icon-arrow-right text-zinc-200 text-lg"></span>
-                    </span>
-                </div>
 
-                @if ($customer->is_call_enabled)
-                    <div class="ios-nav-row cursor-pointer"
-                        onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
-                        <span class="w-8 h-8 flex items-center justify-center bg-zinc-50 shrink-0">
-                            <span class="text-base">📞</span>
-                        </span>
-                        <span class="ios-nav-label">Звонки P2P</span>
-                    </div>
-                @endif
-            </div>
+        <div class="px-5 pt-5 pb-2">
+            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-70">Финансы</span>
         </div>
+
+        {{-- Wallet --}}
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-[#f5f4fc] hover:bg-[#fafaff] active:bg-[#f5f4fc] transition-colors cursor-pointer"
+             onclick="{{ $isUnlocked
+                 ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\''
+                 : ($hasPasskey
+                     ? 'handleMeanlyWalletPasskey(this)'
+                     : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\''
+                 ) }}">
+            <span class="w-9 h-9 flex items-center justify-center bg-[#7C45F5]/10 shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                </svg>
+            </span>
+            <span class="flex-1 text-[15px] font-semibold text-zinc-800 tracking-tight">Meanly Wallet</span>
+            <span class="flex items-center gap-1 text-zinc-300">
+                @if(!$hasPasskey && !$hasPin)
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                @elseif ($isUnlocked)
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                @else
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                @endif
+                <span class="icon-arrow-right text-lg"></span>
+            </span>
+        </div>
+
+        {{-- Calls --}}
+        @if ($customer->is_call_enabled)
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-[#f5f4fc] hover:bg-[#fafaff] active:bg-[#f5f4fc] transition-colors cursor-pointer"
+             onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
+            <span class="w-9 h-9 flex items-center justify-center bg-zinc-50 shrink-0 text-base leading-none">📞</span>
+            <span class="flex-1 text-[15px] font-semibold text-zinc-800 tracking-tight">Звонки P2P</span>
+            <span class="icon-arrow-right text-zinc-300 text-lg"></span>
+        </div>
+        @endif
     @endif
 
-    @php
-    $menuIcons = [
-        'account.profile' => [
-            'bg' => 'bg-violet-50',
-            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>',
-            'color' => 'text-violet-400',
-        ],
-        'account.passkeys' => [
-            'bg' => 'bg-blue-50',
-            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>',
-            'color' => 'text-blue-400',
-        ],
-        'account.login_activity' => [
-            'bg' => 'bg-amber-50',
-            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>',
-            'color' => 'text-amber-400',
-        ],
-        'account.orders' => [
-            'bg' => 'bg-emerald-50',
-            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
-            'color' => 'text-emerald-500',
-        ],
-        'account.organizations' => [
-            'bg' => 'bg-zinc-50',
-            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>',
-            'color' => 'text-zinc-400',
-        ],
-    ];
-    @endphp
-
+    {{-- ── Профиль + остальные группы меню ────────────── --}}
     @foreach (menu()->getItems('customer') as $menuItem)
         @if ($menuItem->haveChildren())
-            <div class="ios-nav-group">
-                <span class="ios-section-label">{{ $menuItem->getName() }}</span>
-                <div class="ios-nav-group-inner">
-                    @foreach ($menuItem->getChildren() as $subMenuItem)
-                        @if ($subMenuItem->getKey() === 'account.organizations' && !$customer->is_b2b_enabled)
-                            @continue
-                        @endif
 
-                        @php
-                            $icon = $menuIcons[$subMenuItem->getKey()] ?? null;
-                        @endphp
-
-                        <a href="{{ $subMenuItem->getUrl() }}" class="ios-nav-row">
-                            @if ($icon)
-                                <span class="w-8 h-8 flex items-center justify-center {{ $icon['bg'] }} shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $icon['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        {!! $icon['svg'] !!}
-                                    </svg>
-                                </span>
-                            @endif
-                            <span class="ios-nav-label {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : '' }}">
-                                {{ $subMenuItem->getName() }}
-                            </span>
-                        </a>
-                    @endforeach
-                </div>
+            {{-- Section divider + label --}}
+            <div class="px-5 pt-5 pb-2 border-t border-[#f5f4fc]">
+                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-70">{{ $menuItem->getName() }}</span>
             </div>
+
+            @foreach ($menuItem->getChildren() as $subMenuItem)
+                @if ($subMenuItem->getKey() === 'account.organizations' && !$customer->is_b2b_enabled)
+                    @continue
+                @endif
+                @php $icon = $menuIcons[$subMenuItem->getKey()] ?? null; @endphp
+
+                <a href="{{ $subMenuItem->getUrl() }}"
+                   class="flex items-center gap-4 px-5 py-4 border-b border-[#f5f4fc] hover:bg-[#fafaff] active:bg-[#f5f4fc] transition-colors {{ $subMenuItem->isActive() ? 'bg-[#fafaff]' : '' }}">
+                    @if ($icon)
+                        <span class="w-9 h-9 flex items-center justify-center {{ $icon['bg'] }} shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $icon['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                {!! $icon['svg'] !!}
+                            </svg>
+                        </span>
+                    @endif
+                    <span class="flex-1 text-[15px] font-semibold tracking-tight {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : 'text-zinc-800' }}">
+                        {{ $subMenuItem->getName() }}
+                    </span>
+                    <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left"></span>
+                </a>
+            @endforeach
         @endif
     @endforeach
 
-
-    {{-- Logout in its own group (single-column) --}}
-    <div class="ios-nav-group">
-        <span class="ios-section-label">Сессия</span>
-        <div class="ios-nav-group-inner ios-nav-group-inner--full">
-            <a href="{{ route('shop.customer.session.destroy.get') }}" class="ios-nav-row">
-                <span class="ios-nav-label !text-red-500">Выйти</span>
-                <span class="ios-nav-row-arrow icon-arrow-right text-red-200 text-lg rtl:icon-arrow-left"></span>
-            </a>
-        </div>
-    </div>
+    {{-- ── Выйти ───────────────────────────────────────── --}}
+    <a href="{{ route('shop.customer.session.destroy.get') }}"
+       class="flex items-center gap-4 px-5 py-4 border-t border-[#f5f4fc] hover:bg-red-50 active:bg-red-100 transition-colors">
+        <span class="w-9 h-9 flex items-center justify-center bg-red-50 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+        </span>
+        <span class="flex-1 text-[15px] font-semibold text-red-500 tracking-tight">Выйти</span>
+        <span class="icon-arrow-right text-red-200 text-lg"></span>
+    </a>
 
 </div>
 
 @push('scripts')
     <script>
-        // Passkey helpers 
         function _b64ToUint8Array(base64) {
             if (!base64) return new Uint8Array(0);
             var padding = '='.repeat((4 - base64.length % 4) % 4);
@@ -164,19 +162,14 @@
         }
 
         window.handleMeanlyWalletPasskey = async function (el) {
-            if (el && el.classList.contains('opacity-50')) return; // prevent double click
-
-            console.log('[Passkey] handleMeanlyWalletPasskey started');
+            if (el && el.classList.contains('opacity-50')) return;
 
             if (!window.PublicKeyCredential) {
-                console.error('[Passkey] PublicKeyCredential not supported');
                 alert('Ваш браузер или соединение (требуется HTTPS) не поддерживают Passkey.');
                 return;
             }
 
-            if (el) {
-                el.classList.add('opacity-50', 'pointer-events-none', 'transition-all');
-            }
+            if (el) el.classList.add('opacity-50', 'pointer-events-none', 'transition-all');
 
             try {
                 var response = await fetch('{{ route('passkeys.login-options') }}', {
@@ -188,31 +181,18 @@
                     }
                 });
 
-                if (!response.ok) {
-                    var errText = await response.text();
-                    throw new Error('Ошибка связи с сервером (' + response.status + ')');
-                }
+                if (!response.ok) throw new Error('Ошибка связи с сервером (' + response.status + ')');
 
                 var options = await response.json();
-
-                if (!options || !options.challenge) {
-                    throw new Error('Сервер прислал некорректные данные (нет challenge).');
-                }
+                if (!options || !options.challenge) throw new Error('Сервер прислал некорректные данные.');
 
                 options.challenge = _b64ToUint8Array(options.challenge);
                 if (options.allowCredentials) {
-                    options.allowCredentials.forEach(function (cred) {
-                        cred.id = _b64ToUint8Array(cred.id);
-                    });
+                    options.allowCredentials.forEach(function (cred) { cred.id = _b64ToUint8Array(cred.id); });
                 }
 
-                var credential = await navigator.credentials.get({
-                    publicKey: options
-                });
-
-                if (!credential) {
-                    throw new Error('Операция отменена пользователем.');
-                }
+                var credential = await navigator.credentials.get({ publicKey: options });
+                if (!credential) throw new Error('Операция отменена пользователем.');
 
                 var payload = {
                     start_authentication_response: JSON.stringify({
@@ -247,14 +227,11 @@
                     throw new Error(result.message || 'Ошибка проверки Passkey на сервере.');
                 }
             } catch (err) {
-                console.error('[Passkey] Error during login flow:', err.name, err.message);
                 if (err.name !== 'NotAllowedError' && err.message !== 'Операция отменена пользователем.') {
                     alert(err.message);
                 }
             } finally {
-                if (el) {
-                    el.classList.remove('opacity-50', 'pointer-events-none');
-                }
+                if (el) el.classList.remove('opacity-50', 'pointer-events-none');
             }
         }
     </script>

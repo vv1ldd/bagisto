@@ -59,76 +59,46 @@
                     box-shadow: none !important;
                 }
 
-                .ios-nav-group-inner {
-                    display: grid !important;
-                    grid-template-columns: repeat(2, 1fr) !important;
-                    gap: 1px !important;
-                    background-color: #e9e8f5 !important;
-                    overflow: hidden !important;
-                    border: 1px solid #e9e8f5 !important;
-                    box-shadow: 0 1px 3px rgba(124,69,245,0.04) !important;
-                }
-
-                /* Single-column override for logout / special sections */
-                .ios-nav-group-inner--full {
-                    grid-template-columns: 1fr !important;
-                }
-
-                .ios-nav-row {
+                .nav-item {
                     display: flex !important;
-                    flex-direction: column !important;
-                    align-items: flex-start !important;
-                    justify-content: flex-start !important;
-                    gap: 10px !important;
-                    padding: 18px 18px !important;
+                    align-items: center !important;
+                    justify-content: space-between !important;
+                    padding: 18px 24px !important;
+                    border-bottom: 1px solid #f5f4fc !important;
                     transition: background-color 0.15s !important;
                     text-decoration: none !important;
                     background-color: #fff !important;
-                    min-height: 90px !important;
                 }
 
-                /* Full-width rows (logout etc.) go back to horizontal */
-                .ios-nav-group-inner--full .ios-nav-row {
-                    flex-direction: row !important;
-                    align-items: center !important;
-                    min-height: unset !important;
-                    padding: 18px 24px !important;
-                    justify-content: space-between !important;
+                .nav-item:last-child {
+                    border-bottom: none !important;
                 }
 
-                .ios-nav-row:hover {
+                .nav-item:hover {
                     background-color: #fafaff !important;
                 }
 
-                .ios-nav-row:active {
+                .nav-item:active {
                     background-color: #f5f4fc !important;
                 }
 
                 .ios-nav-label {
-                    font-size: 15px !important;
+                    font-size: 16px !important;
                     font-weight: 600 !important;
                     color: #27272a !important;
                     letter-spacing: -0.01em !important;
-                    line-height: 1.2 !important;
-                }
-
-                .ios-nav-row-arrow {
-                    display: none !important;
-                }
-
-                .ios-nav-group-inner--full .ios-nav-row-arrow {
-                    display: inline !important;
                 }
 
                 .ios-section-label {
+                    display: block !important;
                     font-size: 11px !important;
                     font-weight: 900 !important;
                     text-transform: uppercase !important;
                     letter-spacing: 0.3em !important;
                     color: #a1a1aa !important;
-                    margin-bottom: 16px !important;
                     opacity: 0.7 !important;
-                    display: block !important;
+                    padding: 20px 20px 8px !important;
+                    background: #fff !important;
                 }
 
                 .ios-tile-relative {
