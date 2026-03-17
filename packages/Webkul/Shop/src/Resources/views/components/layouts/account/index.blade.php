@@ -49,39 +49,64 @@
                     pointer-events: none;
                 }
 
-                /* === iOS Style Navigation & Cards === */
+                /* === Home-page-matching Navigation & Cards === */
                 .ios-nav-group {
-                    background-color: #fff !important;
-                    border: 1px solid #e4e4e7 !important;
+                    background-color: transparent !important;
+                    border: none !important;
                     border-radius: 0 !important;
-                    margin-bottom: 24px !important;
+                    margin-bottom: 32px !important;
+                    overflow: visible !important;
+                    box-shadow: none !important;
+                }
+
+                .ios-nav-group-inner {
+                    background-color: #fff !important;
                     overflow: hidden !important;
-                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                    /* 2-col grid gap look same as home */
+                    border: 1px solid #e9e8f5 !important;
+                    box-shadow: 0 1px 3px rgba(124,69,245,0.04) !important;
                 }
 
                 .ios-nav-row {
                     display: flex !important;
                     align-items: center !important;
                     justify-content: space-between !important;
-                    padding: 14px 20px !important;
-                    border-bottom: 1px solid #f4f4f5 !important;
-                    transition: background-color 0.2s !important;
+                    padding: 18px 24px !important;
+                    border-bottom: 1px solid #f5f4fc !important;
+                    transition: background-color 0.15s !important;
                     text-decoration: none !important;
+                    background-color: #fff !important;
                 }
 
                 .ios-nav-row:last-child {
                     border-bottom: none !important;
                 }
 
+                .ios-nav-row:hover {
+                    background-color: #fafaff !important;
+                }
+
                 .ios-nav-row:active {
-                    background-color: #f4f4f5 !important;
+                    background-color: #f5f4fc !important;
                 }
 
                 .ios-nav-label {
-                    font-size: 16px !important;
-                    font-weight: 500 !important;
-                    color: #18181b !important;
+                    font-size: 17px !important;
+                    font-weight: 600 !important;
+                    color: #27272a !important;
                     flex-grow: 1 !important;
+                    letter-spacing: -0.01em !important;
+                }
+
+                .ios-section-label {
+                    font-size: 11px !important;
+                    font-weight: 900 !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.3em !important;
+                    color: #a1a1aa !important;
+                    margin-bottom: 16px !important;
+                    opacity: 0.7 !important;
+                    display: block !important;
                 }
 
                 .ios-tile-relative {
