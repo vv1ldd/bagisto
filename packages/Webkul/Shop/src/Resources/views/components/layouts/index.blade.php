@@ -420,10 +420,12 @@
             $chatwootEnabled = core()->getConfigData('general.content.chatwoot.enabled');
             $chatwootToken = core()->getConfigData('general.content.chatwoot.website_token');
             $chatwootBaseUrl = core()->getConfigData('general.content.chatwoot.base_url') ?? 'https://support.wildcloud.ru';
+            
             $isCallPage = request()->routeIs('shop.call.index');
+            $isAccountPage = request()->routeIs('shop.customer.account*') || request()->routeIs('shop.customer.session.index');
         @endphp
 
-        @if ($chatwootEnabled && $chatwootToken && !$isCallPage)
+        @if ($chatwootEnabled && $chatwootToken && !$isCallPage && !$isAccountPage)
             <script>
               (function(d,t) {
                 var BASE_URL="{{ $chatwootBaseUrl }}";
