@@ -56,6 +56,36 @@
         </div>
     @endif
 
+    @php
+    $menuIcons = [
+        'account.profile' => [
+            'bg' => 'bg-violet-50',
+            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>',
+            'color' => 'text-violet-400',
+        ],
+        'account.passkeys' => [
+            'bg' => 'bg-blue-50',
+            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>',
+            'color' => 'text-blue-400',
+        ],
+        'account.login_activity' => [
+            'bg' => 'bg-amber-50',
+            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+            'color' => 'text-amber-400',
+        ],
+        'account.orders' => [
+            'bg' => 'bg-emerald-50',
+            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>',
+            'color' => 'text-emerald-500',
+        ],
+        'account.organizations' => [
+            'bg' => 'bg-zinc-50',
+            'svg' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>',
+            'color' => 'text-zinc-400',
+        ],
+    ];
+    @endphp
+
     @foreach (menu()->getItems('customer') as $menuItem)
         @if ($menuItem->haveChildren())
             <div class="ios-nav-group">
@@ -66,8 +96,19 @@
                             @continue
                         @endif
 
+                        @php
+                            $icon = $menuIcons[$subMenuItem->getKey()] ?? null;
+                        @endphp
+
                         <a href="{{ $subMenuItem->getUrl() }}" class="ios-nav-row">
-                            <span class="ios-nav-label {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : '' }}">
+                            <span class="ios-nav-label flex items-center gap-3 {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : '' }}">
+                                @if ($icon)
+                                    <span class="w-8 h-8 flex items-center justify-center {{ $icon['bg'] }} shrink-0">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $icon['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            {!! $icon['svg'] !!}
+                                        </svg>
+                                    </span>
+                                @endif
                                 {{ $subMenuItem->getName() }}
                             </span>
                             <span class="icon-arrow-right text-zinc-200 text-lg rtl:icon-arrow-left"></span>
@@ -77,6 +118,7 @@
             </div>
         @endif
     @endforeach
+
 
     {{-- Logout in its own group --}}
     <div class="ios-nav-group">
