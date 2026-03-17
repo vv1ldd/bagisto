@@ -222,7 +222,7 @@
             </div>
 
             <!-- Empty/Wait State: Shows when room is empty OR when waiting for the first peer to click Start -->
-            <div v-if="(!peerCount || !peers[peerIds[0]]?.connected) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/20">
+            <div v-if="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/20">
                 <!-- Blurred Background Video Layer -->
                 <div class="absolute inset-0 overflow-hidden pointer-events-none">
                     <video ref="localVideoWaiting" autoplay muted playsinline 
@@ -266,7 +266,12 @@
                         </template>
                         <template v-else>
                             <div class="w-12 h-12 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-6 mx-auto"></div>
-                            <h3 class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">Ожидание других участников...</h3>
+                            <h3 v-if="peerCount > 0" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
+                                Ждём @{{ cleanPeerName(peers[peerIds[0]].name) }}...
+                            </h3>
+                            <h3 v-else class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
+                                Ожидание других участников...
+                            </h3>
                             <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
                                 Соединение установится автоматически.
                             </p>
