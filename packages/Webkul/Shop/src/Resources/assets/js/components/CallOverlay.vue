@@ -222,7 +222,7 @@
             </div>
 
             <!-- Empty/Wait State: Shows when room is empty OR when waiting for the first peer to click Start -->
-            <div v-if="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/20">
+            <div v-show="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center translate-z-0 bg-zinc-950/20">
                 <!-- Blurred Background Video Layer -->
                 <div class="absolute inset-0 overflow-hidden pointer-events-none">
                     <video ref="localVideoWaiting" autoplay muted playsinline 
@@ -2081,6 +2081,8 @@ input, textarea {
 
 .animate-spin-slow {
     animation: spin 1.5s linear infinite;
+    will-change: transform;
+    transform: translateZ(0); /* Force GPU layer */
 }
 
 @keyframes fadeInUp {
