@@ -52,16 +52,6 @@
         </a>
     </div>
 
-    {{-- ── Logo Area ── --}}
-    <div class="flex flex-col items-center justify-center pt-8 pb-4">
-        <a href="{{ route('shop.home.index') }}" class="group flex flex-col items-center gap-1 transition-transform active:scale-95">
-            <span class="text-2xl font-black tracking-tighter text-[#7C45F5] leading-none mb-0.5">
-                {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}
-            </span>
-            <div class="h-1 w-8 bg-[#7C45F5]/20 rounded-full"></div>
-        </a>
-    </div>
-
     {{-- ── Финансы ── --}}
     @if ($customer && $customer->username)
         @php
@@ -83,16 +73,6 @@
                 </span>
                 <span class="nav-label">Wallet</span>
                 
-                {{-- Tiny status indicators if any --}}
-                @if(!$hasPasskey && !$hasPin || $isUnlocked)
-                    <div class="absolute top-3 left-3">
-                        @if(!$hasPasskey && !$hasPin)
-                            <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
-                        @elseif($isUnlocked)
-                            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                        @endif
-                    </div>
-                @endif
             </div>
 
             {{-- Calls --}}
