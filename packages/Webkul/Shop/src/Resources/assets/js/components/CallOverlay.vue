@@ -265,7 +265,7 @@
                             </div>
                         </template>
                         <template v-else>
-                            <div class="w-12 h-12 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin mb-6 mx-auto"></div>
+                            <div class="w-12 h-12 border-2 border-t-[#7C45F5] border-white/10 rounded-full animate-spin-slow mb-6 mx-auto shadow-[0_0_20px_rgba(124,69,245,0.2)]"></div>
                             <h3 v-if="peerCount > 0" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
                                 Ждём @{{ cleanPeerName(peers[peerIds[0]].name) }}...
                             </h3>
@@ -532,8 +532,8 @@ export default {
     methods: {
         cleanPeerName(name) {
             if (!name) return '';
-            // Strip everything after first non-word/space/dash character if it looks like technical garbage
-            return name.split(/[\s[\]#()\-_{}]/)[0].trim() || 'Участник';
+            // Strip technical parts and handle emails (split by space, brackets, hash, parens, dash, underscore, braces, OR @)
+            return name.split(/[\s[\]#()\-_{}@]/)[0].trim() || 'Участник';
         },
 
         getLetter(name) {
@@ -2072,6 +2072,15 @@ input, textarea {
 
 .animate-fade-in-up {
     animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+    animation: spin 1.5s linear infinite;
 }
 
 @keyframes fadeInUp {
