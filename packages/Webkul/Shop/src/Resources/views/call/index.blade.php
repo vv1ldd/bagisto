@@ -36,7 +36,8 @@
                     uuid: "{{ $session->uuid }}",
                     userName: "{{ $baseName }}",
                     hash: "{{ $participantHash }}",
-                    remoteName: "{{ $remoteName }}"
+                    remoteName: "{{ $remoteName }}",
+                    turnConfig: @json(config('services.turn'))
                 };
 
                 // Trigger overlay immediately

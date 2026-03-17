@@ -478,7 +478,7 @@ export default {
     mounted() {
         this.$emitter.on('join-room', (payload) => {
             if (this.isActive) return;
-            this.joinRoom(payload.uuid, payload.userName, payload.hash, payload.remoteName);
+            this.joinRoom(payload.uuid, payload.userName, payload.hash, payload.remoteName, payload.turnConfig);
         });
 
         this.$emitter.on('echo-state-change', (state) => {
@@ -943,8 +943,28 @@ export default {
             }
         },
 
-        async joinRoom(uuid, userName, hash, remoteName = '') {
+        async joinRoom(uuid, userName, hash, remoteName = '', turnConfig = null) {
             console.log(`CallOverlay [${this.sessionUniqueId}]: Preparing room ${uuid} as ${userName} (Remote: ${remoteName})`);
+            
+            // Apply Private TURN Config if provided 🕵️‍♂️🔒🚀
+            if (turnConfig && turnConfig.url) {
+                console.log('WebRTC: Applying private TURN configuration');
+                const privateTurn = {
+                    urls: turnConfig.url,
+                    username: turnConfig.username,
+                    credential: turnConfig.password
+                };
+                
+                // Add to start of list to prioritize private server
+                this.configuration.iceServers.unshift(privateTurn);
+                
+                // Also add as STUN if not present (sometimes useful for discovery)
+                const stunUrl = turnConfig.url.replace('turn:', 'stun:');
+                if (!this.configuration.iceServers.some(s => s.urls === stunUrl)) {
+                    this.configuration.iceServers.unshift({ urls: stunUrl });
+                }
+            }
+
             this.remoteParticipantName = remoteName;
             
             // Handle technical names or emails
