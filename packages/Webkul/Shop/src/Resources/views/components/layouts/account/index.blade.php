@@ -2,7 +2,7 @@
     'showBack' => true,
     'backLink' => null,
     'backText' => null,
-    'hasHeader' => true,
+    'hasHeader' => false,
     'hasFooter' => false,
     'isCardless' => false,
 ])
@@ -218,15 +218,10 @@
                 @endif
 
 
-
             </div>
         </div>
 
-        @if (!$hasFooter)
-            <div class="w-full text-center py-6 text-xs font-semibold text-zinc-500 tracking-wider mt-auto block">
-                © {{ date('Y') }} MEANLY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
-            </div>
-        @endif
+        @stack('scripts')
 
         @push('scripts')
             <script>
