@@ -31,7 +31,7 @@
     @if ($favicon = core()->getConfigData('general.design.admin_logo.favicon'))
         <link type="image/x-icon" href="{{ Storage::url($favicon) }}" rel="shortcut icon" sizes="16x16">
     @else
-        <link type="image/x-icon" href="{{ bagisto_asset('images/favicon.ico') }}" rel="shortcut icon" sizes="16x16" />
+        <link type="image/x-icon" href="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/favicon.ico') }}" rel="shortcut icon" sizes="16x16" />
     @endif
 
     @stack('styles')

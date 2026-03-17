@@ -53,7 +53,7 @@
         <link
             rel="icon"
             sizes="16x16"
-            href="{{ core()->getCurrentChannel()->favicon_url ?? '/favicon.ico' }}"
+            href="{{ core()->getCurrentChannel()->favicon_url ?? (core()->getCurrentChannel()->logo_url ?? '/favicon.ico') }}"
         />
 
         <script>
