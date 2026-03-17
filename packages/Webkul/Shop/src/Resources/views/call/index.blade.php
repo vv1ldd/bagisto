@@ -24,10 +24,16 @@
                     }
                 @endphp
 
+                @php
+                    $isCaller = auth()->guard('customer')->check() && auth()->guard('customer')->user()->email === $session->caller_email;
+                    $remoteName = $isCaller ? ($session->recipient_email ?? 'Гость') : ($session->caller_name ?? $session->caller_email);
+                @endphp
+
                 const roomData = {
                     uuid: "{{ $session->uuid }}",
                     userName: "{{ $baseName }}",
-                    hash: "{{ $participantHash }}"
+                    hash: "{{ $participantHash }}",
+                    remoteName: "{{ $remoteName }}"
                 };
 
                 // Trigger overlay immediately

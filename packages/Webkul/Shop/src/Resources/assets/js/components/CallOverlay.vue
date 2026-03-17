@@ -270,7 +270,7 @@
                                 Ждём @{{ cleanPeerName(peers[peerIds[0]].name) }}...
                             </h3>
                             <h3 v-else class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
-                                Ожидание @{{ cleanLocalName }}...
+                                Ожидаем @{{ cleanPeerName(remoteParticipantName) || 'собеседника' }}...
                             </h3>
                             <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
                                 Соединение установится автоматически.
@@ -410,7 +410,8 @@ export default {
             isProximityClose: false,
             lastToggleTime: 0,
             lastTapTime: 0,
-            lastSignalReceivedAt: null
+            lastSignalReceivedAt: null,
+            remoteParticipantName: ''
         };
     },
 
@@ -482,7 +483,7 @@ export default {
     mounted() {
         this.$emitter.on('join-room', (payload) => {
             if (this.isActive) return;
-            this.joinRoom(payload.uuid, payload.userName, payload.hash);
+            this.joinRoom(payload.uuid, payload.userName, payload.hash, payload.remoteName);
         });
 
         this.$emitter.on('echo-state-change', (state) => {
@@ -947,8 +948,9 @@ export default {
             }
         },
 
-        async joinRoom(uuid, userName, hash) {
-            console.log(`CallOverlay [${this.sessionUniqueId}]: Preparing room ${uuid} as ${userName} (Hash: ${hash})`);
+        async joinRoom(uuid, userName, hash, remoteName = '') {
+            console.log(`CallOverlay [${this.sessionUniqueId}]: Preparing room ${uuid} as ${userName} (Remote: ${remoteName})`);
+            this.remoteParticipantName = remoteName;
             
             // Handle technical names or emails
             if (userName.includes('@')) {
