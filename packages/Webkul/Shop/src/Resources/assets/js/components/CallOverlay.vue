@@ -266,14 +266,17 @@
                         </template>
                         <template v-else>
                             <div class="w-10 h-10 md:w-12 md:h-12 border-2 border-[#7C45F5] border-r-transparent animate-spin-robust mb-6 mx-auto shadow-[0_0_20px_rgba(124,69,245,0.2)]"></div>
-                            <h3 v-if="peerCount > 0" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
+                            <h3 v-if="signalingGraceActive" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-amber-500 animate-pulse">
+                                Соединение с сетью...
+                            </h3>
+                            <h3 v-else-if="peerCount > 0" class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
                                 Ждём @{{ (cleanPeerName(peers[peerIds[0]].name) === 'Гость' && remoteParticipantName) ? cleanPeerName(remoteParticipantName) : cleanPeerName(peers[peerIds[0]].name) }}...
                             </h3>
                             <h3 v-else class="text-xs md:text-sm font-black uppercase tracking-[0.3em] text-white/90">
                                 Ожидаем @{{ cleanPeerName(remoteParticipantName) || 'собеседника' }}...
                             </h3>
                             <p class="mt-4 text-[8px] md:text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">
-                                Соединение установится автоматически.
+                                {{ signalingGraceActive ? 'Проверяем настройки связи.' : 'Соединение установится автоматически.' }}
                             </p>
                         </template>
                     </div>
@@ -764,7 +767,7 @@ export default {
                             this.reconnectAttempts++;
                             this.retryEcho();
                         }
-                    }, 60000); // 60s grace period for mobile networks
+                    }, 15000); // 15s grace period for faster feedback🕵️‍♂️🔌🚀
                 }
             }
         },
