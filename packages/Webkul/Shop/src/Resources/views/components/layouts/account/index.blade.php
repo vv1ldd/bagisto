@@ -59,46 +59,64 @@
                     box-shadow: none !important;
                 }
 
+                .nav-grid {
+                    display: grid !important;
+                    grid-template-columns: repeat(2, 1fr) !important;
+                    gap: 1px !important;
+                    background-color: #e9e8f5 !important;
+                    border-bottom: 1px solid #e9e8f5 !important;
+                }
+
                 .nav-item {
                     display: flex !important;
                     align-items: center !important;
-                    justify-content: space-between !important;
-                    padding: 18px 24px !important;
-                    border-bottom: 1px solid #f5f4fc !important;
-                    transition: background-color 0.15s !important;
-                    text-decoration: none !important;
+                    gap: 16px !important;
+                    padding: 16px 20px !important;
                     background-color: #fff !important;
+                    text-decoration: none !important;
+                    transition: background-color 0.15s !important;
                 }
 
-                .nav-item:last-child {
-                    border-bottom: none !important;
+                .nav-tile {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    gap: 12px !important;
+                    padding: 24px 16px !important;
+                    text-align: center !important;
+                    background-color: #fff !important;
+                    text-decoration: none !important;
+                    transition: background-color 0.15s !important;
                 }
 
-                .nav-item:hover {
+                .nav-item:hover, .nav-tile:hover {
                     background-color: #fafaff !important;
                 }
 
-                .nav-item:active {
+                .nav-item:active, .nav-tile:active {
                     background-color: #f5f4fc !important;
                 }
 
-                .ios-nav-label {
-                    font-size: 16px !important;
+                .nav-label {
+                    font-size: 15px !important;
                     font-weight: 600 !important;
                     color: #27272a !important;
                     letter-spacing: -0.01em !important;
+                    line-height: 1.2 !important;
                 }
 
                 .ios-section-label {
                     display: block !important;
-                    font-size: 11px !important;
+                    font-size: 10px !important;
                     font-weight: 900 !important;
                     text-transform: uppercase !important;
-                    letter-spacing: 0.3em !important;
+                    letter-spacing: 0.25em !important;
                     color: #a1a1aa !important;
-                    opacity: 0.7 !important;
-                    padding: 20px 20px 8px !important;
+                    opacity: 0.6 !important;
+                    padding: 20px 20px 10px !important;
                     background: #fff !important;
+                    border-bottom: 1px solid #f5f4fc !important;
                 }
 
                 .ios-tile-relative {

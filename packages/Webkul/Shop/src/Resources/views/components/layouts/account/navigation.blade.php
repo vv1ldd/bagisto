@@ -30,19 +30,18 @@
     ];
 @endphp
 
-{{-- ONE SOLID CARD --}}
+{{-- ONE SOLID CARD with 2-column grids inside --}}
 <div class="relative w-full bg-white border border-[#e9e8f5] shadow-[0_1px_3px_rgba(124,69,245,0.05)] overflow-hidden">
 
-    {{-- ✕ Close / Back button pinned inside card top-right --}}
+    {{-- Close button --}}
     <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '/'"
-       class="absolute top-0 right-0 w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-600 transition-colors z-20"
-       title="Закрыть">
+       class="absolute top-0 right-0 w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-600 transition-colors z-20">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
         </svg>
     </a>
 
-    {{-- ── Финансы ─────────────────────────────────────── --}}
+    {{-- ── Финансы ── --}}
     @if ($customer?->username)
         @php
             $hasPasskey = $customer->passkeys()->exists();
@@ -50,90 +49,80 @@
             $isUnlocked = session('logged_in_via_passkey');
         @endphp
 
-        <div class="px-5 pt-5 pb-2">
-            <span class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-70">Финансы</span>
-        </div>
-
-        {{-- Wallet --}}
-        <div class="flex items-center gap-4 px-5 py-4 border-b border-[#f5f4fc] hover:bg-[#fafaff] active:bg-[#f5f4fc] transition-colors cursor-pointer"
-             onclick="{{ $isUnlocked
-                 ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\''
-                 : ($hasPasskey
-                     ? 'handleMeanlyWalletPasskey(this)'
-                     : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\''
-                 ) }}">
-            <span class="w-9 h-9 flex items-center justify-center bg-[#7C45F5]/10 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                </svg>
-            </span>
-            <span class="flex-1 text-[15px] font-semibold text-zinc-800 tracking-tight">Meanly Wallet</span>
-            <span class="flex items-center gap-1 text-zinc-300">
-                @if(!$hasPasskey && !$hasPin)
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                @elseif ($isUnlocked)
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
-                @else
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        <span class="ios-section-label">Финансы</span>
+        
+        <div class="nav-grid">
+            {{-- Wallet --}}
+            <div class="nav-tile cursor-pointer"
+                 onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'') }}">
+                <span class="w-9 h-9 flex items-center justify-center bg-[#7C45F5]/10 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                </span>
+                <span class="nav-label">Wallet</span>
+                
+                {{-- Tiny status indicators if any --}}
+                @if(!$hasPasskey && !$hasPin || $isUnlocked)
+                    <div class="absolute top-3 left-3">
+                        @if(!$hasPasskey && !$hasPin)
+                            <div class="w-1.5 h-1.5 rounded-full bg-amber-400"></div>
+                        @elseif($isUnlocked)
+                            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                        @endif
+                    </div>
                 @endif
-                <span class="icon-arrow-right text-lg"></span>
-            </span>
-        </div>
-
-        {{-- Calls --}}
-        @if ($customer->is_call_enabled)
-        <div class="flex items-center gap-4 px-5 py-4 border-b border-[#f5f4fc] hover:bg-[#fafaff] active:bg-[#f5f4fc] transition-colors cursor-pointer"
-             onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
-            <span class="w-9 h-9 flex items-center justify-center bg-zinc-50 shrink-0 text-base leading-none">📞</span>
-            <span class="flex-1 text-[15px] font-semibold text-zinc-800 tracking-tight">Звонки P2P</span>
-            <span class="icon-arrow-right text-zinc-300 text-lg"></span>
-        </div>
-        @endif
-    @endif
-
-    {{-- ── Профиль + остальные группы меню ────────────── --}}
-    @foreach (menu()->getItems('customer') as $menuItem)
-        @if ($menuItem->haveChildren())
-
-            {{-- Section divider + label --}}
-            <div class="px-5 pt-5 pb-2 border-t border-[#f5f4fc]">
-                <span class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 opacity-70">{{ $menuItem->getName() }}</span>
             </div>
 
-            @foreach ($menuItem->getChildren() as $subMenuItem)
-                @if ($subMenuItem->getKey() === 'account.organizations' && !$customer->is_b2b_enabled)
-                    @continue
-                @endif
-                @php $icon = $menuIcons[$subMenuItem->getKey()] ?? null; @endphp
+            {{-- Calls --}}
+            @if ($customer->is_call_enabled)
+                <div class="nav-tile cursor-pointer"
+                     onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
+                    <span class="w-9 h-9 flex items-center justify-center bg-zinc-50 shrink-0 text-base leading-none">📞</span>
+                    <span class="nav-label">Звонки</span>
+                </div>
+            @endif
+        </div>
+    @endif
 
-                <a href="{{ $subMenuItem->getUrl() }}"
-                   class="flex items-center gap-4 px-5 py-4 border-b border-[#f5f4fc] hover:bg-[#fafaff] active:bg-[#f5f4fc] transition-colors {{ $subMenuItem->isActive() ? 'bg-[#fafaff]' : '' }}">
-                    @if ($icon)
-                        <span class="w-9 h-9 flex items-center justify-center {{ $icon['bg'] }} shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $icon['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                {!! $icon['svg'] !!}
-                            </svg>
-                        </span>
+    {{-- ── Dynamic Groups (Profile, etc.) ── --}}
+    @foreach (menu()->getItems('customer') as $menuItem)
+        @if ($menuItem->haveChildren())
+            <span class="ios-section-label">{{ $menuItem->getName() }}</span>
+            <div class="nav-grid">
+                @foreach ($menuItem->getChildren() as $subMenuItem)
+                    @if ($subMenuItem->getKey() === 'account.organizations' && !$customer->is_b2b_enabled)
+                        @continue
                     @endif
-                    <span class="flex-1 text-[15px] font-semibold tracking-tight {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : 'text-zinc-800' }}">
-                        {{ $subMenuItem->getName() }}
-                    </span>
-                    <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left"></span>
-                </a>
-            @endforeach
+                    @php $icon = $menuIcons[$subMenuItem->getKey()] ?? null; @endphp
+
+                    <a href="{{ $subMenuItem->getUrl() }}" class="nav-tile">
+                        @if ($icon)
+                            <span class="w-9 h-9 flex items-center justify-center {{ $icon['bg'] }} shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 {{ $icon['color'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    {!! $icon['svg'] !!}
+                                </svg>
+                            </span>
+                        @endif
+                        <span class="nav-label {{ $subMenuItem->isActive() ? 'text-[#7C45F5]' : '' }}">
+                            {{ $subMenuItem->getName() }}
+                        </span>
+                    </a>
+                @endforeach
+            </div>
         @endif
     @endforeach
 
-    {{-- ── Выйти ───────────────────────────────────────── --}}
+    {{-- ── Logout ── --}}
     <a href="{{ route('shop.customer.session.destroy.get') }}"
-       class="flex items-center gap-4 px-5 py-4 border-t border-[#f5f4fc] hover:bg-red-50 active:bg-red-100 transition-colors">
-        <span class="w-9 h-9 flex items-center justify-center bg-red-50 shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+       class="nav-item border-t border-[#f5f4fc] hover:bg-red-50 text-red-500 font-bold">
+        <span class="w-8 h-8 flex items-center justify-center bg-red-50 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
             </svg>
         </span>
-        <span class="flex-1 text-[15px] font-semibold text-red-500 tracking-tight">Выйти</span>
-        <span class="icon-arrow-right text-red-200 text-lg"></span>
+        <span class="nav-label !text-red-500">Выйти</span>
+        <span class="icon-arrow-right text-red-200 ml-auto"></span>
     </a>
 
 </div>
@@ -163,37 +152,23 @@
 
         window.handleMeanlyWalletPasskey = async function (el) {
             if (el && el.classList.contains('opacity-50')) return;
-
             if (!window.PublicKeyCredential) {
                 alert('Ваш браузер или соединение (требуется HTTPS) не поддерживают Passkey.');
                 return;
             }
-
             if (el) el.classList.add('opacity-50', 'pointer-events-none', 'transition-all');
-
             try {
                 var response = await fetch('{{ route('passkeys.login-options') }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
                 });
-
-                if (!response.ok) throw new Error('Ошибка связи с сервером (' + response.status + ')');
-
+                if (!response.ok) throw new Error('Ошибка связи с сервером');
                 var options = await response.json();
-                if (!options || !options.challenge) throw new Error('Сервер прислал некорректные данные.');
-
                 options.challenge = _b64ToUint8Array(options.challenge);
                 if (options.allowCredentials) {
                     options.allowCredentials.forEach(function (cred) { cred.id = _b64ToUint8Array(cred.id); });
                 }
-
                 var credential = await navigator.credentials.get({ publicKey: options });
-                if (!credential) throw new Error('Операция отменена пользователем.');
-
                 var payload = {
                     start_authentication_response: JSON.stringify({
                         id: credential.id,
@@ -208,28 +183,19 @@
                         clientExtensionResults: credential.getClientExtensionResults() || {},
                     })
                 };
-
                 var loginResponse = await fetch('{{ route('passkeys.login') }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                var result = await loginResponse.json();
-
                 if (loginResponse.ok) {
                     window.location.href = '{{ route('shop.customers.account.credits.index') }}';
                 } else {
-                    throw new Error(result.message || 'Ошибка проверки Passkey на сервере.');
+                    var result = await loginResponse.json();
+                    throw new Error(result.message || 'Ошибка проверки Passkey');
                 }
             } catch (err) {
-                if (err.name !== 'NotAllowedError' && err.message !== 'Операция отменена пользователем.') {
-                    alert(err.message);
-                }
+                if (err.name !== 'NotAllowedError') alert(err.message);
             } finally {
                 if (el) el.classList.remove('opacity-50', 'pointer-events-none');
             }
