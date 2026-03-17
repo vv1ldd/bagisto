@@ -1560,6 +1560,13 @@ export default {
                         return;
                     }
                     console.log(`WebRTC: Handling answer from ${id}`);
+                    
+                    // ROBUST AUTO-JOIN: Initiator must join upon receiving answer🕵️‍♂️🔄🚀
+                    if (!this.isJoined) {
+                        console.log('Room: Auto-joining call upon receiving ANSWER');
+                        this.isJoined = true;
+                    }
+
                     try {
                         await peer.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
                     } catch (sdpErr) {
@@ -1606,6 +1613,13 @@ export default {
             if (this.peers[id]?.pc) return this.peers[id].pc;
 
             console.log(`WebRTC: Creating new PeerConnection for ${id}`);
+            
+            // ROBUST AUTO-JOIN: Any transition to WebRTC negotiation should switch UI to call grid🕵️‍♂️🔄🚀
+            if (!this.isJoined) {
+                console.log('Room: Auto-joining call due to PeerConnection creation');
+                this.isJoined = true;
+            }
+
             const pc = new RTCPeerConnection(this.configuration);
             
             if (!this.peers[id]) {
