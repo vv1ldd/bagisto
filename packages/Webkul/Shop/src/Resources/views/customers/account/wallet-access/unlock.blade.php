@@ -6,8 +6,10 @@
 
         <!-- Cancel Button to go back -->
         <a href="{{ route('shop.customers.account.index') }}"
-            class="absolute top-10 right-10 p-4 text-zinc-400 hover:text-zinc-900 transition active:scale-90 z-[10000]">
-            <span class="icon-cancel text-2xl"></span>
+            class="absolute top-10 right-10 w-10 h-10 flex items-center justify-center bg-red-500 text-white hover:bg-red-600 transition active:scale-90 z-[10000]">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
         </a>
 
         <div class="flex flex-col items-center w-full max-w-sm px-8">
