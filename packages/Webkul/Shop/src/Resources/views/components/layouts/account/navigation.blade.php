@@ -44,18 +44,15 @@
         </a>
     </div>
 
-    {{-- ── Финансы ── --}}
-    @if ($customer && $customer->username)
-        @php
-            $hasPasskey = $customer->passkeys()->exists();
-            $hasPin     = !empty($customer->wallet_pin);
-            $isUnlocked = session('logged_in_via_passkey');
-        @endphp
+    <div class="nav-grid !border-t-0">
+        {{-- Wallet --}}
+        @if ($customer && $customer->username)
+            @php
+                $hasPasskey = $customer->passkeys()->exists();
+                $hasPin     = !empty($customer->wallet_pin);
+                $isUnlocked = session('logged_in_via_passkey');
+            @endphp
 
-        <span class="ios-section-label">Финансы</span>
-        
-        <div class="nav-grid">
-            {{-- Wallet --}}
             <div class="nav-tile cursor-pointer"
                  onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'') }}">
                 <span class="w-9 h-9 flex items-center justify-center bg-[#7C45F5]/10 shrink-0">
@@ -64,7 +61,6 @@
                     </svg>
                 </span>
                 <span class="nav-label">Wallet</span>
-                
             </div>
 
             {{-- Calls --}}
@@ -75,14 +71,11 @@
                     <span class="nav-label">Звонки</span>
                 </div>
             @endif
-        </div>
-    @endif
+        @endif
 
-    {{-- ── Dynamic Groups (Profile, etc.) ── --}}
-    @foreach (menu()->getItems('customer') as $menuItem)
-        @if ($menuItem->haveChildren())
-            <span class="ios-section-label">{{ $menuItem->getName() }}</span>
-            <div class="nav-grid">
+        {{-- Dynamic Items from Customer Menu --}}
+        @foreach (menu()->getItems('customer') as $menuItem)
+            @if ($menuItem->haveChildren())
                 {{-- Manually inject Cart if it's the Profile section and cart has items --}}
                 @if ($menuItem->getKey() === 'account' && ($cart = cart()->getCart()) && $cart->items->count() > 0)
                     <a href="{{ route('shop.checkout.cart.index') }}" class="nav-tile">
@@ -117,21 +110,19 @@
                         </span>
                     </a>
                 @endforeach
-            </div>
-        @endif
-    @endforeach
+            @endif
+        @endforeach
 
-    {{-- ── Logout ── --}}
-    <a href="{{ route('shop.customer.session.destroy.get') }}"
-       class="nav-item border-t border-[#f5f4fc] hover:bg-red-50 text-red-500 font-bold">
-        <span class="w-8 h-8 flex items-center justify-center bg-red-50 shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-            </svg>
-        </span>
-        <span class="nav-label !text-red-500">Выйти</span>
-        <span class="icon-arrow-right text-red-200 ml-auto"></span>
-    </a>
+        {{-- Logout --}}
+        <a href="{{ route('shop.customer.session.destroy.get') }}" class="nav-tile hover:bg-red-50 group">
+            <span class="w-9 h-9 flex items-center justify-center bg-red-50 shrink-0 text-red-400 group-hover:text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+            </span>
+            <span class="nav-label !text-red-500">Выйти</span>
+        </a>
+    </div>
 
 </div>
 
