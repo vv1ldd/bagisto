@@ -98,12 +98,15 @@
                                             @{{ cart.coupon_code }}
                                         </p>
 
-                                        <span 
-                                            class="icon-cancel cursor-pointer text-sm transition-opacity hover:opacity-70"
+                                        <div 
+                                            class="flex h-5 w-5 cursor-pointer items-center justify-center bg-red-500 text-white transition-all hover:bg-red-600 active:scale-95"
                                             title="@lang('shop::app.checkout.coupon.remove')"
                                             @click="destroyCoupon"
                                         >
-                                        </span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
 

@@ -37,9 +37,9 @@
     <div class="absolute top-0 right-0 h-10 flex items-center z-20 pointer-events-none">
         {{-- Close button (Right) - Only for Main Menu --}}
         <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '/'"
-           class="w-10 h-10 flex items-center justify-center text-zinc-300 hover:text-zinc-600 transition-colors pointer-events-auto">
+           class="w-8 h-8 flex items-center justify-center bg-red-500 text-white hover:bg-red-600 transition-colors pointer-events-auto mr-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </a>
     </div>

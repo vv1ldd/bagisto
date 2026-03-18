@@ -131,18 +131,18 @@
                 z-index: 20 !important;
                 width: 32px !important;
                 height: 32px !important;
-                background-color: #fff !important;
-                border: 1px solid #f4f4f5 !important;
+                background-color: #ef4444 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                color: #a1a1aa !important;
+                color: #ffffff !important;
                 transition: all 0.2s ease !important;
+                box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2) !important;
             }
 
             .ios-close-button:hover {
-                color: #7C45F5 !important;
-                border-color: #e4e4e7 !important;
+                background-color: #dc2626 !important;
+                transform: scale(1.05) !important;
             }
 
             .ios-close-button:active {
@@ -173,6 +173,25 @@
 
             .ios-back-button:active {
                 transform: scale(0.95) !important;
+            }
+
+            /* Unified Red Cross Style for Modals/Drawers */
+            .ios-red-cross {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 32px !important;
+                height: 32px !important;
+                background-color: #ef4444 !important;
+                color: #ffffff !important;
+                transition: all 0.2s ease !important;
+                cursor: pointer !important;
+                font-size: 18px !important;
+            }
+
+            .ios-red-cross:hover {
+                background-color: #dc2626 !important;
+                transform: scale(1.05) !important;
             }
             {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
         </style>

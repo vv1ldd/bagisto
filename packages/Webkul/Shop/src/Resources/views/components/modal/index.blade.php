@@ -17,11 +17,14 @@
             <div {{ $header->attributes->merge(['class' => 'flex items-center justify-between gap-5 border-b border-zinc-200 bg-white p-8 max-sm:px-4 max-sm:py-3']) }}>
                 {{ $header }}
 
-                <span
-                    class="icon-cancel cursor-pointer text-3xl max-sm:text-2xl"
+                <div
+                    class="ios-red-cross"
                     @click="toggle"
                 >
-                </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </div>
             </div>
         </template>
     @endisset

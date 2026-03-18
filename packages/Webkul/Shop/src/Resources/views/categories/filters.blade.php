@@ -120,16 +120,16 @@
                                                                                                                         {{-- Clear All: Red cross (Matching height h-10) --}}
                                                                                                                         <button
                                                                                                                             type="button"
-                                                                                                                            class="flex h-10 w-10 items-center justify-center border border-red-500 !rounded-none transition-all active:scale-[0.95] ml-1 bg-white"
+                                                                                                                            class="flex h-10 w-10 items-center justify-center border !rounded-none transition-all active:scale-[0.95] ml-1"
                                                                                                                             title="@lang('shop::app.categories.filters.clear-all')"
                                                                                                                             :class="[
                                                                                                                                 hasAppliedFilters 
-                                                                                                                                    ? 'text-red-500 hover:bg-red-500 hover:text-white cursor-pointer opacity-100' 
-                                                                                                                                    : 'border-zinc-100 text-zinc-200 pointer-events-none opacity-0',
+                                                                                                                                    ? 'bg-red-500 text-white border-red-500 hover:bg-red-600 cursor-pointer opacity-100' 
+                                                                                                                                    : 'border-zinc-100 bg-white text-zinc-200 pointer-events-none opacity-0',
                                                                                                                             ]"
                                                                                                                             @click="clear()"
                                                                                                                         >
-                                                                                                                            <span class="icon-cancel text-xl font-bold"></span>
+                                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
                                                                                                                         </button>
                                                                                                                     </div>
                                                                                                                 </div>
