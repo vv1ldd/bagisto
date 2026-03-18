@@ -11,39 +11,24 @@
             </div>
 
             <div class="space-y-3 mb-6">
-                <div v-for="(email, index) in emails" :key="index" class="flex gap-2 animate-fade-in">
+                <div class="flex gap-2 animate-fade-in">
                     <div class="flex-grow relative group">
                         <input 
-                            type="email" 
-                            v-model="emails[index]" 
-                            placeholder="email@example.com"
+                            type="text" 
+                            v-model="email" 
+                            placeholder="email@example.com или @alias"
                             class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-600 focus:bg-black/60"
                             required
                         >
-                        <div v-if="emails.length > 1" 
-                            @click="removeEmail(index)"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-zinc-500 hover:text-red-400 cursor-pointer transition-colors"
-                        >
-                            <span class="icon-cross text-xl"></span>
-                        </div>
                     </div>
                 </div>
-
-                <button 
-                    @click="addEmail"
-                    type="button"
-                    class="w-full py-3 border-2 border-dashed border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:border-[#7C45F5]/40 hover:text-[#7C45F5] transition-all flex items-center justify-center gap-2 active:scale-[0.99]"
-                >
-                    <span class="text-lg">+</span>
-                    Добавить участника
-                </button>
             </div>
 
             <form :action="action" method="POST" @submit.prevent="submitForm">
                 <input type="hidden" name="_token" :value="csrfToken">
                 <input type="hidden" name="caller_name" :value="callerName">
                 <input type="hidden" name="caller_email" :value="callerEmail">
-                <input v-for="(email, index) in emails" :key="'h-'+index" type="hidden" name="recipient_emails[]" :value="email">
+                <input type="hidden" name="recipient_emails[]" :value="email">
 
                 <button 
                     type="submit" 
@@ -51,12 +36,12 @@
                     class="w-full bg-[#7C45F5] hover:bg-[#6b35e4] text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-[#7C45F5]/20 active:scale-95 disabled:opacity-50 disabled:active:scale-100"
                 >
                     <span v-if="isSubmitting">Отправка...</span>
-                    <span v-else>Начать встречу и отправить приглашения</span>
+                    <span v-else>Начать встречу</span>
                 </button>
             </form>
             
             <p class="mt-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider text-center">
-                Участники получат письмо со ссылкой на защищенную комнату
+                Участник получит письмо со ссылкой на защищенную комнату
             </p>
 
             <div class="mt-8 pt-8 border-t border-white/5 flex flex-col gap-4">
@@ -81,7 +66,7 @@ export default {
 
     data() {
         return {
-            emails: [''],
+            email: '',
             isSubmitting: false,
             roomUuid: this.generateUuid(),
             copied: false
@@ -95,20 +80,8 @@ export default {
     },
 
     methods: {
-        addEmail() {
-            this.emails.push('');
-            this.$nextTick(() => {
-                const inputs = this.$el.querySelectorAll('input[type="email"]');
-                inputs[inputs.length - 1].focus();
-            });
-        },
-
-        removeEmail(index) {
-            this.emails.splice(index, 1);
-        },
-
         submitForm(e) {
-            if (this.emails.some(email => !email || !email.includes('@'))) {
+            if (!this.email) {
                 return;
             }
             

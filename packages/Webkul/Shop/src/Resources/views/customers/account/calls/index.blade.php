@@ -1,4 +1,4 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :show-back="true">
     <!-- Page Title -->
     <x-slot:title>
         Звонки P2P
@@ -61,7 +61,7 @@
                         <input type="hidden" name="caller_email" value="{{ auth()->guard('customer')->user()->email }}">
                         
                         <div class="flex-grow">
-                            <input type="email" name="recipient_emails[]" placeholder="email@example.com" required
+                            <input type="text" name="recipient_emails[]" placeholder="email@example.com или @alias" required
                                 class="w-full bg-black/40 border border-white/10 rounded-2xl px-6 py-4 text-sm text-white focus:outline-none focus:border-[#7C45F5] transition-all placeholder:text-zinc-600">
                         </div>
 

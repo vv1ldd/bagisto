@@ -6,11 +6,23 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Webkul\Customer\Models\CallSession;
+use Webkul\Customer\Services\RecipientLookupService;
 use Webkul\Shop\Events\RoomCallSignal;
 use Webkul\Shop\Mail\GuestCallInvitation;
 
 class GuestCallController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @param  RecipientLookupService  $recipientLookupService
+     * @return void
+     */
+    public function __construct(
+        protected RecipientLookupService $recipientLookupService
+    ) {
+    }
+
     /**
      * Show the form to start a guest call.
      *
@@ -32,10 +44,36 @@ class GuestCallController extends Controller
             'caller_name'      => 'required|string|max:255',
             'caller_email'     => 'required|email',
             'recipient_emails' => 'required|array|min:1',
-            'recipient_emails.*' => 'email',
+            'recipient_emails.*' => 'required|string',
         ]);
 
-        $recipientEmails = array_values(array_unique(request('recipient_emails')));
+        $recipientInputs = array_values(array_unique(request('recipient_emails')));
+        $recipientEmails = [];
+
+        foreach ($recipientInputs as $input) {
+            $email = trim($input);
+
+            // If it's not a valid email, try looking it up as an alias/Credits ID
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $customer = $this->recipientLookupService->find($email);
+
+                if ($customer) {
+                    $email = $customer->email;
+                } else {
+                    // If not found and not an email, we skip it or could return error.
+                    // For now, let's just skip invalid identifiers to avoid Mail errors.
+                    continue;
+                }
+            }
+
+            $recipientEmails[] = $email;
+        }
+
+        if (empty($recipientEmails)) {
+            session()->flash('error', 'Указанный получатель не найден. Пожалуйста, проверьте email или @alias.');
+            return redirect()->back()->withInput();
+        }
+
         $uuid = (string) Str::uuid();
 
         $session = CallSession::create([
