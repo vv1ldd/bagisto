@@ -1,6 +1,9 @@
 <x-shop::layouts.account :show-back="false">
     <div class="flex-auto pb-3 ios-tile-relative ios-group max-w-[800px] mx-auto">
-        <a href="{{ route('shop.customers.account.credits.index') }}" class="ios-close-button">
+        @php $creditsUrl = route('shop.customers.account.credits.index'); @endphp
+        <a href="{{ $creditsUrl }}" 
+           onclick="handleMeanlyWalletPasskey(this, '{{ $creditsUrl }}'); return false;"
+           class="ios-close-button">
             <span class="icon-cancel text-xl"></span>
         </a>
 

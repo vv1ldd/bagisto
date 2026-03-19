@@ -136,8 +136,12 @@
 
             @auth('customer')
                 @if(auth()->guard('customer')->user()->id !== $customer->id)
-                    <a href="{{ route('shop.customers.account.credits.index', ['recipient' => '@' . $customer->credits_alias]) }}"
-                        class="action-button">
+                    @php 
+                        $creditsUrl = route('shop.customers.account.credits.index', ['recipient' => '@' . $customer->credits_alias]);
+                    @endphp
+                    <a href="{{ $creditsUrl }}"
+                       onclick="handleMeanlyWalletPasskey(this, '{{ $creditsUrl }}'); return false;"
+                       class="action-button">
                         Отправить Credits
                     </a>
                 @endif

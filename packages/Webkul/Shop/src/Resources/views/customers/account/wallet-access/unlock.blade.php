@@ -136,25 +136,6 @@
         </script>
 
         <style>
-            .pin-key {
-                @apply w-16 h-16 rounded-full bg-white border border-zinc-100 text-2xl font-medium text-zinc-900 transition-all active:scale-90 active:bg-zinc-50 shadow-sm flex items-center justify-center;
-                width: 64px;
-                height: 64px;
-                border-radius: 9999px;
-                background: white;
-                border-width: 1px;
-                border-color: #f4f4f5;
-                font-size: 1.5rem;
-                font-weight: 500;
-                color: #18181b;
-                transition: all 0.2s;
-                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            }
-            .pin-key:active {
-                transform: scale(0.9);
-                background: #f4f4f5;
-            }
-
             .animate-fade-in {
                 animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             }

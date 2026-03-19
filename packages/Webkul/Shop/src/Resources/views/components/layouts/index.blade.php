@@ -74,6 +74,7 @@
         </script>
 
         @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
+        <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
 
         <link
             rel="preconnect"
@@ -282,6 +283,66 @@
             window.addEventListener("load", function (event) {
                 app.mount("#app");
             });
+
+            // ── Global Passkey Wallet Helper ──────────────────────────────
+            function _b64ToUint8Array(base64) {
+                if (!base64) return new Uint8Array(0);
+                var padding = '='.repeat((4 - base64.length % 4) % 4);
+                var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+                var rawData = window.atob(b64);
+                var outputArray = new Uint8Array(rawData.length);
+                for (var i = 0; i < rawData.length; ++i) {
+                    outputArray[i] = rawData.charCodeAt(i);
+                }
+                return outputArray;
+            }
+
+            function _bufToBase64URL(buffer) {
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                for (var i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+            }
+
+            window.handleMeanlyWalletPasskey = async function (el, redirectUrl = null) {
+                if (el && el.classList.contains('opacity-50')) return;
+                if (!window.PublicKeyCredential) {
+                    alert('Ваш браузер или соединение (требуется HTTPS) не поддерживают Passkey.');
+                    return;
+                }
+                if (el) el.classList.add('opacity-50', 'pointer-events-none');
+                
+                try {
+                    const { startAuthentication } = SimpleWebAuthnBrowser;
+                    var response = await fetch('{{ route('passkeys.login-options') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) throw new Error('Ошибка связи с сервером');
+                    var options = await response.json();
+                    
+                    var asseResp = await startAuthentication(options);
+
+                    var loginResponse = await fetch('{{ route('passkeys.login') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                        body: JSON.stringify({ start_authentication_response: asseResp, remember: false })
+                    });
+
+                    if (loginResponse.ok) {
+                        window.location.href = redirectUrl || '{{ route('shop.customers.account.credits.index') }}';
+                    } else {
+                        var result = await loginResponse.json();
+                        throw new Error(result.message || 'Ошибка проверки Passkey');
+                    }
+                } catch (err) {
+                    if (err.name !== 'NotAllowedError') alert(err.message);
+                } finally {
+                    if (el) el.classList.remove('opacity-50', 'pointer-events-none');
+                }
+            }
         </script>
 
         {!! view_render_event('bagisto.shop.layout.vue-app-mount.after') !!}

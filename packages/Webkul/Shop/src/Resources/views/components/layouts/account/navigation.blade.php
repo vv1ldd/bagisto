@@ -121,81 +121,8 @@
             </span>
             <span class="nav-label !text-red-500">Выйти</span>
         </a>
-    </div>
-
-</div>
-
-@push('scripts')
-    <script>
-        function _b64ToUint8Array(base64) {
-            if (!base64) return new Uint8Array(0);
-            var padding = '='.repeat((4 - base64.length % 4) % 4);
-            var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-            var rawData = window.atob(b64);
-            var outputArray = new Uint8Array(rawData.length);
-            for (var i = 0; i < rawData.length; ++i) {
-                outputArray[i] = rawData.charCodeAt(i);
-            }
-            return outputArray;
-        }
-
-        function _bufToBase64URL(buffer) {
-            var binary = '';
-            var bytes = new Uint8Array(buffer);
-            for (var i = 0; i < bytes.byteLength; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-        }
-
-        window.handleMeanlyWalletPasskey = async function (el) {
-            if (el && el.classList.contains('opacity-50')) return;
-            if (!window.PublicKeyCredential) {
-                alert('Ваш браузер или соединение (требуется HTTPS) не поддерживают Passkey.');
-                return;
-            }
-            if (el) el.classList.add('opacity-50', 'pointer-events-none', 'transition-all');
-            try {
-                var response = await fetch('{{ route('passkeys.login-options') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
-                });
-                if (!response.ok) throw new Error('Ошибка связи с сервером');
-                var options = await response.json();
-                options.challenge = _b64ToUint8Array(options.challenge);
-                if (options.allowCredentials) {
-                    options.allowCredentials.forEach(function (cred) { cred.id = _b64ToUint8Array(cred.id); });
-                }
-                var credential = await navigator.credentials.get({ publicKey: options });
-                var payload = {
-                    start_authentication_response: JSON.stringify({
-                        id: credential.id,
-                        rawId: _bufToBase64URL(credential.rawId),
-                        response: {
-                            clientDataJSON: _bufToBase64URL(credential.response.clientDataJSON),
-                            authenticatorData: _bufToBase64URL(credential.response.authenticatorData),
-                            signature: _bufToBase64URL(credential.response.signature),
-                            userHandle: credential.response.userHandle ? _bufToBase64URL(credential.response.userHandle) : null,
-                        },
-                        type: credential.type,
-                        clientExtensionResults: credential.getClientExtensionResults() || {},
-                    })
-                };
-                var loginResponse = await fetch('{{ route('passkeys.login') }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (loginResponse.ok) {
-                    window.location.href = '{{ route('shop.customers.account.credits.index') }}';
-                } else {
-                    var result = await loginResponse.json();
-                    throw new Error(result.message || 'Ошибка проверки Passkey');
-                }
-            } catch (err) {
-                if (err.name !== 'NotAllowedError') alert(err.message);
-            } finally {
-                if (el) el.classList.remove('opacity-50', 'pointer-events-none');
+ @endpush
+classList.remove('opacity-50', 'pointer-events-none');
             }
         }
     </script>

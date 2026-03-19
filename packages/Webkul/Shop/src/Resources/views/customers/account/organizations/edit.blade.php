@@ -8,7 +8,13 @@
             <span class="icon-arrow-left text-xl"></span>
         </button>
 
-        <button type="button" @if (request()->ajax()) onclick="switchStep('organizations')" @else onclick="window.location='{{ route('shop.customers.account.credits.index') }}'" @endif
+        @php $creditsUrl = route('shop.customers.account.credits.index'); @endphp
+        <button type="button" 
+            @if (request()->ajax()) 
+                onclick="switchStep('organizations')" 
+            @else 
+                onclick="handleMeanlyWalletPasskey(this, '{{ $creditsUrl }}'); return false;" 
+            @endif
             class="ios-close-button">
             <span class="icon-cancel text-xl"></span>
         </button>
