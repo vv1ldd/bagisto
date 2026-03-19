@@ -121,9 +121,5 @@
             </span>
             <span class="nav-label !text-red-500">Выйти</span>
         </a>
- @endpush
-classList.remove('opacity-50', 'pointer-events-none');
-            }
-        }
-    </script>
-@endpush
+    </div>
+</div>
