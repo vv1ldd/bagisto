@@ -231,8 +231,5 @@ app.component("v-messenger", Messenger);
 app.component("v-room-joiner", RoomJoiner);
 app.component("v-meeting-inviter", MeetingInviter);
 
-app.config.globalProperties.$emitter.on('start-matrix-call', (data) => {
-    console.log('Starting Matrix call...', data);
-});
 
 export default app;

@@ -63,12 +63,9 @@
 </template>
 
 <script>
-import * as sdk from "matrix-js-sdk";
-
 export default {
     data() {
         return {
-            client: null,
             isVisible: false,
             userId: '',
             rooms: [],
@@ -80,107 +77,32 @@ export default {
     },
 
     mounted() {
-        this.initMatrix();
-        window.addEventListener('resize', this.handleResize);
+        // Matrix initialization removed. Communication is now via WebSockets/Echo in CallOverlay.vue.
+        console.warn('Messenger: Matrix integration has been removed. Use Echo for real-time signaling.');
         
         this.$emitter.on('open-messenger', (data) => {
             this.isVisible = !this.isVisible;
-            if (data && data.roomId) {
-                this.selectRoom(data.roomId);
-            }
         });
     },
 
-    unmounted() {
-        if (this.client) this.client.stopClient();
-    },
-
     methods: {
-        async initMatrix() {
-            try {
-                const response = await this.$axios.get('/api/messenger/credentials');
-                const creds = response.data;
-
-                this.client = sdk.createClient({
-                    baseUrl: creds.homeserver,
-                    userId: creds.username,
-                });
-
-                await this.client.login("m.login.password", {
-                    user: creds.username,
-                    password: creds.password,
-                });
-
-                this.userId = creds.username;
-                this.client.startClient({ initialSyncLimit: 10 });
-
-                this.client.on("sync", (state) => {
-                    if (state === "PREPARED") {
-                        this.loadRooms();
-                    }
-                });
-
-                this.client.on("Room.timeline", (event, room, toStartOfTimeline) => {
-                    if (toStartOfTimeline) return;
-                    if (room.roomId === this.activeRoomId) {
-                        this.processEvent(event);
-                    }
-                });
-
-            } catch (err) {
-                console.error("Matrix init error:", err);
-            }
-        },
-
-        loadRooms() {
-            const matrixRooms = this.client.getRooms();
-            this.rooms = matrixRooms.map(room => ({
-                roomId: room.roomId,
-                name: room.name,
-                avatarUrl: room.getMxcAvatarUrl() ? this.client.mxcUrlToHttp(room.getMxcAvatarUrl(), 40, 40, "crop") : null
-            }));
-        },
-
         selectRoom(roomId) {
             this.activeRoomId = roomId;
-            this.messages = [];
-            const room = this.client.getRoom(roomId);
-            if (room) {
-                room.getLiveTimeline().getEvents().forEach(event => this.processEvent(event));
-                this.scrollToBottom();
-            }
+            // Room loading from Matrix removed.
         },
 
-        processEvent(event) {
-            if (event.getType() !== "m.room.message") return;
+        sendMessage() {
+            if (!this.newMessage.trim()) return;
             
-            const date = new Date(event.getTs());
-            this.messages.push({
-                id: event.getId(),
-                body: event.getContent().body,
-                sender: event.getSender(),
-                senderName: event.sender?.name || event.getSender(),
-                time: date.getHours() + ":" + String(date.getMinutes()).padStart(2, '0')
-            });
-            this.scrollToBottom();
-        },
-
-        async sendMessage() {
-            if (!this.newMessage.trim() || !this.activeRoomId) return;
-            
-            const content = {
-                body: this.newMessage,
-                msgtype: "m.text",
-            };
-
-            await this.client.sendEvent(this.activeRoomId, "m.room.message", content, "");
+            // Matrix sendEvent removed. 
+            // TODO: Implement WebSocket message broadcast if needed.
             this.newMessage = '';
         },
 
         startCall() {
-             this.$emitter.emit('start-matrix-call', {
-                roomId: this.activeRoomId
-            });
+             // Matrix call signaling removed.
+             // CallOverlay already handles signaling via Echo.
+             console.log('Messenger: startCall trigger - ensure CallOverlay is active.');
         },
 
         scrollToBottom() {

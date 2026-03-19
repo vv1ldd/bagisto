@@ -327,12 +327,13 @@ Route::prefix('customer')->group(function () {
                 });
 
                 /**
-                 * Matrix / Element X Integration
-                 */
+                 * Matrix / Element X Integration (Disabled)
+                 *
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\MatrixController::class)->prefix('matrix')->group(function () {
                     Route::get('redirect', 'redirect')->name('shop.customers.account.matrix.redirect');
                     Route::post('verify', 'verifyCredentials')->name('shop.customers.account.matrix.verify');
                 });
+                */
 
             });
         });
