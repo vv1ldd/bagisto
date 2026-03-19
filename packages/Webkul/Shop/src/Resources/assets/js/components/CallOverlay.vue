@@ -1071,18 +1071,41 @@ export default {
         startPresence() {
             this.stopPresence();
             console.log(`CallOverlay [${this.sessionUniqueId}]: Starting presence ticks...`);
-            this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+            this.sendSignal({ 
+                type: 'presence', 
+                fingerprint: this.localFingerprint,
+                is_ready: this.isLocalReady 
+            });
             let ticks = 0;
             this.presenceInterval = setInterval(() => {
                 if (!this.isActive) return;
-                this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                this.sendSignal({ 
+                    type: 'presence', 
+                    fingerprint: this.localFingerprint,
+                    is_ready: this.isLocalReady
+                });
                 ticks++;
                 if (ticks > 10) {
                     this.stopPresence();
                     console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 8s`);
                     this.presenceInterval = setInterval(() => {
-                        if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                        if (this.isActive) {
+                             this.sendSignal({ 
+                                type: 'presence', 
+                                fingerprint: this.localFingerprint,
+                                is_ready: this.isLocalReady
+                            });
+                        }
                     }, 8000); // 8s heartbeat for better stale protection
+                }
+                
+                // REDUNDANT READINESS: If we are ready but peer isn't, re-poke ready signal 🕵️‍♂️🔄🚀
+                if (this.isLocalReady && this.peerCount > 0) {
+                    const firstPeerId = this.peerIds[0];
+                    if (this.peers[firstPeerId] && !this.peers[firstPeerId].isReady) {
+                        console.log(`Room: Peer ${firstPeerId} not ready yet. Re-sending READY signal.`);
+                        this.sendSignal({ type: 'ready', target: firstPeerId, fingerprint: this.localFingerprint });
+                    }
                 }
             }, 1000); // 1s ticks for first 10 seconds
         },
@@ -1289,18 +1312,34 @@ export default {
                             pc: null, stream: null, connected: false, streamReady: false, 
                             hasVideo: false, hasAudio: false, connectedAt: 0,
                             iceQueue: [], fingerprint: signal.fingerprint, verified: false,
-                            iceQueue: [], fingerprint: signal.fingerprint, verified: false,
                             lastSeen: now, reconnecting: false,
-                            makingOffer: false, ignoreOffer: false, watchdog: null, videoTimeout: null, isReady: false
+                            makingOffer: false, ignoreOffer: false, watchdog: null, videoTimeout: null, 
+                            isReady: !!signal.is_ready
                         }
                     };
-                    this.sendSignal({ type: 'presence', target: senderSessionId, fingerprint: this.localFingerprint });
+                    
+                    if (signal.is_ready) {
+                         console.log(`Room: Discovered ${senderName} (${peerKey}) who is already READY via presence.`);
+                    }
+
+                    this.sendSignal({ 
+                        type: 'presence', 
+                        target: senderSessionId, 
+                        fingerprint: this.localFingerprint,
+                        is_ready: this.isLocalReady
+                    });
                 } else {
                     const p = this.peers[peerKey];
                     p.lastSeen = now;
                     p.name = senderName; 
                     p.hash = senderHash;
                     if (signal.fingerprint) p.fingerprint = signal.fingerprint;
+                    
+                    // Sync readiness from presence heartbeat 🕵️‍♂️🔄🚀
+                    if (signal.is_ready && !p.isReady) {
+                        console.log(`Room: Peer ${senderName} (${peerKey}) became READY via presence heartbeat.`);
+                        p.isReady = true;
+                    }
                 }
 
                 if (isInitiator) {
@@ -1976,7 +2015,13 @@ export default {
                 if (match) {
                     this.localFingerprint = match[1];
                     console.log('Room: Initial fingerprint generated:', this.localFingerprint);
-                    if (this.isActive) this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint });
+                    if (this.isActive) {
+                        this.sendSignal({ 
+                            type: 'presence', 
+                            fingerprint: this.localFingerprint,
+                            is_ready: this.isLocalReady
+                        });
+                    }
                 }
                 pc.close();
             } catch (e) { console.warn('Room: Background fingerprint failed', e); }
