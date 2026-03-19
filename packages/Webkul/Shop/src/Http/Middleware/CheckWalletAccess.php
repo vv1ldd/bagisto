@@ -22,10 +22,9 @@ class CheckWalletAccess
         }
 
         $hasPasskey = $customer->passkeys()->count() > 0;
-        $hasPin = !empty($customer->wallet_pin);
 
-        // 1. If user has no passkey and no PIN, show Setup inline
-        if (!$hasPasskey && !$hasPin) {
+        // 1. If user has no passkey, show Setup inline
+        if (!$hasPasskey) {
             if ($request->routeIs('shop.customers.account.wallet.setup*')) {
                 return $next($request);
             }
@@ -44,11 +43,7 @@ class CheckWalletAccess
         // 2. If user is locked out, redirect to Unlock screen
         // We consider the wallet 'unlocked' if 'wallet_unlocked_at' is in the session
         // and it hasn't expired (timeout: 15 minutes = 900 seconds)
-        // Also if they just logged in via passkey, the other middleware `CheckPasskeyTimeout` might handle it,
-        // but let's strictly rely on a local `wallet_unlocked_at` session for wallet.
-
         $unlockedAt = session('wallet_unlocked_at');
-        // If the user JUST logged in via passkey, we can consider the wallet unlocked implicitly.
         $recentPasskeyLogin = session('logged_in_via_passkey') && session('passkey_unlocked_at');
 
         if ($recentPasskeyLogin) {
@@ -66,11 +61,6 @@ class CheckWalletAccess
             if ($request->routeIs('shop.customers.account.wallet.unlock*')) {
                 return $next($request);
             }
-
-            // If it's an AJAX request (e.g. from navigation click or SPA internal load), 
-            // the navigation helper `handleMeanlyWalletPasskey` handles it usually.
-            // But if they navigate directly via browser or a link that didn't intercept, 
-            // we show the unlock UI inline.
             
             if ($request->expectsJson()) {
                 return response()->json([
@@ -81,19 +71,8 @@ class CheckWalletAccess
             }
 
             // Return the unlock view DIRECTLY. 
-            // This renders the lock UI on the same URL (/customer/account/credits)
-            $hasPasskey = $customer->passkeys()->count() > 0;
-            // If no passkey or PIN, redirected to setup
-            if (!$hasPasskey && !$hasPin) {
-                return redirect()->route('shop.customers.account.wallet.setup');
-            }
-
-            // If locked and has passkey/pin, we return the unlock view directly.
-            // This ensures the user stays on their requested URL but must unlock first.
             return response()->view('shop::customers.account.wallet-access.unlock', [
                 'hasPasskey' => $hasPasskey,
-                'hasPin'     => $hasPin,
-                'pinLength'  => $customer->wallet_pin_length ?? 0,
             ]);
         }
 

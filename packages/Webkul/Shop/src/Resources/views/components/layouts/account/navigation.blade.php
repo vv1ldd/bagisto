@@ -49,7 +49,6 @@
         @if ($customer && $customer->username)
             @php
                 $hasPasskey = $customer->passkeys()->exists();
-                $hasPin     = !empty($customer->wallet_pin);
                 $isUnlocked = session('logged_in_via_passkey');
             @endphp
 

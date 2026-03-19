@@ -146,11 +146,10 @@ Route::prefix('customer')->group(function () {
 
             Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
                 /**
-                 * Wallet Access (PIN / Passkey) Setup & Unlock
+                 * Wallet Access (Passkey) Setup & Unlock
                  */
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\WalletAccessController::class)->prefix('wallet-access')->group(function () {
                     Route::get('setup', 'setup')->name('shop.customers.account.wallet.setup');
-                    Route::post('setup', 'storePin')->name('shop.customers.account.wallet.setup.post');
                 });
 
                 /**

@@ -82,8 +82,6 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'balance',
         'credits_id',
         'credits_alias',
-        'wallet_pin',
-        'wallet_pin_length',
         'is_b2b_enabled',
     ];
 

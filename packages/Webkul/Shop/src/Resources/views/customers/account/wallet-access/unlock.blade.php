@@ -30,46 +30,8 @@
                         class="w-full bg-[#7C45F5] text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-100 hover:bg-[#6836d4] transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-[16px] mb-6">
                         <span>Разблокировать</span>
                     </button>
-
-                    @if($hasPin)
-                        <button 
-                            onclick="showPinPad()"
-                            class="text-[14px] font-semibold text-zinc-400 hover:text-zinc-600 transition tracking-wide">
-                            Использовать ПИН-код
-                        </button>
-                    @endif
-                @elseif($hasPin)
-                    {{-- Only PIN available --}}
-                    <div id="pin-entry-container" class="w-full flex flex-col items-center">
-                        <div class="mb-8 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-[2.5rem] flex items-center justify-center text-5xl shadow-inner">
-                            🔒
-                        </div>
-                        
-                        <h1 class="text-[28px] font-bold text-zinc-900 mb-6 text-center tracking-tight">Введите ПИН</h1>
-                        
-                        <!-- PIN Dots -->
-                        <div class="flex gap-4 mb-12" id="pin-dots">
-                            @for($i=0; $i<$pinLength; $i++)
-                                <div class="w-4 h-4 rounded-full border-2 border-zinc-200 transition-all duration-300"></div>
-                            @endfor
-                        </div>
-
-                        <!-- Numeric Keypad -->
-                        <div class="grid grid-cols-3 gap-x-6 gap-y-4 w-full max-w-[280px]">
-                            @for($i=1; $i<=9; $i++)
-                                <button onclick="handlePinInput('{{ $i }}')" class="pin-key">{{ $i }}</button>
-                            @endfor
-                            <button onclick="handlePinClear()" class="pin-key !text-[14px] !font-bold text-zinc-400">Сброс</button>
-                            <button onclick="handlePinInput('0')" class="pin-key">0</button>
-                            <button onclick="handlePinBackspace()" class="pin-key text-zinc-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
                 @else
-                    {{-- No Passkey, No PIN --}}
+                    {{-- No Passkey --}}
                     <div class="mb-8 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-[2.5rem] flex items-center justify-center text-5xl shadow-inner">
                         🔒
                     </div>
@@ -101,99 +63,6 @@
 
         <script>
             const hasPasskey = {{ $hasPasskey ? 'true' : 'false' }};
-            const pinLength = {{ $pinLength }};
-            let currentPin = '';
-
-            // PIN Keypad Logic
-            window.handlePinInput = function(num) {
-                if (currentPin.length >= pinLength) return;
-                currentPin += num;
-                updatePinDots();
-                if (currentPin.length === pinLength) {
-                    verifyPin();
-                }
-            }
-
-            window.handlePinBackspace = function() {
-                currentPin = currentPin.slice(0, -1);
-                updatePinDots();
-            }
-
-            window.handlePinClear = function() {
-                currentPin = '';
-                updatePinDots();
-            }
-
-            function updatePinDots() {
-                const dots = document.querySelectorAll('#pin-dots div');
-                dots.forEach((dot, i) => {
-                    if (i < currentPin.length) {
-                        dot.classList.add('bg-[#7C45F5]', 'border-[#7C45F5]', 'scale-110');
-                    } else {
-                        dot.classList.remove('bg-[#7C45F5]', 'border-[#7C45F5]', 'scale-110');
-                    }
-                });
-            }
-
-            async function verifyPin() {
-                const statusEl = document.getElementById('unlock-status');
-                statusEl.innerHTML = '<span class="text-[#7C45F5] animate-pulse">Проверка...</span>';
-                
-                try {
-                    const response = await fetch("{{ route('shop.customers.account.wallet.verify_pin') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ pin: currentPin })
-                    });
-
-                    const result = await response.json();
-                    if (result.success) {
-                        statusEl.innerHTML = '<span class="text-emerald-500">Успешно!</span>';
-                        setTimeout(() => window.location.reload(), 500);
-                    } else {
-                        statusEl.innerHTML = '<span class="text-red-500">Неверный ПИН</span>';
-                        handlePinClear();
-                        setTimeout(() => statusEl.innerText = 'Защищено технологией Passkey', 2000);
-                    }
-                } catch (e) {
-                    statusEl.innerHTML = '<span class="text-red-500">Ошибка связи</span>';
-                }
-            }
-
-            window.showPinPad = function() {
-                // For users with both, allow switching to PIN
-                const content = document.getElementById('auth-content');
-                content.innerHTML = `
-                    <div id="pin-entry-container" class="w-full flex flex-col items-center animate-fade-in">
-                        <div class="mb-8 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-[2.5rem] flex items-center justify-center text-5xl shadow-inner">
-                            🔒
-                        </div>
-                        <h1 class="text-[28px] font-bold text-zinc-900 mb-6 text-center tracking-tight">Введите ПИН</h1>
-                        <div class="flex gap-4 mb-12" id="pin-dots">
-                            ${Array(pinLength).fill('<div class="w-4 h-4 rounded-full border-2 border-zinc-200 transition-all duration-300"></div>').join('')}
-                        </div>
-                        <div class="grid grid-cols-3 gap-x-6 gap-y-4 w-full max-w-[280px]">
-                            ${[1,2,3,4,5,6,7,8,9].map(i => `<button onclick="handlePinInput('${i}')" class="pin-key">${i}</button>`).join('')}
-                            <button onclick="handlePinClear()" class="pin-key !text-[14px] !font-bold text-zinc-400">Сброс</button>
-                            <button onclick="handlePinInput('0')" class="pin-key">0</button>
-                            <button onclick="handlePinBackspace()" class="pin-key text-zinc-400 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </button>
-                        </div>
-                        <button 
-                            onclick="window.location.reload()"
-                            class="text-[14px] font-semibold text-zinc-400 hover:text-zinc-600 transition mt-10 tracking-wide">
-                            Назад к Face ID
-                        </button>
-                    </div>
-                `;
-            }
 
             // Passkey Authentication Logic
             window.triggerPasskeyAuth = async function () {
