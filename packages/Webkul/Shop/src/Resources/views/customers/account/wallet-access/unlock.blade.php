@@ -102,7 +102,7 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({ start_authentication_response: asseResp, remember: false })
+                        body: JSON.stringify({ start_authentication_response: JSON.stringify(asseResp), remember: false })
                     });
 
                     if (verificationResp.ok) {

@@ -328,7 +328,7 @@
                     var loginResponse = await fetch('{{ route('passkeys.login') }}', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-                        body: JSON.stringify({ start_authentication_response: asseResp, remember: false })
+                        body: JSON.stringify({ start_authentication_response: JSON.stringify(asseResp), remember: false })
                     });
 
                     if (loginResponse.ok) {
