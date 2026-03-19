@@ -54,36 +54,62 @@ class OrderRepository extends Repository
 
             $order->payment()->create($data['payment']);
 
-            // Handle Credits Balance Deduction (Specific Crypto)
+            // Handle Credits Balance Deduction — auto-deduct from all coins, largest RUB value first
             if ($data['payment']['method'] === 'credits') {
                 $customer = $order->customer;
-                $cryptoCoin = $data['payment']['crypto_coin'] ?? null;
-
-                if (!$cryptoCoin) {
-                    throw new \Exception('Cryptocurrency not selected for credits payment.');
-                }
-
                 $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
-                $rate = $exchangeRateService->getRate($cryptoCoin);
 
-                if ($rate <= 0) {
-                    throw new \Exception("Could not fetch valid exchange rate for {$cryptoCoin}.");
+                // Get all balances with their RUB equivalent, sorted descending
+                $balances = $customer->balances()->where('amount', '>', 0)->get()->map(function ($b) use ($exchangeRateService) {
+                    $rate = $exchangeRateService->getRate($b->currency_code);
+                    return [
+                        'model' => $b,
+                        'rate' => $rate,
+                        'rub_value' => $rate > 0 ? $b->amount * $rate : 0,
+                    ];
+                })->filter(fn($b) => $b['rub_value'] > 0)
+                    ->sortByDesc('rub_value')
+                    ->values();
+
+                // Check total is sufficient
+                $totalRub = $balances->sum('rub_value');
+                if ($totalRub < $order->base_grand_total) {
+                    throw new \Exception(
+                        "Insufficient wallet balance. Required: {$order->base_grand_total} RUB, Available: " . round($totalRub, 2) . ' RUB'
+                    );
                 }
 
-                // Calculate exact crypto needed: Fiat Total / Rate (e.g., $100 / $50000 = 0.002 BTC)
-                $cryptoAmountRequired = $order->base_grand_total / $rate;
+                // Deduct from each coin largest-first until covered
+                $remaining = (float) $order->base_grand_total;
+                $deductionLog = [];
 
-                $cryptoBalance = $customer->balances()->where('currency_code', $cryptoCoin)->first();
+                foreach ($balances as $entry) {
+                    if ($remaining <= 0)
+                        break;
 
-                if (!$cryptoBalance || $cryptoBalance->amount < $cryptoAmountRequired) {
-                    throw new \Exception("Insufficient {$cryptoCoin} balance. Required: {$cryptoAmountRequired}, Available: " . ($cryptoBalance ? $cryptoBalance->amount : 0));
+                    $model = $entry['model'];
+                    $rate = $entry['rate'];
+                    $maxCrypto = $model->amount;
+                    $maxRub = $maxCrypto * $rate;
+
+                    if ($maxRub <= $remaining) {
+                        // Use entire balance of this coin
+                        $cryptoUsed = $maxCrypto;
+                        $rubUsed = $maxRub;
+                    } else {
+                        // Partial use
+                        $cryptoUsed = $remaining / $rate;
+                        $rubUsed = $remaining;
+                    }
+
+                    $model->amount -= $cryptoUsed;
+                    $model->save();
+
+                    $remaining -= $rubUsed;
+                    $deductionLog[] = number_format($cryptoUsed, 8) . ' ' . strtoupper($model->currency_code) . ' @ ' . $rate;
                 }
 
-                // Deduct native crypto
-                $cryptoBalance->amount -= $cryptoAmountRequired;
-                $cryptoBalance->save();
-
-                // Log the purchase transaction (keep amount as fiat for general history consistency)
+                // Log the purchase transaction
                 \Webkul\Customer\Models\CustomerTransaction::create([
                     'uuid' => \Illuminate\Support\Str::uuid(),
                     'customer_id' => $customer->id,
@@ -92,8 +118,12 @@ class OrderRepository extends Repository
                     'status' => 'completed',
                     'reference_type' => get_class($order),
                     'reference_id' => $order->id,
-                    'notes' => "Purchase for Order #{$order->increment_id} (Paid " . number_format($cryptoAmountRequired, 8) . " {$cryptoCoin} @ rate {$rate})",
+                    'notes' => 'Purchase for Order #' . $order->increment_id . ' | ' . implode(', ', $deductionLog),
                 ]);
+
+                // Payment is immediate — mark order as paid (processing = ожидает выполнения)
+                $order->status = Order::STATUS_PROCESSING;
+                $order->save();
             }
 
             if (isset($data['shipping_address'])) {
@@ -123,6 +153,39 @@ class OrderRepository extends Repository
             }
 
             Event::dispatch('checkout.order.save.after', $order);
+
+            // ─── Cashback for non-wallet payments ───────────────────────────────────
+            if ($order->customer_id && $data['payment']['method'] !== 'credits') {
+                try {
+                    $cashbackPercent = (float) config('meanly.cashback_percent', 5);
+                    if ($cashbackPercent > 0) {
+                        $cashbackAmount = round($order->base_grand_total * $cashbackPercent / 100, 2);
+
+                        // Credit RUB balance
+                        $rubBalance = \Webkul\Customer\Models\CustomerBalance::firstOrNew([
+                            'customer_id' => $order->customer_id,
+                            'currency_code' => 'RUB',
+                        ]);
+                        $rubBalance->amount = ($rubBalance->amount ?? 0) + $cashbackAmount;
+                        $rubBalance->save();
+
+                        // Log transaction
+                        \Webkul\Customer\Models\CustomerTransaction::create([
+                            'uuid' => \Illuminate\Support\Str::uuid(),
+                            'customer_id' => $order->customer_id,
+                            'amount' => $cashbackAmount,
+                            'type' => 'cashback',
+                            'status' => 'completed',
+                            'reference_type' => get_class($order),
+                            'reference_id' => $order->id,
+                            'notes' => "Кэшбек {$cashbackPercent}% с заказа #{$order->increment_id}",
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Cashback failed for order #' . $order->increment_id . ': ' . $e->getMessage());
+                }
+            }
+
         } catch (\Exception $e) {
             /* rolling back first */
             DB::rollBack();
@@ -207,6 +270,15 @@ class OrderRepository extends Repository
             }
 
             $this->downloadableLinkPurchasedRepository->updateStatus($item, 'expired');
+        }
+
+        // Refund crypto balance if paid with Meanly Wallet (credits)
+        if (
+            $order->payment
+            && $order->payment->method === 'credits'
+            && $order->customer_id
+        ) {
+            $this->refundCreditsForOrder($order);
         }
 
         $this->updateOrderStatus($order);
@@ -436,5 +508,83 @@ class OrderRepository extends Repository
         return $orderOrId instanceof Order
             ? $orderOrId
             : $this->findOrFail($orderOrId);
+    }
+
+    /**
+     * Restore crypto balances when a credits-paid order is cancelled.
+     * Parses the original purchase transaction notes to restore exact amounts.
+     *
+     * @param  \Webkul\Sales\Contracts\Order  $order
+     * @return void
+     */
+    protected function refundCreditsForOrder($order): void
+    {
+        $customer = $order->customer;
+
+        if (!$customer) {
+            return;
+        }
+
+        // Find the original purchase transaction for this order
+        $purchaseTx = \Webkul\Customer\Models\CustomerTransaction::where('customer_id', $customer->id)
+            ->where('type', 'purchase')
+            ->where('reference_id', $order->id)
+            ->first();
+
+        if (!$purchaseTx) {
+            Log::warning("refundCreditsForOrder: no purchase transaction found for order #{$order->id}");
+            return;
+        }
+
+        // Parse notes: "Purchase for Order #N | 0.00200000 TON @ 250, 0.50000000 USDT_TON @ 98"
+        $refundLog = [];
+        $totalRefundedRub = 0;
+
+        if (preg_match_all('/(\d+\.\d+)\s+(\w+)\s+@\s+([\d.]+)/', (string) $purchaseTx->notes, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $cryptoAmount = (float) $m[1];
+                $coinCode = strtolower($m[2]);
+                $rate = (float) $m[3];
+
+                if ($cryptoAmount <= 0) {
+                    continue;
+                }
+
+                // Restore the balance
+                $balance = $customer->balances()->where('currency_code', $coinCode)->first();
+
+                if ($balance) {
+                    $balance->amount += $cryptoAmount;
+                    $balance->save();
+                } else {
+                    // Create balance record if it somehow doesn't exist
+                    $customer->balances()->create([
+                        'currency_code' => $coinCode,
+                        'amount' => $cryptoAmount,
+                    ]);
+                }
+
+                $rubValue = $cryptoAmount * $rate;
+                $totalRefundedRub += $rubValue;
+                $refundLog[] = number_format($cryptoAmount, 8) . ' ' . strtoupper($coinCode) . ' @ ' . $rate;
+            }
+        }
+
+        if (empty($refundLog)) {
+            Log::warning("refundCreditsForOrder: could not parse deduction log for order #{$order->id}. Notes: {$purchaseTx->notes}");
+            return;
+        }
+
+        // Record refund transaction in wallet history
+        \Webkul\Customer\Models\CustomerTransaction::create([
+            'uuid' => \Illuminate\Support\Str::uuid(),
+            'customer_id' => $customer->id,
+            'amount' => round($totalRefundedRub, 2),
+            'type' => 'refund',
+            'status' => 'completed',
+            'reference_type' => get_class($order),
+            'reference_id' => $order->id,
+            'notes' => 'Refund for cancelled Order #' . $order->increment_id . ' | ' . implode(', ', $refundLog),
+        ]);
     }
 }

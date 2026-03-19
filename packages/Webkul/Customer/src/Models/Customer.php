@@ -44,6 +44,9 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     protected $casts = [
         'subscribed_to_news_letter' => 'boolean',
         'balance' => 'decimal:4',
+        'is_investor' => 'boolean',
+        'is_call_enabled' => 'boolean',
+        'is_b2b_enabled' => 'boolean',
     ];
 
     /**
@@ -71,13 +74,15 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'status',
         'is_verified',
         'is_suspended',
+        'is_investor',
+        'is_call_enabled',
         'last_login_ip',
         'verification_code',
         'registration_ip',
         'balance',
         'credits_id',
         'credits_alias',
-        'pin_code',
+        'is_b2b_enabled',
     ];
 
     /**
@@ -89,7 +94,6 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'password',
         'api_token',
         'remember_token',
-        'pin_code',
     ];
 
     /**
@@ -178,6 +182,16 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     }
 
     /**
+     * Get the customer organizations.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function organizations()
+    {
+        return $this->hasMany(OrganizationProxy::modelClass(), 'customer_id');
+    }
+
+    /**
      * Get default customer address that owns the customer.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -236,16 +250,6 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     public function all_carts()
     {
         return $this->hasMany(CartProxy::modelClass(), 'customer_id');
-    }
-
-    /**
-     * Check if the customer has any passkeys configured.
-     *
-     * @return bool
-     */
-    public function hasPasskeys(): bool
-    {
-        return $this->passkeys()->exists();
     }
 
     /**

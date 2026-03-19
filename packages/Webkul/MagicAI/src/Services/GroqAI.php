@@ -34,7 +34,7 @@ class GroqAI
     public function setConfig(): void
     {
         config([
-            'groq.api_key' => core()->getConfigData('general.magic_ai.settings.api_key'),
+            'groq.api_key' => env('MAGIC_AI_API_KEY', config('magic_ai_settings.api_key')),
         ]);
     }
 
@@ -44,18 +44,18 @@ class GroqAI
     public function ask(): string
     {
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer '.config('groq.api_key'),
+            'Authorization' => 'Bearer ' . config('groq.api_key'),
             'Content-Type' => 'application/json',
         ])->post(self::API_URL, [
-            'model' => $this->model,
-            'temperature' => $this->temperature,
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => $this->prompt,
-                ],
-            ],
-        ]);
+                    'model' => $this->model,
+                    'temperature' => $this->temperature,
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $this->prompt,
+                        ],
+                    ],
+                ]);
 
         $result = $response->json();
 

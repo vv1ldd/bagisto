@@ -22,7 +22,8 @@ class ReviewController extends APIController
         protected ProductRepository $productRepository,
         protected ProductReviewRepository $productReviewRepository,
         protected ProductReviewAttachmentRepository $productReviewAttachmentRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Pending review status.
@@ -102,7 +103,11 @@ class ReviewController extends APIController
     {
         $review = $this->productReviewRepository->find($reviewId);
 
-        if ($review?->status !== self::STATUS_APPROVED) {
+        if (
+            !config('magic_ai_settings.enabled')
+            || !core()->getConfigData('general.magic_ai.review_translation.enabled')
+            || $review?->status !== self::STATUS_APPROVED
+        ) {
             return new JsonResponse([
                 'message' => trans('shop::app.products.view.reviews.empty-review'),
             ], 400);
@@ -144,7 +149,7 @@ class ReviewController extends APIController
     private function censorReviewerName(string $name): string
     {
         return collect(explode(' ', $name))
-            ->map(fn ($part) => mb_substr($part, 0, 1).str_repeat('*', max(mb_strlen($part) - 1, 0)))
+            ->map(fn($part) => mb_substr($part, 0, 1) . str_repeat('*', max(mb_strlen($part) - 1, 0)))
             ->join(' ');
     }
 }

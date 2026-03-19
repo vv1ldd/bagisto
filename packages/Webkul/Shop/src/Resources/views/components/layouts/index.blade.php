@@ -44,15 +44,37 @@
             content="Bagisto"
         >
 
+        @if (auth()->guard('customer')->check())
+            <meta name="customer-id" content="{{ auth()->guard('customer')->user()->id }}">
+        @endif
+
         @stack('meta')
 
         <link
             rel="icon"
             sizes="16x16"
-            href="{{ core()->getCurrentChannel()->favicon_url ?? '/favicon.ico' }}"
+            href="{{ core()->getCurrentChannel()->favicon_url ?? (core()->getCurrentChannel()->logo_url ?? '/favicon.ico') }}"
         />
 
+        <script>
+            window.Laravel = {
+                reverbAppKey: '{{ config('broadcasting.connections.reverb.key') }}',
+                reverbHost: '{{ config('broadcasting.connections.reverb.frontend.host') && config('broadcasting.connections.reverb.frontend.host') !== '127.0.0.1' ? config('broadcasting.connections.reverb.frontend.host') : '' }}' || window.location.hostname,
+                reverbPort: '{{ config('broadcasting.connections.reverb.frontend.port') }}',
+                reverbScheme: '{{ config('broadcasting.connections.reverb.frontend.scheme') }}',
+                pusherAppKey: '{{ config('broadcasting.connections.pusher.key') }}',
+                pusherHost: '{{ config('broadcasting.connections.pusher.options.host') }}',
+                pusherPort: '{{ config('broadcasting.connections.pusher.options.port') }}',
+                pusherScheme: '{{ config('broadcasting.connections.pusher.options.scheme') }}',
+                pusherCluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
+                turnUrl: '{{ config('services.turn.url') }}',
+                turnUsername: '{{ config('services.turn.username') }}',
+                turnPassword: '{{ config('services.turn.password') }}',
+            };
+        </script>
+
         @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
+        <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
 
         <link
             rel="preconnect"
@@ -79,6 +101,99 @@
         @stack('styles')
 
         <style>
+            /* Force sharp corners globally (Meanly brutalist style) */
+            *, *::before, *::after {
+                border-radius: 0 !important;
+                -webkit-border-radius: 0 !important;
+                -moz-border-radius: 0 !important;
+            }
+            
+            /* Target all input types and states */
+            input, textarea, select, button, .v-field, .v-field__overlay, .v-field__outline, .form-control {
+                border-radius: 0 !important;
+            }
+
+            .ios-tile-relative {
+                position: relative !important;
+            }
+
+            .ios-group {
+                background-color: #fff !important;
+                border: 1px solid #f3f4f6 !important;
+                margin-bottom: 20px !important;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04) !important;
+            }
+
+            .ios-close-button {
+                position: absolute !important;
+                top: 20px !important;
+                right: 20px !important;
+                left: auto !important;
+                z-index: 20 !important;
+                width: 32px !important;
+                height: 32px !important;
+                background-color: #ef4444 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #ffffff !important;
+                transition: all 0.2s ease !important;
+                box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2) !important;
+            }
+
+            .ios-close-button:hover {
+                background-color: #dc2626 !important;
+                transform: scale(1.05) !important;
+            }
+
+            .ios-close-button:active {
+                transform: scale(0.95) !important;
+            }
+
+            .ios-back-button {
+                position: absolute !important;
+                top: 20px !important;
+                left: 20px !important;
+                right: auto !important;
+                z-index: 20 !important;
+                width: 32px !important;
+                height: 32px !important;
+                background-color: #fff !important;
+                border: 1px solid #f4f4f5 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #a1a1aa !important;
+                transition: all 0.2s ease !important;
+            }
+
+            .ios-back-button:hover {
+                color: #7C45F5 !important;
+                border-color: #e4e4e7 !important;
+            }
+
+            .ios-back-button:active {
+                transform: scale(0.95) !important;
+            }
+
+            /* Unified Red Cross Style for Modals/Drawers */
+            .ios-red-cross {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 32px !important;
+                height: 32px !important;
+                background-color: #ef4444 !important;
+                color: #ffffff !important;
+                transition: all 0.2s ease !important;
+                cursor: pointer !important;
+                font-size: 18px !important;
+            }
+
+            .ios-red-cross:hover {
+                background-color: #dc2626 !important;
+                transform: scale(1.05) !important;
+            }
             {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
         </style>
 
@@ -103,16 +218,13 @@
         </a>
 
         <!-- Premium Background Layer - Refined Mesh Gradient -->
-        <div class="fixed inset-0 bg-[#f8f8fa] -z-30"></div>
-        <div class="fixed inset-0 bg-gradient-to-tr from-[#7C45F5]/15 via-white to-[#FF4D6D]/10 -z-20"></div>
-        <div class="fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(124,69,245,0.08)_0%,transparent_50%),radial-gradient(circle_at_80%_80%,rgba(255,77,109,0.08)_0%,transparent_50%)] -z-10 animate-pulse duration-[10s]"></div>
+        <!-- Solid Background Layer (Matches Sidebar for Seamless integration) -->
+        <div class="fixed inset-0 -z-30" style="background-color: #F0EFFF;"></div>
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative">
-            <!-- Sidebar Navigation -->
-            <x-shop::layouts.sidebar />
-
-            <div id="content-push-wrapper" class="flex flex-col min-h-screen bg-transparent transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] will-change-transform shadow-[0_0_80px_rgba(0,0,0,0.02)] px-0 md:px-0">
+            
+            <div id="main-content-wrapper" class="flex flex-col min-h-screen bg-transparent transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] px-0 md:px-0">
                 <!-- Flash Message Blade Component -->
                 <x-shop::flash-group />
 
@@ -134,7 +246,7 @@
                 {!! view_render_event('bagisto.shop.layout.content.before') !!}
 
                 <!-- Page Content Blade Component -->
-                <main id="main" class="flex-grow">
+                <main id="main" class="flex-grow flex flex-col">
                     {{ $slot }}
                 </main>
 
@@ -153,6 +265,7 @@
             </div>
 
             <v-shortcut-help></v-shortcut-help>
+            <v-call-overlay></v-call-overlay>
         </div>
 
         {!! view_render_event('bagisto.shop.layout.body.after') !!}
@@ -170,6 +283,66 @@
             window.addEventListener("load", function (event) {
                 app.mount("#app");
             });
+
+            // ── Global Passkey Wallet Helper ──────────────────────────────
+            function _b64ToUint8Array(base64) {
+                if (!base64) return new Uint8Array(0);
+                var padding = '='.repeat((4 - base64.length % 4) % 4);
+                var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+                var rawData = window.atob(b64);
+                var outputArray = new Uint8Array(rawData.length);
+                for (var i = 0; i < rawData.length; ++i) {
+                    outputArray[i] = rawData.charCodeAt(i);
+                }
+                return outputArray;
+            }
+
+            function _bufToBase64URL(buffer) {
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                for (var i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+            }
+
+            window.handleMeanlyWalletPasskey = async function (el, redirectUrl = null) {
+                if (el && el.classList.contains('opacity-50')) return;
+                if (!window.PublicKeyCredential) {
+                    alert('Ваш браузер или соединение (требуется HTTPS) не поддерживают Passkey.');
+                    return;
+                }
+                if (el) el.classList.add('opacity-50', 'pointer-events-none');
+                
+                try {
+                    const { startAuthentication } = SimpleWebAuthnBrowser;
+                    var response = await fetch('{{ route('passkeys.login-options') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) throw new Error('Ошибка связи с сервером');
+                    var options = await response.json();
+                    
+                    var asseResp = await startAuthentication(options);
+
+                    var loginResponse = await fetch('{{ route('passkeys.login') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                        body: JSON.stringify({ start_authentication_response: asseResp, remember: false })
+                    });
+
+                    if (loginResponse.ok) {
+                        window.location.href = redirectUrl || '{{ route('shop.customers.account.credits.index') }}';
+                    } else {
+                        var result = await loginResponse.json();
+                        throw new Error(result.message || 'Ошибка проверки Passkey');
+                    }
+                } catch (err) {
+                    if (err.name !== 'NotAllowedError') alert(err.message);
+                } finally {
+                    if (el) el.classList.remove('opacity-50', 'pointer-events-none');
+                }
+            }
         </script>
 
         {!! view_render_event('bagisto.shop.layout.vue-app-mount.after') !!}
@@ -182,7 +355,7 @@
             <div v-if="isVisible" 
                 class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
                 @click.self="isVisible = false">
-                <div class="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl transition-all animate-in fade-in zoom-in duration-200">
+                <div class="w-full max-w-lg overflow-hidden  bg-white shadow-2xl transition-all animate-in fade-in zoom-in duration-200">
                     <div class="flex items-center justify-between border-b border-zinc-100 p-6">
                         <h3 class="text-xl font-dmserif text-zinc-800">Горячие клавиши</h3>
                         <button @click="isVisible = false" class="text-2xl icon-cross text-zinc-400 hover:text-zinc-600"></button>
@@ -196,13 +369,13 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Поиск по каталогу</span>
                                         <div class="flex gap-1">
-                                            <kbd class="min-w-[2.5rem] flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">⌘</kbd>
-                                            <kbd class="min-w-[2.5rem] flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">K</kbd>
+                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">⌘</kbd>
+                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">K</kbd>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Помощь по клавишам</span>
-                                        <kbd class="min-w-[2.5rem] flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">?</kbd>
+                                        <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">?</kbd>
                                     </div>
                                 </div>
                             </section>
@@ -213,25 +386,25 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Главная страница</span>
                                         <div class="flex items-center gap-1.5 font-medium text-zinc-400">
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
                                             <span class="text-xs">затем</span>
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">H</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">H</kbd>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Личный профиль</span>
                                         <div class="flex items-center gap-1.5 font-medium text-zinc-400">
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
                                             <span class="text-xs">затем</span>
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">P</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">P</kbd>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Мои заказы</span>
                                         <div class="flex items-center gap-1.5 font-medium text-zinc-400">
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">G</kbd>
                                             <span class="text-xs">затем</span>
-                                            <kbd class="min-w-[1.5rem] flex items-center justify-center rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">O</kbd>
+                                            <kbd class="min-w-[1.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs">O</kbd>
                                         </div>
                                     </div>
                                 </div>
@@ -323,27 +496,42 @@
             });
         </script>
 
-        <script>
-          (function(d,t) {
-            var BASE_URL="https://support.wildcloud.ru";
-            var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-            g.src=BASE_URL+"/packs/js/sdk.js";
-            g.async = true;
-            s.parentNode.insertBefore(g,s);
-            g.onload=function(){
-              window.chatwootSDK.run({
-                websiteToken: 'CiwXQPuAVsbf6bPh5XEstDjP',
-                baseUrl: BASE_URL
-              })
-            }
-          })(document,"script");
-        </script>
+        @php
+            $chatwootEnabled = core()->getConfigData('general.content.chatwoot.enabled');
+            $chatwootToken = core()->getConfigData('general.content.chatwoot.website_token');
+            $chatwootBaseUrl = core()->getConfigData('general.content.chatwoot.base_url') ?? 'https://support.wildcloud.ru';
+
+            // Unified visibility logic: hide on calls and customer account pages
+            $showChatwoot = $chatwootEnabled && $chatwootToken && ! (
+                request()->routeIs('shop.call.index') || 
+                request()->routeIs('shop.customer.account*') || 
+                request()->routeIs('shop.customer.session.index')
+            );
+        @endphp
+
+        @if ($showChatwoot)
+            <script>
+              (function(d,t) {
+                var BASE_URL="{{ $chatwootBaseUrl }}";
+                var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=BASE_URL+"/packs/js/sdk.js";
+                g.async = true;
+                s.parentNode.insertBefore(g,s);
+                g.onload=function(){
+                  window.chatwootSDK.run({
+                    websiteToken: '{{ $chatwootToken }}',
+                    baseUrl: BASE_URL
+                  })
+                }
+              })(document,"script");
+            </script>
+        @endif
         {{-- Global Verification Modal --}}
         <div id="verify-modal"
             class="hidden fixed inset-0 z-[9999] items-center justify-center p-4 bg-black/60 backdrop-blur-xl">
-            <div class="bg-white rounded-[28px] w-full max-w-[400px] overflow-hidden shadow-2xl border border-white/20">
+            <div class="bg-white  w-full max-w-[400px] overflow-hidden shadow-2xl border border-white/20">
                 <div class="p-8 text-center" style="background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);">
-                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20">
+                    <div class="w-16 h-16 bg-white/20  flex items-center justify-center mx-auto mb-4 border border-white/20">
                         <span class="icon-shield text-white text-3xl"></span>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-1">Верификация</h3>
@@ -351,23 +539,23 @@
                 </div>
 
                 <div class="p-6 space-y-4">
-                    <div class="bg-violet-50/50 border border-violet-100 p-4 rounded-2xl">
+                    <div class="bg-violet-50/50 border border-violet-100 p-4 ">
                         <p class="text-[12px] text-violet-600 font-bold mb-1 uppercase tracking-widest">Сумма подтверждения</p>
                         <p id="verify-amount" class="text-2xl font-bold text-zinc-900 font-mono leading-none">—</p>
                     </div>
 
-                    <div class="bg-zinc-50 border border-zinc-100 p-4 rounded-2xl">
+                    <div class="bg-zinc-50 border border-zinc-100 p-4 ">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0 flex-1">
                                 <p class="text-[12px] text-zinc-400 font-bold mb-1 uppercase tracking-widest">Куда отправить</p>
                                 <p id="verify-dest" class="text-[11px] font-mono font-bold text-zinc-700 break-all leading-tight">—</p>
                             </div>
                             <button id="verify-dest-copy"
-                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-white border border-zinc-200 px-3 py-2 rounded-xl active:scale-95 transition-all shadow-sm">Копировать</button>
+                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-white border border-zinc-200 px-3 py-2  active:scale-95 transition-all shadow-sm">Копировать</button>
                         </div>
                     </div>
 
-                    <div class="text-[13px] text-zinc-500 space-y-2 leading-relaxed bg-zinc-50/50 rounded-2xl p-4 border border-zinc-100">
+                    <div class="text-[13px] text-zinc-500 space-y-2 leading-relaxed bg-zinc-50/50  p-4 border border-zinc-100">
                         <div class="flex gap-2">
                             <span class="font-bold text-violet-600">1.</span>
                             <p>Отправьте <b class="text-zinc-900">ровно указанную</b> сумму со своего кошелька.</p>
@@ -381,7 +569,7 @@
 
                 <div class="px-6 pb-8 flex flex-col gap-3">
                     <a id="verify-link" href="#"
-                        class="w-full text-center text-white font-bold py-4 rounded-2xl shadow-lg active:scale-[0.98] transition-all"
+                        class="w-full text-center text-white font-bold py-4  shadow-lg active:scale-[0.98] transition-all"
                         style="background: linear-gradient(to right, #7c3aed, #4f46e5); box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);">
                         Проверить транзакцию
                     </a>
@@ -390,5 +578,6 @@
                 </div>
             </div>
         </div>
+        {{-- <v-messenger></v-messenger> --}}
     </body>
 </html>

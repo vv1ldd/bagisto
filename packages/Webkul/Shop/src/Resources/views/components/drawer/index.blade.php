@@ -22,11 +22,14 @@
                 {{ $header }}
 
                 <div class="absolute top-5 max-sm:top-4 ltr:right-5 rtl:left-5">
-                    <span
-                        class="icon-cancel cursor-pointer text-3xl max-md:text-2xl"
+                    <div
+                        class="ios-red-cross"
                         @click="close"
                     >
-                    </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </template>

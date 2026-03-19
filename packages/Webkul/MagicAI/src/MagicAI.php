@@ -40,6 +40,16 @@ class MagicAI
     protected string $prompt;
 
     /**
+     * Attachment (base64).
+     */
+    protected ?string $attachment = null;
+
+    /**
+     * Attachment Mime Type.
+     */
+    protected ?string $mimeType = null;
+
+    /**
      * Set LLM model
      */
     public function setModel(string $model): self
@@ -100,6 +110,48 @@ class MagicAI
     }
 
     /**
+     * Set Attachment.
+     */
+    public function setAttachment(string $attachment, string $mimeType): self
+    {
+        $this->attachment = $attachment;
+
+        $this->mimeType = $mimeType;
+
+        return $this;
+    }
+
+    /**
+     * Set LLM prompt text with context from Knowledge Base.
+     */
+    public function withContext(): self
+    {
+        $context = $this->retrieveContext();
+
+        if ($context) {
+            $this->prompt = "Context information:\n" . $context . "\n\nUser Question: " . $this->prompt;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Retrieve relevant context from Knowledge Base.
+     */
+    protected function retrieveContext(): string
+    {
+        $repository = app(\Webkul\MagicAI\Repositories\KnowledgeItemRepository::class);
+        $items = $repository->findRelevant($this->prompt);
+
+        $context = "";
+        foreach ($items as $item) {
+            $context .= $item->content . "\n---\n";
+        }
+
+        return trim($context);
+    }
+
+    /**
      * Set LLM prompt text.
      */
     public function ask(): string
@@ -126,6 +178,8 @@ class MagicAI
                 $this->prompt,
                 $this->temperature,
                 $this->stream,
+                $this->attachment,
+                $this->mimeType,
             );
         }
 
@@ -144,6 +198,8 @@ class MagicAI
                 $this->prompt,
                 $this->stream,
                 $this->raw,
+                $this->attachment,
+                $this->mimeType,
             );
         }
 
@@ -153,6 +209,8 @@ class MagicAI
             $this->temperature,
             $this->stream,
             $this->raw,
+            $this->attachment,
+            $this->mimeType,
         );
     }
 }

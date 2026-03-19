@@ -6,32 +6,48 @@
         @endif
 
             @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                <div class="ios-settings-wrapper mx-auto w-full">
-                    <div class="rounded-[2.5rem] bg-gradient-to-br from-[#F9F7FF] to-[#F1EAFF] p-5 md:p-7 flex flex-col items-center relative overflow-hidden w-full shadow-[0_8px_32px_rgba(124,69,245,0.05)] border border-white">
-                        <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#7C45F5]/10 rounded-full blur-3xl"></div>
-                        <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
+                <div class="ios-settings-wrapper mx-auto w-full px-4 py-8 max-sm:px-2">
+                    <div class="bg-white border-2 border-zinc-100 p-8 flex flex-col items-center relative overflow-hidden w-full shadow-[0_20px_50px_rgba(124,69,245,0.08)]">
+                        <!-- Design Accents -->
+                        <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>
+                        <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-[#FF4D6D]/3 blur-3xl rounded-full"></div>
 
-                        <div class="w-full mx-auto z-10 relative">
-                            <h3 class="text-[#4A1D96] text-[26px] md:text-3xl font-extrabold mb-2 text-center tracking-tight leading-tight">Быстрый вход</h3>
+                        <div class="w-full mx-auto z-10 relative flex flex-col items-center">
+                            <!-- Icon/Brand Section -->
+                            <div class="mb-8 flex flex-col items-center">
+                                <div class="w-20 h-20 bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center mb-6 shadow-xl shadow-[#7C45F5]/20 rotate-3">
+                                    <span class="text-4xl">🔑</span>
+                                </div>
+                                <h3 class="text-zinc-900 text-3xl font-black uppercase tracking-tighter mb-3 balance">Настройка входа</h3>
+                                <div class="h-1.5 w-12 bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D]"></div>
+                            </div>
 
-                            <div class="space-y-2 mb-8">
-                                <p class="text-[14px] text-zinc-600 mb-4 text-center mx-auto max-w-[320px]">
-                                    Добавьте это устройство (отпечаток или FaceID) для мгновенного входа без пароля.
+                            <div class="space-y-4 mb-10">
+                                <p class="text-[15px] font-medium text-zinc-600 text-center leading-relaxed max-w-[340px]">
+                                    Используйте отпечаток или лицо для безопасного доступа к <span class="text-[#7C45F5] font-black uppercase tracking-tight">Meanly Wallet</span> без паролей.
                                 </p>
                             </div>
 
-                            <div class="w-full relative z-10 max-w-[320px] mx-auto flex flex-col gap-3">
+                            <!-- Buttons -->
+                            <div class="w-full max-w-[340px] flex flex-col gap-4">
                                 <button type="button" id="add-passkey-button"
                                     onclick="window.startPasskeyRegistration()"
-                                    class="flex w-full items-center justify-center gap-2 rounded-full bg-[#7C45F5] px-8 py-3.5 text-[15px] font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50">
-                                    <span class="icon-add text-lg"></span>
-                                    <span id="add-passkey-button-text">Привязать устройство</span>
+                                    class="group relative flex w-full items-center justify-center h-16 bg-[#7C45F5] text-white transition-all hover:bg-[#6b35e4] active:scale-[0.98] shadow-lg shadow-[#7C45F5]/20 overflow-hidden">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                    <span class="icon-add-new text-xl mr-3 font-bold"></span>
+                                    <span id="add-passkey-button-text" class="text-sm font-black uppercase tracking-widest">Создать ключ</span>
                                 </button>
 
                                 <a href="{{ route('shop.customers.account.profile.complete_registration_success') }}"
-                                    class="flex w-full items-center justify-center rounded-full bg-white/60 px-8 py-3 text-[14px] font-medium text-[#4A1D96] transition-all hover:bg-white focus:ring-2 focus:ring-[#7C45F5] border border-[#7C45F5]/10">
-                                    Пропустить этот шаг
+                                    class="flex w-full items-center justify-center h-14 bg-zinc-50 text-zinc-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:bg-zinc-100 hover:text-zinc-600 border border-zinc-100">
+                                    Пропустить
                                 </a>
+                            </div>
+
+                            <div class="mt-10 flex items-center justify-center gap-3">
+                                <div class="w-1.5 h-1.5 bg-[#7C45F5] opacity-20"></div>
+                                <div class="w-1.5 h-1.5 bg-[#7C45F5]"></div>
+                                <div class="w-1.5 h-1.5 bg-[#7C45F5] opacity-20"></div>
                             </div>
                         </div>
                     </div>
@@ -47,12 +63,12 @@
                             Passkeys & Безопасность
                         </h3>
 
-                        <div class="bg-zinc-50 border border-zinc-100 rounded-[20px] overflow-hidden">
+                        <div class="bg-zinc-50 border border-zinc-100  overflow-hidden">
                             @if ($customer->passkeys->count())
                                 @foreach ($customer->passkeys as $passkey)
                                     <div class="flex justify-between items-center px-5 py-4 border-b border-zinc-200/60 last:border-0 max-md:px-4">
                                         <div class="flex items-center gap-3">
-                                            <div class="p-2 bg-zinc-200/50 rounded-lg">
+                                            <div class="p-2 bg-zinc-200/50 ">
                                                 <svg class="h-5 w-5 text-zinc-600" viewBox="0 0 24 24" fill="none"
                                                     stroke="currentColor" stroke-width="2">
                                                     <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
@@ -63,7 +79,7 @@
                                                 <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm flex items-center gap-2">
                                                     {{ $passkey->name ?: 'Passkey устройство' }}
                                                     @if($passkey->id == session('current_session_passkey_id') || $passkey->id == request()->cookie('current_device_passkey_id'))
-                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 px-2 py-0.5 rounded-md">Это устройство</span>
+                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 px-2 py-0.5 ">Это устройство</span>
                                                     @endif
                                                 </p>
                                                 <p class="text-xs text-zinc-500">Добавлено:
@@ -94,7 +110,7 @@
                             <div class="p-5 bg-white/50 border-t border-zinc-100">
                                 <button type="button" id="add-passkey-button"
                                     onclick="window.startPasskeyRegistration()"
-                                    class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-50">
+                                    class="flex w-full items-center justify-center gap-2  border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-50">
                                     <span class="icon-add text-lg"></span>
                                     <span id="add-passkey-button-text">Привязать новое устройство</span>
                                 </button>
@@ -102,76 +118,6 @@
                         </div>
                     </div>
 
-                    </div>
-
-                    <!-- PIN Code Section -->
-                    <div class="mt-8">
-                        <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
-                            Резервный ПИН-код
-                        </h3>
-
-                        <div class="bg-zinc-50 border border-zinc-100 rounded-[20px] overflow-hidden">
-                            @if ($customer->pin_code)
-                                <div class="px-5 py-6 text-center bg-white/50">
-                                    <div class="inline-flex justify-center items-center w-12 h-12 rounded-full bg-green-100 text-green-600 mb-3">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    </div>
-                                    <p class="text-[15px] font-medium text-zinc-900 mb-1">ПИН-код установлен</p>
-                                    <p class="text-xs text-zinc-500 mb-4">Вы можете использовать его для входа в Meanly Pay, если Passkey недоступен.</p>
-                                    
-                                    <button type="button" onclick="document.getElementById('pin-setup-modal').classList.remove('hidden')" class="text-sm font-medium text-[#7C45F5] hover:text-[#6534d4] underline-offset-4 hover:underline">
-                                        Изменить ПИН-код
-                                    </button>
-                                </div>
-                            @else
-                                <div class="px-5 py-6 text-center bg-white/50">
-                                    <div class="inline-flex justify-center items-center w-12 h-12 rounded-full bg-orange-100 text-orange-500 mb-3">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                        </svg>
-                                    </div>
-                                    <p class="text-[15px] font-medium text-zinc-900 mb-1">ПИН-код не задан</p>
-                                    <p class="text-xs text-zinc-500 mb-4 max-w-sm mx-auto">Установите 4 или 6-значный ПИН-код в качестве резервного способа авторизации в Meanly Pay.</p>
-                                </div>
-                                <div class="p-5 bg-white/50 border-t border-zinc-100">
-                                    <button type="button" onclick="document.getElementById('pin-setup-modal').classList.remove('hidden')"
-                                        class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50">
-                                        <span class="icon-add text-lg"></span>
-                                        <span>Создать ПИН-код</span>
-                                    </button>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- PIN Setup Modal -->
-                    <div id="pin-setup-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                        <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden relative" onclick="event.stopPropagation()">
-                            <div class="p-6">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h3 class="text-xl font-bold text-zinc-900">{{ $customer->pin_code ? 'Изменение ПИН-кода' : 'Новый ПИН-код' }}</h3>
-                                    <button type="button" onclick="document.getElementById('pin-setup-modal').classList.add('hidden')" class="text-zinc-400 hover:text-zinc-600 transition">
-                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                    </button>
-                                </div>
-                                
-                                <form action="{{ route('shop.customers.account.passkeys.pin.store') }}" method="POST" class="flex flex-col gap-4">
-                                    @csrf
-                                    <div>
-                                        <label class="block text-sm font-medium text-zinc-700 mb-2">Введите 4 или 6 цифр</label>
-                                        <input type="password" name="pin_code" id="pin_code_input" inputmode="numeric" pattern="[0-9]{4,6}" autocomplete="off" maxlength="6" class="w-full text-center tracking-[1em] text-3xl font-mono py-4 bg-zinc-50 border border-zinc-200 rounded-2xl focus:ring-2 focus:ring-[#7C45F5]/50 focus:border-[#7C45F5] outline-none transition" required placeholder="••••">
-                                        <p class="text-xs text-zinc-500 mt-2 text-center">ПИН-код должен содержать только цифры (от 4 до 6 символов).</p>
-                                    </div>
-                                    <div class="mt-4 flex gap-3">
-                                        <button type="button" onclick="document.getElementById('pin-setup-modal').classList.add('hidden')" class="flex-1 py-3.5 px-4 bg-zinc-100 text-zinc-700 font-medium rounded-xl hover:bg-zinc-200 transition">Отмена</button>
-                                        <button type="submit" class="flex-1 py-3.5 px-4 bg-[#7C45F5] text-white font-medium rounded-xl hover:bg-[#6534d4] transition shadow-lg shadow-[#7C45F5]/20">Сохранить</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
 
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.before') !!}
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
@@ -302,14 +248,52 @@
                         } else {
                             const errorData = await registrationResponse.json();
                             console.error('Registration rejected by server:', errorData);
-                            alert(errorData.message || 'Ошибка сохранения Passkey');
+                            window.showAlert('error', 'Ошибка', errorData.message || 'Ошибка сохранения Passkey');
                         }
                     } catch (error) {
                         console.error('Passkey registration error:', error);
-                        alert('Ошибка: ' + error.message);
+                        
+                        let message = error.message;
+                        let title = 'Ошибка';
+                        let type = 'error';
+
+                        // Handle cancellation
+                        if (error.name === 'NotAllowedError' || message.includes('отмена') || message.includes('cancelled')) {
+                            title = 'Запрос отменен';
+                            message = 'Действие отменено пользователем.';
+                            type = 'warning';
+                        }
+
+                        window.showAlert(type, title, message);
                     } finally {
                         if (button) button.disabled = false;
                         if (buttonText) buttonText.innerText = originalText;
+                    }
+                };
+
+                // Global alert handler for Meanly style
+                window.showAlert = function (type, title, message) {
+                    // Try to use Bagisto's flash emitter first
+                    if (window.app && window.app.config && window.app.config.globalProperties && window.app.config.globalProperties.$emitter) {
+                        window.app.config.globalProperties.$emitter.emit('add-flash', { type, message });
+                    } else {
+                        // Fallback to Meanly-styled alert
+                        const alertBox = document.createElement('div');
+                        alertBox.className = `fixed bottom-10 left-1/2 -translate-x-1/2 z-[10001] p-5 font-bold text-white shadow-2xl transition-all border-l-4 min-w-[300px] animate-in slide-in-from-bottom-5 duration-300 ${type === 'success' ? 'bg-zinc-900 border-green-500' : (type === 'warning' ? 'bg-zinc-900 border-orange-500' : 'bg-red-600 border-white')}`;
+                        alertBox.innerHTML = `
+                            <div class="flex items-start gap-4">
+                                <div class="flex-1">
+                                    <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-1">${title}</div>
+                                    <div class="text-[14px] leading-tight">${message}</div>
+                                </div>
+                                <button onclick="this.parentElement.parentElement.remove()" class="text-white/40 hover:text-white">✕</button>
+                            </div>
+                        `;
+                        document.body.appendChild(alertBox);
+                        setTimeout(() => {
+                            alertBox.classList.add('opacity-0', 'translate-y-5');
+                            setTimeout(() => alertBox.remove(), 300);
+                        }, 5000);
                     }
                 };
             </script>

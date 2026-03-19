@@ -9,7 +9,7 @@
     </p>
 </div>
 
-<div style="background: #F5F7F9; padding: 20px; border-radius: 4px; margin-bottom: 34px;">
+<div style="background: #F5F7F9; padding: 20px; border: 1px solid #E2E8F0; margin-bottom: 34px;">
     <p style="font-weight: bold; font-size: 16px; color: #121A26; margin-bottom: 10px;">
         @lang('shop::app.emails.customers.login-notification.details')
     </p>
@@ -32,7 +32,7 @@
 
 <div style="margin-top: 40px; margin-bottom: 40px;">
     <a href="{{ route('shop.customer.session.index') }}"
-        style="padding: 12px 30px; justify-content: center; align-items: center; background: #060C3B; color: #FFFFFF; text-decoration: none; border-radius: 2px; font-weight: 700; display: inline-block;">
+        style="padding: 12px 30px; justify-content: center; align-items: center; background: #060C3B; color: #FFFFFF; text-decoration: none; font-weight: 700; display: inline-block;">
         @lang('shop::app.layouts.my-account')
     </a>
 </div>

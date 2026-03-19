@@ -2,15 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 use Webkul\Shop\Http\Controllers\API\AddressController;
+use Webkul\Shop\Http\Controllers\API\CallController;
 use Webkul\Shop\Http\Controllers\API\CartController;
 use Webkul\Shop\Http\Controllers\API\CategoryController;
 use Webkul\Shop\Http\Controllers\API\CompareController;
 use Webkul\Shop\Http\Controllers\API\CoreController;
 use Webkul\Shop\Http\Controllers\API\CustomerController;
 use Webkul\Shop\Http\Controllers\API\OnepageController;
+use Webkul\Shop\Http\Controllers\API\OrganizationController;
 use Webkul\Shop\Http\Controllers\API\ProductController;
 use Webkul\Shop\Http\Controllers\API\ReviewController;
 use Webkul\Shop\Http\Controllers\API\WishlistController;
+use Webkul\Shop\Http\Controllers\API\MessengerController;
 
 Route::group(['prefix' => 'api'], function () {
     Route::controller(CoreController::class)->prefix('core')->group(function () {
@@ -66,6 +69,8 @@ Route::group(['prefix' => 'api'], function () {
 
         Route::delete('', 'destroy')->name('shop.api.checkout.cart.destroy');
 
+        Route::delete('all', 'destroyAll')->name('shop.api.checkout.cart.destroy_all');
+
         Route::delete('selected', 'destroySelected')->name('shop.api.checkout.cart.destroy_selected');
 
         Route::post('move-to-wishlist', 'moveToWishlist')->name('shop.api.checkout.cart.move_to_wishlist');
@@ -79,12 +84,18 @@ Route::group(['prefix' => 'api'], function () {
         Route::get('cross-sell', 'crossSellProducts')->name('shop.api.checkout.cart.cross-sell.index');
     });
 
-    Route::controller(OnepageController::class)->prefix('checkout/onepage')->group(function () {
+    Route::controller(OnepageController::class)->prefix('checkout/onepage')->middleware('customer')->group(function () {
         Route::get('summary', 'summary')->name('shop.checkout.onepage.summary');
 
         Route::post('addresses', 'storeAddress')->name('shop.checkout.onepage.addresses.store');
 
+        Route::post('send-otp', 'sendOtp')->name('shop.checkout.onepage.send_otp');
+
+        Route::post('verify-otp', 'verifyOtp')->name('shop.checkout.onepage.verify_otp');
+
         Route::post('shipping-methods', 'storeShippingMethod')->name('shop.checkout.onepage.shipping_methods.store');
+
+        Route::get('payment-methods', 'paymentMethods')->name('shop.checkout.onepage.payment_methods.index');
 
         Route::post('payment-methods', 'storePaymentMethod')->name('shop.checkout.onepage.payment_methods.store');
 
@@ -107,6 +118,12 @@ Route::group(['prefix' => 'api'], function () {
             Route::put('edit/{id?}', 'update')->name('shop.api.customers.account.addresses.update');
         });
 
+        Route::controller(OrganizationController::class)->prefix('organizations')->group(function () {
+            Route::get('', 'index')->name('shop.api.customers.account.organizations.index');
+
+            Route::post('', 'store')->name('shop.api.customers.account.organizations.store');
+        });
+
         Route::controller(WishlistController::class)->prefix('wishlist')->group(function () {
             Route::get('', 'index')->name('shop.api.customers.account.wishlist.index');
 
@@ -118,5 +135,7 @@ Route::group(['prefix' => 'api'], function () {
 
             Route::delete('{id}', 'destroy')->name('shop.api.customers.account.wishlist.destroy');
         });
+
+        Route::get('messenger/credentials', [MessengerController::class, 'getCredentials']);
     });
 });

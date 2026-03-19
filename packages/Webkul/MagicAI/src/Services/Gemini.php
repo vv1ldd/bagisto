@@ -14,7 +14,10 @@ class Gemini
         protected string $prompt,
         protected bool $stream,
         protected bool $raw,
-    ) {}
+        protected ?string $attachment = null,
+        protected ?string $mimeType = null,
+    ) {
+    }
 
     /**
      * Send request to Gemini AI.
@@ -23,9 +26,22 @@ class Gemini
     {
         $httpClient = new Client;
 
-        $apiKey = core()->getConfigData('general.magic_ai.settings.api_key');
+        $apiKey = env('MAGIC_AI_API_KEY', config('magic_ai_settings.api_key'));
 
         $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$apiKey}";
+
+        $parts = [
+            ['text' => $this->prompt],
+        ];
+
+        if ($this->attachment && $this->mimeType) {
+            $parts[] = [
+                'inline_data' => [
+                    'mime_type' => $this->mimeType,
+                    'data' => $this->attachment,
+                ],
+            ];
+        }
 
         $result = $httpClient->request('POST', $endpoint, [
             'headers' => [
@@ -34,7 +50,7 @@ class Gemini
             ],
             'json' => [
                 'contents' => [
-                    ['parts' => [['text' => $this->prompt]]],
+                    ['parts' => $parts],
                 ],
             ],
         ]);

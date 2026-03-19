@@ -104,6 +104,14 @@ class Invoice extends Model implements InvoiceContract
     }
 
     /**
+     * Get the billing entity record associated with the invoice.
+     */
+    public function billingEntity(): BelongsTo
+    {
+        return $this->belongsTo(\Webkul\Core\Models\BillingEntityProxy::modelClass(), 'billing_entity_id');
+    }
+
+    /**
      * Get the invoice items record associated with the invoice.
      */
     public function items(): HasMany

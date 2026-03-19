@@ -33,7 +33,7 @@
                                         style="direction: ltr;"
                                     >
                                         <button
-                                            class="group flex h-10 w-10 items-center justify-center rounded-full border border-[#E0E0E0] text-zinc-500 transition-all duration-200 hover:border-black hover:bg-black hover:text-white"
+                                            class="group flex h-10 w-10 items-center justify-center  border border-[#E0E0E0] text-zinc-500 transition-all duration-200 hover:border-black hover:bg-black hover:text-white"
                                             role="button"
                                             aria-label="@lang('shop::app.components.products.carousel.previous')"
                                             tabindex="0"
@@ -45,7 +45,7 @@
                                         </button>
 
                                         <button
-                                            class="group flex h-10 w-10 items-center justify-center rounded-full border border-[#E0E0E0] text-zinc-500 transition-all duration-200 hover:border-black hover:bg-black hover:text-white"
+                                            class="group flex h-10 w-10 items-center justify-center  border border-[#E0E0E0] text-zinc-500 transition-all duration-200 hover:border-black hover:bg-black hover:text-white"
                                             role="button"
                                             aria-label="@lang('shop::app.components.products.carousel.next')"
                                             tabindex="0"
@@ -72,7 +72,7 @@
 
                         <a
                             :href="navigationLink"
-                            class="secondary-button mx-auto mt-5 block w-max rounded-2xl px-11 py-3 text-center text-base max-lg:mt-0 max-lg:hidden max-lg:py-3.5 max-md:rounded-lg"
+                            class="secondary-button mx-auto mt-5 block w-max  px-11 py-3 text-center text-base max-lg:mt-0 max-lg:hidden max-lg:py-3.5 max-md:"
                             :aria-label="title"
                             v-if="navigationLink"
                         >

@@ -1,7 +1,8 @@
 <!-- Checkout Login Vue JS Component -->
 <v-checkout-login>
     <div class="flex items-center">
-        <span class="cursor-pointer text-base font-medium text-blue-700">
+        <span
+            class="cursor-pointer  border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-sm font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-95">
             @lang('shop::app.checkout.login.title')
         </span>
     </div>
@@ -10,114 +11,111 @@
 @pushOnce('scripts')
     {!! \Webkul\Customer\Facades\Captcha::renderJS() !!}
 
-    <script
-        type="text/x-template"
-        id="v-checkout-login-template"
-    >
-        <div>
-            <div class="flex items-center">
-                <span
-                    class="cursor-pointer text-base font-medium text-blue-700"
-                    role="button"
-                    @click="$refs.loginModel.open()"
+    <script type="text/x-template" id="v-checkout-login-template">
+            <div>
+                <div class="flex items-center">
+                    <span
+                        class="cursor-pointer  border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-sm font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-95"
+                        role="button"
+                        @click="$refs.loginModel.open()"
+                    >
+                        @lang('shop::app.checkout.login.title')
+                    </span>
+                </div>
+
+                <!-- Login Form -->
+                <x-shop::form
+                    v-slot="{ meta, errors, handleSubmit }"
+                    as="div"
                 >
-                    @lang('shop::app.checkout.login.title')
-                </span>
-            </div>
+                    {!! view_render_event('bagisto.shop.checkout.login.before') !!}
 
-            <!-- Login Form -->
-            <x-shop::form
-                v-slot="{ meta, errors, handleSubmit }"
-                as="div"
-            >
-                {!! view_render_event('bagisto.shop.checkout.login.before') !!}
+                    <!-- Login form -->
+                    <form @submit="handleSubmit($event, login)">
+                        {!! view_render_event('bagisto.shop.checkout.login.form_controls.before') !!}
 
-                <!-- Login form -->
-                <form @submit="handleSubmit($event, login)">
-                    {!! view_render_event('bagisto.shop.checkout.login.form_controls.before') !!}
+                        <!-- Login modal -->
+                        <x-shop::modal ref="loginModel">
+                            <!-- Modal Header -->
+                            <x-slot:header class="max-md:p-5">
+                                <h2 class="text-xl font-bold text-zinc-800">
+                                    @lang('shop::app.checkout.login.title')
+                                </h2>
+                            </x-slot>
 
-                    <!-- Login modal -->
-                    <x-shop::modal ref="loginModel">
-                        <!-- Modal Header -->
-                        <x-slot:header>
-                            <h2 class="text-2xl font-medium max-md:text-base">
-                                @lang('shop::app.checkout.login.title')
-                            </h2>
-                        </x-slot>
+                            <!-- Modal Content -->
+                            <x-slot:content class="!px-6 py-4">
+                                <!-- Email -->
+                                <x-shop::form.control-group>
+                                    <x-shop::form.control-group.label class="required text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                                        @lang('shop::app.checkout.login.email')
+                                    </x-shop::form.control-group.label>
 
-                        <!-- Modal Content -->
-                        <x-slot:content>
-                            <!-- Email -->
-                            <x-shop::form.control-group>
-                                <x-shop::form.control-group.label class="required">
-                                    @lang('shop::app.checkout.login.email')
-                                </x-shop::form.control-group.label>
+                                    <x-shop::form.control-group.control
+                                        type="email"
+                                        class=" border border-zinc-200 px-6 py-4 focus:border-[#7C45F5] focus:ring-[#7C45F5]"
+                                        name="email"
+                                        rules="required|email"
+                                        :label="trans('shop::app.checkout.login.email')"
+                                        placeholder="email@example.com"
+                                        :aria-label="trans('shop::app.checkout.login.email')"
+                                        aria-required="true"
+                                    />
 
-                                <x-shop::form.control-group.control
-                                    type="email"
-                                    class="px-6 py-4"
-                                    name="email"
-                                    rules="required|email"
-                                    :label="trans('shop::app.checkout.login.email')"
-                                    placeholder="email@example.com"
-                                    :aria-label="trans('shop::app.checkout.login.email')"
-                                    aria-required="true"
-                                />
-
-                                <x-shop::form.control-group.error control-name="email" />
-                            </x-shop::form.control-group>
-
-                            <!-- Password -->
-                            <x-shop::form.control-group class="!mb-0">
-                                <x-shop::form.control-group.label class="required">
-                                    @lang('shop::app.checkout.login.password')
-                                </x-shop::form.control-group.label>
-
-                                <x-shop::form.control-group.control
-                                    type="password"
-                                    class="px-6 py-4"
-                                    id="password"
-                                    name="password"
-                                    rules="required|min:6"
-                                    :label="trans('shop::app.checkout.login.password')"
-                                    :placeholder="trans('shop::app.checkout.login.password')"
-                                    :aria-label="trans('shop::app.checkout.login.password')"
-                                    aria-required="true"
-                                />
-
-                                <x-shop::form.control-group.error control-name="password" />
-                            </x-shop::form.control-group>
-
-                            <!-- Captcha -->
-                            @if (core()->getConfigData('customer.captcha.credentials.status'))
-                                <x-shop::form.control-group class="mt-5">
-                                    {!! \Webkul\Customer\Facades\Captcha::render() !!}
-
-                                    <x-shop::form.control-group.error control-name="g-recaptcha-response" />
+                                    <x-shop::form.control-group.error class="mt-2 text-xs font-bold text-red-500" control-name="email" />
                                 </x-shop::form.control-group>
-                            @endif
-                        </x-slot>
 
-                        <!-- Modal Footer -->
-                        <x-slot:footer>
-                            <div class="flex flex-wrap items-center gap-4">
-                                <x-shop::button
-                                    class="primary-button max-w-none flex-auto rounded-sm px-11 py-3 max-md:rounded-lg max-md:py-1.5"
-                                    :title="trans('shop::app.checkout.login.title')"
-                                    ::loading="isStoring"
-                                    ::disabled="isStoring"
-                                />
-                            </div>
-                        </x-slot>
-                    </x-shop::modal>
+                                <!-- Password -->
+                                <x-shop::form.control-group class="!mb-0">
+                                    <x-shop::form.control-group.label class="required text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                                        @lang('shop::app.checkout.login.password')
+                                    </x-shop::form.control-group.label>
 
-                    {!! view_render_event('bagisto.shop.checkout.login.form_controls.after') !!}
-                </form>
-            </x-shop::form>
+                                    <x-shop::form.control-group.control
+                                        type="password"
+                                        class=" border border-zinc-200 px-6 py-4 focus:border-[#7C45F5] focus:ring-[#7C45F5]"
+                                        id="password"
+                                        name="password"
+                                        rules="required|min:6"
+                                        :label="trans('shop::app.checkout.login.password')"
+                                        :placeholder="trans('shop::app.checkout.login.password')"
+                                        :aria-label="trans('shop::app.checkout.login.password')"
+                                        aria-required="true"
+                                    />
 
-            {!! view_render_event('bagisto.shop.checkout.login.after') !!}
-        </div>
-    </script>
+                                    <x-shop::form.control-group.error class="mt-2 text-xs font-bold text-red-500" control-name="password" />
+                                </x-shop::form.control-group>
+
+                                <!-- Captcha -->
+                                @if (core()->getConfigData('customer.captcha.credentials.status'))
+                                    <x-shop::form.control-group class="mt-5">
+                                        {!! \Webkul\Customer\Facades\Captcha::render() !!}
+
+                                        <x-shop::form.control-group.error control-name="g-recaptcha-response" />
+                                    </x-shop::form.control-group>
+                                @endif
+                            </x-slot>
+
+                            <!-- Modal Footer -->
+                            <x-slot:footer class="!px-6 pb-8">
+                                <div class="flex flex-wrap items-center gap-4">
+                                    <x-shop::button
+                                        class="primary-button w-full  bg-[#7C45F5] py-4 text-base font-bold text-white shadow-lg transition-all hover:bg-[#6b35e4] hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        :title="trans('shop::app.checkout.login.title')"
+                                        ::loading="isStoring"
+                                        ::disabled="isStoring"
+                                    />
+                                </div>
+                            </x-slot>
+                        </x-shop::modal>
+
+                        {!! view_render_event('bagisto.shop.checkout.login.form_controls.after') !!}
+                    </form>
+                </x-shop::form>
+
+                {!! view_render_event('bagisto.shop.checkout.login.after') !!}
+            </div>
+        </script>
 
     <script type="module">
         app.component('v-checkout-login', {
@@ -139,7 +137,7 @@
                     const captchaResponse = document.querySelector('[name="g-recaptcha-response"]')?.value
 
                     params['g-recaptcha-response'] = captchaResponse;
-                   
+
                     this.$axios.post("{{ route('shop.api.customers.session.create') }}", params)
                         .then((response) => {
                             this.isStoring = false;

@@ -1,7 +1,4 @@
 <?php
-/**
- * Meanly Pay customer routes.
- */
 
 use Illuminate\Support\Facades\Route;
 use Webkul\Core\Http\Middleware\NoCacheMiddleware;
@@ -15,13 +12,26 @@ use Webkul\Shop\Http\Controllers\Customer\GDPRController;
 use Webkul\Shop\Http\Controllers\Customer\RegistrationController;
 use Webkul\Shop\Http\Controllers\Customer\ResetPasswordController;
 use Webkul\Shop\Http\Controllers\Customer\SessionController;
-use Webkul\Shop\Http\Controllers\Customer\VerifyIpController;
+
 use Webkul\Shop\Http\Controllers\DataGridController;
 use Webkul\Shop\Http\Controllers\Customer\PasskeyController;
 use Spatie\LaravelPasskeys\Http\Controllers\AuthenticateUsingPasskeyController;
 use Spatie\LaravelPasskeys\Http\Controllers\GeneratePasskeyAuthenticationOptionsController;
+use Webkul\Shop\Http\Controllers\Customer\Account\TransferController;
 
 Route::prefix('customer')->group(function () {
+    Route::get('/test-mail', function () {
+        try {
+            \Illuminate\Support\Facades\Mail::raw('This is a test email from Bagisto to verify mail configuration.', function ($message) {
+                $message->to(request('email', 'admin@example.com'))
+                        ->subject('Mail Configuration Test');
+            });
+            return 'Mail sent successfully! Check your inbox.';
+        } catch (\Exception $e) {
+            return 'Mail error: ' . $e->getMessage();
+        }
+    });
+
     /**
      * Forgot password routes.
      */
@@ -85,52 +95,47 @@ Route::prefix('customer')->group(function () {
         Route::get('resend/verification/{email}', 'resendVerificationEmail')->name('shop.customers.resend.verification_email');
     });
 
-    /**
-     * IP Verification routes.
-     */
-    Route::controller(VerifyIpController::class)->group(function () {
-        Route::get('verify-ip/code', 'showVerifyCode')->name('shop.customers.verify_ip.code');
-        Route::post('verify-ip/code', 'verifyByCode')->name('shop.customers.verify_ip.code.submit');
-        Route::get('verify-ip/link/{token}', 'verifyByLink')->name('shop.customers.verify_ip.link');
-        Route::get('verify-ip/resend', 'resendCode')->name('shop.customers.verify_ip.resend');
-    });
+
 
     /**
      * Customer authenticated routes. All the below routes only be accessible
      * if customer is authenticated.
      */
-    Route::group(['middleware' => ['customer', NoCacheMiddleware::class]], function () {
-        /**
-         * Datagrid routes.
-         */
-        Route::get('datagrid/look-up', [DataGridController::class, 'lookUp'])->name('shop.customer.datagrid.look_up');
+    /**
+     * Customer authenticated routes. All the below routes only be accessible
+     * if customer is authenticated.
+     */
+    Route::group(['middleware' => ['customer']], function () {
+        Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
+            /**
+             * Datagrid routes.
+             */
+            Route::get('datagrid/look-up', [DataGridController::class, 'lookUp'])->name('shop.customer.datagrid.look_up');
 
-        /**
-         * Passkey authenticated routes.
-         */
-        Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
-            Route::get('', 'index')->name('shop.customers.account.passkeys.index');
-            Route::post('register-options', 'registerOptions')->name('passkeys.register-options');
-            Route::post('register', 'register')->name('passkeys.register');
-            Route::delete('{id}', 'destroy')->name('passkeys.destroy');
+            /**
+             * Passkey authenticated routes.
+             */
+            Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.passkeys.index');
+                Route::post('register-options', 'registerOptions')->name('passkeys.register-options');
+                Route::post('register', 'register')->name('passkeys.register');
+                Route::delete('{id}', 'destroy')->name('passkeys.destroy');
+            });
 
-            // PIN Code routes
-            Route::post('pin', 'storePin')->name('shop.customers.account.passkeys.pin.store');
+            /**
+             * Login activity routes.
+             */
+            Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\LoginHistoryController::class)->prefix('login-activity')->group(function () {
+                Route::get('', 'index')->name('shop.customers.account.login_activity.index');
+                Route::delete('{id}', 'destroy')->name('shop.customers.account.login_activity.destroy');
+            });
+
+            /**
+             * Logout.
+             */
+            Route::get('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy.get');
+            Route::delete('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy');
         });
-
-        /**
-         * Login activity routes.
-         */
-        Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\LoginHistoryController::class)->prefix('login-activity')->group(function () {
-            Route::get('', 'index')->name('shop.customers.account.login_activity.index');
-            Route::delete('{id}', 'destroy')->name('shop.customers.account.login_activity.destroy');
-        });
-
-        /**
-         * Logout.
-         */
-        Route::get('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy.get');
-        Route::delete('logout', [SessionController::class, 'destroy'])->name('shop.customer.session.destroy');
 
         /**
          * Customer account. All the below routes are related to
@@ -139,22 +144,162 @@ Route::prefix('customer')->group(function () {
         Route::prefix('account')->group(function () {
             Route::get('', [CustomerController::class, 'account'])->name('shop.customers.account.index');
 
-            /**
-             * Wishlist.
-             */
-            Route::get('wishlist', [WishlistController::class, 'index'])->name('shop.customers.account.wishlist.index');
-
-            // Protected Meanly Pay routes (Credits & Crypto)
-            Route::middleware('meanly_pay_auth')->group(function () {
+            Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
                 /**
-                 * Credits.
+                 * Wallet Access (Passkey) Setup & Unlock
                  */
-                Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
-                Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
-                Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\WalletAccessController::class)->prefix('wallet-access')->group(function () {
+                    Route::get('setup', 'setup')->name('shop.customers.account.wallet.setup');
+                });
 
+                /**
+                 * Credits (formerly Transactions).
+                 */
+                Route::group(['middleware' => ['passkey.timeout', \Webkul\Shop\Http\Middleware\CheckWalletAccess::class]], function () {
+                    Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
+                    Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
+                    Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
+
+                    Route::post('credits/invoice', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'storeInvoice'])->name('shop.customers.account.credits.invoice.store');
+                    Route::get('credits/invoice/print/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'printInvoice'])->name('shop.customers.account.credits.invoice.print');
+                    Route::post('credits/invoice/email/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'emailInvoice'])->name('shop.customers.account.credits.invoice.email');
+                    Route::get('credits/organizations/{id}/bank-accounts', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'getBankAccounts'])->name('shop.customers.account.credits.organizations.bank_accounts');
+
+                    // Credits Transfer
+                    Route::controller(TransferController::class)->prefix('credits')->group(function () {
+                        Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
+                    });
+                });
+                Route::controller(CustomerController::class)->group(function () {
+                    Route::prefix('profile')->group(function () {
+                        Route::get('edit', 'edit')->name('shop.customers.account.profile.edit');
+
+                        Route::get('recovery-key', 'recoveryKey')->name('shop.customers.account.profile.recovery_key');
+
+                        Route::get('complete-registration', 'completeRegistration')->name('shop.customers.account.profile.complete_registration');
+
+                        Route::get('complete-registration-passkey', 'completeRegistrationPasskey')->name('shop.customers.account.profile.complete_registration_passkey');
+
+                        Route::get('complete-registration-success', 'completeRegistrationSuccess')->name('shop.customers.account.profile.complete_registration_success');
+
+                        Route::get('check-username', 'checkUsername')->name('shop.customers.account.profile.check_username');
+
+
+                        Route::post('edit', 'update')->name('shop.customers.account.profile.update');
+
+                        Route::post('destroy', 'destroy')->name('shop.customers.account.profile.destroy');
+                    });
+
+                    Route::get('reviews', 'reviews')->name('shop.customers.account.reviews.index');
+                });
+
+                // Credits Transfer
                 Route::controller(TransferController::class)->prefix('credits')->group(function () {
                     Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
+                });
+
+                /**
+                 * GDPR.
+                 */
+                Route::controller(GDPRController::class)->prefix('gdpr')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.gdpr.index');
+
+                    Route::post('', 'store')->name('shop.customers.account.gdpr.store');
+
+                    Route::get('pdf-view', 'pdfView')->name('shop.customers.account.gdpr.pdf-view');
+
+                    Route::get('html-view', 'htmlView')->name('shop.customers.account.gdpr.html-view');
+
+                    Route::post('revoke/{id}', 'revoke')->name('shop.customers.account.gdpr.revoke');
+                });
+
+                /**
+                 * Cookie consent.
+                 */
+                Route::get('your-cookie-consent-preferences', [GDPRController::class, 'cookieConsent'])
+                    ->name('shop.customers.gdpr.cookie-consent');
+
+                /**
+                 * Addresses.
+                 */
+                Route::controller(AddressController::class)->prefix('addresses')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.addresses.index');
+
+                    Route::get('create', 'create')->name('shop.customers.account.addresses.create');
+
+                    Route::post('create', 'store')->name('shop.customers.account.addresses.store');
+
+                    Route::get('edit/{id}', 'edit')->name('shop.customers.account.addresses.edit');
+
+                    Route::put('edit/{id}', 'update')->name('shop.customers.account.addresses.update');
+
+                    Route::patch('edit/{id}', 'makeDefault')->name('shop.customers.account.addresses.update.default');
+
+                    Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.addresses.delete');
+                });
+
+                /**
+                 * Orders.
+                 */
+                Route::controller(OrderController::class)->prefix('orders')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.orders.index');
+
+                    Route::get('view/{id}', 'view')->name('shop.customers.account.orders.view');
+
+                    Route::get('reorder/{id}', 'reorder')->name('shop.customers.account.orders.reorder');
+
+                    Route::post('cancel/{id}', 'cancel')->name('shop.customers.account.orders.cancel');
+
+                    Route::get('print/Invoice/{id}', 'printInvoice')->name('shop.customers.account.orders.print-invoice');
+                });
+
+                /**
+                 * Downloadable products.
+                 */
+                Route::controller(DownloadableProductController::class)->prefix('downloadable-products')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.downloadable_products.index');
+
+                    Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
+                });
+
+                /**
+                 * Magic AI routes.
+                 */
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\MagicAIController::class)->prefix('magic-ai')->group(function () {
+                    Route::post('parse-bank-details', 'parseBankDetails')->name('shop.customers.account.magic_ai.parse_bank_details');
+                });
+
+                /**
+                 * Organizations.
+                 */
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\OrganizationController::class)->prefix('organizations')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.organizations.index');
+
+                    Route::get('create', 'create')->name('shop.customers.account.organizations.create');
+
+                    Route::post('create', 'store')->name('shop.customers.account.organizations.store');
+
+                    Route::get('edit/{id}', 'edit')->name('shop.customers.account.organizations.edit');
+
+                    Route::put('edit/{id}', 'update')->name('shop.customers.account.organizations.update');
+
+                    Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.organizations.delete');
+
+                    Route::post('{id}/settlement-accounts', 'storeSettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.store');
+
+                    Route::put('{organizationId}/settlement-accounts/{accountId}/alias', 'updateSettlementAccountAlias')->name('shop.customers.account.organizations.settlement_accounts.update_alias');
+
+                    Route::delete('{organizationId}/settlement-accounts/{accountId}', 'destroySettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.destroy');
+
+                    Route::get('lookup-inn/{inn}', 'lookupInn')->name('shop.customers.account.organizations.lookup_inn');
+
+                    Route::get('lookup-bic/{bic}', 'lookupBic')->name('shop.customers.account.organizations.lookup_bic');
+
+                    Route::get('suggest-bank', 'suggestBank')->name('shop.customers.account.organizations.suggest_bank');
+
+                    Route::get('suggest', 'suggestOrganization')->name('shop.customers.account.organizations.suggest');
+
+                    Route::get('suggest-organization', 'suggestOrganization')->name('shop.customers.account.organizations.suggest_organization');
                 });
 
                 /**
@@ -162,92 +307,33 @@ Route::prefix('customer')->group(function () {
                  */
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->prefix('crypto')->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.crypto.index');
+
                     Route::post('create', 'store')->name('shop.customers.account.crypto.store');
+
                     Route::get('sync/{id}', 'sync')->name('shop.customers.account.crypto.sync');
+
                     Route::get('verify/{id}', 'verify')->name('shop.customers.account.crypto.verify');
+
                     Route::post('update-alias/{id}', 'updateAlias')->name('shop.customers.account.crypto.update_alias');
                     Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
                 });
-            }); // End of meanly_pay_auth middleware group
-
-            /**
-             * Profile.
-             */
-            Route::controller(CustomerController::class)->group(function () {
-                Route::prefix('profile')->group(function () {
-                    Route::get('edit', 'edit')->name('shop.customers.account.profile.edit');
-
-                    Route::get('recovery-key', 'recoveryKey')->name('shop.customers.account.profile.recovery_key');
-
-                    Route::get('complete-registration', 'completeRegistration')->name('shop.customers.account.profile.complete_registration');
-
-                    Route::get('complete-registration-passkey', 'completeRegistrationPasskey')->name('shop.customers.account.profile.complete_registration_passkey');
-
-                    Route::get('complete-registration-success', 'completeRegistrationSuccess')->name('shop.customers.account.profile.complete_registration_success');
-
-                    Route::post('edit', 'update')->name('shop.customers.account.profile.update');
-
-                    Route::post('destroy', 'destroy')->name('shop.customers.account.profile.destroy');
+                /**
+                 * Calls.
+                 */
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CallController::class)->prefix('calls')->group(function () {
+                    Route::get('', 'index')->name('shop.customers.account.calls.index');
+                    Route::post('signal', 'signal')->name('shop.customers.account.calls.signal');
                 });
 
-                Route::get('reviews', 'reviews')->name('shop.customers.account.reviews.index');
-            });
+                /**
+                 * Matrix / Element X Integration (Disabled)
+                 *
+                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\MatrixController::class)->prefix('matrix')->group(function () {
+                    Route::get('redirect', 'redirect')->name('shop.customers.account.matrix.redirect');
+                    Route::post('verify', 'verifyCredentials')->name('shop.customers.account.matrix.verify');
+                });
+                */
 
-            // Meanly Pay Unlock Routes
-            Route::controller(\Webkul\Shop\Http\Controllers\Customer\MeanlyPayAuthController::class)->prefix('meanly-pay')->group(function () {
-                Route::get('unlock', 'unlock')->name('shop.customers.account.meanly_pay.unlock');
-                Route::post('verify-pin', 'verifyPin')->name('shop.customers.account.meanly_pay.verify_pin');
-                Route::post('passkey-options', 'passkeyOptions')->name('shop.customers.account.meanly_pay.passkey_options');
-                Route::post('verify-passkey', 'verifyPasskey')->name('shop.customers.account.meanly_pay.verify_passkey');
-            });
-
-            /**
-             * GDPR.
-             */
-            Route::controller(GDPRController::class)->prefix('gdpr')->group(function () {
-                Route::get('', 'index')->name('shop.customers.account.gdpr.index');
-                Route::post('', 'store')->name('shop.customers.account.gdpr.store');
-                Route::get('pdf-view', 'pdfView')->name('shop.customers.account.gdpr.pdf-view');
-                Route::get('html-view', 'htmlView')->name('shop.customers.account.gdpr.html-view');
-                Route::post('revoke/{id}', 'revoke')->name('shop.customers.account.gdpr.revoke');
-            });
-
-            /**
-             * Cookie consent.
-             */
-            Route::get('your-cookie-consent-preferences', [GDPRController::class, 'cookieConsent'])
-                ->name('shop.customers.gdpr.cookie-consent');
-
-            /**
-             * Addresses.
-             */
-            Route::controller(AddressController::class)->prefix('addresses')->group(function () {
-                Route::get('', 'index')->name('shop.customers.account.addresses.index');
-                Route::get('create', 'create')->name('shop.customers.account.addresses.create');
-                Route::post('create', 'store')->name('shop.customers.account.addresses.store');
-                Route::get('edit/{id}', 'edit')->name('shop.customers.account.addresses.edit');
-                Route::put('edit/{id}', 'update')->name('shop.customers.account.addresses.update');
-                Route::patch('edit/{id}', 'makeDefault')->name('shop.customers.account.addresses.update.default');
-                Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.addresses.delete');
-            });
-
-            /**
-             * Orders.
-             */
-            Route::controller(OrderController::class)->prefix('orders')->group(function () {
-                Route::get('', 'index')->name('shop.customers.account.orders.index');
-                Route::get('view/{id}', 'view')->name('shop.customers.account.orders.view');
-                Route::get('reorder/{id}', 'reorder')->name('shop.customers.account.orders.reorder');
-                Route::post('cancel/{id}', 'cancel')->name('shop.customers.account.orders.cancel');
-                Route::get('print/Invoice/{id}', 'printInvoice')->name('shop.customers.account.orders.print-invoice');
-            });
-
-            /**
-             * Downloadable products.
-             */
-            Route::controller(DownloadableProductController::class)->prefix('downloadable-products')->group(function () {
-                Route::get('', 'index')->name('shop.customers.account.downloadable_products.index');
-                Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
             });
         });
     });

@@ -1,8 +1,6 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :show-back="false">
     <!-- Page Title -->
-    <x-slot:title>
-        @lang('shop::app.customers.account.login-activity.title')
-        </x-slot>
+    <x-slot:title></x-slot>
 
         <!-- Breadcrumbs -->
         @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
@@ -11,8 +9,19 @@
         @endSection
         @endif
 
-        <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5">
-            <div class="mb-10 mt-6">
+        <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5 ios-tile-relative">
+            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                class="ios-close-button">
+                <span class="icon-cancel text-xl"></span>
+            </a>
+
+            <div class="mb-10">
+                <!-- Tiled Header -->
+                <div class="px-5 pt-0 pb-6">
+                    <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
+                        @lang('shop::app.customers.account.login-activity.title')
+                    </h1>
+                </div>
 
                 <!-- Active Sessions Section -->
                 @if (count($activeSessions))
@@ -60,7 +69,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition">
+                                                    class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100  transition">
                                                     @lang('shop::app.customers.account.login-activity.revoke')
                                                 </button>
                                             </form>
@@ -122,9 +131,10 @@
                             @endif
                         </div>
                     @else
-                        <div class="bg-zinc-50/50 p-10 text-center rounded-3xl border border-zinc-100">
+                        <div class="bg-zinc-50/50 p-10 text-center  border border-zinc-100">
                             <p class="text-[15px] text-zinc-500">
-                                @lang('shop::app.customers.account.login-activity.empty-history').</p>
+                                @lang('shop::app.customers.account.login-activity.empty-history').
+                            </p>
                         </div>
                     @endif
                 </div>

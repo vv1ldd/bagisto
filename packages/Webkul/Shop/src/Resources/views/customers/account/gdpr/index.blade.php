@@ -1,8 +1,6 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :show-back="false">
     <!-- Page Title -->
-    <x-slot:title>
-        @lang('shop::app.customers.account.gdpr.index.title')
-        </x-slot>
+    <x-slot:title></x-slot>
 
         <!-- Breadcrumbs -->
         @if ((core()->getConfigData('general.general.breadcrumbs.shop')))
@@ -13,7 +11,17 @@
 
 
 
-        <div class="mx-4 flex-auto">
+        <div class="mx-4 flex-auto ios-tile-relative bg-white border border-gray-100 pb-8">
+            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                class="ios-close-button">
+                <span class="icon-cancel text-xl"></span>
+            </a>
+
+            <div class="px-5 pt-6 pb-2">
+                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
+                    @lang('shop::app.customers.account.gdpr.index.title')
+                </h1>
+            </div>
 
             {!! view_render_event('bagisto.shop.customers.account.gdpr.list.before') !!}
 
@@ -52,7 +60,7 @@
                         <template v-else>
                             <template v-for="record in available.records">
                                 <div
-                                    class="w-full p-4 border rounded-md transition-all hover:bg-gray-50 [&>*]:border-0 mb-4 last:mb-0">
+                                    class="w-full p-4 border  transition-all hover:bg-gray-50 [&>*]:border-0 mb-4 last:mb-0">
                                     <div class="flex items-center justify-between">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex gap-2">
@@ -169,7 +177,7 @@
                         <x-slot:footer>
                             <div class="flex flex-wrap items-center gap-4">
                                 <x-shop::button
-                                    class="primary-button max-w-none flex-auto rounded-2xl px-11 py-3 max-md:rounded-lg max-md:py-1.5"
+                                    class="primary-button max-w-none flex-auto  px-11 py-3 max-md: max-md:py-1.5"
                                     :title="trans('shop::app.customers.account.gdpr.index.modal.save')"
                                     ::loading="isStoring" ::disabled="isStoring" />
                             </div>

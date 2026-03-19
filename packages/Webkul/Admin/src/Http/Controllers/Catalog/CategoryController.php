@@ -14,6 +14,7 @@ use Webkul\Admin\Http\Resources\CategoryTreeResource;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\Core\Repositories\ChannelRepository;
+use Webkul\Core\Repositories\BillingEntityRepository;
 
 class CategoryController extends Controller
 {
@@ -25,7 +26,8 @@ class CategoryController extends Controller
     public function __construct(
         protected ChannelRepository $channelRepository,
         protected CategoryRepository $categoryRepository,
-        protected AttributeRepository $attributeRepository
+        protected AttributeRepository $attributeRepository,
+        protected BillingEntityRepository $billingEntityRepository
     ) {
     }
 
@@ -54,7 +56,9 @@ class CategoryController extends Controller
 
         $attributes = $this->attributeRepository->findWhere(['is_filterable' => 1]);
 
-        return view('admin::catalog.categories.create', compact('categories', 'attributes'));
+        $billingEntities = $this->billingEntityRepository->all();
+
+        return view('admin::catalog.categories.create', compact('categories', 'attributes', 'billingEntities'));
     }
 
     /**
@@ -84,6 +88,7 @@ class CategoryController extends Controller
             'attributes',
             'logo_path',
             'banner_path',
+            'billing_entity_id',
         ]);
 
         if (!empty($data['description'])) {
@@ -112,7 +117,9 @@ class CategoryController extends Controller
 
         $attributes = $this->attributeRepository->findWhere(['is_filterable' => 1]);
 
-        return view('admin::catalog.categories.edit', compact('category', 'categories', 'attributes'));
+        $billingEntities = $this->billingEntityRepository->all();
+
+        return view('admin::catalog.categories.edit', compact('category', 'categories', 'attributes', 'billingEntities'));
     }
 
     /**
@@ -143,7 +150,8 @@ class CategoryController extends Controller
             'show_in_header',
             'show_in_carousel',
             'show_in_push_menu',
-            'attributes'
+            'attributes',
+            'billing_entity_id'
         );
 
         $data[$locale] = $localeData;

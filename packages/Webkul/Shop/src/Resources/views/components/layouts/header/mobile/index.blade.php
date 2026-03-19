@@ -8,7 +8,7 @@
     $showWishlist = (bool) core()->getConfigData('customer.settings.wishlist.wishlist_option');
 @endphp
 
-<div class="flex flex-wrap gap-4 px-4 pt-4 pb-3 shadow-none lg:hidden glass-header border-none !bg-transparent">
+<div class="flex py-3 sm:py-6 items-center gap-4 px-8 max-sm:px-4 shadow-none lg:hidden !bg-transparent">
     <div class="flex items-center justify-between w-full">
         <!-- Left Navigation -->
         <div class="flex items-center gap-x-5">
@@ -16,10 +16,10 @@
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.before') !!}
 
-            <a href="{{ route('shop.home.index') }}" class="max-h-[30px]"
-                aria-label="@lang('shop::app.components.layouts.header.mobile.bagisto')">
-                <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}"
-                    alt="{{ config('app.name') }}" width="131" height="29">
+            <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2"
+                aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
+                <span
+                    class="text-2xl font-black tracking-tighter text-[#7C45F5]">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
             </a>
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.after') !!}
@@ -27,29 +27,30 @@
 
         <!-- Right Navigation -->
         <div class="flex items-center">
-            @guest('customer')
-                <a href="{{ route('shop.customer.session.create') }}"
-                    class="flex items-center justify-center rounded-[20px] bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-5 py-2 text-[14px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all active:scale-[0.97]">
-                    Войти
+            <v-header-cart></v-header-cart>
+
+            @auth('customer')
+                <a href="{{ route('shop.customers.account.index') }}"
+                    class="flex items-center gap-2  bg-white/40 px-1 pr-3 py-1 backdrop-blur-md border border-white/60">
+                    <div
+                        class="flex h-7 w-7 items-center justify-center  bg-[#7C45F5] text-white font-bold text-[10px] uppercase shrink-0">
+                        {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
+                    </div>
+                    <span class="text-[13px] font-medium text-zinc-700 flex items-center gap-1 whitespace-nowrap">
+                        @
+                        {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
+                        @if(auth()->guard('customer')->user()->is_investor)
+                            <span title="Инвестор" class="text-[13px] leading-none">💎</span>
+                        @endif
+                    </span>
                 </a>
             @else
-            <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white/70 px-3 py-2 shadow-sm transition active:opacity-70 active:scale-[0.98]">
-                <div class="leading-tight text-right">
-                    <div class="text-[13px] font-bold text-zinc-900 leading-snug">
-                        {{ auth()->guard('customer')->user()->first_name }}
-                        {{ auth()->guard('customer')->user()->last_name }}
-                    </div>
-                    <div class="text-[11px] text-zinc-400 truncate max-w-[130px]">
-                        {{ auth()->guard('customer')->user()->email }}
-                    </div>
-                    <div class="text-[11px] font-bold text-[#7C45F5] mt-0.5">
-                        {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
-                    </div>
-                </div>
-                <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left shrink-0"></span>
-            </a>
+                <a href="{{ route('shop.customer.session.index') }}"
+                    class="flex items-center justify-center  bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-4 py-2 text-[13px] font-bold text-white shadow-md shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97] whitespace-nowrap">
+                    Войти
+                </a>
             @endauth
+
         </div>
     </div>
 

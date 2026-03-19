@@ -298,7 +298,23 @@
                 <table class="{{ core()->getCurrentLocale()->direction }}">
                     <tbody>
                         <tr>
-                            @if (! empty(core()->getConfigData('sales.shipping.origin.country')))
+                            @php
+                                $billingEntity = $invoice->billingEntity;
+                            @endphp
+
+                            @if ($billingEntity)
+                                <td style="width: 50%; padding: 2px 18px;border:none;">
+                                    <b style="display: inline-block; margin-bottom: 4px;">
+                                        {{ $billingEntity->name }}
+                                    </b>
+
+                                    <div>
+                                        <div>{{ $billingEntity->address }}</div>
+
+                                        <div>@lang('shop::app.customers.account.orders.invoice-pdf.inn'): {{ $billingEntity->inn }} / @lang('shop::app.customers.account.orders.invoice-pdf.kpp'): {{ $billingEntity->kpp }}</div>
+                                    </div>
+                                </td>
+                            @elseif (! empty(core()->getConfigData('sales.shipping.origin.country')))
                                 <td style="width: 50%; padding: 2px 18px;border:none;">
                                     <b style="display: inline-block; margin-bottom: 4px;">
                                         {{ core()->getConfigData('sales.shipping.origin.store_name') }}
@@ -327,7 +343,20 @@
                                     </div>
                                 @endif
 
-                                @if (core()->getConfigData('sales.shipping.origin.bank_details'))
+                                @if ($billingEntity)
+                                    <div>
+                                        <b style="display: inline-block; margin-bottom: 4px;">
+                                            @lang('shop::app.customers.account.orders.invoice-pdf.bank-details'):
+                                        </b>
+
+                                        <div>
+                                            {{ $billingEntity->bank_name }}<br>
+                                            @lang('shop::app.customers.account.orders.invoice-pdf.bic'): {{ $billingEntity->bic }}<br>
+                                            @lang('shop::app.customers.account.orders.invoice-pdf.settlement-account'): {{ $billingEntity->settlement_account }}<br>
+                                            @lang('shop::app.customers.account.orders.invoice-pdf.correspondent-account'): {{ $billingEntity->correspondent_account }}
+                                        </div>
+                                    </div>
+                                @elseif (core()->getConfigData('sales.shipping.origin.bank_details'))
                                     <div>
                                         <b style="display: inline-block; margin-bottom: 4px;">
                                             @lang('shop::app.customers.account.orders.invoice-pdf.bank-details'):

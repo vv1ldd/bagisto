@@ -16,8 +16,29 @@
     --brand-gradient: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
 }
 
+*,
+*::before,
+*::after {
+    border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    clip-path: none !important;
+}
+
+input,
+textarea,
+select,
+button,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
 .glass-card {
-    background: var(--glass-bg);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.35) 100%);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
@@ -28,15 +49,21 @@
 .glass-card:hover {
     background: var(--glass-bg-hover);
     border-color: rgba(255, 255, 255, 0.6);
-    transform: translateY(-2px);
 }
 
 .glass-header {
-    background: rgba(255, 255, 255, 0.75);
+    background: linear-gradient(135deg, rgba(124, 69, 245, 0.08) 0%, rgba(255, 255, 255, 0.85) 50%, rgba(255, 77, 109, 0.05) 100%);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--glass-border);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.glass-footer {
+    background: linear-gradient(135deg, rgba(124, 69, 245, 0.05) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 77, 109, 0.03) 100%);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-top: 1px solid var(--glass-border);
 }
 
 .glass-surface {
@@ -78,7 +105,7 @@ img.lazy {
     }
 
     input {
-        @apply outline-none transition-all duration-300 focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 rounded-lg;
+        @apply outline-none transition-all duration-300 focus:ring-2 focus:ring-gray-200 focus:ring-offset-2;
     }
 
     button {
@@ -537,22 +564,39 @@ img.lazy {
     }
 
     .shimmer {
-        animation-duration: 2.2s;
-        animation-fill-mode: forwards;
-        animation-iteration-count: infinite;
-        animation-name: skeleton;
-        animation-timing-function: linear;
-        background: linear-gradient(to right, #F6F6F6 8%, #F0F0F0 18%, #F6F6F6 33%);
-        background-size: 1250px 100%;
+        position: relative;
+        overflow: hidden;
+        background-color: #E6E5F5;
+        animation: shimmer-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
-    @keyframes skeleton {
-        0% {
-            background-position: -1250px 0;
+    .shimmer::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.4) 50%,
+                rgba(255, 255, 255, 0) 100%);
+        animation: shimmer-swipe 2s infinite;
+    }
+
+    @keyframes shimmer-swipe {
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    @keyframes shimmer-pulse {
+
+        0%,
+        100% {
+            opacity: 0.6;
         }
 
-        100% {
-            background-position: 1250px 0;
+        50% {
+            opacity: 1;
         }
     }
 

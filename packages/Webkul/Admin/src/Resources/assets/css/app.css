@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    border-radius: 0 !important;
+}
+
 @font-face {
     font-family: "bagisto-admin";
     src: url("../fonts/bagisto-admin.woff?jwnnow") format("woff");
@@ -51,7 +55,7 @@
         text-transform: none;
         line-height: 1;
         color: #6b7280;
-        
+
         /* Better Font Rendering =========== */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -59,12 +63,12 @@
     }
 
     html.dark [class^="icon-"],
-    html.dark [class*=" icon-"]{
+    html.dark [class*=" icon-"] {
         color: #d1d5db;
     }
-    
+
     .box-shadow {
-        @apply border-[1px] dark:border-gray-800 shadow-[0px_0px_0px_0px_rgba(0,0,0,0.03),0px_1px_1px_0px_rgba(0,0,0,0.03),0px_3px_3px_0px_rgba(0,0,0,0.03),0px_6px_4px_0px_rgba(0,0,0,0.02),0px_11px_4px_0px_rgba(0,0,0,0.00),0px_17px_5px_0px_rgba(0,0,0,0.00)];
+        @apply border-[1px] dark:border-gray-800 shadow-[0px_0px_0px_0px_rgba(0, 0, 0, 0.03), 0px_1px_1px_0px_rgba(0, 0, 0, 0.03), 0px_3px_3px_0px_rgba(0, 0, 0, 0.03), 0px_6px_4px_0px_rgba(0, 0, 0, 0.02), 0px_11px_4px_0px_rgba(0, 0, 0, 0.00), 0px_17px_5px_0px_rgba(0, 0, 0, 0.00)];
     }
 
     .icon-phone:before {
@@ -386,7 +390,7 @@
     .icon-play:before {
         content: "\e945";
     }
-      
+
     p {
         @apply text-[14px] !leading-[17px];
     }
@@ -439,7 +443,8 @@
         background-position-x: calc(100% - 10px);
         background-position-y: 50%;
     }
-    .dark .custom-select{
+
+    .dark .custom-select {
         background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
     }
 
@@ -459,23 +464,23 @@
         @apply text-[12px] text-white font-semibold py-px px-1.5 max-w-max rounded-[35px];
     }
 
-	.label-pending,
+    .label-pending,
     .label-pending_payment {
-		@apply bg-yellow-500;
-	}
-
-	.label-processing{
-		@apply bg-cyan-600;
+        @apply bg-yellow-500;
     }
 
-	.label-completed,
-    .label-active {
-		@apply bg-green-600;
-	}
+    .label-processing {
+        @apply bg-cyan-600;
+    }
 
-	.label-closed {
-		@apply bg-indigo-600;
-	}
+    .label-completed,
+    .label-active {
+        @apply bg-green-600;
+    }
+
+    .label-closed {
+        @apply bg-indigo-600;
+    }
 
     .label-canceled,
     .label-fraud {
@@ -495,7 +500,7 @@
         @apply text-red-600;
     }
 
-	.icon-star-fill:before {
+    .icon-star-fill:before {
         content: "\e938";
         color: #ffb600;
     }
@@ -506,22 +511,18 @@
         animation-iteration-count: infinite;
         animation-name: skeleton;
         animation-timing-function: linear;
-        background: linear-gradient(
-            to right,
-            #f6f6f6 8%,
-            #f0f0f0 18%,
-            #f6f6f6 33%
-        );
+        background: linear-gradient(to right,
+                #f6f6f6 8%,
+                #f0f0f0 18%,
+                #f6f6f6 33%);
         background-size: 1250px 100%;
     }
 
     .dark .shimmer {
-        background: linear-gradient(
-            to right,
-            #1f2937 8%,
-            #1a2232 18%,
-            #1f2937 33%
-        );
+        background: linear-gradient(to right,
+                #1f2937 8%,
+                #1a2232 18%,
+                #1f2937 33%);
     }
 
     @keyframes skeleton {

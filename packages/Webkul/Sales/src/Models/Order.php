@@ -5,6 +5,7 @@ namespace Webkul\Sales\Models;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Core\Models\BillingEntityProxy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -103,7 +104,7 @@ class Order extends Model implements OrderContract
      */
     public function getCustomerFullNameAttribute(): string
     {
-        return $this->customer_first_name.' '.$this->customer_last_name;
+        return $this->customer_first_name . ' ' . $this->customer_last_name;
     }
 
     /**
@@ -144,6 +145,14 @@ class Order extends Model implements OrderContract
     public function cart(): BelongsTo
     {
         return $this->belongsTo(CartProxy::modelClass());
+    }
+
+    /**
+     * Get the billing entity record associated with the order.
+     */
+    public function billingEntity(): BelongsTo
+    {
+        return $this->belongsTo(BillingEntityProxy::modelClass(), 'billing_entity_id');
     }
 
     /**
@@ -316,7 +325,7 @@ class Order extends Model implements OrderContract
         foreach ($this->items as $item) {
             if (
                 $item->canShip()
-                && ! in_array($item->order->status, [
+                && !in_array($item->order->status, [
                     self::STATUS_CLOSED,
                     self::STATUS_FRAUD,
                 ])
@@ -336,7 +345,7 @@ class Order extends Model implements OrderContract
         foreach ($this->items as $item) {
             if (
                 $item->canInvoice()
-                && ! in_array($item->order->status, [
+                && !in_array($item->order->status, [
                     self::STATUS_CLOSED,
                     self::STATUS_FRAUD,
                 ])
@@ -356,7 +365,7 @@ class Order extends Model implements OrderContract
         foreach ($this->items as $item) {
             if (
                 $item->canCancel()
-                && ! in_array($item->order->status, [
+                && !in_array($item->order->status, [
                     self::STATUS_CLOSED,
                     self::STATUS_FRAUD,
                 ])
@@ -376,7 +385,7 @@ class Order extends Model implements OrderContract
         foreach ($this->items as $item) {
             if (
                 $item->qty_to_refund > 0
-                && ! in_array($item->order->status, [
+                && !in_array($item->order->status, [
                     self::STATUS_CLOSED,
                     self::STATUS_FRAUD,
                 ])
@@ -402,7 +411,7 @@ class Order extends Model implements OrderContract
         }
 
         foreach ($this->items as $item) {
-            if (! $item->product?->getTypeInstance()->isSaleable()) {
+            if (!$item->product?->getTypeInstance()->isSaleable()) {
                 return false;
             }
         }

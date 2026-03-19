@@ -7,8 +7,8 @@
 
 @if (core()->getConfigData('catalog.rich_snippets.categories.enable'))
     <script type="application/ld+json">
-                                                        {!! app('Webkul\Product\Helpers\SEO')->getCategoryJsonLd($category) !!}
-                                                    </script>
+                                                                            {!! app('Webkul\Product\Helpers\SEO')->getCategoryJsonLd($category) !!}
+                                                                        </script>
 @endif
 @endPush
 
@@ -23,8 +23,8 @@
         <!-- Hero Image -->
         @if ($category->banner_path)
             <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4">
-                <x-shop::media.images.lazy class="aspect-[4/1] max-h-full max-w-full rounded-xl"
-                    src="{{ $category->banner_url }}" alt="{{ $category->name }}" width="1320" height="300" />
+                <x-shop::media.images.lazy class="aspect-[4/1] max-h-full max-w-full " src="{{ $category->banner_url }}"
+                    alt="{{ $category->name }}" width="1320" height="300" />
             </div>
         @endif
 
@@ -34,7 +34,8 @@
 
         @if (in_array($category->display_mode, [null, 'description_only', 'products_and_description']))
             @if ($category->description)
-                <div class="container mt-[34px] px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4 max-md:text-sm max-sm:text-xs">
+                <div
+                    class="sr-only container mt-[34px] px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4 max-md:text-sm max-sm:text-xs">
                     {!! $category->description !!}
                 </div>
             @endif
@@ -52,131 +53,119 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-category-template">
-                                                        <div class="container px-[60px] max-lg:px-8 max-md:px-4">
-
-                                                    <!-- Horizontal filter bar (all screens: desktop + mobile) -->
-                                                    <div>
-                                                        @include('shop::categories.filters')
-                                                    </div>
+                                                                            <div class="container px-[60px] max-lg:px-8 max-md:px-4">
 
 
-                                                    <!-- Product List (list mode) -->
-                                                    <div
-                                                        class="mt-8 grid grid-cols-1 gap-6"
-                                                        v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
-                                                    >
-                                                        <!-- Shimmer -->
-                                                        <template v-if="isLoading">
-                                                            <x-shop::shimmer.products.cards.list count="12" />
-                                                        </template>
 
-                                                        <!-- List card listing -->
-                                                        {!! view_render_event('bagisto.shop.categories.view.list.product_card.before') !!}
+                                                                        <!-- Product List (list mode) -->
+                                                                        <div
+                                                                            class="mt-8 grid grid-cols-1 gap-6"
+                                                                            v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
+                                                                        >
+                                                                            <!-- Shimmer -->
+                                                                            <template v-if="isLoading">
+                                                                                <x-shop::shimmer.products.cards.list count="12" />
+                                                                            </template>
 
-                                                        <template v-else>
-                                                            <template v-if="products.length">
-                                                                <x-shop::products.card
-                                                                    ::mode="'list'"
-                                                                    v-for="product in products"
-                                                                />
-                                                            </template>
+                                                                            <!-- List card listing -->
+                                                                            {!! view_render_event('bagisto.shop.categories.view.list.product_card.before') !!}
 
-                                                            <!-- Empty -->
-                                                            <template v-else>
-                                                                <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                                    <img
-                                                                        class="max-md:h-[100px] max-md:w-[100px]"
-                                                                        src="{{ bagisto_asset('images/thank-you.png') }}"
-                                                                        alt="@lang('shop::app.categories.view.empty')"
-                                                                        loading="lazy"
-                                                                        decoding="async"
-                                                                    />
+                                                                            <template v-else>
+                                                                                <template v-if="products.length">
+                                                                                    <x-shop::products.card
+                                                                                        ::mode="'list'"
+                                                                                        v-for="product in products"
+                                                                                    />
+                                                                                </template>
 
-                                                                    <p
-                                                                        class="text-xl max-md:text-sm"
-                                                                        role="heading"
-                                                                    >
-                                                                        @lang('shop::app.categories.view.empty')
-                                                                    </p>
-                                                                </div>
-                                                            </template>
-                                                        </template>
+                                                                                <!-- Empty -->
+                                                                                <template v-else>
+                                                                                    <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
+                                                                                    <div class="mb-4 flex h-24 w-24 items-center justify-center  bg-zinc-100 text-zinc-300">
+                                                                                        <span class="icon-cart text-[54px]"></span>
+                                                                                    </div>
 
-                                                        {!! view_render_event('bagisto.shop.categories.view.list.product_card.after') !!}
-                                                    </div>
+                                                                                        <p
+                                                                                            class="text-xl max-md:text-sm"
+                                                                                            role="heading"
+                                                                                        >
+                                                                                            @lang('shop::app.categories.view.empty')
+                                                                                        </p>
+                                                                                    </div>
+                                                                                </template>
+                                                                            </template>
 
-                                                    <!-- Product Grid (grid mode) -->
-                                                    <div v-else class="mt-8 max-md:mt-5">
-                                                        <!-- Shimmer -->
-                                                        <template v-if="isLoading">
-                                                            <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-x-3">
-                                                                <x-shop::shimmer.products.cards.grid count="12" />
-                                                            </div>
-                                                        </template>
+                                                                            {!! view_render_event('bagisto.shop.categories.view.list.product_card.after') !!}
+                                                                        </div>
 
-                                                        {!! view_render_event('bagisto.shop.categories.view.grid.product_card.before') !!}
+                                                                        <!-- Product Grid (grid mode) -->
+                                                                        <div v-else class="mt-8 max-md:mt-5">
+                                                                            <!-- Shimmer -->
+                                                                            <template v-if="isLoading">
+                                                                                <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2">
+                                                                                    <x-shop::shimmer.products.cards.grid count="12" />
+                                                                                </div>
+                                                                            </template>
 
-                                                        <!-- Grid card listing -->
-                                                        <template v-else>
-                                                            <template v-if="products.length">
-                                                                <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-x-3 isolate" style="isolation: isolate;">
-                                                                    <x-shop::products.card
-                                                                        ::mode="'grid'"
-                                                                        v-for="product in products"
-                                                                    />
-                                                                </div>
-                                                            </template>
+                                                                            {!! view_render_event('bagisto.shop.categories.view.grid.product_card.before') !!}
 
-                                                            <!-- Empty -->
-                                                            <template v-else>
-                                                                <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                                    <img
-                                                                        class="max-md:h-[100px] max-md:w-[100px]"
-                                                                        src="{{ bagisto_asset('images/thank-you.png') }}"
-                                                                        alt="@lang('shop::app.categories.view.empty')"
-                                                                        loading="lazy"
-                                                                        decoding="async"
-                                                                    />
+                                                                            <!-- Grid card listing -->
+                                                                            <template v-else>
+                                                                                <template v-if="products.length">
+                                                                                    <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 isolate" style="isolation: isolate;">
+                                                                                        <x-shop::products.card
+                                                                                            ::mode="'grid'"
+                                                                                            v-for="product in products"
+                                                                                        />
+                                                                                    </div>
+                                                                                </template>
 
-                                                                    <p
-                                                                        class="text-xl max-md:text-sm"
-                                                                        role="heading"
-                                                                    >
-                                                                        @lang('shop::app.categories.view.empty')
-                                                                    </p>
-                                                                </div>
-                                                            </template>
-                                                        </template>
+                                                                                <!-- Empty -->
+                                                                                <template v-else>
+                                                                                    <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
+                                                                                    <div class="mb-4 flex h-24 w-24 items-center justify-center  bg-zinc-100 text-zinc-300">
+                                                                                        <span class="icon-cart text-[54px]"></span>
+                                                                                    </div>
 
-                                                        {!! view_render_event('bagisto.shop.categories.view.grid.product_card.after') !!}
-                                                    </div>
+                                                                                        <p
+                                                                                            class="text-xl max-md:text-sm"
+                                                                                            role="heading"
+                                                                                        >
+                                                                                            @lang('shop::app.categories.view.empty')
+                                                                                        </p>
+                                                                                    </div>
+                                                                                </template>
+                                                                            </template>
 
-                                                    {!! view_render_event('bagisto.shop.categories.view.load_more_button.before') !!}
+                                                                            {!! view_render_event('bagisto.shop.categories.view.grid.product_card.after') !!}
+                                                                        </div>
 
-                                                    <!-- Load More Button -->
-                                                    <button
-                                                        class="secondary-button mx-auto mt-14 block w-max rounded-2xl px-11 py-3 text-center text-base max-md:rounded-lg max-sm:mt-6 max-sm:px-6 max-sm:py-1.5 max-sm:text-sm"
-                                                        @click="loadMoreProducts"
-                                                        v-if="links.next && ! loader"
-                                                    >
-                                                        @lang('shop::app.categories.view.load-more')
-                                                    </button>
+                                                                        {!! view_render_event('bagisto.shop.categories.view.load_more_button.before') !!}
 
-                                                    <button
-                                                        v-else-if="links.next"
-                                                        class="secondary-button mx-auto mt-14 block w-max rounded-2xl px-[74.5px] py-3.5 text-center text-base max-md:rounded-lg max-md:py-3 max-sm:mt-6 max-sm:px-[50.8px] max-sm:py-1.5"
-                                                    >
-                                                        <!-- Spinner -->
-                                                        <img
-                                                            class="h-5 w-5 animate-spin text-navyBlue"
-                                                            src="{{ bagisto_asset('images/spinner.svg') }}"
-                                                            alt="Loading"
-                                                        />
-                                                    </button>
+                                                                        <!-- Load More Button -->
+                                                                        <button
+                                                                            class="secondary-button mx-auto mt-14 block w-max  px-11 py-3 text-center text-base max-md: max-sm:mt-6 max-sm:px-6 max-sm:py-1.5 max-sm:text-sm"
+                                                                            @click="loadMoreProducts"
+                                                                            v-if="links.next && ! loader"
+                                                                        >
+                                                                            @lang('shop::app.categories.view.load-more')
+                                                                        </button>
 
-                                                    {!! view_render_event('bagisto.shop.categories.view.grid.load_more_button.after') !!}
-                                                </div>
-                                                    </script>
+                                                                        <button
+                                                                            v-else-if="links.next"
+                                                                            class="secondary-button mx-auto mt-14 block w-max  px-[74.5px] py-3.5 text-center text-base max-md: max-md:py-3 max-sm:mt-6 max-sm:px-[50.8px] max-sm:py-1.5"
+                                                                        >
+                                                                            <!-- Spinner -->
+                                                                            <img
+                                                                                class="h-5 w-5 animate-spin text-navyBlue"
+                                                                                src="{{ bagisto_asset('images/spinner.svg') }}"
+                                                                                alt="Loading"
+                                                                            />
+                                                                        </button>
+
+                                                                        {!! view_render_event('bagisto.shop.categories.view.grid.load_more_button.after') !!}
+                                                                    </div>
+                                                                        </script>
 
             <script type="module">
                 app.component('v-category', {
@@ -236,6 +225,14 @@
 
                     mounted() {
                         this.getProducts();
+
+                        this.$emitter.on('header-filters-applied', filters => {
+                            this.setFilters('filter', filters);
+                        });
+
+                        this.$emitter.on('header-toolbar-applied', toolbar => {
+                            this.setFilters('toolbar', toolbar);
+                        });
                     },
 
                     methods: {

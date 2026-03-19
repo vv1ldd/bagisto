@@ -220,23 +220,33 @@ class PasskeyController extends Controller
             }
 
             $user = $passkey->authenticatable;
-            Log::info('Passkey login successful for user', ['user_id' => $user->id]);
+            Log::info('Passkey validation successful for user', ['user_id' => $user->id]);
 
-            Auth::guard('customer')->login($user, $request->boolean('remember'));
+            $currentUser = Auth::guard('customer')->user();
 
-            // Log login activity
-            app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($user);
+            if ($currentUser && $currentUser->id === $user->id) {
+                // User is already logged in, this is likely a step-up authentication (e.g. for Meanly Wallet)
+                Log::info('Passkey step-up authentication successful, skipping redundant login log', ['user_id' => $user->id]);
+            } else {
+                // Initial login or switching users
+                Auth::guard('customer')->login($user, $request->boolean('remember'));
 
-            session()->regenerate();
+                // Log login activity
+                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($user);
+
+                session()->regenerate();
+            }
+
             session()->put('logged_in_via_passkey', true);
+            session()->put('passkey_unlocked_at', now()->timestamp);
             session()->put('current_session_passkey_id', $passkey->id); // Track current passkey
             Cookie::queue('current_device_passkey_id', $passkey->id, 60 * 24 * 365); // Track device via cookie
 
             session()->forget('passkey-authentication-options-json');
 
             return response()->json([
-                'message' => 'Successfully logged in.',
-                'redirect_url' => route('shop.customers.account.index'),
+                'message' => 'Successfully authenticated.',
+                'redirect_url' => redirect()->intended(route('shop.customers.account.index'))->getTargetUrl(),
             ]);
         } catch (\Exception $e) {
             Log::error('Passkey login error', [

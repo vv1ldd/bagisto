@@ -20,7 +20,7 @@
 
                         <div class="flex items-center gap-3">
                             <button
-                                class="flex h-10 w-10 items-center justify-center rounded-full border border-[#E0E0E0] text-black transition-all duration-200 hover:border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                                class="flex h-10 w-10 items-center justify-center  border border-[#E0E0E0] text-black transition-all duration-200 hover:border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
                                 :disabled="! canScrollLeft"
                                 aria-label="@lang('shop::components.carousel.previous')"
                                 @click="swipeLeft"
@@ -31,7 +31,7 @@
                             </button>
 
                             <button
-                                class="flex h-10 w-10 items-center justify-center rounded-full border border-[#E0E0E0] text-black transition-all duration-200 hover:border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                                class="flex h-10 w-10 items-center justify-center  border border-[#E0E0E0] text-black transition-all duration-200 hover:border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
                                 :disabled="! canScrollRight"
                                 aria-label="@lang('shop::components.carousel.next')"
                                 @click="swipeRight"
@@ -67,7 +67,7 @@
                             >
                                 <a
                                     :href="category.slug"
-                                    class="h-[110px] w-[110px] rounded-full bg-zinc-100 max-md:h-20 max-md:w-20 max-sm:h-[72px] max-sm:w-[72px]"
+                                    class="h-[110px] w-[110px]  bg-zinc-100 max-md:h-20 max-md:w-20 max-sm:h-[72px] max-sm:w-[72px]"
                                     :aria-label="category.name"
                                 >
                                     <x-shop::media.images.lazy
@@ -80,7 +80,7 @@
                                         sizes="(max-width: 640px) 72px, 110px"
                                         width="110"
                                         height="110"
-                                        class="w-full rounded-full max-sm:h-[72px] max-sm:w-[72px]"
+                                        class="w-full  max-sm:h-[72px] max-sm:w-[72px]"
                                         ::alt="category.name"
                                     />
                                 </a>
@@ -97,14 +97,14 @@
 
                     <!-- Scroll progress bar (shown when there's content to scroll) -->
                     <div
-                        class="mt-4 h-1 w-full overflow-hidden rounded-full bg-zinc-200 max-md:mt-3"
+                        class="mt-4 h-1 w-full overflow-hidden  bg-zinc-200 max-md:mt-3"
                         v-show="canScrollRight || canScrollLeft"
                         style="direction: ltr;"
                         role="scrollbar"
                         aria-hidden="true"
                     >
                         <div
-                            class="h-full rounded-full bg-[#7C45F5] transition-[width] duration-200"
+                            class="h-full  bg-[#7C45F5] transition-[width] duration-200"
                             :style="{ width: scrollProgress + '%' }"
                         ></div>
                     </div>

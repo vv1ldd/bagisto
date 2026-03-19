@@ -29,14 +29,14 @@
                 </span>
 
                 <span
-                    class="icon-arrow-left fixed left-2.5 top-1/2 z-10 -mt-12 w-auto cursor-pointer rounded-full bg-[rgba(0,0,0,0.8)] p-3 text-2xl font-bold text-white opacity-30 transition-all hover:opacity-100"
+                    class="icon-arrow-left fixed left-2.5 top-1/2 z-10 -mt-12 w-auto cursor-pointer  bg-[rgba(0,0,0,0.8)] p-3 text-2xl font-bold text-white opacity-30 transition-all hover:opacity-100"
                     v-if="attachments.length >= 2"
                     @click="navigate(currentIndex -= 1)"
                 >
                 </span>
 
                 <span
-                    class="icon-arrow-right fixed right-2.5 top-1/2 z-10 -mt-12 w-auto cursor-pointer rounded-full bg-[rgba(0,0,0,0.8)] p-3 text-2xl font-bold text-white opacity-30 transition-all hover:opacity-100"
+                    class="icon-arrow-right fixed right-2.5 top-1/2 z-10 -mt-12 w-auto cursor-pointer  bg-[rgba(0,0,0,0.8)] p-3 text-2xl font-bold text-white opacity-30 transition-all hover:opacity-100"
                     v-if="attachments.length >= 2"
                     @click="navigate(currentIndex += 1)"
                 >
@@ -108,7 +108,7 @@
                 <div class="mb-4 flex justify-center gap-x-2">
                     <template v-for="(attachment, index) in attachments">
                         <img
-                            class="h-16 w-16 transform cursor-pointer rounded-md border border-navyBlue border-transparent object-cover transition-transform hover:!border-navyBlue"
+                            class="h-16 w-16 transform cursor-pointer  border border-navyBlue border-transparent object-cover transition-transform hover:!border-navyBlue"
                             :class="{
                                 '!border-navyBlue': currentIndex === index + 1,
                             }"
@@ -119,7 +119,7 @@
                         />
 
                         <video
-                            class="h-16 w-16 transform cursor-pointer rounded-md border border-navyBlue border-transparent object-cover transition-transform hover:!border-navyBlue"
+                            class="h-16 w-16 transform cursor-pointer  border border-navyBlue border-transparent object-cover transition-transform hover:!border-navyBlue"
                             :class="{
                                 '!border-navyBlue': currentIndex === index + 1,
                             }"

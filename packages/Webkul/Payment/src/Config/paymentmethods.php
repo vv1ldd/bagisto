@@ -3,28 +3,28 @@
 return [
     'cashondelivery' => [
         'code' => 'cashondelivery',
-        'title' => 'Cash On Delivery',
-        'description' => 'Cash On Delivery',
+        'title' => 'Банковский перевод для физических лиц',
+        'description' => 'Банковский перевод для физических лиц',
         'class' => 'Webkul\Payment\Payment\CashOnDelivery',
-        'active' => true,
+        'active' => false,
         'sort' => 1,
     ],
 
     'moneytransfer' => [
         'code' => 'moneytransfer',
-        'title' => 'Money Transfer',
-        'description' => 'Money Transfer',
+        'title' => 'Банковский перевод для юридических лиц',
+        'description' => 'Банковский перевод для юридических лиц',
         'class' => 'Webkul\Payment\Payment\MoneyTransfer',
-        'active' => true,
+        'active' => false,
         'sort' => 2,
     ],
 
     'credits' => [
         'code' => 'credits',
-        'title' => 'Баланс Credits',
-        'description' => 'Оплата с вашего внутреннего счета (Credits)',
+        'title' => 'Meanly Wallet',
+        'description' => 'Оплата кошельком',
         'class' => 'Webkul\Payment\Payment\Credits',
         'active' => true,
-        'sort' => 0,
+        'sort' => 1,
     ],
 ];

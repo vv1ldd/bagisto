@@ -1,28 +1,23 @@
-<x-shop::layouts.account :has-header="false">
-    <x-slot:title>
-        Meanly Pay
-        </x-slot>
+<x-shop::layouts.account :has-header="false" :is-cardless="true">
+    <div class="mx-auto max-w-[600px] mt-8 mb-10">
+        {{-- Master Unified Tile --}}
+        <div class="bg-white shadow-2xl border border-zinc-100 overflow-hidden relative ios-tile-relative">
+            
+            {{-- Unified Header --}}
+            <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-50 bg-zinc-50/30">
+                <div class="flex items-center gap-3">
+                    <button id="step-back-btn" onclick="handleStepBack()" style="display: none;"
+                        class="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+                        <span class="icon-arrow-left text-xl"></span>
+                    </button>
+                    <h1 id="wallet-main-title" class="text-[20px] font-bold text-zinc-900 leading-tight">Meanly Wallet</h1>
+                </div>
 
-        <div class="max-w-lg mx-auto px-4 py-12">
-            {{-- Top Navigation & Title (Truly Outside the Tile) --}}
-            <div class="flex items-center gap-4 mb-8">
-                <a id="page-back-link" href="{{ route('shop.customers.account.index') }}"
-                    class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
+                <a id="account-close-button"
+                    href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+                    <span class="icon-cancel text-xl"></span>
                 </a>
-                <button id="step-back-btn" onclick="handleStepBack()" style="display: none;"
-                    class="w-10 h-10 rounded-full bg-white border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-violet-500 hover:border-violet-100 transition-all shadow-sm group">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <h1 id="page-title" class="text-[22px] font-bold text-zinc-900 leading-none">Meanly Pay</h1>
             </div>
 
             @php
@@ -48,420 +43,1744 @@
 
             {{-- Step 1: Dashboard --}}
             <div id="step-dashboard"
-                class="ios-group p-6 bg-white rounded-[32px] shadow-md relative overflow-hidden active:scale-[0.99] transition-transform">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5 rounded-full blur-3xl"></div>
-                <div class="flex flex-col gap-2 relative z-10">
-                    <div class="flex items-center justify-between">
-                        <div class="text-[12px] text-zinc-500 font-bold uppercase tracking-[0.1em] opacity-80">Общая
-                            покупательная способность</div>
+                class="p-5 bg-white relative overflow-hidden active:scale-[0.99] transition-transform">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5  blur-3xl"></div>
+            <div class="flex flex-col gap-2 relative z-10">
+                {{-- Row 1: label + badges --}}
+                <div class="flex items-start justify-between gap-2">
+                    <div class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 opacity-80">
+                        @if($user->is_investor)
+                            Покупательная<br>способность
+                        @else
+                            Баланс
+                        @endif
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-wrap justify-end">
                         <div
-                            class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-100 font-bold">
+                            class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1  border border-violet-100 font-bold whitespace-nowrap">
                             @ {{ $user->username }}
                         </div>
-                    </div>
-
-                    <div class="flex items-center justify-between mt-1">
-                        <div class="text-4xl font-bold font-mono text-zinc-900 tracking-tight">
-                            {{ core()->formatPrice($user->getTotalFiatBalance()) }}
-                        </div>
-                        <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
+                        @if($user->is_investor)
                             <div
-                                class="w-10 h-10 rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-violet-50 group-hover:text-violet-600 transition-all border border-zinc-100 group-hover:border-violet-100 shadow-sm text-[20px]">
-                                📜</div>
-                            <span
-                                class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest group-hover:text-violet-500 transition-colors">история</span>
-                        </button>
-                    </div>
-
-                    @if($balances->count() > 0)
-                        <div class="mt-4 flex flex-col gap-2.5">
-                            @foreach($balances as $balance)
-                                @php
-                                    $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888'];
-                                    $rate = $exchangeRateService->getRate($balance->currency_code);
-                                    $fiat = $balance->amount * $rate;
-                                    $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
-                                @endphp
-                                <div class="flex items-center gap-2 text-[14px] font-medium text-zinc-500">
-                                    <span class="w-2 h-2 rounded-full shrink-0" style="background: {{ $m['color'] }}"></span>
-                                    <span class="text-zinc-900 font-bold font-mono">{{ $amount }} {{ $m['label'] }}</span>
-                                    <span class="text-zinc-400 opacity-60">≈</span>
-                                    <span>{{ core()->formatPrice($fiat) }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="mt-4 text-[13px] text-zinc-400 italic">Нет активных балансов</div>
-                    @endif
-
-                    <div class="mt-8">
-                        <button onclick="goToDeposit()"
-                            class="inline-flex items-center justify-center text-[14px] font-bold text-white bg-zinc-900 px-6 py-3 rounded-2xl active:scale-95 transition-all shadow-lg shadow-zinc-100">
-                            + Пополнить
-                        </button>
+                                class="text-[11px] font-black text-amber-600 bg-amber-50 px-2.5 py-1  border border-amber-200 tracking-wide whitespace-nowrap">
+                                💎 Инвестор
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
 
-            {{-- Step 2: Transactions --}}
-            <div id="step-transactions"
-                class="hidden bg-white overflow-hidden rounded-[32px] border border-zinc-100 shadow-sm">
-                @if ($transactions->count() > 0)
-                    <div class="flex flex-col divide-y divide-zinc-50">
-                        @foreach ($transactions as $transaction)
-                            <div class="p-5 hover:bg-zinc-50/50 flex items-center justify-between">
-                                <div class="flex flex-col gap-1.5 min-w-0 pr-4">
-                                    <div class="flex items-center gap-2">
-                                        @php
-                                            $typeLabels = ['deposit' => 'Пополнение', 'withdrawal' => 'Списание', 'purchase' => 'Оплата', 'refund' => 'Возврат', 'transfer_debit' => 'Перевод от вас', 'transfer_credit' => 'Перевод вам'];
-                                            $typeLabel = $typeLabels[$transaction->type] ?? $transaction->type;
-                                            $statusColors = ['completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100', 'pending' => 'bg-amber-50 text-amber-600 border-amber-100', 'failed' => 'bg-red-50 text-red-600 border-red-100'];
-                                            $statusClass = $statusColors[$transaction->status] ?? 'bg-zinc-50 text-zinc-500 border-zinc-100';
-                                        @endphp
-                                        <span class="text-[15px] font-bold text-zinc-900 truncate">{{ $typeLabel }}</span>
-                                        <span
-                                            class="text-[9px] px-1.5 py-0.5 rounded-md border {{ $statusClass }} uppercase tracking-wider font-bold shrink-0">{{ $transaction->status }}</span>
-                                    </div>
-                                    @if($transaction->notes)
-                                        <div class="text-[12px] text-zinc-500 leading-tight">{{ $transaction->notes }}</div>
-                                    @endif
-                                    <div class="text-[11px] text-zinc-400 font-medium">
-                                        {{ $transaction->created_at->format('d.m.Y — H:i') }}</div>
-                                </div>
-                                <div class="text-right shrink-0">
-                                    <div
-                                        class="text-[16px] font-bold font-mono {{ (float) $transaction->amount > 0 ? 'text-emerald-500' : 'text-red-500' }}">
-                                        {{ (float) $transaction->amount > 0 ? '+' : '' }}{{ core()->formatPrice($transaction->amount) }}
-                                    </div>
-                                    <div class="text-[10px] text-zinc-400 font-mono mt-0.5 uppercase tracking-tighter">
-                                        #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
-                                </div>
+                {{-- Row 2: balance + история --}}
+                <div class="flex items-center justify-between mt-1">
+                    <div class="text-4xl font-black font-mono text-zinc-900 tracking-tight">
+                        {{ core()->formatPrice($user->getTotalFiatBalance()) }}
+                    </div>
+                    <div class="flex items-center gap-3">
+
+                        @if ($user->is_b2b_enabled)
+                            <button onclick="goToOrganizations()" class="flex flex-col items-center gap-1 group">
+                                <div
+                                    class="w-12 h-12 bg-white flex items-center justify-center text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white transition-all border border-zinc-200 group-hover:border-[#7C45F5] shadow-md group-active:scale-90 rounded-2xl text-[22px]">
+                                    🏢</div>
+                                <span
+                                    class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">компании</span>
+                            </button>
+                        @endif
+
+                        <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
+                            <div
+                                class="w-12 h-12 bg-white flex items-center justify-center text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white transition-all border border-zinc-200 group-hover:border-[#7C45F5] shadow-md group-active:scale-90 rounded-2xl text-[22px]">
+                                📜</div>
+                            <span
+                                class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">история</span>
+                        </button>
+
+
+                    </div>
+                </div>
+
+                @if($balances->count() > 0)
+                    <div class="mt-4 flex flex-col gap-2.5">
+                        @foreach($balances as $balance)
+                            @php
+                                $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888'];
+                                $rate = $exchangeRateService->getRate($balance->currency_code);
+                                $fiat = $balance->amount * $rate;
+                                $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
+                            @endphp
+                            <div class="flex items-center gap-2 text-[14px] font-medium text-zinc-500">
+                                <span class="w-2 h-2  shrink-0" style="background: {{ $m['color'] }}"></span>
+                                <span class="text-zinc-900 font-black font-mono">{{ $amount }} {{ $m['label'] }}</span>
+                                <span class="text-zinc-400 opacity-60">≈</span>
+                                <span>{{ core()->formatPrice($fiat) }}</span>
                             </div>
                         @endforeach
                     </div>
-                    <div class="p-6 border-t border-zinc-50">
-                        {{ $transactions->links() }}
-                    </div>
-                @else
-                    <div class="flex flex-col items-center justify-center py-24 text-zinc-400 px-10 text-center">
-                        <div
-                            class="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mb-6 shadow-inner text-3xl">
-                            📭</div>
-                        <p class="text-[17px] font-bold text-zinc-700">Транзакций не найдено</p>
-                    </div>
                 @endif
+
+                <div class="mt-8 flex gap-3 max-sm:flex-col">
+                    <div class="flex-1">
+                        @if($user->is_investor)
+                            <button onclick="goToDeposit()"
+                                class="w-full inline-flex items-center justify-center text-[14px] font-black text-white bg-zinc-900 px-6 py-3  active:scale-95 transition-all shadow-lg shadow-zinc-100 uppercase tracking-widest">
+                                + Пополнить
+                            </button>
+                        @else
+                            <div class="flex flex-col gap-1.5 h-full">
+                                <button disabled
+                                    class="w-full h-full inline-flex items-center justify-center text-[14px] font-bold text-zinc-400 bg-zinc-100 px-6 py-3  cursor-not-allowed opacity-60">
+                                    + Пополнить
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                @if(!auth()->guard('customer')->user()->is_investor)
+                    <p class="text-[11px] text-zinc-400 text-center mt-2">Методы пополнения пока недоступны</p>
+                @endif
+
+
+            </div>
+        </div>
+
+        {{-- Step 2: Transactions --}}
+        <div id="step-transactions" class="hidden bg-white overflow-hidden  border border-zinc-100 shadow-sm">
+            @if ($transactions->count() > 0)
+                <div class="flex flex-col divide-y divide-zinc-50">
+                    @foreach ($transactions as $transaction)
+                        <div class="p-5 hover:bg-zinc-50/50 flex items-center justify-between">
+                            <div class="flex flex-col gap-1.5 min-w-0 pr-4">
+                                <div class="flex items-center gap-2">
+                                    @php
+                                        $typeLabels = ['deposit' => 'Пополнение', 'withdrawal' => 'Списание', 'purchase' => 'Оплата', 'refund' => 'Возврат', 'transfer_debit' => 'Перевод от вас', 'transfer_credit' => 'Перевод вам', 'cashback' => '💸 Кэшбек'];
+                                        $typeLabel = $typeLabels[$transaction->type] ?? $transaction->type;
+                                        $statusColors = ['completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100', 'pending' => 'bg-amber-50 text-amber-600 border-amber-100', 'failed' => 'bg-red-50 text-red-600 border-red-100'];
+                                        $statusClass = $statusColors[$transaction->status] ?? 'bg-zinc-50 text-zinc-500 border-zinc-100';
+                                    @endphp
+                                    <span
+                                        class="text-[15px] font-black text-zinc-900 uppercase tracking-tight truncate">{{ $typeLabel }}</span>
+                                    <span
+                                        class="text-[9px] px-1.5 py-0.5 border {{ $statusClass }} uppercase tracking-[0.2em] font-black shrink-0">{{ $transaction->status }}</span>
+                                </div>
+                                @if($transaction->notes)
+                                    <div class="text-[12px] text-zinc-500 leading-tight">{{ $transaction->notes }}</div>
+                                @endif
+                                <div class="text-[11px] text-zinc-400 font-medium">
+                                    {{ $transaction->created_at->format('d.m.Y — H:i') }}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                @if (in_array($transaction->type, ['transfer_debit', 'transfer_credit']))
+                                    @php
+                                        $targetId = $transaction->type === 'transfer_debit'
+                                            ? ($transaction->metadata['recipient_id'] ?? null)
+                                            : ($transaction->metadata['sender_id'] ?? null);
+                                        $targetAlias = $transaction->type === 'transfer_debit'
+                                            ? ($transaction->metadata['recipient_alias'] ?? 'User')
+                                            : ($transaction->metadata['sender_alias'] ?? 'User');
+                                    @endphp
+
+                                @endif
+
+                                <div class="text-right shrink-0">
+                                    @php
+                                        $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
+                                        $isDebit = in_array($transaction->type, $debitTypes);
+                                        $sign = $isDebit ? '-' : '+';
+                                        $colorClass = $isDebit ? 'text-red-500' : 'text-emerald-500';
+                                    @endphp
+                                    <div class="text-[16px] font-black font-mono {{ $colorClass }} tracking-tight">
+                                        {{ $sign }}{{ core()->formatPrice($transaction->amount) }}
+                                    </div>
+                                    <div class="text-[10px] text-zinc-400 font-black mt-0.5 uppercase tracking-[0.1em]">
+                                        #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="p-6 border-t border-zinc-50">
+                    {{ $transactions->links() }}
+                </div>
+            @else
+                <div class="flex flex-col items-center justify-center py-24 text-zinc-400 px-10 text-center">
+                    <div class="w-20 h-20 bg-zinc-50  flex items-center justify-center mb-6 shadow-inner text-3xl">
+                        📭</div>
+                    <p class="text-[17px] font-black text-zinc-700 tracking-tight">Транзакций не найдено</p>
+                </div>
+            @endif
+        </div>
+
+
+
+        {{-- Step2.6: Organizations --}}
+        <div id="step-organizations" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm">
+            @if ($organizations->count() > 0)
+                <div class="flex flex-col divide-y divide-zinc-50">
+                    @foreach ($organizations as $organization)
+                        <div
+                            class="org-row flex items-start justify-between p-5 hover:bg-zinc-50/50 transition-colors group relative">
+                            <!-- Clickable Area -->
+                            <a href="javascript:void(0);"
+                                onclick="openOrganizationDetails({{ $organization->id }}, '{{ addslashes($organization->name) }}', '{{ $organization->inn }}', '{{ $organization->kpp ?? '' }}', '{{ $organization->ogrn ?? '' }}', '{{ addslashes($organization->address) }}')"
+                                class="flex-grow pr-4 block">
+                                <div class="mb-1">
+                                    <p class="text-[17px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-all">
+                                        {{ $organization->name }}
+                                    </p>
+                                </div>
+
+                                <div class="space-y-0.5">
+                                    <p class="text-[13px] text-zinc-500 font-medium" v-pre>
+                                        <span class="text-zinc-400">ИНН:</span>
+                                        <span class="text-zinc-700 font-mono">{{ $organization->inn }}</span>
+                                        <button type="button" onclick="copyValue('{{ $organization->inn }}', this, event)"
+                                            class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                            title="Копировать ИНН">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                        </button>
+
+                                        @if($organization->kpp)
+                                            <span class="text-zinc-400 ml-2">КПП:</span>
+                                            <span class="text-zinc-700 font-mono">{{ $organization->kpp }}</span>
+                                            <button type="button" onclick="copyValue('{{ $organization->kpp }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать КПП">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        @endif
+                                    </p>
+
+                                    @if($organization->bank_name)
+                                        <p class="text-[13px] text-zinc-500" v-pre>
+                                            <span class="text-zinc-400">Банк:</span>
+                                            <span>{{ $organization->bank_name }}</span>
+                                            <button type="button" onclick="copyValue('{{ $organization->bank_name }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать название банка">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+
+                                            <span class="text-zinc-400 ml-2">БИК:</span>
+                                            <span class="font-mono">{{ $organization->bic }}</span>
+                                            <button type="button" onclick="copyValue('{{ $organization->bic }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать БИК">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        </p>
+
+                                        @if($organization->settlement_account)
+                                            <p class="text-[13px] text-zinc-500 mt-0.5" v-pre>
+                                                <span class="text-zinc-400">Расч. счет:</span>
+                                                <span
+                                                    class="font-medium font-mono text-zinc-800">{{ $organization->settlement_account }}</span>
+                                                <button type="button"
+                                                    onclick="copyValue('{{ $organization->settlement_account }}', this, event)"
+                                                    class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                    title="Копировать расчетный счет">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                    </svg>
+                                                </button>
+                                            </p>
+                                        @endif
+                                    @endif
+
+                                    <p class="text-[13px] text-zinc-500 flex items-start gap-1.5 mt-1" v-pre>
+                                        <span class="icon-location text-[16px] text-zinc-300 mt-0.5"></span>
+                                        <span>
+                                            {{ $organization->address }}
+                                            <button type="button"
+                                                onclick="copyValue('{{ $organization->address }}', this, event)"
+                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
+                                                title="Копировать адрес">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </p>
+                                </div>
+                            </a>
+
+                            <!-- Dropdown Actions -->
+                            <div class="shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 relative">
+                                <x-shop::dropdown
+                                    position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
+                                    <x-slot:toggle>
+                                        <button
+                                            class="p-2 hover:bg-white rounded shadow-sm border border-zinc-200 transition text-zinc-500 hover:text-zinc-900"
+                                            aria-label="More Options">
+                                            <span class="icon-more text-2xl"></span>
+                                        </button>
+                                    </x-slot:toggle>
+
+                                    <x-slot:menu class="!py-1 min-w-[140px] shadow-xl border-zinc-100">
+                                        <x-shop::dropdown.menu.item>
+                                            <a href="javascript:void(0);"
+                                                onclick="openAddBankAccount({{ $organization->id }}, '{{ addslashes($organization->name) }}', '{{ $organization->inn }}')"
+                                                class="flex items-center gap-2 w-full text-[14px]">
+                                                <span class="icon-plus text-xl"></span>
+                                                Добавить счет
+                                            </a>
+                                        </x-shop::dropdown.menu.item>
+
+                                        <x-shop::dropdown.menu.item class="text-red-500">
+                                            <form method="POST" id="delete-org-{{ $organization->id }}"
+                                                action="{{ route('shop.customers.account.organizations.delete', $organization->id) }}">
+                                                @method('DELETE')
+                                                @csrf
+                                            </form>
+                                            <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
+                                                onclick="
+                                                                                                                                                                                    event.preventDefault(); 
+                                                                                                                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
+                                                                                                                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
+                                                                                                                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
+                                                                                                                                                                                    } else if(innPrompt !== null) {
+                                                                                                                                                                                        alert('ИНН введен неверно. Удаление отменено.');
+                                                                                                                                                                                    }
+                                                                                                                                                                                ">
+                                                <span class="icon-bin text-xl"></span>
+                                                @lang('shop::app.customers.account.organizations.index.delete')
+                                            </a>
+                                        </x-shop::dropdown.menu.item>
+                                    </x-slot:menu>
+                                </x-shop::dropdown>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <button onclick="goToAddOrganization()"
+                class="flex items-center justify-center w-full p-6 border-t border-zinc-50 hover:bg-violet-50/30 transition-all text-[14px] font-bold text-[#7C45F5] group bg-white">
+                <span
+                    class="w-10 h-10 bg-violet-100/50 text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all shadow-sm">
+                    <span class="icon-plus text-base"></span>
+                </span>
+                Добавить организацию
+            </button>
+        </div>
+
+        {{-- Step 2.7: Add Organization --}}
+        <div id="step-add-organization" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
+            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
+                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+                    Добавление организации
+                </h1>
             </div>
 
-            {{-- Step: Empty --}}
-            <div id="step-empty"
-                class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-8 flex flex-col items-center text-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-violet-50 flex items-center justify-center text-3xl">🔐</div>
-                <div>
-                    <p class="text-[16px] font-bold text-zinc-800">Нет верифицированных кошельков</p>
-                    <p class="text-[13px] text-zinc-400 mt-1">Для пополнения необходимо сначала добавить и
-                        верифицировать свой кошелёк.</p>
+            <form action="{{ route('shop.customers.account.organizations.store') }}" method="POST" id="org-form">
+                @csrf
+                <input type="hidden" name="from_wallet" value="1">
+
+                <!-- Step 1: Organization Details -->
+                <div id="add-org-step-1">
+                    <div class="text-left mb-5">
+                        <h3
+                            class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
+                            <span class="text-zinc-400 text-base">1</span>
+                            Поиск организации
+                        </h3>
+
+                        <div class="space-y-4">
+                            {{-- Row 1: Search --}}
+                            <div class="relative">
+                                <label for="org-name"
+                                    class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                    Поиск по названию или ИНН
+                                </label>
+                                <input type="text" name="name" id="org-name" value="{{ old('name') }}"
+                                    class="w-full py-2.5 px-4 border border-zinc-200 rounded-none focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] text-[13px] text-zinc-900 font-medium transition-colors"
+                                    placeholder="Начните вводить данные для автозаполнения..." autocomplete="off"
+                                    required>
+
+                                <div id="org-suggestions"
+                                    class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
+                                </div>
+                            </div>
+
+                            {{-- Row 2: INN | KPP --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="org-inn"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                        ИНН
+                                    </label>
+                                    <input type="text" name="inn" id="org-inn" value="{{ old('inn') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="10 или 12 цифр" required>
+                                </div>
+
+                                <div>
+                                    <label for="org-kpp"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        КПП
+                                    </label>
+                                    <input type="text" name="kpp" id="org-kpp" value="{{ old('kpp') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="9 цифр">
+                                </div>
+                            </div>
+
+                            {{-- Row 3: OGRN | Address --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="org-ogrn"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        ОГРН
+                                    </label>
+                                    <input type="text" name="ogrn" id="org-ogrn" value="{{ old('ogrn') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="ОГРН">
+                                </div>
+
+                                <div>
+                                    <label for="org-address"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        Юридический адрес
+                                    </label>
+                                    <input type="text" name="address" id="org-address" value="{{ old('address') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] truncate transition-colors"
+                                        placeholder="Полный адрес">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
+                        <button type="button" onclick="switchStep('organizations')"
+                            class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                            Отмена
+                        </button>
+                        <button type="button" onclick="goToAddOrgStep2()"
+                            class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
+                            Далее к банку <span class="icon-arrow-right ml-1 text-[10px]"></span>
+                        </button>
+                    </div>
                 </div>
-                <button onclick="goToManagement()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)"
-                    class="text-white font-bold px-6 py-3 rounded-2xl text-[15px] shadow-lg shadow-violet-200 active:scale-95 transition-all">
-                    + Добавить кошелёк
+
+                <!-- Step 2: Bank Details (Initially Hidden) -->
+                <div id="add-org-step-2" class="hidden">
+                    <div class="text-left mb-6">
+                        <h3
+                            class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
+                            <span class="text-zinc-400 text-base">2</span>
+                            Банковские реквизиты
+                        </h3>
+
+                        <!-- Minimalistic Org Card -->
+                        <div class="mb-5 p-4 border border-zinc-200 bg-zinc-50 flex justify-between items-start">
+                            <div class="overflow-hidden">
+                                <div id="selected-org-name" class="font-bold text-[14px] text-zinc-900 truncate">
+                                    Название организации</div>
+                                <div id="selected-org-inn" class="text-[11px] font-mono text-zinc-500 mt-1">ИНН:
+                                    0000000000
+                                </div>
+                            </div>
+                            <button type="button" onclick="goToAddOrgStep1()"
+                                class="text-xs text-zinc-400 hover:text-[#7C45F5] underline underline-offset-2 transition-colors shrink-0 ml-4">
+                                Изменить
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            {{-- Row 1: BIC | Settlement Account --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="relative">
+                                    <label for="bank-bic"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        БИК или Название Банка
+                                    </label>
+                                    <input type="text" name="bic" id="bank-bic" value="{{ old('bic') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="БИК или название" autocomplete="off">
+
+                                    <div id="bank-suggestions"
+                                        class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="bank-account"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                        Расчетный счет
+                                    </label>
+                                    <input type="text" name="settlement_account" id="bank-account"
+                                        value="{{ old('settlement_account') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                        placeholder="20 цифр">
+                                </div>
+                            </div>
+
+                            {{-- Row 2: Bank name | Correspondent Account --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="bank-name"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        Название Банка
+                                    </label>
+                                    <input type="text" name="bank_name" id="bank-name" value="{{ old('bank_name') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 bg-zinc-50 font-medium cursor-not-allowed"
+                                        placeholder="Подтянется по БИК" readonly tabindex="-1">
+                                </div>
+
+                                <div>
+                                    <label for="bank-corr"
+                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                        Корр. счет
+                                    </label>
+                                    <input type="text" name="correspondent_account" id="bank-corr"
+                                        value="{{ old('correspondent_account') }}"
+                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 bg-zinc-50 cursor-not-allowed"
+                                        placeholder="Подтянется по БИК" readonly tabindex="-1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
+                        <button type="button" onclick="goToAddOrgStep1()"
+                            class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                            Назад
+                        </button>
+                        <button type="submit"
+                            class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
+                            Сохранить организацию
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {{-- Step: Add Bank Account (SPA replacement for Edit Organization) --}}
+        <div id="step-add-bank-account" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
+            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
+                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+                    Добавление расчетного счета
+                </h1>
+            </div>
+
+            <div class="mb-5 p-4 border border-zinc-200 bg-zinc-50 flex justify-between items-start">
+                <div class="overflow-hidden">
+                    <div id="add-bank-org-name" class="font-bold text-[14px] text-zinc-900 truncate">
+                        Название организации</div>
+                    <div id="add-bank-org-inn" class="text-[11px] font-mono text-zinc-500 mt-1">ИНН: 0000000000</div>
+                </div>
+                <button type="button" onclick="switchStep('organizations')"
+                    class="text-xs text-zinc-400 hover:text-[#7C45F5] underline underline-offset-2 transition-colors shrink-0 ml-4">
+                    Изменить
                 </button>
             </div>
 
-            {{-- Step: Management (Combined Deposit & Management) --}}
-            <div id="step-management" class="hidden space-y-4">
-                <p class="text-[11px] text-zinc-400 uppercase font-bold tracking-wider mb-3 px-2">Выберите кошелек для пополнения
-                </p>
-                @foreach($allAddresses as $address)
-                    @php
-                        $nm = [
-                            'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
-                            'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
-                            'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
-                            'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
-                            'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/']
-                        ];
-                        $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
-                        
-                        $netMap = [
-                            'ton' => ['chain' => 'ton'],
-                            'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
-                            'bitcoin' => ['chain' => 'btc'],
-                            'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
-                            'dash' => ['chain' => 'dash']
-                        ];
-                        $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
-                        
-                        $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
-                        if (isset($nmData['token'])) $parts[] = $nmData['token'];
-                        if ($address->alias) $parts[] = $address->alias;
-                        $fullAlias = implode('.', $parts);
+            <form id="add-bank-account-form" onsubmit="submitAddBankAccount(event)">
+                <input type="hidden" id="add-bank-org-id" value="">
 
-                        $explorerUrl = $m[6] . $address->address;
-                        $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
-                        
-                        // Style attributes based on coin
-                        $coinColor = $m[3];
-                    @endphp
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="relative">
+                            <label for="new-bank-bic"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                БИК или Название Банка
+                            </label>
+                            <input type="text" id="new-bank-bic" required
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                placeholder="БИК или название" autocomplete="off">
+                            <div id="new-bank-suggestions"
+                                class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="new-bank-account"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
+                                Расчетный счет
+                            </label>
+                            <input type="text" id="new-bank-account" required
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
+                                placeholder="20 цифр">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="new-bank-name"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                Название Банка
+                            </label>
+                            <input type="text" id="new-bank-name"
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 bg-zinc-50 font-medium cursor-not-allowed"
+                                placeholder="Подтянется по БИК" readonly tabindex="-1">
+                        </div>
+
+                        <div>
+                            <label for="new-bank-corr"
+                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
+                                Корр. счет
+                            </label>
+                            <input type="text" id="new-bank-corr"
+                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 bg-zinc-50 cursor-not-allowed"
+                                placeholder="Подтянется по БИК" readonly tabindex="-1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
+                    <button type="button" onclick="switchStep('organizations')"
+                        class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
+                        Отмена
+                    </button>
+                    <button type="submit" id="add-bank-submit-btn"
+                        class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200 flex items-center gap-2">
+                        <span id="add-bank-btn-text">Добавить счет</span>
+                        <div id="add-bank-btn-spinner"
+                            class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin">
+                        </div>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {{-- Step: Organization Details --}}
+        <div id="step-organization-details"
+            class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
+            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
+                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+                    Детали организации
+                </h1>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Org Info -->
+                <div class="bg-zinc-50 p-5 border border-zinc-200">
+                    <h2 id="org-details-name" class="text-[16px] font-bold text-zinc-900 mb-3 uppercase tracking-tight">
+                        Название</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
+                        <div>
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">ИНН</span>
+                            <span id="org-details-inn" class="text-[14px] font-mono text-zinc-800">0000000000</span>
+                        </div>
+                        <div>
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">КПП</span>
+                            <span id="org-details-kpp" class="text-[14px] font-mono text-zinc-800">-</span>
+                        </div>
+                        <div>
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">ОГРН</span>
+                            <span id="org-details-ogrn" class="text-[14px] font-mono text-zinc-800">-</span>
+                        </div>
+                        <div class="md:col-span-2">
+                            <span
+                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Юридический
+                                адрес</span>
+                            <span id="org-details-address" class="text-[13px] text-zinc-800">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank Accounts List Placeholder -->
+                <div>
+                    <div class="flex items-center justify-between mb-3 border-b border-zinc-50 pb-2">
+                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-400">
+                            Расчетные счета
+                        </h3>
+                    </div>
+                    <div id="org-details-bank-accounts" class="space-y-3">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+
+                <!-- Invoice History List -->
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-3 border-b border-zinc-50 pb-2">
+                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-400">
+                            История счетов
+                        </h3>
+                    </div>
                     
-                    <div class="bg-white rounded-3xl shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
-                        {{-- Clickable Area for Deposit --}}
-                        <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="flex-1 flex gap-4 p-6 min-w-0 text-left cursor-pointer items-center">
-                            {{-- Icon Column --}}
-                            <div class="relative shrink-0">
-                                <div class="w-[52px] h-[52px] rounded-[16px] flex items-center justify-center text-white text-[22px] font-bold shadow-sm" style="background: {{ $coinColor }}">
-                                    {{ $m[2] }}
+                    @php
+                        $b2bInvoices = $transactions->filter(function ($t) {
+                            return isset($t->metadata['organization_id']);
+                        });
+                    @endphp
+
+                    <div id="org-details-invoices" class="flex flex-col divide-y divide-zinc-50 border border-zinc-100">
+                        @forelse($b2bInvoices as $inv)
+                            <div class="invoice-row p-4 hover:bg-zinc-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4 group" 
+                                 data-org-id="{{ $inv->metadata['organization_id'] }}">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-violet-50 text-[#7C45F5] flex items-center justify-center text-lg font-bold shrink-0">
+                                        📄
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <div class="text-[14px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors">
+                                            Счет #{{ $inv->id }}
+                                        </div>
+                                        <div class="text-[11px] text-zinc-500 font-mono">
+                                            {{ core()->formatBasePrice($inv->amount) }} • {{ $inv->created_at->format('d.m.Y') }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 max-md:w-full">
+                                    <a href="{{ route('shop.customers.account.credits.invoice.print', $inv->id) }}" target="_blank"
+                                        class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-violet-50 text-zinc-600 hover:text-[#7C45F5] font-bold text-[11px] uppercase tracking-wider transition-all">
+                                        <span class="icon-download text-lg"></span>
+                                        <span>Скачать</span>
+                                    </a>
+                                    <button type="button" onclick="sendInvoiceEmail({{ $inv->id }}, this)"
+                                        class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-zinc-50 border border-zinc-100 hover:bg-zinc-900 hover:border-zinc-900 text-zinc-600 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-all">
+                                        <span class="icon-mail text-lg pr-1"></span>
+                                        <span>Email</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div id="no-invoices-msg" class="p-8 text-center text-zinc-400 text-[13px]">
+                                Счетов пока нет
+                            </div>
+                        @endforelse
+                        
+                        <div id="no-filtered-invoices-msg" class="hidden p-8 text-center text-zinc-400 text-[13px]">
+                            Для этой организации счетов нет
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-zinc-50 mt-6 pt-4 flex items-center justify-end gap-3">
+                <button type="button" onclick="switchStep('organizations')"
+                    class="px-8 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-[14px] text-zinc-700 font-bold transition-all active:scale-95">
+                    Назад к списку
+                </button>
+            </div>
+        </div>
+
+        {{-- Step: Deposit Type Selection --}}
+        <div id="step-deposit-type" class="hidden ios-group p-5 bg-white shadow-md">
+            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 text-center opacity-70">
+                Способ пополнения
+            </p>
+            <div class="grid grid-cols-1 gap-4">
+                {{-- Crypto Option --}}
+                <button onclick="goToCryptoManagement()"
+                    class="flex items-center gap-4 p-5 bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-violet-200 transition-all text-left group active:scale-[0.98]">
+                    <div
+                        class="w-12 h-12 bg-violet-50 flex items-center justify-center text-violet-600 text-2xl shrink-0 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                        🪙
+                    </div>
+                    <div class="flex-1">
+                        <h3
+                            class="text-[16px] font-black text-zinc-900 uppercase tracking-tight group-hover:text-violet-700 transition-colors">
+                            Криптовалюта</h3>
+                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Пополнение через USDT, TON, BTC или
+                            ETH</p>
+                    </div>
+                    <div class="text-zinc-300 group-hover:text-violet-500 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </button>
+
+                {{-- B2B Bank Transfer Option --}}
+                <button onclick="goToB2BManagement()"
+                    class="flex items-center gap-4 p-5 bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-violet-200 transition-all text-left group active:scale-[0.98]">
+                    <div
+                        class="w-12 h-12 bg-violet-50 flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors">
+                        🏦
+                    </div>
+                    <div class="flex-1">
+                        <h3
+                            class="text-[16px] font-black text-zinc-900 uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors">
+                            Банковский перевод</h3>
+                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Безналичная оплата от юридического
+                            лица (B2B)</p>
+                    </div>
+                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </button>
+
+                {{-- B2C Bank Transfer Option --}}
+                <button onclick="goToB2CManagement()"
+                    class="flex items-center gap-4 p-5 bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-left group active:scale-[0.98]">
+                    <div
+                        class="w-12 h-12 bg-blue-50 flex items-center justify-center text-blue-600 text-2xl shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        👤
+                    </div>
+                    <div class="flex-1">
+                        <h3
+                            class="text-[16px] font-black text-zinc-900 uppercase tracking-tight group-hover:text-blue-700 transition-colors">
+                            Перевод от физ. лица</h3>
+                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Оплата по реквизитам через банк</p>
+                    </div>
+                    <div class="text-zinc-300 group-hover:text-blue-500 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        {{-- Step: Empty (Crypto) --}}
+        <div id="step-empty"
+            class="hidden bg-white border border-zinc-100 shadow-sm p-10 flex flex-col items-center text-center gap-6">
+            <div
+                class="w-20 h-20 bg-violet-50 flex items-center justify-center text-4xl shadow-inner group transition-all">
+                🔐</div>
+            <div class="space-y-2">
+                <p class="text-[17px] font-black text-zinc-900 tracking-tight">Нет верифицированных кошельков</p>
+                <p class="text-[13px] text-zinc-400 max-w-[280px] leading-relaxed">Для пополнения необходимо сначала
+                    добавить и верифицировать свой кошелёк.</p>
+            </div>
+            <button onclick="goToAddWallet()"
+                class="w-full max-w-[240px] text-white font-black px-8 py-3.5 text-[14px] bg-[#7C45F5] hover:bg-[#6534d4] transition-all active:scale-95 shadow-xl shadow-violet-100">
+                Добавить кошелёк
+            </button>
+        </div>
+
+        {{-- Step: Management (Combined Deposit & Management) --}}
+        <div id="step-management" class="hidden space-y-4">
+            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 opacity-70">
+                Выберите кошелек для пополнения
+            </p>
+            @foreach($allAddresses as $address)
+                @php
+                    $nm = [
+                        'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
+                        'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
+                        'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
+                        'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
+                        'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/']
+                    ];
+                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
+
+                    $netMap = [
+                        'ton' => ['chain' => 'ton'],
+                        'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
+                        'bitcoin' => ['chain' => 'btc'],
+                        'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
+                        'dash' => ['chain' => 'dash']
+                    ];
+                    $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
+
+                    $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
+                    if (isset($nmData['token']))
+                        $parts[] = $nmData['token'];
+                    if ($address->alias)
+                        $parts[] = $address->alias;
+                    $fullAlias = implode('.', $parts);
+
+                    $explorerUrl = $m[6] . $address->address;
+                    $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
+
+                    // Style attributes based on coin
+                    $coinColor = $m[3];
+                @endphp
+
+                <div class="bg-white  shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
+                    {{-- Clickable Area for Deposit --}}
+                    <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')"
+                        class="flex-1 flex gap-4 p-5 min-w-0 text-left cursor-pointer items-center">
+                        {{-- Icon Column --}}
+                        <div class="relative shrink-0">
+                            <div class="w-[52px] h-[52px]  flex items-center justify-center text-white text-[22px] font-black shadow-sm"
+                                style="background: {{ $coinColor }}">
+                                {{ $m[2] }}
+                            </div>
+                        </div>
+
+                        {{-- Main Content Column --}}
+                        <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                            {{-- Header: Verified Icon + Alias --}}
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                @if($address->isVerified())
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0"
+                                        viewBox="0 0 24 24" fill="currentColor">
+                                        <path
+                                            d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
+                                    </svg>
+                                @endif
+                                <span
+                                    class="text-[18px] font-black text-black truncate tracking-tight">{{ $fullAlias }}</span>
+                            </div>
+
+                            {{-- Network Breadcrumbs + Address (Premium View) --}}
+                            <div
+                                class="flex items-center gap-2 text-[11px] font-black text-zinc-400 uppercase tracking-widest opacity-80">
+                                <span class="shrink-0">{{ $m[5] }}</span>
+                                <span class="shrink-0 text-zinc-200">›</span>
+                                <span class="shrink-0">{{ $m[1] }}</span>
+                                <span class="shrink-0 text-zinc-200">›</span>
+                                <div class="flex items-center gap-1.5 min-w-0 pr-2">
+                                    <code
+                                        class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
                                 </div>
                             </div>
 
-                            {{-- Main Content Column --}}
-                            <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-                                {{-- Header: Verified Icon + Alias --}}
-                                <div class="flex items-center gap-1.5 min-w-0">
-                                    @if($address->isVerified())
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
-                                        </svg>
+                            {{-- Balance + Sync Status --}}
+                            <div class="flex items-center gap-3 mt-0.5">
+                                <span class="text-[16px] font-black font-mono text-black">
+                                    {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                    <span
+                                        class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.1em] ml-1">{{ $m[1] }}</span>
+                                </span>
+                                <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    @if($address->updated_at)
+                                        {{ $address->updated_at->diffForHumans() }}
+                                    @else
+                                        не синхронизирован
                                     @endif
-                                    <span class="text-[18px] font-bold text-black truncate tracking-tight">{{ $fullAlias }}</span>
-                                </div>
-
-                                {{-- Network Breadcrumbs + Address (Premium View) --}}
-                                <div class="flex items-center gap-2 text-[12px] font-bold text-zinc-400 uppercase tracking-tight">
-                                    <span class="shrink-0">{{ $m[5] }}</span>
-                                    <span class="shrink-0 text-zinc-200">›</span>
-                                    <span class="shrink-0">{{ $m[1] }}</span>
-                                    <span class="shrink-0 text-zinc-200">›</span>
-                                    <div class="flex items-center gap-1.5 min-w-0 pr-2">
-                                        <code class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
-                                    </div>
-                                </div>
-
-                                {{-- Balance + Sync Status --}}
-                                <div class="flex items-center gap-3 mt-0.5">
-                                    <span class="text-[16px] font-bold font-mono text-black">
-                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                        <span class="text-[12px] text-zinc-400 font-bold uppercase ml-1">{{ $m[1] }}</span>
-                                    </span>
-                                    <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        @if($address->updated_at)
-                                            {{ $address->updated_at->diffForHumans() }}
-                                        @else
-                                            не синхронизирован
-                                        @endif
-                                    </div>
                                 </div>
                             </div>
-                            
-                            {{-- Selection Indicator --}}
-                            <div class="shrink-0 pl-2 pr-4 text-zinc-300 group-hover/card:text-violet-500 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </div>
+
+                        {{-- Removal of redundant chevron --}}
+                    </button>
+
+                    {{-- Action Column (Delete) --}}
+                    <div class="shrink-0 flex items-center pr-8 pl-2 border-l border-zinc-50 ml-2">
+                        <form id="delete-wallet-form-{{ $address->id }}"
+                            action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
+                            class="inline">
+                            @csrf @method('DELETE')
+                            <button type="button"
+                                onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
+                                class="w-[42px] h-[42px]  flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
+
+            <button onclick="goToAddWallet()"
+                class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3">
+                <span class="w-7 h-7  bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
+                <span class="text-[15px]">Добавить новый кошелек</span>
+            </button>
+        </div>
+
+        {{-- Step: B2B Management --}}
+        <div id="step-b2b-management" class="hidden space-y-4">
+            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 opacity-70">
+                Выберите организацию-плательщика
+            </p>
+
+            @forelse($organizations as $org)
+                <div class="bg-white border border-zinc-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/50 transition-all group/card relative flex flex-col p-5 cursor-pointer"
+                    onclick="selectTopupOrg('{{ $org->id }}', '{{ $org->name }}')">
+                    <div class="flex items-start gap-5">
+                        {{-- Icon Column --}}
+                        <div class="shrink-0 pt-1">
+                            <div
+                                class="w-12 h-12 bg-violet-50 border border-violet-100 flex items-center justify-center text-xl shadow-inner group-hover/card:bg-violet-100 transition-colors">
+                                🏢
+                            </div>
+                        </div>
+
+                        {{-- Main Content Column --}}
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-4 mb-2">
+                                <h4
+                                    class="text-[17px] font-black text-zinc-900 leading-tight group-hover/card:text-[#7C45F5] transition-colors truncate">
+                                    {{ $org->name }}
+                                </h4>
+                                <div
+                                    class="px-2 py-1 bg-zinc-50 text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] shrink-0">
+                                    ИНН {{ $org->inn }}
+                                </div>
+                            </div>
+
+                            {{-- Grid Details --}}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mt-4 pt-4 border-t border-zinc-50">
+                                @php
+                                    $details = [
+                                        'КПП' => $org->kpp,
+                                        'ОГРН' => $org->ogrn,
+                                        'Банк' => $org->bank_name,
+                                        'Расч. счет' => $org->settlement_account,
+                                    ];
+                                @endphp
+                                @foreach($details as $label => $value)
+                                    @if($value)
+                                        <div class="flex flex-col gap-0.5">
+                                            <span
+                                                class="text-[9px] font-black text-zinc-400 uppercase tracking-[0.15em]">{{ $label }}</span>
+                                            <span
+                                                class="text-[13px] text-zinc-600 font-mono font-black truncate tracking-tight">{{ $value }}</span>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+
+                            <div class="mt-4 flex items-center gap-2 text-[11px] text-zinc-400 italic truncate">
+                                <span>📍</span>
+                                <span>{{ $org->address }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Hover Indicator --}}
+                    <div
+                        class="absolute bottom-4 right-6 opacity-0 group-hover/card:opacity-100 transition-all translate-x-2 group-hover/card:translate-x-0">
+                        <span
+                            class="text-[#7C45F5] font-black text-[12px] uppercase tracking-[0.2em] flex items-center gap-1">
+                            Выбрать <span class="text-lg">→</span>
+                        </span>
+                    </div>
+                </div>
+            @empty
+            @endforelse
+        </div>
+
+        {{-- Step: Top-up Details --}}
+        <div id="step-topup-details" class="hidden space-y-6">
+            <div class="bg-white border border-zinc-100 shadow-xl p-5">
+                <div class="flex items-center gap-4 mb-10 border-b border-zinc-50 pb-8">
+                    <div class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">
+                        🏢</div>
+                    <div>
+                        <h3 class="text-[20px] font-black text-zinc-900 leading-tight tracking-tight"
+                            id="selected-org-name">
+                            Название организации
+                        </h3>
+                        <p class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] mt-1.5 opacity-80">
+                            Банковский перевод (B2B)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div id="topup-amount-container" class="max-w-md">
+                        <x-shop::form.control-group class="!mb-0">
+                            <x-shop::form.control-group.label
+                                class="required !text-[10px] !font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">
+                                Сумма пополнения
+                            </x-shop::form.control-group.label>
+
+                            <div class="relative group">
+                                <x-shop::form.control-group.control type="text" name="amount" id="topup-amount"
+                                    class="!py-5 !px-8 !border-zinc-100 focus:!border-[#7C45F5] focus:!ring-0 transition-all text-[32px] font-mono font-black text-zinc-900 placeholder:text-zinc-100"
+                                    placeholder="0.00" />
+                                <div
+                                    class="absolute right-8 top-1/2 -translate-y-1/2 text-zinc-300 font-black text-2xl group-focus-within:text-[#7C45F5] transition-colors">
+                                    ₽
+                                </div>
+                            </div>
+                        </x-shop::form.control-group>
+                    </div>
+
+                    <div id="topup-success-msg"
+                        class="hidden p-8 bg-zinc-50 border-l-4 border-l-[#7C45F5] shadow-inner space-y-6">
+                        <div class="flex items-center gap-4 text-zinc-900">
+                            <span class="text-3xl">📄</span>
+                            <div>
+                                <p class="font-bold text-[18px]">Счет на оплату сформирован</p>
+                                <p class="text-zinc-500 text-[13px]">Ожидайте зачисления средств после оплаты</p>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                            <a id="topup-invoice-link" href="#" target="_blank"
+                                class="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-[#7C45F5] text-white font-bold text-[14px] uppercase tracking-wider hover:bg-[#6534d4] transition-all active:scale-[0.98] shadow-lg shadow-violet-200">
+                                <span>⬇️</span>
+                                <span>@lang('shop::app.customers.account.invoice.download-invoice')</span>
+                            </a>
+
+                            <button type="button" id="email-invoice-btn" onclick="sendTopupInvoiceEmail()"
+                                class="flex-1 flex items-center justify-center gap-3 px-8 py-4 border-2 border-zinc-900 text-zinc-900 font-bold text-[14px] uppercase tracking-wider hover:bg-zinc-900 hover:text-white transition-all active:scale-[0.98]">
+                                <span id="email-btn-icon">📧</span>
+                                <span id="email-btn-text">Отправить на Email</span>
+                                <div id="email-btn-loader"
+                                    class="hidden w-4 h-4 border-2 border-current border-t-transparent animate-spin">
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="button" id="generate-topup-btn" onclick="generateTopupInvoice()"
+                            class="w-full bg-zinc-900 hover:bg-[#7C45F5] text-white font-black py-5 px-10 shadow-xl transition-all active:scale-95 flex items-center justify-center gap-4 text-[14px] uppercase tracking-[0.2em]">
+                            <span id="btn-text">Выставить счет</span>
+                            <div id="btn-loader"
+                                class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin">
                             </div>
                         </button>
-
-                        {{-- Action Column (Delete) --}}
-                        <div class="shrink-0 flex items-center pr-8 pl-2 border-l border-zinc-50 ml-2">
-                            <form id="delete-wallet-form-{{ $address->id }}" action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="button" onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')" 
-                                    class="w-[42px] h-[42px] rounded-[16px] flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-
-                <button onclick="goToAddWallet()" class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3">
-                    <span class="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
-                    <span class="text-[15px]">Добавить новый кошелек</span>
-                </button>
-            </div>
-
-            {{-- Step: Deposit Details --}}
-            <div id="step-details" class="hidden">
-                @foreach($allAddresses as $address)
-                    @php
-                        $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
-                        $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
-                    @endphp
-                    <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
-                        <div class="bg-white rounded-[32px] shadow-sm overflow-hidden p-6 md:p-8 flex flex-col items-center">
-                            
-                            {{-- QR Code Section --}}
-                            <div class="relative inline-block mt-4 mb-2">
-                                <div class="border border-zinc-100 rounded-[32px] p-6 pb-8 bg-white shadow-sm inline-block">
-                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($address->address) }}"
-                                        alt="QR Code" class="w-56 h-56 mx-auto" />
-                                </div>
-                                {{-- Floated Label --}}
-                                <div class="absolute -bottom-3 left-0 right-0 flex justify-center">
-                                    <div class="bg-white px-4 py-1.5 text-[11px] font-black text-zinc-400 uppercase tracking-[0.15em]">
-                                        Адрес пополнения ({{ $m[0] }})
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Address Copy Section --}}
-                            <div class="w-full max-w-sm mt-8 bg-zinc-50 rounded-[28px] p-6 text-center cursor-pointer active:scale-95 transition-all group"
-                                onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
-                                <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                    {{ $address->address }}
-                                </code>
-                                <div class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
-                                    <span class="copy-txt">Скопировать</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                </div>
-                            </div>
-
-                            {{-- Verification Warning --}}
-                            <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50 rounded-2xl flex gap-3 text-left">
-                                <span class="text-lg">⚠️</span>
-                                <p class="text-[12px] text-violet-700 leading-snug">
-                                    <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы система смогла автоматически зачислить платеж.
-                                </p>
-                            </div>
-
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-        {{-- Step: Add Wallet --}}
-        <div id="step-add-wallet" class="hidden bg-white rounded-[32px] border border-zinc-100 shadow-sm p-6 md:p-8">
-            <x-shop::form :action="route('shop.customers.account.crypto.store')">
-                <input type="hidden" name="network" id="wallet-net-input" value="">
-                
-                <div class="space-y-6">
-                    {{-- 1. Asset/Coin Selection --}}
-                    <div>
-                        <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">1. Монета</p>
-                        <div class="grid grid-cols-5 gap-2">
-                            @foreach([
-                                'btc' => ['₿', 'BTC', '#F7931A'], 
-                                'eth' => ['Ξ', 'ETH', '#627EEA'], 
-                                'usdt' => ['₮', 'USDT', '#26A17B'],
-                                'ton' => ['◎', 'TON', '#0098EA'], 
-                                'dash' => ['D', 'DASH', '#1c75bc']
-                            ] as $coin => $m)
-                                <button type="button" id="coin-{{ $coin }}" onclick="selCoin('{{ $coin }}')" class="flex flex-col items-center justify-center p-3 rounded-[16px] border border-zinc-100 transition-all group bg-white hover:bg-zinc-50 relative overflow-hidden">
-                                    <div id="coin-icon-{{ $coin }}" class="w-8 h-8 rounded-[12px] flex items-center justify-center text-white text-[15px] font-bold mb-1.5 shadow-sm transition-all" style="background: {{ $m[2] }}">
-                                        {{ $m[0] }}
-                                    </div>
-                                    <span id="coin-label-{{ $coin }}" class="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter transition-all">{{ $m[1] }}</span>
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    {{-- 2. Network Selection (Dynamic) --}}
-                    <div id="wallet-network-section" class="hidden">
-                        <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">2. Сеть</p>
-                        <div id="network-options-container" class="grid grid-cols-2 gap-2">
-                            {{-- Populated by JS --}}
-                        </div>
-                    </div>
-
-                    {{-- 3. Address Input --}}
-                    <div id="wallet-addr-section" class="hidden space-y-6">
-                        <div>
-                            <p class="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-3">3. Адрес</p>
-                            <input type="text" name="address" id="wallet-addr-input" placeholder="Вставьте адрес…" oninput="onWalletInput(this.value)" class="w-full rounded-2xl border-zinc-100 bg-zinc-50 font-mono py-4 pl-5 focus:bg-white transition-all shadow-inner placeholder-zinc-300 text-zinc-800" />
-                        </div>
-                        
-                        <div class="pt-2"> {{-- Added padding top to separate button from input --}}
-                            <button type="submit" id="wallet-add-btn" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);opacity:0.4;cursor:not-allowed;" class="w-full text-white font-bold py-4 rounded-2xl shadow-lg transition-all">+ Добавить кошелек</button>
-                        </div>
                     </div>
                 </div>
-            </x-shop::form>
+            </div>
         </div>
+
+        {{-- Step: B2C Details --}}
+        <div id="step-b2c-details" class="hidden space-y-4">
+            <div class="bg-white shadow-sm border border-zinc-100 p-5 flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-blue-50 flex items-center justify-center mb-6 text-3xl shadow-inner">🏦</div>
+                <h3 class="text-[18px] font-black text-zinc-900 mb-2 tracking-tight">Реквизиты для перевода</h3>
+                <p class="text-[13px] text-zinc-400 mb-8 max-w-[280px] leading-relaxed">
+                    Для пополнения баланса переведите средства по следующим реквизитам. Обязательно укажите ваш ID в
+                    назначении платежа.
+                </p>
+
+                <div class="w-full bg-zinc-50 border border-zinc-100 p-5 text-left space-y-3">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">Получатель
+                            (Наименование)</span>
+                        <span class="text-[14px] font-mono font-bold text-zinc-900">ИП АТАНИЯЗОВА НОВБАХАР
+                            ДУРДЫКУЛЫЕВНА</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">ИНН</span>
+                        <span class="text-[14px] font-mono font-black text-zinc-900">500315995400</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">Расчетный
+                            счет</span>
+                        <span
+                            class="text-[14px] font-mono text-zinc-900 font-black mt-0.5 flex justify-between items-center group">
+                            <span>40802810800000109919</span>
+                            <button type="button" onclick="copyAddr('40802810800000109919', this)"
+                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
+                        </span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">БИК Банка</span>
+                        <span
+                            class="text-[14px] font-mono text-zinc-900 font-black mt-0.5 flex justify-between items-center group">
+                            <span>044525974</span>
+                            <button type="button" onclick="copyAddr('044525974', this)"
+                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
+                        </span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">Банк</span>
+                        <span class="text-[14px] font-mono font-black text-zinc-900 mt-0.5">АО «ТБанк»</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-zinc-400 font-black uppercase tracking-[0.2em]">Назначение
+                            платежа</span>
+                        <span
+                            class="text-[14px] font-mono text-zinc-900 font-black mt-0.5 flex justify-between items-start md:items-center group">
+                            <span class="pr-2">Оплата по договору № {{ auth()->guard('customer')->id() }} от
+                                {{ now()->format('d.m.Y') }}. Без НДС.</span>
+                            <button type="button"
+                                onclick="copyAddr('Оплата по договору № {{ auth()->guard('customer')->id() }} от {{ now()->format('d.m.Y') }}. Без НДС.', this)"
+                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100 shrink-0">Копировать</button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6 w-full p-4 bg-orange-50 border border-orange-100 text-left">
+                    <p class="text-[12px] text-orange-800 font-medium">
+                        <span class="font-bold">Важно:</span> Средства будут зачислены на ваш баланс после
+                        поступления на расчетный счет (Обычно в течение 1 рабочего дня).
+                        Пожалуйста, сохраняйте квитанцию об оплате для подтверждения (отправьте её в поддержку).
+                    </p>
+                </div>
+            </div>
         </div>
 
-        @push('scripts')
-            <script>
-                let currentStep = 'dashboard';
-                const initialTitle = "Meanly Pay";
+        <div id="step-details" class="hidden">
+            @foreach($allAddresses as $address)
+                @php
+                    $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
+                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
+                @endphp
+                <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
+                    <div class="bg-white  shadow-sm overflow-hidden p-5 flex flex-col items-center">
 
-                function switchStep(newStep) {
-                    ['step-dashboard', 'step-transactions', 'step-details', 'step-management', 'step-add-wallet', 'step-empty'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.classList.add('hidden');
-                    });
-                    const target = document.getElementById('step-' + newStep);
-                    if (target) target.classList.remove('hidden');
-                    currentStep = newStep;
-                    updateHeader();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                        {{-- QR Code Section --}}
+                        <div class="relative inline-block mt-4 mb-2">
+                            <div class="border border-zinc-100  p-6 pb-8 bg-white shadow-sm inline-block">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($address->address) }}"
+                                    alt="QR Code" class="w-56 h-56 mx-auto" />
+                            </div>
+                            {{-- Floated Label --}}
+                            <div class="absolute -bottom-3 left-0 right-0 flex justify-center">
+                                <div
+                                    class="bg-white px-4 py-1.5 text-[11px] font-black text-zinc-400 uppercase tracking-[0.15em]">
+                                    Адрес пополнения ({{ $m[0] }})
+                                </div>
+                            </div>
+                        </div>
 
-                function updateHeader() {
-                    const titleEl = document.getElementById('page-title');
-                    const backLink = document.getElementById('page-back-link');
-                    const backBtn = document.getElementById('step-back-btn');
+                        {{-- Address Copy Section --}}
+                        <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
+                            onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
+                            <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
+                                                                                                                                                                                                                                                                    {{ $address->address }}
+                                                                                                                                                                                                                                                                </code>
+                            <div
+                                class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
+                                <span class="copy-txt">Скопировать</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </div>
+                        </div>
 
-                    if (currentStep === 'dashboard') {
-                        titleEl.innerText = initialTitle;
-                        backLink.style.display = 'flex';
-                        backBtn.style.display = 'none';
-                    } else {
-                        backLink.style.display = 'none';
-                        backBtn.style.display = 'flex';
+                        {{-- Verification Warning --}}
+                        <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50  flex gap-3 text-left">
+                            <span class="text-lg">⚠️</span>
+                            <p class="text-[12px] text-violet-700 leading-snug">
+                                <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы
+                                система смогла автоматически зачислить платеж.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        {{-- Step: Add Wallet --}}
+        <div id="step-add-wallet" class="hidden space-y-8">
+            <div class="bg-white border border-zinc-100 shadow-sm p-5 md:p-6">
+                {{-- Coin Selection --}}
+                <div class="space-y-4">
+                    <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Выберите актив
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        @foreach(['bitcoin' => 'Bitcoin', 'ethereum' => 'Ethereum', 'usdt' => 'USDT', 'ton' => 'TON', 'dash' => 'Dash'] as $id => $name)
+                            <button type="button"
+                                id="coin-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
+                                onclick="selCoin('{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}')"
+                                class="flex flex-col items-center justify-center p-5 border border-zinc-100 bg-white hover:border-violet-100 transition-all active:scale-95 group relative overflow-hidden">
+                                <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">
+                                    {{ $allAssets[$id === 'usdt' ? 'usdt_ton' : $id]['icon'] }}
+                                </span>
+                                <span id="coin-label-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
+                                    class="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                                    {{ $id }}
+                                </span>
+                                <div
+                                    class="absolute -bottom-1 -right-1 w-4 h-4 bg-zinc-50 rotate-45 group-hover:bg-violet-50 transition-colors">
+                                </div>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Network Selection (Appears after coin) --}}
+                <div id="wallet-network-section" class="hidden space-y-4 pt-10 border-t border-zinc-50 mt-10">
+                    <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Сеть для
+                        пополнения</p>
+                    <div id="network-options-container" class="grid grid-cols-1 gap-3">
+                        {{-- Populated by JS --}}
+                    </div>
+                </div>
+
+                {{-- Address Input Section --}}
+                <div id="wallet-addr-section" class="hidden space-y-4 pt-10 border-t border-zinc-50 mt-10">
+                    <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Адрес вашего
+                        кошелька</p>
+                    <div class="relative">
+                        <input type="text" id="wallet-addr-input" oninput="onWalletInput(this.value)"
+                            placeholder="Введите адрес кошелька..."
+                            class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[14px] text-zinc-900 placeholder:text-zinc-200 focus:bg-white focus:border-[#7C45F5] focus:ring-1 focus:ring-violet-100 transition-all">
+                        <div class="absolute right-5 top-1/2 -translate-y-1/2 flex gap-2">
+                            <div class="w-2 h-2 rounded-full bg-zinc-200" id="addr-valid-dot"></div>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-zinc-400 italic">
+                        Пожалуйста, указывайте только адрес кошелька, с которого будете совершать пополнение.
+                    </p>
+
+                    <form action="{{ route('shop.customers.account.crypto.store') }}" method="POST" id="add-wallet-form"
+                        class="pt-6">
+                        @csrf
+                        <input type="hidden" name="network" id="wallet-net-input">
+                        <input type="hidden" name="address" id="wallet-addr-hidden">
+                        <input type="hidden" name="alias" id="wallet-alias-input">
+
+                        <button type="button" id="wallet-add-btn" disabled onclick="submitWalletAdd()"
+                            class="w-full bg-zinc-900 text-white font-black py-5 px-10 shadow-xl opacity-40 cursor-not-allowed transition-all active:scale-95 uppercase tracking-[0.2em] text-[14px] hover:bg-[#7C45F5]">
+                            Подключить кошелек
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    @push('scripts')
+        <script>
+            let currentStep = 'das                 hboard';
+            const initialTitle = "Meanly Wallet";
+
+            function switchStep(newStep) {
+                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+                const target = document.getElementById('step-' + newStep);
+                if (target) target.classList.remove('hidden');
+                currentStep = newStep;
+                updateHeader();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function updateHeader() {
+                const titleEl = document.querySelector('h1#page-title') || document.querySelector('h1.text-\\[20px\\]');
+                const backBtn = document.getElementById('step-back-btn');
+
+                if (currentStep === 'dashboard') {
+                    if (titleEl) titleEl.innerText = initialTitle;
+                    if (backBtn) backBtn.style.display = 'none';
+                } else {
+                    if (backBtn) backBtn.style.display = 'flex';
+                    if (titleEl) {
                         if (currentStep === 'transactions') titleEl.innerText = "История";
+                        if (currentStep === 'organizations') titleEl.innerText = "Мои компании";
+                        if (currentStep === 'add-organization') titleEl.innerText = "Новая компания";
+                        if (currentStep === 'add-bank-account') titleEl.innerText = "Новый счет";
+                        if (currentStep === 'organization-details') titleEl.innerText = "Детали";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
+                        if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
                         if (currentStep === 'details') titleEl.innerText = "Детали пополнения";
                         if (currentStep === 'management') titleEl.innerText = "Кошельки для пополнения";
+                        if (currentStep === 'b2b-management') titleEl.innerText = "Мои организации";
                         if (currentStep === 'add-wallet') titleEl.innerText = "Новый кошелек";
+                        if (currentStep === 'b2c-details') titleEl.innerText = "Реквизиты для оплаты";
+                        if (currentStep === 'topup-details') titleEl.innerText = "Оформление счета";
                     }
                 }
+            }
 
-                function handleStepBack() {
-                    if (currentStep === 'transactions') switchStep('dashboard');
-                    else if (currentStep === 'empty') switchStep('dashboard');
-                    else if (currentStep === 'details') switchStep('management');
-                    else if (currentStep === 'management') switchStep('dashboard');
-                    else if (currentStep === 'add-wallet') switchStep('management');
+            function handleStepBack() {
+                if (currentStep === 'transactions') switchStep('dashboard');
+                else if (currentStep === 'organizations') switchStep('dashboard');
+                else if (currentStep === 'add-organization') switchStep('organizations');
+                else if (currentStep === 'add-bank-account') switchStep('organizations');
+                else if (currentStep === 'organization-details') switchStep('organizations');
+                else if (currentStep === 'deposit-type') switchStep('dashboard');
+                else if (currentStep === 'empty') switchStep('deposit-type');
+                else if (currentStep === 'details') switchStep('management');
+                else if (currentStep === 'management') switchStep('deposit-type');
+                else if (currentStep === 'b2b-management') switchStep('deposit-type');
+                else if (currentStep === 'b2c-details') switchStep('deposit-type');
+                else if (currentStep === 'add-wallet') switchStep('management');
+                else if (currentStep === 'topup-details') switchStep('b2b-management');
+            }
+
+            function goToDeposit() { switchStep('deposit-type'); }
+            function goToOrganizations() { switchStep('organizations'); }
+            function goToAddOrganization() {
+                switchStep('add-organization');
+                // Reset to step 1 when opening
+                goToAddOrgStep1();
+                document.getElementById('org-form').reset();
+            }
+            function goToCryptoManagement() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
+            function goToB2BManagement() { switchStep('b2b-management'); }
+            function goToB2CManagement() { switchStep('b2c-details'); }
+
+            function goToAddOrgStep1() {
+                document.getElementById('add-org-step-1').classList.remove('hidden');
+                document.getElementById('add-org-step-2').classList.add('hidden');
+            }
+
+            function goToAddOrgStep2() {
+                const name = document.getElementById('org-name').value.trim();
+                const inn = document.getElementById('org-inn').value.trim();
+                const kpp = document.getElementById('org-kpp').value.trim();
+
+                if (!name || !inn) {
+                    alert('Пожалуйста, укажите хотя бы название организации и ИНН для продолжения.');
+                    // Outline inputs in red slightly
+                    if (!name) document.getElementById('org-name').classList.add('border-red-500');
+                    if (!inn) document.getElementById('org-inn').classList.add('border-red-500');
+
+                    setTimeout(() => {
+                        document.getElementById('org-name').classList.remove('border-red-500');
+                        document.getElementById('org-inn').classList.remove('border-red-500');
+                    }, 2000);
+                    return;
                 }
 
-                function goToDeposit() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
-                function goToManagement() { switchStep('management'); }
-                function goToAddWallet() { switchStep('add-wallet'); }
-                function selectAsset(assetKey, walletId) {
-                    // Check if wallet is verified, ideally this should be handled better, but simple check for now
-                    const form = document.getElementById('delete-wallet-form-' + walletId);
-                    if(form && !form.closest('div.bg-white').querySelector('svg[viewBox="0 0 24 24"]')) {
-                        alert('Сначала верифицируйте кошелек для пополнения.');
-                        return;
-                    }
-                    switchStep('details');
-                    document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
-                    const target = document.getElementById('details-wallet-' + walletId);
-                    if (target) target.classList.remove('hidden');
-                }
+                // Populate Step 2 Mini Card
+                document.getElementById('selected-org-name').innerText = name;
+                document.getElementById('selected-org-inn').innerText = 'ИНН: ' + inn + (kpp ? ' / КПП: ' + kpp : '');
 
-                function copyAddr(text, btn) {
-                    navigator.clipboard.writeText(text).then(() => {
-                        const orig = btn.innerText; btn.innerText = '✓ ADDR OK';
-                        setTimeout(() => btn.innerText = orig, 2000);
+                document.getElementById('add-org-step-1').classList.add('hidden');
+                document.getElementById('add-org-step-2').classList.remove('hidden');
+            }
+
+            function openOrganizationDetails(id, name, inn, kpp, ogrn, address) {
+                document.getElementById('org-details-name').innerText = name;
+                document.getElementById('org-details-inn').innerText = inn;
+                document.getElementById('org-details-kpp').innerText = kpp || '-';
+                document.getElementById('org-details-ogrn').innerText = ogrn || '-';
+                document.getElementById('org-details-address').innerText = address || '-';
+
+                // Load bank accounts via AJAX
+                const container = document.getElementById('org-details-bank-accounts');
+                container.innerHTML = '<div class="p-4 text-center text-zinc-400 text-[12px]">Загрузка счетов...</div>';
+
+                fetch(`/customer/account/credits/organizations/${id}/bank-accounts`)
+                    .then(res => res.json())
+                    .then(data => {
+                        container.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(acc => {
+                                const div = document.createElement('div');
+                                div.className = 'p-4 border border-zinc-100 bg-zinc-50/50 flex flex-col gap-1';
+                                div.innerHTML = `
+                                    <div class="text-[14px] font-mono font-bold text-zinc-900">${acc.settlement_account}</div>
+                                    <div class="text-[11px] text-zinc-500">${acc.bank_name} (БИК: ${acc.bic})</div>
+                                `;
+                                container.appendChild(div);
+                            });
+                        } else {
+                            container.innerHTML = '<div class="p-4 text-center text-zinc-400 text-[12px] italic">Счета не добавлены</div>';
+                        }
                     });
+
+                // Filter Invoices
+                let hasInvoices = false;
+                document.querySelectorAll('.invoice-row').forEach(row => {
+                    if (row.getAttribute('data-org-id') == id) {
+                        row.classList.remove('hidden');
+                        hasInvoices = true;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+
+                const noInvoicesMsg = document.getElementById('no-invoices-msg');
+                const noFilteredMsg = document.getElementById('no-filtered-invoices-msg');
+
+                if (noInvoicesMsg) noInvoicesMsg.classList.add('hidden');
+                
+                if (hasInvoices) {
+                    if(noFilteredMsg) noFilteredMsg.classList.add('hidden');
+                } else {
+                    if(noFilteredMsg) noFilteredMsg.classList.remove('hidden');
                 }
 
-                // --- FULL VALIDATION LOGIC ---
-                const _SHA256 = (() => { const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]; function h(msg) { let H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]; msg = Array.from(msg); const l = msg.length * 8; msg.push(0x80); while ((msg.length % 64) !== 56) msg.push(0); for (let i = 7; i >= 0; i--)msg.push((l / (2 ** (i * 8))) & 0xFF); for (let c = 0; c < msg.length; c += 64) { const W = []; for (let i = 0; i < 16; i++)W[i] = (msg[c + i * 4] << 24) | (msg[c + i * 4 + 1] << 16) | (msg[c + i * 4 + 2] << 8) | msg[c + i * 4 + 3]; for (let i = 16; i < 64; i++) { const s0 = ((W[i - 15] >>> 7) | (W[i - 15] << 25)) ^ ((W[i - 15] >>> 18) | (W[i - 15] << 14)) ^ (W[i - 15] >>> 3); const s1 = ((W[i - 2] >>> 17) | (W[i - 2] << 15)) ^ ((W[i - 2] >>> 19) | (W[i - 2] << 13)) ^ (W[i - 2] >>> 10); W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0; } let [a, b, d, e, f, g, hh, ii] = [...H, H[6], H[7]]; for (let j = 0; j < 64; j++) { const S1 = ((f >>> 6) | (f << 26)) ^ ((f >>> 11) | (f << 21)) ^ ((f >>> 25) | (f << 7)); const ch = (f & g) ^ (~f & hh); const t1 = (ii + S1 + ch + K[j] + W[j]) >>> 0; const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10)); const maj = (a & b) ^ (a & d) ^ (b & d); const t2 = (S0 + maj) >>> 0; ii = hh; hh = g; g = f; f = (e + t1) >>> 0; e = d; d = b; b = a; a = (t1 + t2) >>> 0; } H = [H[0] + a, H[1] + b, H[2] + d, H[3] + e, H[4] + f, H[5] + g, H[6] + hh, H[7] + ii].map(v => v >>> 0); } return H.map(v => v.toString(16).padStart(8, '0')).join(''); } return { hash: h }; })();
-                function _b58d(s) { const A = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; let n = 0n; for (const c of s) { const i = A.indexOf(c); if (i < 0) return null; n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = '0' + h; const b = h.match(/../g).map(x => parseInt(x, 16)); return [...Array(s.match(/^1*/)[0].length).fill(0), ...b]; }
-                function _b58chk(a) { const b = _b58d(a); if (!b || b.length < 5) return false; const p = b.slice(0, -4), cs = b.slice(-4), h1 = _SHA256.hash(p), h2 = _SHA256.hash(h1.match(/../g).map(x => parseInt(x, 16))); return h2.slice(0, 8) === cs.map(x => x.toString(16).padStart(2, '0')).join(''); }
-                function _crc16(d) { let c = 0; for (const b of d) { c ^= (b << 8); for (let i = 0; i < 8; i++)c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1); } return c & 0xFFFF; }
+                switchStep('organization-details');
+            }
 
-                const ADDR_NETS = {
+            function openAddBankAccount(orgId, orgName, orgInn) {
+                document.getElementById('add-bank-org-id').value = orgId;
+                document.getElementById('add-bank-org-name').innerText = orgName;
+                document.getElementById('add-bank-org-inn').innerText = 'ИНН: ' + orgInn;
+
+                document.getElementById('new-bank-bic').value = '';
+                document.getElementById('new-bank-account').value = '';
+                document.getElementById('new-bank-name').value = '';
+                document.getElementById('new-bank-corr').value = '';
+
+                switchStep('add-bank-account');
+            }
+
+            async function submitAddBankAccount(e) {
+                e.preventDefault();
+                const orgId = document.getElementById('add-bank-org-id').value;
+                const bicInput = document.getElementById('new-bank-bic');
+                const accInput = document.getElementById('new-bank-account');
+
+                const bic = (bicInput.value || '').replace(/\D/g, '');
+                const account = (accInput.value || '').replace(/\D/g, '');
+
+                if (bic || account) {
+                    if (!window.isValidBankAccount(bic, account)) {
+                        alert('Расчетный счет не соответствует БИК банка (неверный контрольный ключ)');
+                        return false;
+                    }
+                }
+
+                const btn = document.getElementById('add-bank-submit-btn');
+                const btnText = document.getElementById('add-bank-btn-text');
+                const btnSpinner = document.getElementById('add-bank-btn-spinner');
+
+                btn.disabled = true;
+                btnText.classList.add('opacity-50');
+                btnSpinner.classList.remove('hidden');
+
+                try {
+                    const formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('bic', bicInput.value);
+                    formData.append('settlement_account', accInput.value);
+                    formData.append('bank_name', document.getElementById('new-bank-name').value);
+                    formData.append('correspondent_account', document.getElementById('new-bank-corr').value);
+
+                    const response = await fetch(`/customer/account/organizations/${orgId}/settlement-account`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        const errorMsg = data.errors ? Object.values(data.errors).flat().join('\n') : data.message;
+                        throw new Error(errorMsg || 'Произошла ошибка');
+                    }
+
+                    if (data.success) {
+                        window.showAlert('success', 'Успех', data.message);
+                        setTimeout(() => window.location.reload(), 1000);
+                    }
+                } catch (error) {
+                    window.showAlert('error', 'Ошибка', error.message);
+                } finally {
+                    btn.disabled = false;
+                    btnText.classList.remove('opacity-50');
+                    btnSpinner.classList.add('hidden');
+                }
+            }
+
+            function goToManagement() { switchStep('management'); }
+            function goToAddWallet() { switchStep('add-wallet'); }
+            function selectAsset(assetKey, walletId) {
+                // Check if wallet is verified, ideally this should be handled better, but simple check for now
+                const form = document.getElementById('delete-wallet-form-' + walletId);
+                if (form && !form.closest('div.bg-white').querySelector('svg[viewBox="0 0 24 24"]')) {
+                    alert('Сначала верифицируйте кошелек для пополнения.');
+                    return;
+                }
+                switchStep('details');
+                document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
+                const target = document.getElementById('details-wallet-' + walletId);
+                if (target) target.classList.remove('hidden');
+            }
+
+            let _selectedTopupOrgId = null;
+
+            function selectTopupOrg(id, name) {
+                _selectedTopupOrgId = id;
+                document.getElementById('selected-org-name').innerText = name;
+                switchStep('topup-details');
+            }
+
+            async function generateTopupInvoice() {
+                const amount = document.getElementById('topup-amount').value;
+                const btn = document.getElementById('generate-topup-btn');
+                const btnText = document.getElementById('btn-text');
+                const btnLoader = document.getElementById('btn-loader');
+                const successMsg = document.getElementById('topup-success-msg');
+                const invoiceLink = document.getElementById('topup-invoice-link');
+
+                if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                    alert('Пожалуйста, введите корректную сумму');
+                    return;
+                }
+
+                btn.disabled = true;
+                btnText.classList.add('hidden');
+                btnLoader.classList.remove('hidden');
+
+                try {
+                    const response = await fetch("{{ route('shop.customers.account.credits.invoice.store') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            amount: amount,
+                            organization_id: _selectedTopupOrgId
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        successMsg.classList.remove('hidden');
+                        invoiceLink.href = "{{ route('shop.customers.account.credits.invoice.print', '') }}/" + result.transaction_id;
+
+                        // Store transaction ID for email button
+                        window.lastTransactionId = result.transaction_id;
+
+                        btn.classList.add('hidden');
+
+                        // Hide amount input
+                        document.getElementById('topup-amount-container').classList.add('hidden');
+
+                        window.showAlert('success', 'Success', result.message);
+                    } else {
+                        alert(result.message || 'Произошла ошибка при создании счета');
+                        btn.disabled = false;
+                        btnText.classList.remove('hidden');
+                        btnLoader.classList.add('hidden');
+                    }
+                } catch (error) {
+                    console.error('Topup Error:', error);
+                    alert('Произошла системная ошибка. Пожалуйста, попробуйте позже.');
+                    btn.disabled = false;
+                    btnText.classList.remove('hidden');
+                    btnLoader.classList.add('hidden');
+                }
+            }
+
+            function sendTopupInvoiceEmail() {
+                const transactionId = window.lastTransactionId;
+                if (!transactionId) return;
+
+                const btn = document.getElementById('email-invoice-btn');
+                const btnText = document.getElementById('email-btn-text');
+                const btnIcon = document.getElementById('email-btn-icon');
+                const btnLoader = document.getElementById('email-btn-loader');
+
+                btn.disabled = true;
+                const originalText = btnText.textContent;
+                btnText.textContent = 'Sending...';
+                btnIcon.classList.add('hidden');
+                btnLoader.classList.remove('hidden');
+
+                axios.post("{{ route('shop.customers.account.credits.invoice.email', '') }}/" + transactionId)
+                    .then(response => {
+                        window.showAlert('success', 'Успех', response.data.message);
+                        btnText.textContent = 'Sent!';
+                        btnLoader.classList.add('hidden');
+                        setTimeout(() => {
+                            btnText.textContent = originalText;
+                            btnIcon.classList.remove('hidden');
+                            btn.disabled = false;
+                        }, 3000);
+                    })
+                    .catch(error => {
+                        window.showAlert('error', 'Ошибка', error.response?.data?.message || 'Failed to send email');
+                        btnText.textContent = originalText;
+                        btnIcon.classList.remove('hidden');
+                        btnLoader.classList.add('hidden');
+                        btn.disabled = false;
+                    });
+            }
+
+            function sendInvoiceEmail(transactionId, btn) {
+                if (!transactionId || btn.disabled) return;
+
+                btn.disabled = true;
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<div class="w-4 h-4 border-2 border-current border-t-transparent animate-spin"></div><span class="max-md:hidden">Отправка...</span>';
+
+                axios.post("{{ route('shop.customers.account.credits.invoice.email', '') }}/" + transactionId)
+                    .then(response => {
+                        window.showAlert('success', 'Успех', response.data.message);
+                        btn.innerHTML = '<span class="icon-check text-lg pr-1"></span><span class="max-md:hidden">Отправлено</span>';
+                        setTimeout(() => {
+                            btn.innerHTML = originalHtml;
+                            btn.disabled = false;
+                        }, 3000);
+                    })
+                    .catch(error => {
+                        window.showAlert('error', 'Ошибка', error.response?.data?.message || 'Failed to send email');
+                        btn.innerHTML = originalHtml;
+                        btn.disabled = false;
+                    });
+            }
+            function copyAddr(text, btn) {
+                navigator.clipboard.writeText(text).then(() => {
+                    window.showAlert('success', 'Успех', 'Скопировано в буфер обмена');
+                    if (btn) {
+                        const orig = btn.innerText;
+                        btn.innerText = '✓';
+                        setTimeout(() => btn.innerText = orig, 2000);
+                    }
+                });
+            }
+
+            window.copyValue = function (text, btn, e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                if (!navigator.clipboard) {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try { document.execCommand('copy'); } catch (err) { }
+                    document.body.removeChild(textArea);
+                } else {
+                    navigator.clipboard.writeText(text);
+                }
+
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<span class="text-[10px] font-bold text-green-500 uppercase ml-1">Скопировано!</span>';
+                btn.classList.remove('text-zinc-300');
+                btn.classList.add('text-green-500');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.add('text-zinc-300');
+                    btn.classList.remove('text-green-500');
+                }, 2000);
+            }
+
+            // Global alert handler to replace missing window.showAlert
+            window.showAlert = function (type, title, message) {
+                // Use Bagisto's built-in flash if possible, or a simple alert fallback
+                if (window.app && window.app.config && window.app.config.globalProperties && window.app.config.globalProperties.$emitter) {
+                    window.app.config.globalProperties.$emitter.emit('add-flash', { type, message });
+                } else {
+                    // Fallback to a custom styled div or just alert if emitter is not ready
+                    const alertBox = document.createElement('div');
+                    alertBox.className = `fixed bottom-4 right-4 z-[10001] p-4 font-bold text-white shadow-2xl transition-all border-l-4 ${type === 'success' ? 'bg-zinc-900 border-green-500' : 'bg-red-600 border-white'}`;
+                    alertBox.innerHTML = `<div class="text-[10px] uppercase tracking-widest opacity-60 mb-1">${title}</div><div class="text-[13px]">${message}</div>`;
+                    document.body.appendChild(alertBox);
+                    setTimeout(() => alertBox.remove(), 5000);
+                }
+            };
+
+            // --- FULL VALIDATION LOGIC ---
+            const _SHA256 = (() => { const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2]; function h(msg) { let H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]; msg = Array.from(msg); const l = msg.length * 8; msg.push(0x80); while ((msg.length % 64) !== 56) msg.push(0); for (let i = 7; i >= 0; i--)msg.push((l / (2 ** (i * 8))) & 0xFF); for (let c = 0; c < msg.length; c += 64) { const W = []; for (let i = 0; i < 16; i++)W[i] = (msg[c + i * 4] << 24) | (msg[c + i * 4 + 1] << 16) | (msg[c + i * 4 + 2] << 8) | msg[c + i * 4 + 3]; for (let i = 16; i < 64; i++) { const s0 = ((W[i - 15] >>> 7) | (W[i - 15] << 25)) ^ ((W[i - 15] >>> 18) | (W[i - 15] << 14)) ^ (W[i - 15] >>> 3); const s1 = ((W[i - 2] >>> 17) | (W[i - 2] << 15)) ^ ((W[i - 2] >>> 19) | (W[i - 2] << 13)) ^ (W[i - 2] >>> 10); W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0; } let [a, b, d, e, f, g, hh, ii] = [...H, H[6], H[7]]; for (let j = 0; j < 64; j++) { const S1 = ((f >>> 6) | (f << 26)) ^ ((f >>> 11) | (f << 21)) ^ ((f >>> 25) | (f << 7)); const ch = (f & g) ^ (~f & hh); const t1 = (ii + S1 + ch + K[j] + W[j]) >>> 0; const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10)); const maj = (a & b) ^ (a & d) ^ (b & d); const t2 = (S0 + maj) >>> 0; ii = hh; hh = g; g = f; f = (e + t1) >>> 0; e = d; d = b; b = a; a = (t1 + t2) >>> 0; } H = [H[0] + a, H[1] + b, H[2] + d, H[3] + e, H[4] + f, H[5] + g, H[6] + hh, H[7] + ii].map(v => v >>> 0); } return H.map(v => v.toString(16).padStart(8, '0')).join(''); } return { hash: h }; })();
+            function _b58d(s) { const A = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'; let n = 0n; for (const c of s) { const i = A.indexOf(c); if (i < 0) return null; n = n * 58n + BigInt(i); } let h = n.toString(16); if (h.length % 2) h = '0' + h; const b = h.match(/../g).map(x => parseInt(x, 16)); return [...Array(s.match(/^1*/)[0].length).fill(0), ...b]; }
+            function _b58chk(a) { const b = _b58d(a); if (!b || b.length < 5) return false; const p = b.slice(0, -4), cs = b.slice(-4), h1 = _SHA256.hash(p), h2 = _SHA256.hash(h1.match(/../g).map(x => parseInt(x, 16))); return h2.slice(0, 8) === cs.map(x => x.toString(16).padStart(2, '0')).join(''); }
+            function _crc16(d) { let c = 0; for (const b of d) { c ^= (b << 8); for (let i = 0; i < 8; i++)c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1); } return c & 0xFFFF; }
+
+            const ADDR_NETS = {
                 bitcoin: { validate: a => { if (/^bc1[a-z0-9]{6,87}$/.test(a)) return true; if (!/^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/.test(a)) return false; return _b58chk(a); }, bg: '#FFF7ED', color: '#F7931A' },
                 ethereum: { validate: a => /^0x[0-9a-fA-F]{40}$/.test(a), bg: '#EEF2FF', color: '#627EEA' },
                 ton: { validate: a => { a = a.trim(); if (/^0:[0-9a-fA-F]{64}$/.test(a)) return true; if (!/^(UQ|EQ|UW|EW)[a-zA-Z0-9\-_]{46}$/.test(a)) return false; const b64 = a.replace(/-/g, '+').replace(/_/g, '/'); let bin; try { bin = atob(b64); } catch { return false; } if (bin.length !== 36) return false; const data = Array.from(bin.slice(0, 34)).map(c => c.charCodeAt(0)); const chk = [bin.charCodeAt(34), bin.charCodeAt(35)]; const exp = _crc16(data); return chk[0] === ((exp >> 8) & 0xFF) && chk[1] === (exp & 0xFF); }, bg: '#E0F5FF', color: '#0098EA' },
@@ -490,26 +1809,26 @@
 
             function selCoin(coin) {
                 _selCoin = coin;
-                
+
                 // Update Coin Buttons
                 document.querySelectorAll('button[id^="coin-"]').forEach(b => {
                     const id = b.id.replace('coin-', '');
                     const isSelected = id === coin;
                     const color = COIN_COLORS[id];
-                    
+
                     if (isSelected) {
                         b.style.borderColor = color;
                         b.style.borderWidth = '1.5px'; // slightly thicker border
                         b.classList.remove('bg-white');
                         b.classList.add('bg-zinc-50/30'); // slight tint
-                        
+
                         document.getElementById('coin-label-' + id).style.color = color;
                     } else {
                         b.style.borderColor = '#f4f4f5'; // zinc-100
                         b.style.borderWidth = '1px';
                         b.classList.add('bg-white');
                         b.classList.remove('bg-zinc-50/30');
-                        
+
                         document.getElementById('coin-label-' + id).style.color = '#a1a1aa'; // zinc-400
                     }
                 });
@@ -517,11 +1836,11 @@
                 const nets = COIN_NETWORKS[coin];
                 const container = document.getElementById('network-options-container');
                 container.innerHTML = '';
-                
+
                 nets.forEach(net => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'network-btn flex items-center justify-center p-3 rounded-[16px] border border-zinc-100 bg-white transition-all font-bold text-[13px] text-zinc-900';
+                    btn.className = 'network-btn flex items-center justify-center p-3  border border-zinc-100 bg-white transition-all font-black text-[12px] uppercase tracking-[0.2em] text-zinc-900';
                     btn.innerText = net.label;
                     btn.onclick = () => selActualNet(net.id, btn, coin);
                     container.appendChild(btn);
@@ -532,7 +1851,7 @@
                 document.getElementById('wallet-net-input').value = '';
                 _selNet = null;
                 onWalletInput('');
-                
+
                 if (nets.length === 1) {
                     container.firstChild.click();
                 }
@@ -541,30 +1860,30 @@
             function selActualNet(netId, btnEl, coin) {
                 _selNet = netId;
                 document.getElementById('wallet-net-input').value = netId;
-                
+
                 document.querySelectorAll('.network-btn').forEach(b => {
                     b.style.borderColor = '#f4f4f5'; // zinc-100
                     b.style.borderWidth = '1px';
                     b.classList.remove('bg-[#E6F6F1]'); // ensure we remove any specific bg class if we add them later
                     b.style.background = '#ffffff';
                 });
-                
+
                 // Specifically map the green background for USDT as shown in screenshot
                 const color = COIN_COLORS[coin];
                 btnEl.style.borderColor = color;
                 btnEl.style.borderWidth = '1.5px';
-                
+
                 // If it's the green usdt color, match the screenshot's green tint background
                 if (color === '#26A17B') {
                     btnEl.style.background = '#E6F6F1';
                 } else if (color === '#0098EA') {
-                     btnEl.style.background = '#E0F5FF';
+                    btnEl.style.background = '#E0F5FF';
                 } else if (color === '#F7931A') {
-                     btnEl.style.background = '#FFF7ED';
+                    btnEl.style.background = '#FFF7ED';
                 } else if (color === '#627EEA') {
-                     btnEl.style.background = '#EEF2FF';
+                    btnEl.style.background = '#EEF2FF';
                 } else {
-                     btnEl.style.background = '#f8fafc'; // light gray fallback
+                    btnEl.style.background = '#f8fafc'; // light gray fallback
                 }
 
                 document.getElementById('wallet-addr-section').classList.remove('hidden');
@@ -574,27 +1893,304 @@
             function onWalletInput(val) {
                 const v = _selNet ? ADDR_NETS[_selNet].validate(val.trim()) : false;
                 const btn = document.getElementById('wallet-add-btn');
+                const dot = document.getElementById('addr-valid-dot');
+
                 btn.disabled = !v;
                 btn.style.opacity = v ? '1' : '0.4';
                 btn.style.cursor = v ? 'pointer' : 'not-allowed';
+
+                if (dot) {
+                    dot.style.background = v ? '#22c55e' : (val.trim() ? '#ef4444' : '#e4e4e7');
+                }
+
+                const hiddenInput = document.getElementById('wallet-addr-hidden');
+                if (hiddenInput) hiddenInput.value = val.trim();
             }
-                function confirmWalletDeletion(id, expected) { if (prompt(`Введите "${expected}" для удаления:`) === expected) document.getElementById(`delete-wallet-form-${id}`).submit(); }
 
-                document.addEventListener('DOMContentLoaded', () => {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const step = urlParams.get('step');
-                    if (step === 'transactions') switchStep('transactions');
-                    else if (step === 'deposit') goToDeposit();
-                    else if (step === 'management') goToManagement();
+            function submitWalletAdd() {
+                const addr = document.getElementById('wallet-addr-input').value.trim();
+                const net = document.getElementById('wallet-net-input').value;
 
-                    @if(session('show_verify_id'))
-                        @php $target = $allAddresses->firstWhere('id', session('show_verify_id')); @endphp
-                        @if($target)
-                            goToManagement();
-                            setTimeout(() => showVerifyModal('{{ $target->id }}', '{{ $target->network }}', '{{ rtrim(rtrim(number_format($target->verification_amount ?? 0, 8, '.', ''), '0'), '.') }}', '{{ $target->address }}'), 500);
-                        @endif
+                if (!addr || !net) return;
+
+                const aliasInput = document.getElementById('wallet-alias-input');
+                if (aliasInput && !aliasInput.value) {
+                    aliasInput.value = addr.substring(0, 4) + '...' + addr.substring(addr.length - 4);
+                }
+
+                document.getElementById('add-wallet-form').submit();
+            }
+            function confirmWalletDeletion(id, expected) { if (prompt(`Введите "${expected}" для удаления:`) === expected) document.getElementById(`delete-wallet-form-${id}`).submit(); }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const step = urlParams.get('step');
+                if (step === 'transactions') switchStep('transactions');
+                else if (step === 'deposit') goToDeposit();
+                else if (step === 'management') goToManagement();
+                else if (step === 'b2b-management') goToB2BManagement();
+
+                @if($errors->any() && old('inn'))
+                    goToB2BManagement();
+                    // Let user know there was an error in the standalone create form if they were redirected back here.
+                    // Though this shouldn't happen anymore with the controller change.
+                @endif
+
+                @if(session('show_verify_id'))
+                    @php $target = $allAddresses->firstWhere('id', session('show_verify_id')); @endphp
+                    @if($target)
+                        goToManagement();
+                        setTimeout(() => showVerifyModal('{{ $target->id }}', '{{ $target->network }}', '{{ rtrim(rtrim(number_format($target->verification_amount ?? 0, 8, '.', ''), '0'), '.') }}', '{{ $target->address }}'), 500);
                     @endif
+                @endif
+
+                                                                                                                                                                                                                                            });
+
+            // --- ORGANIZATION WIZARD SCRIPTS ---
+            window.isValidBankAccount = function (bic, account) {
+                bic = (bic || '').toString().replace(/\D/g, '');
+                account = (account || '').toString().replace(/\D/g, '');
+
+                if (bic.length !== 9 || account.length !== 20) return false;
+
+                let bicPart;
+                if (bic[6] === '0' && bic[7] === '0') {
+                    bicPart = '0' + bic[4] + bic[5];
+                } else {
+                    bicPart = bic.substring(6, 9);
+                }
+
+                const combined = bicPart + account;
+                const weights = [7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1, 3, 7, 1];
+
+                let sum = 0;
+                for (let i = 0; i < 23; i++) {
+                    const digit = parseInt(combined[i]);
+                    sum += (digit * weights[i]) % 10;
+                }
+
+                return sum % 10 === 0;
+            };
+
+            // DaData Integration Ported
+            document.addEventListener('DOMContentLoaded', () => {
+                // Formatting for numbers
+                window.forceNumeric = function (e) {
+                    if (e.ctrlKey || e.metaKey || e.altKey) return;
+                    const functionalKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Escape'];
+                    if (functionalKeys.includes(e.key)) return;
+                    if (!/[\d]/.test(e.key)) e.preventDefault();
+                };
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.target && ['org-inn', 'org-kpp', 'bank-account', 'new-bank-account'].includes(e.target.id)) {
+                        window.forceNumeric(e);
+                    }
                 });
-            </script>
-        @endpush
+
+                document.addEventListener('input', function (e) {
+                    if (e.target && ['org-inn', 'org-kpp', 'bank-account', 'new-bank-account', 'org-ogrn'].includes(e.target.id)) {
+                        e.target.value = e.target.value.replace(/\D/g, '');
+                    }
+                });
+
+                // Validation for Add Org
+                document.body.addEventListener('submit', function (e) {
+                    if (e.target && e.target.id === 'org-form') {
+                        const bicInput = document.getElementById('bank-bic');
+                        const accInput = document.getElementById('bank-account');
+                        const bic = bicInput ? bicInput.value.replace(/\D/g, '') : '';
+                        const account = accInput ? accInput.value.replace(/\D/g, '') : '';
+
+                        if (bic || account) {
+                            if (!window.isValidBankAccount(bic, account)) {
+                                alert('Расчетный счет не соответствует БИК банка (неверный контрольный ключ)');
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
+                    }
+                });
+
+                // DaData Organization Autocomplete
+                let orgTimeout = null;
+                function handleOrgInput(e) {
+                    clearTimeout(orgTimeout);
+                    if (e && !e.isTrusted) return;
+
+                    const query = e.target.value;
+                    const orgSuggestionsBox = document.getElementById('org-suggestions');
+
+                    if (query.length < 3) {
+                        if (orgSuggestionsBox) orgSuggestionsBox.classList.add('hidden');
+                        return;
+                    }
+
+                    orgTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(`{{ route('shop.customers.account.organizations.suggest') }}?query=${encodeURIComponent(query)}`);
+                            const data = await response.json();
+
+                            if (orgSuggestionsBox) {
+                                orgSuggestionsBox.innerHTML = '';
+                                if (data && data.length > 0) {
+                                    data.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.className = 'p-2 hover:bg-emerald-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+
+                                        const itemName = item.name || '';
+                                        const inn = item.inn || '';
+                                        const kpp = item.kpp ? ` КПП: ${item.kpp}` : '';
+                                        const address = item.address || '';
+                                        const ogrn = item.ogrn || '';
+
+                                        div.innerHTML = `
+                                                                                            <div class="font-bold text-zinc-900 text-[13px]">${itemName}</div>
+                                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">ИНН: ${inn}${kpp}</div>
+                                                                                            <div class="text-[11px] text-zinc-400 mt-1 truncate">${address}</div>
+                                                                                        `;
+
+                                        div.onmousedown = (event) => {
+                                            event.preventDefault();
+                                            const nameInput = document.getElementById('org-name');
+                                            const innInput = document.getElementById('org-inn');
+                                            const kppInput = document.getElementById('org-kpp');
+                                            const addressInput = document.getElementById('org-address');
+                                            const ogrnInput = document.getElementById('org-ogrn');
+
+                                            if (nameInput) nameInput.value = itemName;
+                                            if (innInput) innInput.value = inn;
+                                            if (kppInput && item.kpp) kppInput.value = item.kpp;
+                                            if (addressInput && address) addressInput.value = address;
+                                            if (ogrnInput && ogrn) ogrnInput.value = ogrn;
+
+                                            orgSuggestionsBox.classList.add('hidden');
+                                            orgSuggestionsBox.innerHTML = '';
+                                        };
+
+                                        orgSuggestionsBox.appendChild(div);
+                                    });
+                                    const parentGroup = e.target.closest('.relative');
+                                    if (parentGroup && !parentGroup.contains(orgSuggestionsBox)) {
+                                        parentGroup.appendChild(orgSuggestionsBox);
+                                    }
+                                    orgSuggestionsBox.classList.remove('hidden');
+                                } else {
+                                    orgSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Ничего не найдено</div>';
+                                    orgSuggestionsBox.classList.remove('hidden');
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error fetching org suggestions', err);
+                        }
+                    }, 500);
+                }
+
+                // DaData Bank Autocomplete
+                let bankTimeout = null;
+                function handleBankInput(e, prefix = 'bank') {
+                    clearTimeout(bankTimeout);
+                    if (e && !e.isTrusted) return;
+
+                    const query = e.target.value;
+                    const bankSuggestionsBox = document.getElementById(`${prefix}-suggestions`);
+
+                    if (query.length < 3) {
+                        if (bankSuggestionsBox) bankSuggestionsBox.classList.add('hidden');
+                        return;
+                    }
+
+                    bankTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(`{{ route('shop.customers.account.organizations.suggest_bank') }}?query=${encodeURIComponent(query)}`);
+                            const data = await response.json();
+
+                            if (bankSuggestionsBox) {
+                                bankSuggestionsBox.innerHTML = '';
+                                if (data && data.length > 0) {
+                                    data.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+
+                                        div.innerHTML = `
+                                                                                            <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>
+                                                                                            <div class="text-[11px] text-zinc-500 font-mono mt-1">БИК: ${item.bic} | Корр: ${item.correspondent_account}</div>
+                                                                                        `;
+
+                                        div.onmousedown = (event) => {
+                                            event.preventDefault();
+                                            const bicInput = document.getElementById(`${prefix}-bic`);
+                                            const nameInput = document.getElementById(`${prefix}-name`);
+                                            const corrInput = document.getElementById(`${prefix}-corr`);
+
+                                            if (bicInput) bicInput.value = item.bic;
+                                            if (nameInput) nameInput.value = item.bank_name || item.name;
+                                            if (corrInput) corrInput.value = item.correspondent_account;
+
+                                            bankSuggestionsBox.classList.add('hidden');
+                                            bankSuggestionsBox.innerHTML = '';
+
+                                            const bankAccountInput = document.getElementById(`${prefix}-account`);
+                                            if (bankAccountInput) bankAccountInput.focus();
+                                        };
+
+                                        bankSuggestionsBox.appendChild(div);
+                                    });
+                                    const parentGroup = e.target.closest('.relative') || e.target.parentNode;
+                                    if (parentGroup) {
+                                        parentGroup.appendChild(bankSuggestionsBox);
+                                    }
+                                    bankSuggestionsBox.classList.remove('hidden');
+                                } else {
+                                    bankSuggestionsBox.innerHTML = '<div class="p-3 text-zinc-500 text-[12px]">Банк не найден</div>';
+                                    bankSuggestionsBox.classList.remove('hidden');
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error fetching bank suggestions', err);
+                        }
+                    }, 500);
+                }
+
+                // Event delegation for input events
+                const events = ['input', 'paste', 'change'];
+                events.forEach(eventType => {
+                    document.addEventListener(eventType, function (e) {
+                        if (e.target) {
+                            if (e.target.id === 'org-name' || e.target.id === 'org-inn') {
+                                if (eventType === 'paste') setTimeout(() => handleOrgInput(e), 0);
+                                else handleOrgInput(e);
+                            } else if (e.target.id === 'bank-bic') {
+                                if (eventType === 'paste') setTimeout(() => handleBankInput(e, 'bank'), 0);
+                                else handleBankInput(e, 'bank');
+                            } else if (e.target.id === 'new-bank-bic') {
+                                if (eventType === 'paste') setTimeout(() => handleBankInput(e, 'new-bank'), 0);
+                                else handleBankInput(e, 'new-bank');
+                            }
+                        }
+                    });
+                });
+
+                // Hide suggestions on outside click
+                document.addEventListener('click', function (e) {
+                    const orgSuggestionsBox = document.getElementById('org-suggestions');
+                    if (orgSuggestionsBox && !orgSuggestionsBox.contains(e.target) && e.target.id !== 'org-name' && e.target.id !== 'org-inn') {
+                        orgSuggestionsBox.classList.add('hidden');
+                    }
+
+                    const bankSuggestionsBox = document.getElementById('bank-suggestions');
+                    if (bankSuggestionsBox && !bankSuggestionsBox.contains(e.target) && e.target.id !== 'bank-bic') {
+                        bankSuggestionsBox.classList.add('hidden');
+                    }
+
+                    const newBankSuggestionsBox = document.getElementById('new-bank-suggestions');
+                    if (newBankSuggestionsBox && !newBankSuggestionsBox.contains(e.target) && e.target.id !== 'new-bank-bic') {
+                        newBankSuggestionsBox.classList.add('hidden');
+                    }
+                });
+            });
+
+        </script>
+    @endpush
+
 </x-shop::layouts.account>

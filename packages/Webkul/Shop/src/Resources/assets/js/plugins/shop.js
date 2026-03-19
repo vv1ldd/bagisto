@@ -11,6 +11,13 @@ export default {
             },
 
             /**
+             * Customer id.
+             *
+             * @returns {number|null}
+             */
+            customer_id: document.querySelector('meta[name="customer-id"]')?.content ?? null,
+
+            /**
              * Load the dynamic scripts.
              *
              * @param {string} src
@@ -43,7 +50,7 @@ export default {
 
                 const symbol = currency.symbol !== '' ? currency.symbol : currency.code;
 
-                if (! currency.currency_position) {
+                if (!currency.currency_position) {
                     return new Intl.NumberFormat(locale, {
                         style: "currency",
                         currency: currency.code,

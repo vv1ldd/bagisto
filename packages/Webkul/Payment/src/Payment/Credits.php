@@ -15,23 +15,32 @@ class Credits extends Payment
     protected $code = 'credits';
 
     /**
-     * Get redirect url.
+     * No external redirect — order is created directly in storeOrder().
+     * Return empty so Payment::getRedirectUrl() check is falsy.
      *
      * @return string
      */
-    public function getRedirectUrl()
+    public function getRedirectUrl(): string
     {
-        return route('shop.checkout.success');
+        return '';
     }
 
     /**
      * Check if payment method is available.
+     * Falls back to PHP config default if no DB record exists.
      *
      * @return bool
      */
     public function isAvailable()
     {
-        if (!$this->getConfigData('active')) {
+        // Check DB config; fall back to PHP config default (true)
+        $active = $this->getConfigData('active');
+
+        if ($active === null) {
+            $active = config('payment_methods.credits.active', true);
+        }
+
+        if (!$active) {
             return false;
         }
 
@@ -47,12 +56,11 @@ class Credits extends Payment
             return false;
         }
 
-        // Available only if customer has enough total fiat equivalent balance
-        return $customer->getTotalFiatBalance() >= $cart->base_grand_total;
+        return true;
     }
 
     /**
-     * Returns payment method image.
+     * Returns payment method image — Meanly Pay branded logo.
      *
      * @return string
      */
@@ -60,6 +68,22 @@ class Credits extends Payment
     {
         $url = $this->getConfigData('image');
 
-        return $url ? Storage::url($url) : bagisto_asset('images/money-transfer.png', 'shop');
+        if ($url) {
+            return Storage::url($url);
+        }
+
+        try {
+            return bagisto_asset('images/money-transfer.png', 'shop');
+        } catch (\Throwable $e) {
+            return '';
+        }
+    }
+
+    /**
+     * Payment method title.
+     */
+    public function getTitle()
+    {
+        return $this->getConfigData('title') ?: 'Meanly Pay';
     }
 }

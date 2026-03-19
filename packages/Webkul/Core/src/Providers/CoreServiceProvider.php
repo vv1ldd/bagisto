@@ -14,11 +14,16 @@ class CoreServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        include __DIR__.'/../Http/helpers.php';
+        include __DIR__ . '/../Http/helpers.php';
 
         $this->registerCommands();
 
         $this->registerOverrides();
+
+        $this->app->bind(
+            \Webkul\Core\Contracts\BillingEntity::class,
+            \Webkul\Core\Repositories\BillingEntityRepository::class
+        );
     }
 
     /**
@@ -26,11 +31,11 @@ class CoreServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
 
-        $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'core');
+        $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'core');
 
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'core');
+        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'core');
 
         Event::listen('bagisto.shop.layout.body.after', static function (ViewRenderEventManager $viewRenderEventManager) {
             $viewRenderEventManager->addTemplate('core::blade.tracer.style');
@@ -71,12 +76,12 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->app->extend(
             \Illuminate\Foundation\Console\UpCommand::class,
-            fn () => new \Webkul\Core\Console\Commands\UpCommand
+            fn() => new \Webkul\Core\Console\Commands\UpCommand
         );
 
         $this->app->extend(
             \Illuminate\Foundation\Console\DownCommand::class,
-            fn () => new \Webkul\Core\Console\Commands\DownCommand
+            fn() => new \Webkul\Core\Console\Commands\DownCommand
         );
 
         $this->app->bind(
@@ -86,17 +91,17 @@ class CoreServiceProvider extends ServiceProvider
 
         $this->app->bind(
             \Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance::class,
-            fn ($app) => new \Webkul\Core\Http\Middleware\PreventRequestsDuringMaintenance($app)
+            fn($app) => new \Webkul\Core\Http\Middleware\PreventRequestsDuringMaintenance($app)
         );
 
         $this->app->singleton(
             \Elastic\Elasticsearch\Client::class,
-            fn () => \Webkul\Core\Facades\ElasticSearch::getFacadeApplication()->connection()
+            fn() => \Webkul\Core\Facades\ElasticSearch::getFacadeApplication()->connection()
         );
 
         $this->app->singleton(
             'blade.compiler',
-            fn ($app) => new \Webkul\Core\View\Compilers\BladeCompiler($app['files'], $app['config']['view.compiled'])
+            fn($app) => new \Webkul\Core\View\Compilers\BladeCompiler($app['files'], $app['config']['view.compiled'])
         );
     }
 }

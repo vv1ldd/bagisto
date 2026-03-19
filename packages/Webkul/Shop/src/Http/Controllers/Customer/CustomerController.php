@@ -96,6 +96,33 @@ class CustomerController extends Controller
     }
 
     /**
+     * Check if username is available.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkUsername()
+    {
+        $username = request()->get('username');
+
+        if (!$username) {
+            return response()->json(['available' => false]);
+        }
+
+        // Allow current user to keep their own username
+        $customer = auth()->guard('customer')->user();
+
+        $exists = $this->customerRepository->scopeQuery(function ($query) use ($username, $customer) {
+            return $query->where('username', $username)
+                ->where('id', '!=', $customer->id);
+        })->first();
+
+        return response()->json([
+            'available' => !$exists,
+            'message' => $exists ? 'Этот псевдоним уже занят' : ''
+        ]);
+    }
+
+    /**
      * Edit function for editing customer profile.
      *
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
@@ -127,18 +154,6 @@ class CustomerController extends Controller
             $data['birth_city'] = trim($data['birth_city']);
         } else {
             unset($data['birth_city']);
-        }
-
-        if (!empty($data['country_of_residence'])) {
-            $data['country_of_residence'] = trim($data['country_of_residence']);
-        } else {
-            unset($data['country_of_residence']);
-        }
-
-        if (!empty($data['citizenship'])) {
-            $data['citizenship'] = trim($data['citizenship']);
-        } else {
-            unset($data['citizenship']);
         }
 
         $data['subscribed_to_news_letter'] = isset($data['subscribed_to_news_letter']);

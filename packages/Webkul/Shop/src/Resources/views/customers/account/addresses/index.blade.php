@@ -1,8 +1,6 @@
-<x-shop::layouts.account>
+<x-shop::layouts.account :show-back="false">
     <!-- Page Title -->
-    <x-slot:title>
-        @lang('shop::app.customers.account.addresses.index.add-address')
-        </x-slot>
+    <x-slot:title></x-slot>
 
 
 
@@ -38,7 +36,18 @@
             </style>
         @endpush
 
-        <div class="flex-auto pt-2 pb-8">
+        <div class="flex-auto pb-8 ios-tile-relative bg-white border border-gray-100">
+            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                class="ios-close-button">
+                <span class="icon-cancel text-xl"></span>
+            </a>
+
+            <div class="px-5 pt-6 pb-2">
+                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
+                    @lang('shop::app.customers.account.addresses.index.title')
+                </h1>
+            </div>
+
             <!-- Header Actions -->
             <div class="flex justify-end px-5 mb-2">
                 <a href="{{ route('shop.customers.account.addresses.create') }}"
@@ -77,7 +86,7 @@
                                     position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
                                     <x-slot:toggle>
                                         <button
-                                            class="p-2 rounded-full hover:bg-zinc-100 transition active:scale-95 text-zinc-400 group-hover:text-zinc-600"
+                                            class="p-2  hover:bg-zinc-100 transition active:scale-95 text-zinc-400 group-hover:text-zinc-600"
                                             aria-label="More Options">
                                             <span class="icon-more text-2xl"></span>
                                         </button>

@@ -13,7 +13,9 @@ class OpenAI
         protected string $model,
         protected string $prompt,
         protected float $temperature,
-        protected bool $stream = false
+        protected bool $stream = false,
+        protected ?string $attachment = null,
+        protected ?string $mimeType = null,
     ) {
         $this->setConfig();
     }
@@ -24,8 +26,8 @@ class OpenAI
     public function setConfig(): void
     {
         config([
-            'openai.api_key' => core()->getConfigData('general.magic_ai.settings.api_key'),
-            'openai.organization' => core()->getConfigData('general.magic_ai.settings.organization'),
+            'openai.api_key' => env('MAGIC_AI_API_KEY', config('magic_ai_settings.api_key')),
+            'openai.organization' => env('MAGIC_AI_ORGANIZATION', config('magic_ai_settings.organization')),
         ]);
     }
 
@@ -34,13 +36,29 @@ class OpenAI
      */
     public function ask(): string
     {
+        $content = [
+            [
+                'type' => 'text',
+                'text' => $this->prompt,
+            ],
+        ];
+
+        if ($this->attachment && $this->mimeType) {
+            $content[] = [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => "data:{$this->mimeType};base64,{$this->attachment}",
+                ],
+            ];
+        }
+
         $result = BaseOpenAI::chat()->create([
             'model' => $this->model,
             'temperature' => $this->temperature,
             'messages' => [
                 [
                     'role' => 'user',
-                    'content' => $this->prompt,
+                    'content' => $content,
                 ],
             ],
         ]);
@@ -65,7 +83,7 @@ class OpenAI
         $images = [];
 
         foreach ($result->data as $image) {
-            $images[]['url'] = 'data:image/png;base64,'.$image->b64_json;
+            $images[]['url'] = 'data:image/png;base64,' . $image->b64_json;
         }
 
         return $images;

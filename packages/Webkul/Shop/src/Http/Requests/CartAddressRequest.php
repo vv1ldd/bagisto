@@ -33,7 +33,7 @@ class CartAddressRequest extends FormRequest
             $this->mergeAddressRules('billing');
         }
 
-        if (! $this->input('billing.use_for_shipping')) {
+        if (!$this->input('billing.use_for_shipping')) {
             $this->mergeAddressRules('shipping');
         }
 
@@ -45,22 +45,26 @@ class CartAddressRequest extends FormRequest
      */
     private function mergeAddressRules(string $addressType): void
     {
+        $haveStockableItems = \Webkul\Checkout\Facades\Cart::getCart()?->haveStockableItems() ?? true;
+
         $this->mergeWithRules([
             "{$addressType}.company_name" => ['nullable'],
             "{$addressType}.first_name" => ['required'],
             "{$addressType}.last_name" => ['required'],
             "{$addressType}.email" => ['required'],
-            "{$addressType}.address" => ['required', 'array', 'min:1'],
-            "{$addressType}.city" => ['required'],
-            "{$addressType}.country" => core()->isCountryRequired() ? ['required'] : ['nullable'],
-            "{$addressType}.state" => core()->isStateRequired() ? ['required'] : ['nullable'],
-            "{$addressType}.postcode" => core()->isPostCodeRequired() ? ['required', new PostCode] : [new PostCode],
-            "{$addressType}.phone" => ['required', new PhoneNumber],
+            "{$addressType}.address" => $haveStockableItems ? ['required', 'array', 'min:1'] : ['nullable', 'array'],
+            "{$addressType}.city" => $haveStockableItems ? ['required'] : ['nullable'],
+            "{$addressType}.country" => ($haveStockableItems && core()->isCountryRequired()) ? ['required'] : ['nullable'],
+            "{$addressType}.state" => ($haveStockableItems && core()->isStateRequired()) ? ['required'] : ['nullable'],
+            "{$addressType}.postcode" => ($haveStockableItems && core()->isPostCodeRequired()) ? ['required', new PostCode] : [new PostCode],
+            "{$addressType}.phone" => $haveStockableItems ? ['required', new PhoneNumber] : ['nullable', new PhoneNumber],
         ]);
 
         if ($addressType == 'billing') {
             $this->mergeWithRules([
                 "{$addressType}.vat_id" => [(new VatIdRule)->setCountry($this->input('billing.country'))],
+                "{$addressType}.is_gift" => ['nullable', 'boolean'],
+                "{$addressType}.gift_email" => ['required_if:billing.is_gift,true', 'nullable', 'email'],
             ]);
         }
     }

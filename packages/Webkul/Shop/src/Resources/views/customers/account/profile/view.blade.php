@@ -136,8 +136,12 @@
 
             @auth('customer')
                 @if(auth()->guard('customer')->user()->id !== $customer->id)
-                    <a href="{{ route('shop.customers.account.credits.index', ['recipient' => '@' . $customer->credits_alias]) }}"
-                        class="action-button">
+                    @php 
+                        $creditsUrl = route('shop.customers.account.credits.index', ['recipient' => '@' . $customer->credits_alias]);
+                    @endphp
+                    <a href="{{ $creditsUrl }}"
+                       onclick="handleMeanlyWalletPasskey(this, '{{ $creditsUrl }}'); return false;"
+                       class="action-button">
                         Отправить Credits
                     </a>
                 @endif
@@ -159,7 +163,7 @@
                             @php 
                                 $senderAlias = $transfer->metadata['sender_alias'] ?? 'Unknown';
                             @endphp
-                            <div class="flex items-center justify-between p-3 bg-[#f8fafc] rounded-xl border border-[#f1f5f9]">
+                            <div class="flex items-center justify-between p-3 bg-[#f8fafc]  border border-[#f1f5f9]">
                                 <div class="text-left">
                                     <div class="text-[13px] font-semibold text-zinc-900">
                                         Входящий перевод от 
@@ -193,7 +197,7 @@
                                 </span>
                                 
                                 @if($address->isVerified())
-                                    <span class="icon-checkmark text-[10px] text-emerald-500 bg-emerald-50 p-1 rounded-full border border-emerald-100" title="Верифицированный адрес"></span>
+                                    <span class="icon-checkmark text-[10px] text-emerald-500 bg-emerald-50 p-1  border border-emerald-100" title="Верифицированный адрес"></span>
                                 @endif
                             </div>
                             <div class="address-text" id="addr-{{ $address->id }}">

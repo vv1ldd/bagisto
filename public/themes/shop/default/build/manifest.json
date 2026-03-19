@@ -1,29 +1,33 @@
 {
-  "_veeValidate-D1OGalzA.js": {
-    "file": "assets/veeValidate-D1OGalzA.js",
+  "_veeValidate-C3FntGn8.js": {
+    "file": "assets/veeValidate-C3FntGn8.js",
     "name": "veeValidate",
     "imports": [
-      "_vue-Mf5lPYt2.js"
+      "_vue-DtujeSyG.js"
     ]
   },
   "_vendor-CKdKapBW.js": {
     "file": "assets/vendor-CKdKapBW.js",
     "name": "vendor"
   },
-  "_vue-Mf5lPYt2.js": {
-    "file": "assets/vue-Mf5lPYt2.js",
+  "_vue-DtujeSyG.js": {
+    "file": "assets/vue-DtujeSyG.js",
     "name": "vue"
   },
-  "node_modules/intl-tel-input/build/img/flags.webp": {
-    "file": "assets/flags-D1ZsmaPP.webp",
-    "src": "node_modules/intl-tel-input/build/img/flags.webp"
-  },
-  "node_modules/intl-tel-input/build/img/flags@2x.webp": {
-    "file": "assets/flags@2x-CK7NHWq8.webp",
-    "src": "node_modules/intl-tel-input/build/img/flags@2x.webp"
+  "node_modules/matrix-js-sdk/lib/rust-crypto/index.js": {
+    "file": "assets/index-DvnDJ2Pu.js",
+    "name": "index",
+    "src": "node_modules/matrix-js-sdk/lib/rust-crypto/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/Resources/assets/js/app.js",
+      "_vue-DtujeSyG.js",
+      "_vendor-CKdKapBW.js",
+      "_veeValidate-C3FntGn8.js"
+    ]
   },
   "src/Resources/assets/css/app.css": {
-    "file": "assets/app-By_fYzjl.css",
+    "file": "assets/app-DcUPqcl4.css",
     "src": "src/Resources/assets/css/app.css",
     "isEntry": true
   },
@@ -104,21 +108,20 @@
     "src": "src/Resources/assets/images/wishlist.png"
   },
   "src/Resources/assets/js/app.js": {
-    "file": "assets/app-B0q4e26F.js",
+    "file": "assets/app-VW3KDa4T.js",
     "name": "app",
     "src": "src/Resources/assets/js/app.js",
     "isEntry": true,
     "imports": [
-      "_vue-Mf5lPYt2.js",
+      "_vue-DtujeSyG.js",
       "_vendor-CKdKapBW.js",
-      "_veeValidate-D1OGalzA.js"
+      "_veeValidate-C3FntGn8.js"
+    ],
+    "dynamicImports": [
+      "node_modules/matrix-js-sdk/lib/rust-crypto/index.js"
     ],
     "css": [
-      "assets/app-BOvo_RZC.css"
-    ],
-    "assets": [
-      "assets/flags-D1ZsmaPP.webp",
-      "assets/flags@2x-CK7NHWq8.webp"
+      "assets/app-DjSjsOaQ.css"
     ]
   }
 }

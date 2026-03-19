@@ -21,17 +21,13 @@
         <tr>
             <td align="center">
                 <div
-                    style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
+                    style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
                     <div style="padding: 40px;">
                         <!-- Email Header -->
                         <div style="margin-bottom: 40px; text-align: left;">
                             <a href="{{ route('shop.home.index') }}" style="text-decoration: none;">
-                                @if ($logo = core()->getCurrentChannel()->logo_url)
-                                    <img src="{{ url($logo) }}" alt="{{ config('app.name') }}" style="height: 36px;" />
-                                @else
-                                    <img src="{{ url(bagisto_asset('images/logo.svg', 'shop')) }}" alt="{{ config('app.name') }}"
-                                        style="height: 36px;" />
-                                @endif
+                                <span
+                                    style="font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -1.5px; color: #7C45F5; text-decoration: none; text-transform: uppercase;">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
                             </a>
                         </div>
 
@@ -48,7 +44,7 @@
                             <p style="font-size: 14px; color: #64748B; line-height: 1.5;">
                                 @php $contactEmail = core()->getContactEmailDetails()['email'] ?: 'support@meanly.ru'; @endphp
                                 @lang('shop::app.emails.thanks', [
-                                    'link'  => 'mailto:' . $contactEmail,
+                                    'link' => 'mailto:' . $contactEmail,
                                     'email' => $contactEmail,
                                     'style' => 'color: #7E22CE; text-decoration: none; font-weight: 600;'
                                 ])

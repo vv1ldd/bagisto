@@ -1,359 +1,106 @@
-{!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.before') !!}
+@php
+    $showCategories = false;
+@endphp
 
-<div
-    class="flex min-h-[64px] w-full justify-between border border-b border-l-0 border-r-0 border-t-0 px-[60px] max-1180:px-8">
-    <!--
-        This section will provide categories for the first, second, and third levels. If
-        additional levels are required, users can customize them according to their needs.
-    -->
-    <div class="flex items-center gap-x-10 max-[1180px]:gap-x-5">
-        {{-- Hamburger Menu Removed - Replaced with Floating Edge Trigger --}}
-
+<div class="w-full max-w-7xl mx-auto px-4 py-3 sm:px-8 sm:py-6 flex items-center justify-between">
+    {{-- LEFT: Logo --}}
+    <div class="flex items-center flex-shrink-0">
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
 
-        <a href="{{ route('shop.home.index') }}"
-            aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.bagisto')">
-            <img src="{{ core()->getCurrentChannel()->logo_url ?? bagisto_asset('images/logo.svg') }}" width="131"
-                height="29" alt="{{ config('app.name') }}">
+        <a href="{{ route('shop.home.index') }}" class="group flex items-center gap-2"
+            aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
+            <span
+                class="text-2xl font-black tracking-tighter text-[#7C45F5] transition-transform group-hover:scale-105 leading-none">
+                {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}
+            </span>
         </a>
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.after') !!}
-
-        {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.category.before') !!}
-
-        <v-desktop-category>
-            <div class="flex items-center gap-5">
-                <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
-
-                <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
-
-                <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
-            </div>
-        </v-desktop-category>
-
-        {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.category.after') !!}
     </div>
 
-    <!-- Right Nagivation Section -->
-    <div class="flex items-center gap-x-9 max-[1100px]:gap-x-6 max-lg:gap-x-8">
+    {{-- MIDDLE: Toolbar (Filters & Search) --}}
+    <div class="flex-grow flex justify-center px-4">
+        @if (request()->routeIs('shop.productOrCategory.index') || request()->routeIs('shop.search.index'))
+            @include('shop::categories.filters')
 
-        {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.search_bar.after') !!}
+            <v-filters>
+                <x-shop::shimmer.categories.filters />
+            </v-filters>
+        @endif
+    </div>
 
-        <!-- Right Navigation Links -->
-        <div class="mt-1.5 flex gap-x-8 max-[1100px]:gap-x-6 max-lg:gap-x-8">
-
-
-
-            {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile.before') !!}
-
-            <!-- user profile -->
-            @guest('customer')
-                <a href="{{ route('shop.customer.session.create') }}"
-                    class="flex items-center justify-center rounded-[20px] bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-5 py-2 text-[14px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97]">
-                    Войти / Регистрация
-                </a>
-            @else
-            <a href="{{ route('shop.customers.account.index') }}"
-                class="flex items-center gap-3 rounded-2xl border border-zinc-200 bg-white/70 px-4 py-2 shadow-sm transition hover:shadow-md hover:border-zinc-300 active:opacity-70 active:scale-[0.98]">
-                <div class="leading-tight text-right">
-                    <div class="text-[14px] font-bold text-zinc-900 leading-snug">
-                        {{ auth()->guard('customer')->user()->first_name }}
-                        {{ auth()->guard('customer')->user()->last_name }}
-                    </div>
-                    <div class="text-[12px] text-zinc-400 truncate max-w-[160px]">
-                        {{ auth()->guard('customer')->user()->email }}
-                    </div>
-                    <div class="text-[12px] font-bold text-[#7C45F5] mt-0.5">
-                        Баланс: {{ core()->formatPrice(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
-                    </div>
-                </div>
-                <span class="icon-arrow-right text-zinc-300 text-lg rtl:icon-arrow-left shrink-0"></span>
-            </a>
-            @endauth
-
-            {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.profile.after') !!}
-        </div>
+    {{-- RIGHT: Unified Navigation Section (Profile & Cart) --}}
+    <div class="flex items-center gap-3 flex-shrink-0">
+        <v-header-nav></v-header-nav>
     </div>
 </div>
 
 @pushOnce('scripts')
-    <script type="text/x-template" id="v-desktop-category-template">
-                                                                                        <!-- Loading State -->
-    <div class="flex items-center gap-5" v-if="isLoading">
-        <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
-
-        <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
-
-        <span class="w-20 h-6 rounded shimmer" role="presentation"></span>
-    </div>
-
-    <!-- Default category layout -->
-    <div class="flex items-center"
-        v-else-if="'{{ core()->getConfigData('general.design.categories.category_view') }}' !== 'sidebar'">
-        <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue"
-            v-for="category in categories">
-            <span>
-                <a :href="category.url" class="inline-block px-5 uppercase">
-                    @{{ category.name }}
-                </a>
-            </span>
-
-            <div class="pointer-events-none absolute top-[78px] z-[1] max-h-[580px] w-max max-w-[1260px] translate-y-1 overflow-auto overflow-x-auto border border-b-0 border-l-0 border-r-0 border-t border-[#F3F3F3] bg-white p-9 opacity-0 shadow-[0_6px_6px_1px_rgba(0,0,0,.3)] transition duration-300 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-hover:duration-200 group-hover:ease-in ltr:-left-9 rtl:-right-9"
-                v-if="category.children && category.children.length">
-                <div class="flex justify-between gap-x-[70px]">
-                    <div class="grid w-full min-w-max max-w-[150px] flex-auto grid-cols-[1fr] content-start gap-5"
-                        v-for="pairCategoryChildren in pairCategoryChildren(category)">
-                        <template v-for="secondLevelCategory in pairCategoryChildren">
-                            <p class="font-medium text-navyBlue">
-                                <a :href="secondLevelCategory.url">
-                                    @{{ secondLevelCategory.name }}
-                                </a>
-                            </p>
-
-                            <ul class="grid grid-cols-[1fr] gap-3"
-                                v-if="secondLevelCategory.children && secondLevelCategory.children.length">
-                                <li class="text-sm font-medium text-zinc-500"
-                                    v-for="thirdLevelCategory in secondLevelCategory.children">
-                                    <a :href="thirdLevelCategory.url">
-                                        @{{ thirdLevelCategory.name }}
-                                    </a>
-                                </li>
-                            </ul>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sidebar category layout -->
-    <div v-else>
-        <!-- Categories Navigation -->
-        <div class="flex items-center">
-            <!-- "All" button for opening the category drawer -->
-            <div class="flex h-[77px] cursor-pointer items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue"
-                @click="toggleCategoryDrawer">
-                <span class="flex items-center gap-1 px-5 uppercase">
-                    <span class="text-xl icon-hamburger"></span>
-
-                    @lang('shop::app.components.layouts.header.desktop.bottom.all')
-                </span>
-            </div>
-
-            <!-- Show only first 4 categories in main navigation -->
-            <div class="group relative flex h-[77px] items-center border-b-4 border-transparent hover:border-b-4 hover:border-navyBlue"
-                v-for="category in categories.slice(0, 4)">
-                <span>
-                    <a :href="category.url" class="inline-block px-5 uppercase">
-                        @{{ category.name }}
-                    </a>
-                </span>
-
-                <!-- Dropdown for each category -->
-                <div class="pointer-events-none absolute top-[78px] z-[1] max-h-[580px] w-max max-w-[1260px] translate-y-1 overflow-auto overflow-x-auto border border-b-0 border-l-0 border-r-0 border-t border-[#F3F3F3] bg-white p-9 opacity-0 shadow-[0_6px_6px_1px_rgba(0,0,0,.3)] transition duration-300 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-hover:duration-200 group-hover:ease-in ltr:-left-9 rtl:-right-9"
-                    v-if="category.children && category.children.length">
-                    <div class="flex justify-between gap-x-[70px]">
-                        <div class="grid w-full min-w-max max-w-[150px] flex-auto grid-cols-[1fr] content-start gap-5"
-                            v-for="pairCategoryChildren in pairCategoryChildren(category)">
-                            <template v-for="secondLevelCategory in pairCategoryChildren">
-                                <p class="font-medium text-navyBlue">
-                                    <a :href="secondLevelCategory.url">
-                                        @{{ secondLevelCategory.name }}
-                                    </a>
-                                </p>
-
-                                <ul class="grid grid-cols-[1fr] gap-3"
-                                    v-if="secondLevelCategory.children && secondLevelCategory.children.length">
-                                    <li class="text-sm font-medium text-zinc-500"
-                                        v-for="thirdLevelCategory in secondLevelCategory.children">
-                                        <a :href="thirdLevelCategory.url">
-                                            @{{ thirdLevelCategory.name }}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bagisto Drawer Integration -->
-        <x-shop::drawer position="left" width="400px" ::is-active="isDrawerActive" @toggle="onDrawerToggle"
-            @close="onDrawerClose">
-            <x-slot:toggle></x-slot>
-
-                <x-slot:header class="border-b border-gray-200">
-                    <div class="flex items-center justify-between w-full">
-                        <p class="text-xl font-medium">
-                            @lang('shop::app.components.layouts.header.desktop.bottom.categories')
-                        </p>
-                    </div>
-                    </x-slot>
-
-                    <x-slot:content class="!px-0">
-                        <!-- Wrapper with transition effects -->
-                        <div class="relative h-full overflow-hidden">
-                            <!-- Sliding container -->
-                            <div class="flex h-full transition-transform duration-300" :class="{
-                                                                                                                'ltr:translate-x-0 rtl:translate-x-0': currentViewLevel !== 'third',
-                                                                                                                'ltr:-translate-x-full rtl:translate-x-full': currentViewLevel === 'third'
-                                                                                                            }">
-                                <!-- First level view -->
-                                <div class="h-[calc(100vh-74px)] w-full flex-shrink-0 overflow-auto">
-                                    <div class="py-4">
-                                        <div v-for="category in categories" :key="category.id"
-                                            :class="{'mb-2': category.children && category.children.length}">
-                                            <div
-                                                class="flex items-center justify-between px-6 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-100">
-                                                <a :href="category.url" class="text-base font-medium text-black">
-                                                    @{{ category.name }}
-                                                </a>
-                                            </div>
-
-                                            <!-- Second Level Categories -->
-                                            <div v-if="category.children && category.children.length">
-                                                <div v-for="secondLevelCategory in category.children"
-                                                    :key="secondLevelCategory.id">
-                                                    <div class="flex items-center justify-between px-6 py-2 transition-colors duration-200 cursor-pointer hover:bg-gray-100"
-                                                        @click="showThirdLevel(secondLevelCategory, category, $event)">
-                                                        <a :href="secondLevelCategory.url" class="text-sm font-normal">
-                                                            @{{ secondLevelCategory.name }}
-                                                        </a>
-
-                                                        <span
-                                                            v-if="secondLevelCategory.children && secondLevelCategory.children.length"
-                                                            class="icon-arrow-right rtl:icon-arrow-left"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Third level view -->
-                                <div class="flex-shrink-0 w-full h-full" v-if="currentViewLevel === 'third'">
-                                    <div class="px-6 py-4 border-b border-gray-200">
-                                        <button @click="goBackToMainView"
-                                            class="flex items-center justify-center gap-2 focus:outline-none"
-                                            aria-label="Go back">
-                                            <span class="text-lg icon-arrow-left rtl:icon-arrow-right"></span>
-
-                                            <p class="text-base font-medium text-black">
-                                                @lang('shop::app.components.layouts.header.desktop.bottom.back-button')
-                                            </p>
-                                        </button>
-                                    </div>
-
-                                    <!-- Third Level Content -->
-                                    <div class="py-4">
-                                        <div v-for="thirdLevelCategory in currentSecondLevelCategory?.children"
-                                            :key="thirdLevelCategory.id" class="mb-2">
-                                            <a :href="thirdLevelCategory.url"
-                                                class="block px-6 py-2 text-sm transition-colors duration-200 hover:bg-gray-100">
-                                                @{{ thirdLevelCategory.name }}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </x-slot>
-        </x-shop::drawer>
-    </div>
-    </script>
-
     <script type="module">
-        app.component('v-desktop-category', {
-            template: '#v-desktop-category-template',
+        app.component('v-header-nav', {
+            template: `
+                                                                <div class="flex items-center">
+                                                                    @guest('customer')
+                                                                        <a href="{{ route('shop.customer.session.create') }}"
+                                                                            class="flex items-center justify-center  border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-[14px] font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-[0.97]">
+                                                                            Войти / Регистрация
+                                                                        </a>
+                                                                    @else
+                                                                        <div class="flex items-center gap-2 mr-2">
+                                                                            <button @click="$emitter.emit('open-messenger')" 
+                                                                                    class="flex h-7 w-7 items-center justify-center bg-zinc-100 text-zinc-600 hover:bg-[#7C45F5] hover:text-white transition-all active:scale-95 shadow-sm border border-zinc-200 group">
+                                                                                <span class="icon-chat text-base group-hover:scale-110 transition-transform"></span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="flex items-center gap-2.5 bg-white/60 border border-white/80 backdrop-blur-md shadow-sm px-3 py-1.5 leading-none">
+                                                                            {{-- Dynamic Avatar/Cart Box --}}
+                                                                            <a :href="cart && cart.items.length > 0 ? '{{ route('shop.checkout.cart.index') }}' : '{{ route('shop.customers.account.index') }}'" class="relative group">
+                                                                                <div class="flex h-7 w-7 items-center justify-center  bg-[#7C45F5] text-white font-bold shadow-sm leading-none ring-2 ring-white transition-all group-hover:scale-105 active:scale-95">
+                                                                                    <template v-if="cart && cart.items.length > 0">
+                                                                                        <span class="icon-cart text-base"></span>
+                                                                                        <span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center  bg-white text-[8px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
+                                                                                            @{{ cart.items.length }}
+                                                                                        </span>
+                                                                                    </template>
+                                                                                    <template v-else>
+                                                                                        <span class="text-[10px] uppercase">
+                                                                                            {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
+                                                                                        </span>
+                                                                                    </template>
+                                                                                </div>
+                                                                            </a>
+
+                                                                            <a href="{{ route('shop.customers.account.index') }}"
+                                                                                class="text-xs font-black text-zinc-600 hover:text-[#7C45F5] transition-colors truncate max-w-[120px]">
+                                                                                @
+                                                                                {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
+                                                                                @if(auth()->guard('customer')->user()->is_investor)
+                                                                                    <span title="Инвестор" class="text-xs leading-none">💎</span>
+                                                                                @endif
+                                                                            </a>
+                                                                        </div>
+                                                                    @endguest
+                                                                </div>
+                                                            `,
 
             data() {
                 return {
-                    isLoading: true,
-                    categories: [],
-                    isDrawerActive: false,
-                    currentViewLevel: 'main',
-                    currentSecondLevelCategory: null,
-                    currentParentCategory: null
+                    cart: null
                 }
             },
 
             mounted() {
-                this.initCategories();
+                this.getCart();
+                this.$emitter.on('update-mini-cart', cart => { this.cart = cart; });
             },
 
             methods: {
-                initCategories() {
-                    try {
-                        const stored = localStorage.getItem('categories');
-
-                        if (stored) {
-                            this.categories = JSON.parse(stored);
-                            this.isLoading = false;
-
-                            return;
-                        }
-
-                    } catch (e) { }
-
-                    this.getCategories();
-                },
-
-                getCategories() {
-                    this.$axios.get("{{ route('shop.api.categories.tree', ['show_in_header' => 1]) }}")
-                        .then(response => {
-                            this.isLoading = false;
-                            this.categories = response.data.data;
-                            localStorage.setItem('categories', JSON.stringify(this.categories));
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        });
-                },
-
-                pairCategoryChildren(category) {
-                    if (!category.children) return [];
-
-                    return category.children.reduce((result, value, index, array) => {
-                        if (index % 2 === 0) {
-                            result.push(array.slice(index, index + 2));
-                        }
-                        return result;
-                    }, []);
-                },
-
-                toggleCategoryDrawer() {
-                    this.isDrawerActive = !this.isDrawerActive;
-                    if (this.isDrawerActive) {
-                        this.currentViewLevel = 'main';
-                    }
-                },
-
-                onDrawerToggle(event) {
-                    this.isDrawerActive = event.isActive;
-                },
-
-                onDrawerClose(event) {
-                    this.isDrawerActive = false;
-                },
-
-                showThirdLevel(secondLevelCategory, parentCategory, event) {
-                    if (secondLevelCategory.children && secondLevelCategory.children.length) {
-                        this.currentSecondLevelCategory = secondLevelCategory;
-                        this.currentParentCategory = parentCategory;
-                        this.currentViewLevel = 'third';
-
-                        if (event) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                    }
-                },
-
-                goBackToMainView() {
-                    this.currentViewLevel = 'main';
+                getCart() {
+                    this.$axios.get("{{ route('shop.api.checkout.cart.index') }}")
+                        .then(response => { this.cart = response.data.data; })
+                        .catch(error => { });
                 }
-            },
+            }
         });
     </script>
 @endPushOnce

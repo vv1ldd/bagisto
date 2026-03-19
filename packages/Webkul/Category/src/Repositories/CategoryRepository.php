@@ -193,6 +193,7 @@ class CategoryRepository extends Repository
             switch ($key) {
                 case 'show_in_header':
                 case 'show_in_carousel':
+                case 'show_in_push_menu':
                     $queryBuilder->where($key, $value);
                     break;
             }

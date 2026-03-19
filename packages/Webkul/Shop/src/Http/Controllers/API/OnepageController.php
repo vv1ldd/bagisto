@@ -12,6 +12,9 @@ use Webkul\Sales\Transformers\OrderResource;
 use Webkul\Shipping\Facades\Shipping;
 use Webkul\Shop\Http\Requests\CartAddressRequest;
 use Webkul\Shop\Http\Resources\CartResource;
+use Illuminate\Support\Facades\Mail;
+use Webkul\Shop\Mail\Customer\OtpNotification;
+use Illuminate\Http\Request;
 
 class OnepageController extends APIController
 {
@@ -23,7 +26,8 @@ class OnepageController extends APIController
     public function __construct(
         protected OrderRepository $orderRepository,
         protected CustomerRepository $customerRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Return cart summary.
@@ -36,6 +40,66 @@ class OnepageController extends APIController
     }
 
     /**
+     * Send OTP to customer email.
+     */
+    public function sendOtp(Request $request): JsonResource
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->input('email');
+        $otp = (string) rand(100000, 999999);
+
+        session([
+            'checkout_otp_email' => $email,
+            'checkout_otp_code' => $otp,
+            'checkout_otp_verified' => false,
+        ]);
+
+        try {
+            Mail::queue(new OtpNotification($email, $otp));
+
+            return new JsonResource([
+                'success' => true,
+                'message' => 'Код отправлен на вашу почту.',
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResource([
+                'success' => false,
+                'message' => 'Не удалось отправить код. Пожалуйста, попробуйте позже.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Verify OTP code.
+     */
+    public function verifyOtp(Request $request): JsonResource
+    {
+        $request->validate([
+            'code' => 'required|string|size:6',
+        ]);
+
+        $storedEmail = session('checkout_otp_email');
+        $storedOtp = session('checkout_otp_code');
+
+        if ($request->input('code') === $storedOtp) {
+            session(['checkout_otp_verified' => true]);
+
+            return new JsonResource([
+                'success' => true,
+                'message' => 'Email успешно подтвержден.',
+            ]);
+        }
+
+        return new JsonResource([
+            'success' => false,
+            'message' => 'Неверный код. Пожалуйста, проверьте и попробуйте снова.',
+        ], 422);
+    }
+
+    /**
      * Store address.
      */
     public function storeAddress(CartAddressRequest $cartAddressRequest): JsonResource
@@ -43,12 +107,22 @@ class OnepageController extends APIController
         $params = $cartAddressRequest->all();
 
         if (
-            ! auth()->guard('customer')->check()
-            && ! Cart::getCart()->hasGuestCheckoutItems()
+            !auth()->guard('customer')->check()
+            && !Cart::getCart()->hasGuestCheckoutItems()
         ) {
             return new JsonResource([
                 'redirect' => true,
                 'data' => route('shop.customer.session.index'),
+            ]);
+        }
+
+        if (
+            !auth()->guard('customer')->check()
+            && !session('checkout_otp_verified')
+        ) {
+            return new JsonResource([
+                'error' => true,
+                'message' => 'Необходимо подтвердить Email через OTP.',
             ]);
         }
 
@@ -61,12 +135,24 @@ class OnepageController extends APIController
 
         Cart::saveAddresses($params);
 
+        if ($cart = Cart::getCart()) {
+            if (!empty($params['billing']['is_gift'])) {
+                $additional = $cart->additional ?? [];
+
+                $additional['is_gift'] = true;
+                $additional['gift_email'] = $params['billing']['gift_email'] ?? null;
+
+                $cart->additional = $additional;
+                $cart->save();
+            }
+        }
+
         $cart = Cart::getCart();
 
         Cart::collectTotals();
 
         if ($cart->haveStockableItems()) {
-            if (! $rates = Shipping::collectRates()) {
+            if (!$rates = Shipping::collectRates()) {
                 return new JsonResource([
                     'redirect' => true,
                     'redirect_url' => route('shop.checkout.cart.index'),
@@ -86,6 +172,19 @@ class OnepageController extends APIController
     }
 
     /**
+     * Return supported payment methods.
+     */
+    public function paymentMethods()
+    {
+        try {
+            $data = Payment::getSupportedPaymentMethods();
+            return response()->json($data);
+        } catch (\Throwable $e) {
+            return response()->json(['payment_methods' => []], 200);
+        }
+    }
+
+    /**
      * Store shipping method.
      *
      * @return \Illuminate\Http\Response
@@ -98,8 +197,8 @@ class OnepageController extends APIController
 
         if (
             Cart::hasError()
-            || ! $validatedData['shipping_method']
-            || ! Cart::saveShippingMethod($validatedData['shipping_method'])
+            || !$validatedData['shipping_method']
+            || !Cart::saveShippingMethod($validatedData['shipping_method'])
         ) {
             return response()->json([
                 'redirect_url' => route('shop.checkout.cart.index'),
@@ -124,8 +223,8 @@ class OnepageController extends APIController
 
         if (
             Cart::hasError()
-            || ! $validatedData['payment']
-            || ! Cart::savePaymentMethod($validatedData['payment'])
+            || !$validatedData['payment']
+            || !Cart::savePaymentMethod($validatedData['payment'])
         ) {
             return response()->json([
                 'redirect_url' => route('shop.checkout.cart.index'),
@@ -154,6 +253,14 @@ class OnepageController extends APIController
         }
 
         Cart::collectTotals();
+
+        $cart = Cart::getCart();
+
+        // For digital-only carts auto-save billing from customer profile if not set.
+        if ($cart && !$cart->haveStockableItems() && !$cart->billing_address) {
+            $this->autoSaveBillingFromProfile();
+            $cart = Cart::getCart();
+        }
 
         try {
             $this->validateOrder();
@@ -187,6 +294,34 @@ class OnepageController extends APIController
     }
 
     /**
+     * Auto-save a minimal billing address from the authenticated customer's profile.
+     * Used for digital orders where no address entry is needed.
+     */
+    protected function autoSaveBillingFromProfile(): void
+    {
+        $customer = auth()->guard('customer')->user();
+
+        if (!$customer) {
+            return;
+        }
+
+        Cart::saveAddresses([
+            'billing' => [
+                'first_name' => $customer->first_name ?: ($customer->username ?? 'Customer'),
+                'last_name' => $customer->last_name ?: '-',
+                'email' => $customer->email,
+                'address' => ['Digital'],
+                'city' => 'Digital',
+                'country' => 'RU',
+                'state' => '',
+                'postcode' => '',
+                'phone' => $customer->phone ?? '',
+                'use_for_shipping' => true,
+            ],
+        ]);
+    }
+
+    /**
      * Validate order before creation.
      *
      * @return void|\Exception
@@ -206,31 +341,31 @@ class OnepageController extends APIController
 
         if (
             auth()->guard('customer')->user()
-            && ! auth()->guard('customer')->user()->status
+            && !auth()->guard('customer')->user()->status
         ) {
             throw new \Exception(trans('shop::app.checkout.cart.inactive-account-message'));
         }
 
-        if (! Cart::haveMinimumOrderAmount()) {
+        if (!Cart::haveMinimumOrderAmount()) {
             throw new \Exception(trans('shop::app.checkout.cart.minimum-order-message', ['amount' => core()->currency($minimumOrderAmount)]));
         }
 
-        if ($cart->haveStockableItems() && ! $cart->shipping_address) {
+        if ($cart->haveStockableItems() && !$cart->shipping_address) {
             throw new \Exception(trans('shop::app.checkout.onepage.address.check-shipping-address'));
         }
 
-        if (! $cart->billing_address) {
+        if (!$cart->billing_address) {
             throw new \Exception(trans('shop::app.checkout.onepage.address.check-billing-address'));
         }
 
         if (
             $cart->haveStockableItems()
-            && ! $cart->selected_shipping_rate
+            && !$cart->selected_shipping_rate
         ) {
             throw new \Exception(trans('shop::app.checkout.cart.specify-shipping-method'));
         }
 
-        if (! $cart->payment) {
+        if (!$cart->payment) {
             throw new \Exception(trans('shop::app.checkout.cart.specify-payment-method'));
         }
     }

@@ -31,6 +31,7 @@ class CustomerServiceProvider extends ServiceProvider
             $this->commands([
                 \Webkul\Customer\Console\Commands\SyncCryptoBalances::class,
                 \Webkul\Customer\Console\Commands\ProcessRecharge::class,
+                \Webkul\Customer\Console\Commands\SyncBanks::class,
             ]);
 
             $this->callAfterResolving(\Illuminate\Console\Scheduling\Schedule::class, function (\Illuminate\Console\Scheduling\Schedule $schedule) {

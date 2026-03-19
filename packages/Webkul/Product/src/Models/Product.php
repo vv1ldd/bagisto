@@ -347,6 +347,18 @@ class Product extends Model implements ProductContract
     }
 
     /**
+     * Get billing entity id.
+     *
+     * @return int|null
+     */
+    public function getBillingEntityIdAttribute()
+    {
+        $category = $this->categories->whereNotNull('billing_entity_id')->first();
+
+        return $category ? $category->billing_entity_id : null;
+    }
+
+    /**
      * Get type instance.
      *
      *

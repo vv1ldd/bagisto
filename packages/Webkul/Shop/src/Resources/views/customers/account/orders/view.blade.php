@@ -14,71 +14,41 @@
     @endSection
 
     
+    <x-slot:headerActions>
+        <div class="flex gap-4 items-center">
+            {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.before', ['order' => $order]) !!}
+
+            @if ($order->canReorder() && core()->getConfigData('sales.order_settings.reorder.shop'))
+                <a href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
+                   class="text-[#007AFF] font-semibold text-[16px] transition active:opacity-50">
+                    @lang('shop::app.customers.account.orders.view.reorder-btn-title')
+                </a>
+            @endif
+
+            {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.after', ['order' => $order]) !!}
+
+            {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.before', ['order' => $order]) !!}
+
+            @if ($order->canCancel())
+                <form method="POST" ref="cancelOrderForm" action="{{ route('shop.customers.account.orders.cancel', $order->id) }}">
+                    @csrf
+                </form>
+
+                <a class="text-red-500 font-semibold text-[16px] transition active:opacity-50"
+                   href="javascript:void(0);"
+                   @click="$emitter.emit('open-confirm-modal', {
+                        message: '@lang('shop::app.customers.account.orders.view.cancel-confirm-msg')',
+                        agree: () => { $refs['cancelOrderForm'].submit() }
+                   })">
+                    @lang('shop::app.customers.account.orders.view.cancel-btn-title')
+                </a>
+            @endif
+
+            {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.after', ['order' => $order]) !!}
+        </div>
+    </x-slot:headerActions>
 
     <div class="flex-auto p-8 max-md:p-5 pt-4">
-
-        <!-- Cancel and Reorder buttons -->
-        <div class="flex items-center justify-between">
-            <div class="max-md:flex max-md:items-center">
-                <!-- Back Button For mobile view -->
-                <a
-                    class="grid md:hidden"
-                    href="{{ route('shop.customers.account.orders.index') }}"
-                >
-                    <span class="icon-arrow-left rtl:icon-arrow-right text-2xl"></span>
-                </a>
-
-                <h2 class="text-2xl font-medium max-md:text-xl max-sm:text-base ltr:ml-2.5 md:ltr:ml-0 rtl:mr-2.5 md:rtl:mr-0">
-                    @lang('shop::app.customers.account.orders.view.page-title', ['order_id' => $order->increment_id])
-                </h2>
-            </div>
-
-            <div class="flex gap-1.5">
-                {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.before', ['order' => $order]) !!}
-
-                @if (
-                    $order->canReorder()
-                    && core()->getConfigData('sales.order_settings.reorder.shop')
-                )
-                    <a
-                        href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
-                        class="secondary-button border-zinc-200 px-5 py-3 font-normal max-md:hidden"
-                    >
-                        @lang('shop::app.customers.account.orders.view.reorder-btn-title')
-                    </a>
-                @endif
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.reorder_button.after', ['order' => $order]) !!}
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.before', ['order' => $order]) !!}
-
-                @if ($order->canCancel())
-                    <form
-                        method="POST"
-                        ref="cancelOrderForm"
-                        action="{{ route('shop.customers.account.orders.cancel', $order->id) }}"
-                    >
-                        @csrf
-                    </form>
-
-                    <a
-                        class="secondary-button border-zinc-200 px-5 py-3 font-normal max-md:hidden"
-                        href="javascript:void(0);"
-                        @click="$emitter.emit('open-confirm-modal', {
-                            message: '@lang('shop::app.customers.account.orders.view.cancel-confirm-msg')',
-
-                            agree: () => {
-                                this.$refs['cancelOrderForm'].submit()
-                            }
-                        })"
-                    >
-                        @lang('shop::app.customers.account.orders.view.cancel-btn-title')
-                    </a>
-                @endif
-
-                {!! view_render_event('bagisto.shop.customers.account.orders.cancel_button.after', ['order' => $order]) !!}
-            </div>
-        </div>
 
         {!! view_render_event('bagisto.shop.customers.account.orders.view.before', ['order' => $order]) !!}
 
@@ -102,7 +72,7 @@
                         </div>
 
                         <!-- Order Details -->
-                        <div class="relative mt-8 overflow-x-auto rounded-xl border">
+                        <div class="relative mt-8 overflow-x-auto  border">
                             <table class="w-full text-left">
                                 <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
                                     <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
@@ -463,7 +433,7 @@
                         class="grid gap-4 md:hidden"
                         v-pre
                     >
-                        <div class="rounded-lg border">
+                        <div class=" border">
                             <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
                                 <div>
                                     @lang('shop::app.customers.account.orders.view.order-id'):
@@ -508,7 +478,7 @@
                             </div>
 
                             <!-- Reorder and Cancel Button -->
-                            <div class="flex w-full justify-center rounded-b-lg border-t text-center">
+                            <div class="flex w-full justify-center  border-t text-center">
                                 @if ($order->canReorder())
                                     <a
                                         href="{{ route('shop.customers.account.orders.reorder', $order->id) }}"
@@ -550,7 +520,7 @@
                         <!-- Item Ordered -->
                         <x-shop::accordion
                             :is-active="true"
-                            class="overflow-hidden rounded-lg !border-none !bg-gray-100"
+                            class="overflow-hidden  !border-none !bg-gray-100"
                         >
                             <x-slot:header class="bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
                                @lang('shop::app.customers.account.orders.view.item-ordered')
@@ -558,7 +528,7 @@
 
                             <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
                                 @foreach ($order->items as $item)
-                                    <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
+                                    <div class="  border border-t-0 bg-white px-4 py-2">
                                         <p class="pb-2 text-sm font-medium">
                                             {{ $item->name }}
 
@@ -761,12 +731,12 @@
                         </x-shop::accordion>
 
                         <!--Summary -->
-                        <div class="w-full rounded-md bg-gray-100">
-                            <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
+                        <div class="w-full  bg-gray-100">
+                            <div class=" border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
                                 @lang('shop::app.customers.account.orders.view.information.order-summary')
                             </div>
 
-                            <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+                            <div class="grid gap-1.5   border border-t-0 bg-white px-4 py-3 text-xs font-medium">
 
                                 {!! view_render_event('bagisto.shop.customers.account.orders.view.information.subtotal.before') !!}
 
@@ -980,7 +950,7 @@
                             @foreach ($order->invoices as $invoice)
                                 <!-- For Mobile View -->
                                 <div class="grid gap-4 md:hidden">
-                                    <div class="rounded-lg border">
+                                    <div class=" border">
                                         <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
                                             <div class="flex justify-between">
                                                 @lang('shop::app.customers.account.orders.view.invoices.individual-invoice', ['invoice_id' => $invoice->increment_id ?? $invoice->id])
@@ -999,15 +969,15 @@
                                     <!-- Item  Invoiced -->
                                     <x-shop::accordion
                                         :is-active="true"
-                                        class="overflow-hidden rounded-lg !border-none !bg-gray-100"
+                                        class="overflow-hidden  !border-none !bg-gray-100"
                                     >
-                                        <x-slot:header class="!mb-0 rounded-t-md bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
+                                        <x-slot:header class="!mb-0  bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
                                             @lang('shop::app.customers.account.orders.view.item-invoiced')
                                         </x-slot>
 
                                         <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
                                             @foreach ($invoice->items as $item)
-                                                <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
+                                                <div class="  border border-t-0 bg-white px-4 py-2">
                                                     <p class="pb-2 text-sm font-medium">
                                                         {{ $item->name }}
                                                     </p>
@@ -1103,12 +1073,12 @@
                                     </x-shop::accordion>
 
                                     <!--Summary -->
-                                    <div class="w-full rounded-md bg-gray-100">
-                                        <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
+                                    <div class="w-full  bg-gray-100">
+                                        <div class=" border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
                                             @lang('Order Summary')
                                         </div>
 
-                                        <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+                                        <div class="grid gap-1.5   border border-t-0 bg-white px-4 py-3 text-xs font-medium">
 
                                             {!! view_render_event('bagisto.shop.customers.account.orders.view.invoices.subtotal.before') !!}
 
@@ -1258,7 +1228,7 @@
                                         </a>
                                     </div>
 
-                                    <div class="relative mt-8 overflow-x-auto rounded-xl border">
+                                    <div class="relative mt-8 overflow-x-auto  border">
                                         <table class="w-full text-left">
                                             <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
                                                 <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
@@ -1517,7 +1487,7 @@
                                     </div>
 
                                     <!-- Table of Contents -->
-                                    <div class="relative mt-5 overflow-x-auto rounded-xl border max-md:hidden">
+                                    <div class="relative mt-5 overflow-x-auto  border max-md:hidden">
                                         <table class="w-full text-left text-sm">
                                             <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
                                                 <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
@@ -1566,7 +1536,7 @@
 
                                 <!-- For Mobile view -->
                                 <div class="grid gap-4 md:hidden">
-                                    <div class="rounded-lg border">
+                                    <div class=" border">
                                         <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
                                             <div class="flex justify-between">
                                                 @lang('shop::app.customers.account.orders.view.shipments.tracking-number'):
@@ -1582,15 +1552,15 @@
 
                                     <x-shop::accordion
                                         :is-active="true"
-                                        class="overflow-hidden rounded-lg !border-none !bg-gray-100"
+                                        class="overflow-hidden  !border-none !bg-gray-100"
                                     >
-                                        <x-slot:header class="!mb-0 rounded-t-md bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
+                                        <x-slot:header class="!mb-0  bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
                                             @lang('shop::app.customers.account.orders.view.item-shipped')
                                         </x-slot>
 
                                         <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
                                             @foreach ($shipment->items as $item)
-                                                <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
+                                                <div class="  border border-t-0 bg-white px-4 py-2">
                                                     <p class="pb-2 text-sm font-medium">
                                                         {{ $item->name }}
                                                     </p>
@@ -1644,7 +1614,7 @@
                                     </span>
                                 </div>
 
-                                <div class="relative mt-8 overflow-x-auto rounded-xl border">
+                                <div class="relative mt-8 overflow-x-auto  border">
                                     <table class="w-full text-left text-sm">
                                         <thead class="border-b border-zinc-200 bg-zinc-100 text-sm text-black">
                                             <tr class="[&>*]:font-medium [&>*]:px-6 [&>*]:py-4">
@@ -1752,7 +1722,7 @@
                                 class="grid gap-4 md:hidden"
                                 v-pre
                             >
-                                <div class="rounded-lg border">
+                                <div class=" border">
                                     <div class="grid gap-1.5 px-4 py-2.5 text-xs font-medium text-zinc-500 [&>*]:flex [&>*]:justify-between">
                                         @lang('shop::app.customers.account.orders.view.refunds.individual-refund', ['refund_id' => $refund->id])
                                     </div>
@@ -1760,15 +1730,15 @@
 
                                 <x-shop::accordion
                                     :is-active="true"
-                                    class="overflow-hidden rounded-lg !border-none !bg-gray-100"
+                                    class="overflow-hidden  !border-none !bg-gray-100"
                                 >
-                                    <x-slot:header class="!mb-0 rounded-t-md bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
+                                    <x-slot:header class="!mb-0  bg-gray-100 !px-4 py-3 text-sm font-medium max-sm:py-2">
                                         @lang('shop::app.customers.account.orders.view.item-refunded')
                                     </x-slot>
 
                                     <x-slot:content class="grid gap-2.5 !bg-gray-100 !p-0">
                                         @foreach ($invoice->items as $item)
-                                            <div class="rounded-md rounded-t-none border border-t-0 bg-white px-4 py-2">
+                                            <div class="  border border-t-0 bg-white px-4 py-2">
                                                 <p class="pb-2 text-sm font-medium">
                                                     {{ $item->name }}
                                                 </p>
@@ -1856,12 +1826,12 @@
                                 </x-shop::accordion>
 
                                 <!-- Summary -->
-                                <div class="w-full rounded-md bg-gray-100">
-                                    <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
+                                <div class="w-full  bg-gray-100">
+                                    <div class=" border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
                                         @lang('shop::app.customers.account.orders.view.refunds.order-summary')
                                     </div>
 
-                                    <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+                                    <div class="grid gap-1.5   border border-t-0 bg-white px-4 py-3 text-xs font-medium">
 
                                         {!! view_render_event('bagisto.shop.customers.account.orders.view.refunds.subtotal.before') !!}
 
@@ -2202,14 +2172,14 @@
 
             <!-- Shipping Address and Payment methods for mobile view -->
             <div
-                class="w-full rounded-md bg-gray-100 md:hidden"
+                class="w-full  bg-gray-100 md:hidden"
                 v-pre
             >
-                <div class="rounded-t-md border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
+                <div class=" border-none !px-4 py-3 text-sm font-medium max-sm:py-2">
                     @lang('shop::app.customers.account.orders.view.shipping-and-payment')
                 </div>
 
-                <div class="grid gap-1.5 rounded-md rounded-t-none border border-t-0 bg-white px-4 py-3 text-xs font-medium">
+                <div class="grid gap-1.5   border border-t-0 bg-white px-4 py-3 text-xs font-medium">
                     <!-- Shipping Address -->
                     @if ($order->shipping_address)
                         <div class="text-sm font-medium text-zinc-500">

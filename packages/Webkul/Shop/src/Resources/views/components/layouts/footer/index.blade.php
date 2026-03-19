@@ -21,94 +21,72 @@
     ]);
 @endphp
 
-<footer class="mt-12 bg-transparent max-sm:mt-10">
-    @if (request()->routeIs('shop.home.index'))
-        <div
-            class="glass-card mx-4 mb-12 rounded-[32px] overflow-hidden flex justify-between gap-x-6 gap-y-8 p-12 md:mx-[60px] max-1060:flex-col-reverse max-md:gap-5 max-md:p-8 max-sm:px-4 max-sm:py-5">
-            <!-- For Desktop View -->
-            <div class="flex flex-wrap items-start gap-24 max-1180:gap-6 max-1060:hidden" v-pre>
-                @if ($customization?->options)
-                    @foreach ($customization->options as $footerLinkSection)
-                        <ul class="grid gap-5 text-sm">
-                            @php
-                                usort($footerLinkSection, function ($a, $b) {
-                                    return $a['sort_order'] - $b['sort_order'];
-                                });
-                            @endphp
+<footer class="mt-8 bg-transparent max-sm:mt-4">
+    <div class="glass-footer px-4 md:px-[60px] py-6 max-sm:px-5">
+        <div class="mx-auto flex flex-col items-center justify-center gap-2 w-full max-w-7xl">
 
-                            @foreach ($footerLinkSection as $link)
-                                <li>
-                                    <a href="{{ $link['url'] }}" class="text-zinc-500 hover:text-black transition-colors">
-                                        {{ $link['title'] }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
+            <!-- Footer Links (Only on home and CMS pages) -->
+            @if (in_array(Route::currentRouteName(), ['shop.home.index', 'shop.cms.page']) && $customization?->options)
+                <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 min-h-[30px]" v-pre>
+                    @foreach ($customization->options as $footerLinkSection)
+                        @php
+                            usort($footerLinkSection, function ($a, $b) {
+                                return $a['sort_order'] - $b['sort_order'];
+                            });
+                        @endphp
+
+                        @foreach ($footerLinkSection as $link)
+                            <a href="{{ $link['url'] }}"
+                                class="text-[13px] font-medium text-zinc-500 hover:text-black tracking-wide transition-colors whitespace-nowrap">
+                                {{ $link['title'] }}
+                            </a>
+                        @endforeach
                     @endforeach
+                </div>
+            @endif
+
+            <!-- Ultimate Bottom Bar: Contacts - Copyright - Company -->
+            <div
+                class="flex flex-wrap justify-between items-center w-full gap-y-4 max-lg:justify-center max-lg:flex-col text-[11px] font-medium text-zinc-400/80 tracking-[0.1em] uppercase mt-4 pt-4 border-t border-zinc-200/50">
+
+                <!-- Contact Details -->
+                @if (core()->getConfigData('general.design.footer.show_footer_info'))
+                    <div class="flex flex-wrap justify-center items-center gap-3">
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95') }}"
+                            class="hover:text-zinc-600 transition-colors">
+                            {{ core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95' }}
+                        </a>
+                        <span class="text-zinc-300">|</span>
+                        <a href="mailto:{{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}"
+                            class="hover:text-zinc-600 transition-colors">
+                            {{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}
+                        </a>
+                        <span class="text-zinc-300">|</span>
+                        <p>{{ core()->getConfigData('general.design.footer.schedule') ?: 'ПН-ВС 24ч' }}</p>
+                    </div>
+                @else
+                    <div class="max-lg:hidden"></div>
+                @endif
+
+                <!-- Copyright -->
+                <div class="flex items-center tracking-[0.15em] max-lg:order-last max-lg:mt-2">
+                    {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
+                    <p>@lang('shop::app.components.layouts.footer.footer-text', ['current_year' => date('Y')])</p>
+                    {!! view_render_event('bagisto.shop.layout.footer.footer_text.after') !!}
+                </div>
+
+                <!-- Company Info -->
+                @if (core()->getConfigData('general.design.footer.show_footer_info'))
+                    <div class="flex flex-wrap justify-center items-center gap-3">
+                        <p>{{ core()->getConfigData('general.design.footer.company_name') ?: 'ИП АТАНИЯЗОВА ДЖЕННЕТ' }}</p>
+                        <span class="text-zinc-300">|</span>
+                        <p>ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}</p>
+                    </div>
+                @else
+                    <div class="max-lg:hidden"></div>
                 @endif
             </div>
-
-            <!-- Contact Information -->
-            <div
-                class="flex flex-col gap-5 text-sm text-zinc-500 max-w-[250px] max-1060:ml-auto max-1060:items-end max-1060:text-right">
-                <div class="grid gap-1">
-                    <a href="tel:+79334151895"
-                        class="hover:text-black transition-colors font-medium text-lg text-black block mb-1">+7 (933)
-                        415-18-95</a>
-                    <div class="flex flex-col gap-0.5 text-xs font-medium">
-                        <p>ПН-ВС 24ч</p>
-                        <a href="mailto:support@meanly.ru" class="hover:text-black transition-colors">support@meanly.ru</a>
-                    </div>
-                </div>
-
-                <div class="grid gap-0.5">
-                    <p class="font-bold text-black text-xs uppercase tracking-wide">ИП АТАНИЯЗОВА ДЖЕННЕТ</p>
-                    <p class="text-[10px] opacity-80">ИНН 526217178798</p>
-                </div>
-            </div>
-
-            <!-- For Mobile view -->
-            <x-shop::accordion :is-active="false"
-                class="hidden !w-full rounded-xl !border-2 !border-[#7C45F5]/30 max-1060:block max-sm:rounded-lg">
-                <x-slot:header class="rounded-t-lg font-medium max-md:p-2.5 max-sm:px-3 max-sm:py-2 max-sm:text-sm"
-                    style="background-color: rgba(124, 69, 245, 0.07);">
-                    @lang('shop::app.components.layouts.footer.footer-content')
-                    </x-slot>
-
-                    <x-slot:content class="flex justify-between !bg-transparent !p-4">
-                        @if ($customization?->options)
-                            @foreach ($customization->options as $footerLinkSection)
-                                <ul class="grid gap-5 text-sm" v-pre>
-                                    @php
-                                        usort($footerLinkSection, function ($a, $b) {
-                                            return $a['sort_order'] - $b['sort_order'];
-                                        });
-                                    @endphp
-
-                                    @foreach ($footerLinkSection as $link)
-                                        <li>
-                                            <a href="{{ $link['url'] }}" class="text-sm font-medium max-sm:text-xs">
-                                                {{ $link['title'] }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endforeach
-                        @endif
-                        </x-slot>
-            </x-shop::accordion>
-
         </div>
-    @endif
-
-    <div class="flex justify-center bg-white/40 backdrop-blur-xl border-t border-white/20 px-[60px] py-6 max-sm:px-5">
-        {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
-
-        <p class="text-center text-[13px] font-medium text-zinc-500 tracking-wide uppercase">
-            @lang('shop::app.components.layouts.footer.footer-text', ['current_year' => date('Y')])
-        </p>
-
-        {!! view_render_event('bagisto.shop.layout.footer.footer_text.after') !!}
     </div>
 </footer>
 

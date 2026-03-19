@@ -2,7 +2,7 @@
 
 return [
     [
-        'key' => 'customer.login_page',
+        'key' => 'customer.settings.login_page',
         'name' => 'shop::app.admin.system.login-page.title',
         'info' => 'shop::app.admin.system.login-page.info',
         'icon' => 'settings/login.svg',
@@ -15,13 +15,86 @@ return [
                 'channel_based' => true,
                 'validation' => 'mimes:bmp,jpeg,jpg,png,webp',
             ],
-            // Placeholder for multiple images if needed in the future
-            // [
-            //     'name'          => 'background_images',
-            //     'title'         => 'shop::app.admin.system.login-page.background-images',
-            //     'type'          => 'gallery', // Assuming gallery type exists or can be handled
-            //     'channel_based' => true,
-            // ]
+            [
+                'name' => 'scheduled_image_1',
+                'title' => 'shop::app.admin.system.login-page.scheduled-image-1',
+                'type' => 'image',
+                'channel_based' => true,
+                'validation' => 'mimes:bmp,jpeg,jpg,png,webp',
+            ],
+            [
+                'name' => 'scheduled_image_1_start',
+                'title' => 'shop::app.admin.system.login-page.start-date',
+                'type' => 'date',
+                'channel_based' => true,
+            ],
+            [
+                'name' => 'scheduled_image_1_end',
+                'title' => 'shop::app.admin.system.login-page.end-date',
+                'type' => 'date',
+                'channel_based' => true,
+            ],
+            [
+                'name' => 'scheduled_image_2',
+                'title' => 'shop::app.admin.system.login-page.scheduled-image-2',
+                'type' => 'image',
+                'channel_based' => true,
+                'validation' => 'mimes:bmp,jpeg,jpg,png,webp',
+            ],
+            [
+                'name' => 'scheduled_image_2_start',
+                'title' => 'shop::app.admin.system.login-page.start-date',
+                'type' => 'date',
+                'channel_based' => true,
+            ],
+            [
+                'name' => 'scheduled_image_2_end',
+                'title' => 'shop::app.admin.system.login-page.end-date',
+                'type' => 'date',
+                'channel_based' => true,
+            ],
+            [
+                'name' => 'scheduled_image_3',
+                'title' => 'shop::app.admin.system.login-page.scheduled-image-3',
+                'type' => 'image',
+                'channel_based' => true,
+                'validation' => 'mimes:bmp,jpeg,jpg,png,webp',
+            ],
+            [
+                'name' => 'scheduled_image_3_start',
+                'title' => 'shop::app.admin.system.login-page.start-date',
+                'type' => 'date',
+                'channel_based' => true,
+            ],
+            [
+                'name' => 'scheduled_image_3_end',
+                'title' => 'shop::app.admin.system.login-page.end-date',
+                'type' => 'date',
+                'channel_based' => true,
+            ],
+        ],
+    ],
+    [
+        'key' => 'customer.settings.b2b',
+        'name' => 'shop::app.layouts.b2b',
+        'info' => 'shop::app.layouts.b2b',
+        'icon' => 'settings/customer.svg',
+        'sort' => 5,
+        'fields' => [
+            [
+                'name' => 'default_billing_entity',
+                'title' => 'shop::app.customers.account.topup.select-billing-entity',
+                'type' => 'select',
+                'options' => [
+                    [
+                        'title' => 'None',
+                        'value' => '',
+                    ],
+                ],
+                'channel_based' => true,
+                'locale_based' => false,
+                'repository' => 'Webkul\Core\Repositories\BillingEntityRepository',
+            ],
         ],
     ],
 ];

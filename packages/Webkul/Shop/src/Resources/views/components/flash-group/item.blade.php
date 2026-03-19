@@ -11,7 +11,7 @@
         id="v-flash-item-template"
     >
         <div
-            class="flex w-max max-w-[408px] justify-between gap-12 rounded-lg px-5 py-3 max-sm:max-w-80 max-sm:items-center max-sm:gap-2 max-sm:p-3"
+            class="flex w-max max-w-[408px] justify-between gap-12  px-5 py-3 max-sm:max-w-80 max-sm:items-center max-sm:gap-2 max-sm:p-3"
             :style="typeStyles[flash.type]['container']"
         >
             <p
@@ -27,11 +27,14 @@
                 @{{ flash.message }}
             </p>
 
-			<span
-                class="icon-cancel max-h-4 max-w-4 cursor-pointer"
-                :style="typeStyles[flash.type]['icon']"
+            <div
+                class="ios-red-cross !w-5 !h-5 !text-[12px]"
                 @click="remove"
-            ></span>
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </div>
         </div>
     </script>
 

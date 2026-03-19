@@ -79,4 +79,18 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect' => env('GITHUB_CALLBACK_URL'),
     ],
+
+    'dadata' => [
+        'api_key' => env('DADATA_API_KEY'),
+    ],
+
+    'turn' => [
+        'url'      => env('TURN_URL', 'turn:turn.meanly.ru:3478'),
+        'username' => env('TURN_USERNAME', 'meanly'),
+        'password' => env('TURN_PASSWORD', 'meanly_secret'),
+    ],
+    'matrix' => [
+        'homeserver_url'             => env('MATRIX_SERVER_URL', 'https://matrix.wildflow.dev'),
+        'registration_shared_secret' => env('MATRIX_REGISTRATION_SHARED_SECRET'),
+    ],
 ];

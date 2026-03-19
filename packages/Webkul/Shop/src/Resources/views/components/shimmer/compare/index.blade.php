@@ -3,7 +3,7 @@
 <div class="flex items-center justify-between">
     <h2 class="shimmer h-8 w-[200px] max-sm:w-[180px]"></h2>
 
-    <div class="shimmer h-[50px] w-[150px] rounded-xl max-md:h-[42px] max-md:w-[115px] max-sm:h-[34px] max-sm:rounded-xl"></div>
+    <div class="shimmer h-[50px] w-[150px]  max-md:h-[42px] max-md:w-[115px] max-sm:h-[34px] max-sm:"></div>
 </div>
 
 <div class="journal-scroll mt-16 grid overflow-auto max-md:mt-7">

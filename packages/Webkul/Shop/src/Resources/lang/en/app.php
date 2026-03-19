@@ -136,6 +136,20 @@ return [
                 ],
             ],
 
+            'credits' => [
+                'unlock-via-menu' => 'Please unlock your wallet through the profile menu.',
+            ],
+
+            'invoice' => [
+                'amount' => 'Invoice Amount',
+                'select-billing-entity' => 'Select Billing Entity',
+                'generate-invoice' => 'Generate Invoice-Offer',
+                'success' => 'Invoice generated successfully.',
+                'pending-message' => 'Your request is pending. Please download the invoice and make the payment.',
+                'download-invoice' => 'Download Invoice-Offer',
+                'title' => 'Invoice-Offer',
+            ],
+
             'addresses' => [
                 'index' => [
                     'add-address' => 'Add Address',
@@ -188,6 +202,40 @@ return [
                     'title' => 'Address',
                     'update-btn' => 'Update',
                     'vat-id' => 'Vat ID',
+                ],
+            ],
+
+            'organizations' => [
+                'index' => [
+                    'add-organization' => 'Add Organization',
+                    'create-success' => 'Organization added successfully.',
+                    'delete' => 'Delete',
+                    'delete-success' => 'Organization deleted successfully',
+                    'edit' => 'Edit',
+                    'edit-success' => 'Organization updated successfully.',
+                    'empty-organization' => 'You have not added an organization to your account yet.',
+                    'title' => 'Organizations',
+                    'update-success' => 'Organization updated successfully.',
+                ],
+
+                'create' => [
+                    'add-organization' => 'Add Organization',
+                    'name' => 'Organization Name',
+                    'inn' => 'INN',
+                    'kpp' => 'KPP',
+                    'address' => 'Legal Address',
+                    'save' => 'Save',
+                    'title' => 'Organization',
+                ],
+
+                'edit' => [
+                    'edit' => 'Edit',
+                    'name' => 'Organization Name',
+                    'inn' => 'INN',
+                    'kpp' => 'KPP',
+                    'address' => 'Legal Address',
+                    'title' => 'Organization',
+                    'update-btn' => 'Update',
                 ],
             ],
 
@@ -354,6 +402,11 @@ return [
                     'tax-amount' => 'Tax Amount',
                     'tax' => 'Tax',
                     'vat-number' => 'Vat Number',
+                    'inn' => 'INN',
+                    'kpp' => 'KPP',
+                    'bic' => 'BIC',
+                    'settlement-account' => 'Settlement Account',
+                    'correspondent-account' => 'Correspondent Account',
                 ],
             ],
 
@@ -1056,6 +1109,8 @@ return [
                 'telephone' => 'Telephone',
                 'title' => 'Address',
                 'vat-id' => 'Vat ID',
+                'is-gift' => 'This is a gift',
+                'gift-email' => 'Recipient Email',
             ],
 
             'index' => [
@@ -1176,6 +1231,7 @@ return [
 
     'layouts' => [
         'address' => 'Address',
+        'b2b' => 'My Organizations',
         'downloadable-products' => 'Downloadable Products',
         'gdpr-request' => 'GDPR Data Request',
         'my-account' => 'My Account',
@@ -1183,7 +1239,7 @@ return [
         'profile' => 'Profile',
         'reviews' => 'Reviews',
         'wishlist' => 'Wishlist',
-        'passkeys' => 'Login Methods',
+        'passkeys' => 'Access Keys',
         'login-activity' => 'Login Activity',
     ],
 
@@ -1277,6 +1333,15 @@ return [
                 'invoice-overdue' => 'This is a gentle reminder that your invoice is now overdue. We kindly request you to make the payment at your earliest convenience.',
                 'subject' => 'Invoice reminder',
             ],
+
+            'invoice' => [
+                'subject' => 'Invoice-Offer №:id from :date',
+                'greeting' => 'Your invoice request has been accepted.',
+                'description' => 'A request for invoice payment of :amount has been created. The invoice PDF is attached to this email.',
+                'transaction-id' => 'Invoice Number',
+                'amount-label' => 'Amount',
+                'footer' => 'Please make the payment using the details provided in the attached invoice. Your balance will be updated automatically upon receipt of funds.',
+            ],
         ],
 
         'contact-us' => [
@@ -1355,8 +1420,13 @@ return [
         'system' => [
             'login-page' => [
                 'title' => 'Login Page Customization',
-                'description' => 'Manage background images for customer login and registration pages.',
+                'info' => 'Manage background images for customer login and registration pages.',
                 'background-image' => 'Background Image',
+                'scheduled-image-1' => 'Scheduled Image 1',
+                'scheduled-image-2' => 'Scheduled Image 2',
+                'scheduled-image-3' => 'Scheduled Image 3',
+                'start-date' => 'Start Date',
+                'end-date' => 'End Date',
             ],
         ],
     ],

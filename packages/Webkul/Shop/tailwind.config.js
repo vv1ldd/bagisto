@@ -3,6 +3,18 @@ module.exports = {
     content: ["./src/Resources/**/*.blade.php", "./src/Resources/**/*.js"],
 
     theme: {
+        borderRadius: {
+            'none': '0',
+            'sm': '0',
+            DEFAULT: '0',
+            'md': '0',
+            'lg': '0',
+            'xl': '0',
+            '2xl': '0',
+            '3xl': '0',
+            'full': '0',
+        },
+
         container: {
             center: true,
 
@@ -58,6 +70,10 @@ module.exports = {
         {
             pattern: /^grid-cols-(1|2|3|4|5|6)$/,
         },
+        // Responsive grid variants (pattern doesn't work for variants in Tailwind v3)
+        'md:grid-cols-1', 'md:grid-cols-2', 'md:grid-cols-3', 'md:grid-cols-4',
+        // Flex row/col responsive variants used in x-template blocks
+        'md:flex-row', 'md:flex-col', 'md:border-r', 'md:border-b-0', 'md:border-r-0',
         {
             pattern: /^(max-sm|max-md|max-lg|max-1060|max-1180):grid-cols-(1|2|3|4|5|6)$/,
             variants: ['max-sm', 'max-md', 'max-lg', 'max-1060', 'max-1180'],

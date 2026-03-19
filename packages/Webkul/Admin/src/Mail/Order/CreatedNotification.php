@@ -15,20 +15,27 @@ class CreatedNotification extends Mailable
      *
      * @return void
      */
-    public function __construct(public Order $order) {}
+    public function __construct(public Order $order)
+    {
+    }
 
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
+        $adminEmail = core()->getAdminEmailDetails();
+        $to = [];
+
+        if (!empty($adminEmail['email'])) {
+            $to[] = new Address(
+                $adminEmail['email'],
+                $adminEmail['name'] ?? 'Admin'
+            );
+        }
+
         return new Envelope(
-            to: [
-                new Address(
-                    core()->getAdminEmailDetails()['email'],
-                    core()->getAdminEmailDetails()['name']
-                ),
-            ],
+            to: $to,
             subject: trans('admin::app.emails.orders.created.subject'),
         );
     }

@@ -66,7 +66,7 @@ class Cart
      */
     public function initCart(?CustomerContract $customer = null): void
     {
-        if (! $customer) {
+        if (!$customer) {
             $customer = auth()->guard()->user();
         }
 
@@ -85,7 +85,7 @@ class Cart
      */
     public function refreshCart(): void
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return;
         }
 
@@ -189,7 +189,7 @@ class Cart
      */
     public function deActivateCart(): void
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return;
         }
 
@@ -207,7 +207,7 @@ class Cart
      */
     public function mergeCart(CustomerContract $customer): void
     {
-        if (! session()->has('cart')) {
+        if (!session()->has('cart')) {
             return;
         }
 
@@ -221,7 +221,7 @@ class Cart
         /**
          * When the logged in customer is not having any of the cart instance previously and are active.
          */
-        if (! $cart) {
+        if (!$cart) {
             $this->cartRepository->update([
                 'customer_id' => $customer->id,
                 'is_guest' => 0,
@@ -257,8 +257,19 @@ class Cart
     {
         Event::dispatch('checkout.cart.add.before', $product->id);
 
-        if (! $this->cart) {
+        if (!$this->cart) {
             $this->createCart([]);
+        }
+
+        $billingEntityId = $product->billing_entity_id;
+
+        if ($this->cart->items->count() > 0) {
+            if ($this->cart->billing_entity_id !== $billingEntityId) {
+                throw new \Exception(trans('shop::app.checkout.cart.billing-entity-mismatch'));
+            }
+        } else {
+            $this->cart->billing_entity_id = $billingEntityId;
+            $this->cart->save();
         }
 
         $cartProducts = $product->getTypeInstance()->prepareForCart(array_merge([
@@ -266,7 +277,7 @@ class Cart
         ], $data));
 
         if (is_string($cartProducts)) {
-            if (! $this->cart->all_items->count()) {
+            if (!$this->cart->all_items->count()) {
                 $this->removeCart($this->cart);
             } else {
                 $this->collectTotals();
@@ -283,7 +294,7 @@ class Cart
                     $cartProduct['parent_id'] = $parentCartItem->id;
                 }
 
-                if (! $cartItem) {
+                if (!$cartItem) {
                     $cartItem = $this->cartItemRepository->create(array_merge($cartProduct, ['cart_id' => $this->cart->id]));
                 } else {
                     if (
@@ -298,11 +309,13 @@ class Cart
                     }
                 }
 
-                if (! $parentCartItem) {
+                if (!$parentCartItem) {
                     $parentCartItem = $cartItem;
                 }
             }
         }
+
+        $this->refreshCart();
 
         $this->collectTotals();
 
@@ -316,11 +329,11 @@ class Cart
      */
     public function removeItem(int $itemId): bool
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return false;
         }
 
-        if (! $this->cart->items->pluck('id')->contains($itemId)) {
+        if (!$this->cart->items->pluck('id')->contains($itemId)) {
             return false;
         }
 
@@ -343,7 +356,7 @@ class Cart
         foreach ($data['qty'] as $itemId => $quantity) {
             $item = $this->cartItemRepository->find($itemId);
 
-            if (! $item) {
+            if (!$item) {
                 continue;
             }
 
@@ -351,7 +364,7 @@ class Cart
                 continue;
             }
 
-            if (! $item->product->status) {
+            if (!$item->product->status) {
                 throw new \Exception(trans('shop::app.checkout.cart.inactive'));
             }
 
@@ -363,7 +376,7 @@ class Cart
 
             $item->quantity = $quantity;
 
-            if (! $this->isItemHaveQuantity($item)) {
+            if (!$this->isItemHaveQuantity($item)) {
                 throw new \Exception(trans('shop::app.checkout.cart.inventory-warning'));
             }
 
@@ -401,8 +414,8 @@ class Cart
         foreach ($items as $item) {
             if ($item->getTypeInstance()->compareOptions($item->additional, $data['additional'])) {
                 if (
-                    ! isset($data['additional']['parent_id'])
-                    && ! $item->parent_id
+                    !isset($data['additional']['parent_id'])
+                    && !$item->parent_id
                 ) {
                     return $item;
                 }
@@ -480,11 +493,11 @@ class Cart
         /**
          * If cart is not having any stockable items then no need to save shipping address.
          */
-        if (! $this->cart->haveStockableItems()) {
+        if (!$this->cart->haveStockableItems()) {
             return null;
         }
 
-        if (! $this->cart->billing_address) {
+        if (!$this->cart->billing_address) {
             throw new BillingAddressNotFoundException;
         }
 
@@ -558,11 +571,11 @@ class Cart
      */
     public function saveShippingMethod(string $shippingMethodCode): bool
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return false;
         }
 
-        if (! Shipping::isMethodCodeExists($shippingMethodCode)) {
+        if (!Shipping::isMethodCodeExists($shippingMethodCode)) {
             return false;
         }
 
@@ -577,7 +590,7 @@ class Cart
      */
     public function resetShippingMethod(): bool
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return false;
         }
 
@@ -594,7 +607,7 @@ class Cart
      */
     public function savePaymentMethod(array $params): bool|Contracts\CartPayment
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return false;
         }
 
@@ -605,7 +618,7 @@ class Cart
         $cartPayment = new CartPayment;
 
         $cartPayment->method = $params['method'];
-        $cartPayment->method_title = core()->getConfigData('sales.payment_methods.'.$params['method'].'.title');
+        $cartPayment->method_title = core()->getConfigData('sales.payment_methods.' . $params['method'] . '.title');
         $cartPayment->cart_id = $this->cart->id;
         $cartPayment->save();
 
@@ -637,11 +650,11 @@ class Cart
      */
     public function moveToCart(WishlistContract $wishlistItem, ?int $quantity = 1): bool
     {
-        if (! $wishlistItem->product->getTypeInstance()->canBeMovedFromWishlistToCart($wishlistItem)) {
+        if (!$wishlistItem->product->getTypeInstance()->canBeMovedFromWishlistToCart($wishlistItem)) {
             return false;
         }
 
-        if (! $wishlistItem->additional) {
+        if (!$wishlistItem->additional) {
             $wishlistItem->additional = ['product_id' => $wishlistItem->product_id];
         }
 
@@ -672,7 +685,7 @@ class Cart
     {
         $cartItem = $this->cart->items()->find($itemId);
 
-        if (! $cartItem) {
+        if (!$cartItem) {
             return false;
         }
 
@@ -686,7 +699,7 @@ class Cart
         foreach ($wishlistItems as $wishlistItem) {
             $options = $wishlistItem->item_options;
 
-            if (! $options) {
+            if (!$options) {
                 $options = ['product_id' => $wishlistItem->product_id];
             }
 
@@ -695,7 +708,7 @@ class Cart
             }
         }
 
-        if (! $found) {
+        if (!$found) {
             Event::dispatch('customer.wishlist.create.before', $cartItem->product_id);
 
             $wishlist = $this->wishlistRepository->create([
@@ -711,7 +724,7 @@ class Cart
             Event::dispatch('customer.wishlist.create.after', $wishlist);
         }
 
-        if (! $this->cart->items->count()) {
+        if (!$this->cart->items->count()) {
             $this->cartRepository->delete($this->cart->id);
 
             $this->refreshCart();
@@ -731,7 +744,7 @@ class Cart
      */
     public function hasError(): bool
     {
-        return ! empty($this->getErrors());
+        return !empty($this->getErrors());
     }
 
     /**
@@ -739,21 +752,21 @@ class Cart
      */
     public function getErrors()
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return [
                 'error_code' => 'CART_NOT_FOUND',
                 'message' => trans('shop::app.checkout.cart.index.empty-product'),
             ];
         }
 
-        if (! $this->isItemsHaveSufficientQuantity()) {
+        if (!$this->isItemsHaveSufficientQuantity()) {
             return [
                 'error_code' => 'INSUFFICIENT_QUANTITY',
                 'message' => trans('shop::app.checkout.cart.inventory-warning'),
             ];
         }
 
-        if (! $this->haveMinimumOrderAmount()) {
+        if (!$this->haveMinimumOrderAmount()) {
             $minimumOrderDescription = core()->getConfigData('sales.order_settings.minimum_order.description');
 
             return [
@@ -761,6 +774,15 @@ class Cart
                 'message' => $minimumOrderDescription ?: trans('shop::app.checkout.cart.minimum-order-message'),
                 'amount' => core()->formatPrice((int) core()->getConfigData('sales.order_settings.minimum_order.minimum_order_amount') ?: $this->getOrderAmount()),
             ];
+        }
+
+        foreach ($this->cart->items as $item) {
+            if ($item->product->billing_entity_id !== $this->cart->billing_entity_id) {
+                return [
+                    'error_code' => 'BILLING_ENTITY_MISMATCH',
+                    'message' => trans('shop::app.checkout.cart.billing-entity-mismatch'),
+                ];
+            }
         }
 
         return [];
@@ -793,7 +815,7 @@ class Cart
      */
     public function haveMinimumOrderAmount(): bool
     {
-        if (! core()->getConfigData('sales.order_settings.minimum_order.enable')) {
+        if (!core()->getConfigData('sales.order_settings.minimum_order.enable')) {
             return true;
         }
 
@@ -805,12 +827,12 @@ class Cart
      */
     public function isItemsHaveSufficientQuantity(): bool
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return false;
         }
 
         foreach ($this->cart->items as $item) {
-            if (! $this->isItemHaveQuantity($item)) {
+            if (!$this->isItemHaveQuantity($item)) {
                 return false;
             }
         }
@@ -831,14 +853,14 @@ class Cart
      */
     public function collectTotals(): self
     {
-        if (! $this->validateItems()) {
+        if (!$this->validateItems()) {
             /**
              * Reset the cart so that fresh copy of cart can be created.
              */
             $this->refreshCart();
         }
 
-        if (! $this->cart) {
+        if (!$this->cart) {
             return $this;
         }
 
@@ -930,11 +952,11 @@ class Cart
      */
     public function validateItems(): bool
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return false;
         }
 
-        if (! $this->cart->items->count()) {
+        if (!$this->cart->items->count()) {
             $this->removeCart($this->cart);
 
             return false;
@@ -958,7 +980,7 @@ class Cart
                     $itemBasePrice = $item->base_price;
                 }
 
-                $basePrice = ! is_null($item->custom_price) ? $item->custom_price : $itemBasePrice;
+                $basePrice = !is_null($item->custom_price) ? $item->custom_price : $itemBasePrice;
 
                 $price = core()->convertPrice($basePrice);
 
@@ -985,7 +1007,7 @@ class Cart
             $isInvalid |= $validationResult->isCartInvalid();
         }
 
-        return ! $isInvalid;
+        return !$isInvalid;
     }
 
     /**
@@ -993,7 +1015,7 @@ class Cart
      */
     public function calculateItemsTax(): void
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return;
         }
 
@@ -1016,13 +1038,15 @@ class Cart
                 continue;
             }
 
-            if (! isset($taxCategories[$taxCategoryId])) {
+            if (!isset($taxCategories[$taxCategoryId])) {
                 $taxCategories[$taxCategoryId] = $this->taxCategoryRepository->find($taxCategoryId);
             }
 
-            if (! $taxCategories[$taxCategoryId]) {
+            if (!$taxCategories[$taxCategoryId]) {
                 continue;
             }
+
+            $isVatPayer = !$this->cart->billing_entity || in_array($this->cart->billing_entity->tax_regime, ['osno', 'usn-vat-5', 'usn-vat-7']);
 
             $calculationBasedOn = core()->getConfigData('sales.taxes.calculation.based_on');
 
@@ -1053,39 +1077,41 @@ class Cart
 
             $item->tax_percent = $item->tax_amount = $item->base_tax_amount = 0;
 
-            Tax::isTaxApplicableInCurrentAddress($taxCategories[$taxCategoryId], $address, function ($rate) use ($item, $taxCategoryId) {
-                $item->applied_tax_rate = $rate->identifier;
+            if ($isVatPayer) {
+                Tax::isTaxApplicableInCurrentAddress($taxCategories[$taxCategoryId], $address, function ($rate) use ($item, $taxCategoryId) {
+                    $item->applied_tax_rate = $rate->identifier;
 
-                $item->tax_category_id = $taxCategoryId;
+                    $item->tax_category_id = $taxCategoryId;
 
-                $item->tax_percent = $rate->tax_rate;
+                    $item->tax_percent = $rate->tax_rate;
 
-                if (Tax::isInclusiveTaxProductPrices()) {
-                    $item->tax_amount = round(($item->total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                    if (Tax::isInclusiveTaxProductPrices()) {
+                        $item->tax_amount = round(($item->total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                    $item->base_tax_amount = round(($item->base_total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                        $item->base_tax_amount = round(($item->base_total_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                    $item->total = $item->total_incl_tax - $item->tax_amount;
+                        $item->total = $item->total_incl_tax - $item->tax_amount;
 
-                    $item->base_total = $item->base_total_incl_tax - $item->base_tax_amount;
+                        $item->base_total = $item->base_total_incl_tax - $item->base_tax_amount;
 
-                    $item->price = $item->total / $item->quantity;
+                        $item->price = $item->total / $item->quantity;
 
-                    $item->base_price = $item->base_total / $item->quantity;
-                } else {
-                    $item->tax_amount = round(($item->total * $rate->tax_rate) / 100, 4);
+                        $item->base_price = $item->base_total / $item->quantity;
+                    } else {
+                        $item->tax_amount = round(($item->total * $rate->tax_rate) / 100, 4);
 
-                    $item->base_tax_amount = round(($item->base_total * $rate->tax_rate) / 100, 4);
+                        $item->base_tax_amount = round(($item->base_total * $rate->tax_rate) / 100, 4);
 
-                    $item->total_incl_tax = $item->total + $item->tax_amount;
+                        $item->total_incl_tax = $item->total + $item->tax_amount;
 
-                    $item->base_total_incl_tax = $item->base_total + $item->base_tax_amount;
+                        $item->base_total_incl_tax = $item->base_total + $item->base_tax_amount;
 
-                    $item->price_incl_tax = $item->price + ($item->tax_amount / $item->quantity);
+                        $item->price_incl_tax = $item->price + ($item->tax_amount / $item->quantity);
 
-                    $item->base_price_incl_tax = $item->base_price + ($item->base_tax_amount / $item->quantity);
-                }
-            });
+                        $item->base_price_incl_tax = $item->base_price + ($item->base_tax_amount / $item->quantity);
+                    }
+                });
+            }
 
             if (empty($item->applied_tax_rate)) {
                 $item->price_incl_tax = $item->price;
@@ -1108,17 +1134,17 @@ class Cart
      */
     public function calculateShippingTax(): void
     {
-        if (! $this->cart) {
+        if (!$this->cart) {
             return;
         }
 
         $shippingRate = $this->cart->selected_shipping_rate;
 
-        if (! $shippingRate) {
+        if (!$shippingRate) {
             return;
         }
 
-        if (! $taxCategoryId = core()->getConfigData('sales.taxes.categories.shipping')) {
+        if (!$taxCategoryId = core()->getConfigData('sales.taxes.categories.shipping')) {
             return;
         }
 
@@ -1148,31 +1174,38 @@ class Cart
             $address = Tax::getDefaultAddress();
         }
 
+        $shippingRate->applied_tax_rate = null;
+        $shippingRate->tax_percent = $shippingRate->tax_amount = $shippingRate->base_tax_amount = 0;
+
         Event::dispatch('checkout.cart.calculate.shipping.tax.before', $this->cart);
 
-        Tax::isTaxApplicableInCurrentAddress($taxCategory, $address, function ($rate) use ($shippingRate) {
-            $shippingRate->applied_tax_rate = $rate->identifier;
+        $isVatPayer = !$this->cart->billing_entity || in_array($this->cart->billing_entity->tax_regime, ['osno', 'usn-vat-5', 'usn-vat-7']);
 
-            $shippingRate->tax_percent = $rate->tax_rate;
+        if ($isVatPayer) {
+            Tax::isTaxApplicableInCurrentAddress($taxCategory, $address, function ($rate) use ($shippingRate) {
+                $shippingRate->applied_tax_rate = $rate->identifier;
 
-            if (Tax::isInclusiveTaxShippingPrices()) {
-                $shippingRate->tax_amount = round(($shippingRate->price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                $shippingRate->tax_percent = $rate->tax_rate;
 
-                $shippingRate->base_tax_amount = round(($shippingRate->base_price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
+                if (Tax::isInclusiveTaxShippingPrices()) {
+                    $shippingRate->tax_amount = round(($shippingRate->price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                $shippingRate->price = $shippingRate->price_incl_tax - $shippingRate->tax_amount;
+                    $shippingRate->base_tax_amount = round(($shippingRate->base_price_incl_tax * $rate->tax_rate) / (100 + $rate->tax_rate), 4);
 
-                $shippingRate->base_price = $shippingRate->base_price_incl_tax - $shippingRate->base_tax_amount;
-            } else {
-                $shippingRate->tax_amount = round(($shippingRate->price * $rate->tax_rate) / 100, 4);
+                    $shippingRate->price = $shippingRate->price_incl_tax - $shippingRate->tax_amount;
 
-                $shippingRate->base_tax_amount = round(($shippingRate->base_price * $rate->tax_rate) / 100, 4);
+                    $shippingRate->base_price = $shippingRate->base_price_incl_tax - $shippingRate->base_tax_amount;
+                } else {
+                    $shippingRate->tax_amount = round(($shippingRate->price * $rate->tax_rate) / 100, 4);
 
-                $shippingRate->price_incl_tax = $shippingRate->price + $shippingRate->tax_amount;
+                    $shippingRate->base_tax_amount = round(($shippingRate->base_price * $rate->tax_rate) / 100, 4);
 
-                $shippingRate->base_price_incl_tax = $shippingRate->base_price + $shippingRate->base_tax_amount;
-            }
-        });
+                    $shippingRate->price_incl_tax = $shippingRate->price + $shippingRate->tax_amount;
+
+                    $shippingRate->base_price_incl_tax = $shippingRate->base_price + $shippingRate->base_tax_amount;
+                }
+            });
+        }
 
         if (empty($shippingRate->applied_tax_rate)) {
             $shippingRate->price_incl_tax = $shippingRate->price;

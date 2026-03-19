@@ -36,25 +36,7 @@ return [
         'icon' => 'icon-orders',
         'sort' => 5,
     ],
-    [
-        'key' => 'account.reviews',
-        'name' => 'shop::app.layouts.reviews',
-        'route' => 'shop.customers.account.reviews.index',
-        'icon' => 'icon-star',
-        'sort' => 6,
-    ],
-    [
-        'key' => 'account.wishlist',
-        'name' => 'shop::app.layouts.wishlist',
-        'route' => 'shop.customers.account.wishlist.index',
-        'icon' => 'icon-heart',
-        'sort' => 7,
-    ],
-    [
-        'key' => 'account.gdpr_data_request',
-        'name' => 'shop::app.layouts.gdpr-request',
-        'route' => 'shop.customers.account.gdpr.index',
-        'icon' => 'icon-gdpr-safe',
-        'sort' => 8,
-    ],
+
+
+
 ];

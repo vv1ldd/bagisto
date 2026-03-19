@@ -17,5 +17,5 @@
         </div>
     @endif
 
-    <button class="shimmer mx-auto mt-14 block h-12 w-[171.516px] rounded-2xl py-3"></button>
+    <button class="shimmer mx-auto mt-14 block h-12 w-[171.516px]  py-3"></button>
 </div>

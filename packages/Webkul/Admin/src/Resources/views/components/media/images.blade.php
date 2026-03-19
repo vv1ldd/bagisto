@@ -457,7 +457,7 @@
                     isLoading: false,
 
                     ai: {
-                        enabled: Boolean("{{ core()->getConfigData('general.magic_ai.settings.enabled') && core()->getConfigData('general.magic_ai.image_generation.enabled') }}"),
+                        enabled: Boolean("{{ config('magic_ai_settings.enabled') && core()->getConfigData('general.magic_ai.image_generation.enabled') }}"),
 
                         prompt: null,
 
@@ -568,7 +568,7 @@
 
                 resetAIModal() {
                     this.ai = {
-                        enabled: Boolean("{{ core()->getConfigData('general.magic_ai.settings.enabled') && core()->getConfigData('general.magic_ai.image_generation.enabled') }}"),
+                        enabled: Boolean("{{ config('magic_ai_settings.enabled') && core()->getConfigData('general.magic_ai.image_generation.enabled') }}"),
 
                         prompt: null,
 

@@ -2,8 +2,9 @@
     'showBack' => true,
     'backLink' => null,
     'backText' => null,
-    'hasHeader' => true,
-    'hasFooter' => true,
+    'hasHeader' => false,
+    'hasFooter' => false,
+    'isCardless' => false,
 ])
 
 <x-shop::layouts :has-header="$hasHeader" :has-feature="false" :has-footer="$hasFooter">
@@ -18,7 +19,7 @@
                 @keyframes accountFadeIn {
                     from {
                         opacity: 0;
-                        transform: translateY(10px);
+                        transform: translateY(4px);
                     }
 
                     to {
@@ -48,47 +49,117 @@
                     pointer-events: none;
                 }
 
-                /* === iOS Style Navigation & Cards === */
+                /* === Home-page-matching Navigation & Cards === */
                 .ios-nav-group {
-                    background-color: #fff !important;
-                    border: 1px solid #e4e4e7 !important;
-                    border-radius: 16px !important;
-                    margin-bottom: 24px !important;
-                    overflow: hidden !important;
-                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+                    background-color: transparent !important;
+                    border: none !important;
+                    border-radius: 0 !important;
+                    margin-bottom: 32px !important;
+                    overflow: visible !important;
+                    box-shadow: none !important;
                 }
 
-                .ios-nav-row {
+                .nav-grid {
+                    display: grid !important;
+                    grid-template-columns: repeat(2, 1fr) !important;
+                    gap: 1px !important;
+                    background-color: #f5f4fc !important;
+                    border-bottom: 1px solid #f5f4fc !important;
+                }
+
+                @media (max-width: 380px) {
+                    .nav-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                }
+
+                .nav-item {
                     display: flex !important;
                     align-items: center !important;
-                    justify-content: space-between !important;
-                    padding: 14px 20px !important;
-                    border-bottom: 1px solid #f4f4f5 !important;
-                    transition: background-color 0.2s !important;
+                    gap: 16px !important;
+                    padding: 16px 20px !important;
+                    background-color: #fff !important;
                     text-decoration: none !important;
+                    transition: background-color 0.15s !important;
                 }
 
-                .ios-nav-row:last-child {
-                    border-bottom: none !important;
+                .nav-tile {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    gap: 12px !important;
+                    padding: 24px 16px !important;
+                    text-align: center !important;
+                    background-color: #fff !important;
+                    text-decoration: none !important;
+                    transition: background-color 0.15s !important;
                 }
 
-                .ios-nav-row:active {
-                    background-color: #f4f4f5 !important;
+                .nav-item:hover, .nav-tile:hover {
+                    background-color: #fafaff !important;
                 }
 
-                .ios-nav-label {
-                    font-size: 16px !important;
-                    font-weight: 500 !important;
-                    color: #18181b !important;
-                    flex-grow: 1 !important;
+                .nav-item:active, .nav-tile:active {
+                    background-color: #f5f4fc !important;
+                }
+
+                .nav-label {
+                    font-size: 15px !important;
+                    font-weight: 600 !important;
+                    color: #27272a !important;
+                    letter-spacing: -0.01em !important;
+                    line-height: 1.2 !important;
+                }
+
+                .ios-section-label {
+                    display: block !important;
+                    font-size: 10px !important;
+                    font-weight: 900 !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.25em !important;
+                    color: #a1a1aa !important;
+                    opacity: 0.6 !important;
+                    padding: 20px 20px 10px !important;
+                    background: #fff !important;
+                    border-bottom: 1px solid #f5f4fc !important;
+                }
+
+                .ios-tile-relative {
+                    position: relative !important;
+                }
+
+                .ios-close-button {
+                    position: absolute !important;
+                    top: 20px !important;
+                    right: 20px !important;
+                    left: auto !important;
+                    z-index: 20 !important;
+                    width: 32px !important;
+                    height: 32px !important;
+                    background-color: #fff !important;
+                    border: 1px solid #f4f4f5 !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    color: #a1a1aa !important;
+                    transition: all 0.2s ease !important;
+                }
+
+                .ios-close-button:hover {
+                    color: #7C45F5 !important;
+                    border-color: #e4e4e7 !important;
+                }
+
+                .ios-close-button:active {
+                    transform: scale(0.95) !important;
                 }
             </style>
         @endpush
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container px-[60px] max-lg:px-8 max-md:px-0 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-72px)] flex flex-col pb-2 pt-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
-            <x-shop::layouts.account.breadcrumb />
+            class="container px-[60px] max-lg:px-8 max-md:px-4 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-80px)] flex flex-col justify-center pb-10 pt-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
 
             @php
                 $customer = auth()->guard('customer')->user();
@@ -113,58 +184,54 @@
                         </div>
                     @else
                         <!-- Main Content Pane (Drill-Down View) -->
-                        <div class="flex flex-col w-full glass-card !bg-white/40 overflow-hidden mb-8 !rounded-3xl"
-                            style="max-width: 600px;">
-
-                            @if ($showBack || isset($title))
-                                <!-- Drill-Down Header: Minimal circular back button -->
-                                <div class="flex items-center gap-3 px-8 pt-6 pb-2 max-md:px-5 max-md:pt-5 max-md:pb-2">
-                                    @if ($showBack)
-                                        <a href="{{ $backLink ?? route('shop.customers.account.index') }}"
-                                            @if (!isset($backLink))
-                                                onclick="if (window.history.length > 1 && document.referrer && new URL(document.referrer).origin === window.location.origin) { window.history.back(); return false; }"
-                                            @endif
-                                            class="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                                            </svg>
-                                        </a>
-                                    @endif
-
-                                    @if (isset($title))
+                        <div class="flex flex-col w-full" style="max-width: 600px;">
+                            
+                            @if ($showBack || (isset($title) && !empty((string)$title)))
+                                <!-- Drill-Down Header: Positioned above the card -->
+                                <div class="flex items-center justify-between gap-3 px-5 pt-0 pb-4 mt-2">
+                                    @if (isset($title) && !empty((string)$title))
                                         <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
                                     @endif
 
-                                    <div class="flex-1"></div>
+                                    <div class="flex items-center gap-2">
+                                        @if (isset($headerActions))
+                                            {{ $headerActions }}
+                                        @endif
 
-                                    @if (request()->routeIs('shop.customers.account.profile.edit'))
-                                        <button type="submit" form="profile-edit-form"
-                                            class="text-[#007AFF] font-semibold text-[17px] transition active:opacity-50 disabled:opacity-30 disabled:cursor-not-allowed"
-                                            id="profile-save-header-btn">
-                                            @lang('shop::app.customers.account.profile.edit.save')
-                                        </button>
-                                    @endif
+                                        @if ($showBack)
+                                            <div class="flex items-center bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
+                                                {{-- Back Arrow (Left) --}}
+                                                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
+                                                    class="w-8 h-8 flex items-center justify-center text-zinc-500 active:scale-95 transition-transform hover:text-[#7C45F5]">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             @endif
 
-                            <!-- Page Content -->
-                            <div class="flex-1">
+                            @if ($isCardless)
                                 {{ $slot }}
-                            </div>
+                            @else
+                                <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 mb-8 ">
+                                    <!-- Page Content -->
+                                    <div class="flex-1">
+                                        {{ $slot }}
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 @endif
 
 
-
             </div>
         </div>
 
-        @if (!$hasFooter)
-            <div class="w-full text-center py-6 text-xs font-semibold text-zinc-500 tracking-wider">
-                © {{ date('Y') }} MEANLY. ВСЕ ПРАВА ЗАЩИЩЕНЫ.
-            </div>
-        @endif
+        @stack('scripts')
 
         @push('scripts')
             <script>
@@ -175,7 +242,7 @@
                     // Intercept all <a> clicks within the account wrapper
                     document.addEventListener('click', function (e) {
                         const link = e.target.closest('a[href]');
-                        if (!link) return;
+                        if (!link || link.id === 'account-close-button' || link.closest('#account-close-button')) return;
 
                         const href = link.getAttribute('href');
                         // Only intercept internal, non-empty, non-anchor links
