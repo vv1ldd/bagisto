@@ -43,7 +43,7 @@
             </p>
         @else
             <!-- Back Button to Login Options -->
-            <div class="flex flex-col items-center mb-6">
+            <div class="flex flex-col items-center mb-4 md:mb-6">
                 <a href="{{ route('shop.customer.session.index') }}" 
                     class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
                     <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
@@ -55,7 +55,7 @@
                 {!! view_render_event('bagisto.shop.customers.signup_form_controls.before') !!}
 
                 <!-- Email -->
-                <x-shop::form.control-group class="mb-4">
+                <x-shop::form.control-group class="mb-2 md:mb-4">
                     <x-shop::form.control-group.label
                         class="required !text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
                         @lang('shop::app.customers.signup-form.email')
@@ -70,7 +70,7 @@
                 </x-shop::form.control-group>
 
                 <!-- Options: Newsletter & GDPR -->
-                <div class="flex flex-col gap-3 mb-4">
+                <div class="flex flex-col gap-2 mb-2 md:gap-3 md:mb-4">
                     @if(core()->getConfigData('general.gdpr.settings.enabled') && core()->getConfigData('general.gdpr.agreement.enabled'))
                         <div class="flex select-none items-center gap-2">
                             <x-shop::form.control-group.control type="checkbox" name="agreement" id="agreement" value="1"
@@ -97,11 +97,11 @@
                     </div>
                 @endif
 
-                <div class="mt-4 text-center text-[12px] text-zinc-500 leading-relaxed">
+                <div class="mt-2 text-center text-[11px] text-zinc-500 leading-tight md:mt-4 md:text-[12px] md:leading-relaxed">
                     @lang('shop::app.customers.signup-form.agreement')
                 </div>
 
-                <div class="mt-4">
+                <div class="mt-2 md:mt-4">
                     <button
                         class="w-full !rounded-none bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
                         type="submit" :disabled="!meta.valid">
@@ -114,7 +114,7 @@
 
             {!! view_render_event('bagisto.shop.customers.signup.after') !!}
 
-            <p class="mt-6 text-center text-sm text-zinc-500">
+            <p class="mt-4 text-center text-sm text-zinc-500 md:mt-6">
                 @lang('shop::app.customers.signup-form.account-exists')
                 <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customer.session.index') }}">
                     @lang('shop::app.customers.signup-form.sign-in-button')

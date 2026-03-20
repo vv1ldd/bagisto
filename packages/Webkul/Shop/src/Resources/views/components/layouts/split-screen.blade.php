@@ -7,15 +7,15 @@
         {{ $title }}
     </x-slot>
    
-    <div class="flex min-h-screen w-full flex-wrap overflow-hidden bg-white">
+    <div class="flex min-h-[100dvh] w-full flex-wrap overflow-hidden bg-white">
         <!-- Left Side: Content -->
-        <div class="flex w-full flex-col min-h-screen px-4 pt-4 pb-4 md:px-10 md:pt-8 md:pb-6 lg:px-20 lg:pt-10 lg:pb-10 md:w-1/2 overflow-y-auto">
+        <div class="flex w-full flex-col h-[100dvh] px-4 pt-6 pb-4 md:h-auto md:min-h-screen md:px-10 md:pt-8 md:pb-6 lg:px-20 lg:pt-10 lg:pb-10 md:w-1/2 overflow-y-auto scrollbar-hide">
             <!-- Header/Logo -->
-            <div class="mb-4 flex items-center justify-between">
+            <div class="mb-2 flex items-center justify-between md:mb-4">
                 <a href="{{ route('shop.home.index') }}"
                     class="flex items-center gap-2"
                     aria-label="@lang('shop::app.customers.login-form.bagisto')">
-                    <span class="text-2xl font-black tracking-tighter text-[#7C45F5] uppercase">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
+                    <span class="text-xl font-black tracking-tighter text-[#7C45F5] uppercase md:text-2xl">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
                 </a>
 
                 @if (isset($header))
@@ -24,14 +24,14 @@
             </div>
 
             <!-- Content Area -->
-            <div class="flex flex-grow flex-col justify-center py-4 md:py-2">
+            <div class="flex flex-grow flex-col justify-center py-2 md:py-2">
                 <div class="mx-auto w-full max-w-[440px]">
                     {{ $slot }}
                 </div>
             </div>
 
             <!-- Footer -->
-            <div class="mt-auto pt-6 text-center text-xs text-zinc-400">
+            <div class="mt-auto pt-4 text-center text-[10px] text-zinc-400 md:pt-6 md:text-xs">
                 @lang('shop::app.customers.login-form.footer', ['current_year' => date('Y')])
             </div>
         </div>

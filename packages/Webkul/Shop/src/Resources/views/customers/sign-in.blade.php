@@ -11,7 +11,7 @@
         {!! view_render_event('bagisto.shop.customers.login.before') !!}
 
         <!-- Initial Login Options (Passkey vs Email) -->
-        <div id="login-options-container" class="flex flex-col gap-2 transition-all duration-300">
+        <div id="login-options-container" class="flex flex-col gap-1 md:gap-2 transition-all duration-300">
             <!-- Passkey Login Button (Primary focus) -->
             <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
                 class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-3 text-center font-medium text-white transition hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
@@ -26,7 +26,7 @@
             @php
                 $showEmailForm = $errors->any() || session('email');
             @endphp
-            <div id="login-options-separator" class="relative my-2 text-center {{ $showEmailForm ? 'hidden' : '' }}">
+            <div id="login-options-separator" class="relative my-1 md:my-2 text-center {{ $showEmailForm ? 'hidden' : '' }}">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                     <div class="w-full border-t border-zinc-200"></div>
                 </div>
@@ -52,7 +52,7 @@
             </div>
 
             <!-- Back Button for email view (hidden by default) -->
-            <div id="back-to-options-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col items-center mb-2">
+            <div id="back-to-options-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col items-center mb-1 md:mb-2">
                 <button type="button" onclick="backToLoginOptions()" 
                     class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
                     <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
@@ -61,7 +61,7 @@
             </div>
 
             {{-- Magic Link Email Form (Hidden by default, auto-shown on errors) --}}
-            <div id="email-login-form-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col gap-4">
+            <div id="email-login-form-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col gap-3 md:gap-4">
                 <x-shop::form :action="route('shop.customer.session.email')" v-slot="{ meta }">
                     <x-shop::form.control-group class="mb-2">
                         <x-shop::form.control-group.label
@@ -91,7 +91,7 @@
 
             </div>
 
-            <p class="mt-6 text-center text-sm text-zinc-500">
+            <p class="mt-4 text-center text-sm text-zinc-500 md:mt-6">
                 Впервые у нас?
                 <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customers.register.index') }}">
                     @lang('shop::app.customers.signup-form.button-title')
