@@ -533,11 +533,15 @@
             $chatwootToken = core()->getConfigData('general.content.chatwoot.website_token');
             $chatwootBaseUrl = core()->getConfigData('general.content.chatwoot.base_url') ?? 'https://support.wildcloud.ru';
 
-            // Unified visibility logic: hide on calls and customer account pages
+            // Unified visibility logic: hide on calls, registration, account, and auth-related pages
             $showChatwoot = $chatwootEnabled && $chatwootToken && ! (
                 request()->routeIs('shop.call.index') || 
                 request()->routeIs('shop.customer.account*') || 
-                request()->routeIs('shop.customer.session.index')
+                request()->routeIs('shop.customers.account*') || 
+                request()->routeIs('shop.customer.session.index') ||
+                request()->routeIs('shop.customers.register*') ||
+                request()->routeIs('shop.customers.forgot_password*') ||
+                request()->routeIs('shop.customers.reset_password*')
             );
         @endphp
 
