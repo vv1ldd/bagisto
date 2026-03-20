@@ -237,19 +237,17 @@
                     <div class="ios-row">
                         <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                         <div class="ios-input-wrapper">
-                            <div class="flex items-center justify-end w-full">
-                                <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
-                                <x-shop::form.control-group class="!mb-0">
-                                    <x-shop::form.control-group.control type="text" name="username" rules="required"
-                                        class="pseudonym-input"
-                                        :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
-                                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                        data-lpignore="true" data-1p-ignore
-                                        label="Псевдоним" 
-                                        v-on:focus="clearDefaultUsername($event)"
-                                        v-on:input="debounceCheckUsername($event.target.value)" />
-                                </x-shop::form.control-group>
-                            </div>
+                            <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
+                            <x-shop::form.control-group class="!mb-0">
+                                <x-shop::form.control-group.control type="text" name="username" rules="required"
+                                    class="pseudonym-input"
+                                    :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
+                                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                    data-lpignore="true" data-1p-ignore
+                                    label="Псевдоним" 
+                                    v-on:focus="clearDefaultUsername($event)"
+                                    v-on:input="debounceCheckUsername($event.target.value)" />
+                            </x-shop::form.control-group>
                             <span class="ios-arrow icon-arrow-right"></span>
                         </div>
                     </div>
@@ -380,19 +378,17 @@
             <div class="ios-row">
                 <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                 <div class="ios-input-wrapper">
-                    <div class="flex items-center justify-end w-full">
-                        <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
-                        <x-shop::form.control-group class="!mb-0">
-                            <x-shop::form.control-group.control type="text" name="username" rules="required"
-                                class="pseudonym-input"
-                                :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
-                                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                data-lpignore="true" data-1p-ignore
-                                label="Псевдоним"
-                                v-on:focus="clearDefaultUsername($event)"
-                                v-on:input="debounceCheckUsername($event.target.value)" />
-                        </x-shop::form.control-group>
-                    </div>
+                    <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
+                    <x-shop::form.control-group class="!mb-0">
+                        <x-shop::form.control-group.control type="text" name="username" rules="required"
+                            class="pseudonym-input"
+                            :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            data-lpignore="true" data-1p-ignore
+                            label="Псевдоним"
+                            v-on:focus="clearDefaultUsername($event)"
+                            v-on:input="debounceCheckUsername($event.target.value)" />
+                    </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
             </div>
