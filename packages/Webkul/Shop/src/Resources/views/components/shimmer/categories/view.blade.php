@@ -1,8 +1,4 @@
 <div class="container px-[60px] max-lg:px-8 max-sm:px-4">
-    <!-- Horizontal Filter Shimmer Effect -->
-    <div class="md:mt-10">
-        <x-shop::shimmer.categories.filters />
-    </div>
 
     <!-- Product Card Container -->
     @if(request()->query('mode') == 'list')
