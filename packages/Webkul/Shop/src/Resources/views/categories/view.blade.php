@@ -22,7 +22,7 @@
 
         <!-- Hero Image -->
         @if ($category->banner_path)
-            <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4">
+            <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-0">
                 <x-shop::media.images.lazy class="aspect-[4/1] max-h-full max-w-full " src="{{ $category->banner_url }}"
                     alt="{{ $category->name }}" width="1320" height="300" />
             </div>
@@ -61,7 +61,7 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-category-template">
-                                                                            <div class="container px-[60px] max-lg:px-8 max-md:px-4">
+                                                                            <div class="container px-[60px] max-lg:px-8 max-md:px-0">
 
 
 

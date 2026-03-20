@@ -16,7 +16,7 @@ $searchInstead = $suggestion ? $query : null;
         {{ $title }}
         </x-slot>
 
-        <div class="container px-[60px] max-lg:px-8 max-sm:px-4">
+        <div class="container px-[60px] max-lg:px-8 max-sm:px-0">
             @if (request()->has('image-search'))
                 @include('shop::search.images.results')
             @endif
@@ -49,7 +49,7 @@ $searchInstead = $suggestion ? $query : null;
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-search-template">
-                                                            <div class="container px-[60px] max-lg:px-8 max-sm:px-4">
+                                                            <div class="container px-[60px] max-lg:px-8 max-sm:px-0">
                                                         <div class="md:mt-10">
                                                             <!-- Filter bar (all screens) -->
 

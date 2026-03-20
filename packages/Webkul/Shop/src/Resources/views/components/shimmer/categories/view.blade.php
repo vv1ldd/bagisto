@@ -1,4 +1,4 @@
-<div class="container px-[60px] max-lg:px-8 max-sm:px-4">
+<div class="container px-[60px] max-lg:px-8 max-sm:px-0">
 
     <!-- Product Card Container -->
     @if(request()->query('mode') == 'list')
