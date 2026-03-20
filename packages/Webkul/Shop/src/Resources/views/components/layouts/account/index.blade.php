@@ -148,19 +148,18 @@
                     </div>
                 @else
                     <!-- Main Content Pane (Drill-Down View) -->
-                    <div class="flex flex-col w-full" style="max-width: 600px;">
+                    <div class="flex flex-col w-full relative" style="max-width: 600px;">
                         
-                        <!-- Universal Floating Back Button -->
-                        <div class="relative w-full">
-                            <button type="button" 
-                                onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
-                                class="ios-back-button !shadow-none !border-[#e9e8f5]" style="top: -20px !important; left: 0px !important; width: 32px; height: 32px; z-index: 50;">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                                </svg>
-                            </button>
-                        </div>
-                        
+                        <!-- Floating Back Button outside the card boundaries -->
+                        <button type="button" 
+                            onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
+                            class="ios-back-button !border-zinc-200 !shadow-sm hover:!shadow-md transition-all" 
+                            style="top: -12px !important; left: -12px !important; z-index: 999; background: #fff !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </button>
+
                         @if (isset($title) && !empty((string)$title))
                             <!-- Drill-Down Header: Positioned above the card -->
                             <div class="flex items-center justify-between gap-3 px-10 pt-0 pb-4 mt-2">
