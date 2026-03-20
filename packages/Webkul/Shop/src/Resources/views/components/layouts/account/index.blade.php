@@ -2,8 +2,8 @@
     'showBack' => true,
     'backLink' => null,
     'backText' => null,
-    'hasHeader' => false,
-    'hasFooter' => false,
+    'hasHeader' => true,
+    'hasFooter' => true,
     'isCardless' => false,
 ])
 
@@ -128,44 +128,16 @@
                 .ios-tile-relative {
                     position: relative !important;
                 }
-
-                .ios-close-button {
-                    position: absolute !important;
-                    top: 20px !important;
-                    right: 20px !important;
-                    left: auto !important;
-                    z-index: 20 !important;
-                    width: 32px !important;
-                    height: 32px !important;
-                    background-color: #fff !important;
-                    border: 1px solid #f4f4f5 !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    color: #a1a1aa !important;
-                    transition: all 0.2s ease !important;
-                }
-
-                .ios-close-button:hover {
-                    color: #7C45F5 !important;
-                    border-color: #e4e4e7 !important;
-                }
-
-                .ios-close-button:active {
-                    transform: scale(0.95) !important;
-                }
             </style>
         @endpush
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container px-[60px] max-lg:px-8 max-md:px-4 account-animate-in {{ !$hasHeader ? 'min-h-[calc(100vh-80px)] flex flex-col justify-center pb-10 pt-6' : 'mt-8 mb-10 max-md:mt-5 max-md:mb-5' }}">
+            class="container px-[60px] max-lg:px-8 max-md:px-4 account-animate-in mt-8 mb-10 max-md:mt-5 max-md:mb-5">
 
             @php
                 $customer = auth()->guard('customer')->user();
             @endphp
-
-
 
             <div class="flex justify-center max-md:mt-5">
 
@@ -175,59 +147,48 @@
                         <x-shop::layouts.account.navigation />
                     </div>
                 @else
-                    @if (!$hasHeader)
-                        <!-- Onboarding / Solo Content -->
-                        <div class="w-full flex-1 flex flex-col bg-transparent mt-4 mb-2">
-                            <div class="w-full my-auto">
-                                {{ $slot }}
-                            </div>
-                        </div>
-                    @else
-                        <!-- Main Content Pane (Drill-Down View) -->
-                        <div class="flex flex-col w-full" style="max-width: 600px;">
-                            
-                            @if ($showBack || (isset($title) && !empty((string)$title)))
-                                <!-- Drill-Down Header: Positioned above the card -->
-                                <div class="flex items-center justify-between gap-3 px-5 pt-0 pb-4 mt-2">
-                                    @if (isset($title) && !empty((string)$title))
-                                        <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
+                    <!-- Main Content Pane (Drill-Down View) -->
+                    <div class="flex flex-col w-full" style="max-width: 600px;">
+                        
+                        @if ($showBack || (isset($title) && !empty((string)$title)))
+                            <!-- Drill-Down Header: Positioned above the card -->
+                            <div class="flex items-center justify-between gap-3 px-5 pt-0 pb-4 mt-2">
+                                @if (isset($title) && !empty((string)$title))
+                                    <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
+                                @endif
+
+                                <div class="flex items-center gap-2">
+                                    @if (isset($headerActions))
+                                        {{ $headerActions }}
                                     @endif
 
-                                    <div class="flex items-center gap-2">
-                                        @if (isset($headerActions))
-                                            {{ $headerActions }}
-                                        @endif
-
-                                        @if ($showBack)
-                                            <div class="flex items-center bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
-                                                {{-- Back Arrow (Left) --}}
-                                                <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
-                                                    class="w-8 h-8 flex items-center justify-center text-zinc-500 active:scale-95 transition-transform hover:text-[#7C45F5]">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                                                    </svg>
-                                                </a>
-                                            </div>
-                                        @endif
-                                    </div>
+                                    @if ($showBack)
+                                        <div class="flex items-center bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
+                                            {{-- Back Arrow (Left) --}}
+                                            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
+                                                class="w-8 h-8 flex items-center justify-center text-zinc-500 active:scale-95 transition-transform hover:text-[#7C45F5]">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    @endif
                                 </div>
-                            @endif
+                            </div>
+                        @endif
 
-                            @if ($isCardless)
-                                {{ $slot }}
-                            @else
-                                <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 mb-8 ">
-                                    <!-- Page Content -->
-                                    <div class="flex-1">
-                                        {{ $slot }}
-                                    </div>
+                        @if ($isCardless)
+                            {{ $slot }}
+                        @else
+                            <div class="flex flex-col w-full bg-white shadow-lg border border-gray-100 mb-8 ">
+                                <!-- Page Content -->
+                                <div class="flex-1">
+                                    {{ $slot }}
                                 </div>
-                            @endif
-                        </div>
-                    @endif
+                            </div>
+                        @endif
+                    </div>
                 @endif
-
-
             </div>
         </div>
 
@@ -242,7 +203,7 @@
                     // Intercept all <a> clicks within the account wrapper
                     document.addEventListener('click', function (e) {
                         const link = e.target.closest('a[href]');
-                        if (!link || link.id === 'account-close-button' || link.closest('#account-close-button')) return;
+                        if (!link) return;
 
                         const href = link.getAttribute('href');
                         // Only intercept internal, non-empty, non-anchor links
@@ -299,6 +260,11 @@
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
                 }
+            </script>
+        @endpush
+
+</x-shop::layouts>
+}
             </script>
         @endpush
 

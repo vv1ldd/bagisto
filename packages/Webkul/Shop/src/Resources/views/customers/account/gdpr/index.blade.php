@@ -11,11 +11,8 @@
 
 
 
-        <div class="mx-4 flex-auto ios-tile-relative bg-white border border-gray-100 pb-8">
+        <div class="mx-4 flex-auto  bg-white border border-gray-100 pb-8">
             <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-                class="ios-close-button">
-                <span class="icon-cancel text-xl"></span>
-            </a>
 
             <div class="px-5 pt-6 pb-2">
                 <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">

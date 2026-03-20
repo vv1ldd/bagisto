@@ -1,7 +1,7 @@
 <x-shop::layouts.account :has-header="false" :is-cardless="true">
     <div class="mx-auto max-w-[600px] mt-8 mb-10">
         {{-- Master Unified Tile --}}
-        <div class="bg-white shadow-2xl border border-zinc-100 overflow-hidden relative ios-tile-relative">
+        <div class="bg-white shadow-2xl border border-zinc-100 overflow-hidden relative ">
             
             {{-- Unified Header --}}
             <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-50 bg-zinc-50/30">
