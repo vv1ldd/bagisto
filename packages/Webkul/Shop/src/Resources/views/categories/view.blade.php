@@ -52,7 +52,7 @@
             <v-category :is-empty-initial="{{ $isEmpty ? 'true' : 'false' }}">
                 <!-- Category Shimmer Effect -->
                 @if ($isEmpty)
-                    <x-shop::shimmer.categories.empty />
+                    <x-shop::shimmer.categories.no-products />
                 @else
                     <x-shop::shimmer.categories.view />
                 @endif
@@ -72,7 +72,7 @@
                                                                         >
                                                                             <!-- Shimmer -->
                                                                             <template v-if="isLoading">
-                                                                                <x-shop::shimmer.categories.empty v-if="isEmptyInitial" />
+                                                                                <x-shop::shimmer.categories.no-products v-if="isEmptyInitial" />
                                                                                 <x-shop::shimmer.products.cards.list count="12" v-else />
                                                                             </template>
 
@@ -111,7 +111,7 @@
                                                                         <div v-else class="mt-8 max-md:mt-5">
                                                                             <!-- Shimmer -->
                                                                             <template v-if="isLoading">
-                                                                                <x-shop::shimmer.categories.empty v-if="isEmptyInitial" />
+                                                                                <x-shop::shimmer.categories.no-products v-if="isEmptyInitial" />
                                                                                 <div v-else class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2">
                                                                                     <x-shop::shimmer.products.cards.grid count="12" />
                                                                                 </div>
