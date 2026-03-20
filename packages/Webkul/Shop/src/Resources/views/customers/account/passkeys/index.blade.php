@@ -14,7 +14,6 @@
         <x-slot:title></x-slot:title>
 
         <div class="bg-white border border-zinc-100 mb-6 ">
-            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
 
             <div class="px-5 pt-6 pb-2 flex items-center gap-3">
                 <span class="text-2xl">🔑</span>

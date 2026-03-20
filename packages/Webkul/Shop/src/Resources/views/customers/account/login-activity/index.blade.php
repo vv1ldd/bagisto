@@ -10,7 +10,6 @@
         @endif
 
         <div class="flex-1 px-8 pt-6 pb-20 max-md:px-5 ">
-            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
 
             <div class="mb-10">
                 <!-- Tiled Header -->
