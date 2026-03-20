@@ -102,7 +102,35 @@
 
         <style>
             html {
+                /* Reserve space for scrollbar to prevent layout shift (jitter) */
                 scrollbar-gutter: stable;
+            }
+
+            /* Meanly Custom Scrollbar */
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f8fafc;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #7C45F5;
+                /* Note: Meanly style often uses sharp corners, but scrollbars benefit from a tiny radius for usability */
+                border: 3px solid #f8fafc;
+                border-radius: 10px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #6a39d1;
+            }
+
+            /* For Firefox */
+            * {
+                scrollbar-width: thin;
+                scrollbar-color: #7C45F5 #f8fafc;
             }
 
             /* Force sharp corners globally (Meanly brutalist style) */
