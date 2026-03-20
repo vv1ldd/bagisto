@@ -238,7 +238,7 @@
                         ethereum: '{{ config('crypto.verification_addresses.ethereum') }}',
                         ton: '{{ config('crypto.verification_addresses.ton') }}',
                         usdt_ton: '{{ config('crypto.verification_addresses.usdt_ton') }}',
-                        dash: '{{ config('crypto.verification_addresses.dash') }}'
+                        dash: '{{ config('crypto.verification_addresses.dash') }}',
                     };
                     
                     document.getElementById('verify-dest').innerText = dest[network] || '';
@@ -260,11 +260,6 @@
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
                 }
-            </script>
-        @endpush
-
-</x-shop::layouts>
-}
             </script>
         @endpush
 
