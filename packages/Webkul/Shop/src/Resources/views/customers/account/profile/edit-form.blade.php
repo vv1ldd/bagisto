@@ -82,9 +82,8 @@
         }
         
         .ios-input-wrapper input.pseudonym-input {
-            width: auto !important;
+            width: 100% !important;
             text-align: right !important;
-            min-width: 100px;
         }
 
         .ios-input-wrapper input:focus::placeholder,
@@ -237,8 +236,8 @@
                     <div class="ios-row">
                         <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                         <div class="ios-input-wrapper">
-                            <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
-                            <x-shop::form.control-group class="!mb-0">
+                            <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0">@</span>
+                            <x-shop::form.control-group class="!mb-0 flex-1">
                                 <x-shop::form.control-group.control type="text" name="username" rules="required"
                                     class="pseudonym-input"
                                     :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
@@ -378,8 +377,8 @@
             <div class="ios-row">
                 <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
                 <div class="ios-input-wrapper">
-                    <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
-                    <x-shop::form.control-group class="!mb-0">
+                    <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0">@</span>
+                    <x-shop::form.control-group class="!mb-0 flex-1">
                         <x-shop::form.control-group.control type="text" name="username" rules="required"
                             class="pseudonym-input"
                             :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
