@@ -4,7 +4,7 @@
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-date-picker-template">
-                <span class="relative">
+                <span class="relative block w-full">
                     <slot></slot>
                 </span>
             </script>
