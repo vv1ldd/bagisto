@@ -18,7 +18,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 20px;
+            padding: 12px 16px 12px 20px;
             min-height: 52px;
             border-bottom: 1px solid #f3f4f6;
             position: relative;
@@ -53,6 +53,7 @@
             justify-content: flex-end;
             align-items: center;
             background: transparent !important;
+            padding-right: 24px; /* Space for the absolute arrow */
         }
 
         .ios-input-wrapper>div {
@@ -82,7 +83,7 @@
         
         .ios-input-wrapper input.pseudonym-input {
             width: auto !important;
-            text-align: left !important;
+            text-align: right !important;
             flex-grow: 0 !important;
         }
 
@@ -160,7 +161,16 @@
             cursor: pointer !important;
         }
 
-        .ios-arrow { margin-left: 8px; color: #d4d4d8; font-size: 18px; flex-shrink: 0; }
+        .ios-arrow { 
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d4d4d8; 
+            font-size: 18px; 
+            flex-shrink: 0; 
+            pointer-events: none;
+        }
         .ios-input-wrapper select { padding-right: 0 !important; text-align: right; text-align-last: right; }
 
         .ios-switch-row {
@@ -190,12 +200,13 @@
         .ios-switch input:checked+.ios-slider:before { transform: translateX(20px); }
 
         @media (max-width: 768px) {
-            .ios-settings-wrapper { padding: 0 12px; }
+            .ios-settings-wrapper { padding: 0 8px; }
             .ios-group { margin-bottom: 12px; }
-            .ios-row { padding: 8px 14px; min-height: 44px; }
-            .ios-label { font-size: 14px; }
-            .ios-input-wrapper { margin-left: 10px; }
+            .ios-row { padding: 8px 12px 8px 14px; min-height: 44px; }
+            .ios-label { font-size: 14px; max-width: 40%; white-space: normal; line-height: 1.2; }
+            .ios-input-wrapper { margin-left: 8px; padding-right: 20px; }
             .ios-input-wrapper input, .ios-input-wrapper select { font-size: 14px !important; }
+            .ios-arrow { right: 10px; font-size: 16px; }
             .ios-switch-row { padding: 10px 14px; margin-bottom: 16px; }
         }
     </style>
