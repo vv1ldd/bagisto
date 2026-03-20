@@ -1,6 +1,4 @@
 <x-shop::layouts.account :show-back="false" :has-header="true" :has-footer="true" :is-cardless="true">
-    <x-slot:title>Разблокировка Кошелька</x-slot:title>
-
     <div class="flex flex-col items-center justify-center min-h-[50vh] py-12 px-6 animate-page-entry relative">
         
         {{-- Ambient background glows (Relative to container) --}}
@@ -35,14 +33,9 @@
                         <div id="retry-container" class="hidden w-full flex flex-col items-center animate-slide-up">
                             <button 
                                 onclick="triggerPasskeyAuth()"
-                                class="w-full bg-[#7C45F5] text-white font-black py-4 rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6836d4] transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[13px] uppercase tracking-widest mb-6">
+                                class="w-full bg-[#7C45F5] text-white font-black py-4 rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6836d4] transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[13px] uppercase tracking-widest">
                                 <span>Попробовать снова</span>
                             </button>
-                            
-                            <a href="{{ route('shop.customers.account.index') }}" class="text-[11px] font-black text-zinc-400 hover:text-[#7C45F5] transition-colors duration-300 uppercase tracking-[0.2em] flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                                На главную
-                            </a>
                         </div>
                     </div>
                 @else
@@ -66,16 +59,7 @@
                 @endif
             </div>
 
-            <div class="mt-8 flex items-center justify-center gap-2 py-2 px-5 bg-zinc-50 rounded-full border border-zinc-100 shadow-sm animate-slide-up animation-delay-500">
-                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]" id="unlock-status">
-                    @if(session()->has('error'))
-                        <span class="text-red-500">{{ session('error') }}</span>
-                    @else
-                        End-to-End Encryption
-                    @endif
-                </p>
-            </div>
+            <div id="unlock-status" class="hidden"></div>
 
             <meta name="csrf-token" content="{{ csrf_token() }}">
         </div>

@@ -44,7 +44,10 @@
         @if ($customer && $customer->username)
             @php
                 $hasPasskey = $customer->passkeys()->exists();
-                $isUnlocked = session('logged_in_via_passkey');
+                
+                // Keep inline with the CheckWalletAccess middleware logic
+                $unlockedAt = session('wallet_unlocked_at') ?: (session('logged_in_via_passkey') ? session('passkey_unlocked_at') : null);
+                $isUnlocked = $unlockedAt && (time() - $unlockedAt <= 900);
             @endphp
 
             <div class="nav-tile cursor-pointer"
