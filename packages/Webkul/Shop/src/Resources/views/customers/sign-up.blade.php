@@ -53,7 +53,7 @@
                     </x-shop::form.control-group.label>
 
                     <x-shop::form.control-group.control type="email"
-                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-[12px] focus:!ring-2 focus:!ring-zinc-500 w-full"
+                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-none focus:!ring-2 focus:!ring-zinc-500 w-full"
                         name="email" rules="required|email" :value="old('email')"
                         :label="trans('shop::app.customers.signup-form.email')" placeholder="email@example.com" />
 
@@ -94,7 +94,7 @@
 
                 <div class="mt-4">
                     <button
-                        class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
+                        class="w-full !rounded-none bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
                         type="submit" :disabled="!meta.valid">
                         @lang('shop::app.customers.signup-form.button-title')
                     </button>

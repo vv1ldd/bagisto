@@ -14,7 +14,7 @@
         <div id="login-options-container" class="flex flex-col gap-2 transition-all duration-300">
             <!-- Passkey Login Button (Primary focus) -->
             <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
-                class="flex w-full items-center justify-center gap-3 !rounded-[20px] bg-[#7C45F5] px-8 py-3 text-center font-medium text-white transition hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
+                class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-3 text-center font-medium text-white transition hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -40,7 +40,7 @@
             <div id="email-login-form-button-container" class="{{ $showEmailForm ? 'hidden' : '' }}">
                 <button type="button" id="show-email-form-button"
                     onclick="document.getElementById('email-login-form-button-container').classList.add('hidden'); document.getElementById('email-login-form-container').classList.remove('hidden'); document.getElementById('passkey-login-button').classList.add('!hidden'); document.querySelector('.login-options-container-or').classList.add('hidden');"
-                    class="flex w-full items-center justify-center gap-3 !rounded-[20px] border border-zinc-200 bg-white px-8 py-3 text-center font-medium text-zinc-700 transition hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2">
+                    class="flex w-full items-center justify-center gap-3 !rounded-none border border-zinc-200 bg-white px-8 py-3 text-center font-medium text-zinc-700 transition hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
@@ -72,7 +72,7 @@
                         </x-shop::form.control-group.label>
 
                         <x-shop::form.control-group.control type="email"
-                            class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-[12px] focus:!ring-2 focus:!ring-zinc-500 w-full"
+                            class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-none focus:!ring-2 focus:!ring-zinc-500 w-full"
                             name="email" rules="required|email" :value="old('email')"
                             :label="trans('shop::app.customers.login-form.email')" placeholder="email@example.com" />
 
@@ -85,7 +85,7 @@
                     </x-shop::form.control-group>
 
                     <button
-                        class="w-full !rounded-[20px] bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
+                        class="w-full !rounded-none bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
                         type="submit" :disabled="!meta.valid">
                         Отправить ссылку для входа
                     </button>
