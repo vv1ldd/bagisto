@@ -171,19 +171,12 @@
             pointer-events: none;
         }
         .ios-input-wrapper select { 
-            padding-right: 20px !important; 
             text-align: right; 
             text-align-last: right; 
             appearance: none;
             -webkit-appearance: none;
             outline: none;
             background-color: transparent;
-        }
-
-        @media (max-width: 768px) {
-            .ios-input-wrapper select { 
-                padding-right: 28px !important; 
-            }
         }
 
         .ios-switch-row {
@@ -311,7 +304,7 @@
                     @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
                         <div class="ios-row">
                             <label class="ios-label">@lang('shop::app.customers.account.profile.edit.gender') <span class="text-red-500">*</span></label>
-                            <div class="ios-input-wrapper relative">
+                            <div class="ios-input-wrapper">
                                 <x-shop::form.control-group class="!mb-0 flex-1">
                                     <x-shop::form.control-group.control type="select" name="gender" rules="required"
                                         :value="old('gender') ?? (str_starts_with($customer->gender, '$2y$') ? '' : $customer->gender)"
@@ -467,7 +460,7 @@
             @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
                 <div class="ios-row">
                     <label class="ios-label">@lang('shop::app.customers.account.profile.edit.gender') <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper relative">
+                    <div class="ios-input-wrapper">
                         <x-shop::form.control-group class="!mb-0 flex-1">
                             <x-shop::form.control-group.control type="select" name="gender" rules="required"
                                 :value="old('gender') ?? (str_starts_with($customer->gender, '$2y$') ? '' : $customer->gender)"

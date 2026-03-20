@@ -58,6 +58,16 @@
 
                         onChange: function (selectedDates, dateStr, instance) {
                             self.$emit("onChange", dateStr);
+                        },
+
+                        onOpen: function (selectedDates, dateStr, instance) {
+                            if (window.innerWidth < 768) {
+                                instance.calendarContainer.classList.add('mobile-center');
+                            }
+                        },
+
+                        onClose: function (selectedDates, dateStr, instance) {
+                            instance.calendarContainer.classList.remove('mobile-center');
                         }
                     };
                 },
@@ -80,4 +90,44 @@
             }
         });
     </script>
+
+    <style>
+        @media (max-width: 767px) {
+            .flatpickr-calendar.mobile-center {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                margin: 0 !important;
+                z-index: 999999 !important;
+            }
+            
+            .flatpickr-calendar.mobile-center::before {
+                content: '';
+                position: fixed;
+                top: -100vh;
+                left: -100vw;
+                width: 200vw;
+                height: 200vh;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: -1;
+                pointer-events: none;
+            }
+
+            .flatpickr-calendar.mobile-center.animate.open {
+                animation: fpFadeInCenter 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            }
+
+            @keyframes fpFadeInCenter {
+                from {
+                    opacity: 0;
+                    transform: translate(-50%, -45%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translate(-50%, -50%);
+                }
+            }
+        }
+    </style>
 @endPushOnce
