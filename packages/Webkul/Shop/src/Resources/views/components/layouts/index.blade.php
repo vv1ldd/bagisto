@@ -250,7 +250,7 @@
                 {!! view_render_event('bagisto.shop.layout.content.before') !!}
 
                 <!-- Page Content Blade Component -->
-                <main id="main" class="flex-grow flex flex-col">
+                <main id="main" class="flex-grow flex flex-col" style="padding-top: 56px;">
                     {{ $slot }}
                 </main>
 
@@ -277,6 +277,184 @@
         @stack('scripts')
 
         {!! view_render_event('bagisto.shop.layout.vue-app-mount.before') !!}
+        <script>
+            /**
+             * Compensate for fixed header height dynamically.
+             */
+            (function() {
+                function adjustHeaderOffset() {
+                    var header = document.getElementById('shop-header');
+                    var main = document.getElementById('main');
+                    if (header && main) {
+                        main.style.paddingTop = header.offsetHeight + 'px';
+                    }
+                }
+                window.addEventListener('load', adjustHeaderOffset);
+                window.addEventListener('resize', adjustHeaderOffset);
+                // Run immediately on DOMContentLoaded as well for fast connections
+                document.addEventListener('DOMContentLoaded', adjustHeaderOffset);
+            })();
+
+            /**
+             * ─── Lightweight SPA Navigation Router ───────────────────────────────
+             *
+             * Intercepts internal link clicks, fetches the new page, and swaps
+             * only the <main> content — keeping the header static in the DOM.
+             * Falls back to normal navigation for special links.
+             */
+            (function () {
+                // Links/routes that must do a full page reload
+                var FULL_RELOAD_PATTERNS = [
+                    '/customer/login', '/customer/logout', '/customer/register',
+                    '/checkout/', '/cart', '/admin', 'javascript:',
+                    '/customer/login', '/customer/reset-password', '/customer/forgot-password',
+                ];
+
+                var SKIP_EXTENSIONS = ['.pdf', '.zip', '.png', '.jpg', '.svg', '.xml'];
+
+                var isFetching = false;
+                var progressBar = null;
+
+                function createProgressBar() {
+                    var bar = document.createElement('div');
+                    bar.id = 'spa-progress';
+                    bar.style.cssText = 'position:fixed;top:0;left:0;z-index:9999;height:2px;width:0;background:linear-gradient(to right,#7C45F5,#a78bfa);transition:width 0.2s ease,opacity 0.4s ease;pointer-events:none;';
+                    document.body.appendChild(bar);
+                    return bar;
+                }
+
+                function showProgress() {
+                    if (!progressBar) progressBar = createProgressBar();
+                    progressBar.style.width = '0';
+                    progressBar.style.opacity = '1';
+                    setTimeout(function () { progressBar.style.width = '70%'; }, 30);
+                }
+
+                function finishProgress() {
+                    if (!progressBar) return;
+                    progressBar.style.width = '100%';
+                    setTimeout(function () { progressBar.style.opacity = '0'; progressBar.style.width = '0'; }, 300);
+                }
+
+                function shouldSkip(href) {
+                    if (!href) return true;
+                    if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return true;
+                    try {
+                        var url = new URL(href, window.location.origin);
+                        if (url.origin !== window.location.origin) return true;
+                        var path = url.pathname.toLowerCase();
+                        for (var i = 0; i < FULL_RELOAD_PATTERNS.length; i++) {
+                            if (path.includes(FULL_RELOAD_PATTERNS[i])) return true;
+                        }
+                        for (var j = 0; j < SKIP_EXTENSIONS.length; j++) {
+                            if (path.endsWith(SKIP_EXTENSIONS[j])) return true;
+                        }
+                        return false;
+                    } catch(e) { return true; }
+                }
+
+                function extractMain(html) {
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(html, 'text/html');
+                    return {
+                        title: doc.title,
+                        main: doc.getElementById('main'),
+                        scripts: doc.querySelectorAll('#main script[type="module"]'),
+                    };
+                }
+
+                function swapContent(href, push) {
+                    if (isFetching) return;
+                    isFetching = true;
+                    showProgress();
+
+                    // Fade out main
+                    var mainEl = document.getElementById('main');
+                    if (mainEl) { mainEl.style.opacity = '0'; mainEl.style.transition = 'opacity 0.12s ease'; }
+
+                    fetch(href, { headers: { 'X-Spa-Request': '1' } })
+                        .then(function(r) { return r.ok ? r.text() : Promise.reject(r.status); })
+                        .then(function(html) {
+                            var parsed = extractMain(html);
+                            if (!parsed.main) { window.location.href = href; return; }
+
+                            // Update title
+                            document.title = parsed.title;
+
+                            // Swap main content
+                            var currentMain = document.getElementById('main');
+                            if (currentMain) {
+                                currentMain.innerHTML = parsed.main.innerHTML;
+                                currentMain.style.opacity = '1';
+                            }
+
+                            // Update header filter bar for active route
+                            // (Re-render happens server-side; header stays static in DOM)
+                            
+                            // Push history
+                            if (push) { history.pushState({ spa: true, href: href }, parsed.title, href); }
+
+                            // Scroll to top
+                            window.scrollTo({ top: 0 });
+
+                            // Re-execute inline module scripts from new content
+                            parsed.scripts.forEach(function (oldScript) {
+                                var s = document.createElement('script');
+                                s.type = 'module';
+                                s.textContent = oldScript.textContent;
+                                document.body.appendChild(s);
+                            });
+
+                            // Re-mount Vue on the swapped content
+                            if (window.app && window.app._context) {
+                                try { window.app.mount('#app'); } catch(e) {/* already mounted */}
+                            }
+
+                            finishProgress();
+                            isFetching = false;
+                        })
+                        .catch(function() {
+                            // On any error, fall back to normal navigation
+                            window.location.href = href;
+                            isFetching = false;
+                            finishProgress();
+                        });
+                }
+
+                // Intercept clicks
+                document.addEventListener('click', function(e) {
+                    var link = e.target.closest('a[href]');
+                    if (!link) return;
+                    if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+                    if (link.target === '_blank') return;
+                    if (link.getAttribute('data-turbo') === 'false' || link.getAttribute('data-spa') === 'false') return;
+                    // Skip download links
+                    if (link.hasAttribute('download')) return;
+
+                    var href = link.href;
+                    if (shouldSkip(href)) return;
+
+                    // Same URL: just scroll to top
+                    if (href === window.location.href) { e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+
+                    e.preventDefault();
+                    swapContent(href, true);
+                }, { passive: false });
+
+                // Handle browser back/forward
+                window.addEventListener('popstate', function(e) {
+                    if (e.state && e.state.spa) {
+                        swapContent(e.state.href || window.location.href, false);
+                    } else {
+                        window.location.reload();
+                    }
+                });
+
+                // Store initial state
+                history.replaceState({ spa: true, href: window.location.href }, document.title, window.location.href);
+            })();
+        </script>
+
         <script>
             /**
              * Load event, the purpose of using the event is to mount the application
