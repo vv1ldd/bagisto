@@ -86,13 +86,13 @@
                                                                                                                         <input type="hidden" name="is_buy_now" v-model="is_buy_now">
                                                                                                                         <input type="hidden" name="quantity" v-model="qty">
 
-                                                                                    <div class="w-full max-w-5xl mx-auto px-4 lg:px-6 space-y-6 pt-6 flex flex-col md:flex-row md:items-start md:gap-8 lg:gap-12">
+                                                                                    <div class="w-full max-w-6xl mx-auto px-4 lg:px-6 space-y-4 pt-4 flex flex-col md:flex-row md:items-start md:gap-6 lg:gap-10">
 
                                                                                         <!-- LEFT COLUMN: Product Card -->
-                                                                                        <div class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-col items-stretch w-full md:max-w-[420px] shrink-0">
+                                                                                        <div class="bg-white border border-zinc-100 shadow-xl overflow-hidden flex flex-col items-stretch w-full md:max-w-[480px] shrink-0">
 
                                                                                             <!-- Header: Title + Actions (Heart + Cross) -->
-                                                                                            <div class="p-6 pb-4 max-sm:p-4 max-sm:pb-2 flex items-center justify-between gap-4 relative z-10 w-full border-b border-zinc-50">
+                                                                                            <div class="px-5 py-4 max-sm:px-4 max-sm:py-3 flex items-center justify-between gap-4 relative z-10 w-full border-b border-zinc-50">
                                                                                                 <h1 class="text-lg font-black text-zinc-900 uppercase tracking-tighter leading-tight flex-1">
                                                                                                     {{ $product->name }}
                                                                                                 </h1>
@@ -117,15 +117,15 @@
                                                                                             </div>
 
                                                                                             <!-- Product Image (Full width of the card) -->
-                                                                                            <div class="relative w-full flex items-center justify-center bg-zinc-50 border-y border-zinc-100 p-6 z-0">
-                                                                                                <img src="{{ $productBaseImage['medium_image_url'] }}"
-                                                                                                     class="w-full h-auto object-contain transition-transform duration-500 hover:scale-105"
-                                                                                                     style="max-height: 280px;"
+                                                                                            <div class="relative w-full flex items-center justify-center bg-zinc-50 border-y border-zinc-100 p-4 z-0">
+                                                                                                 <img src="{{ $productBaseImage['medium_image_url'] }}"
+                                                                                                      class="w-full h-auto object-contain transition-transform duration-500 hover:scale-105"
+                                                                                                      style="max-height: 320px;"
                                                                                                      alt="{{ $product->name }}">
                                                                                             </div>
 
                                                                                             <!-- Info, Price, Actions -->
-                                                                                            <div class="flex flex-col gap-4 p-6 max-sm:p-4 bg-white relative z-10 text-center items-center">
+                                                                                            <div class="flex flex-col gap-3 p-5 max-sm:p-4 bg-white relative z-10 text-center items-center">
 
                                                                                                 <div class="space-y-4 w-full">
                                                                                                     <!-- Attributes / Brand -->
@@ -141,7 +141,7 @@
                                                                                                     @endif
 
                                                                                                     <!-- Price & Quantity Row -->
-                                                                                                    <div class="flex items-center justify-between gap-4 w-full border-y border-zinc-50 py-4">
+                                                                                                    <div class="flex items-center justify-between gap-4 w-full border-y border-zinc-50 py-3">
                                                                                                         <div class="text-2xl font-black tracking-tight text-zinc-900 md:text-3xl text-left">
                                                                                                             {!! $product->getTypeInstance()->getPriceHtml() !!}
                                                                                                         </div>
