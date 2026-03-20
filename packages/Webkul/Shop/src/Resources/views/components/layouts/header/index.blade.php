@@ -7,7 +7,7 @@
         </div>
     @endif
 
-    <header class="w-full min-h-[56px] sm:min-h-[70px] bg-transparent">
+    <header class="w-full h-[64px] bg-transparent">
         <!-- Desktop Header -->
         <div class="max-lg:hidden">
             <x-shop::layouts.header.desktop />

@@ -2,7 +2,7 @@
     $showCategories = false;
 @endphp
 
-<div class="w-full max-w-7xl mx-auto px-4 py-3 sm:px-8 sm:py-6 flex items-center justify-between">
+<div class="w-full max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between h-[64px]">
     {{-- LEFT: Logo --}}
     <div class="flex items-center flex-shrink-0">
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
@@ -10,7 +10,7 @@
         <a href="{{ route('shop.home.index') }}" class="group flex items-center gap-2"
             aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
             <span
-                class="text-2xl font-black tracking-tighter text-[#7C45F5] transition-transform group-hover:scale-105 leading-none">
+                class="text-2xl font-black tracking-tighter text-[#7C45F5] leading-none">
                 {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}
             </span>
         </a>
@@ -30,8 +30,21 @@
     </div>
 
     {{-- RIGHT: Unified Navigation Section (Profile & Cart) --}}
-    <div class="flex items-center gap-3 flex-shrink-0">
-        <v-header-nav></v-header-nav>
+    {{-- SSR skeleton ensures the space is pre-reserved before Vue hydrates --}}
+    <div class="flex items-center gap-3 flex-shrink-0 min-w-[160px] justify-end">
+        <v-header-nav>
+            {{-- SSR fallback: rendered server-side, Vue replaces it on mount --}}
+            @auth('customer')
+                <div class="flex items-center gap-2.5 bg-white/60 border border-white/80 backdrop-blur-md shadow-sm px-3 py-1.5 leading-none" style="visibility: hidden; pointer-events: none;">
+                    <div class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-bold ring-2 ring-white">
+                        <span class="text-[10px] uppercase">{{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}</span>
+                    </div>
+                    <span class="text-xs font-black text-zinc-600 truncate max-w-[120px]">@{{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}</span>
+                </div>
+            @else
+                <div style="visibility: hidden; pointer-events: none;" class="flex items-center justify-center border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-[14px] font-bold text-[#7C45F5]">Войти / Регистрация</div>
+            @endauth
+        </v-header-nav>
     </div>
 </div>
 
