@@ -25,6 +25,12 @@
     clip-path: none !important;
 }
 
+html,
+body {
+    overscroll-behavior: none;
+    scrollbar-gutter: stable;
+}
+
 input,
 textarea,
 select,
