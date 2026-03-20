@@ -130,14 +130,12 @@ $searchInstead = $suggestion ? $query : null;
                                                                 </template>
                                                             </div>
 
-                                                            <!-- Load More Button -->
-                                                            <button
-                                                                class="secondary-button mx-auto mt-[60px] block w-max  px-11 py-3 text-center text-base max-md: max-md:text-sm max-sm:mt-7 max-sm:px-7 max-sm:py-2"
-                                                                @click="loadMoreProducts"
-                                                                v-if="links.next"
-                                                            >
-                                                                @lang('shop::app.categories.view.load-more')
-                                                            </button>
+                                                            <!-- Infinite Scroll Sentinel -->
+                                                            <div id="infinite-scroll-sentinel" ref="infiniteScrollSentinel" class="flex justify-center py-10" v-if="links.next">
+                                                                <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:gap-x-3 max-sm:mt-5 max-sm:justify-items-center max-sm:gap-y-4 w-full" v-if="loader">
+                                                                    <x-shop::shimmer.products.cards.grid count="5" />
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                             </script>
@@ -171,6 +169,8 @@ $searchInstead = $suggestion ? $query : null;
                             products: [],
 
                             links: {},
+
+                            loader: false,
                         }
                     },
 
@@ -206,6 +206,14 @@ $searchInstead = $suggestion ? $query : null;
                         this.$emitter.on('header-toolbar-applied', toolbar => {
                             this.setFilters('toolbar', toolbar);
                         });
+
+                        this.initInfiniteScroll();
+                    },
+
+                    beforeUnmount() {
+                        if (this.observer) {
+                            this.observer.disconnect();
+                        }
                     },
 
                     methods: {
@@ -242,18 +250,42 @@ $searchInstead = $suggestion ? $query : null;
                                 });
                         },
 
-                        loadMoreProducts() {
-                            if (this.links.next) {
-                                this.$axios.get(this.links.next)
-                                    .then(response => {
-                                        this.products = [...this.products, ...response.data.data];
+                        initInfiniteScroll() {
+                            this.$nextTick(() => {
+                                const sentinel = this.$refs.infiniteScrollSentinel;
+                                if (!sentinel) return;
 
-                                        this.links = response.data.links;
-                                    })
-                                    .catch(error => {
-                                        console.error("Failed to load more search results:", error);
-                                    });
+                                this.observer = new IntersectionObserver((entries) => {
+                                    if (entries[0].isIntersecting && this.links.next && !this.loader) {
+                                        this.loadMoreProducts();
+                                    }
+                                }, {
+                                    rootMargin: '200px',
+                                });
+
+                                this.observer.observe(sentinel);
+                            });
+                        },
+
+                        loadMoreProducts() {
+                            if (this.loader || !this.links.next) {
+                                return;
                             }
+
+                            this.loader = true;
+
+                            this.$axios.get(this.links.next)
+                                .then(response => {
+                                    this.loader = false;
+
+                                    this.products = [...this.products, ...response.data.data];
+
+                                    this.links = response.data.links;
+                                })
+                                .catch(error => {
+                                    this.loader = false;
+                                    console.error("Failed to load more search results:", error);
+                                });
                         },
 
                         removeJsonEmptyValues(params) {

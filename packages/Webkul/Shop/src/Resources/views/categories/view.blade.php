@@ -142,26 +142,12 @@
 
                                                                         {!! view_render_event('bagisto.shop.categories.view.load_more_button.before') !!}
 
-                                                                        <!-- Load More Button -->
-                                                                        <button
-                                                                            class="secondary-button mx-auto mt-14 block w-max  px-11 py-3 text-center text-base max-md: max-sm:mt-6 max-sm:px-6 max-sm:py-1.5 max-sm:text-sm"
-                                                                            @click="loadMoreProducts"
-                                                                            v-if="links.next && ! loader"
-                                                                        >
-                                                                            @lang('shop::app.categories.view.load-more')
-                                                                        </button>
-
-                                                                        <button
-                                                                            v-else-if="links.next"
-                                                                            class="secondary-button mx-auto mt-14 block w-max  px-[74.5px] py-3.5 text-center text-base max-md: max-md:py-3 max-sm:mt-6 max-sm:px-[50.8px] max-sm:py-1.5"
-                                                                        >
-                                                                            <!-- Spinner -->
-                                                                            <img
-                                                                                class="h-5 w-5 animate-spin text-navyBlue"
-                                                                                src="{{ bagisto_asset('images/spinner.svg') }}"
-                                                                                alt="Loading"
-                                                                            />
-                                                                        </button>
+                                                                        <!-- Infinite Scroll Sentinel -->
+                                                                        <div id="infinite-scroll-sentinel" ref="infiniteScrollSentinel" class="flex justify-center py-10" v-if="links.next">
+                                                                            <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 w-full" v-if="loader">
+                                                                                <x-shop::shimmer.products.cards.grid count="5" />
+                                                                            </div>
+                                                                        </div>
 
                                                                         {!! view_render_event('bagisto.shop.categories.view.grid.load_more_button.after') !!}
                                                                     </div>
@@ -233,6 +219,14 @@
                         this.$emitter.on('header-toolbar-applied', toolbar => {
                             this.setFilters('toolbar', toolbar);
                         });
+
+                        this.initInfiniteScroll();
+                    },
+
+                    beforeUnmount() {
+                        if (this.observer) {
+                            this.observer.disconnect();
+                        }
                     },
 
                     methods: {
@@ -271,6 +265,23 @@
 
                                     this.isLoading = false;
                                 });
+                        },
+
+                        initInfiniteScroll() {
+                            this.$nextTick(() => {
+                                const sentinel = this.$refs.infiniteScrollSentinel;
+                                if (!sentinel) return;
+
+                                this.observer = new IntersectionObserver((entries) => {
+                                    if (entries[0].isIntersecting && this.links.next && !this.loader) {
+                                        this.loadMoreProducts();
+                                    }
+                                }, {
+                                    rootMargin: '200px', // Trigger slightly before reaching the bottom
+                                });
+
+                                this.observer.observe(sentinel);
+                            });
                         },
 
                         loadMoreProducts() {
