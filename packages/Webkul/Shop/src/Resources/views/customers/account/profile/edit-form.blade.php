@@ -84,7 +84,7 @@
         .ios-input-wrapper input.pseudonym-input {
             width: auto !important;
             text-align: right !important;
-            flex-grow: 0 !important;
+            min-width: 100px;
         }
 
         .ios-input-wrapper input:focus::placeholder,
@@ -234,10 +234,10 @@
         <div class="w-full mx-auto relative">
             <div class="ios-group w-full !mb-2 !overflow-hidden">
                     {{-- Fields for registration mode --}}
-                    <div class="ios-row !flex-col !items-start !h-auto !py-3">
-                        <div class="flex items-center justify-between w-full">
-                            <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
-                            <div class="ios-input-wrapper !justify-end">
+                    <div class="ios-row">
+                        <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
+                        <div class="ios-input-wrapper">
+                            <div class="flex items-center justify-end w-full">
                                 <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
                                 <x-shop::form.control-group class="!mb-0">
                                     <x-shop::form.control-group.control type="text" name="username" rules="required"
@@ -249,8 +249,8 @@
                                         v-on:focus="clearDefaultUsername($event)"
                                         v-on:input="debounceCheckUsername($event.target.value)" />
                                 </x-shop::form.control-group>
-                                <span class="ios-arrow icon-arrow-right"></span>
                             </div>
+                            <span class="ios-arrow icon-arrow-right"></span>
                         </div>
                     </div>
                     <div class="ios-row">
@@ -377,10 +377,10 @@
                 <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">Профиль</h1>
             </div>
 
-            <div class="ios-row !flex-col !items-start !h-auto !py-3">
-                <div class="flex items-center justify-between w-full">
-                    <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper !justify-end">
+            <div class="ios-row">
+                <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
+                <div class="ios-input-wrapper">
+                    <div class="flex items-center justify-end w-full">
                         <span class="text-zinc-400 mr-0.5 text-[15px] select-none">@</span>
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.control type="text" name="username" rules="required"
@@ -392,8 +392,8 @@
                                 v-on:focus="clearDefaultUsername($event)"
                                 v-on:input="debounceCheckUsername($event.target.value)" />
                         </x-shop::form.control-group>
-                        <span class="ios-arrow icon-arrow-right"></span>
                     </div>
+                    <span class="ios-arrow icon-arrow-right"></span>
                 </div>
             </div>
             <div class="ios-row">
