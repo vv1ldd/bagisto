@@ -4,7 +4,7 @@
     <!-- Shimmer Effect -->
     <div class="flex items-center justify-between border border-b border-l-0 border-r-0 border-t-0 px-16">
         <!-- Currencies -->
-        <div class="flex w-20 items-center justify-between gap-2.5 py-3">
+        <div class="flex w-20 items-center justify-between gap-2.5 py-1.5">
             <div
                 class="shimmer h-6 w-12 "
                 role="presentation"
@@ -20,13 +20,13 @@
 
         <!-- Offers -->
         <div
-            class="shimmer h-6 w-72  py-3"
+            class="shimmer h-6 w-72  py-1.5"
             role="presentation"
         >
         </div>
 
         <!-- Locales -->
-        <div class="flex w-32 items-center justify-between gap-2.5 py-3">
+        <div class="flex w-32 items-center justify-between gap-2.5 py-1.5">
             <div
                 class="shimmer h-6 w-6"
                 role="presentation"
@@ -63,7 +63,7 @@
                 <!-- Dropdown Toggler -->
                 <x-slot:toggle>
                     <div
-                        class="flex cursor-pointer gap-2.5 py-3"
+                        class="flex cursor-pointer gap-2.5 py-1.5"
                         role="button"
                         tabindex="0"
                         @click="currencyToggler = ! currencyToggler"
@@ -90,7 +90,7 @@
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.top.currency_switcher.after') !!}
 
             <p
-                class="py-3 text-xs font-medium"
+                class="py-1.5 text-xs font-medium"
                 v-pre
             >
                 {{ core()->getConfigData('general.content.header_offer.title') }}
@@ -111,7 +111,7 @@
                 <x-slot:toggle>
                     <!-- Dropdown Toggler -->
                     <div
-                        class="flex cursor-pointer items-center gap-2.5 py-3"
+                        class="flex cursor-pointer items-center gap-2.5 py-1.5"
                         role="button"
                         tabindex="0"
                         @click="localeToggler = ! localeToggler"
