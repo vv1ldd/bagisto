@@ -73,7 +73,9 @@
                                                                             <!-- Shimmer -->
                                                                             <template v-if="isLoading">
                                                                                 <x-shop::shimmer.categories.no-products v-if="isEmptyInitial" />
-                                                                                <x-shop::shimmer.products.cards.list count="12" v-else />
+                                                                                <template v-else>
+                                                                                    <x-shop::shimmer.products.cards.list count="12" />
+                                                                                </template>
                                                                             </template>
 
                                                                             <!-- List card listing -->
