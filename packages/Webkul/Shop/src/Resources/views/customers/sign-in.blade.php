@@ -26,7 +26,7 @@
             @php
                 $showEmailForm = $errors->any() || session('email');
             @endphp
-            <div class="relative my-2 text-center {{ $showEmailForm ? 'hidden' : '' }}">
+            <div id="login-options-separator" class="relative my-2 text-center {{ $showEmailForm ? 'hidden' : '' }}">
                 <div class="absolute inset-0 flex items-center" aria-hidden="true">
                     <div class="w-full border-t border-zinc-200"></div>
                 </div>
@@ -39,7 +39,7 @@
             <!-- Show Email Login Form Button -->
             <div id="email-login-form-button-container" class="{{ $showEmailForm ? 'hidden' : '' }}">
                 <button type="button" id="show-email-form-button"
-                    onclick="document.getElementById('email-login-form-button-container').classList.add('hidden'); document.getElementById('email-login-form-container').classList.remove('hidden'); document.getElementById('passkey-login-button').classList.add('!hidden'); document.querySelector('.login-options-container-or').classList.add('hidden');"
+                    onclick="showEmailLoginForm()" 
                     class="flex w-full items-center justify-center gap-3 !rounded-none border border-zinc-200 bg-white px-8 py-3 text-center font-medium text-zinc-700 transition hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2">
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -51,15 +51,13 @@
                 </button>
             </div>
 
-            <!-- Separator for email view (hidden by default) -->
-            <div class="login-options-container-or relative mb-2 text-center hidden">
-                <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-zinc-200"></div>
-                </div>
-                <div class="relative">
-                    <span
-                        class="bg-white px-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">@lang('shop::app.customers.login-form.or')</span>
-                </div>
+            <!-- Back Button for email view (hidden by default) -->
+            <div id="back-to-options-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col items-center mb-2">
+                <button type="button" onclick="backToLoginOptions()" 
+                    class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
+                    <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
+                    @lang('shop::app.customers.login-form.back-to-login-options')
+                </button>
             </div>
 
             {{-- Magic Link Email Form (Hidden by default, auto-shown on errors) --}}
@@ -106,6 +104,26 @@
         @push('scripts')
             {!! \Webkul\Customer\Facades\Captcha::renderJS() !!}
             <script>
+                function showEmailLoginForm() {
+                    document.getElementById('email-login-form-button-container').classList.add('hidden');
+                    document.getElementById('login-options-separator').classList.add('hidden');
+                    document.getElementById('passkey-login-button').classList.add('!hidden');
+                    
+                    document.getElementById('email-login-form-container').classList.remove('hidden');
+                    document.getElementById('back-to-options-container').classList.remove('hidden');
+                    document.getElementById('back-to-options-container').classList.add('flex');
+                }
+
+                function backToLoginOptions() {
+                    document.getElementById('email-login-form-button-container').classList.remove('hidden');
+                    document.getElementById('login-options-separator').classList.remove('hidden');
+                    document.getElementById('passkey-login-button').classList.remove('!hidden');
+                    
+                    document.getElementById('email-login-form-container').classList.add('hidden');
+                    document.getElementById('back-to-options-container').classList.add('hidden');
+                    document.getElementById('back-to-options-container').classList.remove('flex');
+                }
+
                 // Password toggle 
                 (function () {
                     var passwordInput = document.getElementById('password-input');

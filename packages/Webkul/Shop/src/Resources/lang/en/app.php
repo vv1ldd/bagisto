@@ -48,6 +48,7 @@ return [
             'verify-first' => 'Verify your email account first.',
             'resend-verification' => 'Resend verification email again',
             'or' => 'OR',
+            'back-to-login-options' => 'Back to login options',
         ],
 
         'signup-form' => [
