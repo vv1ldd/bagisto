@@ -42,6 +42,15 @@
                 </a>
             </p>
         @else
+            <!-- Back Button to Login Options -->
+            <div class="flex flex-col items-center mb-6">
+                <a href="{{ route('shop.customer.session.index') }}" 
+                    class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
+                    <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
+                    @lang('shop::app.customers.login-form.back-to-login-options')
+                </a>
+            </div>
+
             <x-shop::form :action="route('shop.customers.register.store')" v-slot="{ meta }">
                 {!! view_render_event('bagisto.shop.customers.signup_form_controls.before') !!}
 
