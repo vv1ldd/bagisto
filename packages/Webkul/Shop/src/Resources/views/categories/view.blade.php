@@ -48,12 +48,6 @@
         @endphp
 
         @if (in_array($category->display_mode, [null, 'products_only', 'products_and_description']))
-            @include('shop::categories.filters')
-            
-            <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4">
-                <v-filters></v-filters>
-            </div>
-
             <!-- Category Vue Component -->
             <v-category :is-empty-initial="{{ $isEmpty ? 'true' : 'false' }}">
                 <!-- Category Shimmer Effect -->
