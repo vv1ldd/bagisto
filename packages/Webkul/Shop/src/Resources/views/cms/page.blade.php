@@ -15,12 +15,12 @@
         </x-slot>
 
         <!-- Page Content -->
-        <div class="container mt-8 mb-10 overflow-x-hidden px-[60px] max-lg:px-8 max-sm:px-4 flex justify-center">
-            <div class="ios-group ios-tile-relative w-full p-8 sm:p-12" style="max-width: 900px;">
+        <div class="container mt-8 mb-10 overflow-x-hidden px-0 sm:px-4 lg:px-8 xl:px-[60px] flex justify-center">
+            <div class="ios-group ios-tile-relative w-full px-5 py-10 sm:p-12" style="max-width: 1200px;">
                 <!-- Close Button -->
                 <button type="button"
                     onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
-                    class="ios-close-button">
+                    class="ios-close-button mt-4 sm:mt-0 mr-4 sm:mr-0">
                     <span class="icon-cancel text-2xl"></span>
                 </button>
 
