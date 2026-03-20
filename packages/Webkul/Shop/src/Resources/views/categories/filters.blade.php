@@ -20,11 +20,10 @@
                                                                                                     <template v-else>
                                                                                                             {{-- HORIZONTAL TOOLBAR --}}
                                                                                                             <div 
-                                                                                                                class="w-full px-0 py-0 flex items-center justify-center h-10 transition-all"
-                                                                                                                v-show="isMounted"
+                                                                                                                class="w-full px-0 py-0 flex items-center justify-center h-10"
                                                                                                             >
                                                                                                                 <div 
-                                                                                                                    class="flex items-center flex-nowrap transition-all h-full w-full gap-2 items-center justify-center"
+                                                                                                                    class="flex items-center flex-nowrap h-full w-full gap-2 items-center justify-center"
                                                                                                                 >
                                                                                                                     {{-- SEARCH: Box-style search input --}}
                                                                                                                     <div 

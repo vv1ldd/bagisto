@@ -228,7 +228,7 @@
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative">
             
-            <div id="main-content-wrapper" class="flex flex-col min-h-screen bg-transparent transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] px-0 md:px-0">
+            <div id="main-content-wrapper" class="flex flex-col min-h-screen bg-transparent px-0 md:px-0">
                 <!-- Flash Message Blade Component -->
                 <x-shop::flash-group />
 
