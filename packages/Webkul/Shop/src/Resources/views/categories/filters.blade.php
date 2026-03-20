@@ -94,16 +94,15 @@
                                                                                                                                         @values-applied="applyFilter(filter, $event)"
                                                                                                                                     />
                                                                                                                                 </div>
-                                                                                                                            </Teleport>
                                                                                                                         </div>
 
                                                                                                                         {{-- Sort Options --}}
-                                                                                                                        <div class="flex items-center gap-1.5 h-full ml-1" v-if="!isMobile">
+                                                                                                                        <div class="flex items-center gap-1.5 h-full ml-1 overflow-x-auto no-scrollbar">
                                                                                                                             <button
                                                                                                                                 v-for="sort in sortOptions"
                                                                                                                                 :key="sort.value"
                                                                                                                                 type="button"
-                                                                                                                                class="flex items-center gap-1 border !rounded-none font-semibold transition-all active:scale-[0.98] whitespace-nowrap h-full shadow-sm"
+                                                                                                                                class="flex items-center gap-1 border !rounded-none font-semibold transition-all active:scale-[0.98] whitespace-nowrap h-full shadow-sm flex-shrink-0"
                                                                                                                                 :class="[
                                                                                                                                     sort.value === currentSort
                                                                                                                                         ? 'border-[#7C45F5] bg-[#7C45F5] text-white'

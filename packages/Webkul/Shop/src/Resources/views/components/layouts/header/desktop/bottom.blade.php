@@ -22,13 +22,6 @@
 
     {{-- MIDDLE: Toolbar (Filters & Search) --}}
     <div class="flex-grow flex justify-center px-4">
-        @if (request()->routeIs('shop.productOrCategory.index') || request()->routeIs('shop.search.index'))
-            @include('shop::categories.filters')
-
-            <v-filters>
-                <x-shop::shimmer.categories.filters />
-            </v-filters>
-        @endif
     </div>
 
     {{-- RIGHT: Server-side rendered nav — no Vue, no CLS --}}

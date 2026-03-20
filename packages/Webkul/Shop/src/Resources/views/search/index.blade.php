@@ -42,6 +42,12 @@ $searchInstead = $suggestion ? $query : null;
             @endif
         </div>
 
+        @include('shop::categories.filters')
+
+        <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4">
+            <v-filters></v-filters>
+        </div>
+
         <!-- Product Listing -->
         <v-search>
             <x-shop::shimmer.categories.view />

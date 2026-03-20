@@ -43,11 +43,25 @@
 
         {!! view_render_event('bagisto.shop.categories.view.description.after') !!}
 
+        @php
+            $isEmpty = $category->products()->count() === 0;
+        @endphp
+
         @if (in_array($category->display_mode, [null, 'products_only', 'products_and_description']))
+            @include('shop::categories.filters')
+            
+            <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-4">
+                <v-filters></v-filters>
+            </div>
+
             <!-- Category Vue Component -->
-            <v-category>
+            <v-category :is-empty-initial="{{ $isEmpty ? 'true' : 'false' }}">
                 <!-- Category Shimmer Effect -->
-                <x-shop::shimmer.categories.view />
+                @if ($isEmpty)
+                    <x-shop::shimmer.categories.empty />
+                @else
+                    <x-shop::shimmer.categories.view />
+                @endif
             </v-category>
         @endif
 
@@ -64,7 +78,8 @@
                                                                         >
                                                                             <!-- Shimmer -->
                                                                             <template v-if="isLoading">
-                                                                                <x-shop::shimmer.products.cards.list count="12" />
+                                                                                <x-shop::shimmer.categories.empty v-if="isEmptyInitial" />
+                                                                                <x-shop::shimmer.products.cards.list count="12" v-else />
                                                                             </template>
 
                                                                             <!-- List card listing -->
@@ -102,7 +117,8 @@
                                                                         <div v-else class="mt-8 max-md:mt-5">
                                                                             <!-- Shimmer -->
                                                                             <template v-if="isLoading">
-                                                                                <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2">
+                                                                                <x-shop::shimmer.categories.empty v-if="isEmptyInitial" />
+                                                                                <div v-else class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2">
                                                                                     <x-shop::shimmer.products.cards.grid count="12" />
                                                                                 </div>
                                                                             </template>
@@ -156,6 +172,8 @@
             <script type="module">
                 app.component('v-category', {
                     template: '#v-category-template',
+
+                    props: ['isEmptyInitial'],
 
                     data() {
                         return {
