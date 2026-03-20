@@ -278,7 +278,7 @@
                 {!! view_render_event('bagisto.shop.layout.content.before') !!}
 
                 <!-- Page Content Blade Component -->
-                <main id="main" class="flex-grow flex flex-col" style="padding-top: 64px;">
+                <main id="main" class="flex-grow flex flex-col" style="{{ $hasHeader ? 'padding-top: 64px;' : '' }}">
                     {{ $slot }}
                 </main>
 
