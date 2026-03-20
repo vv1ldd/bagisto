@@ -150,31 +150,33 @@
                     <!-- Main Content Pane (Drill-Down View) -->
                     <div class="flex flex-col w-full" style="max-width: 600px;">
                         
-                        @if ($showBack || (isset($title) && !empty((string)$title)))
+                        <!-- Universal Floating Back Button -->
+                        <div class="relative w-full">
+                            <button type="button" 
+                                onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
+                                class="ios-back-button !shadow-none !border-[#e9e8f5]" style="top: -20px !important; left: 0px !important; width: 32px; height: 32px; z-index: 50;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        @if (isset($title) && !empty((string)$title))
                             <!-- Drill-Down Header: Positioned above the card -->
-                            <div class="flex items-center justify-between gap-3 px-5 pt-0 pb-4 mt-2">
-                                @if (isset($title) && !empty((string)$title))
-                                    <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
-                                @endif
-
+                            <div class="flex items-center justify-between gap-3 px-10 pt-0 pb-4 mt-2">
+                                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
                                 <div class="flex items-center gap-2">
                                     @if (isset($headerActions))
                                         {{ $headerActions }}
                                     @endif
-
-                                    @if ($showBack)
-                                        <div class="flex items-center bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
-                                            {{-- Back Arrow (Left) --}}
-                                            <a href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
-                                                class="w-8 h-8 flex items-center justify-center text-zinc-500 active:scale-95 transition-transform hover:text-[#7C45F5]">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
+                        @else
+                            @if (isset($headerActions))
+                                <div class="flex justify-end px-5 pt-0 pb-4 mt-2">
+                                    {{ $headerActions }}
+                                </div>
+                            @endif
                         @endif
 
                         @if ($isCardless)
