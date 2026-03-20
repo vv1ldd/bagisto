@@ -101,6 +101,10 @@
         @stack('styles')
 
         <style>
+            html {
+                scrollbar-gutter: stable;
+            }
+
             /* Force sharp corners globally (Meanly brutalist style) */
             *, *::before, *::after {
                 border-radius: 0 !important;

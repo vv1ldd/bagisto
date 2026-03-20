@@ -12,6 +12,20 @@
             <p class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Режим разговора (Тапните для выхода)</p>
         </div>
 
+        <!-- Global Top Actions -->
+        <div v-show="!isCallEnded && !showStartButton && controlsVisible" 
+             class="absolute top-6 left-6 z-[1000] flex items-center gap-3 transition-all duration-500">
+            <button @click.stop="forceHome" 
+                    class="group flex items-center gap-2 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/30 px-4 py-2 rounded-2xl transition-all active:scale-95">
+                <div class="flex h-8 w-8 items-center justify-center bg-white/10 rounded-xl group-hover:bg-[#7C45F5] transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-white/80 group-hover:text-white">Назад</span>
+            </button>
+        </div>
+
         <!-- Video Layer (Base) -->
         <div class="absolute inset-0 bg-zinc-950">
             <!-- 1-on-1 Mode -->
@@ -326,6 +340,14 @@
                         </svg>
                         <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                    </button>
+
+                    <!-- Back Button (Minimizes Overlay) -->
+                    <button @click.stop="isActive = false" 
+                            class="h-12 w-12 md:h-16 md:w-16 bg-white/5 text-white/40 flex items-center justify-center transition-all hover:scale-110 hover:text-white active:scale-90 border border-white/5 backdrop-blur-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
                         </svg>
                     </button>
 
@@ -763,13 +785,13 @@ export default {
                     this.signalingGraceTimeout = setTimeout(() => {
                         this.signalingGraceActive = false;
                         
-                        // AUTO RECOVERY: If still unavailable after 60s, try one manual reset with backoff
+                        // AUTO RECOVERY: If still unavailable after 30s, try manual reset with backoff
                         if (['unavailable', 'failed', 'disconnected'].includes(this.signalingState) && this.reconnectAttempts < 5) {
-                            console.warn(`CallOverlay [${this.sessionUniqueId}]: Signaling hang detected. Attempting automated recovery...`);
+                            console.warn(`CallOverlay [${this.sessionUniqueId}]: Signaling issue persists. Attempting automated recovery...`);
                             this.reconnectAttempts++;
                             this.retryEcho();
                         }
-                    }, 15000); // 15s grace period for faster feedback🕵️‍♂️🔌🚀
+                    }, 30000); // Increased from 15s to 30s for better stability on unstable networks
                 }
             }
         },
@@ -1085,9 +1107,9 @@ export default {
                     is_ready: this.isLocalReady
                 });
                 ticks++;
-                if (ticks > 10) {
+                if (ticks > 5) {
                     this.stopPresence();
-                    console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 8s`);
+                    console.log(`CallOverlay [${this.sessionUniqueId}]: Presence stable, slowing down to 5s`);
                     this.presenceInterval = setInterval(() => {
                         if (this.isActive) {
                              this.sendSignal({ 
@@ -1096,7 +1118,7 @@ export default {
                                 is_ready: this.isLocalReady
                             });
                         }
-                    }, 8000); // 8s heartbeat for better stale protection
+                    }, 5000); // 5s heartbeat (changed from 8s) for more consistent connection monitoring
                 }
                 
                 // REDUNDANT READINESS: If we are ready but peer isn't, re-poke ready signal 🕵️‍♂️🔄🚀
@@ -1393,6 +1415,14 @@ export default {
                     const peer = this.peers[peerKey];
                     if (peer && peer.pc) peer.pc.restartIce();
                 }
+                else if (signal.type === 'track-state') {
+                    const peer = this.peers[peerKey];
+                    if (peer) {
+                        console.log(`WebRTC: Received track-state from ${senderName}:`, signal.kind, signal.enabled);
+                        if (signal.kind === 'video') peer.hasVideo = signal.enabled;
+                        if (signal.kind === 'audio') peer.hasAudio = signal.enabled;
+                    }
+                }
             }
         },
 
@@ -1552,7 +1582,7 @@ export default {
                         peer.reconnecting = false;
                     }
                 }
-            }, 5000); // 5 second timeout for automatic recovery
+            }, 10000); // Increased from 5s to 10s to be less aggressive during initial connection
         },
 
         async handleOffer(id, name, signal) {
@@ -1751,12 +1781,15 @@ export default {
                 
                 if (track.kind === 'video') {
                     console.log(`WebRTC: Video track detected for ${id}`);
-                    this.peers[id].hasVideo = !track.muted;
+                    // Initial state: assume video is there if track is enabled and not ended
+                    this.peers[id].hasVideo = track.enabled && track.readyState !== 'ended';
                     
                     // REACTIVE MONITORING: Listen for mute/unmute events 🕵️‍♂️🎥🚀
                     track.onmute = () => {
                         console.log(`WebRTC: Remote video track MUTED for ${id}`);
-                        if (this.peers[id]) this.peers[id].hasVideo = false;
+                        // Don't immediately set hasVideo to false on mute, 
+                        // as it often happens during network fluctuations.
+                        // We'll rely on the 20s streamReady timeout or explicit disabled state.
                     };
                     track.onunmute = () => {
                         console.log(`WebRTC: Remote video track UNMUTED for ${id}`);
@@ -1766,6 +1799,7 @@ export default {
                         }
                     };
                     
+                    // If we receive any frame, we are definitely ready
                     if (this.peers[id].hasVideo) {
                         this.peers[id].streamReady = true;
                     }
@@ -1808,14 +1842,15 @@ export default {
                     this.peers[id].connectedAt = Date.now();
                 }
                 this.peers[id].connected = true;
+                this.peers[id].reconnecting = false; // Reset reconnecting state on success 🕵️‍♂️🔄🚀
                 
-                // Allow up to 10 seconds for video tracks to arrive before deciding they have no camera
+                // Allow up to 20 seconds for video tracks to arrive before deciding they have no camera
                 if (!this.peers[id].videoTimeout) {
                     this.peers[id].videoTimeout = setTimeout(() => {
                         if (this.peers[id]) {
                             this.peers[id].streamReady = true;
                         }
-                    }, 10000);
+                    }, 20000); // Increased from 10s to 20s
                 }
 
                 this.verifySecurity(id);
@@ -1845,7 +1880,7 @@ export default {
 
             // Connection is dead - auto cleanup if it doesn't recover in 15 seconds
             if (['disconnected', 'failed'].includes(state) && !this.peers[id].deathTimer) {
-                console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (15s).`);
+                console.warn(`WebRTC: Peer ${id} entered ${state} state. Starting death timer (30s).`);
                 this.peers[id].deathTimer = setTimeout(() => {
                     if (this.peers[id] && !['connected', 'completed'].includes(this.peers[id].pc?.connectionState)) {
                         console.error(`WebRTC: Cleaning up dead peer ${id} after ${state} state timeout.`);
@@ -1853,7 +1888,7 @@ export default {
                     } else if (this.peers[id]) {
                         this.peers[id].deathTimer = null; // Recovered
                     }
-                }, 15000);
+                }, 30000); // Increased from 15s to 30s
             }
         },
 
@@ -2103,11 +2138,13 @@ export default {
         toggleMic() {
             this.isMicOn = !this.isMicOn;
             if (this.localStream) this.localStream.getAudioTracks().forEach(t => t.enabled = this.isMicOn);
+            this.sendSignal({ type: 'track-state', kind: 'audio', enabled: this.isMicOn });
         },
 
         toggleCamera() {
             this.isCameraOn = !this.isCameraOn;
             if (this.localStream) this.localStream.getVideoTracks().forEach(t => t.enabled = this.isCameraOn);
+            this.sendSignal({ type: 'track-state', kind: 'video', enabled: this.isCameraOn });
         },
 
         async toggleScreenShare() {
