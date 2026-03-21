@@ -30,14 +30,15 @@
     ];
 @endphp
 
-<div class="relative w-full bg-white border border-[#e2d9ff] shadow-xl rounded-[2rem] overflow-hidden">
+{{-- CARDLESS MENU: Just the list of items without the outer container card --}}
+<div class="relative w-full">
     <button type="button" 
         onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
-        class="ios-close-button !shadow-none !bg-red-50 !text-red-500 hover:!bg-red-100 transition-colors" style="top: 12px !important; right: 12px !important;">
+        class="ios-close-button !shadow-none !bg-red-50 !text-red-500 hover:!bg-red-100 transition-colors" style="top: 0 !important; right: 0 !important;">
         <span class="icon-cancel text-xl"></span>
     </button>
 
-    <div class="p-4 pt-12 md:p-6 md:pt-14">
+    <div class="p-0 pt-10">
         <div class="nav-grid">
             {{-- Wallet --}}
             @if ($customer && $customer->username)
