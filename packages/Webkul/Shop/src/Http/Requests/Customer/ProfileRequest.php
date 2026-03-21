@@ -31,7 +31,7 @@ class ProfileRequest extends FormRequest
         return [
             'first_name' => ['required'],
             'last_name' => ['required'],
-            'username' => ['required', 'unique:customers,username,' . $id, 'max:255', 'regex:/^[a-zA-Z0-9_.]+$/'],
+            'username' => ['required', 'unique:customers,username,' . $id, 'max:255', 'regex:/^[\p{L}0-9_.]+$/u'],
             'gender' => $customer->gender ? 'nullable' : 'required|in:Other,Male,Female',
             'date_of_birth' => $customer->date_of_birth ? 'nullable' : 'required|string',
             'birth_city' => $customer->birth_city ? 'nullable' : 'required|string',

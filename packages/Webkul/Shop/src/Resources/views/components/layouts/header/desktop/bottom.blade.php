@@ -3,6 +3,10 @@
     $authUser = auth()->guard('customer')->user();
     $userInitial = $authUser ? strtoupper(substr($authUser->credits_alias ?: $authUser->username, 0, 1)) : null;
     $userName = $authUser ? ($authUser->credits_alias ?: $authUser->username) : null;
+
+    /* Get initial cart count for server-side rendering */
+    $cart = \Webkul\Checkout\Facades\Cart::getCart();
+    $cartCount = $cart ? $cart->items->count() : 0;
 @endphp
 
 <div class="w-full max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between h-[64px]">
@@ -30,17 +34,28 @@
             {{-- Logged-in: Avatar + Alias --}}
             <div class="flex items-center gap-2.5">
                 {{-- Avatar/Cart icon — Vue only adds the cart badge on top --}}
-                <div class="relative">
-                    <a href="{{ route('shop.customers.account.index') }}" class="relative group" id="header-avatar-link">
+                <div class="relative min-w-[28px]">
+                    <a href="{{ $cartCount > 0 ? route('shop.checkout.cart.index') : route('shop.customers.account.index') }}" 
+                       class="relative group block" 
+                       id="header-avatar-link">
                         <div class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-sm leading-none ring-2 ring-white transition-all group-hover:scale-105 active:scale-95">
-                            <span class="text-[10px] uppercase" id="header-avatar-initial">{{ $userInitial }}</span>
+                            @if ($cartCount > 0)
+                                <span class="icon-cart text-base"></span>
+                                <span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center bg-white text-[8px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
+                                    {{ $cartCount }}
+                                </span>
+                            @else
+                                <span class="text-[10px] uppercase">{{ $userInitial }}</span>
+                            @endif
                         </div>
                     </a>
-                    {{-- Tiny Vue component only for the dynamic cart badge overlay --}}
+
+                    {{-- Tiny Vue component to handle dynamic updates and toggles --}}
                     <v-cart-badge
                         cart-url="{{ route('shop.checkout.cart.index') }}"
                         avatar-url="{{ route('shop.customers.account.index') }}"
-                        initial="{{ $userInitial }}"
+                        :initial-count="{{ $cartCount }}"
+                        user-initial="{{ $userInitial }}"
                     ></v-cart-badge>
                 </div>
 
@@ -62,42 +77,55 @@
 @pushOnce('scripts')
     <script type="module">
         /**
-         * v-cart-badge: tiny Vue component that overlays the cart badge on the static avatar.
-         * It does NOT change layout — it only adds/removes the small badge counter.
+         * v-cart-badge: tiny Vue component that handles the cart/avatar toggle.
+         * It uses a prop for the initial count to avoid flashes during mounting.
          */
         app.component('v-cart-badge', {
             template: `
-                <template v-if="cartCount > 0">
-                    <a :href="cartUrl" class="absolute inset-0 flex items-center justify-center bg-[#7C45F5] text-white font-bold shadow-sm ring-2 ring-white hover:scale-105 active:scale-95 transition-all">
-                        <span class="icon-cart text-base"></span>
-                        <span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center bg-white text-[8px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
-                            @{{ cartCount }}
-                        </span>
+                <div class="absolute inset-0 z-10">
+                    <a :href="cartCount > 0 ? cartUrl : avatarUrl" 
+                       class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-sm leading-none ring-2 ring-white transition-all hover:scale-105 active:scale-95">
+                        <template v-if="cartCount > 0">
+                            <span class="icon-cart text-base"></span>
+                            <span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center bg-white text-[8px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
+                                @{{ cartCount }}
+                            </span>
+                        </template>
+                        <template v-else>
+                            <span class="text-[10px] uppercase">@{{ userInitial }}</span>
+                        </template>
                     </a>
-                </template>
+                </div>
             `,
 
             props: {
                 cartUrl: String,
                 avatarUrl: String,
-                initial: String,
+                initialCount: Number,
+                userInitial: String,
             },
 
             data() {
-                return { cartCount: 0 };
+                return { 
+                    cartCount: this.initialCount 
+                };
             },
 
             mounted() {
+                // Fetch real count to be sure, although initial should be correct
                 this.fetchCart();
+
                 this.$emitter.on('update-mini-cart', cart => {
-                    this.cartCount = cart ? (cart.items?.length ?? 0) : 0;
+                    this.cartCount = cart ? (cart.items_count ?? cart.items?.length ?? 0) : 0;
                 });
             },
 
             methods: {
                 fetchCart() {
                     this.$axios.get("{{ route('shop.api.checkout.cart.index') }}")
-                        .then(r => { this.cartCount = r.data?.data?.items?.length ?? 0; })
+                        .then(r => { 
+                            this.cartCount = r.data?.data?.items_count ?? r.data?.data?.items?.length ?? 0; 
+                        })
                         .catch(() => {});
                 }
             }

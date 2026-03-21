@@ -75,15 +75,15 @@
                 <!-- Cart Information -->
                 <template v-else>
                     <div
-                        class="mt-4 flex flex-wrap gap-8 pb-8 max-1060:flex-col"
+                        class="mt-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start pb-8"
                         v-if="cart?.items?.length"
                     >
-                        <div class="flex flex-1 flex-col gap-4">
+                        <div class="space-y-6 flex-1 w-full">
                             <!-- Cart items card -->
-                            <div class=" border border-zinc-100 bg-white shadow-sm overflow-hidden">
+                            <div class="bg-white p-6 sm:p-8 shadow-sm flex flex-col overflow-hidden">
 
                                 <!-- Header -->
-                                <div class="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100">
+                                <div class="flex items-center justify-between pb-4 border-b border-zinc-100">
                                     <div class="flex select-none items-center gap-2">
                                     <input
                                         type="checkbox"
@@ -155,11 +155,11 @@
 
                                 <!-- Cart Item Listing -->
                                 <div
-                                    class="px-5 divide-y divide-zinc-100"
+                                    class="divide-y divide-zinc-100"
                                     v-for="item in cart?.items"
                                     :key="item.id"
                                 >
-                                <div class="flex gap-4 py-4">
+                                <div class="flex gap-4 py-4 sm:min-h-[120px] items-start">
                                     <!-- Checkbox -->
                                     <div class="mt-[3px] select-none">
                                             <input
@@ -260,10 +260,10 @@
                             </div><!-- end card -->
 
                             <!-- Footer actions -->
-                            <div class="flex justify-end gap-3">
+                            <div class="flex justify-end gap-3 mt-4">
                                 {!! view_render_event('bagisto.shop.checkout.cart.continue_shopping.before') !!}
                                 <a
-                                    class="secondary-button  px-5 py-2.5 text-sm"
+                                    class="bg-[#7C45F5]/10 text-[#7C45F5] font-semibold px-5 py-2.5 text-sm rounded transition-colors hover:bg-[#7C45F5]/20"
                                     href="{{ route('shop.home.index') }}"
                                 >
                                     @lang('shop::app.checkout.cart.index.continue-shopping')
@@ -272,7 +272,7 @@
 
                                 {!! view_render_event('bagisto.shop.checkout.cart.update_cart.before') !!}
                                 <x-shop::button
-                                    class="secondary-button  px-5 py-2.5 text-sm"
+                                    class="bg-[#7C45F5]/10 text-[#7C45F5] font-semibold px-5 py-2.5 text-sm rounded transition-colors hover:bg-[#7C45F5]/20 disabled:opacity-50"
                                     :title="trans('shop::app.checkout.cart.index.update-cart')"
                                     ::loading="isStoring"
                                     ::disabled="isStoring"

@@ -20,13 +20,13 @@
                                                                                                                             <div v-if="! activeAddressForm">
                                                                                                                                 <!-- Individual Profile Card -->
                                                                                                                                 <div 
-                                                                                                                                    class="p-5 border transition-all duration-300 group cursor-pointer overflow-hidden relative w-full max-w-[450px]"
+                                                                                                                                    class="relative border transition-all duration-300 group cursor-pointer w-full max-w-[450px]" style="height: 72px;"
                                                                                                                                     :class="[selectedOrgId === null ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
                                                                                                                                     @click="selectedOrgId = null; isB2B = false; $parent.$options.name == 'v-direct-checkout' && proceedWithUnifiedCard()"
                                                                                                                                 >
                                                                                                                                     <div class="absolute inset-0 bg-gradient-to-br from-transparent to-[#7C45F5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                                                                                                                                    <div class="relative flex items-center justify-between">
+                                                                                                                                    <div class="relative flex items-center justify-between h-full px-5">
                                                                                                                                         <div class="min-w-0">
                                                                                                                                             <p class="text-base font-bold transition-colors duration-300" :class="[selectedOrgId === null ? 'text-[#7C45F5]' : 'text-zinc-800']">
                                                                                                                                                 @{{ customerFullName }}
@@ -60,13 +60,13 @@
                                                                                                                                         <div 
                                                                                                                                             v-for="org in organizations"
                                                                                                                                             :key="org.id"
-                                                                                                                                            class="relative p-4  border transition-all duration-300 group cursor-pointer overflow-hidden"
+                                                                                                                                            class="relative border transition-all duration-300 group cursor-pointer" style="height: 72px;"
                                                                                                                                             :class="[selectedOrgId == org.id ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
                                                                                                                                             @click="selectedOrgId = org.id; isB2B = true; $parent.$options.name == 'v-direct-checkout' && proceedWithUnifiedCard()"
                                                                                                                                         >
                                                                                                                                             <div class="absolute inset-0 bg-gradient-to-br from-transparent to-[#7C45F5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                                                                                                                                            <div class="relative flex items-center justify-between">
+                                                                                                                                            <div class="relative flex items-center justify-between h-full px-4">
                                                                                                                                                 <div class="min-w-0">
                                                                                                                                                     <p class="text-sm font-bold transition-colors duration-300" :class="[selectedOrgId == org.id ? 'text-[#7C45F5]' : 'text-zinc-800']">@{{ org.name }}</p>
                                                                                                                                                     <div class="flex flex-wrap gap-2 mt-1.5">

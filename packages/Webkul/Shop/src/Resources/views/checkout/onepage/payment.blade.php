@@ -27,11 +27,12 @@
                             <div 
                                 v-for="(payment, index) in methods"
                                 :key="payment.method"
-                                class="relative p-2.5  border transition-all duration-300 group cursor-pointer flex flex-col bg-white"
+                                class="relative border transition-all duration-300 group cursor-pointer flex flex-col justify-start bg-white"
+                                style="height: 56px;"
                                 :class="[selectedPaymentMethod == payment.method ? 'border-[#7C45F5] ring-1 ring-[#7C45F5] shadow-lg shadow-[#7C45F5]/5' : 'border-zinc-100 hover:border-zinc-200 shadow-sm']"
                                 @click="handleSelection(payment)"
                             >
-                                <div class="flex items-center justify-between">
+                                <div class="flex items-center justify-between h-full px-2.5">
                                     <div class="flex items-center gap-2">
                                         <div class="h-8 w-8  bg-zinc-50 border border-zinc-100 p-1 flex items-center justify-center shrink-0">
                                             <img :src="payment.image" class="max-h-full max-w-full object-contain" />
@@ -51,8 +52,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Meanly Wallet: show total balance, no coin selection needed -->
-                                <div v-if="payment.method === 'credits' && selectedPaymentMethod === 'credits'" class="mt-3 p-2.5  bg-[#7C45F5]/5 border border-[#7C45F5]/10 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <!-- Meanly Wallet: show total balance — absolutely positioned BELOW the tile, does NOT expand it -->
+                                <div 
+                                    v-if="payment.method === 'credits' && selectedPaymentMethod === 'credits'" 
+                                    class="absolute left-0 right-0 top-full z-10 p-2.5 bg-white border border-[#7C45F5]/20 border-t-0 animate-in fade-in slide-in-from-top-1 duration-200"
+                                >
                                     <div class="flex items-center justify-between px-1">
                                         <span class="text-[9px] font-black text-zinc-400 uppercase tracking-wider">Баланс</span>
                                         @if(auth()->guard('customer')->check())

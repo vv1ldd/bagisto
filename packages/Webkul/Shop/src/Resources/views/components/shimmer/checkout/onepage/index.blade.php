@@ -7,13 +7,13 @@
                 <div class="flex items-center justify-between mb-4 mt-2">
                     <h2 class="shimmer h-6 w-[180px]"></h2>
                 </div>
-                <div class="shimmer h-[90px] w-full max-w-[450px]"></div>
+                <div class="shimmer h-[90px] sm:h-[140px] w-full max-w-[450px]"></div>
             </div>
 
             <!-- Payment Method Shimmer -->
             <div>
                 <h2 class="shimmer h-4 w-32 mb-4 mt-2"></h2>
-                <div class="shimmer h-[70px] w-full max-w-[450px]"></div>
+                <div class="shimmer h-[70px] sm:h-[140px] w-full max-w-[450px]"></div>
             </div>
         </div>
     </div>
