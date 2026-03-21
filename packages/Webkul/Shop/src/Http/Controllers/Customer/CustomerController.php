@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Core\Repositories\SubscribersListRepository;
 use Webkul\Customer\Repositories\CustomerRepository;
+use Webkul\Customer\Services\MnemonicService;
 use Webkul\Product\Repositories\ProductReviewRepository;
 use Webkul\Sales\Models\Order;
 use Webkul\Shop\Http\Controllers\Controller;
@@ -23,8 +24,44 @@ class CustomerController extends Controller
     public function __construct(
         protected CustomerRepository $customerRepository,
         protected ProductReviewRepository $productReviewRepository,
-        protected SubscribersListRepository $subscriptionRepository
+        protected SubscribersListRepository $subscriptionRepository,
+        protected MnemonicService $mnemonicService
     ) {
+    }
+
+    /**
+     * Generate and display the recovery key on demand (from the security dashboard).
+     * This generates a new seed, saves its hash, and shows the recovery key view.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function generateRecoveryKey()
+    {
+        $customer = auth()->guard('customer')->user();
+
+        // If already backed up, just redirect to the view screen
+        if ($customer->mnemonic_hash && session()->has('pending_recovery_key')) {
+            return view('shop::customers.account.profile.recovery-key', [
+                'words' => explode(' ', session('pending_recovery_key'))
+            ]);
+        }
+
+        // Generate a new BIP39 mnemonic
+        $counts = [12, 15, 18, 21, 24];
+        $wordCount = $counts[array_rand($counts)];
+        $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
+        $recoveryKey = implode(' ', $mnemonicWords);
+        $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+
+        // Save the hash to the customer record
+        $this->customerRepository->update(['mnemonic_hash' => $mnemonicHash], $customer->id);
+
+        // Store full phrase in session so recovery-key view can display it
+        session(['pending_recovery_key' => $recoveryKey]);
+
+        return view('shop::customers.account.profile.recovery-key', [
+            'words' => $mnemonicWords
+        ]);
     }
 
     /**

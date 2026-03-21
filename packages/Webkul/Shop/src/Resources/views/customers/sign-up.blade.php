@@ -238,8 +238,8 @@
                     console.log('[Passkey] Registration success! Redirecting...');
                     btn.innerHTML = 'Готово!';
                     
-                    // Step 5: Redirect to Mnemonic display
-                    window.location.href = '{{ route('shop.customers.account.profile.recovery_key') }}';
+                    // Step 5: Redirect to dashboard where user can optionally set up security
+                    window.location.href = '{{ route('shop.customers.account.index') }}';
 
                 } catch (err) {
                     console.error('[Passkey] Error:', err);
