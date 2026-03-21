@@ -2,6 +2,7 @@
     $wordlist = app(\Webkul\Customer\Services\MnemonicService::class)->getWordlist();
 @endphp
 
+<x-shop::layouts.split-screen title="Восстановление доступа">
     {{-- Google Font for Code Mode --}}
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
 
