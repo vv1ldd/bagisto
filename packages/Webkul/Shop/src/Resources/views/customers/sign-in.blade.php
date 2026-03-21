@@ -65,7 +65,7 @@
                 <x-shop::form :action="route('shop.customer.session.email')" v-slot="{ meta }">
                     <x-shop::form.control-group class="mb-2">
                         <x-shop::form.control-group.label
-                            class="required !text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
+                            class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
                             @lang('shop::app.customers.login-form.email')
                         </x-shop::form.control-group.label>
 

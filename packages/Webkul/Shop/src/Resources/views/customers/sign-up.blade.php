@@ -57,7 +57,7 @@
                 <!-- Email -->
                 <x-shop::form.control-group class="mb-2 md:mb-4">
                     <x-shop::form.control-group.label
-                        class="required !text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
+                        class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
                         @lang('shop::app.customers.signup-form.email')
                     </x-shop::form.control-group.label>
 
@@ -66,7 +66,6 @@
                         name="email" rules="required|email" :value="old('email')"
                         :label="trans('shop::app.customers.signup-form.email')" placeholder="email@example.com" />
 
-                    <x-shop::form.control-group.error control-name="email" />
                 </x-shop::form.control-group>
 
                 <!-- Options: Newsletter & GDPR -->
@@ -93,7 +92,6 @@
                 @if (core()->getConfigData('customer.captcha.credentials.status'))
                     <div class="mb-4">
                         {!! \Webkul\Customer\Facades\Captcha::render() !!}
-                        <x-shop::form.control-group.error control-name="g-recaptcha-response" />
                     </div>
                 @endif
 

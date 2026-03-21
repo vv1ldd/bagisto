@@ -30,7 +30,7 @@
                 <!-- Email Section -->
                 <div class="mb-8">
                     <x-shop::form.control-group>
-                        <x-shop::form.control-group.label class="required !text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
+                        <x-shop::form.control-group.label class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
                             @lang('shop::app.customers.login-form.email')
                         </x-shop::form.control-group.label>
 
@@ -63,11 +63,6 @@
                     @endfor
                 </div>
 
-                @error('mnemonic')
-                    <div class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-[13px] font-bold">
-                        {{ $message }}
-                    </div>
-                @enderror
 
                 <button
                     class="w-full !rounded-none bg-[#7C45F5] px-8 py-5 text-center font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 uppercase tracking-widest disabled:opacity-50"

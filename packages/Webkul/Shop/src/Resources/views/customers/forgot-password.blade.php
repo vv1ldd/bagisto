@@ -22,7 +22,7 @@
                 <!-- Email -->
                 <x-shop::form.control-group class="mb-2">
                     <x-shop::form.control-group.label
-                        class="required !text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
+                        class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
                         @lang('shop::app.customers.login-form.email')
                     </x-shop::form.control-group.label>
 
@@ -36,7 +36,6 @@
                 @if (core()->getConfigData('customer.captcha.credentials.status'))
                     <div class="mb-4">
                         {!! \Webkul\Customer\Facades\Captcha::render() !!}
-                        <x-shop::form.control-group.error control-name="g-recaptcha-response" />
                     </div>
                 @endif
 
