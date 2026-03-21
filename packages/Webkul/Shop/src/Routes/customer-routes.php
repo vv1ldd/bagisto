@@ -98,6 +98,14 @@ Route::prefix('customer')->group(function () {
 
 
     /**
+     * Recovery routes.
+     */
+    Route::controller(\Webkul\Shop\Http\Controllers\Customer\RecoveryController::class)->prefix('recovery')->group(function () {
+        Route::get('seed', 'showSeedForm')->name('shop.customers.recovery.seed');
+        Route::post('seed', 'recoverBySeed')->name('shop.customers.recovery.seed.post');
+    });
+
+    /**
      * Customer authenticated routes. All the below routes only be accessible
      * if customer is authenticated.
      */

@@ -25,7 +25,8 @@ class RegistrationController extends Controller
     public function __construct(
         protected CustomerRepository $customerRepository,
         protected CustomerGroupRepository $customerGroupRepository,
-        protected SubscribersListRepository $subscriptionRepository
+        protected SubscribersListRepository $subscriptionRepository,
+        protected \Webkul\Customer\Services\MnemonicService $mnemonicService
     ) {
     }
 
@@ -59,8 +60,10 @@ class RegistrationController extends Controller
             $currentIp = trim(explode(',', $currentIp)[0]);
         }
 
-        // Generate a secure recovery key (format: xxxx-xxxx-xxxx-xxxx)
-        $recoveryKey = implode('-', str_split(bin2hex(random_bytes(8)), 4));
+        // Generate a 12-word mnemonic seed phrase (Ledger style)
+        $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
+        $recoveryKey = implode(' ', $mnemonicWords);
+
         // Store in session — will be shown after email link click
         session(['pending_recovery_key' => $recoveryKey]);
 

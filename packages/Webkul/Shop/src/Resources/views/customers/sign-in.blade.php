@@ -91,12 +91,19 @@
 
             </div>
 
-            <p class="mt-4 text-center text-sm text-zinc-500 md:mt-6">
-                Впервые у нас?
-                <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customers.register.index') }}">
-                    @lang('shop::app.customers.signup-form.button-title')
+            <div class="mt-8 pt-6 border-t border-zinc-100 flex flex-col items-center gap-4">
+                <p class="text-center text-sm text-zinc-500">
+                    Впервые у нас?
+                    <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customers.register.index') }}">
+                        @lang('shop::app.customers.signup-form.button-title')
+                    </a>
+                </p>
+
+                <a href="{{ route('shop.customers.recovery.seed') }}" 
+                    class="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
+                    Восстановить доступ через секретную фразу
                 </a>
-            </p>
+            </div>
         </div>
 
         {!! view_render_event('bagisto.shop.customers.login.after') !!}
