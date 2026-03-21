@@ -394,4 +394,14 @@ class CustomerController extends Controller
     {
         return view('shop::customers.account.onboarding.security');
     }
+
+    /**
+     * Show the security settings page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showSecurity()
+    {
+        return view('shop::customers.account.security');
+    }
 }
