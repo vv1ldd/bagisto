@@ -62,25 +62,17 @@
                 .nav-grid {
                     display: grid !important;
                     grid-template-columns: repeat(2, 1fr) !important;
-                    gap: 1px !important;
-                    background-color: #f5f4fc !important;
-                    border-bottom: 1px solid #f5f4fc !important;
+                    gap: 12px !important;
+                    padding: 12px !important;
+                    background-color: transparent !important;
                 }
 
-                @media (max-width: 380px) {
+                @media (max-width: 480px) {
                     .nav-grid {
-                        grid-template-columns: 1fr !important;
+                        grid-template-columns: repeat(2, 1fr) !important;
+                        gap: 8px !important;
+                        padding: 8px !important;
                     }
-                }
-
-                .nav-item {
-                    display: flex !important;
-                    align-items: center !important;
-                    gap: 16px !important;
-                    padding: 16px 20px !important;
-                    background-color: #fff !important;
-                    text-decoration: none !important;
-                    transition: background-color 0.15s !important;
                 }
 
                 .nav-tile {
@@ -88,26 +80,32 @@
                     flex-direction: column !important;
                     align-items: center !important;
                     justify-content: center !important;
-                    gap: 12px !important;
-                    padding: 24px 16px !important;
+                    gap: 10px !important;
+                    padding: 24px 12px !important;
                     text-align: center !important;
                     background-color: #fff !important;
+                    border: 1px solid #e2d9ff !important;
+                    border-radius: 1.5rem !important;
                     text-decoration: none !important;
-                    transition: background-color 0.15s !important;
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
                 }
 
-                .nav-item:hover, .nav-tile:hover {
-                    background-color: #fafaff !important;
+                .nav-tile:hover {
+                    background-color: #fff !important;
+                    border-color: #7C45F5 !important;
+                    transform: translateY(-2px) !important;
+                    box-shadow: 0 10px 15px -3px rgba(124, 69, 245, 0.1) !important;
                 }
 
-                .nav-item:active, .nav-tile:active {
-                    background-color: #f5f4fc !important;
+                .nav-tile:active {
+                    transform: scale(0.98) !important;
                 }
 
                 .nav-label {
-                    font-size: 15px !important;
-                    font-weight: 600 !important;
-                    color: #27272a !important;
+                    font-size: 14px !important;
+                    font-weight: 700 !important;
+                    color: #1a0050 !important;
                     letter-spacing: -0.01em !important;
                     line-height: 1.2 !important;
                 }
@@ -133,7 +131,7 @@
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container px-[60px] max-lg:px-8 max-md:px-4 account-animate-in mt-8 mb-10 max-md:mt-5 max-md:mb-5">
+            class="min-h-screen {{ request()->routeIs('shop.customers.account.index') ? 'bg-[#F0EFFF]' : '' }} container !max-w-none px-[60px] max-lg:px-8 max-md:px-4 account-animate-in pt-8 pb-10 max-md:pt-5 max-md:pb-5 mt-0">
 
             @php
                 $customer = auth()->guard('customer')->user();
