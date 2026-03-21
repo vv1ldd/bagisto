@@ -197,8 +197,3 @@
         </script>
     @endpush
 </x-shop::layouts.split-screen>
-     {!! core()->getConfigData('general.gdpr.agreement.agreement_content') !!}
-                        </div>
-                        </x-slot>
-        </x-shop::modal>
-</x-shop::layouts.split-screen>
