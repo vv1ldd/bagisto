@@ -66,27 +66,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A9 9 0 112.182 19.818l4.636-4.636a2.121 2.121 0 113.001-3.001l4.635-4.635z"/>
                     </svg>
                 </span>
-                <div class="flex flex-col">
+                <div class="flex flex-col min-w-0 pr-4">
                     <span class="nav-label">Активность входа</span>
-                    <span class="text-[12px] text-zinc-500 font-medium">Безопасность сессий</span>
-                </div>
-                <span class="nav-arrow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </span>
-            </a>
- 
-            {{-- Change Password --}}
-            <a href="{{ route('shop.customers.account.profile.edit') }}#password-section" class="nav-tile group mt-1">
-                <span class="w-12 h-12 flex items-center justify-center bg-amber-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                    </svg>
-                </span>
-                <div class="flex flex-col">
-                    <span class="nav-label">Сменить пароль</span>
-                    <span class="text-[12px] text-zinc-500 font-medium">Только для входа через email</span>
+                    <span class="text-[12px] text-zinc-500 font-medium truncate">Безопасность сессий</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -130,7 +112,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
     const addDeviceBtn = document.getElementById('add-device-btn');
     const qrModal = document.getElementById('qr-modal');
     const qrModalContent = document.getElementById('qr-modal-content');
@@ -152,7 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const _b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 
     // Show Modal
-    addDeviceBtn.addEventListener('click', async () => {
+    addDeviceBtn.addEventListener('click', async (e) => {
+        e.preventDefault(); // Ensure purely internal handling
         qrModal.classList.remove('hidden');
         setTimeout(() => {
             qrModalContent.classList.remove('scale-95', 'opacity-0');
@@ -224,6 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
             addThisDeviceBtn.innerText = originalText;
         }
     });
-});
+})();
 </script>
 @endpush
