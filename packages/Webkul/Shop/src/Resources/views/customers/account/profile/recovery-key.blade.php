@@ -62,16 +62,31 @@
 
     @push('scripts')
     <script>
+        // Warn before tab close/refresh
         window.addEventListener('beforeunload', function (e) {
+            const msg = 'Внимание! Сид-фраза показывается только ОДИН раз. Убедитесь, что вы её сохранили.';
             e.preventDefault();
-            e.returnValue = '';
+            e.returnValue = msg;
+            return msg;
         });
 
+        // Kill protection when user clicks the final button
         document.getElementById('finish-btn').addEventListener('click', function() {
+            window.onbeforeunload = null;
             window.removeEventListener('beforeunload', arguments.callee);
         });
 
-        // Prevention for back button
+        // Intercept all links on page for localized confirm
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a');
+            if (link && link.id !== 'finish-btn' && link.href && !link.href.startsWith('#')) {
+                if (!confirm('Внимание! Сид-фраза показывается только ОДИН раз. Вы уверены, что хотите уйти со страницы?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Prevention for browser "Back" button
         history.pushState(null, null, location.href);
         window.onpopstate = function () {
             if (confirm('Внимание! Сид-фраза показывается только ОДИН раз. Вы уверены, что хотите уйти со страницы?')) {
