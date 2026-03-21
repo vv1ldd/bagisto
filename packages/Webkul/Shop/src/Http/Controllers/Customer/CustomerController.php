@@ -165,7 +165,11 @@ class CustomerController extends Controller
             return back()->withErrors(['message' => 'Введены неверные слова. Пожалуйста, проверьте свою секретную фразу и попробуйте снова.']);
         }
 
-        // Success: clear session
+        // Success: set verified timestamp and clear session
+        $this->customerRepository->update([
+            'mnemonic_verified_at' => now(),
+        ], auth()->guard('customer')->user()->id);
+
         session()->forget(['pending_recovery_key', 'verification_indices']);
         
         session()->flash('success', 'Секретная фраза подтверждена!');
