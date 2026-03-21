@@ -144,6 +144,7 @@
                 @if (request()->routeIs('shop.customers.account.index'))
                     <!-- iOS Style Sidebar (Start Page Menu) -->
                     <div class="w-full shrink-0" style="max-width: 600px;">
+                        {{ $slot }}
                         <x-shop::layouts.account.navigation />
                     </div>
                 @else
