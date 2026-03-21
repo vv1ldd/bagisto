@@ -7,6 +7,7 @@
     {{-- Inline Vue Component for the Wizard --}}
     <v-recovery-wizard 
         :wordlist='@json($wordlist)'
+        :old-words='@json(old("words"))'
         action-url="{{ route('shop.customers.recovery.seed.post') }}"
         csrf-token="{{ csrf_token() }}"
     ></v-recovery-wizard>
@@ -17,6 +18,19 @@
                 
                 <div class="w-full max-w-[480px] bg-white p-8 md:p-12 shadow-2xl shadow-purple-500/10 border border-zinc-100 flex flex-col items-stretch relative overflow-hidden transition-all duration-500">
                     
+                    <!-- Flash Messages (Manual check if layout misses them) -->
+                    @if (session()->has('error'))
+                        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs font-bold uppercase tracking-wider animate-in fade-in slide-in-from-top-2">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if (session()->has('success'))
+                        <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 text-xs font-bold uppercase tracking-wider animate-in fade-in slide-in-from-top-2">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     <!-- Progress Header (only for word entry steps) -->
                     <div class="mb-12" v-if="currentStep > 0 && currentStep <= totalSteps">
                         <div class="flex justify-between items-end mb-4">
@@ -147,7 +161,7 @@
         <script type="module">
             app.component('v-recovery-wizard', {
                 template: '#v-recovery-wizard-template',
-                props: ['wordlist', 'actionUrl', 'csrfToken'],
+                props: ['wordlist', 'actionUrl', 'csrfToken', 'oldWords'],
                 
                 data() {
                     return {
@@ -156,6 +170,32 @@
                         words: [],
                         inputWord: '',
                         suggestions: []
+                    }
+                },
+
+                mounted() {
+                    if (this.oldWords && Array.isArray(this.oldWords)) {
+                        const filtered = this.oldWords.filter(w => w && w.trim() !== '');
+                        if (filtered.length > 0) {
+                            // Find the valid BIP39 length matches or just use the current count
+                            const validLengths = [12, 15, 18, 21, 24];
+                            let bestLen = 24;
+                            for (let l of validLengths) {
+                                if (filtered.length <= l) {
+                                    bestLen = l;
+                                    break;
+                                }
+                            }
+
+                            this.totalSteps = bestLen;
+                            this.words = Array(bestLen).fill('');
+                            filtered.forEach((w, i) => {
+                                if (i < bestLen) this.words[i] = w;
+                            });
+
+                            // Go to final confirmation step
+                            this.currentStep = bestLen + 1;
+                        }
                     }
                 },
 
