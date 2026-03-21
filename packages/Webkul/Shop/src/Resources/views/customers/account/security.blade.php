@@ -6,9 +6,9 @@
 @endphp
 
 <x-shop::layouts.account :is-cardless="true">
-    <div class="mx-auto max-w-[600px] mt-8 mb-10">
+    <div class="mx-auto max-w-[600px] mt-4 mb-6">
         {{-- Header --}}
-        <div class="flex items-center gap-3 mb-6 px-4">
+        <div class="flex items-center gap-3 mb-4 px-4">
             <a href="{{ route('shop.customers.account.index') }}" 
                class="w-10 h-10 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 rounded-2xl active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
                 <span class="icon-arrow-left text-2xl"></span>
@@ -20,8 +20,8 @@
             {{-- Seed Phrase --}}
             @if (!$isVerified)
                 <a href="{{ route('shop.customers.account.profile.generate_recovery_key') }}" class="nav-tile group">
-                    <span class="w-14 h-14 flex items-center justify-center {{ $hasSeed ? 'bg-emerald-500' : 'bg-red-500' }} text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <span class="w-12 h-12 flex items-center justify-center {{ $hasSeed ? 'bg-emerald-500' : 'bg-red-500' }} text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                     </span>
@@ -34,7 +34,7 @@
                                 <span class="bg-red-100 text-red-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">важно</span>
                             @endif
                         </div>
-                        <span class="text-[13px] text-zinc-500 font-medium truncate">
+                        <span class="text-[12px] text-zinc-500 font-medium truncate">
                             {{ $hasSeed ? 'Фраза создана. Проверьте её.' : 'Единственный способ восстановления' }}
                         </span>
                     </div>
@@ -45,11 +45,11 @@
                     </span>
                 </a>
             @endif
-
+ 
             {{-- Passkey / Add Device --}}
-            <a href="javascript:void(0);" id="add-device-btn" class="nav-tile group mt-2">
-                <span class="w-14 h-14 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <a href="javascript:void(0);" id="add-device-btn" class="nav-tile group mt-1">
+                <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                     </svg>
                 </span>
@@ -58,7 +58,7 @@
                         <span class="nav-label">Привязать устройство</span>
                         <span class="bg-violet-100 text-violet-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">{{ $passkeyCount }} {{ $passkeyCount === 1 ? 'ключ' : 'ключа' }}</span>
                     </div>
-                    <span class="text-[13px] text-zinc-500 font-medium truncate">Вход через TouchID или FaceID</span>
+                    <span class="text-[12px] text-zinc-500 font-medium truncate">Вход через TouchID или FaceID</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -66,17 +66,17 @@
                     </svg>
                 </span>
             </a>
-
+ 
             {{-- Activity Log --}}
-            <a href="{{ route('shop.customers.account.login_activity.index') }}" class="nav-tile group mt-2">
-                <span class="w-14 h-14 flex items-center justify-center bg-emerald-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <a href="{{ route('shop.customers.account.login_activity.index') }}" class="nav-tile group mt-1">
+                <span class="w-12 h-12 flex items-center justify-center bg-emerald-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A9 9 0 112.182 19.818l4.636-4.636a2.121 2.121 0 113.001-3.001l4.635-4.635z"/>
                     </svg>
                 </span>
                 <div class="flex flex-col">
                     <span class="nav-label">Активность входа</span>
-                    <span class="text-[13px] text-zinc-500 font-medium">Безопасность сессий</span>
+                    <span class="text-[12px] text-zinc-500 font-medium">Безопасность сессий</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -84,17 +84,17 @@
                     </svg>
                 </span>
             </a>
-
+ 
             {{-- Change Password --}}
-            <a href="{{ route('shop.customers.account.profile.edit') }}#password-section" class="nav-tile group mt-2">
-                <span class="w-14 h-14 flex items-center justify-center bg-amber-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <a href="{{ route('shop.customers.account.profile.edit') }}#password-section" class="nav-tile group mt-1">
+                <span class="w-12 h-12 flex items-center justify-center bg-amber-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                     </svg>
                 </span>
                 <div class="flex flex-col">
                     <span class="nav-label">Сменить пароль</span>
-                    <span class="text-[13px] text-zinc-500 font-medium">Только для входа через email</span>
+                    <span class="text-[12px] text-zinc-500 font-medium">Только для входа через email</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

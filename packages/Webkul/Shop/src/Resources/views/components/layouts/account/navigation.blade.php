@@ -16,14 +16,18 @@ $menuIcons = [
 ?>
 
 {{-- CARDLESS MENU --}}
-<div class="relative w-full">
-    <button type="button" 
-        onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
-        class="ios-close-button !shadow-none !bg-red-50 !text-red-500 hover:!bg-red-100 transition-colors" style="top: 0 !important; right: 0 !important;">
-        <span class="icon-cancel text-xl"></span>
-    </button>
+<div class="relative w-full max-w-[600px] mx-auto">
+    {{-- Header with Back Button --}}
+    <div class="flex items-center gap-3 mb-4 px-4 pt-4">
+        <button type="button" 
+            onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
+            class="w-10 h-10 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 rounded-2xl active:scale-95 transition-all shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+            <span class="icon-arrow-left text-2xl"></span>
+        </button>
+        <h1 class="text-[22px] font-black text-zinc-900 tracking-tight">Личные настройки</h1>
+    </div>
 
-    <div class="p-0 pt-10">
+    <div class="p-0">
         <div class="nav-grid">
             {{-- Wallet --}}
             @if ($customer && $customer->username)
@@ -32,17 +36,17 @@ $menuIcons = [
                     $unlockedAt = session('wallet_unlocked_at') ?: (session('logged_in_via_passkey') ? session('passkey_unlocked_at') : null);
                     $isUnlocked = $unlockedAt && (time() - $unlockedAt <= 900);
                 @endphp
-
+ 
                 <div class="nav-tile cursor-pointer group"
                      onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'') }}">
-                    <span class="w-14 h-14 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
                     </span>
                     <div class="flex flex-col">
                         <span class="nav-label">Wallet</span>
-                        <span class="text-[13px] text-zinc-500 font-medium">Ваш баланс и транзакции</span>
+                        <span class="text-[12px] text-zinc-500 font-medium">Ваш баланс и транзакции</span>
                     </div>
                     <span class="nav-arrow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -50,15 +54,15 @@ $menuIcons = [
                         </svg>
                     </span>
                 </div>
-
+ 
                 {{-- Calls --}}
                 @if ($customer->is_call_enabled)
-                    <div class="nav-tile cursor-pointer group"
+                    <div class="nav-tile cursor-pointer group mt-1"
                          onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
-                        <span class="w-14 h-14 flex items-center justify-center bg-zinc-800 text-white rounded-2xl shrink-0 text-2xl transition-transform group-hover:scale-105 shadow-sm">📞</span>
+                        <span class="w-12 h-12 flex items-center justify-center bg-zinc-800 text-white rounded-2xl shrink-0 text-xl transition-transform group-hover:scale-105 shadow-sm">📞</span>
                         <div class="flex flex-col">
                             <span class="nav-label">Звонки</span>
-                            <span class="text-[13px] text-zinc-500 font-medium">История вызовов</span>
+                            <span class="text-[12px] text-zinc-500 font-medium">История вызовов</span>
                         </div>
                         <span class="nav-arrow">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,7 +72,7 @@ $menuIcons = [
                     </div>
                 @endif
             @endif
-
+ 
             {{-- Dynamic Items --}}
             @foreach (menu()->getItems('customer') as $menuItem)
                 @if ($menuItem->haveChildren())
@@ -81,12 +85,12 @@ $menuIcons = [
                         @if (in_array($subMenuItem->getKey(), ['account.profile', 'account.passkeys', 'account.orders', 'account.login_activity']))
                             @continue
                         @endif
-
+ 
                         @php $icon = $menuIcons[$subMenuItem->getKey()] ?? null; @endphp
-
-                        <a href="{{ $subMenuItem->getUrl() }}" class="nav-tile group mt-2">
+ 
+                        <a href="{{ $subMenuItem->getUrl() }}" class="nav-tile group mt-1">
                             @if ($icon)
-                                <span class="w-14 h-14 flex items-center justify-center rounded-2xl border-2 border-transparent transition-transform group-hover:scale-105 shadow-sm">
+                                <span class="w-12 h-12 flex items-center justify-center rounded-2xl border-2 border-transparent transition-transform group-hover:scale-105 shadow-sm">
                                     @php
                                         $bgClass = 'bg-zinc-400';
                                         if (str_contains($icon['bg'], 'violet')) $bgClass = 'bg-violet-500';
@@ -97,7 +101,7 @@ $menuIcons = [
                                         elseif (str_contains($icon['bg'], 'indigo')) $bgClass = 'bg-indigo-500';
                                     @endphp
                                     <div class="w-full h-full flex items-center justify-center {{ $bgClass }} text-white rounded-2xl">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             {!! $icon['svg'] !!}
                                         </svg>
                                     </div>
@@ -105,7 +109,7 @@ $menuIcons = [
                             @endif
                             <div class="flex flex-col">
                                 <span class="nav-label">{{ $subMenuItem->getName() }}</span>
-                                <span class="text-[13px] text-zinc-500 font-medium">
+                                <span class="text-[12px] text-zinc-500 font-medium">
                                     @if($subMenuItem->getKey() === 'account.address') Адреса доставки
                                     @elseif($subMenuItem->getKey() === 'account.wishlist') Избранные товары
                                     @elseif($subMenuItem->getKey() === 'account.reviews') Ваши отзывы
@@ -122,17 +126,17 @@ $menuIcons = [
                     @endforeach
                 @endif
             @endforeach
-
+ 
             {{-- Security (Grouped) --}}
-            <a href="{{ route('shop.customers.account.security.index') }}" class="nav-tile group mt-2">
-                <span class="w-14 h-14 flex items-center justify-center bg-violet-600 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <a href="{{ route('shop.customers.account.security.index') }}" class="nav-tile group mt-1">
+                <span class="w-12 h-12 flex items-center justify-center bg-violet-600 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
                 </span>
                 <div class="flex flex-col">
                     <span class="nav-label">Безопасность</span>
-                    <span class="text-[13px] text-zinc-500 font-medium">Пароль, фраза и устройства</span>
+                    <span class="text-[12px] text-zinc-500 font-medium">Пароль, фраза и устройства</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -140,17 +144,17 @@ $menuIcons = [
                     </svg>
                 </span>
             </a>
-
+ 
             {{-- Profile Edit --}}
-            <a href="{{ route('shop.customers.account.profile.edit') }}" class="nav-tile group mt-2">
-                <span class="w-14 h-14 flex items-center justify-center bg-zinc-200 text-zinc-600 rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <a href="{{ route('shop.customers.account.profile.edit') }}" class="nav-tile group mt-1">
+                <span class="w-12 h-12 flex items-center justify-center bg-zinc-200 text-zinc-600 rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                 </span>
                 <div class="flex flex-col">
                     <span class="nav-label">Личные данные</span>
-                    <span class="text-[13px] text-zinc-500 font-medium">Имя, почта и настройки</span>
+                    <span class="text-[12px] text-zinc-500 font-medium">Имя, почта и настройки</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,17 +162,17 @@ $menuIcons = [
                     </svg>
                 </span>
             </a>
-
+ 
             {{-- Logout --}}
-            <a href="{{ route('shop.customer.session.destroy.get') }}" class="nav-tile group hover:!border-red-200 mt-2">
-                <span class="w-14 h-14 flex items-center justify-center bg-red-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <a href="{{ route('shop.customer.session.destroy.get') }}" class="nav-tile group hover:!border-red-200 mt-1">
+                <span class="w-12 h-12 flex items-center justify-center bg-red-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
                 </span>
                 <div class="flex flex-col">
                     <span class="nav-label !text-red-500">Выйти</span>
-                    <span class="text-[13px] text-red-300 font-medium">Завершить сеанс</span>
+                    <span class="text-[12px] text-red-300 font-medium">Завершить сеанс</span>
                 </div>
                 <span class="nav-arrow !text-red-100">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

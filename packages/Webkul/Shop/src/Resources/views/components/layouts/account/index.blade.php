@@ -62,18 +62,18 @@
                 .nav-grid {
                     display: grid !important;
                     grid-template-columns: 1fr !important;
-                    gap: 12px !important;
-                    padding: 12px !important;
+                    gap: 8px !important;
+                    padding: 8px !important;
                     background-color: transparent !important;
                 }
-
+ 
                 .nav-tile {
                     display: flex !important;
                     flex-direction: row !important;
                     align-items: center !important;
                     justify-content: flex-start !important;
-                    gap: 16px !important;
-                    padding: 16px 20px !important;
+                    gap: 12px !important;
+                    padding: 12px 16px !important;
                     text-align: left !important;
                     background-color: #fff !important;
                     border: 1px solid #e2d9ff !important;
@@ -82,36 +82,36 @@
                     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
                     box-shadow: 0 1px 3px rgba(124, 69, 245, 0.05) !important;
                 }
-
+ 
                 .nav-tile:hover {
                     background-color: #fff !important;
                     border-color: #7C45F5 !important;
                     transform: translateX(4px) !important;
                     box-shadow: 0 10px 15px -3px rgba(124, 69, 245, 0.08) !important;
                 }
-
+ 
                 .nav-tile:active {
                     transform: scale(0.99) !important;
                 }
-
+ 
                 .nav-label {
-                    font-size: 16px !important;
+                    font-size: 15px !important;
                     font-weight: 700 !important;
                     color: #1a0050 !important;
                     letter-spacing: -0.01em !important;
                     line-height: 1.2 !important;
                 }
-
+ 
                 .nav-arrow {
                     margin-left: auto !important;
                     color: #d1d5db !important;
                     transition: color 0.2s !important;
                 }
-
+ 
                 .nav-tile:hover .nav-arrow {
                     color: #7C45F5 !important;
                 }
-
+ 
                 .ios-section-label {
                     display: block !important;
                     font-size: 10px !important;
@@ -120,11 +120,11 @@
                     letter-spacing: 0.25em !important;
                     color: #a1a1aa !important;
                     opacity: 0.6 !important;
-                    padding: 20px 20px 10px !important;
+                    padding: 12px 20px 8px !important;
                     background: #fff !important;
                     border-bottom: 1px solid #f5f4fc !important;
                 }
-
+ 
                 .ios-tile-relative {
                     position: relative !important;
                 }
@@ -133,7 +133,7 @@
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="min-h-screen {{ request()->routeIs('shop.customers.account.index') ? 'bg-[#F0EFFF]' : '' }} container !max-w-none px-[60px] max-lg:px-8 max-md:px-4 account-animate-in pt-8 pb-10 max-md:pt-5 max-md:pb-5 mt-0">
+            class="{{ request()->routeIs('shop.customers.account.index') ? 'bg-[#F0EFFF]' : '' }} container !max-w-none px-[60px] max-lg:px-8 max-md:px-4 account-animate-in pt-4 pb-4 max-md:pt-2 max-md:pb-2 mt-0">
 
             @php
                 $customer = auth()->guard('customer')->user();
