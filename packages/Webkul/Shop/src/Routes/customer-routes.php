@@ -56,15 +56,12 @@ Route::prefix('customer')->group(function () {
     Route::controller(SessionController::class)->prefix('login')->group(function () {
         Route::get('', 'index')->name('shop.customer.session.index');
 
-        Route::post('', 'store')->name('shop.customer.session.create');
-
-        Route::post('email', 'sendLoginEmail')->name('shop.customer.session.email');
-
-        Route::get('link/{token}', 'loginByLink')->name('shop.customer.login.link');
-
-        Route::get('verify-identity', 'showVerifyIdentity')->name('shop.customer.login.verify_identity');
-
-        Route::post('verify-identity', 'verifyIdentity')->name('shop.customer.login.verify_identity.post');
+        // Standard and Magic Link login methods disabled in favor of Passkeys
+        // Route::post('', 'store')->name('shop.customer.session.create');
+        // Route::post('email', 'sendLoginEmail')->name('shop.customer.session.email');
+        // Route::get('link/{token}', 'loginByLink')->name('shop.customer.login.link');
+        // Route::get('verify-identity', 'showVerifyIdentity')->name('shop.customer.login.verify_identity');
+        // Route::post('verify-identity', 'verifyIdentity')->name('shop.customer.login.verify_identity.post');
     });
 
     /**

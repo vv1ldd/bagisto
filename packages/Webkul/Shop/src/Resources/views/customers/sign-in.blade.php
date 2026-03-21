@@ -10,88 +10,21 @@
 
         {!! view_render_event('bagisto.shop.customers.login.before') !!}
 
-        <!-- Initial Login Options (Passkey vs Email) -->
-        <div id="login-options-container" class="flex flex-col gap-1 md:gap-2 transition-all duration-300">
+        <!-- Initial Login Options (Passkey Only) -->
+        <div id="login-options-container" class="flex flex-col gap-4 transition-all duration-300">
             <!-- Passkey Login Button (Primary focus) -->
             <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
-                class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-3 text-center font-medium text-white transition hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-4 text-center font-bold text-white transition hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 uppercase tracking-widest">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                     stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    <circle cx="12" cy="16" r="1"></circle>
+                    <circle cx="12" cy="16" r="1.5"></circle>
                 </svg>
                 Войти с помощью Passkey
             </button>
-            @php
-                $showEmailForm = $errors->any() || session('email');
-            @endphp
-            <div id="login-options-separator" class="relative my-1 md:my-2 text-center {{ $showEmailForm ? 'hidden' : '' }}">
-                <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div class="w-full border-t border-zinc-200"></div>
-                </div>
-                <div class="relative">
-                    <span
-                        class="bg-white px-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">@lang('shop::app.customers.login-form.or')</span>
-                </div>
-            </div>
 
-            <!-- Show Email Login Form Button -->
-            <div id="email-login-form-button-container" class="{{ $showEmailForm ? 'hidden' : '' }}">
-                <button type="button" id="show-email-form-button"
-                    onclick="showEmailLoginForm()" 
-                    class="flex w-full items-center justify-center gap-3 !rounded-none border border-zinc-200 bg-white px-8 py-3 text-center font-medium text-zinc-700 transition hover:bg-zinc-50 focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                        </path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    Войти через почту
-                </button>
-            </div>
-
-            <!-- Back Button for email view (hidden by default) -->
-            <div id="back-to-options-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col items-center mb-1 md:mb-2">
-                <button type="button" onclick="backToLoginOptions()" 
-                    class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
-                    <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
-                    @lang('shop::app.customers.login-form.back-to-login-options')
-                </button>
-            </div>
-
-            {{-- Magic Link Email Form (Hidden by default, auto-shown on errors) --}}
-            <div id="email-login-form-container" class="{{ $showEmailForm ? 'flex' : 'hidden' }} flex-col gap-3 md:gap-4">
-                <x-shop::form :action="route('shop.customer.session.email')" v-slot="{ meta }">
-                    <x-shop::form.control-group class="mb-2">
-                        <x-shop::form.control-group.label
-                            class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
-                            @lang('shop::app.customers.login-form.email')
-                        </x-shop::form.control-group.label>
-
-                        <x-shop::form.control-group.control type="email"
-                            class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-none focus:!ring-2 focus:!ring-zinc-500 w-full"
-                            name="email" rules="required|email" :value="old('email')"
-                            :label="trans('shop::app.customers.login-form.email')" placeholder="email@example.com" />
-
-                        {{-- Register suggestion shown when email not found --}}
-                        @if($errors->has('email') && str_contains($errors->first('email'), 'не найден'))
-                            <p class="mt-2 text-[12px] text-zinc-400">Нет аккаунта с этой почтой —
-                                воспользуйтесь кнопкой «Создать аккаунт» ниже.</p>
-                        @endif
-
-                    </x-shop::form.control-group>
-
-                    <button
-                        class="w-full !rounded-none bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
-                        type="submit" :disabled="!meta.valid">
-                        Отправить ссылку для входа
-                    </button>
-                </x-shop::form>
-
-            </div>
-
-            <div class="mt-8 pt-6 border-t border-zinc-100 flex flex-col items-center gap-4">
+            <div class="mt-8 pt-6 border-t border-zinc-100 flex flex-col items-center gap-6">
                 <p class="text-center text-sm text-zinc-500">
                     Впервые у нас?
                     <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customers.register.index') }}">
@@ -99,8 +32,10 @@
                     </a>
                 </p>
 
+                <div class="h-px w-8 bg-zinc-200"></div>
+
                 <a href="{{ route('shop.customers.recovery.seed') }}" 
-                    class="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
+                    class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-[#7C45F5] transition-colors text-center leading-relaxed max-w-[200px]">
                     Восстановить доступ через секретную фразу
                 </a>
             </div>
