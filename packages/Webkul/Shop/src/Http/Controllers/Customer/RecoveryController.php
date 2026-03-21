@@ -76,8 +76,8 @@ class RecoveryController extends Controller
             
             session()->flash('success', 'Доступ восстановлен! Пожалуйста, настройте новый Passkey.');
 
-            // Redirect to profile
-            return redirect()->route('shop.customers.account.profile.index');
+            // Redirect to account index
+            return redirect()->route('shop.customers.account.index');
         }
 
         session()->flash('error', 'Неверная секретная фраза или email.');
