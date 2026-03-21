@@ -10,19 +10,9 @@
         </div>
     </x-shop::layouts.split-screen>
 @else
-    <x-shop::layouts.account :show-back="false" :has-header="true" :has-footer="true">
-        <x-slot:title></x-slot:title>
-
-        <div class="bg-white border border-zinc-100 mb-6 ">
-
-            <div class="px-5 pt-6 pb-2 flex items-center gap-3">
-                <span class="icon-shield text-2xl text-[#7C45F5]"></span>
-                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $pageTitle }}</h1>
-            </div>
-
-            <div class="p-5">
-                @include('shop::customers.account.passkeys.index-form', ['customer' => $customer])
-            </div>
+    <x-shop::layouts.account :is-cardless="true" :title="$pageTitle" :back-link="route('shop.customers.account.security.index')">
+        <div class="mt-2 mb-6 max-w-[800px] mx-auto">
+            @include('shop::customers.account.passkeys.index-form', ['customer' => $customer])
         </div>
     </x-shop::layouts.account>
 @endif

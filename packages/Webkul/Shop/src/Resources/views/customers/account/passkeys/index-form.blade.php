@@ -71,7 +71,7 @@
                 </div>
             @else
                 <!-- Original Profile Settings View -->
-                <div class="px-8 max-md:px-5 mt-4 w-full max-w-[800px] mx-auto">
+                <div class="px-8 max-md:px-5 mt-4 w-full max-w-[600px] mx-auto">
                     {!! view_render_event('bagisto.shop.customers.account.profile.email.after') !!}
 
                     <!-- Passkeys & Trusted Devices -->
