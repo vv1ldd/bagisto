@@ -66,7 +66,7 @@
             </div>
         @else
             {{-- Guest: Login button --}}
-            <a href="{{ route('shop.customer.session.create') }}"
+            <a href="{{ route('shop.customer.session.index') }}"
                 class="flex items-center justify-center border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-[14px] font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-[0.97]">
                 Войти / Регистрация
             </a>

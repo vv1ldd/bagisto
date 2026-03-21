@@ -146,7 +146,7 @@
                     </a>
                 @endif
             @else
-                <a href="{{ route('shop.customer.session.create') }}" class="action-button">
+                <a href="{{ route('shop.customer.session.index') }}" class="action-button">
                     Войти чтобы перевести
                 </a>
             @endauth
