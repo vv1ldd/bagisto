@@ -1,3 +1,15 @@
+@push('styles')
+<style>
+    html, body {
+        overflow: hidden !important;
+        height: 100dvh !important;
+        position: fixed !important;
+        width: 100% !important;
+        overscroll-behavior: none !important;
+    }
+</style>
+@endpush
+
 @props([
     'title' => '',
     'contentWidth' => 'max-w-[440px]',
@@ -8,9 +20,9 @@
         {{ $title }}
     </x-slot>
    
-    <div class="flex h-[100dvh] w-full flex-wrap overflow-hidden bg-white">
+    <div class="fixed inset-0 flex h-[100dvh] w-full flex-wrap overflow-hidden bg-white z-[9999]">
         <!-- Left Side: Content -->
-        <div class="flex w-full flex-col h-full px-4 pt-6 pb-4 md:px-10 md:pt-8 md:pb-6 lg:px-20 lg:pt-10 lg:pb-10 md:w-1/2 overflow-hidden">
+        <div class="flex w-full flex-col h-full px-4 pt-6 pb-4 md:px-10 md:pt-8 md:pb-6 lg:px-20 lg:pt-10 lg:pb-10 md:w-1/2 overflow-hidden relative">
             <!-- Header/Logo -->
             <div class="mb-2 flex items-center justify-between md:mb-4">
                 <a href="{{ route('shop.home.index') }}"
