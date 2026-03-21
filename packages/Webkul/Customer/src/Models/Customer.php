@@ -30,6 +30,16 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     use HasApiTokens, HasFactory, Notifiable, Visitor, InteractsWithPasskeys;
 
     /**
+     * Get the name for the passkey.
+     * Overriding default implementation from InteractsWithPasskeys to support null emails.
+     */
+    public function getPasskeyName(): string
+    {
+        return $this->email ?? $this->username;
+    }
+
+
+    /**
      * The table associated with the model.
      *
      * @var string
