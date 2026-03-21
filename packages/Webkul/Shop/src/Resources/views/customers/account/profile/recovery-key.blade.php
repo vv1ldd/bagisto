@@ -27,11 +27,11 @@
 
 
         <!-- Ledger-style Word Grid -->
-        <div class="grid grid-cols-3 lg:grid-cols-4 gap-1.5 md:gap-3 w-full max-w-[600px] mb-6">
+        <div class="grid grid-cols-2 min-[400px]:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3 w-full max-w-[680px] mb-8 px-2 md:px-0">
             @foreach($words as $index => $word)
-                <div class="flex items-center gap-1.5 bg-white border border-[#E9E1FF] p-1.5 md:p-2.5 shadow-sm hover:border-[#7C45F5] transition-colors rounded">
-                    <span class="text-[9px] md:text-[10px] font-black text-[#7C45F5]/40 w-3 md:w-3.5 text-right">{{ $index + 1 }}</span>
-                    <span class="text-[#4A1D96] font-mono font-bold tracking-tight text-[11px] md:text-[14px] select-all">{{ $word }}</span>
+                <div class="flex items-center gap-2 bg-white border border-[#E9E1FF] py-2 px-2.5 md:py-2.5 md:px-3 shadow-sm hover:border-[#7C45F5] transition-colors rounded">
+                    <span class="text-[10px] md:text-[11px] font-black text-[#7C45F5]/40 w-4 lg:w-5 text-right flex-shrink-0 select-none">{{ $index + 1 }}</span>
+                    <span class="text-[#4A1D96] font-mono font-bold tracking-tight text-[12px] sm:text-[13px] md:text-[15px] select-all break-keep">{{ $word }}</span>
                 </div>
             @endforeach
         </div>
