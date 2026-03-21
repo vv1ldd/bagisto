@@ -2,8 +2,36 @@
     $wordlist = app(\Webkul\Customer\Services\MnemonicService::class)->getWordlist();
 @endphp
 
-<x-shop::layouts.split-screen title="Восстановление доступа">
-    
+    {{-- Google Font for Code Mode --}}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        .code-input {
+            font-family: 'Roboto Mono', monospace !important;
+            letter-spacing: 0.5em !important;
+            padding-left: 0.5em !important; /* Offset for centered letter-spacing */
+            text-transform: uppercase;
+        }
+        
+        /* Simulated boxes for characters */
+        .code-input-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-image: linear-gradient(to right, #7C45F5 70%, transparent 70%);
+            background-size: 1.25em 100%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+        
+        .code-input:focus + .code-input-container::after {
+            opacity: 1;
+        }
+    </style>
+
     {{-- Inline Vue Component for the Wizard --}}
     <v-recovery-wizard 
         :wordlist='@json($wordlist)'
@@ -90,7 +118,7 @@
                                 </p>
                             </div>
                             
-                            <div class="relative w-full">
+                            <div class="relative w-full code-input-container">
                                 <input 
                                     type="text"
                                     v-model="inputWord"
@@ -98,7 +126,7 @@
                                     @keydown="handleKeydown"
                                     ref="wordInput"
                                     placeholder="..."
-                                    class="w-full bg-transparent border-b-4 border-zinc-100 p-4 text-3xl font-bold text-center text-zinc-800 placeholder:text-zinc-100 focus:border-[#7C45F5] focus:ring-0 transition-all uppercase tracking-[0.1em]"
+                                    class="w-full bg-transparent border-b-4 border-zinc-100 p-4 text-3xl font-bold text-center text-zinc-800 placeholder:text-zinc-100 focus:border-[#7C45F5] focus:ring-0 transition-all code-input"
                                     autocomplete="off"
                                     autofocus
                                 >
