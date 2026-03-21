@@ -49,10 +49,12 @@ class CustomerLoginLogRepository extends Repository
             'last_active_at' => now(),
         ]);
 
-        try {
-            Mail::queue(new LoginNotification($customer, $loginLog));
-        } catch (\Exception $e) {
-            \Log::error('Login Notification Mail Error: ' . $e->getMessage());
+        if ($customer->email) {
+            try {
+                Mail::queue(new LoginNotification($customer, $loginLog));
+            } catch (\Exception $e) {
+                \Log::error('Login Notification Mail Error: ' . $e->getMessage());
+            }
         }
 
         session(['customer_login_log_id' => $loginLog->id]);
