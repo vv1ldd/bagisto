@@ -8,9 +8,9 @@
         {{ $title }}
     </x-slot>
    
-    <div class="flex min-h-[100dvh] w-full flex-wrap overflow-hidden bg-white">
+    <div class="flex h-[100dvh] w-full flex-wrap overflow-hidden bg-white">
         <!-- Left Side: Content -->
-        <div class="flex w-full flex-col h-[100dvh] px-4 pt-6 pb-4 md:h-auto md:min-h-screen md:px-10 md:pt-8 md:pb-6 lg:px-20 lg:pt-10 lg:pb-10 md:w-1/2 overflow-y-auto scrollbar-hide">
+        <div class="flex w-full flex-col h-full px-4 pt-6 pb-4 md:px-10 md:pt-8 md:pb-6 lg:px-20 lg:pt-10 lg:pb-10 md:w-1/2 overflow-hidden">
             <!-- Header/Logo -->
             <div class="mb-2 flex items-center justify-between md:mb-4">
                 <a href="{{ route('shop.home.index') }}"
