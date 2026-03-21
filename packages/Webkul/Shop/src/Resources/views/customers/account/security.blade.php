@@ -33,13 +33,8 @@
                     <span class="nav-arrow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </span>
-                </a>
-            @endif
- 
-            {{-- Passkey / Add Device --}}
-            <button type="button" id="add-device-btn" class="nav-tile group mt-1 w-full">
+                          {{-- Passkey / Add Device --}}
+            <button type="button" id="add-device-btn" onclick="window.showQrModal()" class="nav-tile group mt-1 w-full text-left">
                 <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -47,7 +42,7 @@
                 </span>
                 <div class="flex flex-col min-w-0 pr-4">
                     <div class="flex items-center gap-2">
-                        <span class="nav-label">Привязать устройство</span>
+                        <span class="nav-label">Добавить устройство</span>
                     </div>
                     <span class="text-[12px] text-zinc-500 font-medium truncate">Вход через TouchID или FaceID</span>
                 </div>
@@ -59,7 +54,7 @@
             </button>
  
             {{-- Manage Passkeys --}}
-            <a href="{{ route('shop.customers.account.passkeys.index') }}" class="nav-tile group mt-1 w-full">
+            <a href="{{ route('shop.customers.account.passkeys.index') }}" class="nav-tile group mt-1 w-full text-left">
                 <span class="w-12 h-12 flex items-center justify-center bg-blue-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
@@ -82,7 +77,7 @@
             </a>
  
             {{-- Activity Log --}}
-            <a href="{{ route('shop.customers.account.login_activity.index') }}" class="nav-tile group mt-1">
+            <a href="{{ route('shop.customers.account.login_activity.index') }}" class="nav-tile group mt-1 text-left">
                 <span class="w-12 h-12 flex items-center justify-center bg-emerald-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A9 9 0 112.182 19.818l4.636-4.636a2.121 2.121 0 113.001-3.001l4.635-4.635z"/>
@@ -121,114 +116,118 @@
                 </div>
 
                 <div class="w-full space-y-3">
-                    <button id="add-this-device-btn" class="w-full py-4 bg-[#7C45F5] text-white font-bold rounded-xl shadow-lg shadow-[#7C45F5]/30 hover:bg-[#6534d4] transition-all active:scale-[0.98]">
+                    <button id="add-this-device-btn" onclick="window.registerThisDevice(this)" class="w-full py-4 bg-[#7C45F5] text-white font-bold rounded-xl shadow-lg shadow-[#7C45F5]/30 hover:bg-[#6534d4] transition-all active:scale-[0.98]">
                         ПРИВЯЗАТЬ ЭТО УСТРОЙСТВО
                     </button>
-                    <button id="close-qr-modal" class="w-full py-2 text-zinc-400 hover:text-zinc-600 font-bold transition-colors">Закрыть</button>
+                    <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-400 hover:text-zinc-600 font-bold transition-colors">Закрыть</button>
                 </div>
             </div>
         </div>
     </div>
-</x-shop::layouts.account>
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script>
-(function() {
-    const addDeviceBtn = document.getElementById('add-device-btn');
-    const qrModal = document.getElementById('qr-modal');
-    const qrModalContent = document.getElementById('qr-modal-content');
-    const qrModalOverlay = document.getElementById('qr-modal-overlay');
-    const qrCodeContainer = document.getElementById('qrcode-container');
-    const closeQrModal = document.getElementById('close-qr-modal');
-    const addThisDeviceBtn = document.getElementById('add-this-device-btn');
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+    (function() {
+        // Helpers
+        const _u8 = (b64) => {
+            const b = b64.replace(/-/g, '+').replace(/_/g, '/');
+            const bin = atob(b);
+            const arr = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+            return arr;
+        };
+        const _b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 
-    if (!addDeviceBtn) return;
-
-    // Helpers
-    const _u8 = (b64) => {
-        const b = b64.replace(/-/g, '+').replace(/_/g, '/');
-        const bin = atob(b);
-        const arr = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-        return arr;
-    };
-    const _b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
-    // Show Modal
-    addDeviceBtn.addEventListener('click', async (e) => {
-        e.preventDefault(); // Ensure purely internal handling
-        qrModal.classList.remove('hidden');
-        setTimeout(() => {
-            qrModalContent.classList.remove('scale-95', 'opacity-0');
-        }, 10);
-
-        try {
-            const res = await fetch('{{ route('shop.customers.account.passkeys.generate-link') }}');
-            const data = await res.json();
+        // Show Modal (Globally Accessible)
+        window.showQrModal = async function() {
+            const qrModal = document.getElementById('qr-modal');
+            const qrModalContent = document.getElementById('qr-modal-content');
+            const qrCodeContainer = document.getElementById('qrcode-container');
             
-            qrCodeContainer.innerHTML = '';
-            new QRCode(qrCodeContainer, {
-                text: data.url,
-                width: 160,
-                height: 160,
-                colorDark : "#1a0050",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.M
-            });
-        } catch (err) {
-            qrCodeContainer.innerHTML = '<span class="text-red-500 font-bold text-xs text-center">Ошибка<br>загрузки</span>';
-        }
-    });
+            if (!qrModal || !qrModalContent || !qrCodeContainer) return;
 
-    // Close Modal
-    const hideModal = () => {
-        qrModalContent.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => { qrModal.classList.add('hidden'); }, 300);
-    };
-    closeQrModal.addEventListener('click', hideModal);
-    qrModalOverlay.addEventListener('click', hideModal);
+            qrModal.classList.remove('hidden');
+            setTimeout(() => {
+                qrModalContent.classList.remove('scale-95', 'opacity-0');
+            }, 10);
 
-    // Register This Device
-    addThisDeviceBtn.addEventListener('click', async () => {
-        const originalText = addThisDeviceBtn.innerText;
-        addThisDeviceBtn.disabled = true;
-        addThisDeviceBtn.innerText = 'ПОДОЖДИТЕ...';
+            try {
+                const res = await fetch('{{ route('shop.customers.account.passkeys.generate-link') }}');
+                const data = await res.json();
+                
+                qrCodeContainer.innerHTML = '';
+                new QRCode(qrCodeContainer, {
+                    text: data.url,
+                    width: 160,
+                    height: 160,
+                    colorDark : "#1a0050",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.M
+                });
+            } catch (err) {
+                qrCodeContainer.innerHTML = '<span class="text-red-500 font-bold text-xs text-center">Ошибка<br>загрузки</span>';
+            }
+        };
 
-        try {
-            const res = await fetch('{{ route('passkeys.register-options') }}', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
-            });
-            const opt = await res.json();
-            opt.challenge = _u8(opt.challenge);
-            opt.user.id = _u8(opt.user.id);
-            if (opt.excludeCredentials) opt.excludeCredentials.forEach(c => c.id = _u8(c.id));
+        // Close Modal (Globally Accessible)
+        window.hideQrModal = function() {
+            const qrModal = document.getElementById('qr-modal');
+            const qrModalContent = document.getElementById('qr-modal-content');
+            if (!qrModal || !qrModalContent) return;
+            
+            qrModalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { qrModal.classList.add('hidden'); }, 300);
+        };
 
-            const cred = await navigator.credentials.create({ publicKey: opt });
-            if (!cred) throw new Error('Отменено');
+        // Close on overlay click
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'qr-modal-overlay') {
+                window.hideQrModal();
+            }
+        });
 
-            const saveRes = await fetch('{{ route('passkeys.register') }}', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: JSON.stringify({
-                    id: cred.id,
-                    rawId: _b64(cred.rawId),
-                    response: { clientDataJSON: _b64(cred.response.clientDataJSON), attestationObject: _b64(cred.response.attestationObject) },
-                    type: cred.type,
-                    clientExtensionResults: cred.getClientExtensionResults() || {}
-                })
-            });
+        // Register This Device (Globally Accessible)
+        window.registerThisDevice = async function(btn) {
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'ПОДОЖДИТЕ...';
 
-            if (!saveRes.ok) throw new Error('Ошибка сохранения');
-            alert('Устройство успешно добавлено!');
-            location.reload();
-        } catch (err) {
-            if (err.name !== 'NotAllowedError') alert('Ошибка: ' + err.message);
-            addThisDeviceBtn.disabled = false;
-            addThisDeviceBtn.innerText = originalText;
-        }
-    });
-})();
-</script>
-@endpush
+            try {
+                const res = await fetch('{{ route('passkeys.register-options') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                });
+                const opt = await res.json();
+                opt.challenge = _u8(opt.challenge);
+                opt.user.id = _u8(opt.user.id);
+                if (opt.excludeCredentials) opt.excludeCredentials.forEach(c => c.id = _u8(c.id));
+
+                const cred = await navigator.credentials.create({ publicKey: opt });
+                if (!cred) throw new Error('Отменено');
+
+                const saveRes = await fetch('{{ route('passkeys.register') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({
+                        id: cred.id,
+                        rawId: _b64(cred.rawId),
+                        response: { clientDataJSON: _b64(cred.response.clientDataJSON), attestationObject: _b64(cred.response.attestationObject) },
+                        type: cred.type,
+                        clientExtensionResults: cred.getClientExtensionResults() || {}
+                    })
+                });
+
+                if (!saveRes.ok) throw new Error('Ошибка сохранения');
+                alert('Устройство успешно добавлено!');
+                location.reload();
+            } catch (err) {
+                if (err.name !== 'NotAllowedError') alert('Ошибка: ' + err.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        };
+    })();
+    </script>
+    @endpush
+</x-shop::layouts.account>
