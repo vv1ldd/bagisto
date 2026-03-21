@@ -112,6 +112,13 @@ Route::prefix('customer')->group(function () {
      * Customer authenticated routes. All the below routes only be accessible
      * if customer is authenticated.
      */
+    /**
+     * Passkey linking (landing page) needs to be accessible via signed link without existing session.
+     */
+    Route::get('passkeys/link', [PasskeyController::class, 'linkLanding'])
+        ->name('shop.customers.account.passkeys.link')
+        ->middleware('signed');
+
     Route::group(['middleware' => ['customer']], function () {
         Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
             /**
@@ -124,6 +131,7 @@ Route::prefix('customer')->group(function () {
              */
             Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
                 Route::get('', 'index')->name('shop.customers.account.passkeys.index');
+                Route::get('generate-link', 'generateLink')->name('shop.customers.account.passkeys.generate-link');
                 Route::post('register-options', 'registerOptions')->name('passkeys.register-options');
                 Route::post('register', 'register')->name('passkeys.register');
                 Route::delete('{id}', 'destroy')->name('passkeys.destroy');

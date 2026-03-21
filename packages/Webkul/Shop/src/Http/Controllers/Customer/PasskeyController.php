@@ -33,6 +33,15 @@ class PasskeyController extends Controller
     public function registerOptions(Request $request, GeneratePasskeyRegisterOptionsAction $generateOptionsAction)
     {
         $user = Auth::guard('customer')->user();
+        
+        // Handle linking flow where user is found via session or manual auth during landing
+        if (!$user && session()->has('link_user_id')) {
+            $user = app(\Webkul\Customer\Repositories\CustomerRepository::class)->find(session('link_user_id'));
+        }
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
 
         $optionsJson = $generateOptionsAction->execute($user, asJson: true);
 
@@ -42,11 +51,52 @@ class PasskeyController extends Controller
     }
 
     /**
+     * Generate a signed link for adding a second device (via QR).
+     */
+    public function generateLink()
+    {
+        $user = Auth::guard('customer')->user();
+
+        $url = \Illuminate\Support\Facades\URL::signedRoute('shop.customers.account.passkeys.link', [
+            'user_id' => $user->id,
+        ], now()->addMinutes(15));
+
+        return response()->json(['url' => $url]);
+    }
+
+    /**
+     * Landing page for the second device via QR.
+     */
+    public function linkLanding(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $user = app(\Webkul\Customer\Repositories\CustomerRepository::class)->find($userId);
+
+        if (!$user) {
+            abort(404);
+        }
+
+        // Store user ID in session so registerOptions/register can find it
+        session(['link_user_id' => $user->id]);
+
+        return view('shop::customers.account.passkeys.link-register', compact('user'));
+    }
+
+    /**
      * Store the newly registered passkey.
      */
     public function register(Request $request, StorePasskeyAction $storePasskeyAction)
     {
         $user = Auth::guard('customer')->user();
+        
+        if (!$user && session()->has('link_user_id')) {
+            $user = app(\Webkul\Customer\Repositories\CustomerRepository::class)->find(session('link_user_id'));
+        }
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
         $optionsJson = $request->session()->get('passkey-registration-options-json');
 
         if (!$optionsJson) {
