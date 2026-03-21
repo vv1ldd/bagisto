@@ -24,10 +24,7 @@
             </div>
         </div>
 
-        @php
-            $mnemonic = session('recovery_key');
-            $words = explode(' ', $mnemonic);
-        @endphp
+
 
         <!-- Ledger-style Word Grid -->
         <div class="grid grid-cols-3 lg:grid-cols-4 gap-1.5 md:gap-3 w-full max-w-[600px] mb-6">
