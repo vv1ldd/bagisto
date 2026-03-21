@@ -1,16 +1,20 @@
 # Stage 1: Frontend Build
 FROM mirror.gcr.io/library/node:18-alpine AS frontend
 WORKDIR /app
+
+# Install build tools for native npm modules
+RUN apk add --no-cache build-base git python3
+
 COPY package.json package-lock.json* ./
 # Cache NPM packages and install root dependencies
 RUN --mount=type=cache,target=/root/.npm \
-    npm i || true
+    npm i
 COPY . .
 RUN npm run build
 
 # Install and build Shop package frontend assets (Vue components)
 RUN --mount=type=cache,target=/root/.npm \
-    npm --prefix packages/Webkul/Shop install || true \
+    npm --prefix packages/Webkul/Shop install \
     && npm --prefix packages/Webkul/Shop run build
 
 # Stage 2: PHP Application
