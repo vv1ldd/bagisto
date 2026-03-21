@@ -40,9 +40,10 @@
         </div>
 
         <div class="flex flex-col items-center gap-4 w-full">
-            <a href="{{ route('shop.customers.account.profile.complete_registration') }}"
-                class="flex w-full max-w-[280px] items-center justify-center gap-2 bg-[#7C45F5] px-6 py-3.5 text-[15px] font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 uppercase tracking-widest rounded">
-                Я записал фразу
+            <a href="{{ route('shop.customers.account.profile.verify_recovery_key') }}"
+                class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-4 text-center text-sm font-bold text-white shadow-xl shadow-[#7C45F5]/30 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 uppercase tracking-[0.2em] 
+                active:scale-[0.98] disabled:opacity-50 max-w-[400px]">
+                ПРОДОЛЖИТЬ
             </a>
         </div>
     </div>

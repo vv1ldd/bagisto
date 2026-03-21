@@ -45,6 +45,23 @@
             </div>
         </div>
 
+        <!-- Nickname Input -->
+        <div class="w-full max-w-[340px] mx-auto mb-6">
+            <div class="bg-white border border-gray-100 shadow-sm overflow-hidden rounded-md">
+                <div class="flex items-center justify-between py-3 px-4 min-h-[52px] relative focus-within:bg-gray-50 transition-colors">
+                    <label for="nickname-input" class="text-[15px] font-medium text-zinc-900 whitespace-nowrap flex-shrink-0">Псевдоним</label>
+                    <div class="flex-grow ml-4 flex justify-end items-center relative">
+                        <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0 font-medium">@</span>
+                        <input type="text" id="nickname-input" required
+                            class="w-full text-right outline-none bg-transparent text-zinc-500 font-medium focus:text-[#7C45F5] focus:placeholder-transparent pb-0.5 text-[15px]"
+                            placeholder="nickname" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            pattern="^[a-zA-Z0-9_]{3,20}$">
+                    </div>
+                </div>
+            </div>
+            <p id="nickname-error" class="text-xs text-red-500 mt-2 hidden text-center font-medium"></p>
+        </div>
+
         <!-- Primary Action Button -->
         <button type="button" id="start-registration-btn" onclick="handlePasskeyRegistration(event)"
             class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-5 text-center font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-xl shadow-[#7C45F5]/30 uppercase tracking-[0.2em] text-sm active:scale-[0.98]">
@@ -101,6 +118,26 @@
                 const btn = document.getElementById('start-registration-btn');
                 const originalText = btn.innerHTML;
                 
+                const nicknameInput = document.getElementById('nickname-input');
+                const nicknameError = document.getElementById('nickname-error');
+                const nickname = nicknameInput.value.trim();
+
+                nicknameError.classList.add('hidden');
+
+                if (!nickname) {
+                    nicknameError.textContent = 'Укажите псевдоним';
+                    nicknameError.classList.remove('hidden');
+                    nicknameInput.focus();
+                    return;
+                }
+
+                if (!/^[a-zA-Z0-9_\-\.]{3,30}$/.test(nickname)) {
+                    nicknameError.textContent = 'Псевдоним должен содержать от 3 до 30 символов';
+                    nicknameError.classList.remove('hidden');
+                    nicknameInput.focus();
+                    return;
+                }
+
                 if (!window.PublicKeyCredential) {
                     alert('Ваш браузер не поддерживает Passkey. Пожалуйста, обновите браузер или используйте современное устройство.');
                     return;
@@ -118,12 +155,24 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'Accept': 'application/json'
-                        }
+                        },
+                        body: JSON.stringify({ username: nickname })
                     });
 
                     if (!prepareResponse.ok) {
                         const errorData = await prepareResponse.json();
-                        throw new Error(errorData.message || 'Ошибка инициализации регистрации.');
+                        
+                        // Handle Laravel Validation format
+                        let errorMessage = 'Ошибка инициализации регистрации.';
+                        if (errorData.errors && errorData.errors.username) {
+                            errorMessage = errorData.errors.username[0];
+                        } else if (errorData.message) {
+                            errorMessage = errorData.message;
+                        }
+
+                        nicknameError.textContent = errorMessage;
+                        nicknameError.classList.remove('hidden');
+                        throw new Error(errorMessage);
                     }
 
                     const options = await prepareResponse.json();

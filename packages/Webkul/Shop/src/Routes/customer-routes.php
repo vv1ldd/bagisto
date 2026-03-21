@@ -183,9 +183,8 @@ Route::prefix('customer')->group(function () {
 
                         Route::get('recovery-key', 'recoveryKey')->name('shop.customers.account.profile.recovery_key');
 
-                        Route::get('complete-registration', 'completeRegistration')->name('shop.customers.account.profile.complete_registration');
-
-                        Route::get('complete-registration-passkey', 'completeRegistrationPasskey')->name('shop.customers.account.profile.complete_registration_passkey');
+                        Route::get('verify-recovery-key', 'showVerifyRecoveryKey')->name('shop.customers.account.profile.verify_recovery_key');
+                        Route::post('verify-recovery-key', 'verifyRecoveryKey')->name('shop.customers.account.profile.verify_recovery_key.post');
 
                         Route::get('complete-registration-success', 'completeRegistrationSuccess')->name('shop.customers.account.profile.complete_registration_success');
 

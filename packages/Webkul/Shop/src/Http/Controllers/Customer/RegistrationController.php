@@ -47,8 +47,20 @@ class RegistrationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function passkeyPrepare()
+    public function passkeyPrepare(Request $request)
     {
+        $request->validate([
+            'username' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_\-\.]+$/', 'unique:customers,username'],
+        ], [
+            'username.required' => 'Укажите псевдоним',
+            'username.min' => 'Псевдоним должен содержать от 3 до 30 символов',
+            'username.max' => 'Псевдоним должен содержать от 3 до 30 символов',
+            'username.regex' => 'Псевдоним может содержать только латиницу, цифры, минус, подчеркивание и точку',
+            'username.unique' => 'Этот псевдоним уже занят',
+        ]);
+
+        $username = $request->input('username');
+
         $currentIp = request()->header('CF-Connecting-IP')
             ?? request()->header('X-Forwarded-For')
             ?? request()->header('X-Real-IP')
@@ -71,7 +83,7 @@ class RegistrationController extends Controller
         $data = [
             'first_name' => 'Пользователь',
             'last_name' => '',
-            'username' => 'user_' . Str::random(8),
+            'username' => $username,
             'email' => null, // Allowed per migration
             'password' => bcrypt($recoveryKey),
             'mnemonic_hash' => $mnemonicHash,

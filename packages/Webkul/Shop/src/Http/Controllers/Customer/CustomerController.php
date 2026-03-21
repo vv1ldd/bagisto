@@ -40,22 +40,106 @@ class CustomerController extends Controller
     }
 
     /**
-     * Show recovery key page.
+     * Show the recovery key (seed phrase) to the user.
      *
      * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
      */
     public function recoveryKey()
     {
-        if (session()->has('pending_recovery_key')) {
-            session()->flash('recovery_key', session('pending_recovery_key'));
-            session()->forget('pending_recovery_key');
+        $recoveryKey = session('pending_recovery_key');
+
+        if (! $recoveryKey) {
+            return redirect()->route('shop.customers.account.index');
         }
 
-        if (!session()->has('recovery_key')) {
-            return redirect()->route('shop.customers.account.profile.complete_registration');
+        return view('shop::customers.account.profile.recovery-key', [
+            'words' => explode(' ', $recoveryKey)
+        ]);
+    }
+
+    /**
+     * Show the screen to verify the recovery key.
+     * Generates 3 random word indices to quiz the user.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function showVerifyRecoveryKey()
+    {
+        $recoveryKey = session('pending_recovery_key');
+
+        if (! $recoveryKey) {
+            return redirect()->route('shop.customers.account.index');
         }
 
-        return view('shop::customers.account.profile.recovery-key');
+        $words = explode(' ', $recoveryKey);
+        
+        $indices = session('verification_indices');
+        if (! $indices) {
+            // Generate 3 unique random zero-based indices
+            $keys = array_rand($words, 3);
+            sort($keys);
+            $indices = $keys;
+            session(['verification_indices' => $indices]);
+        }
+
+        return view('shop::customers.account.profile.verify-recovery-key', compact('indices'));
+    }
+
+    /**
+     * Verify the entered recovery key words.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function verifyRecoveryKey(\Illuminate\Http\Request $request)
+    {
+        $recoveryKey = session('pending_recovery_key');
+        $indices = session('verification_indices');
+
+        if (! $recoveryKey || ! $indices) {
+            return redirect()->route('shop.customers.account.index');
+        }
+
+        $words = explode(' ', $recoveryKey);
+        
+        // Validate inputs
+        $rules = [];
+        $messages = [];
+        foreach ($indices as $i) {
+            $fieldName = 'word_' . $i;
+            $pos = $i + 1;
+            $rules[$fieldName] = 'required|string';
+            $messages["{$fieldName}.required"] = "Введите слово №{$pos}";
+        }
+        $request->validate($rules, $messages);
+
+        // Check if words match
+        $allCorrect = true;
+        foreach ($indices as $i) {
+            $expected = strtolower(trim($words[$i]));
+            $actual = strtolower(trim($request->input('word_' . $i)));
+            
+            if ($expected !== $actual) {
+                $allCorrect = false;
+                break;
+            }
+        }
+
+        if (! $allCorrect) {
+            return back()->withErrors(['message' => 'Введены неверные слова. Пожалуйста, проверьте свою секретную фразу и попробуйте снова.']);
+        }
+
+        // Success: clear session, complete registration
+        session()->forget(['pending_recovery_key', 'verification_indices']);
+        
+        $customer = auth()->guard('customer')->user();
+        if ($customer && $customer->is_complete_registration === null) {
+            $this->customerRepository->update([
+                'is_complete_registration' => 1
+            ], $customer->id);
+        }
+
+        session()->flash('success', 'Регистрация полностью завершена!');
+        return redirect()->route('shop.customers.account.profile.complete_registration_success');
     }
 
     /**
@@ -63,30 +147,7 @@ class CustomerController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function completeRegistration()
-    {
-        $customer = $this->customerRepository->find(auth()->guard('customer')->user()->id);
 
-        return view('shop::customers.account.profile.edit', [
-            'customer' => $customer,
-            'isCompleteRegistration' => true,
-        ]);
-    }
-
-    /**
-     * Show the passkey completion page after registration.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function completeRegistrationPasskey()
-    {
-        $customer = $this->customerRepository->find(auth()->guard('customer')->user()->id);
-
-        return view('shop::customers.account.passkeys.index', [
-            'customer' => $customer,
-            'isCompleteRegistration' => true,
-        ]);
-    }
 
     /**
      * Handle the final success redirect after registration flow.
