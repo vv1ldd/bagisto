@@ -174,14 +174,16 @@
                 },
 
                 mounted() {
+                    // Try to restore state from old input (Laravel back()->withInput())
                     if (this.oldWords && Array.isArray(this.oldWords)) {
-                        const filtered = this.oldWords.filter(w => w && w.trim() !== '');
-                        if (filtered.length > 0) {
-                            // Find the valid BIP39 length matches or just use the current count
+                        const filledWords = this.oldWords.filter(w => w && w.trim() !== '');
+                        
+                        if (filledWords.length > 0) {
+                            // Find the best-fitting BIP39 length (12, 15, 18, 21, 24)
                             const validLengths = [12, 15, 18, 21, 24];
-                            let bestLen = 24;
+                            let bestLen = filledWords.length;
                             for (let l of validLengths) {
-                                if (filtered.length <= l) {
+                                if (filledWords.length <= l) {
                                     bestLen = l;
                                     break;
                                 }
@@ -189,11 +191,13 @@
 
                             this.totalSteps = bestLen;
                             this.words = Array(bestLen).fill('');
-                            filtered.forEach((w, i) => {
-                                if (i < bestLen) this.words[i] = w;
+                            
+                            // Map the old words correctly into the array
+                            this.oldWords.forEach((w, i) => {
+                                if (i < bestLen) this.words[i] = w || '';
                             });
 
-                            // Go to final confirmation step
+                            // Jump to the final confirmation step so user can see errors and correct them
                             this.currentStep = bestLen + 1;
                         }
                     }
