@@ -291,7 +291,7 @@
                         <label class="ios-label">@lang('shop::app.customers.account.profile.edit.email') <span class="text-red-500">*</span></label>
                         <div class="ios-input-wrapper">
                             <x-shop::form.control-group class="!mb-0 flex-1">
-                                <x-shop::form.control-group.control type="email" name="email" :rules="'required|email|unique:customers,email,' . $customer->id"
+                                <x-shop::form.control-group.control type="email" name="email" rules="required|email"
                                     :value="old('email') ?? $customer->email" placeholder="email@example.com"
                                     autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                                     data-lpignore="true" data-1p-ignore
