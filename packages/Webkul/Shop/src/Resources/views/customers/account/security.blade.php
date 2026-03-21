@@ -116,86 +116,61 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const addDeviceBtn = document.getElementById('add-device-btn');
+    console.log('[Passkey] Init button:', !!addDeviceBtn);
     if (!addDeviceBtn) return;
 
-    addDeviceBtn.addEventListener('click', async () => {
-        addDeviceBtn.innerHTML = '<div class="flex items-center justify-center w-full py-2"><span class="text-[#7C45F5] text-sm font-bold animate-pulse">Подготовка нового ключа...</span></div>';
-
-        try {
-            // Step 1: Get registration options
-            const optionsRes = await fetch('{{ route('passkeys.register-options') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (!optionsRes.ok) throw new Error('Не удалось получить параметры регистрации.');
-            
-            const options = await optionsRes.json();
-
-            // Convert base64url to Uint8Array
-            options.challenge = _b64ToUint8Array(options.challenge);
-            options.user.id = _b64ToUint8Array(options.user.id);
-            if (options.excludeCredentials) {
-                options.excludeCredentials.forEach(c => { c.id = _b64ToUint8Array(c.id); });
-            }
-
-            // Step 2: Trigger device prompt
-            const credential = await navigator.credentials.create({ publicKey: options });
-            if (!credential) throw new Error('Не удалось создать ключ доступа.');
-
-            // Step 3: Send to server
-            const registerPayload = {
-                id: credential.id,
-                rawId: _bufToBase64URL(credential.rawId),
-                response: {
-                    clientDataJSON: _bufToBase64URL(credential.response.clientDataJSON),
-                    attestationObject: _bufToBase64URL(credential.response.attestationObject),
-                },
-                type: credential.type,
-                clientExtensionResults: credential.getClientExtensionResults() || {},
-            };
-
-            const storeRes = await fetch('{{ route('passkeys.register') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(registerPayload)
-            });
-
-            if (!storeRes.ok) {
-                const err = await storeRes.json();
-                throw new Error(err.message || 'Ошибка сохранения ключа.');
-            }
-
-            location.reload();
-
-        } catch (err) {
-            console.error('[Passkey]', err);
-            location.reload();
-        }
-    });
-
-    // Helper: base64url to Uint8Array
-    function _b64ToUint8Array(base64url) {
-        const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-        const bin = atob(base64);
+    const _u8 = (b64) => {
+        const b = b64.replace(/-/g, '+').replace(/_/g, '/');
+        const bin = atob(b);
         const arr = new Uint8Array(bin.length);
         for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
         return arr;
-    }
-    function _bufToBase64URL(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let bin = '';
-        for (const b of bytes) bin += String.fromCharCode(b);
-        return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-    }
+    };
+
+    const _b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+    addDeviceBtn.addEventListener('click', async () => {
+        const originalText = addDeviceBtn.innerHTML;
+        addDeviceBtn.innerHTML = '<div class="w-full text-center py-2 animate-pulse text-[#7C45F5] font-bold">Подготовка...</div>';
+
+        try {
+            const res = await fetch('{{ route('passkeys.register-options') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+            });
+
+            if (!res.ok) throw new Error('Ошибка сервера: ' + res.status);
+            const opt = await res.json();
+
+            opt.challenge = _u8(opt.challenge);
+            opt.user.id = _u8(opt.user.id);
+            if (opt.excludeCredentials) opt.excludeCredentials.forEach(c => c.id = _u8(c.id));
+
+            const cred = await navigator.credentials.create({ publicKey: opt });
+            if (!cred) throw new Error('Создание ключа отменено.');
+
+            const saveRes = await fetch('{{ route('passkeys.register') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({
+                    id: cred.id,
+                    rawId: _b64(cred.rawId),
+                    response: { clientDataJSON: _b64(cred.response.clientDataJSON), attestationObject: _b64(cred.response.attestationObject) },
+                    type: cred.type,
+                    clientExtensionResults: cred.getClientExtensionResults() || {}
+                })
+            });
+
+            if (!saveRes.ok) throw new Error('Ошибка сохранения');
+            
+            alert('Устройство успешно добавлено!');
+            location.reload();
+        } catch (err) {
+            console.error(err);
+            if (err.name !== 'NotAllowedError') alert('Ошибка: ' + err.message);
+            addDeviceBtn.innerHTML = originalText;
+        }
+    });
 });
 </script>
 @endpush
