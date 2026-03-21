@@ -100,18 +100,8 @@
                 transform: translate(-50%, -50%) !important;
                 margin: 0 !important;
                 z-index: 999999 !important;
-            }
-            
-            .flatpickr-calendar.mobile-center::before {
-                content: '';
-                position: fixed;
-                top: -100vh;
-                left: -100vw;
-                width: 200vw;
-                height: 200vh;
-                background: rgba(0, 0, 0, 0.4);
-                z-index: -1;
-                pointer-events: none;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
+                animation: flatpickrFadeIn 0.2s ease-out;
             }
 
             .flatpickr-calendar.mobile-center.animate.open {
