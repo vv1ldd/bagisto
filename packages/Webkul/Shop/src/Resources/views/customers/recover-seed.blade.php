@@ -27,25 +27,6 @@
 
         <div class="w-full max-w-[480px]">
             <x-shop::form :action="route('shop.customers.recovery.seed.post')" v-slot="{ meta }">
-                <!-- Email Section -->
-                <div class="mb-8">
-                    <x-shop::form.control-group>
-                        <x-shop::form.control-group.label class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
-                            @lang('shop::app.customers.login-form.email')
-                        </x-shop::form.control-group.label>
-
-                        <x-shop::form.control-group.control 
-                            type="email"
-                            class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-none focus:!ring-2 focus:!ring-[#7C45F5] w-full"
-                            name="email" 
-                            rules="required|email" 
-                            :value="old('email')"
-                            :label="trans('shop::app.customers.login-form.email')" 
-                            placeholder="email@example.com" 
-                        />
-                    </x-shop::form.control-group>
-                </div>
-
                 <!-- Seed Phrase Grid -->
                 <p class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400 mb-4">Секретная фраза (12, 15, 18, 21 или 24 слова)</p>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-3 mb-10">

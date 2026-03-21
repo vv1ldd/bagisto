@@ -72,6 +72,7 @@ class RegistrationController extends Controller
         $wordCount = $counts[array_rand($counts)];
         $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
         $recoveryKey = implode(' ', $mnemonicWords);
+        $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
 
         // Store in session — will be shown after email link click
         session(['pending_recovery_key' => $recoveryKey]);
@@ -84,6 +85,7 @@ class RegistrationController extends Controller
             'last_name' => '',
             'username' => 'user_' . Str::random(8),
             'password' => bcrypt($recoveryKey),
+            'mnemonic_hash' => $mnemonicHash,
             'api_token' => Str::random(80),
             'is_verified' => !core()->getConfigData('customer.settings.email.verification'),
             'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,

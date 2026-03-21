@@ -119,12 +119,21 @@ class MnemonicService
     }
 
     /**
-     * Get world list
+     * Generate a deterministic, non-reversible hash of the mnemonic phrase.
+     * Used for locating users during Seed-Only recovery without storing the raw mnemonic.
      *
-     * @return array
+     * @param  string|array  $mnemonic
+     * @return string
      */
-    public function getWordlist()
+    public function hashMnemonic($mnemonic)
     {
-        return self::$wordlist;
+        if (is_array($mnemonic)) {
+            $mnemonic = implode(' ', $mnemonic);
+        }
+
+        // Normalize: lowercase, trim extra whitespace
+        $normalized = strtolower(trim(preg_replace('/\s+/', ' ', $mnemonic)));
+
+        return hash('sha256', $normalized);
     }
 }

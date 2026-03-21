@@ -40,11 +40,9 @@ class RecoveryController extends Controller
     public function recoverBySeed(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
             'words' => 'required|array|min:12|max:24',
         ]);
 
-        $email = $request->input('email');
         $words = array_filter($request->input('words', [])); // Remove empty slots
         
         $validLengths = [12, 15, 18, 21, 24];
@@ -63,11 +61,13 @@ class RecoveryController extends Controller
             return redirect()->back()->withInput();
         }
 
-        $mnemonic = implode(' ', $cleanWords);
+        $mnemonicHash = $this->mnemonicService->hashMnemonic($cleanWords);
 
-        // Try to authenticate. Since the mnemonic IS the initial password (bcrypt-ed).
-        if (Auth::guard('customer')->attempt(['email' => $email, 'password' => $mnemonic])) {
-            $customer = Auth::guard('customer')->user();
+        // Find customer by mnemonic hash
+        $customer = $this->customerRepository->findOneByField('mnemonic_hash', $mnemonicHash);
+
+        if ($customer) {
+            Auth::guard('customer')->login($customer);
             
             // Log activity if repository exists
             if (class_exists(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)) {
@@ -80,7 +80,7 @@ class RecoveryController extends Controller
             return redirect()->route('shop.customers.account.index');
         }
 
-        session()->flash('error', 'Неверная секретная фраза или email.');
+        session()->flash('error', 'Аккаунт с такой секретной фразой не найден.');
         return redirect()->back()->withInput();
     }
 }
