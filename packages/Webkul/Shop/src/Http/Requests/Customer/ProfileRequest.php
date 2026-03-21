@@ -24,24 +24,34 @@ class ProfileRequest extends FormRequest
      */
     public function rules()
     {
-        $customer = auth()->guard('customer')->user();
-        $id = $customer->id;
-        $isCompleteRegistration = $this->has('is_complete_registration');
-
         return [
-            'first_name' => ['nullable'],
-            'last_name' => ['nullable'],
-            'username' => ['required', 'unique:customers,username,' . $id, 'max:255', 'regex:/^[\p{L}0-9_.]+$/u'],
-            'gender' => ['nullable', 'in:Other,Male,Female'],
-            'date_of_birth' => ['nullable', 'string'],
-            'birth_city' => ['nullable', 'string'],
-            'email' => ['nullable', 'email', 'unique:customers,email,' . $id],
-
-            'image' => ['array', 'nullable'],
-            'image.*' => ['nullable', 'mimes:bmp,jpg,jpeg,' . ($isCompleteRegistration ? 'png' : 'png,svg,webp')],
-            'phone' => ['nullable', new PhoneNumber, 'unique:customers,phone,' . $id],
+            'first_name'  => ['nullable', 'string', 'max:255'],
+            'last_name'   => ['nullable', 'string', 'max:255'],
+            'username'    => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_\-\.]+$/', 'unique:customers,username,' . auth()->guard('customer')->user()->id],
+            'gender'      => ['nullable', 'in:Male,Female,Other'],
+            'date_of_birth'=> ['nullable', 'date', 'before:today'],
+            'birth_city'  => ['nullable', 'string', 'max:255'],
+            'email'       => ['nullable', 'email', 'unique:customers,email,' . auth()->guard('customer')->user()->id],
+            'phone'       => ['nullable', new PhoneNumber, 'unique:customers,phone,' . auth()->guard('customer')->user()->id],
+            'image'       => ['array', 'nullable'],
+            'image.*'     => ['nullable', 'mimes:bmp,jpg,jpeg,png,svg,webp'],
+            'oldpassword' => ['nullable', 'required_with:password'],
+            'password'    => ['nullable', 'min:6', 'confirmed'],
             'subscribed_to_news_letter' => 'nullable',
-            'is_complete_registration' => 'boolean|nullable',
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'username.regex' => 'Псевдоним может содержать только латиницу, цифры, минус, подчеркивание и точку',
+            'username.min' => 'Псевдоним должен содержать от 3 до 30 символов',
+            'username.max' => 'Псевдоним должен содержать от 3 до 30 символов',
         ];
     }
 

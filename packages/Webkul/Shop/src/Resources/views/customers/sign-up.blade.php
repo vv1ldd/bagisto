@@ -55,7 +55,7 @@
                         <input type="text" id="nickname-input" required
                             class="w-full text-right outline-none bg-transparent text-zinc-500 font-medium focus:text-[#7C45F5] focus:placeholder-transparent pb-0.5 text-[15px]"
                             placeholder="nickname" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                            pattern="^[a-zA-Z0-9_]{3,20}$">
+                            pattern="^[a-zA-Z0-9_\-\.]{3,30}$">
                     </div>
                 </div>
             </div>
@@ -131,8 +131,15 @@
                     return;
                 }
 
-                if (!/^[a-zA-Z0-9_\-\.]{3,30}$/.test(nickname)) {
+                if (nickname.length < 3 || nickname.length > 30) {
                     nicknameError.textContent = 'Псевдоним должен содержать от 3 до 30 символов';
+                    nicknameError.classList.remove('hidden');
+                    nicknameInput.focus();
+                    return;
+                }
+
+                if (!/^[a-zA-Z0-9_\-\.]+$/.test(nickname)) {
+                    nicknameError.textContent = 'Псевдоним может содержать только латиницу, цифры, минус, подчеркивание и точку';
                     nicknameError.classList.remove('hidden');
                     nicknameInput.focus();
                     return;
