@@ -29,13 +29,13 @@ class ProfileRequest extends FormRequest
         $isCompleteRegistration = $this->has('is_complete_registration');
 
         return [
-            'first_name' => ['required'],
-            'last_name' => ['required'],
+            'first_name' => ['nullable'],
+            'last_name' => ['nullable'],
             'username' => ['required', 'unique:customers,username,' . $id, 'max:255', 'regex:/^[\p{L}0-9_.]+$/u'],
-            'gender' => $customer->gender ? 'nullable' : 'required|in:Other,Male,Female',
-            'date_of_birth' => $customer->date_of_birth ? 'nullable' : 'required|string',
-            'birth_city' => $customer->birth_city ? 'nullable' : 'required|string',
-            'email' => 'email|unique:customers,email,' . $id,
+            'gender' => ['nullable', 'in:Other,Male,Female'],
+            'date_of_birth' => ['nullable', 'string'],
+            'birth_city' => ['nullable', 'string'],
+            'email' => ['nullable', 'email', 'unique:customers,email,' . $id],
 
             'image' => ['array', 'nullable'],
             'image.*' => ['nullable', 'mimes:bmp,jpg,jpeg,' . ($isCompleteRegistration ? 'png' : 'png,svg,webp')],
