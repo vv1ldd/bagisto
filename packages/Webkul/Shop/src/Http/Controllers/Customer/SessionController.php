@@ -173,16 +173,29 @@ class SessionController extends Controller
             // Refresh customer model
             $customer = $customerRepository->find($customer->id);
         } else {
-            // 1. Check exact matches for names (standard approach)
+            // 1. Check exact matches            // If already claimed, ensure matching
+            // Exception: Allow name changes if currently set to default "Пользователь"
+            $isDefaultName = ($customer->first_name === 'Пользователь' || empty($customer->first_name));
+
             if (
-                mb_strtolower(trim($customer->first_name)) !== mb_strtolower(trim($data['first_name'])) ||
-                mb_strtolower(trim($customer->last_name)) !== mb_strtolower(trim($data['last_name']))
+                ! $isDefaultName &&
+                (mb_strtolower(trim($customer->first_name)) !== mb_strtolower(trim($data['first_name'])) ||
+                mb_strtolower(trim($customer->last_name)) !== mb_strtolower(trim($data['last_name'])))
             ) {
-                Log::warning('[IdentityVerification] Name mismatch', [
-                    'db' => ['fn' => $customer->first_name, 'ln' => $customer->last_name],
-                    'input' => ['fn' => $data['first_name'], 'ln' => $data['last_name']]
+                Log::warning('[IdentityVerification] Name mismatch for claimed identity', [
+                    'db_first' => $customer->first_name,
+                    'input_first' => $data['first_name']
                 ]);
+
                 return redirect()->back()->withErrors(['verification' => 'Введенные данные не совпадают с нашими записями. [N]'])->withInput();
+            }
+
+            // If it was default name, we should actually perform the update now
+            if ($isDefaultName) {
+                 $customerRepository->update([
+                    'first_name' => trim($data['first_name']),
+                    'last_name' => trim($data['last_name']),
+                ], $customer->id);
             }
 
             // 2. Check fields (handle both plain text and hashed for backward compatibility)
