@@ -5,16 +5,8 @@
     $passkeyCount = $customer->passkeys()->count();
 @endphp
 
-<x-shop::layouts.account :is-cardless="true">
-    <div class="mx-auto max-w-[600px] mt-4 mb-6">
-        {{-- Header --}}
-        <div class="flex items-center gap-3 mb-4 px-4">
-            <a href="{{ route('shop.customers.account.index') }}" 
-               class="w-10 h-10 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 rounded-2xl active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
-                <span class="icon-arrow-left text-2xl"></span>
-            </a>
-            <h1 class="text-[22px] font-black text-zinc-900 tracking-tight">Безопасность</h1>
-        </div>
+<x-shop::layouts.account :is-cardless="true" :title="__('Безопасность')">
+    <div class="mt-2 mb-6">
 
         <div class="nav-grid">
             {{-- Seed Phrase --}}

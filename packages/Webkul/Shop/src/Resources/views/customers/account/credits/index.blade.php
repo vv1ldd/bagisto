@@ -1,24 +1,7 @@
-<x-shop::layouts.account :has-header="false" :is-cardless="true">
-    <div class="mx-auto max-w-[600px] mt-8 mb-10">
+<x-shop::layouts.account :is-cardless="true" :title="__('Meanly Wallet')">
+    <div class="mt-2 mb-10">
         {{-- Master Unified Tile --}}
         <div class="bg-white shadow-2xl border border-zinc-100 overflow-hidden relative ">
-            
-            {{-- Unified Header --}}
-            <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-50 bg-zinc-50/30">
-                <div class="flex items-center gap-3">
-                    <button id="step-back-btn" onclick="handleStepBack()" style="display: none;"
-                        class="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
-                        <span class="icon-arrow-left text-xl"></span>
-                    </button>
-                    <h1 id="wallet-main-title" class="text-[20px] font-bold text-zinc-900 leading-tight">Meanly Wallet</h1>
-                </div>
-
-                <a id="account-close-button"
-                    href="javascript:window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-                    class="w-8 h-8 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 active:scale-90 transition-transform shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
-                    <span class="icon-cancel text-xl"></span>
-                </a>
-            </div>
 
             @php
                 $user = auth()->guard('customer')->user();

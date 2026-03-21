@@ -150,21 +150,17 @@
                     <!-- Main Content Pane (Drill-Down View) -->
                     <div class="flex flex-col w-full relative" style="max-width: 600px;">
                         
-                        <!-- Floating Back Button outside the card boundaries -->
-                        <button type="button" 
-                            onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
-                            class="ios-back-button !border-zinc-200 !shadow-sm hover:!shadow-md transition-all" 
-                            style="top: -12px !important; left: -12px !important; z-index: 999; background: #fff !important;">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
-                            </svg>
-                        </button>
-
                         @if (isset($title) && !empty((string)$title))
-                            <!-- Drill-Down Header: Positioned above the card -->
-                            <div class="flex items-center justify-between gap-3 px-10 pt-0 pb-4 mt-2">
-                                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $title }}</h1>
-                                <div class="flex items-center gap-2">
+                            <!-- Drill-Down Header: Matches Navigation style -->
+                            <div class="flex items-center gap-3 mb-4 px-4 pt-4">
+                                <button type="button" 
+                                    onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
+                                    class="w-10 h-10 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 rounded-2xl active:scale-95 transition-all shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+                                    <span class="icon-arrow-left text-2xl"></span>
+                                </button>
+                                <h1 class="text-[22px] font-black text-zinc-900 tracking-tight">{{ $title }}</h1>
+                                
+                                <div class="ml-auto flex items-center gap-2">
                                     @if (isset($headerActions))
                                         {{ $headerActions }}
                                     @endif

@@ -24,7 +24,7 @@ $menuIcons = [
             class="w-10 h-10 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 rounded-2xl active:scale-95 transition-all shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
             <span class="icon-arrow-left text-2xl"></span>
         </button>
-        <h1 class="text-[22px] font-black text-zinc-900 tracking-tight">Личные настройки</h1>
+        <h1 class="text-[22px] font-black text-zinc-900 tracking-tight">Личный кабинет</h1>
     </div>
 
     <div class="p-0">
