@@ -221,7 +221,8 @@ class CustomerController extends Controller
             session()->flash('success', trans('shop::app.customers.account.profile.index.edit-success'));
 
             if (isset($data['is_complete_registration']) && $data['is_complete_registration']) {
-                return redirect()->route('shop.customers.account.profile.complete_registration_passkey');
+                session()->flash('success', 'Регистрация полностью завершена!');
+                return redirect()->route('shop.customers.account.profile.complete_registration_success');
             }
 
             if ($customer->passkeys()->count() === 0) {
