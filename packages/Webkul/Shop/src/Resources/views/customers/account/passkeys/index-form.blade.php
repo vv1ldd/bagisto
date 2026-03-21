@@ -16,7 +16,7 @@
                             <!-- Icon/Brand Section -->
                             <div class="mb-10 flex flex-col items-center">
                                 <div class="w-24 h-24 bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center mb-10 shadow-2xl shadow-[#7C45F5]/20 !rounded-none">
-                                    <span class="text-5xl">🔑</span>
+                                    <span class="icon-shield text-5xl text-white"></span>
                                 </div>
                                 <h3 class="text-zinc-900 text-4xl font-black uppercase tracking-tighter mb-4 text-center leading-[0.9]">Настройка входа</h3>
                                 <div class="h-2 w-16 bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D]"></div>
@@ -24,7 +24,7 @@
 
                             <div class="space-y-4 mb-12">
                                 <p class="text-[17px] font-medium text-zinc-500 text-center leading-relaxed max-w-[320px]">
-                                    Используйте отпечаток или лицо для безопасного доступа к <span class="text-[#7C45F5] font-black uppercase tracking-tight">Meanly Wallet</span> без паролей.
+                                    Используйте отпечаток или лицо для безопасного доступа к <span class="text-[#7C45F5] font-black uppercase tracking-tight">Meanly</span> без паролей.
                                 </p>
                             </div>
 

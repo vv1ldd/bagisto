@@ -16,7 +16,7 @@
         <div class="bg-white border border-zinc-100 mb-6 ">
 
             <div class="px-5 pt-6 pb-2 flex items-center gap-3">
-                <span class="text-2xl">🔑</span>
+                <span class="icon-shield text-2xl text-[#7C45F5]"></span>
                 <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">{{ $pageTitle }}</h1>
             </div>
 
