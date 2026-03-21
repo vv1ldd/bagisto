@@ -1,5 +1,6 @@
 @props([
     'title' => '',
+    'contentWidth' => 'max-w-[440px]',
 ])
 
 <x-shop::layouts :has-header="false" :has-feature="false" :has-footer="false">
@@ -25,7 +26,7 @@
 
             <!-- Content Area -->
             <div class="flex flex-grow flex-col justify-center py-2 md:py-2">
-                <div class="mx-auto w-full max-w-[440px]">
+                <div class="mx-auto w-full {{ $contentWidth }}">
                     {{ $slot }}
                 </div>
             </div>

@@ -1,48 +1,22 @@
-<x-shop::layouts :has-header="false" :has-feature="false" :has-footer="false">
+<x-shop::layouts>
     <x-slot:title>@lang('shop::app.checkout.onepage.index.checkout')</x-slot>
 
-        <style>
-            body {
-                background: linear-gradient(135deg, #fdf4ff 0%, #ffffff 50%, #f5f3ff 100%);
-                min-height: 100vh;
-            }
+    <style>
+        body {
+            background: linear-gradient(135deg, #fdf4ff 0%, #ffffff 50%, #f5f3ff 100%);
+            min-height: 100vh;
+        }
 
-            [v-cloak] {
-                display: none;
-            }
-        </style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 
-        <div class="px-4 py-3 sm:px-8 sm:py-6 max-w-7xl mx-auto" v-cloak>
-            <div class="flex items-center justify-between mb-6">
-                <a href="{{ route('shop.home.index') }}" class="group flex items-center gap-2">
-                    <span
-                        class="text-2xl font-black tracking-tighter text-[#7C45F5] transition-transform group-hover:scale-105">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
-                </a>
-
-                @guest('customer')
-                    @include('shop::checkout.login')
-                @else
-                    <div
-                        class="flex items-center gap-2.5 px-3 py-1.5  bg-white/60 border border-white/80 backdrop-blur-md shadow-sm">
-                        <div
-                            class="h-7 w-7  bg-[#7C45F5] text-white flex items-center justify-center text-[10px] font-black uppercase ring-2 ring-white">
-                            {{ substr(auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username, 0, 1) }}
-                        </div>
-                        <span class="text-xs font-black text-zinc-600 truncate max-w-[120px]">
-                            @
-                            {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
-                            @if(auth()->guard('customer')->user()->is_investor)
-                                <span title="Инвестор" class="text-xs leading-none">💎</span>
-                            @endif
-                        </span>
-                    </div>
-                @endguest
-            </div>
-
-            <v-checkout>
-                <x-shop::shimmer.checkout.onepage />
-            </v-checkout>
-        </div>
+    <div class="px-4 py-3 md:py-8 max-w-7xl mx-auto" v-cloak>
+        <v-checkout>
+            <x-shop::shimmer.checkout.onepage />
+        </v-checkout>
+    </div>
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-checkout-template">
