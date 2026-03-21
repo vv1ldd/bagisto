@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Webkul\Shop\Mail\Customer\InvoiceNotification;
 use Webkul\Shop\Helpers\NumberToWords;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class CreditController extends Controller
 {
@@ -46,10 +48,27 @@ class CreditController extends Controller
             ->orderBy('network')
             ->get();
 
-        $transactions = $customer
-            ->credits()
-            ->orderBy('id', 'desc')
-            ->paginate(20);
+        // Combine Credits (Transactions) and Orders
+        $credits = $customer->credits()->get()->map(function ($item) {
+            $item->merged_type = 'transaction';
+            return $item;
+        });
+
+        $orders = $customer->orders()->get()->map(function ($item) {
+            $item->merged_type = 'order';
+            return $item;
+        });
+
+        $mergedCollection = $credits->concat($orders)->sortByDesc('created_at');
+
+        // Manual Pagination
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 20;
+        $currentItems = $mergedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        
+        $transactions = new LengthAwarePaginator($currentItems, $mergedCollection->count(), $perPage, $currentPage, [
+            'path' => LengthAwarePaginator::resolveCurrentPath(),
+        ]);
 
         $organizations = $customer->organizations;
 
