@@ -222,9 +222,6 @@
     </style>
 @endpush
 
-@if (isset($isCompleteRegistration) && $isCompleteRegistration)
-    <input type="hidden" name="is_complete_registration" value="1">
-@endif
 
 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.before', ['customer' => $customer]) !!}
 
@@ -232,220 +229,177 @@
 
 <div class="ios-settings-wrapper mx-auto w-full">
 
-    @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-        {{-- Registration flow --}}
-        <div class="mb-4 text-center">
-            <h1 class="text-2xl font-bold text-zinc-900 mb-1">Как к вам обращаться?</h1>
-            <p class="text-sm text-zinc-500 max-w-[400px] mx-auto leading-normal">
-                Придумайте уникальный псевдоним. По нему вас будут узнавать на платформе.
-            </p>
+    {{-- Normal profile edit mode --}}
+    <!-- Group 1: Contact Info -->
+    <div class="ios-group ">
+
+        <div class="px-5 pt-6 pb-2">
+            <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">Профиль</h1>
         </div>
 
-        <div class="w-full mx-auto relative">
-            <div class="ios-group w-full !mb-2 !overflow-hidden">
-                    {{-- Fields for registration mode --}}
-                    <div class="ios-row">
-                        <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
-                        <div class="ios-input-wrapper">
-                            <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0">@</span>
-                            <x-shop::form.control-group class="!mb-0 flex-1">
-                                <x-shop::form.control-group.control type="text" name="username" rules="required"
-                                    class="pseudonym-input"
-                                    :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
-                                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                    data-lpignore="true" data-1p-ignore
-                                    label="Псевдоним" 
-                                    v-on:focus="clearDefaultUsername($event)"
-                                    v-on:input="debounceCheckUsername($event.target.value)" />
-                            </x-shop::form.control-group>
-                            <span class="ios-arrow icon-arrow-right"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-center mt-6">
-                    <button type="submit"
-                        :disabled="!meta.valid || !!usernameError"
-                        class="flex w-full items-center justify-center gap-3  bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
-                        @lang('shop::app.customers.account.profile.edit.save')
-                    </button>
-                </div>
+        <div class="ios-row">
+            <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
+            <div class="ios-input-wrapper">
+                <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0">@</span>
+                <x-shop::form.control-group class="!mb-0 flex-1">
+                    <x-shop::form.control-group.control type="text" name="username" rules="required"
+                        class="pseudonym-input"
+                        :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        data-lpignore="true" data-1p-ignore
+                        label="Псевдоним"
+                        v-on:focus="clearDefaultUsername($event)"
+                        v-on:input="debounceCheckUsername($event.target.value)" />
+                </x-shop::form.control-group>
+                <span class="ios-arrow icon-arrow-right"></span>
             </div>
-
-    @else
-        {{-- Normal profile edit mode --}}
-        <!-- Group 1: Contact Info -->
-        <div class="ios-group ">
-
-            <div class="px-5 pt-6 pb-2">
-                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">Профиль</h1>
+        </div>
+        <div class="ios-row">
+            <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
+            <div class="ios-input-wrapper">
+                <x-shop::form.control-group class="!mb-0 flex-1">
+                    <x-shop::form.control-group.control type="text" name="first_name" rules="required"
+                        :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
+                        placeholder="Имя" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        data-lpignore="true" data-1p-ignore
+                        :label="trans('shop::app.customers.account.profile.edit.first-name')" />
+                </x-shop::form.control-group>
+                <span class="ios-arrow icon-arrow-right"></span>
             </div>
+        </div>
+        <div class="ios-row">
+            <label class="ios-label">@lang('shop::app.customers.account.profile.edit.last-name') <span class="text-red-500">*</span></label>
+            <div class="ios-input-wrapper">
+                <x-shop::form.control-group class="!mb-0 flex-1">
+                    <x-shop::form.control-group.control type="text" name="last_name" rules="required"
+                        :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        data-lpignore="true" data-1p-ignore
+                        :label="trans('shop::app.customers.account.profile.edit.last-name')" />
+                </x-shop::form.control-group>
+                <span class="ios-arrow icon-arrow-right"></span>
+            </div>
+        </div>
+        <div class="ios-row">
+            <label class="ios-label">@lang('shop::app.customers.account.profile.edit.email') <span class="text-red-500">*</span></label>
+            <div class="ios-input-wrapper">
+                <input type="hidden" name="email" value="{{ $customer->email }}">
+                <div class="flex-1 flex justify-end items-center mr-1">
+                    <span class="text-[15px] text-zinc-400 text-right truncate">{{ $customer->email }}</span>
+                </div>
+                <span class="ios-arrow icon-arrow-right"></span>
+            </div>
+        </div>
 
+        <div class="ios-row cursor-pointer" onclick="window.location.href='{{ route('shop.customers.account.addresses.index') }}'">
+            <label class="ios-label cursor-pointer text-zinc-900">@lang('shop::app.layouts.address')</label>
+            <div class="ios-input-wrapper justify-end">
+                <span class="text-[15px] text-zinc-400 text-right truncate max-w-[200px]">
+                    {{ $customer->default_address ? ($customer->default_address->address . ', ' . $customer->default_address->city) : 'Настроить' }}
+                </span>
+                <span class="ios-arrow icon-arrow-right"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Group 2: Personal Details -->
+    <div class="ios-group">
+        @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
             <div class="ios-row">
-                <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
+                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.gender') <span class="text-red-500">*</span></label>
                 <div class="ios-input-wrapper">
-                    <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0">@</span>
                     <x-shop::form.control-group class="!mb-0 flex-1">
-                        <x-shop::form.control-group.control type="text" name="username" rules="required"
-                            class="pseudonym-input"
-                            :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
-                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                            data-lpignore="true" data-1p-ignore
-                            label="Псевдоним"
-                            v-on:focus="clearDefaultUsername($event)"
-                            v-on:input="debounceCheckUsername($event.target.value)" />
+                        <x-shop::form.control-group.control type="select" name="gender" rules="required"
+                            :value="old('gender') ?? (str_starts_with($customer->gender, '$2y$') ? '' : $customer->gender)"
+                            :label="trans('shop::app.customers.account.profile.edit.gender')">
+                            <option value="" disabled hidden>Выберите пол</option>
+                            <option value="Male" {{ (($customer->gender ?? old('gender')) == 'Male') ? 'selected' : '' }}>
+                                @lang('shop::app.customers.account.profile.edit.male')
+                            </option>
+                            <option value="Female" {{ (($customer->gender ?? old('gender')) == 'Female') ? 'selected' : '' }}>
+                                @lang('shop::app.customers.account.profile.edit.female')
+                            </option>
+                            <option value="Other" {{ (($customer->gender ?? old('gender')) == 'Other') ? 'selected' : '' }}>
+                                @lang('shop::app.customers.account.profile.edit.other')
+                            </option>
+                        </x-shop::form.control-group.control>
                     </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
             </div>
+        @endif
+
+        @if (empty($customer->date_of_birth) || str_starts_with($customer->date_of_birth, '$2y$'))
             <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
+                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.dob') <span class="text-red-500">*</span></label>
                 <div class="ios-input-wrapper">
                     <x-shop::form.control-group class="!mb-0 flex-1">
-                        <x-shop::form.control-group.control type="text" name="first_name" rules="required"
-                            :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
-                            placeholder="Имя" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        <x-shop::form.control-group.control type="date" name="date_of_birth"
+                            rules="required" :value="old('date_of_birth') ?? (str_starts_with($customer->date_of_birth, '$2y$') ? '' : $customer->date_of_birth)"
+                            id="dob_input_edit" allow-input="false" placeholder="Выберите дату"
+                            :label="trans('shop::app.customers.account.profile.edit.dob')" />
+                    </x-shop::form.control-group>
+                    <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
+                </div>
+            </div>
+        @endif
+
+        @if (empty($customer->birth_city) || str_starts_with($customer->birth_city, '$2y$'))
+            <div class="ios-row">
+                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.birth-city') <span class="text-red-500">*</span></label>
+                <div class="ios-input-wrapper">
+                    <x-shop::form.control-group class="!mb-0 flex-1">
+                        <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
+                            :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
+                            placeholder="Например: Москва" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                             data-lpignore="true" data-1p-ignore
-                            :label="trans('shop::app.customers.account.profile.edit.first-name')" />
+                            :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
                     </x-shop::form.control-group>
                     <span class="ios-arrow icon-arrow-right"></span>
                 </div>
             </div>
-            <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.last-name') <span class="text-red-500">*</span></label>
-                <div class="ios-input-wrapper">
-                    <x-shop::form.control-group class="!mb-0 flex-1">
-                        <x-shop::form.control-group.control type="text" name="last_name" rules="required"
-                            :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
-                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                            data-lpignore="true" data-1p-ignore
-                            :label="trans('shop::app.customers.account.profile.edit.last-name')" />
-                    </x-shop::form.control-group>
-                    <span class="ios-arrow icon-arrow-right"></span>
-                </div>
-            </div>
-            <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.email') <span class="text-red-500">*</span></label>
-                <div class="ios-input-wrapper">
-                    <input type="hidden" name="email" value="{{ $customer->email }}">
-                    <div class="flex-1 flex justify-end items-center mr-1">
-                        <span class="text-[15px] text-zinc-400 text-right truncate">{{ $customer->email }}</span>
-                    </div>
-                    <span class="ios-arrow icon-arrow-right"></span>
-                </div>
-            </div>
+        @endif
 
-            <div class="ios-row cursor-pointer" onclick="window.location.href='{{ route('shop.customers.account.addresses.index') }}'">
-                <label class="ios-label cursor-pointer text-zinc-900">@lang('shop::app.layouts.address')</label>
-                <div class="ios-input-wrapper justify-end">
-                    <span class="text-[15px] text-zinc-400 text-right truncate max-w-[200px]">
-                        {{ $customer->default_address ? ($customer->default_address->address . ', ' . $customer->default_address->city) : 'Настроить' }}
-                    </span>
-                    <span class="ios-arrow icon-arrow-right"></span>
-                </div>
-            </div>
-        </div>
+    </div>
 
-        <!-- Group 2: Personal Details -->
-        <div class="ios-group">
-            @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
-                <div class="ios-row">
-                    <label class="ios-label">@lang('shop::app.customers.account.profile.edit.gender') <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper">
-                        <x-shop::form.control-group class="!mb-0 flex-1">
-                            <x-shop::form.control-group.control type="select" name="gender" rules="required"
-                                :value="old('gender') ?? (str_starts_with($customer->gender, '$2y$') ? '' : $customer->gender)"
-                                :label="trans('shop::app.customers.account.profile.edit.gender')">
-                                <option value="" disabled hidden>Выберите пол</option>
-                                <option value="Male" {{ (($customer->gender ?? old('gender')) == 'Male') ? 'selected' : '' }}>
-                                    @lang('shop::app.customers.account.profile.edit.male')
-                                </option>
-                                <option value="Female" {{ (($customer->gender ?? old('gender')) == 'Female') ? 'selected' : '' }}>
-                                    @lang('shop::app.customers.account.profile.edit.female')
-                                </option>
-                                <option value="Other" {{ (($customer->gender ?? old('gender')) == 'Other') ? 'selected' : '' }}>
-                                    @lang('shop::app.customers.account.profile.edit.other')
-                                </option>
-                            </x-shop::form.control-group.control>
-                        </x-shop::form.control-group>
-                        <span class="ios-arrow icon-arrow-right"></span>
-                    </div>
-                </div>
-            @endif
-
-            @if (empty($customer->date_of_birth) || str_starts_with($customer->date_of_birth, '$2y$'))
-                <div class="ios-row">
-                    <label class="ios-label">@lang('shop::app.customers.account.profile.edit.dob') <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper">
-                        <x-shop::form.control-group class="!mb-0 flex-1">
-                            <x-shop::form.control-group.control type="date" name="date_of_birth"
-                                rules="required" :value="old('date_of_birth') ?? (str_starts_with($customer->date_of_birth, '$2y$') ? '' : $customer->date_of_birth)"
-                                id="dob_input_edit" allow-input="false" placeholder="Выберите дату"
-                                :label="trans('shop::app.customers.account.profile.edit.dob')" />
-                        </x-shop::form.control-group>
-                        <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
-                    </div>
-                </div>
-            @endif
-
-            @if (empty($customer->birth_city) || str_starts_with($customer->birth_city, '$2y$'))
-                <div class="ios-row">
-                    <label class="ios-label">@lang('shop::app.customers.account.profile.edit.birth-city') <span class="text-red-500">*</span></label>
-                    <div class="ios-input-wrapper">
-                        <x-shop::form.control-group class="!mb-0 flex-1">
-                            <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
-                                :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
-                                placeholder="Например: Москва" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                                data-lpignore="true" data-1p-ignore
-                                :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
-                        </x-shop::form.control-group>
-                        <span class="ios-arrow icon-arrow-right"></span>
-                    </div>
-                </div>
-            @endif
-
-        </div>
-
-        <!-- B2B Toggle (Read-only) -->
-        <div class="ios-switch-row !mb-4 opacity-80">
-            <div class="flex flex-col gap-0.5">
-                <label class="text-[15px] font-medium text-zinc-900 select-none m-0">
-                    B2B возможности
-                </label>
-                <span class="text-[11px] text-zinc-400">для подключения возможностей для бизнеса напишите в поддержку</span>
-            </div>
-            <div class="ios-toggle-container">
-                <label class="ios-switch cursor-not-allowed">
-                    <input type="checkbox" disabled @checked($customer->is_b2b_enabled)>
-                    <span class="ios-slider !cursor-not-allowed {{ $customer->is_b2b_enabled ? '' : '!bg-zinc-200' }}"></span>
-                </label>
-            </div>
-        </div>
-
-        <!-- Newsletter Toggle -->
-        <div class="ios-switch-row">
-            <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0" for="is-subscribed">
-                Подписаться на уведомления
+    <!-- B2B Toggle (Read-only) -->
+    <div class="ios-switch-row !mb-4 opacity-80">
+        <div class="flex flex-col gap-0.5">
+            <label class="text-[15px] font-medium text-zinc-900 select-none m-0">
+                B2B возможности
             </label>
-            <div class="ios-toggle-container">
-                <label class="ios-switch">
-                    <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed"
-                        @checked($customer->subscribed_to_news_letter)>
-                    <span class="ios-slider"></span>
-                </label>
-            </div>
+            <span class="text-[11px] text-zinc-400">для подключения возможностей для бизнеса напишите в поддержку</span>
         </div>
-
-        <div class="flex justify-center mt-6">
-            <button type="submit"
-                :disabled="!meta.valid || !!usernameError"
-                class="flex w-full items-center justify-center gap-3 bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
-                @lang('shop::app.customers.account.profile.edit.save')
-            </button>
+        <div class="ios-toggle-container">
+            <label class="ios-switch cursor-not-allowed">
+                <input type="checkbox" disabled @checked($customer->is_b2b_enabled)>
+                <span class="ios-slider !cursor-not-allowed {{ $customer->is_b2b_enabled ? '' : '!bg-zinc-200' }}"></span>
+            </label>
         </div>
+    </div>
 
+    <!-- Newsletter Toggle -->
+    <div class="ios-switch-row">
+        <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0" for="is-subscribed">
+            Подписаться на уведомления
+        </label>
+        <div class="ios-toggle-container">
+            <label class="ios-switch">
+                <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed"
+                    @checked($customer->subscribed_to_news_letter)>
+                <span class="ios-slider"></span>
+            </label>
+        </div>
+    </div>
 
-    @endif
+    <div class="flex justify-center mt-6">
+        <button type="submit"
+            :disabled="!meta.valid || !!usernameError"
+            class="flex w-full items-center justify-center gap-3 bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
+            @lang('shop::app.customers.account.profile.edit.save')
+        </button>
+    </div>
+
 
 </div>
 

@@ -27,23 +27,8 @@
             </p>
         </div>
 
-        <!-- Registration Flow Steps Info (Subtle) -->
-        <div class="flex items-center gap-4 my-8">
-            <div class="flex flex-col items-center gap-2 opacity-100">
-                <div class="w-8 h-8 rounded-full border-2 border-[#7C45F5] flex items-center justify-center text-[#7C45F5] font-bold text-xs bg-[#7C45F5]/5">1</div>
-                <span class="text-[10px] uppercase tracking-tighter font-bold text-zinc-400">Ключ доступа</span>
-            </div>
-            <div class="w-8 h-px bg-zinc-100"></div>
-            <div class="flex flex-col items-center gap-2 opacity-40">
-                <div class="w-8 h-8 rounded-full border-2 border-zinc-200 flex items-center justify-center text-zinc-400 font-bold text-xs">2</div>
-                <span class="text-[10px] uppercase tracking-tighter font-bold text-zinc-400">Секретная фраза</span>
-            </div>
-            <div class="w-8 h-px bg-zinc-100"></div>
-            <div class="flex flex-col items-center gap-2 opacity-40">
-                <div class="w-8 h-8 rounded-full border-2 border-zinc-200 flex items-center justify-center text-zinc-400 font-bold text-xs">3</div>
-                <span class="text-[10px] uppercase tracking-tighter font-bold text-zinc-400">Профиль</span>
-            </div>
-        </div>
+
+
 
         <!-- Nickname Input -->
         <div class="w-full max-w-[340px] mx-auto mb-6">

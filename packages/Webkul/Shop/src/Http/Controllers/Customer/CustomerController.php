@@ -165,17 +165,10 @@ class CustomerController extends Controller
             return back()->withErrors(['message' => 'Введены неверные слова. Пожалуйста, проверьте свою секретную фразу и попробуйте снова.']);
         }
 
-        // Success: clear session, complete registration
+        // Success: clear session
         session()->forget(['pending_recovery_key', 'verification_indices']);
         
-        $customer = auth()->guard('customer')->user();
-        if ($customer && $customer->is_complete_registration === null) {
-            $this->customerRepository->update([
-                'is_complete_registration' => 1
-            ], $customer->id);
-        }
-
-        session()->flash('success', 'Регистрация полностью завершена!');
+        session()->flash('success', 'Секретная фраза подтверждена!');
         return redirect()->route('shop.customers.account.profile.complete_registration_success');
     }
 
@@ -321,11 +314,6 @@ class CustomerController extends Controller
             }
 
             session()->flash('success', trans('shop::app.customers.account.profile.index.edit-success'));
-
-            if (isset($data['is_complete_registration']) && $data['is_complete_registration']) {
-                session()->flash('success', 'Регистрация полностью завершена!');
-                return redirect()->route('shop.customers.account.profile.complete_registration_success');
-            }
 
             if ($customer->passkeys()->count() === 0) {
                 return redirect()->route('shop.customers.account.passkeys.index');
