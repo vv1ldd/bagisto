@@ -28,7 +28,7 @@
     <div class="flex items-center gap-3 flex-shrink-0">
         @auth('customer')
             {{-- Logged-in: Avatar + Alias --}}
-            <div class="flex items-center gap-2.5 bg-white/60 border border-white/80 backdrop-blur-md shadow-sm px-3 py-1.5 leading-none">
+            <div class="flex items-center gap-2.5">
                 {{-- Avatar/Cart icon — Vue only adds the cart badge on top --}}
                 <div class="relative">
                     <a href="{{ route('shop.customers.account.index') }}" class="relative group" id="header-avatar-link">
