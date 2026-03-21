@@ -11,30 +11,45 @@
         id="v-flash-item-template"
     >
         <div
-            class="flex w-max max-w-[408px] justify-between gap-12  px-5 py-3 max-sm:max-w-80 max-sm:items-center max-sm:gap-2 max-sm:p-3"
-            :style="typeStyles[flash.type]['container']"
+            class="group relative flex min-w-[320px] max-w-[420px] items-center justify-between gap-4 overflow-hidden bg-white/90 p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-all duration-300 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] border-l-4"
+            :class="[
+                flash.type === 'success' ? 'border-[#7C45F5]' : '',
+                flash.type === 'error' ? 'border-red-500' : '',
+                flash.type === 'warning' ? 'border-amber-500' : '',
+                flash.type === 'info' ? 'border-blue-500' : '',
+            ]"
         >
-            <p
-                class="flex items-center break-words text-sm"
-                :style="typeStyles[flash.type]['message']"
-            >
-                <span
-                    class="icon-toast-done text-2xl ltr:mr-2.5 rtl:ml-2.5"
-                    :class="iconClasses[flash.type]"
-                    :style="typeStyles[flash.type]['icon']"
-                ></span>
+            <div class="flex items-center gap-3">
+                <div 
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                    :class="[
+                        flash.type === 'success' ? 'bg-[#7C45F5]/10 text-[#7C45F5]' : '',
+                        flash.type === 'error' ? 'bg-red-50 text-red-500' : '',
+                        flash.type === 'warning' ? 'bg-amber-50 text-amber-500' : '',
+                        flash.type === 'info' ? 'bg-blue-50 text-blue-500' : '',
+                    ]"
+                >
+                    <span :class="iconClasses[flash.type]" class="text-lg"></span>
+                </div>
 
-                @{{ flash.message }}
-            </p>
-
-            <div
-                class="ios-red-cross !w-5 !h-5 !text-[12px]"
-                @click="remove"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                <p class="text-[13px] font-bold text-zinc-800 leading-tight">
+                    @{{ flash.message }}
+                </p>
             </div>
+
+            <button
+                @click="remove"
+                class="flex h-7 w-7 shrink-0 items-center justify-center text-zinc-400 transition-all hover:bg-zinc-100 hover:text-zinc-600 active:scale-95"
+            >
+                <span class="icon-cross text-xl"></span>
+            </button>
+
+            <!-- Progress bar for auto-hide -->
+            <div 
+                class="absolute bottom-0 left-0 h-0.5 bg-zinc-200/50 transition-all duration-[6000ms] ease-linear"
+                style="width: 100%;"
+                ref="progressBar"
+            ></div>
         </div>
     </script>
 
@@ -55,49 +70,21 @@
 
                         info: 'icon-toast-info',
                     },
-
-                    typeStyles: {
-                        success: {
-                            container: 'background: #D4EDDA',
-
-                            message: 'color: #155721',
-
-                            icon: 'color: #155721'
-                        },
-
-                        error: {
-                            container: 'background: #F8D7DA',
-
-                            message: 'color: #721C24',
-
-                            icon: 'color: #721C24'
-                        },
-
-                        warning: {
-                            container: 'background: #FFF3CD',
-
-                            message: 'color: #856404',
-
-                            icon: 'color: #856404'
-                        },
-
-                        info: {
-                            container: 'background: #E2E3E5',
-
-                            message: 'color: #383D41',
-
-                            icon: 'color: #383D41'
-                        },
-                    },
                 };
             },
 
-            created() {
-                var self = this;
+            mounted() {
+                // Animate progress bar
+                if (this.$refs.progressBar) {
+                    setTimeout(() => {
+                        this.$refs.progressBar.style.width = '0%';
+                    }, 50);
+                }
 
-                setTimeout(function() {
-                    self.remove()
-                }, 1000)
+                // Show for 6 seconds unless user interacts/clicks
+                setTimeout(() => {
+                    this.remove();
+                }, 6000);
             },
 
             methods: {

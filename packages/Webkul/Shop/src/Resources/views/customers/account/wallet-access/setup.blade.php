@@ -1,69 +1,174 @@
 <x-shop::layouts.account :show-back="false" :has-header="true" :has-footer="true" :is-cardless="true">
-    <x-slot:title>Настройка Кошелька</x-slot:title>
+    <x-slot:title>Настройка кошелька</x-slot:title>
 
-    <div class="flex flex-col items-center justify-center min-h-[50vh] py-12 px-6 animate-page-entry relative">
-        
-        {{-- Ambient background glows --}}
-        <div class="absolute top-0 left-1/4 w-64 h-64 bg-indigo-500/5 rounded-full blur-[80px] animate-blob z-0"></div>
-        <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-[80px] animate-blob animation-delay-2000 z-0"></div>
+    <div class="mx-auto w-full px-4 py-8 max-sm:px-0 max-sm:py-0">
+        <div class="bg-white p-10 flex flex-col items-center relative overflow-hidden w-full min-h-[calc(100vh-100px)] sm:min-h-0 sm:border-2 sm:border-zinc-100 shadow-[0_20px_50px_rgba(124,69,245,0.06)] !rounded-none">
+            <!-- Design Accents -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#FF4D6D]/3 blur-3xl rounded-full"></div>
 
-        <div class="flex flex-col items-center w-full max-w-[420px] relative z-10">
-            <div class="w-full bg-white border border-zinc-100/80 rounded-[2.5rem] p-10 shadow-[0_24px_80px_rgba(0,0,0,0.06)] flex flex-col items-center text-center">
-                
-                <div class="mb-8 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-3xl flex items-center justify-center shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-zinc-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
+            <div class="w-full mx-auto z-10 relative flex flex-col items-center justify-center flex-1">
+                <!-- Icon/Brand Section -->
+                <div class="mb-10 flex flex-col items-center">
+                    <div class="w-24 h-24 bg-gradient-to-br from-[#7C45F5] to-[#FF4D6D] flex items-center justify-center mb-10 shadow-2xl shadow-[#7C45F5]/20 !rounded-none">
+                        <span class="text-5xl">🔑</span>
+                    </div>
+                    <h3 class="text-zinc-900 text-4xl font-black uppercase tracking-tighter mb-4 text-center leading-[0.9]">Настройка кошелька</h3>
+                    <div class="h-2 w-16 bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D]"></div>
                 </div>
 
-                <h1 class="text-[22px] font-black text-zinc-900 mb-4 uppercase tracking-tight leading-tight">Безопасный доступ</h1>
-                <p class="text-zinc-500 text-[14px] mb-10 leading-relaxed font-medium">
-                    Чтобы использовать кошелек, необходимо настроить безопасный вход с помощью биометрии или ключа доступа Face ID / Touch ID.
-                </p>
+                <div class="space-y-4 mb-12">
+                    <p class="text-[17px] font-medium text-zinc-500 text-center leading-relaxed max-w-[320px]">
+                        Используйте отпечаток или лицо для безопасного доступа к <span class="text-[#7C45F5] font-black uppercase tracking-tight">Meanly Wallet</span> без подтверждений по почте.
+                    </p>
+                </div>
 
-                <div class="flex flex-col gap-4 w-full">
-                    <a href="{{ route('shop.customers.account.passkeys.index') }}"
-                        class="w-full bg-[#7C45F5] text-white font-black py-4 rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6836d4] transition-all active:scale-[0.98] flex items-center justify-center gap-3 text-[13px] uppercase tracking-widest">
-                        <span>Создать ключ доступа</span>
-                    </a>
+                <!-- Buttons -->
+                <div class="w-full max-w-[320px] flex flex-col gap-4">
+                    <button type="button" id="add-passkey-button"
+                        onclick="window.startPasskeyRegistration()"
+                        class="group relative flex w-full items-center justify-center h-18 bg-[#7C45F5] text-white transition-all hover:bg-[#6b35e4] active:scale-[0.98] shadow-xl shadow-[#7C45F5]/25 overflow-hidden !rounded-none border-none">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                        <span class="icon-add-new text-2xl mr-3 font-bold"></span>
+                        <span id="add-passkey-button-text" class="text-[13px] font-black uppercase tracking-widest">Создать ключ</span>
+                    </button>
 
-                    <a href="{{ route('shop.customers.account.index') }}" class="text-[11px] font-black text-zinc-400 hover:text-[#7C45F5] transition-colors duration-300 uppercase tracking-[0.2em] flex items-center justify-center gap-2 mt-2">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                         На главную
+                    <a href="{{ route('shop.customers.account.index') }}"
+                        class="flex w-full items-center justify-center h-16 bg-white text-zinc-400 text-[11px] font-bold uppercase tracking-[0.3em] transition-all hover:bg-zinc-50 hover:text-zinc-600 border border-zinc-100 !rounded-none">
+                        На главную
                     </a>
                 </div>
-            </div>
 
-            <div class="mt-8 flex items-center justify-center gap-2 py-2 px-5 bg-zinc-50 rounded-full border border-zinc-100 shadow-sm">
-                <div class="w-1.5 h-1.5 rounded-full bg-[#7C45F5] animate-pulse"></div>
-                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
-                    Wallet Security Setup
-                </p>
+                <div class="mt-10 flex items-center justify-center gap-3">
+                    <div class="w-1.5 h-1.5 bg-[#7C45F5] opacity-20"></div>
+                    <div class="w-1.5 h-1.5 bg-[#7C45F5]"></div>
+                    <div class="w-1.5 h-1.5 bg-[#7C45F5] opacity-20"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <style>
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    @push('scripts')
+        <script>
+            window.startPasskeyRegistration = async function () {
+                const button = document.getElementById('add-passkey-button');
+                const buttonText = document.getElementById('add-passkey-button-text');
+                const originalText = buttonText?.innerText || 'Создать ключ';
 
-        @keyframes blob {
-            0% { transform: translate(0px, 0px) scale(1); }
-            33% { transform: translate(20px, -30px) scale(1.05); }
-            66% { transform: translate(-15px, 15px) scale(0.98); }
-            100% { transform: translate(0px, 0px) scale(1); }
-        }
+                if (!window.PublicKeyCredential) {
+                    window.showAlert('error', 'Ошибка', 'Ваш браузер не поддерживает Passkey (требуется HTTPS).');
+                    return;
+                }
 
-        .animate-page-entry {
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+                if (button) button.disabled = true;
+                if (buttonText) buttonText.innerText = 'Подготовка...';
 
-        .animate-blob {
-            animation: blob 8s infinite alternate;
-        }
+                function base64ToUint8Array(base64) {
+                    const padding = '='.repeat((4 - base64.length % 4) % 4);
+                    const b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+                    const rawData = window.atob(b64);
+                    const outputArray = new Uint8Array(rawData.length);
+                    for (let i = 0; i < rawData.length; ++i) {
+                        outputArray[i] = rawData.charCodeAt(i);
+                    }
+                    return outputArray;
+                }
 
-        .animation-delay-2000 { animation-delay: 2s; }
-    </style>
+                function arrayBufferToBase64URL(buffer) {
+                    let binary = '';
+                    const bytes = new Uint8Array(buffer);
+                    const len = bytes.byteLength;
+                    for (let i = 0; i < len; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                }
+
+                try {
+                    const response = await fetch('{{ route('passkeys.register-options') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+
+                    if (!response.ok) throw new Error('Не удалось получить настройки с сервера.');
+
+                    const rawOptions = await response.json();
+                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+
+                    options.challenge = base64ToUint8Array(options.challenge);
+                    options.user.id = base64ToUint8Array(options.user.id);
+
+                    if (options.excludeCredentials) {
+                        options.excludeCredentials.forEach(cred => {
+                            cred.id = base64ToUint8Array(cred.id);
+                        });
+                    }
+
+                    if (buttonText) buttonText.innerText = 'Ожидание устройства...';
+
+                    const credential = await navigator.credentials.create({
+                        publicKey: options
+                    });
+
+                    if (!credential) throw new Error('Отмена пользователем.');
+                    if (buttonText) buttonText.innerText = 'Сохранение...';
+
+                    const transports = (credential.response.getTransports) ? credential.response.getTransports() : [];
+
+                    const registrationData = {
+                        id: credential.id,
+                        rawId: arrayBufferToBase64URL(credential.rawId),
+                        response: {
+                            clientDataJSON: arrayBufferToBase64URL(credential.response.clientDataJSON),
+                            attestationObject: arrayBufferToBase64URL(credential.response.attestationObject),
+                            transports: transports,
+                        },
+                        type: credential.type,
+                        clientExtensionResults: credential.getClientExtensionResults() || {},
+                    };
+
+                    const registrationResponse = await fetch('{{ route('passkeys.register') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify(registrationData)
+                    });
+
+                    if (registrationResponse.ok) {
+                        window.location.reload();
+                    } else {
+                        const errorData = await registrationResponse.json();
+                        window.showAlert('error', 'Ошибка', errorData.message || 'Ошибка сохранения Passkey');
+                    }
+                } catch (error) {
+                    console.error('Passkey registration error:', error);
+                    let message = error.message;
+                    let type = 'error';
+
+                    if (error.name === 'NotAllowedError' || message.includes('отмена') || message.includes('cancelled')) {
+                        message = 'Действие отменено пользователем.';
+                        type = 'warning';
+                    }
+
+                    window.showAlert(type, 'Ошибка', message);
+                } finally {
+                    if (button) button.disabled = false;
+                    if (buttonText) buttonText.innerText = originalText;
+                }
+            };
+
+            window.showAlert = function (type, title, message) {
+                if (window.app && window.app.config && window.app.config.globalProperties && window.app.config.globalProperties.$emitter) {
+                    window.app.config.globalProperties.$emitter.emit('add-flash', { type, message });
+                } else {
+                    alert(message);
+                }
+            };
+        </script>
+    @endpush
 </x-shop::layouts.account>
