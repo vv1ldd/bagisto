@@ -223,8 +223,8 @@
                     console.log('[Passkey] Registration success! Redirecting...');
                     btn.innerHTML = 'Готово!';
                     
-                    // Step 5: Redirect to dashboard where user can optionally set up security
-                    window.location.href = '{{ route('shop.customers.account.index') }}';
+                    // Step 5: Redirect to focused security onboarding page
+                    window.location.href = '{{ route('shop.customers.account.onboarding.security') }}';
 
                 } catch (err) {
                     console.error('[Passkey] Error:', err);

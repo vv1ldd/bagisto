@@ -380,4 +380,14 @@ class CustomerController extends Controller
     {
         return view('shop::customers.account.index');
     }
+
+    /**
+     * Show security onboarding page for new users.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showSecurityOnboarding()
+    {
+        return view('shop::customers.account.onboarding.security');
+    }
 }

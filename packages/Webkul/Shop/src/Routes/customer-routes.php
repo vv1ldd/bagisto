@@ -150,6 +150,7 @@ Route::prefix('customer')->group(function () {
          */
         Route::prefix('account')->group(function () {
             Route::get('', [CustomerController::class, 'account'])->name('shop.customers.account.index');
+            Route::get('security-onboarding', [CustomerController::class, 'showSecurityOnboarding'])->name('shop.customers.account.onboarding.security');
 
             Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
                 /**
