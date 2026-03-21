@@ -176,31 +176,35 @@ class CustomerController extends Controller
 
             session()->forget('onboarding_no_password');
 
-            if ($data['subscribed_to_news_letter']) {
-                $subscription = $this->subscriptionRepository->findOneWhere(['email' => $data['email']]);
+            $email = $data['email'] ?? $customer->email;
 
-                if ($subscription) {
-                    $this->subscriptionRepository->update([
-                        'customer_id' => $customer->id,
-                        'is_subscribed' => 1,
-                    ], $subscription->id);
+            if ($email) {
+                if ($data['subscribed_to_news_letter']) {
+                    $subscription = $this->subscriptionRepository->findOneWhere(['email' => $email]);
+
+                    if ($subscription) {
+                        $this->subscriptionRepository->update([
+                            'customer_id' => $customer->id,
+                            'is_subscribed' => 1,
+                        ], $subscription->id);
+                    } else {
+                        $this->subscriptionRepository->create([
+                            'email' => $email,
+                            'customer_id' => $customer->id,
+                            'channel_id' => core()->getCurrentChannel()?->id ?: core()->getDefaultChannel()->id,
+                            'is_subscribed' => 1,
+                            'token' => $token = uniqid(),
+                        ]);
+                    }
                 } else {
-                    $this->subscriptionRepository->create([
-                        'email' => $data['email'],
-                        'customer_id' => $customer->id,
-                        'channel_id' => core()->getCurrentChannel()?->id ?: core()->getDefaultChannel()->id,
-                        'is_subscribed' => 1,
-                        'token' => $token = uniqid(),
-                    ]);
-                }
-            } else {
-                $subscription = $this->subscriptionRepository->findOneWhere(['email' => $data['email']]);
+                    $subscription = $this->subscriptionRepository->findOneWhere(['email' => $email]);
 
-                if ($subscription) {
-                    $this->subscriptionRepository->update([
-                        'customer_id' => $customer->id,
-                        'is_subscribed' => 0,
-                    ], $subscription->id);
+                    if ($subscription) {
+                        $this->subscriptionRepository->update([
+                            'customer_id' => $customer->id,
+                            'is_subscribed' => 0,
+                        ], $subscription->id);
+                    }
                 }
             }
 
