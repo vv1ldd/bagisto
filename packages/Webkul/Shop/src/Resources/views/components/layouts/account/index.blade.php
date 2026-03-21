@@ -5,6 +5,7 @@
     'hasHeader' => true,
     'hasFooter' => true,
     'isCardless' => false,
+    'title'      => null,
 ])
 
 <x-shop::layouts :has-header="$hasHeader" :has-feature="false" :has-footer="$hasFooter">

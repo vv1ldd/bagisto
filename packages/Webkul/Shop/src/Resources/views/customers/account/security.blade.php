@@ -39,7 +39,7 @@
             @endif
  
             {{-- Passkey / Add Device --}}
-            <a href="javascript:void(0);" id="add-device-btn" class="nav-tile group mt-1">
+            <button type="button" id="add-device-btn" class="nav-tile group mt-1 w-full">
                 <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -57,7 +57,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
                     </svg>
                 </span>
-            </a>
+            </button>
  
             {{-- Activity Log --}}
             <a href="{{ route('shop.customers.account.login_activity.index') }}" class="nav-tile group mt-1">
