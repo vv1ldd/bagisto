@@ -12,24 +12,60 @@ class MnemonicService
     ];
 
     /**
-     * Generate a new mnemonic phrase.
+     * Generate a new BIP39-compliant mnemonic phrase.
+     * Supported word counts: 12, 15, 18, 21, 24.
      *
      * @param  int  $wordCount
      * @return array
      */
     public function generateMnemonic($wordCount = 12)
     {
-        $mnemonic = [];
+        // BIP39 Entropy bits based on word count
+        $entropyBitsMap = [
+            12 => 128,
+            15 => 160,
+            18 => 192,
+            21 => 224,
+            24 => 256,
+        ];
 
-        for ($i = 0; $i < $wordCount; $i++) {
-            $mnemonic[] = self::$wordlist[random_int(0, count(self::$wordlist) - 1)];
+        if (!isset($entropyBitsMap[$wordCount])) {
+            throw new \InvalidArgumentException("Invalid word count for BIP39 mnemonic.");
+        }
+
+        $ent = $entropyBitsMap[$wordCount];
+        $cs = $ent / 32; // Checksum length
+
+        // Generate random bytes for entropy
+        $entropyBytes = random_bytes($ent / 8);
+        $entropyBin = '';
+        foreach (str_split($entropyBytes) as $byte) {
+            $entropyBin .= str_pad(decbin(ord($byte)), 8, '0', STR_PAD_LEFT);
+        }
+
+        // Calculate checksum
+        $hash = hash('sha256', $entropyBytes, true);
+        $hashBin = '';
+        foreach (str_split($hash) as $byte) {
+            $hashBin .= str_pad(decbin(ord($byte)), 8, '0', STR_PAD_LEFT);
+        }
+        $checksum = substr($hashBin, 0, $cs);
+
+        // Combine entropy + checksum
+        $combinedBin = $entropyBin . $checksum;
+
+        // Split into 11-bit chunks and map to words
+        $mnemonic = [];
+        foreach (str_split($combinedBin, 11) as $chunk) {
+            $mnemonic[] = self::$wordlist[bindec($chunk)];
         }
 
         return $mnemonic;
     }
 
     /**
-     * Validate if all words in the phrase are from the BIP39 wordlist.
+     * Validate if all words in the phrase are from the BIP39 wordlist
+     * AND if the checksum is correct.
      *
      * @param  string|array  $mnemonic
      * @return bool
@@ -40,13 +76,46 @@ class MnemonicService
             $mnemonic = explode(' ', strtolower(trim($mnemonic)));
         }
 
-        foreach ($mnemonic as $word) {
-            if (!in_array($word, self::$wordlist)) {
-                return false;
-            }
+        $wordCount = count($mnemonic);
+        $entropyBitsMap = [12 => 128, 15 => 160, 18 => 192, 21 => 224, 24 => 256];
+
+        // Only support standard BIP39 lengths for checksum validation
+        if (!isset($entropyBitsMap[$wordCount])) {
+            return false;
         }
 
-        return true;
+        $ent = $entropyBitsMap[$wordCount];
+        $cs = $ent / 32;
+
+        // 1. Map words back to 11-bit binary indices
+        $wordMap = array_flip(self::$wordlist);
+        $combinedBin = '';
+        foreach ($mnemonic as $word) {
+            if (!isset($wordMap[$word])) {
+                return false;
+            }
+            $combinedBin .= str_pad(decbin($wordMap[$word]), 11, '0', STR_PAD_LEFT);
+        }
+
+        // 2. Extract entropy and checksum from combined binary
+        $entropyBin = substr($combinedBin, 0, $ent);
+        $checksumBin = substr($combinedBin, $ent);
+
+        // 3. Convert entropy binary back to bytes
+        $entropyBytes = '';
+        foreach (str_split($entropyBin, 8) as $byte) {
+            $entropyBytes .= chr(bindec($byte));
+        }
+
+        // 4. Calculate expected checksum from entropy bytes
+        $hash = hash('sha256', $entropyBytes, true);
+        $hashBin = '';
+        foreach (str_split($hash) as $byte) {
+            $hashBin .= str_pad(decbin(ord($byte)), 8, '0', STR_PAD_LEFT);
+        }
+        $expectedChecksum = substr($hashBin, 0, $cs);
+
+        return $checksumBin === $expectedChecksum;
     }
 
     /**

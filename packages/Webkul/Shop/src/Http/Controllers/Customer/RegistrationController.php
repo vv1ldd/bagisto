@@ -60,8 +60,9 @@ class RegistrationController extends Controller
             $currentIp = trim(explode(',', $currentIp)[0]);
         }
 
-        // Generate a random-length mnemonic seed phrase (12-24 words, Ledger style)
-        $wordCount = rand(12, 24);
+        // Generate a random-length BIP39 mnemonic (12, 15, 18, 21, 24 words)
+        $counts = [12, 15, 18, 21, 24];
+        $wordCount = $counts[array_rand($counts)];
         $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
         $recoveryKey = implode(' ', $mnemonicWords);
 

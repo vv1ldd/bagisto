@@ -34,6 +34,7 @@ class RecoveryController extends Controller
     /**
      * Recover account using the seed phrase.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function recoverBySeed(Request $request)
@@ -46,8 +47,9 @@ class RecoveryController extends Controller
         $email = $request->input('email');
         $words = array_filter($request->input('words', [])); // Remove empty slots
         
-        if (count($words) < 12 || count($words) > 24) {
-            return back()->withErrors(['mnemonic' => 'Секретная фраза должна содержать от 12 до 24 слов.']);
+        $validLengths = [12, 15, 18, 21, 24];
+        if (! in_array(count($words), $validLengths)) {
+            return back()->withErrors(['mnemonic' => 'Секретная фраза должна содержать 12, 15, 18, 21 или 24 слова.']);
         }
 
         // Clean words
@@ -55,25 +57,25 @@ class RecoveryController extends Controller
             return strtolower(trim($word));
         }, $words);
 
-        $mnemonic = implode(' ', $cleanWords);
-
         if (!$this->mnemonicService->isValidMnemonic($cleanWords)) {
-            return back()->withErrors(['mnemonic' => 'Введенная фраза содержит некорректные слова.']);
+            return back()->withErrors(['mnemonic' => 'Ошибка в словах или порядке слов. Пожалуйста, проверьте контрольную сумму.']);
         }
 
+        $mnemonic = implode(' ', $cleanWords);
+
         // Try to authenticate. Since the mnemonic IS the initial password (bcrypt-ed).
-        // If the user changed their password, this will fail.
-        // But for "onboarding" users who only have passkeys, this is their password.
         if (Auth::guard('customer')->attempt(['email' => $email, 'password' => $mnemonic])) {
             $customer = Auth::guard('customer')->user();
             
-            // Log activity
-            app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
+            // Log activity if repository exists
+            if (class_exists(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)) {
+                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
+            }
             
             session()->flash('success', 'Доступ восстановлен! Пожалуйста, настройте новый Passkey.');
 
-            // Redirect to wallet setup or profile
-            return redirect()->route('shop.customers.account.wallet.setup');
+            // Redirect to profile
+            return redirect()->route('shop.customers.account.profile.index');
         }
 
         return back()->withErrors(['mnemonic' => 'Неверная секретная фраза или email.']);
