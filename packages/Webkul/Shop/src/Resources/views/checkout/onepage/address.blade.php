@@ -24,7 +24,7 @@
 
 <!-- If the customer is logged in -->
 <template v-else>
-    <div class="mb-7 mt-8 max-md:mb-4 max-md:mt-4">
+    <div>
         @include('shop::checkout.onepage.address.customer')
     </div>
 </template>

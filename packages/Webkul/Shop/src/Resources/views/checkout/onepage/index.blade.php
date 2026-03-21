@@ -1,4 +1,4 @@
-<x-shop::layouts>
+<x-shop::layouts :has-feature="false" :has-footer="false">
     <x-slot:title>@lang('shop::app.checkout.onepage.index.checkout')</x-slot>
 
     <style>
@@ -44,21 +44,21 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="bg-white/40 backdrop-blur-3xl border border-white/60  p-2 shadow-sm overflow-hidden">
+                                                        <div class="bg-white p-6 sm:p-8 shadow-sm overflow-hidden flex flex-col gap-10">
                                                             <!-- Address -->
-                                                            <div class="p-4 sm:p-6 border-b border-white/40" data-step="address">
+                                                            <div data-step="address">
                                                                 <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
                                                                     @include('shop::checkout.onepage.address')
                                                                 </template>
                                                             </div>
 
                                                             <!-- Shipping -->
-                                                            <div v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)" class="p-4 sm:p-6 border-b border-white/40" data-step="shipping">
+                                                            <div v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)" data-step="shipping">
                                                                 @include('shop::checkout.onepage.shipping')
                                                             </div>
 
                                                             <!-- Payment -->
-                                                            <div v-if="['payment', 'review'].includes(currentStep)" class="p-4 sm:p-6" data-step="payment">
+                                                            <div v-if="['payment', 'review'].includes(currentStep)" data-step="payment">
                                                                 @include('shop::checkout.onepage.payment')
                                                             </div>
                                                         </div>
@@ -66,7 +66,7 @@
 
                                                     <!-- Sidebar Column (RIGHT) -->
                                                     <div class="hidden lg:block sticky top-8 space-y-4">
-                                                        <div class="bg-white/60 backdrop-blur-3xl border border-white/80  p-6 shadow-xl shadow-zinc-200/50">
+                                                        <div class="bg-white p-6 sm:p-8 shadow-sm">
                                                             @include('shop::checkout.onepage.summary')
 
                                                             <div class="mt-8 space-y-4" v-if="canPlaceOrder">
