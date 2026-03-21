@@ -20,7 +20,7 @@
                                                                                                                             <div v-if="! activeAddressForm">
                                                                                                                                 <!-- Individual Profile Card -->
                                                                                                                                 <div 
-                                                                                                                                    class="p-5 border transition-all duration-300 group cursor-pointer overflow-hidden relative"
+                                                                                                                                    class="p-5 border transition-all duration-300 group cursor-pointer overflow-hidden relative w-full max-w-[450px]"
                                                                                                                                     :class="[selectedOrgId === null ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
                                                                                                                                     @click="selectedOrgId = null; isB2B = false; $parent.$options.name == 'v-direct-checkout' && proceedWithUnifiedCard()"
                                                                                                                                 >

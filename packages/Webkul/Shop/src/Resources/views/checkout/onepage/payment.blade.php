@@ -23,7 +23,7 @@
                             </h2>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 gap-4 w-full max-w-[450px]">
                             <div 
                                 v-for="(payment, index) in methods"
                                 :key="payment.method"

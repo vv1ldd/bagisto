@@ -8,7 +8,7 @@ return [
         'client_id' => 'sb',
         'class' => 'Webkul\Paypal\Payment\SmartButton',
         'sandbox' => true,
-        'active' => true,
+        'active' => false,
         'sort' => 4,
     ],
 
@@ -18,7 +18,7 @@ return [
         'description' => 'PayPal Standard',
         'class' => 'Webkul\Paypal\Payment\Standard',
         'sandbox' => true,
-        'active' => true,
+        'active' => false,
         'business_account' => 'test@webkul.com',
         'sort' => 3,
     ],
