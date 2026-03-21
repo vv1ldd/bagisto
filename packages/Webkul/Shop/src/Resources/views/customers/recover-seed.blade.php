@@ -66,9 +66,15 @@
 
                         <!-- Word Input Section -->
                         <div v-if="currentStep > 0 && currentStep <= totalSteps" class="min-h-[200px] flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mb-8 text-center">
-                                Введите <span v-text="currentStep"></span>-е секретное слово
-                            </p>
+                            <div class="flex items-center gap-3 mb-8">
+                                <button v-if="currentStep > 1" @click="prevStep" type="button" 
+                                    class="text-zinc-300 hover:text-[#7C45F5] transition-colors p-1" title="Назад">
+                                    <span class="icon-arrow-left text-xl"></span>
+                                </button>
+                                <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 text-center">
+                                    Введите <span v-text="currentStep"></span>-е секретное слово
+                                </p>
+                            </div>
                             
                             <div class="relative w-full">
                                 <input 
@@ -101,16 +107,17 @@
                              class="grid gap-2 mb-8 animate-in zoom-in duration-500"
                              :class="totalSteps > 12 ? 'grid-cols-2' : 'grid-cols-1'">
                             <div v-for="(word, i) in words" :key="i" 
-                                 class="flex items-center gap-2 bg-zinc-50 p-2 border border-zinc-100">
-                                <span class="text-[8px] font-black text-zinc-300 w-4" v-text="i+1" style="min-width: 14px"></span>
-                                <span class="text-[12px] font-bold text-zinc-700 uppercase tracking-wider" v-text="word"></span>
+                                 @click="jumpToStep(i+1)"
+                                 class="flex items-center gap-2 bg-zinc-50 p-2 border border-zinc-100 hover:border-[#7C45F5] cursor-pointer group transition-all">
+                                <span class="text-[8px] font-black text-zinc-300 w-4 group-hover:text-[#7C45F5]" v-text="i+1" style="min-width: 14px"></span>
+                                <span class="text-[12px] font-bold text-zinc-700 uppercase tracking-wider group-hover:text-zinc-900" v-text="word"></span>
                             </div>
                         </div>
 
                         <!-- Navigation -->
                         <div class="flex items-center gap-4 animate-in fade-in duration-500" :class="{'mt-16': currentStep > 0 && currentStep <= totalSteps}">
                             <button @click="prevStep" type="button" v-if="currentStep > 0"
-                                class="flex-1 border-2 border-zinc-100 p-5 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-600 hover:border-zinc-200 transition-all">
+                                class="flex-1 border-2 border-zinc-200 p-5 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-[#7C45F5] hover:border-[#7C45F5] transition-all bg-zinc-50 hover:bg-white">
                                 Назад
                             </button>
                             
@@ -129,7 +136,7 @@
 
                     <div class="mt-12 text-center" v-if="currentStep <= totalSteps">
                         <a href="{{ route('shop.customer.session.index') }}"
-                            class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-200 hover:text-[#7C45F5] transition-colors">
+                            class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-300 hover:text-[#7C45F5] transition-colors">
                             Вернуться ко входу
                         </a>
                     </div>
@@ -190,7 +197,18 @@
                             } else if (this.isWordValid) {
                                 this.nextStep();
                             }
+                        } else if (e.key === 'Backspace' && this.inputWord === '' && this.currentStep > 1) {
+                            // Intuitive backspace to go to previous word
+                            e.preventDefault();
+                            this.prevStep();
                         }
+                    },
+
+                    jumpToStep(step) {
+                        this.currentStep = step;
+                        this.inputWord = this.words[step - 1];
+                        this.suggestions = [];
+                        this.$nextTick(() => { this.$refs.wordInput.focus(); });
                     },
 
                     nextStep() {
