@@ -203,9 +203,11 @@
                 },
 
                 mounted() {
+                    console.log('[Recovery] Wizard mounted. Old words:', this.oldWords);
                     // Try to restore state from old input (Laravel back()->withInput())
                     if (this.oldWords && Array.isArray(this.oldWords)) {
                         const filledWords = this.oldWords.filter(w => w && w.trim() !== '');
+                        console.log('[Recovery] Filled words found:', filledWords.length);
                         
                         if (filledWords.length > 0) {
                             // Find the best-fitting BIP39 length (12, 15, 18, 21, 24)
@@ -228,6 +230,7 @@
 
                             // Jump to the final confirmation step so user can see errors and correct them
                             this.currentStep = bestLen + 1;
+                            console.log('[Recovery] Jumped to step:', this.currentStep);
                         }
                     }
                 },

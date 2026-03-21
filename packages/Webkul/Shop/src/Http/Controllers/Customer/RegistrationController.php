@@ -40,6 +40,76 @@ class RegistrationController extends Controller
         return view('shop::customers.sign-up');
     }
 
+
+    /**
+     * Prepare for passkey-only registration.
+     * Creates a skeleton customer and returns passkey options.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function passkeyPrepare()
+    {
+        $currentIp = request()->header('CF-Connecting-IP')
+            ?? request()->header('X-Forwarded-For')
+            ?? request()->header('X-Real-IP')
+            ?? request()->ip();
+
+        if (str_contains($currentIp, ',')) {
+            $currentIp = trim(explode(',', $currentIp)[0]);
+        }
+
+        // Generate a random-length BIP39 mnemonic
+        $counts = [12, 15, 18, 21, 24];
+        $wordCount = $counts[array_rand($counts)];
+        $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
+        $recoveryKey = implode(' ', $mnemonicWords);
+        $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+
+        // Create skeleton customer
+        $customerGroup = core()->getConfigData('customer.settings.create_new_account_options.default_group');
+        
+        $data = [
+            'first_name' => 'Пользователь',
+            'last_name' => '',
+            'username' => 'user_' . Str::random(8),
+            'email' => null, // Allowed per migration
+            'password' => bcrypt($recoveryKey),
+            'mnemonic_hash' => $mnemonicHash,
+            'api_token' => Str::random(80),
+            'is_verified' => 1, // Verified via Passkey eventually
+            'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,
+            'channel_id' => core()->getCurrentChannel()->id,
+            'token' => md5(uniqid(rand(), true)),
+            'registration_ip' => $currentIp,
+            'last_login_ip' => $currentIp,
+            'status' => 1,
+        ];
+
+        // If already logged in as a placeholder (no email), reuse the account
+        $customer = auth()->guard('customer')->user();
+        
+        if ($customer && is_null($customer->email)) {
+            // Regeneration logic if needed, but for simplicity we'll just use it
+        } else {
+            Event::dispatch('customer.registration.before');
+
+            $customer = $this->customerRepository->create($data);
+
+            Event::dispatch('customer.registration.after', $customer);
+
+            // Log them in immediately so passkey registration can proceed
+            auth()->guard('customer')->login($customer);
+        }
+
+        // Generate mnemonic (always new for a new attempt to be safe)
+        if (!session()->has('pending_recovery_key')) {
+             session(['pending_recovery_key' => $recoveryKey]);
+        }
+        
+        // Return passkey options via the PasskeyController logic
+        return app(\Webkul\Shop\Http\Controllers\Customer\PasskeyController::class)->registerOptions(request(), app(\Spatie\LaravelPasskeys\Actions\GeneratePasskeyRegisterOptionsAction::class));
+    }
+
     /**
      * Method to store user's sign up form data to DB.
      *

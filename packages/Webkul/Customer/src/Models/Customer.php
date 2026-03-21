@@ -83,6 +83,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'credits_id',
         'credits_alias',
         'is_b2b_enabled',
+        'mnemonic_hash',
     ];
 
     /**

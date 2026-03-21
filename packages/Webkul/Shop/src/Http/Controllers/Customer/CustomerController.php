@@ -46,6 +46,11 @@ class CustomerController extends Controller
      */
     public function recoveryKey()
     {
+        if (session()->has('pending_recovery_key')) {
+            session()->flash('recovery_key', session('pending_recovery_key'));
+            session()->forget('pending_recovery_key');
+        }
+
         if (!session()->has('recovery_key')) {
             return redirect()->route('shop.customers.account.profile.complete_registration');
         }

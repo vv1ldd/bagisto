@@ -6,133 +6,198 @@
 <x-shop::layouts.split-screen>
     <x-slot:title>
         @lang('shop::app.customers.signup-form.page-title')
-        </x-slot>
+    </x-slot>
 
-        {!! view_render_event('bagisto.shop.customers.signup.before') !!}
+    {!! view_render_event('bagisto.shop.customers.signup.before') !!}
 
-        @if (session('status') === 'verification-sent')
-            <div class="mb-8 flex h-14 w-14 items-center justify-center  bg-[#7C45F5]/10 mx-auto">
-                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#7C45F5" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                </svg>
-            </div>
+    <div id="registration-wizard" class="flex flex-col items-center">
+        <!-- Back Button -->
+        <div class="flex flex-col items-center mb-8">
+            <a href="{{ route('shop.customer.session.index') }}" 
+                class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
+                <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
+                @lang('shop::app.customers.login-form.back-to-login-options')
+            </a>
+        </div>
 
-            <div class="mb-4 text-center">
-
-                <p class="mt-4 text-lg text-zinc-500 text-center">
-                    Мы отправили письмо на <br>
-                    <span class="font-semibold text-zinc-800">{{ session('email') }}</span>
-                </p>
-            </div>
-
-            <div class="mt-12 p-6  bg-[#7C45F5]/5 border border-[#7C45F5]/10">
-                <p class="text-zinc-600 leading-relaxed">
-                    Мы отправили вам письмо со специальной ссылкой. <br><br>
-                    Перейдите по ней, чтобы подтвердить свой аккаунт и продолжить настройку профиля. Код
-                    вводить не нужно — всё произойдет автоматически.
-                </p>
-            </div>
-
-            <p class="mt-8 text-center text-sm text-zinc-500">
-                Не пришло письмо?
-                <a href="{{ route('shop.customers.resend.verification_email', session('email')) }}"
-                    class="font-semibold text-[#7C45F5] hover:text-[#6534d4]">
-                    Отправить снова
-                </a>
+        <div class="mb-4 text-center">
+            <h1 class="text-2xl font-bold text-zinc-900 mb-2">Создать аккаунт</h1>
+            <p class="text-sm text-zinc-500 max-w-[320px] mx-auto leading-relaxed">
+                Используйте Passkey для мгновенного и безопасного входа без пароля.
             </p>
-        @else
-            <!-- Back Button to Login Options -->
-            <div class="flex flex-col items-center mb-4 md:mb-6">
-                <a href="{{ route('shop.customer.session.index') }}" 
-                    class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
-                    <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
-                    @lang('shop::app.customers.login-form.back-to-login-options')
-                </a>
+        </div>
+
+        <!-- Registration Flow Steps Info (Subtle) -->
+        <div class="flex items-center gap-4 my-8">
+            <div class="flex flex-col items-center gap-2 opacity-100">
+                <div class="w-8 h-8 rounded-full border-2 border-[#7C45F5] flex items-center justify-center text-[#7C45F5] font-bold text-xs bg-[#7C45F5]/5">1</div>
+                <span class="text-[10px] uppercase tracking-tighter font-bold text-zinc-400">Ключ доступа</span>
             </div>
+            <div class="w-8 h-px bg-zinc-100"></div>
+            <div class="flex flex-col items-center gap-2 opacity-40">
+                <div class="w-8 h-8 rounded-full border-2 border-zinc-200 flex items-center justify-center text-zinc-400 font-bold text-xs">2</div>
+                <span class="text-[10px] uppercase tracking-tighter font-bold text-zinc-400">Секретная фраза</span>
+            </div>
+            <div class="w-8 h-px bg-zinc-100"></div>
+            <div class="flex flex-col items-center gap-2 opacity-40">
+                <div class="w-8 h-8 rounded-full border-2 border-zinc-200 flex items-center justify-center text-zinc-400 font-bold text-xs">3</div>
+                <span class="text-[10px] uppercase tracking-tighter font-bold text-zinc-400">Профиль</span>
+            </div>
+        </div>
 
-            <x-shop::form :action="route('shop.customers.register.store')" v-slot="{ meta }">
-                {!! view_render_event('bagisto.shop.customers.signup_form_controls.before') !!}
+        <!-- Primary Action Button -->
+        <button type="button" id="start-registration-btn" onclick="handlePasskeyRegistration(event)"
+            class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-5 text-center font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-xl shadow-[#7C45F5]/30 uppercase tracking-[0.2em] text-sm active:scale-[0.98]">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <circle cx="12" cy="11" r="3"></circle>
+                <path d="M12 14v1"></path>
+            </svg>
+            Создать аккаунт
+        </button>
 
-                <!-- Email -->
-                <x-shop::form.control-group class="mb-2 md:mb-4">
-                    <x-shop::form.control-group.label
-                        class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400">
-                        @lang('shop::app.customers.signup-form.email')
-                    </x-shop::form.control-group.label>
+        <p class="mt-8 text-center text-[11px] text-zinc-400 max-w-[280px] leading-relaxed italic">
+            Нажимая «Создать аккаунт», вы подтверждаете согласие с условиями использования сервиса.
+        </p>
+    </div>
 
-                    <x-shop::form.control-group.control type="email"
-                        class="!border !border-zinc-200 !bg-transparent !px-5 !py-4 !rounded-none focus:!ring-2 focus:!ring-zinc-500 w-full"
-                        name="email" rules="required|email" :value="old('email')"
-                        :label="trans('shop::app.customers.signup-form.email')" placeholder="email@example.com" />
+    {!! view_render_event('bagisto.shop.customers.signup.after') !!}
 
-                </x-shop::form.control-group>
+    @push('scripts')
+        <script>
+            /**
+             * Base64 to ArrayBuffer helper
+             */
+            function _b64ToUint8Array(base64) {
+                if (!base64) return new Uint8Array(0);
+                var padding = '='.repeat((4 - base64.length % 4) % 4);
+                var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+                var rawData = window.atob(b64);
+                var outputArray = new Uint8Array(rawData.length);
+                for (var i = 0; i < rawData.length; ++i) {
+                    outputArray[i] = rawData.charCodeAt(i);
+                }
+                return outputArray;
+            }
 
-                <!-- Options: Newsletter & GDPR -->
-                <div class="flex flex-col gap-2 mb-2 md:gap-3 md:mb-4">
-                    @if(core()->getConfigData('general.gdpr.settings.enabled') && core()->getConfigData('general.gdpr.agreement.enabled'))
-                        <div class="flex select-none items-center gap-2">
-                            <x-shop::form.control-group.control type="checkbox" name="agreement" id="agreement" value="1"
-                                rules="required" class="hidden peer" />
-                            <label class="icon-uncheck peer-checked:icon-check-box cursor-pointer text-2xl text-navyBlue"
-                                for="agreement"></label>
-                            <label class="cursor-pointer text-sm text-zinc-500" for="agreement">
-                                {{ core()->getConfigData('general.gdpr.agreement.agreement_label') }}
-                                @if (core()->getConfigData('general.gdpr.agreement.agreement_content'))
-                                    <span class="underline cursor-pointer ml-1" @click="$refs.termsModal.open()">
-                                        @lang('shop::app.customers.signup-form.click-here')
-                                    </span>
-                                @endif
-                            </label>
-                        </div>
-                    @endif
-                </div>
+            /**
+             * ArrayBuffer to Base64URL helper
+             */
+            function _bufToBase64URL(buffer) {
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                for (var i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+            }
 
-                <!-- Captcha -->
-                @if (core()->getConfigData('customer.captcha.credentials.status'))
-                    <div class="mb-4">
-                        {!! \Webkul\Customer\Facades\Captcha::render() !!}
-                    </div>
-                @endif
+            /**
+             * Main execution logic
+             */
+            async function handlePasskeyRegistration(e) {
+                e.preventDefault();
+                
+                const btn = document.getElementById('start-registration-btn');
+                const originalText = btn.innerHTML;
+                
+                if (!window.PublicKeyCredential) {
+                    alert('Ваш браузер не поддерживает Passkey. Пожалуйста, обновите браузер или используйте современное устройство.');
+                    return;
+                }
 
-                <div class="mt-2 text-center text-[11px] text-zinc-500 leading-tight md:mt-4 md:text-[12px] md:leading-relaxed">
-                    @lang('shop::app.customers.signup-form.agreement')
-                </div>
+                btn.disabled = true;
+                btn.innerHTML = '<span class="animate-pulse">Подготовка...</span>';
 
-                <div class="mt-2 md:mt-4">
-                    <button
-                        class="w-full !rounded-none bg-[#7C45F5] px-8 py-4 text-center font-medium text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5]"
-                        type="submit" :disabled="!meta.valid">
-                        @lang('shop::app.customers.signup-form.button-title')
-                    </button>
+                try {
+                    // Step 1: Create placeholder customer and get options
+                    console.log('[Passkey] Preparing registration...');
+                    const prepareResponse = await fetch('{{ route('shop.customers.register.passkey.prepare') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
 
-                    {!! view_render_event('bagisto.shop.customers.signup_form_controls.after') !!}
-                </div>
-            </x-shop::form>
+                    if (!prepareResponse.ok) {
+                        const errorData = await prepareResponse.json();
+                        throw new Error(errorData.message || 'Ошибка инициализации регистрации.');
+                    }
 
-            {!! view_render_event('bagisto.shop.customers.signup.after') !!}
+                    const options = await prepareResponse.json();
+                    console.log('[Passkey] Received options:', options);
 
-            <p class="mt-4 text-center text-sm text-zinc-500 md:mt-6">
-                @lang('shop::app.customers.signup-form.account-exists')
-                <a class="font-bold text-[#7C45F5] hover:underline" href="{{ route('shop.customer.session.index') }}">
-                    @lang('shop::app.customers.signup-form.sign-in-button')
-                </a>
-            </p>
-        @endif
+                    // Step 2: Convert options for navigator.credentials.create
+                    options.challenge = _b64ToUint8Array(options.challenge);
+                    options.user.id = _b64ToUint8Array(options.user.id);
+                    if (options.excludeCredentials) {
+                        options.excludeCredentials.forEach(cred => {
+                            cred.id = _b64ToUint8Array(cred.id);
+                        });
+                    }
 
-        @push('scripts')
-            {!! \Webkul\Customer\Facades\Captcha::renderJS() !!}
-        @endpush
+                    btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
 
-        <!-- Terms & Conditions Modal -->
-        <x-shop::modal ref="termsModal">
-            <x-slot:toggle></x-slot>
-                <x-slot:header class="!p-5">
-                    <p class="text-xl font-bold">@lang('shop::app.customers.signup-form.terms-conditions')</p>
-                    </x-slot>
-                    <x-slot:content class="!p-5">
-                        <div class="max-h-[500px] overflow-auto prose prose-sm max-w-none">
-                            {!! core()->getConfigData('general.gdpr.agreement.agreement_content') !!}
+                    // Step 3: Trigger Browser Prompt
+                    const credential = await navigator.credentials.create({
+                        publicKey: options
+                    });
+
+                    if (!credential) {
+                        throw new Error('Не удалось создать ключ доступа.');
+                    }
+
+                    console.log('[Passkey] Credential created:', credential.id);
+                    btn.innerHTML = '<span class="animate-pulse">Сохранение...</span>';
+
+                    // Step 4: Send credential back to server to finalize
+                    const registerPayload = {
+                        id: credential.id,
+                        rawId: _bufToBase64URL(credential.rawId),
+                        response: {
+                            clientDataJSON: _bufToBase64URL(credential.response.clientDataJSON),
+                            attestationObject: _bufToBase64URL(credential.response.attestationObject),
+                        },
+                        type: credential.type,
+                        clientExtensionResults: credential.getClientExtensionResults() || {},
+                    };
+
+                    const storeResponse = await fetch('{{ route('passkeys.register') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(registerPayload)
+                    });
+
+                    if (!storeResponse.ok) {
+                        const storeError = await storeResponse.json();
+                        throw new Error(storeError.message || 'Ошибка сохранения ключа доступа.');
+                    }
+
+                    console.log('[Passkey] Registration success! Redirecting...');
+                    btn.innerHTML = 'Готово!';
+                    
+                    // Step 5: Redirect to Mnemonic display
+                    window.location.href = '{{ route('shop.customers.account.profile.recovery_key') }}';
+
+                } catch (err) {
+                    console.error('[Passkey] Error:', err);
+                    if (err.name !== 'NotAllowedError') {
+                        alert('Ошибка: ' + err.message);
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+        </script>
+    @endpush
+</x-shop::layouts.split-screen>
+     {!! core()->getConfigData('general.gdpr.agreement.agreement_content') !!}
                         </div>
                         </x-slot>
         </x-shop::modal>
