@@ -68,7 +68,7 @@
             </a>
 
             {{-- Activity Log --}}
-            <a href="{{ route('shop.customers.account.profile.activity') }}" class="nav-tile group mt-2">
+            <a href="{{ route('shop.customers.account.login_activity.index') }}" class="nav-tile group mt-2">
                 <span class="w-14 h-14 flex items-center justify-center bg-emerald-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A9 9 0 112.182 19.818l4.636-4.636a2.121 2.121 0 113.001-3.001l4.635-4.635z"/>
