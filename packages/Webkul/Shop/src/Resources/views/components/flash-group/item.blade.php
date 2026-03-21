@@ -39,9 +39,9 @@
 
             <button
                 @click="remove"
-                class="flex h-7 w-7 shrink-0 items-center justify-center text-zinc-400 transition-all hover:bg-zinc-100 hover:text-zinc-600 active:scale-95"
+                class="flex h-7 w-7 shrink-0 items-center justify-center text-zinc-500 transition-all hover:bg-zinc-100 hover:text-zinc-800 active:scale-95"
             >
-                <span class="icon-cross text-xl"></span>
+                <span class="icon-cancel text-xl"></span>
             </button>
 
             <!-- Progress bar for auto-hide -->
