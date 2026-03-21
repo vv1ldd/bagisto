@@ -30,9 +30,7 @@
     ];
 @endphp
 
-{{-- ONE SOLID CARD with 2-column grids inside --}}
 <div class="relative w-full bg-white border border-[#e2d9ff] shadow-xl rounded-[2rem] overflow-hidden">
-
     <button type="button" 
         onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
         class="ios-close-button !shadow-none !bg-red-50 !text-red-500 hover:!bg-red-100 transition-colors" style="top: 12px !important; right: 12px !important;">
@@ -82,6 +80,9 @@
                             </svg>
                         </span>
                     </div>
+                @endif
+            @endif
+
             {{-- Dynamic Items from Customer Menu --}}
             @foreach (menu()->getItems('customer') as $menuItem)
                 @if ($menuItem->haveChildren())
@@ -99,7 +100,7 @@
 
                         <a href="{{ $subMenuItem->getUrl() }}" class="nav-tile group">
                             @if ($icon)
-                                <span class="w-14 h-14 flex items-center justify-center {{ str_replace('bg-opacity-10', '', str_replace('-50', '', $icon['bg'])) }} {{ str_replace('text-', 'text-white ', $icon['color']) }} rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm {{ !str_contains($icon['bg'], '-') ? 'bg-zinc-200' : '' }}">
+                                <span class="w-14 h-14 flex items-center justify-center {{ str_replace('bg-opacity-10', '', str_replace('-50', '', $icon['bg'])) }} {{ str_replace('text-', 'text-white ', $icon['color']) }} rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                                     @php
                                         // Force solid background colors for icons
                                         $bgClass = 'bg-zinc-400';
@@ -245,7 +246,7 @@
             <a href="{{ route('shop.customer.session.destroy.get') }}" class="nav-tile group hover:!border-red-200 mt-2">
                 <span class="w-14 h-14 flex items-center justify-center bg-red-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
                 </span>
                 <div class="flex flex-col">
@@ -391,10 +392,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-"2.5" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </span>
-            </a>
-        </div>
-    </div>
-</div>
