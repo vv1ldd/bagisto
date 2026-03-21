@@ -42,7 +42,7 @@
             {{-- Content --}}
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">
-                    <p class="font-bold text-[#1a0050] text-[15px]">Резервная копия (Seed-фраза)</p>
+                    <p class="font-bold text-[#1a0050] text-[15px]">Сид-фраза (24 слова)</p>
                     @if($hasSeed)
                         <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 rounded-full px-2 py-0.5">Готово</span>
                     @else
@@ -50,7 +50,7 @@
                     @endif
                 </div>
                 <p class="text-zinc-500 text-[13px] mt-0.5 leading-snug">
-                    {{ $hasSeed ? 'Фраза создана. Нажмите, чтобы просмотреть её снова.' : 'Создайте секретную фразу — единственный способ восстановить аккаунт.' }}
+                    {{ $hasSeed ? 'Фраза создана. Нажмите, чтобы просмотреть её.' : 'Создайте секретную фразу — единственный способ восстановить аккаунт.' }}
                 </p>
             </div>
 
