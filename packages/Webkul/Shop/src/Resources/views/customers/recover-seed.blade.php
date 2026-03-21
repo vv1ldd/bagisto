@@ -47,9 +47,9 @@
                 </div>
 
                 <!-- Seed Phrase Grid -->
-                <p class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400 mb-4">Секретная фраза из 12 слов</p>
+                <p class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400 mb-4">Секретная фраза (от 12 до 24 слов)</p>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-3 mb-10">
-                    @for($i = 0; $i < 12; $i++)
+                    @for($i = 0; $i < 24; $i++)
                         <div class="flex items-center gap-2 bg-white border border-zinc-200 focus-within:border-[#7C45F5] transition-colors p-3 group">
                             <span class="text-[9px] font-black text-zinc-300 group-focus-within:text-[#7C45F5]/40 w-3">{{ $i + 1 }}</span>
                             <input 
@@ -57,7 +57,6 @@
                                 name="words[]" 
                                 class="w-full h-full bg-transparent border-none p-0 text-[14px] font-mono font-bold text-zinc-700 focus:ring-0 placeholder:text-zinc-200 placeholder:font-normal"
                                 placeholder="..."
-                                required
                                 autocomplete="off"
                             >
                         </div>

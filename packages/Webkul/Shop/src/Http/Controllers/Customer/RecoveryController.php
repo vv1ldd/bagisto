@@ -40,12 +40,16 @@ class RecoveryController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'words' => 'required|array|size:12',
+            'words' => 'required|array|min:12|max:24',
         ]);
 
         $email = $request->input('email');
-        $words = $request->input('words');
+        $words = array_filter($request->input('words', [])); // Remove empty slots
         
+        if (count($words) < 12 || count($words) > 24) {
+            return back()->withErrors(['mnemonic' => 'Секретная фраза должна содержать от 12 до 24 слов.']);
+        }
+
         // Clean words
         $cleanWords = array_map(function($word) {
             return strtolower(trim($word));

@@ -60,8 +60,9 @@ class RegistrationController extends Controller
             $currentIp = trim(explode(',', $currentIp)[0]);
         }
 
-        // Generate a 12-word mnemonic seed phrase (Ledger style)
-        $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
+        // Generate a random-length mnemonic seed phrase (12-24 words, Ledger style)
+        $wordCount = rand(12, 24);
+        $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
         $recoveryKey = implode(' ', $mnemonicWords);
 
         // Store in session — will be shown after email link click
