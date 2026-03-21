@@ -61,53 +61,55 @@
 
                 .nav-grid {
                     display: grid !important;
-                    grid-template-columns: repeat(2, 1fr) !important;
+                    grid-template-columns: 1fr !important;
                     gap: 12px !important;
                     padding: 12px !important;
                     background-color: transparent !important;
                 }
 
-                @media (max-width: 480px) {
-                    .nav-grid {
-                        grid-template-columns: repeat(2, 1fr) !important;
-                        gap: 8px !important;
-                        padding: 8px !important;
-                    }
-                }
-
                 .nav-tile {
                     display: flex !important;
-                    flex-direction: column !important;
+                    flex-direction: row !important;
                     align-items: center !important;
-                    justify-content: center !important;
-                    gap: 10px !important;
-                    padding: 24px 12px !important;
-                    text-align: center !important;
+                    justify-content: flex-start !important;
+                    gap: 16px !important;
+                    padding: 16px 20px !important;
+                    text-align: left !important;
                     background-color: #fff !important;
                     border: 1px solid #e2d9ff !important;
-                    border-radius: 1.5rem !important;
+                    border-radius: 1.25rem !important;
                     text-decoration: none !important;
                     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+                    box-shadow: 0 1px 3px rgba(124, 69, 245, 0.05) !important;
                 }
 
                 .nav-tile:hover {
                     background-color: #fff !important;
                     border-color: #7C45F5 !important;
-                    transform: translateY(-2px) !important;
-                    box-shadow: 0 10px 15px -3px rgba(124, 69, 245, 0.1) !important;
+                    transform: translateX(4px) !important;
+                    box-shadow: 0 10px 15px -3px rgba(124, 69, 245, 0.08) !important;
                 }
 
                 .nav-tile:active {
-                    transform: scale(0.98) !important;
+                    transform: scale(0.99) !important;
                 }
 
                 .nav-label {
-                    font-size: 14px !important;
+                    font-size: 16px !important;
                     font-weight: 700 !important;
                     color: #1a0050 !important;
                     letter-spacing: -0.01em !important;
                     line-height: 1.2 !important;
+                }
+
+                .nav-arrow {
+                    margin-left: auto !important;
+                    color: #d1d5db !important;
+                    transition: color 0.2s !important;
+                }
+
+                .nav-tile:hover .nav-arrow {
+                    color: #7C45F5 !important;
                 }
 
                 .ios-section-label {
