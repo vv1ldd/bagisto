@@ -7,15 +7,17 @@
 <div class="w-full mx-auto max-w-2xl px-4 pb-10">
 
     {{-- === Header === --}}
-    <div class="mb-6 text-center">
-        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7C45F5] to-[#a78bfa] shadow-lg shadow-[#7C45F5]/30 mb-3">
-            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
+    @if (!isset($hideHeader) || !$hideHeader)
+        <div class="mb-6 text-center">
+            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7C45F5] to-[#a78bfa] shadow-lg shadow-[#7C45F5]/30 mb-3">
+                <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <h2 class="text-[#1a0050] text-xl font-extrabold tracking-tight">Защитите аккаунт</h2>
+            <p class="text-zinc-500 text-sm mt-1 max-w-sm mx-auto">Дополнительные шаги для безопасного доступа к вашему аккаунту</p>
         </div>
-        <h2 class="text-[#1a0050] text-xl font-extrabold tracking-tight">Защитите аккаунт</h2>
-        <p class="text-zinc-500 text-sm mt-1 max-w-sm mx-auto">Дополнительные шаги для безопасного доступа к вашему аккаунту</p>
-    </div>
+    @endif
 
     {{-- === Security Options === --}}
     <div class="flex flex-col gap-3">
