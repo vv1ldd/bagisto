@@ -136,4 +136,14 @@ class MnemonicService
 
         return hash('sha256', $normalized);
     }
+
+    /**
+     * Get the entire BIP39 wordlist.
+     *
+     * @return array
+     */
+    public function getWordlist()
+    {
+        return self::$wordlist;
+    }
 }

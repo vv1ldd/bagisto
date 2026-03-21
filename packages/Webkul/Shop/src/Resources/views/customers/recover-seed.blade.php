@@ -1,43 +1,210 @@
+@php
+    $wordlist = app(\Webkul\Customer\Services\MnemonicService::class)->getWordlist();
+@endphp
+
 <x-shop::layouts.split-screen title="Восстановление доступа">
-    <div class="flex flex-col items-center flex-1 py-10">
-        <div class="mb-10 flex flex-col items-center">
-            <h1 class="text-zinc-900 text-4xl font-black uppercase tracking-tighter mb-4 text-center leading-[0.9]">Восстановление</h1>
-            <div class="h-2 w-16 bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D]"></div>
-        </div>
+    
+    {{-- Inline Vue Component for the Wizard --}}
+    <v-recovery-wizard 
+        :wordlist='@json($wordlist)'
+        action-url="{{ route('shop.customers.recovery.seed.post') }}"
+        csrf-token="{{ csrf_token() }}"
+    ></v-recovery-wizard>
 
-        <div class="w-full max-w-[480px]">
-            <x-shop::form :action="route('shop.customers.recovery.seed.post')" v-slot="{ meta }">
-                <!-- Seed Phrase Grid -->
-                <p class="!text-[10px] !font-bold uppercase tracking-widest text-zinc-400 mb-4">Секретная фраза (12, 15, 18, 21 или 24 слова)</p>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-x-3 gap-y-3 mb-10">
-                    @for($i = 0; $i < 24; $i++)
-                        <div class="flex items-center gap-2 bg-white border border-zinc-200 focus-within:border-[#7C45F5] transition-colors p-3 group">
-                            <span class="text-[9px] font-black text-zinc-300 group-focus-within:text-[#7C45F5]/40 w-3">{{ $i + 1 }}</span>
-                            <input 
-                                type="text" 
-                                name="words[]" 
-                                class="w-full h-full bg-transparent border-none p-0 text-[14px] font-mono font-bold text-zinc-700 focus:ring-0 placeholder:text-zinc-200 placeholder:font-normal"
-                                placeholder="..."
-                                autocomplete="off"
-                            >
+    @pushOnce('scripts')
+        <script type="text/x-template" id="v-recovery-wizard-template">
+            <div class="flex flex-col items-center justify-center min-h-[calc(100vh-64px)] py-6 px-4">
+                
+                <div class="w-full max-w-[480px] bg-white p-8 md:p-12 shadow-2xl shadow-purple-500/10 border border-zinc-100 flex flex-col items-stretch relative overflow-hidden">
+                    
+                    <!-- Progress Header -->
+                    <div class="mb-12" v-if="currentStep <= 24">
+                        <div class="flex justify-between items-end mb-4">
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#7C45F5] mb-1">Meanly Wallet / Recovery</p>
+                                <h2 class="text-2xl font-black text-zinc-900 leading-none">Слово <span v-text="currentStep"></span> из 24</h2>
+                            </div>
                         </div>
-                    @endfor
+                        <div class="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-[#7C45F5] to-[#B465DA] transition-all duration-700 ease-out"
+                                 :style="{ width: (currentStep / 24 * 100) + '%' }"></div>
+                        </div>
+                    </div>
+
+                    <!-- Final Confirmation Header -->
+                    <div class="mb-8 text-center" v-if="currentStep === 25">
+                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#7C45F5] mb-2">Проверьте фразу</p>
+                        <h2 class="text-2xl font-black text-zinc-900 leading-none">Все готово</h2>
+                    </div>
+
+                    <!-- Wizard Form -->
+                    <form :action="actionUrl" method="POST" @submit="handleSubmit" ref="recoveryForm">
+                        <input type="hidden" name="_token" :value="csrfToken">
+                        
+                        <!-- Invisible fields to hold all words for submission -->
+                        <div v-for="(word, index) in words" :key="'hidden-'+index">
+                            <input type="hidden" name="words[]" :value="word">
+                        </div>
+
+                        <!-- Step-by-Step Input Section -->
+                        <div v-if="currentStep <= 24" class="min-h-[200px] flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mb-8 text-center">
+                                Введите <span v-text="currentStep"></span>-е секретное слово
+                            </p>
+                            
+                            <div class="relative w-full">
+                                <input 
+                                    type="text"
+                                    v-model="inputWord"
+                                    @input="handleInput"
+                                    @keydown="handleKeydown"
+                                    ref="wordInput"
+                                    placeholder="..."
+                                    class="w-full bg-transparent border-b-4 border-zinc-100 p-4 text-3xl font-bold text-center text-zinc-800 placeholder:text-zinc-100 focus:border-[#7C45F5] focus:ring-0 transition-all uppercase tracking-[0.1em]"
+                                    autocomplete="off"
+                                    autofocus
+                                >
+
+                                <!-- Autocomplete Suggestions -->
+                                <div v-if="suggestions.length > 0" 
+                                     class="absolute left-0 right-0 top-full mt-4 flex flex-wrap justify-center gap-2 z-20">
+                                    <button v-for="sWord in suggestions" 
+                                        @click="selectWord(sWord)"
+                                        type="button"
+                                        class="bg-white border-2 border-zinc-100 px-4 py-2 text-sm font-bold text-zinc-500 hover:border-[#7C45F5] hover:text-[#7C45F5] hover:bg-purple-50 transition-all shadow-sm">
+                                        <span v-text="sWord"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Final Confirmation Grid Section -->
+                        <div v-if="currentStep === 25" class="grid grid-cols-2 gap-2 mb-8 animate-in zoom-in duration-500">
+                            <div v-for="(word, i) in words" :key="i" 
+                                 class="flex items-center gap-2 bg-zinc-50 p-2 border border-zinc-100">
+                                <span class="text-[8px] font-black text-zinc-300 w-4" v-text="i+1"></span>
+                                <span class="text-[12px] font-bold text-zinc-700 uppercase tracking-wider" v-text="word"></span>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex items-center gap-4 animate-in fade-in duration-500" :class="{'mt-16': currentStep <= 24}">
+                            <button @click="prevStep" type="button" v-if="currentStep > 1"
+                                class="flex-1 border-2 border-zinc-100 p-5 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-600 hover:border-zinc-200 transition-all">
+                                Назад
+                            </button>
+                            
+                            <button v-if="currentStep < 25" @click="nextStep" type="button"
+                                :disabled="!isWordValid"
+                                class="flex-[2] bg-zinc-900 p-5 text-sm font-bold uppercase tracking-widest text-white hover:bg-black transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+                                Далее
+                            </button>
+
+                            <button v-if="currentStep === 25" type="submit"
+                                class="flex-[2] bg-[#7C45F5] p-5 text-sm font-bold uppercase tracking-widest text-white hover:bg-[#6534d4] transition-all shadow-lg shadow-[#7C45F5]/20">
+                                Восстановить доступ
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-12 text-center" v-if="currentStep < 25">
+                        <a href="{{ route('shop.customer.session.index') }}"
+                            class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-300 hover:text-[#7C45F5] transition-colors">
+                            Вернуться ко входу
+                        </a>
+                    </div>
                 </div>
-
-
-                <button
-                    class="w-full !rounded-none bg-[#7C45F5] px-8 py-5 text-center font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-lg shadow-[#7C45F5]/20 uppercase tracking-widest disabled:opacity-50"
-                    type="submit" :disabled="!meta.valid">
-                    Восстановить доступ
-                </button>
-            </x-shop::form>
-
-            <div class="mt-8 text-center flex flex-col gap-4">
-                <a href="{{ route('shop.customer.session.index') }}"
-                    class="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
-                    Назад ко входу
-                </a>
             </div>
-        </div>
-    </div>
+        </script>
+
+        <script type="module">
+            app.component('v-recovery-wizard', {
+                template: '#v-recovery-wizard-template',
+                props: ['wordlist', 'actionUrl', 'csrfToken'],
+                
+                data() {
+                    return {
+                        currentStep: 1,
+                        words: Array(24).fill(''),
+                        inputWord: '',
+                        suggestions: []
+                    }
+                },
+
+                computed: {
+                    isWordValid() {
+                        const val = this.inputWord.toLowerCase().trim();
+                        return this.wordlist.includes(val);
+                    }
+                },
+
+                methods: {
+                    handleInput() {
+                        const val = this.inputWord.toLowerCase().trim();
+                        if (val.length >= 2) {
+                            this.suggestions = this.wordlist.filter(w => w.startsWith(val)).slice(0, 5);
+                        } else {
+                            this.suggestions = [];
+                        }
+                    },
+
+                    selectWord(word) {
+                        this.inputWord = word;
+                        this.suggestions = [];
+                        this.nextStep();
+                    },
+
+                    handleKeydown(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (this.suggestions.length > 0) {
+                                this.selectWord(this.suggestions[0]);
+                            } else if (this.isWordValid) {
+                                this.nextStep();
+                            }
+                        }
+                    },
+
+                    nextStep() {
+                        if (!this.isWordValid) return;
+                        
+                        this.words[this.currentStep - 1] = this.inputWord.toLowerCase().trim();
+                        
+                        if (this.currentStep < 25) {
+                            this.currentStep++;
+                            
+                            if (this.currentStep <= 24) {
+                                this.inputWord = this.words[this.currentStep - 1]; 
+                                this.suggestions = [];
+                                this.$nextTick(() => { this.$refs.wordInput.focus(); });
+                            }
+                        }
+                    },
+
+                    prevStep() {
+                        if (this.currentStep > 1) {
+                            if (this.currentStep <= 24) {
+                                this.words[this.currentStep - 1] = this.inputWord.toLowerCase().trim();
+                            }
+                            
+                            this.currentStep--;
+                            
+                            if (this.currentStep <= 24) {
+                                this.inputWord = this.words[this.currentStep - 1];
+                                this.suggestions = [];
+                                this.$nextTick(() => { this.$refs.wordInput.focus(); });
+                            }
+                        }
+                    },
+
+                    handleSubmit(e) {
+                        if (this.words.some(w => !w)) {
+                            e.preventDefault();
+                            alert('Пожалуйста, заполните все 24 слова.');
+                        }
+                    }
+                }
+            });
+        </script>
+    @endpushOnce
 </x-shop::layouts.split-screen>
