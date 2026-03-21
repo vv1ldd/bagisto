@@ -36,11 +36,16 @@ class SessionController extends Controller
      */
     public function sendLoginEmail()
     {
-        request()->validate([
-            'email' => 'required|email|exists:customers,email',
-        ], [
-            'email.exists' => 'Пользователь с такой почтой не найден.',
-        ]);
+        try {
+            request()->validate([
+                'email' => 'required|email|exists:customers,email',
+            ], [
+                'email.exists' => 'Пользователь с такой почтой не найден.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            session()->flash('error', $e->validator->errors()->first());
+            return redirect()->back()->withInput();
+        }
 
         $email = request()->get('email');
         $customerRepository = app(CustomerRepository::class);

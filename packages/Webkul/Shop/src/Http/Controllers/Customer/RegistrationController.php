@@ -45,8 +45,15 @@ class RegistrationController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(RegistrationRequest $registrationRequest)
+    public function store(Request $request)
     {
+        try {
+            $registrationRequest = app(\Webkul\Shop\Http\Requests\Customer\RegistrationRequest::class);
+            $registrationRequest->validateResolved();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            session()->flash('error', $e->validator->errors()->first());
+            return redirect()->back()->withInput();
+        }
         $customerGroup = core()->getConfigData('customer.settings.create_new_account_options.default_group');
 
         $subscription = $this->subscriptionRepository->findOneWhere(['email' => request()->input('email')]);

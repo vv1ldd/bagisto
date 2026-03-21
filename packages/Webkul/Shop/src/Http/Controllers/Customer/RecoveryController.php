@@ -49,7 +49,8 @@ class RecoveryController extends Controller
         
         $validLengths = [12, 15, 18, 21, 24];
         if (! in_array(count($words), $validLengths)) {
-            return back()->withErrors(['mnemonic' => 'Секретная фраза должна содержать 12, 15, 18, 21 или 24 слова.']);
+            session()->flash('error', 'Секретная фраза должна содержать 12, 15, 18, 21 или 24 слова.');
+            return redirect()->back()->withInput();
         }
 
         // Clean words
@@ -58,7 +59,8 @@ class RecoveryController extends Controller
         }, $words);
 
         if (!$this->mnemonicService->isValidMnemonic($cleanWords)) {
-            return back()->withErrors(['mnemonic' => 'Ошибка в словах или порядке слов. Пожалуйста, проверьте контрольную сумму.']);
+            session()->flash('error', 'Ошибка в словах или порядке слов. Пожалуйста, проверьте контрольную сумму.');
+            return redirect()->back()->withInput();
         }
 
         $mnemonic = implode(' ', $cleanWords);
@@ -78,6 +80,7 @@ class RecoveryController extends Controller
             return redirect()->route('shop.customers.account.profile.index');
         }
 
-        return back()->withErrors(['mnemonic' => 'Неверная секретная фраза или email.']);
+        session()->flash('error', 'Неверная секретная фраза или email.');
+        return redirect()->back()->withInput();
     }
 }
