@@ -261,7 +261,7 @@
                             <span class="ios-arrow icon-arrow-right"></span>
                         </div>
                     </div>
-
+                </div>
 
                 <div class="flex justify-center mt-6">
                     <button type="submit"
