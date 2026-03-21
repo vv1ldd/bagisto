@@ -24,18 +24,18 @@
                 </div>
 
                 <!-- Buttons -->
-                <div class="w-full max-w-[320px] flex flex-col gap-4">
+                <div class="w-full max-w-[320px] flex flex-col items-center gap-6">
                     <button type="button" id="add-passkey-button"
                         onclick="window.startPasskeyRegistration()"
-                        class="group relative flex w-full items-center justify-center h-18 bg-[#7C45F5] text-white transition-all hover:bg-[#6b35e4] active:scale-[0.98] shadow-xl shadow-[#7C45F5]/25 overflow-hidden !rounded-none border-none">
+                        class="group relative flex w-full items-center justify-center h-20 bg-[#7C45F5] text-white transition-all hover:bg-[#6b35e4] hover:shadow-2xl hover:shadow-[#7C45F5]/30 active:scale-[0.98] shadow-xl shadow-[#7C45F5]/25 overflow-hidden !rounded-none border-none">
                         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                         <span class="icon-add-new text-2xl mr-3 font-bold"></span>
-                        <span id="add-passkey-button-text" class="text-[13px] font-black uppercase tracking-widest">Создать ключ</span>
+                        <span id="add-passkey-button-text" class="text-[14px] font-black uppercase tracking-[0.2em]">Создать ключ</span>
                     </button>
 
                     <a href="{{ route('shop.customers.account.index') }}"
-                        class="flex w-full items-center justify-center h-16 bg-white text-zinc-400 text-[11px] font-bold uppercase tracking-[0.3em] transition-all hover:bg-zinc-50 hover:text-zinc-600 border border-zinc-100 !rounded-none">
-                        На главную
+                        class="text-zinc-400 text-[11px] font-bold uppercase tracking-[0.2em] transition-all hover:text-[#7C45F5] underline underline-offset-4">
+                        Пропустить
                     </a>
                 </div>
 
