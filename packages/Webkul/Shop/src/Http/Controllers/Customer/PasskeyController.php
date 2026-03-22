@@ -32,11 +32,9 @@ class PasskeyController extends Controller
      */
     public function registerOptions(Request $request, GeneratePasskeyRegisterOptionsAction $generateOptionsAction)
     {
-        // Force correct RP ID at runtime to bypass cache issues
+        // Always sync RP ID to current request host
         $currentHost = $request->getHost();
-        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
-            config(['passkeys.relying_party.id' => $currentHost]);
-        }
+        config(['passkeys.relying_party.id' => $currentHost]);
 
         $user = Auth::guard('customer')->user();
         
@@ -134,11 +132,9 @@ class PasskeyController extends Controller
      */
     public function register(Request $request, StorePasskeyAction $storePasskeyAction)
     {
-        // Force correct RP ID at runtime
+        // Always sync RP ID to current request host
         $currentHost = $request->getHost();
-        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
-            config(['passkeys.relying_party.id' => $currentHost]);
-        }
+        config(['passkeys.relying_party.id' => $currentHost]);
         $user = Auth::guard('customer')->user();
         
         $linkingFlow = false;
@@ -295,12 +291,9 @@ class PasskeyController extends Controller
      */
     public function loginOptions(GeneratePasskeyAuthenticationOptionsAction $generateOptionsAction)
     {
-        // Force correct RP ID at runtime
+        // Always sync RP ID to current request host
         $currentHost = request()->getHost();
-        $rpId = config('passkeys.relying_party.id');
-        if (empty($rpId) || $rpId === 'localhost' || $rpId === '127.0.0.1') {
-            config(['passkeys.relying_party.id' => $currentHost]);
-        }
+        config(['passkeys.relying_party.id' => $currentHost]);
 
         $optionsJson = $generateOptionsAction->execute();
 
@@ -316,11 +309,9 @@ class PasskeyController extends Controller
      */
     public function login(AuthenticateUsingPasskeysRequest $request, FindPasskeyToAuthenticateAction $findPasskeyAction)
     {
-        // Force correct RP ID at runtime
+        // Always sync RP ID to current request host
         $currentHost = $request->getHost();
-        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
-            config(['passkeys.relying_party.id' => $currentHost]);
-        }
+        config(['passkeys.relying_party.id' => $currentHost]);
 
         $optionsJson = session()->get('passkey-authentication-options-json');
 
