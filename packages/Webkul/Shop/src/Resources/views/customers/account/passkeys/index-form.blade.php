@@ -292,22 +292,17 @@
                             if (!response.ok) throw new Error('Не удалось получить настройки с сервера.');
 
                             const rawOptions = await response.json();
-                            const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+                            // Pass raw server options directly — do NOT modify
+                            const optionsJSON = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
-                            if (!options || !options.challenge) throw new Error('Некорректные настройки.');
+                            if (!optionsJSON || !optionsJSON.challenge) throw new Error('Некорректные настройки.');
 
-                            // --- Force Resident Keys ---
-                            if (!options.authenticatorSelection) {
-                                options.authenticatorSelection = {};
-                            }
-                            options.authenticatorSelection.residentKey = 'required';
-                            options.authenticatorSelection.requireResidentKey = true;
-                            options.authenticatorSelection.userVerification = 'preferred';
+                            console.log('[Passkey] RP ID:', optionsJSON.rp ? optionsJSON.rp.id : 'N/A');
 
                             if (buttonText) buttonText.innerText = 'Ожидание устройства...';
 
-                            // Start WebAuthn registration
-                            const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON: options });
+                            // Start WebAuthn registration (v8+ format)
+                            const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
 
 
                             if (buttonText) buttonText.innerText = 'Сохранение...';

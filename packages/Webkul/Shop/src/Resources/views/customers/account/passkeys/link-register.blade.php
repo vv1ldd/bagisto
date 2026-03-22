@@ -91,31 +91,17 @@
                     if (!res.ok) throw new Error('Не удалось получить настройки с сервера.');
                     
                     const rawOptions = await res.json();
-                    console.log('Raw options received:', rawOptions);
+                    // Pass raw server options directly — do NOT modify
+                    // SimpleWebAuthn v8+ handles all encoding/decoding internally
+                    const optionsJSON = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
-                    // Ensure we have the correct part of the object for SimpleWebAuthn
-                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
-
-                    // --- Domain/RP Check ---
-                    const currentDomain = window.location.hostname;
-                    if (options.rp && options.rp.id && options.rp.id !== currentDomain) {
-                        console.warn('RP ID mismatch. Fixing it to match current domain:', currentDomain);
-                        // options.rp.id = currentDomain; // We can't easily fix it because the challenge is bound to it, but we can log it.
-                    }
-
-                    // Force Resident Keys
-                    if (!options.authenticatorSelection) {
-                        options.authenticatorSelection = {};
-                    }
-                    options.authenticatorSelection.residentKey = 'required';
-                    options.authenticatorSelection.requireResidentKey = true;
-                    options.authenticatorSelection.userVerification = 'preferred';
+                    console.log('[Passkey] RP ID:', optionsJSON.rp ? optionsJSON.rp.id : 'N/A');
+                    console.log('[Passkey] User:', JSON.stringify(optionsJSON.user));
 
                     btnText.innerText = 'ОЖИДАНИЕ...';
 
-                    // Start WebAuthn registration
-                    console.log('Starting registration with options:', options);
-                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON: options });
+                    // Start WebAuthn registration (v8+ format)
+                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
 
                     console.log('Registration response:', attResp);
 

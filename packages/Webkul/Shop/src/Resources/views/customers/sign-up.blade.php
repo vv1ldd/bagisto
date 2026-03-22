@@ -126,27 +126,18 @@
                     }
 
                     const rawOptions = await prepareResponse.json();
-                    console.log('[Passkey] Received options:', rawOptions);
-                    
-                    var options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+                    // Use the raw server response directly — DO NOT modify options
+                    // SimpleWebAuthn v8+ handles all encoding/decoding internally
+                    const optionsJSON = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
-                    // Force Passkey requirements
-                    if (!options.authenticatorSelection) {
-                        options.authenticatorSelection = {};
-                    }
-                    options.authenticatorSelection.residentKey = 'required';
-                    options.authenticatorSelection.requireResidentKey = true;
-                    options.authenticatorSelection.userVerification = 'preferred';
-
-                    console.log('[Passkey] RP ID:', options.rp ? options.rp.id : 'N/A');
-                    console.log('[Passkey] User:', JSON.stringify(options.user));
-                    console.log('[Passkey] authenticatorSelection:', JSON.stringify(options.authenticatorSelection));
-                    console.log('[Passkey] Starting registration with options:', options);
+                    console.log('[Passkey] RP ID:', optionsJSON.rp ? optionsJSON.rp.id : 'N/A');
+                    console.log('[Passkey] User:', JSON.stringify(optionsJSON.user));
+                    console.log('[Passkey] Raw options from server:', JSON.stringify(optionsJSON));
 
                     btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
 
-                    // Trigger Browser Prompt using SimpleWebAuthn (v8+ API requires { optionsJSON })
-                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON: options });
+                    // Pass server options directly (v8+ format)
+                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
                     console.log('[Passkey] Credential created:', attResp);
                     
                     btn.innerHTML = '<span class="animate-pulse">Сохранение...</span>';
