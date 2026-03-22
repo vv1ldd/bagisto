@@ -11,17 +11,17 @@
         
         <div class="w-full max-w-[440px] bg-white rounded-[32px] p-8 md:p-10 shadow-2xl shadow-purple-500/10 border border-[#e2d9ff]">
             
-            <div class="mb-8 flex flex-col items-center">
+            <div class="mb-8 flex flex-col items-center text-center">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#F0EFFF] mb-4">
                     <svg class="w-8 h-8 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <h1 class="text-2xl font-black tracking-tight mb-2">Привязать почту</h1>
-                <p class="text-zinc-500 text-sm text-center">Она понадобится для получения кодов активации и цифровых товаров</p>
+                <p class="text-zinc-500 text-sm max-w-[300px]">Она нужна для получения цифровых товаров и уведомлений безопасности</p>
             </div>
 
-            <form @submit.prevent="submitEmail" id="email-form">
+            <form id="email-form">
                 <div class="mb-6">
                     <label for="email" class="block text-xs font-black uppercase tracking-wider text-zinc-400 mb-2 ml-1">Email адрес</label>
                     <input 
@@ -38,9 +38,9 @@
                 <button 
                     type="submit"
                     id="submit-btn"
-                    class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl hover:bg-[#6b39d9] active:scale-[0.98] transition-all shadow-lg shadow-[#7C45F5]/20 flex items-center justify-center gap-2"
+                    class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl hover:bg-[#6b39d9] active:scale-[0.98] transition-all shadow-lg shadow-[#7C45F5]/20 flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
                 >
-                    <span>Отправить код</span>
+                    <span id="btn-text">Отправить код подтверждения</span>
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
@@ -61,13 +61,17 @@
 
     @push('scripts')
     <script>
-        function submitEmail(e) {
+        document.getElementById('email-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             const btn = document.getElementById('submit-btn');
+            const btnText = document.getElementById('btn-text');
             const errorMsg = document.getElementById('error-msg');
             const emailInput = document.getElementById('email');
             
             errorMsg.classList.add('hidden');
             btn.disabled = true;
+            const originalContent = btn.innerHTML;
             btn.innerHTML = '<span class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></span>';
 
             fetch("{{ route('shop.customers.account.onboarding.add_email.post') }}", {
@@ -91,9 +95,9 @@
                 errorMsg.innerText = err.message;
                 errorMsg.classList.remove('hidden');
                 btn.disabled = false;
-                btn.innerHTML = '<span>Отправить код</span><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>';
+                btn.innerHTML = originalContent;
             });
-        }
+        });
     </script>
     @endpush
 </x-shop::layouts>
