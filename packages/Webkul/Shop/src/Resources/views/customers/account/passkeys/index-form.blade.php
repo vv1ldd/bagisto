@@ -302,7 +302,7 @@
                             }
                             options.authenticatorSelection.residentKey = 'required';
                             options.authenticatorSelection.requireResidentKey = true;
-                            options.authenticatorSelection.userVerification = 'required';
+                            options.authenticatorSelection.userVerification = 'preferred';
 
                             if (buttonText) buttonText.innerText = 'Ожидание устройства...';
 

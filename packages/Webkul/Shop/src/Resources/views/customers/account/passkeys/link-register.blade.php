@@ -109,7 +109,7 @@
                     }
                     options.authenticatorSelection.residentKey = 'required';
                     options.authenticatorSelection.requireResidentKey = true;
-                    options.authenticatorSelection.userVerification = 'required';
+                    options.authenticatorSelection.userVerification = 'preferred';
 
                     btnText.innerText = 'ОЖИДАНИЕ...';
 

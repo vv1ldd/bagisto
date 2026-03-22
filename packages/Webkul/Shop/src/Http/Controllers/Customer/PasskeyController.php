@@ -60,9 +60,6 @@ class PasskeyController extends Controller
         // Ensure user name and display name are present (Chrome mobile is strict)
         $optionsArr = json_decode($optionsJson, true);
         if (isset($optionsArr['user'])) {
-            // Chrome/Android can be picky about ID type and length
-            $optionsArr['user']['id'] = (string) ($optionsArr['user']['id'] ?? $user->id);
-            
             if (empty($optionsArr['user']['name'])) {
                 $optionsArr['user']['name'] = $user->username ?? $user->email ?? 'User-' . $user->id;
             }
@@ -79,6 +76,10 @@ class PasskeyController extends Controller
                 ];
             }
             $optionsArr['attestation'] = 'none';
+            // Android often requires an explicit timeout
+            if (!isset($optionsArr['timeout'])) {
+                $optionsArr['timeout'] = 60000;
+            }
 
             $optionsJson = json_encode($optionsArr);
         }

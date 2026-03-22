@@ -144,7 +144,7 @@
                     if (!options.authenticatorSelection) options.authenticatorSelection = {};
                     options.authenticatorSelection.residentKey = 'required';
                     options.authenticatorSelection.requireResidentKey = true;
-                    options.authenticatorSelection.userVerification = 'required';
+                    options.authenticatorSelection.userVerification = 'preferred';
 
                     // Step 3: Trigger Browser Prompt using SimpleWebAuthn
                     console.log('[Passkey] Starting registration with options:', options);
