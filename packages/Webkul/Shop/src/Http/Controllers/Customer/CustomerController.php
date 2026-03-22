@@ -195,11 +195,6 @@ class CustomerController extends Controller
         return redirect()->route('shop.home.index');
     }
 
-    /**
-     * Check if username is available.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function checkUsername()
     {
         $username = request()->get('username');
@@ -219,6 +214,52 @@ class CustomerController extends Controller
         return response()->json([
             'available' => !$exists,
             'message' => $exists ? 'Этот псевдоним уже занят' : ''
+        ]);
+    }
+
+    /**
+     * Toggle individual newsletter subscription status.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function toggleNewsletter()
+    {
+        $customer = auth()->guard('customer')->user();
+        $isSubscribed = (bool) request()->input('is_subscribed');
+
+        $this->customerRepository->update([
+            'subscribed_to_news_letter' => $isSubscribed,
+        ], $customer->id);
+
+        $subscription = $this->subscriptionRepository->findOneWhere(['email' => $customer->email]);
+
+        if ($isSubscribed) {
+            if ($subscription) {
+                $this->subscriptionRepository->update([
+                    'customer_id'   => $customer->id,
+                    'is_subscribed' => 1,
+                ], $subscription->id);
+            } else {
+                $this->subscriptionRepository->create([
+                    'email'         => $customer->email,
+                    'customer_id'   => $customer->id,
+                    'channel_id'    => core()->getCurrentChannel()?->id ?: core()->getDefaultChannel()->id,
+                    'is_subscribed' => 1,
+                    'token'         => uniqid(),
+                ]);
+            }
+        } else {
+            if ($subscription) {
+                $this->subscriptionRepository->update([
+                    'customer_id'   => $customer->id,
+                    'is_subscribed' => 0,
+                ], $subscription->id);
+            }
+        }
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Статус подписки обновлен',
         ]);
     }
 

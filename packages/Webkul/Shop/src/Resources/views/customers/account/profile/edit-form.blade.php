@@ -176,40 +176,6 @@
     </div>
     @endif
 
-    {{-- Capabilities & Settings --}}
-    <div class="mb-12">
-        <h3 class="ios-section-label !bg-transparent !border-0 !px-4">Настройки</h3>
-        <div class="nav-grid">
-            {{-- B2B Toggle --}}
-            <div class="nav-tile !p-0 overflow-hidden items-center opacity-80 cursor-not-allowed">
-                <div class="flex flex-col pl-5 min-w-0 flex-1 py-4">
-                    <span class="nav-label">B2B возможности</span>
-                    <span class="text-[11px] text-zinc-400 font-medium leading-tight">Для подключения напишите в поддержку</span>
-                </div>
-                <div class="pr-5">
-                    <label class="relative inline-flex items-center cursor-not-allowed">
-                        <input type="checkbox" value="" class="sr-only peer" disabled @checked($customer->is_b2b_enabled)>
-                        <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#34c759]"></div>
-                    </label>
-                </div>
-            </div>
-
-            {{-- Newsletter Toggle --}}
-            <label for="is-subscribed" class="nav-tile !p-0 overflow-hidden items-center group cursor-pointer">
-                <div class="flex flex-col pl-5 min-w-0 flex-1 py-4">
-                    <span class="nav-label group-hover:text-[#7C45F5] transition-colors">Подписаться на уведомления</span>
-                    <span class="text-[11px] text-zinc-400 font-medium">Рассылки и новости</span>
-                </div>
-                <div class="pr-5">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed" class="sr-only peer" @checked($customer->subscribed_to_news_letter)>
-                        <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#34c759]"></div>
-                    </label>
-                </div>
-            </label>
-        </div>
-    </div>
-
     {{-- Save Button --}}
     <div class="flex justify-center mt-10">
         <button type="submit"

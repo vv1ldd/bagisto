@@ -78,6 +78,28 @@
                     </svg>
                 </span>
             </a>
+
+            {{-- Newsletter Subscription --}}
+            <div class="nav-tile group mt-1 !cursor-default">
+                <span class="w-12 h-12 flex items-center justify-center bg-purple-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </span>
+                <div class="flex flex-col min-w-0 pr-4 flex-1">
+                    <span class="nav-label">Уведомления</span>
+                    <span class="text-[12px] text-zinc-500 font-medium truncate">Рассылки и новости</span>
+                </div>
+                <div class="pr-2">
+                    <form action="{{ route('shop.customers.account.profile.toggle_newsletter') }}" method="POST" id="newsletter-form">
+                        @csrf
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_subscribed" value="1" class="sr-only peer" @checked($customer->subscribed_to_news_letter) onchange="this.form.submit()">
+                            <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#34c759]"></div>
+                        </label>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </x-shop::layouts.account>

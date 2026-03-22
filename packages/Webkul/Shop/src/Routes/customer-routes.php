@@ -202,6 +202,7 @@ Route::prefix('customer')->group(function () {
 
                         Route::get('check-username', 'checkUsername')->name('shop.customers.account.profile.check_username');
 
+                        Route::post('toggle-newsletter', 'toggleNewsletter')->name('shop.customers.account.profile.toggle_newsletter');
 
                         Route::post('edit', 'update')->name('shop.customers.account.profile.update');
 
