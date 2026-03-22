@@ -81,8 +81,8 @@ $menuIcons = [
                             @continue
                         @endif
                         
-                        {{-- Skip Profile, Passkeys AND Orders (as Orders-Wallet merge is planned) --}}
-                        @if (in_array($subMenuItem->getKey(), ['account.profile', 'account.passkeys', 'account.orders', 'account.login_activity']))
+                        {{-- Skip Profile, Passkeys, Orders, and Address --}}
+                        @if (in_array($subMenuItem->getKey(), ['account.profile', 'account.passkeys', 'account.orders', 'account.login_activity', 'account.address']))
                             @continue
                         @endif
  

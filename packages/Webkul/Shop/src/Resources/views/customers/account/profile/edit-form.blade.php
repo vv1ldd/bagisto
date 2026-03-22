@@ -86,20 +86,6 @@
                 </div>
             </div>
 
-            {{-- Address --}}
-            <a href="{{ route('shop.customers.account.addresses.index') }}" class="nav-tile !p-0 overflow-hidden items-center group">
-                <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px] cursor-pointer">@lang('shop::app.layouts.address')</label>
-                <div class="flex-grow flex items-center justify-end pr-5">
-                    <span class="text-[15px] text-zinc-400 font-medium text-right truncate max-w-[200px]">
-                        {{ $customer->default_address ? ($customer->default_address->address . ', ' . $customer->default_address->city) : 'Настроить' }}
-                    </span>
-                    <span class="nav-arrow !ml-0">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </span>
-                </div>
-            </a>
         </div>
     </div>
 
