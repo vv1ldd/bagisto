@@ -12,20 +12,6 @@
             <p class="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Режим разговора (Тапните для выхода)</p>
         </div>
 
-        <!-- Global Top Actions -->
-        <div v-show="!isCallEnded && !showStartButton && controlsVisible" 
-             class="absolute top-6 left-6 z-[1000] flex items-center gap-3 transition-all duration-500">
-            <button @click.stop="forceHome" 
-                    class="group flex items-center gap-2 bg-black/40 backdrop-blur-xl border border-white/10 hover:border-white/30 px-4 py-2 rounded-2xl transition-all active:scale-95">
-                <div class="flex h-8 w-8 items-center justify-center bg-white/10 rounded-xl group-hover:bg-[#7C45F5] transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-white/80 group-hover:text-white">Назад</span>
-            </button>
-        </div>
-
         <!-- Video Layer (Base) -->
         <div class="absolute inset-0 bg-zinc-950">
             <!-- 1-on-1 Mode -->
