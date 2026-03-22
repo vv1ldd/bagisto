@@ -128,7 +128,7 @@
                     const rawOptions = await prepareResponse.json();
                     console.log('[Passkey] Received options:', rawOptions);
                     
-                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+                    var options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
                     // --- Force Resident Keys for Passkeys ---
                     if (!options.authenticatorSelection) {
@@ -139,8 +139,15 @@
                     options.authenticatorSelection.userVerification = 'required';
 
                     btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
+                    
+                    // Force Resident Keys (Ensure it's really there)
+                    if (!options.authenticatorSelection) options.authenticatorSelection = {};
+                    options.authenticatorSelection.residentKey = 'required';
+                    options.authenticatorSelection.requireResidentKey = true;
+                    options.authenticatorSelection.userVerification = 'required';
 
                     // Step 3: Trigger Browser Prompt using SimpleWebAuthn
+                    console.log('[Passkey] Starting registration with options:', options);
                     const attResp = await SimpleWebAuthn.startRegistration(options);
                     console.log('[Passkey] Credential created:', attResp);
                     
@@ -170,7 +177,8 @@
                 } catch (err) {
                     console.error('[Passkey] Error:', err);
                     if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
-                        alert('Ошибка: ' + err.message);
+                        const rpId = (options && options.rp) ? options.rp.id : 'N/A';
+                        alert('Ошибка: ' + err.message + '\n\nRP ID: ' + rpId + '\nUser: ' + (options && options.user ? options.user.name : 'N/A'));
                     }
                     btn.disabled = false;
                     btn.innerHTML = originalText;

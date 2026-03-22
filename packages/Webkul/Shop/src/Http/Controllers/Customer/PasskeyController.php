@@ -57,10 +57,23 @@ class PasskeyController extends Controller
 
         $optionsJson = $generateOptionsAction->execute($user, asJson: true);
         
+        // Ensure user name and display name are present (Chrome mobile is strict)
+        $optionsArr = json_decode($optionsJson, true);
+        if (isset($optionsArr['user'])) {
+            if (empty($optionsArr['user']['name'])) {
+                $optionsArr['user']['name'] = $user->username ?? $user->email ?? 'User-' . $user->id;
+            }
+            if (empty($optionsArr['user']['displayName'])) {
+                $optionsArr['user']['displayName'] = ($user->first_name ?? 'User') . ' ' . ($user->last_name ?? '');
+                $optionsArr['user']['displayName'] = trim($optionsArr['user']['displayName']) ?: $optionsArr['user']['name'];
+            }
+            $optionsJson = json_encode($optionsArr);
+        }
+
         Log::info('Passkey registration options generated', [
             'user_id' => $user->id,
             'linking_flow' => $linkingFlow,
-            'options' => $optionsJson,
+            'user_name' => $optionsArr['user']['name'] ?? 'N/A',
             'session_id' => session()->getId(),
         ]);
 
@@ -317,9 +330,10 @@ class PasskeyController extends Controller
             );
 
             if (!$passkey) {
+                $decodedResp = is_string($credentialResponse) ? json_decode($credentialResponse, true) : $credentialResponse;
                 Log::warning('Passkey login failed: FindPasskeyAction returned null', [
                     'user_id' => auth()->guard('customer')->id() ?? 'guest',
-                    'credential_id' => $credentialResponse['id'] ?? 'N/A',
+                    'credential_id' => $decodedResp['id'] ?? 'N/A',
                 ]);
                 return response()->json(['message' => 'Invalid passkey. Device not found or validation failed.'], 401);
             }
