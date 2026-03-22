@@ -21,7 +21,7 @@
 
         <div class="w-full max-w-xl">
             {{-- Security Options Component --}}
-            @include('shop::customers.account.security', ['hideHeader' => true])
+            @include('shop::customers.account.security-content')
             
             <div class="mt-8 flex justify-center">
                 <a href="{{ route('shop.customers.account.index') }}" 
