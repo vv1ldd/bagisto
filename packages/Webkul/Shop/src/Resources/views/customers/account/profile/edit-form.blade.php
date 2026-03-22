@@ -1,406 +1,223 @@
-@push('styles')
-    <style>
-        .ios-settings-wrapper {
-            max-width: 600px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .ios-group {
-            background-color: #fff;
-            border: 1px solid #f3f4f6;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
-            overflow: hidden;
-        }
-
-        .ios-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px 12px 20px;
-            min-height: 52px;
-            border-bottom: 1px solid #f3f4f6;
-            position: relative;
-            transition: background-color 0.2s ease;
-        }
-
-        .ios-row:first-child {
-        }
-
-        .ios-row:last-child {
-            border-bottom: none;
-        }
-
-        .ios-row:active {
-            background-color: #f9fafb;
-        }
-
-        .ios-label {
-            font-size: 16px;
-            font-weight: 500;
-            color: #18181b;
-            margin: 0;
-            white-space: nowrap;
-            flex-shrink: 0;
-            background: transparent !important;
-        }
-
-        .ios-input-wrapper {
-            flex-grow: 1;
-            margin-left: 16px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            background: transparent !important;
-            padding-right: 24px; /* Space for the absolute arrow */
-        }
-
-        .ios-input-wrapper>div {
-            width: auto;
-            margin-bottom: 0 !important;
-            background: transparent !important;
-        }
-
-        .ios-input-wrapper input:not([name="phone"]),
-        .ios-input-wrapper select {
-            width: 100% !important;
-            height: auto !important;
-            line-height: normal !important;
-            text-align: right !important;
-            text-align-last: right !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 0 2px 0 !important;
-            margin: 0 !important;
-            color: #71717a !important;
-            font-size: 15px !important;
-            appearance: none;
-            outline: none !important;
-            border-radius: 0 !important;
-        }
-        
-        .ios-input-wrapper input.pseudonym-input {
-            width: 100% !important;
-            text-align: right !important;
-        }
-
-        .ios-input-wrapper input:focus::placeholder,
-        .ios-input-wrapper input:focus::-webkit-input-placeholder { color: transparent !important; }
-
-        ::selection {
-            background-color: rgba(124, 69, 245, 0.2) !important;
-            color: inherit !important;
-        }
-
-        ::-moz-selection {
-            background-color: rgba(124, 69, 245, 0.2) !important;
-            color: inherit !important;
-        }
-
-
-        input::-webkit-calendar-picker-indicator,
-        input::-webkit-inner-spin-button,
-        input::-webkit-clear-button {
-            display: none !important;
-            appearance: none !important;
-            -webkit-appearance: none !important;
-        }
-
-        /* Hide browser contact/credential autofill icon */
-        input::-webkit-contacts-auto-fill-button,
-        input::-webkit-credentials-auto-fill-button {
-            visibility: hidden;
-            display: none !important;
-            pointer-events: none;
-            height: 0;
-            width: 0;
-            margin: 0;
-        }
-
-        .ios-input-wrapper input[type="date"],
-        .ios-input-wrapper input[type="date"]:focus,
-        .ios-input-wrapper input[type="date"]:hover {
-            -webkit-appearance: none !important;
-            -moz-appearance: none !important;
-            appearance: none !important;
-            background: transparent !important;
-            background-color: transparent !important;
-            border: none !important;
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            outline: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-            height: 24px !important;
-            line-height: 24px !important;
-            font-size: 15px !important;
-            color: #71717a !important;
-            text-align: right !important;
-            cursor: pointer !important;
-        }
-
-        .ios-input-wrapper span.relative { background: transparent !important; }
-        .ios-input-wrapper .flatpickr-input {
-            -webkit-appearance: none !important;
-            appearance: none !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            width: 100% !important;
-            height: 24px !important;
-            line-height: 24px !important;
-            font-size: 15px !important;
-            color: #71717a !important;
-            text-align: right !important;
-            cursor: pointer !important;
-        }
-
-        .ios-arrow { 
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #d4d4d8; 
-            font-size: 18px; 
-            flex-shrink: 0; 
-            pointer-events: none;
-        }
-        .ios-input-wrapper select { 
-            text-align: right; 
-            text-align-last: right; 
-            appearance: none;
-            -webkit-appearance: none;
-            outline: none;
-            background-color: transparent;
-        }
-
-        .ios-switch-row {
-            background: #fff;
-            border: 1px solid #e4e4e7;
-            padding: 14px 20px;
-            margin-bottom: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-        .ios-toggle-container { display: flex; align-items: center; }
-        .ios-switch { position: relative; display: inline-block; width: 51px; height: 31px; }
-        .ios-switch input { opacity: 0; width: 0; height: 0; }
-        .ios-slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #e9e9ea; transition: .4s;
-        }
-        .ios-slider:before {
-            position: absolute; content: "";
-            height: 27px; width: 27px; left: 2px; bottom: 2px;
-            background-color: white; transition: .4s;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-        }
-        .ios-switch input:checked+.ios-slider { background-color: #34c759; }
-        .ios-switch input:checked+.ios-slider:before { transform: translateX(20px); }
-
-        @media (max-width: 768px) {
-            .ios-settings-wrapper { padding: 0 8px; }
-            .ios-group { margin-bottom: 12px; }
-            .ios-row { padding: 8px 12px 8px 14px; min-height: 44px; }
-            .ios-label { font-size: 14px; max-width: 40%; white-space: normal; line-height: 1.2; }
-            .ios-input-wrapper { margin-left: 8px; padding-right: 20px; }
-            .ios-input-wrapper input, .ios-input-wrapper select { font-size: 14px !important; }
-            .ios-label { 
-                max-width: 60%; 
-                font-size: 15px; 
-            }
-            .ios-arrow { right: 10px; font-size: 16px; }
-            .ios-switch-row { padding: 10px 14px; margin-bottom: 16px; }
-        }
-    </style>
-@endpush
-
-
 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.before', ['customer' => $customer]) !!}
 
 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.image.after') !!}
 
-<div class="ios-settings-wrapper mx-auto w-full">
+<div class="mt-4 w-full max-w-[800px] mx-auto px-1">
 
-    {{-- Normal profile edit mode --}}
-    <!-- Group 1: Contact Info -->
-    <div class="ios-group ">
-
-        <div class="px-5 pt-6 pb-2">
-            <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">Профиль</h1>
-        </div>
-
-        <div class="ios-row">
-            <label class="ios-label">Псевдоним <span class="text-red-500">*</span></label>
-            <div class="ios-input-wrapper">
-                <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0">@</span>
-                <x-shop::form.control-group class="!mb-0 flex-1">
-                    <x-shop::form.control-group.control type="text" name="username" rules="required"
-                        class="pseudonym-input"
-                        :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
-                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                        data-lpignore="true" data-1p-ignore
-                        label="Псевдоним"
-                        v-on:focus="clearDefaultUsername($event)"
-                        v-on:input="debounceCheckUsername($event.target.value)" />
-                </x-shop::form.control-group>
-                <span class="ios-arrow icon-arrow-right"></span>
-            </div>
-        </div>
-        <div class="ios-row">
-            <label class="ios-label">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
-            <div class="ios-input-wrapper">
-                <x-shop::form.control-group class="!mb-0 flex-1">
-                    <x-shop::form.control-group.control type="text" name="first_name" rules="required"
-                        :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
-                        placeholder="Имя" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                        data-lpignore="true" data-1p-ignore
-                        :label="trans('shop::app.customers.account.profile.edit.first-name')" />
-                </x-shop::form.control-group>
-                <span class="ios-arrow icon-arrow-right"></span>
-            </div>
-        </div>
-        <div class="ios-row">
-            <label class="ios-label">@lang('shop::app.customers.account.profile.edit.last-name') <span class="text-red-500">*</span></label>
-            <div class="ios-input-wrapper">
-                <x-shop::form.control-group class="!mb-0 flex-1">
-                    <x-shop::form.control-group.control type="text" name="last_name" rules="required"
-                        :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
-                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                        data-lpignore="true" data-1p-ignore
-                        :label="trans('shop::app.customers.account.profile.edit.last-name')" />
-                </x-shop::form.control-group>
-                <span class="ios-arrow icon-arrow-right"></span>
-            </div>
-        </div>
-        <div class="ios-row">
-            <label class="ios-label">@lang('shop::app.customers.account.profile.edit.email') <span class="text-red-500">*</span></label>
-            <div class="ios-input-wrapper">
-                <input type="hidden" name="email" value="{{ $customer->email }}">
-                <div class="flex-1 flex justify-end items-center mr-1">
-                    <span class="text-[15px] text-zinc-400 text-right truncate">{{ $customer->email }}</span>
-                </div>
-                <span class="ios-arrow icon-arrow-right"></span>
-            </div>
-        </div>
-
-        <div class="ios-row cursor-pointer" onclick="window.location.href='{{ route('shop.customers.account.addresses.index') }}'">
-            <label class="ios-label cursor-pointer text-zinc-900">@lang('shop::app.layouts.address')</label>
-            <div class="ios-input-wrapper justify-end">
-                <span class="text-[15px] text-zinc-400 text-right truncate max-w-[200px]">
-                    {{ $customer->default_address ? ($customer->default_address->address . ', ' . $customer->default_address->city) : 'Настроить' }}
-                </span>
-                <span class="ios-arrow icon-arrow-right"></span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Group 2: Personal Details -->
-    <div class="ios-group">
-        @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
-            <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.gender') <span class="text-red-500">*</span></label>
-                <div class="ios-input-wrapper">
+    {{-- Main Profile Info --}}
+    <div class="mb-10">
+        <h3 class="ios-section-label !bg-transparent !border-0 !px-4">Профиль</h3>
+        
+        <div class="nav-grid">
+            {{-- Pseudonym --}}
+            <div class="nav-tile !p-0 overflow-hidden items-center">
+                <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">Псевдоним <span class="text-red-500">*</span></label>
+                <div class="flex-grow flex items-center justify-end pr-5 group">
+                    <span class="text-zinc-400 mr-1 text-[15px] font-medium selection:bg-transparent">@</span>
                     <x-shop::form.control-group class="!mb-0 flex-1">
-                        <x-shop::form.control-group.control type="select" name="gender" rules="required"
-                            :value="old('gender') ?? (str_starts_with($customer->gender, '$2y$') ? '' : $customer->gender)"
-                            :label="trans('shop::app.customers.account.profile.edit.gender')">
-                            <option value="" disabled hidden>Выберите пол</option>
-                            <option value="Male" {{ (($customer->gender ?? old('gender')) == 'Male') ? 'selected' : '' }}>
-                                @lang('shop::app.customers.account.profile.edit.male')
-                            </option>
-                            <option value="Female" {{ (($customer->gender ?? old('gender')) == 'Female') ? 'selected' : '' }}>
-                                @lang('shop::app.customers.account.profile.edit.female')
-                            </option>
-                            <option value="Other" {{ (($customer->gender ?? old('gender')) == 'Other') ? 'selected' : '' }}>
-                                @lang('shop::app.customers.account.profile.edit.other')
-                            </option>
-                        </x-shop::form.control-group.control>
-                    </x-shop::form.control-group>
-                    <span class="ios-arrow icon-arrow-right"></span>
-                </div>
-            </div>
-        @endif
-
-        @if (empty($customer->date_of_birth) || str_starts_with($customer->date_of_birth, '$2y$'))
-            <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.dob') <span class="text-red-500">*</span></label>
-                <div class="ios-input-wrapper">
-                    <x-shop::form.control-group class="!mb-0 flex-1">
-                        <x-shop::form.control-group.control type="date" name="date_of_birth"
-                            rules="required" :value="old('date_of_birth') ?? (str_starts_with($customer->date_of_birth, '$2y$') ? '' : $customer->date_of_birth)"
-                            id="dob_input_edit" allow-input="false" placeholder="Выберите дату"
-                            :label="trans('shop::app.customers.account.profile.edit.dob')" />
-                    </x-shop::form.control-group>
-                    <span class="ios-arrow icon-arrow-right pointer-events-none"></span>
-                </div>
-            </div>
-        @endif
-
-        @if (empty($customer->birth_city) || str_starts_with($customer->birth_city, '$2y$'))
-            <div class="ios-row">
-                <label class="ios-label">@lang('shop::app.customers.account.profile.edit.birth-city') <span class="text-red-500">*</span></label>
-                <div class="ios-input-wrapper">
-                    <x-shop::form.control-group class="!mb-0 flex-1">
-                        <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
-                            :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
-                            placeholder="Например: Москва" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                        <x-shop::form.control-group.control type="text" name="username" rules="required"
+                            class="!border-0 !bg-transparent !p-0 !text-right !text-[15px] !text-zinc-500 !font-medium !shadow-none !ring-0 !h-auto w-full"
+                            :value="old('username') ?? (str_starts_with($customer->username, 'user_') ? '' : $customer->username)" placeholder="nickname"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                             data-lpignore="true" data-1p-ignore
-                            :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
+                            label="Псевдоним"
+                            v-on:focus="clearDefaultUsername($event)"
+                            v-on:input="debounceCheckUsername($event.target.value)" />
                     </x-shop::form.control-group>
-                    <span class="ios-arrow icon-arrow-right"></span>
+                    <span class="nav-arrow !ml-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
                 </div>
             </div>
-        @endif
 
+            {{-- First Name --}}
+            <div class="nav-tile !p-0 overflow-hidden items-center">
+                <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">@lang('shop::app.customers.account.profile.edit.first-name') <span class="text-red-500">*</span></label>
+                <div class="flex-grow flex items-center justify-end pr-5">
+                    <x-shop::form.control-group class="!mb-0 flex-1">
+                        <x-shop::form.control-group.control type="text" name="first_name" rules="required"
+                            class="!border-0 !bg-transparent !p-0 !text-right !text-[15px] !text-zinc-500 !font-medium !shadow-none !ring-0 !h-auto w-full"
+                            :value="old('first_name') ?? (($customer->first_name === 'Пользователь' || $customer->first_name === '') ? null : $customer->first_name)"
+                            placeholder="Имя" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            data-lpignore="true" data-1p-ignore
+                            :label="trans('shop::app.customers.account.profile.edit.first-name')" />
+                    </x-shop::form.control-group>
+                    <span class="nav-arrow !ml-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            {{-- Last Name --}}
+            <div class="nav-tile !p-0 overflow-hidden items-center">
+                <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">@lang('shop::app.customers.account.profile.edit.last-name') <span class="text-red-500">*</span></label>
+                <div class="flex-grow flex items-center justify-end pr-5">
+                    <x-shop::form.control-group class="!mb-0 flex-1">
+                        <x-shop::form.control-group.control type="text" name="last_name" rules="required"
+                            class="!border-0 !bg-transparent !p-0 !text-right !text-[15px] !text-zinc-500 !font-medium !shadow-none !ring-0 !h-auto w-full"
+                            :value="old('last_name') ?? $customer->last_name" placeholder="Фамилия"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            data-lpignore="true" data-1p-ignore
+                            :label="trans('shop::app.customers.account.profile.edit.last-name')" />
+                    </x-shop::form.control-group>
+                    <span class="nav-arrow !ml-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            {{-- Email (Read-only) --}}
+            <div class="nav-tile !p-0 overflow-hidden items-center opacity-70">
+                <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">@lang('shop::app.customers.account.profile.edit.email') <span class="text-red-500">*</span></label>
+                <div class="flex-grow flex items-center justify-end pr-5">
+                    <input type="hidden" name="email" value="{{ $customer->email }}">
+                    <span class="text-[15px] text-zinc-400 font-medium text-right truncate">{{ $customer->email }}</span>
+                    <span class="nav-arrow !ml-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            {{-- Address --}}
+            <a href="{{ route('shop.customers.account.addresses.index') }}" class="nav-tile !p-0 overflow-hidden items-center group">
+                <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px] cursor-pointer">@lang('shop::app.layouts.address')</label>
+                <div class="flex-grow flex items-center justify-end pr-5">
+                    <span class="text-[15px] text-zinc-400 font-medium text-right truncate max-w-[200px]">
+                        {{ $customer->default_address ? ($customer->default_address->address . ', ' . $customer->default_address->city) : 'Настроить' }}
+                    </span>
+                    <span class="nav-arrow !ml-0">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
+            </a>
+        </div>
     </div>
 
-    <!-- B2B Toggle (Read-only) -->
-    <div class="ios-switch-row !mb-4 opacity-80">
-        <div class="flex flex-col gap-0.5">
-            <label class="text-[15px] font-medium text-zinc-900 select-none m-0">
-                B2B возможности
-            </label>
-            <span class="text-[11px] text-zinc-400">для подключения возможностей для бизнеса напишите в поддержку</span>
+    {{-- Personal Details --}}
+    @if ((empty($customer->gender) || str_starts_with($customer->gender, '$2y$')) || (empty($customer->date_of_birth) || str_starts_with($customer->date_of_birth, '$2y$')) || (empty($customer->birth_city) || str_starts_with($customer->birth_city, '$2y$')))
+    <div class="mb-10">
+        <h3 class="ios-section-label !bg-transparent !border-0 !px-4">Личные данные</h3>
+        <div class="nav-grid">
+            @if (empty($customer->gender) || str_starts_with($customer->gender, '$2y$'))
+                <div class="nav-tile !p-0 overflow-hidden items-center">
+                    <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">@lang('shop::app.customers.account.profile.edit.gender') <span class="text-red-500">*</span></label>
+                    <div class="flex-grow flex items-center justify-end pr-5">
+                        <x-shop::form.control-group class="!mb-0 flex-1">
+                            <x-shop::form.control-group.control type="select" name="gender" rules="required"
+                                class="!border-0 !bg-transparent !p-0 !text-right !text-[15px] !text-zinc-500 !font-medium !shadow-none !ring-0 !h-auto w-full appearance-none cursor-pointer"
+                                :value="old('gender') ?? (str_starts_with($customer->gender, '$2y$') ? '' : $customer->gender)"
+                                :label="trans('shop::app.customers.account.profile.edit.gender')">
+                                <option value="" disabled hidden>Выберите пол</option>
+                                <option value="Male" {{ (($customer->gender ?? old('gender')) == 'Male') ? 'selected' : '' }}>@lang('shop::app.customers.account.profile.edit.male')</option>
+                                <option value="Female" {{ (($customer->gender ?? old('gender')) == 'Female') ? 'selected' : '' }}>@lang('shop::app.customers.account.profile.edit.female')</option>
+                                <option value="Other" {{ (($customer->gender ?? old('gender')) == 'Other') ? 'selected' : '' }}>@lang('shop::app.customers.account.profile.edit.other')</option>
+                            </x-shop::form.control-group.control>
+                        </x-shop::form.control-group>
+                        <span class="nav-arrow !ml-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            @endif
+
+            @if (empty($customer->date_of_birth) || str_starts_with($customer->date_of_birth, '$2y$'))
+                <div class="nav-tile !p-0 overflow-hidden items-center">
+                    <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">@lang('shop::app.customers.account.profile.edit.dob') <span class="text-red-500">*</span></label>
+                    <div class="flex-grow flex items-center justify-end pr-5">
+                        <x-shop::form.control-group class="!mb-0 flex-1">
+                            <x-shop::form.control-group.control type="date" name="date_of_birth"
+                                rules="required" class="!border-0 !bg-transparent !p-0 !text-right !text-[15px] !text-zinc-500 !font-medium !shadow-none !ring-0 !h-auto w-full cursor-pointer"
+                                :value="old('date_of_birth') ?? (str_starts_with($customer->date_of_birth, '$2y$') ? '' : $customer->date_of_birth)"
+                                id="dob_input_edit" allow-input="false" placeholder="Выберите дату"
+                                :label="trans('shop::app.customers.account.profile.edit.dob')" />
+                        </x-shop::form.control-group>
+                        <span class="nav-arrow !ml-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            @endif
+
+            @if (empty($customer->birth_city) || str_starts_with($customer->birth_city, '$2y$'))
+                <div class="nav-tile !p-0 overflow-hidden items-center">
+                    <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">@lang('shop::app.customers.account.profile.edit.birth-city') <span class="text-red-500">*</span></label>
+                    <div class="flex-grow flex items-center justify-end pr-5">
+                        <x-shop::form.control-group class="!mb-0 flex-1">
+                            <x-shop::form.control-group.control type="text" name="birth_city" rules="required"
+                                class="!border-0 !bg-transparent !p-0 !text-right !text-[15px] !text-zinc-500 !font-medium !shadow-none !ring-0 !h-auto w-full"
+                                :value="old('birth_city') ?? (str_starts_with($customer->birth_city, '$2y$') ? '' : $customer->birth_city)"
+                                placeholder="Например: Москва" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                data-lpignore="true" data-1p-ignore
+                                :label="trans('shop::app.customers.account.profile.edit.birth-city')" />
+                        </x-shop::form.control-group>
+                        <span class="nav-arrow !ml-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            @endif
         </div>
-        <div class="ios-toggle-container">
-            <label class="ios-switch cursor-not-allowed">
-                <input type="checkbox" disabled @checked($customer->is_b2b_enabled)>
-                <span class="ios-slider !cursor-not-allowed {{ $customer->is_b2b_enabled ? '' : '!bg-zinc-200' }}"></span>
+    </div>
+    @endif
+
+    {{-- Capabilities & Settings --}}
+    <div class="mb-12">
+        <h3 class="ios-section-label !bg-transparent !border-0 !px-4">Настройки</h3>
+        <div class="nav-grid">
+            {{-- B2B Toggle --}}
+            <div class="nav-tile !p-0 overflow-hidden items-center opacity-80 cursor-not-allowed">
+                <div class="flex flex-col pl-5 min-w-0 flex-1 py-4">
+                    <span class="nav-label">B2B возможности</span>
+                    <span class="text-[11px] text-zinc-400 font-medium leading-tight">Для подключения напишите в поддержку</span>
+                </div>
+                <div class="pr-5">
+                    <label class="relative inline-flex items-center cursor-not-allowed">
+                        <input type="checkbox" value="" class="sr-only peer" disabled @checked($customer->is_b2b_enabled)>
+                        <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#34c759]"></div>
+                    </label>
+                </div>
+            </div>
+
+            {{-- Newsletter Toggle --}}
+            <label for="is-subscribed" class="nav-tile !p-0 overflow-hidden items-center group cursor-pointer">
+                <div class="flex flex-col pl-5 min-w-0 flex-1 py-4">
+                    <span class="nav-label group-hover:text-[#7C45F5] transition-colors">Подписаться на уведомления</span>
+                    <span class="text-[11px] text-zinc-400 font-medium">Рассылки и новости</span>
+                </div>
+                <div class="pr-5">
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed" class="sr-only peer" @checked($customer->subscribed_to_news_letter)>
+                        <div class="w-11 h-6 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#34c759]"></div>
+                    </label>
+                </div>
             </label>
         </div>
     </div>
 
-    <!-- Newsletter Toggle -->
-    <div class="ios-switch-row">
-        <label class="text-[15px] font-medium text-zinc-900 cursor-pointer select-none m-0" for="is-subscribed">
-            Подписаться на уведомления
-        </label>
-        <div class="ios-toggle-container">
-            <label class="ios-switch">
-                <input type="checkbox" name="subscribed_to_news_letter" id="is-subscribed"
-                    @checked($customer->subscribed_to_news_letter)>
-                <span class="ios-slider"></span>
-            </label>
-        </div>
-    </div>
-
-    <div class="flex justify-center mt-6">
+    {{-- Save Button --}}
+    <div class="flex justify-center mt-10">
         <button type="submit"
             :disabled="!meta.valid || !!usernameError"
-            class="flex w-full items-center justify-center gap-3 bg-[#7C45F5] px-8 py-3 text-center text-[15px] font-bold text-white shadow-lg shadow-[#7C45F5]/20 transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 rounded-none">
+            class="w-full bg-[#7C45F5] hover:bg-[#6b35e4] text-white px-10 py-5 rounded-3xl font-black uppercase tracking-widest text-[13px] transition-all shadow-xl shadow-[#7C45F5]/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
             @lang('shop::app.customers.account.profile.edit.save')
         </button>
     </div>
-
-
 </div>
 
 {!! view_render_event('bagisto.shop.customers.account.profile.edit_form_controls.after', ['customer' => $customer]) !!}

@@ -17,9 +17,7 @@
         </v-profile-edit>
     </x-shop::layouts.split-screen>
 @else
-    <x-shop::layouts.account :show-back="false" :has-header="true" :has-footer="true" :is-cardless="true">
-        <x-slot:title></x-slot:title>
-
+    <x-shop::layouts.account :is-cardless="true" :title="$pageTitle" :back-link="route('shop.customers.account.index')">
         <!-- Profile Edit Form -->
         <v-profile-edit inline-template>
             <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data"
