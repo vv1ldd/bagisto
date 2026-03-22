@@ -1316,12 +1316,21 @@
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
-                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                const steps = ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'];
+                
+                steps.forEach(id => {
                     const el = document.getElementById(id);
-                    if (el) el.classList.add('hidden');
+                    if (el) {
+                        el.style.display = 'none';
+                        el.classList.add('hidden');
+                    }
                 });
+
                 const target = document.getElementById('step-' + newStep);
-                if (target) target.classList.remove('hidden');
+                if (target) {
+                    target.style.display = (newStep === 'dashboard') ? 'grid' : 'block';
+                    target.classList.remove('hidden');
+                }
                 
                 // Update Tabs State
                 const tabDashboard = document.getElementById('tab-dashboard');
@@ -1329,7 +1338,10 @@
                 const walletTabs = document.getElementById('wallet-tabs');
 
                 if (newStep === 'dashboard' || newStep === 'transactions') {
-                    if (walletTabs) walletTabs.classList.remove('hidden');
+                    if (walletTabs) {
+                        walletTabs.style.display = 'flex';
+                        walletTabs.classList.remove('hidden');
+                    }
                     if (tabDashboard) {
                         tabDashboard.className = newStep === 'dashboard' 
                             ? "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]"
@@ -1341,7 +1353,10 @@
                             : "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]";
                     }
                 } else {
-                    if (walletTabs) walletTabs.classList.add('hidden');
+                    if (walletTabs) {
+                        walletTabs.style.display = 'none';
+                        walletTabs.classList.add('hidden');
+                    }
                 }
 
                 currentStep = newStep;

@@ -942,7 +942,7 @@ img.lazy {
 }
 /* ─── Shared UI Tile Styles ───────────────────────────────── */
 .nav-grid {
-    display: grid !important;
+    display: grid;
     grid-template-columns: 1fr !important;
     gap: 8px !important;
     padding: 8px !important;
