@@ -5,6 +5,7 @@
 
     <div class="flex-grow flex flex-col items-center justify-center bg-zinc-950 text-white min-h-screen" data-echo-bootstrap>
         <!-- The background is now intentionally empty as everything happens within the CallOverlay -->
+        <v-call-overlay></v-call-overlay>
     </div>
 
     @push('scripts')

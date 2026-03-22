@@ -1,5 +1,6 @@
 <x-shop::layouts.account :is-cardless="true" :title="'Видеовстреча'" :back-link="route('shop.customers.account.index')">
     <div class="mt-0 mb-6 w-full max-w-[800px] mx-auto px-1 leading-none" data-echo-bootstrap>
+        <v-call-overlay></v-call-overlay>
         <v-meeting-inviter 
             action="{{ route('shop.call.store') }}" 
             csrf-token="{{ csrf_token() }}"

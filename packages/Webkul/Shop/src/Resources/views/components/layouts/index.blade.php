@@ -297,7 +297,6 @@
             </div>
 
             <v-shortcut-help></v-shortcut-help>
-            <v-call-overlay></v-call-overlay>
         </div>
 
         {!! view_render_event('bagisto.shop.layout.body.after') !!}
