@@ -300,21 +300,15 @@ class PasskeyController extends Controller
         try {
             $credentialResponse = $request->input('start_authentication_response');
             
-            if (is_string($credentialResponse)) {
-                $decoded = json_decode($credentialResponse, true);
-                if (json_last_error() === JSON_ERROR_NONE) {
-                    $credentialResponse = $decoded;
-                } else {
-                    Log::warning('Passkey login: Failed to decode start_authentication_response string', [
-                        'raw' => substr($credentialResponse, 0, 100) . '...'
-                    ]);
-                }
+            // Spatie action expects a JSON string. 
+            // If it's already an array (decoded by Laravel), convert it back to string.
+            if (is_array($credentialResponse)) {
+                $credentialResponse = json_encode($credentialResponse);
             }
 
             Log::debug('Passkey login: Final credential response for validation', [
                 'type' => gettype($credentialResponse),
-                'is_array' => is_array($credentialResponse),
-                'has_id' => is_array($credentialResponse) && isset($credentialResponse['id']),
+                'is_string' => is_string($credentialResponse),
             ]);
 
             $passkey = $findPasskeyAction->execute(
