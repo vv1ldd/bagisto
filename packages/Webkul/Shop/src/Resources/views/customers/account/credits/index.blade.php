@@ -101,19 +101,21 @@
                 <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] opacity-80">Способы пополнения</span>
             </div>
 
-            {{-- Crypto Option (Full Width) --}}
-            <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
-                <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
-                    🪙
-                </div>
-                <div class="flex flex-col items-start flex-1">
-                    <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Криптовалюта</div>
-                    <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">USDT, TON, BTC, ETH</div>
-                </div>
-                <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
-                    <span class="icon-arrow-right text-xl"></span>
-                </div>
-            </button>
+            @if ($user->is_crypto_enabled)
+                {{-- Crypto Option (Full Width) --}}
+                <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
+                    <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
+                        🪙
+                    </div>
+                    <div class="flex flex-col items-start flex-1">
+                        <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Криптовалюта</div>
+                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">USDT, TON, BTC, ETH</div>
+                    </div>
+                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
+                        <span class="icon-arrow-right text-xl"></span>
+                    </div>
+                </button>
+            @endif
 
             @if ($user->is_b2b_enabled)
                 {{-- B2B Option (Half) --}}

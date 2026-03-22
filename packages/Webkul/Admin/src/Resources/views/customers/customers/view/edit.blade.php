@@ -209,6 +209,18 @@
                                 <x-admin::form.control-group.control type="switch" name="is_call_enabled" :value="1"
                                     label="Звонки P2P" ::checked="customer.is_call_enabled" />
                             </x-admin::form.control-group>
+
+                            <!-- Crypto Top-up Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    🪙 Крипто пополнения
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_crypto_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_crypto_enabled" :value="1"
+                                    label="Крипто пополнения" ::checked="customer.is_crypto_enabled" />
+                            </x-admin::form.control-group>
                         </div>
 
                         {!! view_render_event('bagisto.admin.customers.customers.view.edit.after', ['customer' => $customer]) !!}

@@ -101,6 +101,7 @@ class CustomerController extends Controller
                         'customer_group_id',
                         'channel_id',
                         'is_b2b_enabled',
+                        'is_crypto_enabled',
                     ]));
 
         if (empty($data['phone'])) {
@@ -158,6 +159,7 @@ class CustomerController extends Controller
             'is_investor',
             'is_call_enabled',
             'is_b2b_enabled',
+            'is_crypto_enabled',
         ]);
 
         if (empty($data['phone'])) {
