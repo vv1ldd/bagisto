@@ -164,7 +164,7 @@
                             </svg>
                         </div>
                         <h3 class="text-[#1a0050] text-xl font-black tracking-tight mb-2">Привязка устройства</h3>
-                        <p class="text-zinc-500 text-sm">Отсканируйте этот QR-код камерой телефона, чтобы войти без пароля.</p>
+                        <p class="text-zinc-500 text-sm">Отсканируйте этот QR-код камерой телефона, чтобы привязать другое устройство.</p>
                     </div>
 
                     <div id="qrcode-container" class="bg-white p-4 border border-[#e2d9ff] rounded-2xl shadow-sm mb-8 flex items-center justify-center w-48 h-48 overflow-hidden">
