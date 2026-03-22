@@ -46,7 +46,7 @@
                     </div>
                 </div>
             </div>
-            <p id="nickname-status" class="text-xs text-red-500 mt-2 hidden text-center font-medium"></p>
+            <p id="nickname-status" class="text-xs mt-2 text-center font-medium min-h-[16px] transition-opacity duration-200 opacity-0"></p>
         </div>
 
         <!-- Primary Action Button -->
@@ -88,7 +88,7 @@
                 // reset visual
                 nicknameIcon.className = 'ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-0 transition-opacity text-sm';
                 nicknameIcon.innerHTML = '';
-                nicknameStatus.classList.add('hidden');
+                nicknameStatus.className = 'text-xs mt-2 text-center font-medium min-h-[16px] transition-opacity duration-200 opacity-0';
                 
                 isUsernameValid = false;
                 updateButtonState();
@@ -151,10 +151,9 @@
                 if (nicknameStatus) {
                     if (text) {
                         nicknameStatus.textContent = text;
-                        nicknameStatus.className = `text-xs mt-2 text-center font-medium ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`;
-                        nicknameStatus.classList.remove('hidden');
+                        nicknameStatus.className = `text-xs mt-2 text-center font-medium min-h-[16px] transition-opacity duration-200 opacity-100 ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`;
                     } else {
-                        nicknameStatus.classList.add('hidden');
+                        nicknameStatus.className = `text-xs mt-2 text-center font-medium min-h-[16px] transition-opacity duration-200 opacity-0`;
                     }
                 }
             }
