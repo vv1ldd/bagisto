@@ -46,18 +46,9 @@
             const btnText = document.getElementById('btn-text');
             if (!btn) return;
 
-            const _u8 = (b64) => {
-                const padding = '='.repeat((4 - b64.length % 4) % 4);
-                const b = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                const bin = window.atob(b);
-                const arr = new Uint8Array(bin.length);
-                for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-                return arr;
-            };
-
-            const _b64 = (buf) => window.btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
             btn.addEventListener('click', async () => {
+                const { startRegistration } = window.SimpleWebAuthnBrowser;
+
                 if (!window.PublicKeyCredential) {
                     alert('Ваш браузер не поддерживает Passkey (требуется iOS 16+, Android 9+ или современный браузер Desktop).');
                     return;
@@ -79,33 +70,14 @@
 
                     if (!res.ok) throw new Error('Не удалось получить настройки с сервера.');
                     
-                    const rawOptions = await res.json();
-                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
-
-                    options.challenge = _u8(options.challenge);
-                    options.user.id = _u8(options.user.id);
-                    if (options.excludeCredentials) {
-                        options.excludeCredentials.forEach(cred => cred.id = _u8(cred.id));
-                    }
+                    const options = await res.json();
 
                     btnText.innerText = 'ОЖИДАНИЕ...';
 
-                    const credential = await navigator.credentials.create({ publicKey: options });
-                    if (!credential) throw new Error('Создание ключа отменено.');
+                    // Start WebAuthn registration
+                    const attResp = await startRegistration(options);
 
                     btnText.innerText = 'СОХРАНЕНИЕ...';
-
-                    const registrationData = {
-                        id: credential.id,
-                        rawId: _b64(credential.rawId),
-                        response: {
-                            clientDataJSON: _b64(credential.response.clientDataJSON),
-                            attestationObject: _b64(credential.response.attestationObject),
-                            transports: credential.response.getTransports ? credential.response.getTransports() : [],
-                        },
-                        type: credential.type,
-                        clientExtensionResults: credential.getClientExtensionResults() || {},
-                    };
 
                     const saveRes = await fetch('{{ route('passkeys.register') }}', {
                         method: 'POST',
@@ -113,7 +85,7 @@
                             'Content-Type': 'application/json', 
                             'X-CSRF-TOKEN': '{{ csrf_token() }}' 
                         },
-                        body: JSON.stringify(registrationData)
+                        body: JSON.stringify(attResp)
                     });
 
                     if (!saveRes.ok) {
@@ -129,10 +101,13 @@
                     }, 1500);
 
                 } catch (err) {
-                    console.error(err);
-                    if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
+                    console.error('Passkey Registration Error:', err);
+                    
+                    // Don't show alert for user cancellation
+                    if (err.name !== 'NotAllowedError' && !err.message.includes('отмена') && err.name !== 'AbortError') {
                         alert('Ошибка: ' + err.message);
                     }
+                    
                     btn.disabled = false;
                     btn.innerHTML = originalHTML;
                 }
