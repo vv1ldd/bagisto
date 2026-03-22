@@ -34,16 +34,29 @@ class PasskeyController extends Controller
     {
         $user = Auth::guard('customer')->user();
         
+        $linkingFlow = false;
         // Handle linking flow where user is found via session or manual auth during landing
         if (!$user && session()->has('link_user_id')) {
             $user = app(\Webkul\Customer\Repositories\CustomerRepository::class)->find(session('link_user_id'));
+            $linkingFlow = true;
         }
 
         if (!$user) {
+            Log::warning('Passkey registration options failed: Unauthenticated.', [
+                'session_has_link_user_id' => session()->has('link_user_id'),
+                'session_id' => session()->getId(),
+            ]);
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         $optionsJson = $generateOptionsAction->execute($user, asJson: true);
+        
+        Log::info('Passkey registration options generated', [
+            'user_id' => $user->id,
+            'linking_flow' => $linkingFlow,
+            'options' => $optionsJson,
+            'session_id' => session()->getId(),
+        ]);
 
         $request->session()->put('passkey-registration-options-json', $optionsJson);
 
@@ -89,15 +102,28 @@ class PasskeyController extends Controller
     {
         $user = Auth::guard('customer')->user();
         
+        $linkingFlow = false;
         if (!$user && session()->has('link_user_id')) {
             $user = app(\Webkul\Customer\Repositories\CustomerRepository::class)->find(session('link_user_id'));
+            $linkingFlow = true;
         }
 
         if (!$user) {
+            Log::warning('Passkey register failed: Unauthenticated.', [
+                'session_has_link_user_id' => session()->has('link_user_id'),
+                'session_id' => session()->getId(),
+            ]);
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         $optionsJson = $request->session()->get('passkey-registration-options-json');
+
+        Log::info('Passkey registration attempt', [
+            'user_id' => $user->id,
+            'linking_flow' => $linkingFlow,
+            'has_options_in_session' => !empty($optionsJson),
+            'session_id' => session()->getId(),
+        ]);
 
         if (!$optionsJson) {
             return response()->json(['message' => 'No registration options found in session.'], 400);
