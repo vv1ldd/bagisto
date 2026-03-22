@@ -33,7 +33,12 @@
                     <span class="nav-arrow">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                          {{-- Passkey / Add Device --}}
+                        </svg>
+                    </span>
+                </a>
+            @endif
+
+            {{-- Passkey / Add Device --}}
             <button type="button" id="add-device-btn" onclick="window.showQrModal()" class="nav-tile group mt-1 w-full text-left">
                 <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
