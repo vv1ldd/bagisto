@@ -21,6 +21,12 @@
 
         {{-- Step 1: Dashboard --}}
         <div id="step-dashboard" class="nav-grid">
+            {{-- Tabs --}}
+            <div class="col-span-2 flex items-center gap-6 mb-2 border-b border-[#e2d9ff]">
+                <button class="text-[14px] font-black text-[#1a0050] border-b-2 border-[#7C45F5] pb-3 uppercase tracking-tight cursor-default">Обзор</button>
+                <button onclick="switchStep('transactions')" class="text-[14px] font-black text-zinc-400 hover:text-[#1a0050] border-b-2 border-transparent hover:border-[#e2d9ff] pb-3 transition-all uppercase tracking-tight">История</button>
+            </div>
+
             {{-- Total Balance Tile (Main) --}}
             <div class="nav-tile col-span-2 p-8 !flex-row !items-center !justify-between bg-white border-[#e2d9ff]">
                 <div class="flex flex-col gap-1">
@@ -130,6 +136,12 @@
 
         {{-- Step 2: Transactions --}}
         <div id="step-transactions" class="hidden">
+            {{-- Tabs --}}
+            <div class="flex items-center gap-6 mb-6 border-b border-[#e2d9ff]">
+                <button onclick="switchStep('dashboard')" class="text-[14px] font-black text-zinc-400 hover:text-[#1a0050] border-b-2 border-transparent hover:border-[#e2d9ff] pb-3 transition-all uppercase tracking-tight">Обзор</button>
+                <button class="text-[14px] font-black text-[#1a0050] border-b-2 border-[#7C45F5] pb-3 uppercase tracking-tight cursor-default">История</button>
+            </div>
+
             <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
             @if ($transactions->count() > 0)
                 <div class="flex flex-col divide-y divide-zinc-50">
@@ -1325,13 +1337,12 @@
                 const titleEl = document.querySelector('h1#page-title') || document.querySelector('h1.text-\\[20px\\]');
                 const backBtn = document.getElementById('step-back-btn');
 
-                if (currentStep === 'dashboard') {
+                if (currentStep === 'dashboard' || currentStep === 'transactions') {
                     if (titleEl) titleEl.innerText = initialTitle;
                     if (backBtn) backBtn.style.display = 'none';
                 } else {
                     if (backBtn) backBtn.style.display = 'flex';
                     if (titleEl) {
-                        if (currentStep === 'transactions') titleEl.innerText = "История";
                         if (currentStep === 'organizations') titleEl.innerText = "Мои компании";
                         if (currentStep === 'add-organization') titleEl.innerText = "Новая компания";
                         if (currentStep === 'add-bank-account') titleEl.innerText = "Новый счет";
