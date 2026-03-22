@@ -21,7 +21,7 @@
 
         <div class="w-full max-w-xl">
             {{-- Security Options Component --}}
-            @include('shop::customers.account.security-content')
+            @include('shop::customers.account.security-content', ['isOnboarding' => true])
             
             <div class="mt-8 flex justify-center">
                 <a href="{{ route('shop.customers.account.index') }}" 

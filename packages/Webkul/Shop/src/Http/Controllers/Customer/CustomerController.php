@@ -13,6 +13,9 @@ use Webkul\Product\Repositories\ProductReviewRepository;
 use Webkul\Sales\Models\Order;
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Shop\Http\Requests\Customer\ProfileRequest;
+use Webkul\Shop\Mail\Customer\EmailVerificationNotification;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class CustomerController extends Controller
 {
@@ -39,8 +42,8 @@ class CustomerController extends Controller
     {
         $customer = auth()->guard('customer')->user();
 
-        // If already backed up, just redirect to the view screen
-        if ($customer->mnemonic_hash && session()->has('pending_recovery_key')) {
+        // If already backed up and VERIFIED, just redirect to the view screen
+        if ($customer->mnemonic_hash && $customer->mnemonic_verified_at && session()->has('pending_recovery_key')) {
             return view('shop::customers.account.profile.recovery-key', [
                 'words' => explode(' ', session('pending_recovery_key'))
             ]);
@@ -450,5 +453,86 @@ class CustomerController extends Controller
     public function showSecurity()
     {
         return view('shop::customers.account.security');
+    }
+
+    /**
+     * Show the "Add Email" screen during onboarding.
+     */
+    public function showAddEmail()
+    {
+        return view('shop::customers.account.onboarding.add-email');
+    }
+
+    /**
+     * Send verification code to the provided email.
+     */
+    public function sendEmailVerificationCode(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email', 'unique:customers,email,' . auth()->guard('customer')->id()],
+        ], [
+            'email.required' => 'Введите адрес электронной почты',
+            'email.email' => 'Некорректный формат почты',
+            'email.unique' => 'Эта почта уже занята другим пользователем',
+        ]);
+
+        $email = $request->input('email');
+        $customer = auth()->guard('customer')->user();
+
+        // Generate 6-digit code
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $token = Str::random(60);
+
+        $this->customerRepository->update([
+            'email' => $email,
+            'verification_code' => $code,
+            'token' => $token,
+            'is_verified' => 0,
+        ], $customer->id);
+
+        try {
+            Mail::to($email)->queue(new EmailVerificationNotification($customer->fresh()));
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Не удалось отправить письмо. Проверьте адрес.'], 500);
+        }
+
+        session(['onboarding_email' => $email]);
+
+        return response()->json(['status' => 'success', 'redirect' => route('shop.customers.account.onboarding.verify_email_view')]);
+    }
+
+    /**
+     * Show verify email code screen.
+     */
+    public function showVerifyEmailView()
+    {
+        $email = session('onboarding_email');
+        if (!$email) return redirect()->route('shop.customers.account.onboarding.security');
+
+        return view('shop::customers.account.onboarding.verify-email', compact('email'));
+    }
+
+    /**
+     * Verify the 6-digit code.
+     */
+    public function verifyEmailCode(\Illuminate\Http\Request $request)
+    {
+        $request->validate(['code' => 'required|string|size:6']);
+        
+        $customer = auth()->guard('customer')->user();
+        
+        if ($customer->verification_code !== $request->input('code')) {
+            return response()->json(['status' => 'error', 'message' => 'Неверный код'], 422);
+        }
+
+        $this->customerRepository->update([
+            'is_verified' => 1,
+            'verification_code' => null,
+            'token' => null,
+        ], $customer->id);
+
+        session()->forget('onboarding_email');
+
+        return response()->json(['status' => 'success', 'redirect' => route('shop.customers.account.onboarding.security')]);
     }
 }

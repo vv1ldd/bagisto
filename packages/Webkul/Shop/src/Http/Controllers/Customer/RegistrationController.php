@@ -88,6 +88,7 @@ class RegistrationController extends Controller
             'registration_ip' => $currentIp,
             'last_login_ip' => $currentIp,
             'status' => 1,
+            'subscribed_to_news_letter' => 1,
         ];
 
         // If already logged in as a placeholder (no email), reuse the account

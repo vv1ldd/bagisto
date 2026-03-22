@@ -160,6 +160,10 @@ Route::prefix('customer')->group(function () {
             Route::get('', [CustomerController::class, 'account'])->name('shop.customers.account.index');
             Route::get('security', [CustomerController::class, 'showSecurity'])->name('shop.customers.account.security.index');
             Route::get('security-onboarding', [CustomerController::class, 'showSecurityOnboarding'])->name('shop.customers.account.onboarding.security');
+            Route::get('security-onboarding/add-email', [CustomerController::class, 'showAddEmail'])->name('shop.customers.account.onboarding.add_email');
+            Route::post('security-onboarding/add-email', [CustomerController::class, 'sendEmailVerificationCode'])->name('shop.customers.account.onboarding.add_email.post');
+            Route::get('security-onboarding/verify-email', [CustomerController::class, 'showVerifyEmailView'])->name('shop.customers.account.onboarding.verify_email_view');
+            Route::post('security-onboarding/verify-email', [CustomerController::class, 'verifyEmailCode'])->name('shop.customers.account.onboarding.verify_email.post');
 
             Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
                 /**

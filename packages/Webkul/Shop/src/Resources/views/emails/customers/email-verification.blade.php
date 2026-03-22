@@ -20,7 +20,17 @@
         </a>
     </div>
 
-    <!-- Code block removed -->
+    <!-- Code block for manual entry -->
+    @if ($customer->verification_code)
+        <div style="margin: 24px 0; padding: 20px; background-color: #F8FAFC; border: 2px dashed #E2E8F0; display: inline-block;">
+            <p style="font-size: 14px; color: #64748B; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">
+                @lang('shop::app.emails.customers.verification.verification-code')
+            </p>
+            <span style="font-size: 36px; font-weight: 800; color: #1a0050; letter-spacing: 0.3em; font-family: monospace;">
+                {{ $customer->verification_code }}
+            </span>
+        </div>
+    @endif
 
     <p style="font-size: 14px; color: #64748B; margin-top: 16px;">
         Если кнопка не работает, скопируйте эту ссылку в браузер:<br>
