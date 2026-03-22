@@ -70,83 +70,81 @@
                     </div>
                 </div>
             @else
-                <!-- Original Profile Settings View -->
-                <div class="px-8 max-md:px-5 mt-4 w-full max-w-[600px] mx-auto">
+                <!-- Redesigned Profile Settings View -->
+                <div class="mt-4 w-full">
                     {!! view_render_event('bagisto.shop.customers.account.profile.email.after') !!}
 
                     <!-- Passkeys & Trusted Devices -->
-                    <div class="mt-8">
+                    <div class="mb-10">
                         <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
                             Passkeys & Безопасность
                         </h3>
 
-                        <div class="bg-zinc-50 border border-zinc-100  overflow-hidden">
+                        <div class="nav-grid">
                             @if ($customer->passkeys->count())
                                 @foreach ($customer->passkeys as $passkey)
-                                    <div class="flex justify-between items-center px-5 py-4 border-b border-zinc-200/60 last:border-0 max-md:px-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="p-2 bg-zinc-200/50 ">
-                                                <svg class="h-5 w-5 text-zinc-600" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2">
-                                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                                                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                                                </svg>
-                                            </div>
-                                            <div class="text-left">
-                                                <p class="text-[15px] font-medium text-zinc-900 max-md:text-sm flex items-center gap-2">
-                                                    {{ $passkey->name ?: 'Passkey устройство' }}
+                                    <div class="nav-tile !cursor-default items-center">
+                                        <div class="flex items-center gap-4 flex-1 min-w-0">
+                                            <span class="w-12 h-12 flex items-center justify-center bg-zinc-100 text-zinc-500 rounded-2xl shrink-0">
+                                                @php
+                                                    $isMobile = stripos($passkey->user_agent, 'phone') !== false || stripos($passkey->user_agent, 'android') !== false;
+                                                @endphp
+                                                @if ($isMobile)
+                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                                    </svg>
+                                                @endif
+                                            </span>
+                                            
+                                            <div class="flex flex-col min-w-0">
+                                                <div class="flex items-center gap-2 mb-0.5">
+                                                    <span class="nav-label">{{ $passkey->name ?: 'Passkey устройство' }}</span>
                                                     @if($passkey->id == session('current_session_passkey_id') || $passkey->id == request()->cookie('current_device_passkey_id'))
-                                                        <span class="text-[10px] font-bold uppercase tracking-wider text-green-600 bg-green-100 px-2 py-0.5 ">Это устройство</span>
+                                                        <span class="bg-emerald-100 text-emerald-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">это устройство</span>
                                                     @endif
-                                                </p>
-                                                <p class="text-xs text-zinc-500">Добавлено:
-                                                    {{ $passkey->created_at->format('d.m.Y') }}
-                                                </p>
+                                                </div>
+                                                <span class="text-[12px] text-zinc-500 font-medium">Добавлено: {{ $passkey->created_at->format('d.m.Y') }}</span>
                                             </div>
                                         </div>
+
                                         <form action="{{ route('passkeys.destroy', $passkey->id) }}" method="POST"
-                                            onsubmit="return confirm('Удалить это устройство?')">
+                                            onsubmit="return confirm('Удалить это устройство?')" class="shrink-0 flex items-center h-12">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 p-2">
-                                                <span class="icon-bin text-xl"></span>
+                                            <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
                                             </button>
                                         </form>
                                     </div>
                                 @endforeach
-                            @else
-                                <div class="px-5 py-8 text-center bg-white/50">
-                                    <p class="text-[15px] text-zinc-500 mb-2">У вас пока нет привязанных Passkey
-                                        устройств.</p>
-                                    <p class="text-xs text-zinc-400">Добавьте устройство (отпечаток или FaceID) для
-                                        быстрого
-                                        входа без пароля и подтверждений по почте.</p>
-                                </div>
                             @endif
 
-                            <div class="px-5 py-4 bg-white/50 border-t border-zinc-100/60">
-                                <button type="button" id="add-device-btn" onclick="window.showQrModal()" class="group flex w-full items-center justify-between text-left transition-all hover:bg-zinc-50 rounded-xl p-2 -m-2">
-                                    <div class="flex items-center gap-4">
-                                        <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                            </svg>
-                                        </span>
-                                        <div class="flex flex-col min-w-0">
-                                            <span class="text-[15px] font-bold text-zinc-900">Добавить устройство</span>
-                                            <span class="text-[12px] text-zinc-500 font-medium">Вход через TouchID или FaceID</span>
-                                        </div>
-                                    </div>
-                                    <span class="text-zinc-400 group-hover:text-[#7C45F5] transition-colors pr-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                            <button type="button" id="add-device-btn" onclick="window.showQrModal()" class="nav-tile group items-center text-left">
+                                <div class="flex items-center gap-4 flex-1 min-w-0">
+                                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                         </svg>
                                     </span>
-                                </button>
-                            </div>
+                                    <div class="flex flex-col min-w-0">
+                                        <span class="nav-label">Добавить устройство</span>
+                                        <span class="text-[12px] text-zinc-500 font-medium">Вход через TouchID или FaceID</span>
+                                    </div>
+                                </div>
+                                <span class="nav-arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </span>
+                            </button>
                         </div>
                     </div>
-
 
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.before') !!}
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
