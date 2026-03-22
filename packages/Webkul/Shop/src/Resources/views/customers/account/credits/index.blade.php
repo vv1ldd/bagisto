@@ -1,132 +1,128 @@
 <x-shop::layouts.account :is-cardless="true" :title="__('Meanly Wallet')">
-    <div class="mt-2 mb-10">
-        {{-- Master Unified Tile --}}
-        <div class="bg-white shadow-2xl border border-zinc-100 overflow-hidden relative ">
+    <div class="mt-0 mb-8 w-full max-w-[800px] mx-auto px-2">
+        {{-- Back Button for SPA-like navigation --}}
+        <button id="step-back-btn" onclick="handleStepBack()" 
+            class="hidden items-center gap-2 text-[13px] font-black text-[#7C45F5] mb-6 hover:-translate-x-1 transition-all">
+            <span class="icon-arrow-left text-lg"></span>
+            Назад
+        </button>
+        @php
+            $user = auth()->guard('customer')->user();
+            $balances = $user->balances;
+            $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
+            $netLabels = [
+                'ton' => ['label' => 'TON', 'symbol' => '◎', 'color' => '#0098EA', 'icon' => '💎'],
+                'usdt_ton' => ['label' => 'USDT', 'symbol' => '₮', 'color' => '#26A17B', 'icon' => '₮'],
+                'bitcoin' => ['label' => 'BTC', 'symbol' => '₿', 'color' => '#F7931A', 'icon' => '₿'],
+                'ethereum' => ['label' => 'ETH', 'symbol' => 'Ξ', 'color' => '#627EEA', 'icon' => 'Ξ'],
+                'dash' => ['label' => 'DASH', 'symbol' => 'D', 'color' => '#1c75bc', 'icon' => 'D'],
+            ];
+        @endphp
 
-            @php
-                $user = auth()->guard('customer')->user();
-                $balances = $user->balances;
-                $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
-                $netLabels = [
-                    'ton' => ['label' => 'TON', 'symbol' => '◎', 'color' => '#0098EA'],
-                    'usdt_ton' => ['label' => 'USDT', 'symbol' => '₮', 'color' => '#26A17B'],
-                    'bitcoin' => ['label' => 'BTC', 'symbol' => '₿', 'color' => '#F7931A'],
-                    'ethereum' => ['label' => 'ETH', 'symbol' => 'Ξ', 'color' => '#627EEA'],
-                    'dash' => ['label' => 'DASH', 'symbol' => 'D', 'color' => '#1c75bc'],
-                ];
-
-                $allAssets = [
-                    'ton' => ['name' => 'TON (Native)', 'symbol' => 'TON', 'icon' => '💎', 'network' => 'TON Network', 'color' => '#0098EA', 'color2' => '#33BFFF', 'address' => config('crypto.verification_addresses.ton')],
-                    'usdt_ton' => ['name' => 'USDT (TON)', 'symbol' => 'USDT', 'icon' => '₮', 'network' => 'TON Network', 'color' => '#0098EA', 'color2' => '#33BFFF', 'address' => config('crypto.verification_addresses.usdt_ton')],
-                    'bitcoin' => ['name' => 'Bitcoin', 'symbol' => 'BTC', 'icon' => '₿', 'network' => 'Bitcoin', 'color' => '#F7931A', 'color2' => '#FDB953', 'address' => config('crypto.verification_addresses.bitcoin')],
-                    'ethereum' => ['name' => 'Ethereum / USDT ERC20', 'symbol' => 'ETH', 'icon' => 'Ξ', 'network' => 'Ethereum', 'color' => '#627EEA', 'color2' => '#8FA4EF', 'address' => config('crypto.verification_addresses.ethereum')],
-                    'dash' => ['name' => 'Dash', 'symbol' => 'DASH', 'icon' => 'D', 'network' => 'Dash', 'color' => '#1c75bc', 'color2' => '#4DA3E0', 'address' => config('crypto.verification_addresses.dash')],
-                ];
-            @endphp
-
-            {{-- Step 1: Dashboard --}}
-            <div id="step-dashboard"
-                class="p-5 bg-white relative overflow-hidden active:scale-[0.99] transition-transform">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-violet-400/5  blur-3xl"></div>
-            <div class="flex flex-col gap-2 relative z-10">
-                {{-- Row 1: label + badges --}}
-                <div class="flex items-start justify-between gap-2">
-                    <div class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 opacity-80">
+        {{-- Step 1: Dashboard --}}
+        <div id="step-dashboard" class="nav-grid">
+            {{-- Total Balance Tile (Main) --}}
+            <div class="nav-tile col-span-2 p-8 !flex-row !items-center !justify-between bg-white border-[#e2d9ff]">
+                <div class="flex flex-col gap-1">
+                    <div class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
                         @if($user->is_investor)
-                            Покупательная<br>способность
+                            Покупательная способность
                         @else
-                            Баланс
+                            Ваш Баланс
                         @endif
                     </div>
-                    <div class="flex items-center gap-1.5 flex-wrap justify-end">
-                        <div
-                            class="text-[12px] font-mono text-violet-600 bg-violet-50 px-2.5 py-1  border border-violet-100 font-bold whitespace-nowrap">
+                    <div class="text-4xl md:text-5xl font-black text-[#1a0050] tracking-tighter italic">
+                        {{ core()->formatPrice($user->getTotalFiatBalance()) }}
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <div class="text-[11px] font-mono text-zinc-400 bg-zinc-50 px-2.5 py-1 border border-zinc-100 font-bold">
                             @ {{ $user->username }}
                         </div>
                         @if($user->is_investor)
-                            <div
-                                class="text-[11px] font-black text-amber-600 bg-amber-50 px-2.5 py-1  border border-amber-200 tracking-wide whitespace-nowrap">
-                                💎 Инвестор
+                            <div class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 border border-amber-200 uppercase tracking-widest">
+                                Инвестор
                             </div>
                         @endif
                     </div>
                 </div>
+                
+                <div class="hidden md:flex flex-col items-end gap-1 opacity-20">
+                    <span class="icon-security text-5xl text-[#7C45F5]"></span>
+                    <span class="text-[8px] font-black uppercase tracking-widest text-[#7C45F5]">SSL Secure</span>
+                </div>
+            </div>
 
-                {{-- Row 2: balance + история --}}
-                <div class="flex items-center justify-between mt-1">
-                    <div class="text-4xl font-black font-mono text-zinc-900 tracking-tight">
-                        {{ core()->formatPrice($user->getTotalFiatBalance()) }}
+            {{-- Asset Tiles --}}
+            @foreach($balances as $balance)
+                @php
+                    $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888', 'icon' => '💰'];
+                    $rate = $exchangeRateService->getRate($balance->currency_code);
+                    $fiat = $balance->amount * $rate;
+                    $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
+                @endphp
+                <div class="nav-tile p-6 group">
+                    <div class="flex items-center justify-between w-full mb-4">
+                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold transition-transform group-hover:scale-110" 
+                             style="background: {{ $m['color'] }}15; color: {{ $m['color'] }}">
+                            {{ $m['icon'] }}
+                        </div>
+                        <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{{ $m['label'] }}</div>
                     </div>
-                    <div class="flex items-center gap-3">
-
-                        @if ($user->is_b2b_enabled)
-                            <button onclick="goToOrganizations()" class="flex flex-col items-center gap-1 group">
-                                <div
-                                    class="w-12 h-12 bg-white flex items-center justify-center text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white transition-all border border-zinc-200 group-hover:border-[#7C45F5] shadow-md group-active:scale-90 rounded-2xl text-[22px]">
-                                    🏢</div>
-                                <span
-                                    class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">компании</span>
-                            </button>
-                        @endif
-
-                        <button onclick="switchStep('transactions')" class="flex flex-col items-center gap-1 group">
-                            <div
-                                class="w-12 h-12 bg-white flex items-center justify-center text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white transition-all border border-zinc-200 group-hover:border-[#7C45F5] shadow-md group-active:scale-90 rounded-2xl text-[22px]">
-                                📜</div>
-                            <span
-                                class="text-[9px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-[#7C45F5] transition-colors">история</span>
-                        </button>
-
-
+                    <div class="text-[18px] font-black text-[#1a0050] tracking-tight truncate w-full">
+                        {{ $amount }} {{ $m['label'] }}
+                    </div>
+                    <div class="text-[13px] text-zinc-500 font-medium mt-1">
+                        ≈ {{ core()->formatPrice($fiat) }}
                     </div>
                 </div>
+            @endforeach
 
-                @if($balances->count() > 0)
-                    <div class="mt-4 flex flex-col gap-2.5">
-                        @foreach($balances as $balance)
-                            @php
-                                $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888'];
-                                $rate = $exchangeRateService->getRate($balance->currency_code);
-                                $fiat = $balance->amount * $rate;
-                                $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
-                            @endphp
-                            <div class="flex items-center gap-2 text-[14px] font-medium text-zinc-500">
-                                <span class="w-2 h-2  shrink-0" style="background: {{ $m['color'] }}"></span>
-                                <span class="text-zinc-900 font-black font-mono">{{ $amount }} {{ $m['label'] }}</span>
-                                <span class="text-zinc-400 opacity-60">≈</span>
-                                <span>{{ core()->formatPrice($fiat) }}</span>
-                            </div>
-                        @endforeach
+            {{-- Action: History --}}
+            <button onclick="switchStep('transactions')" class="nav-tile p-6 hover:border-[#7C45F5] group">
+                <div class="w-12 h-12 bg-zinc-50 text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
+                    📜
+                </div>
+                <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">История</div>
+                <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Транзакции</div>
+            </button>
+
+            @if ($user->is_b2b_enabled)
+                {{-- Action: Companies --}}
+                <button onclick="goToOrganizations()" class="nav-tile p-6 hover:border-[#7C45F5] group">
+                    <div class="w-12 h-12 bg-zinc-50 text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
+                        🏢
+                    </div>
+                    <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Компании</div>
+                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">B2B Управление</div>
+                </button>
+            @endif
+
+            {{-- Action: Deposit --}}
+            <div class="col-span-2">
+                @if($user->is_investor)
+                    <button onclick="goToDeposit()"
+                        class="nav-tile !flex-row p-6 bg-[#7C45F5] border-[#7C45F5] hover:bg-[#6b35e4] text-white group !justify-center gap-3 active:scale-[0.98] transition-all">
+                        <span class="text-2xl transition-transform group-hover:scale-125">➕</span>
+                        <div class="flex flex-col items-start translate-y-[1px]">
+                            <span class="text-[15px] font-black uppercase tracking-tighter italic leading-none">Пополнить баланс</span>
+                            <span class="text-[9px] font-bold uppercase tracking-[0.2em] opacity-80 leading-none mt-1">Моментальное зачисление</span>
+                        </div>
+                    </button>
+                @else
+                    <div class="nav-tile !flex-row p-6 bg-zinc-50 border-zinc-100 text-zinc-400 cursor-not-allowed opacity-60 !justify-center gap-3">
+                        <span class="text-2xl">🔒</span>
+                        <div class="flex flex-col items-start translate-y-[1px]">
+                            <span class="text-[15px] font-black uppercase tracking-tighter italic leading-none">Пополнить баланс</span>
+                            <span class="text-[9px] font-bold uppercase tracking-[0.2em] leading-none mt-1">Доступно только инвесторам</span>
+                        </div>
                     </div>
                 @endif
-
-                <div class="mt-8 flex gap-3 max-sm:flex-col">
-                    <div class="flex-1">
-                        @if($user->is_investor)
-                            <button onclick="goToDeposit()"
-                                class="w-full inline-flex items-center justify-center text-[14px] font-black text-white bg-zinc-900 px-6 py-3  active:scale-95 transition-all shadow-lg shadow-zinc-100 uppercase tracking-widest">
-                                + Пополнить
-                            </button>
-                        @else
-                            <div class="flex flex-col gap-1.5 h-full">
-                                <button disabled
-                                    class="w-full h-full inline-flex items-center justify-center text-[14px] font-bold text-zinc-400 bg-zinc-100 px-6 py-3  cursor-not-allowed opacity-60">
-                                    + Пополнить
-                                </button>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-                @if(!auth()->guard('customer')->user()->is_investor)
-                    <p class="text-[11px] text-zinc-400 text-center mt-2">Методы пополнения пока недоступны</p>
-                @endif
-
-
             </div>
         </div>
 
         {{-- Step 2: Transactions --}}
-        <div id="step-transactions" class="hidden bg-white overflow-hidden  border border-zinc-100 shadow-sm">
+        <div id="step-transactions" class="hidden">
+            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
             @if ($transactions->count() > 0)
                 <div class="flex flex-col divide-y divide-zinc-50">
                     @foreach ($transactions as $transaction)
@@ -230,11 +226,13 @@
                 </div>
             @endif
         </div>
+    </div>
 
 
 
         {{-- Step2.6: Organizations --}}
-        <div id="step-organizations" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm">
+        <div id="step-organizations" class="hidden">
+            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
             @if ($organizations->count() > 0)
                 <div class="flex flex-col divide-y divide-zinc-50">
                     @foreach ($organizations as $organization)
@@ -395,14 +393,15 @@
                 </div>
             @endif
 
-            <button onclick="goToAddOrganization()"
-                class="flex items-center justify-center w-full p-6 border-t border-zinc-50 hover:bg-violet-50/30 transition-all text-[14px] font-bold text-[#7C45F5] group bg-white">
-                <span
-                    class="w-10 h-10 bg-violet-100/50 text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all shadow-sm">
-                    <span class="icon-plus text-base"></span>
-                </span>
-                Добавить организацию
-            </button>
+                <button onclick="goToAddOrganization()"
+                    class="flex items-center justify-center w-full p-6 border-t border-[#f0ebff] hover:bg-[#f8f6ff] transition-all text-[14px] font-bold text-[#7C45F5] group bg-white">
+                    <span
+                        class="w-10 h-10 bg-[#f0ebff] text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all shadow-sm">
+                        <span class="icon-plus text-base"></span>
+                    </span>
+                    Добавить организацию
+                </button>
+            </div>
         </div>
 
         {{-- Step 2.7: Add Organization --}}
@@ -802,73 +801,62 @@
         </div>
 
         {{-- Step: Deposit Type Selection --}}
-        <div id="step-deposit-type" class="hidden ios-group p-5 bg-white shadow-md">
-            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 text-center opacity-70">
-                Способ пополнения
+        <div id="step-deposit-type" class="hidden nav-grid !grid-cols-1">
+            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-2 px-2 opacity-70">
+                Выберите способ пополнения
             </p>
-            <div class="grid grid-cols-1 gap-4">
+            <div class="space-y-4">
                 {{-- Crypto Option --}}
                 <button onclick="goToCryptoManagement()"
-                    class="flex items-center gap-4 p-5 bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-violet-200 transition-all text-left group active:scale-[0.98]">
+                    class="flex items-center gap-4 p-6 bg-white border border-[#f0ebff] shadow-sm hover:border-[#7C45F5] transition-all text-left group active:scale-[0.98]">
                     <div
-                        class="w-12 h-12 bg-violet-50 flex items-center justify-center text-violet-600 text-2xl shrink-0 group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                        class="w-14 h-14 bg-[#f8f6ff] flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors rounded-2xl">
                         🪙
                     </div>
                     <div class="flex-1">
                         <h3
-                            class="text-[16px] font-black text-zinc-900 uppercase tracking-tight group-hover:text-violet-700 transition-colors">
+                            class="text-[16px] font-black text-[#1a0050] uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors italic">
                             Криптовалюта</h3>
-                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Пополнение через USDT, TON, BTC или
-                            ETH</p>
+                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">USDT, TON, BTC или ETH</p>
                     </div>
-                    <div class="text-zinc-300 group-hover:text-violet-500 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
+                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors">
+                        <span class="icon-arrow-right text-xl"></span>
                     </div>
                 </button>
 
                 {{-- B2B Bank Transfer Option --}}
                 <button onclick="goToB2BManagement()"
-                    class="flex items-center gap-4 p-5 bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-violet-200 transition-all text-left group active:scale-[0.98]">
+                    class="flex items-center gap-4 p-6 bg-white border border-[#f0ebff] shadow-sm hover:border-[#7C45F5] transition-all text-left group active:scale-[0.98]">
                     <div
-                        class="w-12 h-12 bg-violet-50 flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors">
-                        🏦
+                        class="w-14 h-14 bg-[#f8f6ff] flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors rounded-2xl">
+                        🏢
                     </div>
                     <div class="flex-1">
                         <h3
-                            class="text-[16px] font-black text-zinc-900 uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors">
-                            Банковский перевод</h3>
-                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Безналичная оплата от юридического
-                            лица (B2B)</p>
+                            class="text-[16px] font-black text-[#1a0050] uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors italic">
+                            Для компаний</h3>
+                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Безналичная оплата от юр. лица (B2B)</p>
                     </div>
                     <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
+                        <span class="icon-arrow-right text-xl"></span>
                     </div>
                 </button>
 
                 {{-- B2C Bank Transfer Option --}}
                 <button onclick="goToB2CManagement()"
-                    class="flex items-center gap-4 p-5 bg-white border border-zinc-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-left group active:scale-[0.98]">
+                    class="flex items-center gap-4 p-6 bg-white border border-[#f0ebff] shadow-sm hover:border-[#7C45F5] transition-all text-left group active:scale-[0.98]">
                     <div
-                        class="w-12 h-12 bg-blue-50 flex items-center justify-center text-blue-600 text-2xl shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        class="w-14 h-14 bg-[#f8f6ff] flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors rounded-2xl">
                         👤
                     </div>
                     <div class="flex-1">
                         <h3
-                            class="text-[16px] font-black text-zinc-900 uppercase tracking-tight group-hover:text-blue-700 transition-colors">
-                            Перевод от физ. лица</h3>
-                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Оплата по реквизитам через банк</p>
+                            class="text-[16px] font-black text-[#1a0050] uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors italic">
+                            Для физ. лиц</h3>
+                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Перевод по реквизитам через банк</p>
                     </div>
-                    <div class="text-zinc-300 group-hover:text-blue-500 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
+                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors">
+                        <span class="icon-arrow-right text-xl"></span>
                     </div>
                 </button>
             </div>
@@ -892,10 +880,11 @@
         </div>
 
         {{-- Step: Management (Combined Deposit & Management) --}}
-        <div id="step-management" class="hidden space-y-4">
+        <div id="step-management" class="hidden">
             <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 opacity-70">
-                Выберите кошелек для пополнения
+                Кошельки для пополнения
             </p>
+            <div class="grid grid-cols-1 gap-3">
             @foreach($allAddresses as $address)
                 @php
                     $nm = [
@@ -1096,8 +1085,8 @@
         </div>
 
         {{-- Step: Top-up Details --}}
-        <div id="step-topup-details" class="hidden space-y-6">
-            <div class="bg-white border border-zinc-100 shadow-xl p-5">
+        <div id="step-topup-details" class="hidden">
+            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden p-6">
                 <div class="flex items-center gap-4 mb-10 border-b border-zinc-50 pb-8">
                     <div class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">
                         🏢</div>
@@ -1365,7 +1354,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     @push('scripts')
