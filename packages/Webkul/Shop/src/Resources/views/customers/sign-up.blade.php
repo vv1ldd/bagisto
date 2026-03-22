@@ -145,8 +145,8 @@
 
                     btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
 
-                    // Trigger Browser Prompt using SimpleWebAuthn
-                    const attResp = await SimpleWebAuthn.startRegistration(options);
+                    // Trigger Browser Prompt using SimpleWebAuthn (v8+ API requires { optionsJSON })
+                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON: options });
                     console.log('[Passkey] Credential created:', attResp);
                     
                     btn.innerHTML = '<span class="animate-pulse">Сохранение...</span>';

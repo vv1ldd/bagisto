@@ -115,7 +115,8 @@
 
                     // Start WebAuthn registration
                     console.log('Starting registration with options:', options);
-                    const attResp = await SimpleWebAuthn.startRegistration(options);
+                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON: options });
+
                     console.log('Registration response:', attResp);
 
                     btnText.innerText = 'СОХРАНЕНИЕ...';
