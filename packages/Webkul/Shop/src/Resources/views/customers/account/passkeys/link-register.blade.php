@@ -96,6 +96,24 @@
                     // Ensure we have the correct part of the object for SimpleWebAuthn
                     const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
+                    // --- Domain/RP Check ---
+                    const currentDomain = window.location.hostname;
+                    if (options.rp && options.rp.id && options.rp.id !== currentDomain) {
+                        console.warn('RP ID mismatch. Fixing it to match current domain:', currentDomain);
+                        // options.rp.id = currentDomain; // We can't easily fix it because the challenge is bound to it, but we can log it.
+                    }
+
+                    // --- Force Platform Authenticator ---
+                    if (!options.authenticatorSelection) {
+                        options.authenticatorSelection = {};
+                    }
+                    // Residents keys are required for passkeys
+                    options.authenticatorSelection.residentKey = 'required';
+                    options.authenticatorSelection.requireResidentKey = true;
+                    options.authenticatorSelection.userVerification = 'required';
+                    // Force using the device itself
+                    options.authenticatorSelection.authenticatorAttachment = 'platform';
+
                     btnText.innerText = 'ОЖИДАНИЕ...';
 
                     // Start WebAuthn registration
@@ -129,9 +147,14 @@
                 } catch (err) {
                     console.error('Passkey Registration Error:', err);
                     
+                    let errMsg = err.message;
+                    if (err.name === 'SecurityError') {
+                        errMsg = 'Ошибка домена (RP ID mismatch). Пожалуйста, свяжитесь с поддержкой или проверьте APP_URL.';
+                    }
+
                     // Don't show alert for user cancellation
                     if (err.name !== 'NotAllowedError' && !err.message.includes('отмена') && err.name !== 'AbortError') {
-                        alert('Ошибка: ' + err.message);
+                        alert('Ошибка: ' + errMsg);
                     }
                     
                     btn.disabled = false;

@@ -296,6 +296,15 @@
 
                             if (!options || !options.challenge) throw new Error('Некорректные настройки.');
 
+                            // --- Force Platform Authenticator & Resident Keys ---
+                            if (!options.authenticatorSelection) {
+                                options.authenticatorSelection = {};
+                            }
+                            options.authenticatorSelection.residentKey = 'required';
+                            options.authenticatorSelection.requireResidentKey = true;
+                            options.authenticatorSelection.userVerification = 'required';
+                            options.authenticatorSelection.authenticatorAttachment = 'platform';
+
                             if (buttonText) buttonText.innerText = 'Ожидание устройства...';
 
                             // Start WebAuthn registration
