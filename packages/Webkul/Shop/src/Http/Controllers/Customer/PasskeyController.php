@@ -32,6 +32,12 @@ class PasskeyController extends Controller
      */
     public function registerOptions(Request $request, GeneratePasskeyRegisterOptionsAction $generateOptionsAction)
     {
+        // Force correct RP ID at runtime to bypass cache issues
+        $currentHost = $request->getHost();
+        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
+            config(['passkeys.relying_party.id' => $currentHost]);
+        }
+
         $user = Auth::guard('customer')->user();
         
         $linkingFlow = false;
@@ -100,6 +106,11 @@ class PasskeyController extends Controller
      */
     public function register(Request $request, StorePasskeyAction $storePasskeyAction)
     {
+        // Force correct RP ID at runtime
+        $currentHost = $request->getHost();
+        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
+            config(['passkeys.relying_party.id' => $currentHost]);
+        }
         $user = Auth::guard('customer')->user();
         
         $linkingFlow = false;
@@ -248,6 +259,12 @@ class PasskeyController extends Controller
      */
     public function loginOptions(GeneratePasskeyAuthenticationOptionsAction $generateOptionsAction)
     {
+        // Force correct RP ID at runtime
+        $currentHost = request()->getHost();
+        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
+            config(['passkeys.relying_party.id' => $currentHost]);
+        }
+
         $optionsJson = $generateOptionsAction->execute();
 
         Log::info('Passkey login options generated', ['options' => $optionsJson]);
@@ -262,6 +279,12 @@ class PasskeyController extends Controller
      */
     public function login(AuthenticateUsingPasskeysRequest $request, FindPasskeyToAuthenticateAction $findPasskeyAction)
     {
+        // Force correct RP ID at runtime
+        $currentHost = $request->getHost();
+        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
+            config(['passkeys.relying_party.id' => $currentHost]);
+        }
+
         $optionsJson = session()->get('passkey-authentication-options-json');
 
         Log::info('Passkey login attempt', [
