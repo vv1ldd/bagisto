@@ -55,29 +55,32 @@ class PasskeyController extends Controller
 
         $optionsJson = $generateOptionsAction->execute($user, asJson: true);
         
-        // Ensure user name and display name are present (Chrome mobile is strict)
+        // Patch options for Google Password Manager compatibility
         $optionsArr = json_decode($optionsJson, true);
         if (isset($optionsArr['user'])) {
-            if (empty($optionsArr['user']['name'])) {
-                $optionsArr['user']['name'] = $user->username ?? $user->email ?? 'User-' . $user->id;
-            }
-            if (empty($optionsArr['user']['displayName'])) {
-                $optionsArr['user']['displayName'] = ($user->first_name ?? 'User') . ' ' . ($user->last_name ?? '');
-                $optionsArr['user']['displayName'] = trim($optionsArr['user']['displayName']) ?: $optionsArr['user']['name'];
-            }
+            // user.name: always ASCII — use username (Latin letters/digits only)
+            $asciiName = $user->username ?? 'user-' . $user->id;
+            $optionsArr['user']['name'] = $asciiName;
 
-            // Chrome/Android fixes
-            if (!isset($optionsArr['pubKeyCredParams']) || empty($optionsArr['pubKeyCredParams'])) {
+            // user.displayName: Google Password Manager rejects Cyrillic/non-ASCII
+            // Always use the username (ASCII) as displayName
+            $optionsArr['user']['displayName'] = $asciiName;
+
+            // user.id: must be stable random bytes, NOT a sequential integer
+            // We generate a stable base64url ID from a HMAC of the user's DB id
+            // This is consistent across registrations for the same user
+            $stableKey = hash_hmac('sha256', 'passkey-user-id:' . $user->id, config('app.key'), true);
+            $optionsArr['user']['id'] = rtrim(strtr(base64_encode(substr($stableKey, 0, 32)), '+/', '-_'), '=');
+
+            // Ensure pubKeyCredParams is populated
+            if (empty($optionsArr['pubKeyCredParams'])) {
                 $optionsArr['pubKeyCredParams'] = [
                     ['type' => 'public-key', 'alg' => -7],   // ES256
                     ['type' => 'public-key', 'alg' => -257], // RS256
                 ];
             }
             $optionsArr['attestation'] = 'none';
-            // Android often requires an explicit timeout
-            if (!isset($optionsArr['timeout'])) {
-                $optionsArr['timeout'] = 60000;
-            }
+            $optionsArr['timeout'] = 60000;
 
             $optionsJson = json_encode($optionsArr);
         }
