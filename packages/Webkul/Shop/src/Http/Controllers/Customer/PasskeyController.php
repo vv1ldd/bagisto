@@ -225,6 +225,14 @@ class PasskeyController extends Controller
                 'device_name' => $deviceName,
             ]);
 
+            if (!Auth::guard('customer')->check() && $linkingFlow) {
+                Auth::guard('customer')->login($user);
+                session()->forget('link_user_id');
+                
+                // Track login activity
+                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($user);
+            }
+
             return response()->json(['message' => 'Passkey registered successfully.']);
         } catch (\Exception $e) {
             $message = $e->getMessage();

@@ -103,8 +103,8 @@ class RegistrationController extends Controller
 
             Event::dispatch('customer.registration.after', $customer);
 
-            // Log them in immediately so passkey registration can proceed
-            auth()->guard('customer')->login($customer);
+            // Store in session for Passkey creation, but do NOT log in yet
+            session(['link_user_id' => $customer->id]);
         }
         
         // Return passkey options via the PasskeyController logic
