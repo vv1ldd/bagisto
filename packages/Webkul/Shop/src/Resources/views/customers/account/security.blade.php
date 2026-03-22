@@ -19,7 +19,7 @@
                     </span>
                     <div class="flex flex-col min-w-0 pr-4">
                         <div class="flex items-center gap-2">
-                            <span class="nav-label">Сид-фраза</span>
+                            <span class="nav-label">Фразы восстановления</span>
                             @if ($hasSeed)
                                 <span class="bg-emerald-100 text-emerald-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">создана</span>
                             @else

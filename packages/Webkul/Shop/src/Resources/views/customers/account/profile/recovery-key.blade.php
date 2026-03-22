@@ -4,7 +4,7 @@
     :has-footer="false"
 >
     <x-slot:title>
-        Сохранение сид-фразы
+        Сохранение фраз восстановления
     </x-slot>
 
     <div class="min-h-screen flex flex-col items-center justify-center bg-[#F0EFFF] py-6 px-4">
@@ -17,7 +17,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
                 </div>
-                <h1 class="text-[#1a0050] text-xl md:text-2xl font-black tracking-tight mb-1">Сид-фраза доступа</h1>
+                <h1 class="text-[#1a0050] text-xl md:text-2xl font-black tracking-tight mb-1">Фразы восстановления</h1>
                 <p class="text-zinc-500 text-sm max-w-xs mx-auto">Единственный способ восстановить доступ.</p>
             </div>
 
@@ -64,7 +64,7 @@
     <script>
         // Warn before tab close/refresh
         window.addEventListener('beforeunload', function (e) {
-            const msg = 'Внимание! Сид-фраза показывается только ОДИН раз. Убедитесь, что вы её сохранили.';
+            const msg = 'Внимание! Фразы восстановления показываются только ОДИН раз. Убедитесь, что вы их сохранили.';
             e.preventDefault();
             e.returnValue = msg;
             return msg;
@@ -80,7 +80,7 @@
         document.addEventListener('click', function(e) {
             const link = e.target.closest('a');
             if (link && link.id !== 'finish-btn' && link.href && !link.href.startsWith('#')) {
-                if (!confirm('Внимание! Сид-фраза показывается только ОДИН раз. Вы уверены, что хотите уйти со страницы?')) {
+                if (!confirm('Внимание! Фразы восстановления показываются только ОДИН раз. Вы уверены, что хотите уйти со страницы?')) {
                     e.preventDefault();
                 }
             }
@@ -89,7 +89,7 @@
         // Prevention for browser "Back" button
         history.pushState(null, null, location.href);
         window.onpopstate = function () {
-            if (confirm('Внимание! Сид-фраза показывается только ОДИН раз. Вы уверены, что хотите уйти со страницы?')) {
+            if (confirm('Внимание! Фразы восстановления показываются только ОДИН раз. Вы уверены, что хотите уйти со страницы?')) {
                 history.back();
             } else {
                 history.pushState(null, null, location.href);
