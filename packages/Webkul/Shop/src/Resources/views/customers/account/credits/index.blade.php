@@ -128,113 +128,110 @@
                         <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">Оплата от юр. лица</div>
                     </div>
                     <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
-                        <span class="icon-arrow-right text-xl"></span>
-                    </div>
-                </button>
-            @endif
-        </div>
-
-        {{-- Step 2: Transactions --}}
         <div id="step-transactions" class="hidden">
-            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
             @if ($transactions->count() > 0)
-                <div class="flex flex-col divide-y divide-zinc-50">
+                <div class="flex flex-col">
                     @foreach ($transactions as $transaction)
-                        @if ($transaction->merged_type === 'order')
-                            {{-- Unified Order Row --}}
-                            <div class="p-5 hover:bg-zinc-50/50 flex items-center justify-between cursor-pointer" 
-                                 onclick="window.location.href='{{ route('shop.customers.account.orders.view', $transaction->id) }}'">
-                                <div class="flex flex-col gap-1.5 min-w-0 pr-4">
+                        @php
+                            $isOrder = ($transaction->merged_type === 'order');
+                            
+                            // Status setup
+                            $status = $transaction->status;
+                            $statusColors = [
+                                'completed'  => 'text-emerald-500 bg-emerald-50',
+                                'pending'    => 'text-amber-500 bg-amber-50',
+                                'processing' => 'text-blue-500 bg-blue-50',
+                                'canceled'   => 'text-red-500 bg-red-50',
+                                'failed'     => 'text-red-500 bg-red-50',
+                            ];
+                            $statusClass = $statusColors[$status] ?? 'text-zinc-400 bg-zinc-50';
+
+                            // Type & Icon setup
+                            if ($isOrder) {
+                                $icon = '📦';
+                                $title = "Заказ #" . $transaction->increment_id;
+                                $subtitle = "Покупка в магазине";
+                                $amount = "-" . core()->formatPrice($transaction->grand_total);
+                                $amountColor = "text-red-500";
+                                $clickUrl = route('shop.customers.account.orders.view', $transaction->id);
+                            } else {
+                                $typeLabels = [
+                                    'deposit'         => ['icon' => '📥', 'label' => 'Пополнение'],
+                                    'withdrawal'      => ['icon' => '📤', 'label' => 'Списание'],
+                                    'purchase'        => ['icon' => '🛍', 'label' => 'Оплата'],
+                                    'refund'          => ['icon' => '💸', 'label' => 'Возврат'],
+                                    'transfer_debit'  => ['icon' => '↔️', 'label' => 'Перевод от вас'],
+                                    'transfer_credit' => ['icon' => '↔️', 'label' => 'Перевод вам'],
+                                    'cashback'        => ['icon' => '💰', 'label' => 'Кэшбек'],
+                                ];
+                                $config = $typeLabels[$transaction->type] ?? ['icon' => '📄', 'label' => $transaction->type];
+                                $icon = $config['icon'];
+                                $title = $config['label'];
+                                $subtitle = $transaction->notes ?: "#" . ($transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A');
+                                
+                                $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
+                                $isDebit = in_array($transaction->type, $debitTypes);
+                                $amount = ($isDebit ? '-' : '+') . core()->formatPrice($transaction->amount);
+                                $amountColor = $isDebit ? "text-red-500" : "text-emerald-500";
+                                $clickUrl = null;
+                            }
+                        @endphp
+
+                        <div class="p-4 border-b border-zinc-50 last:border-0 hover:bg-zinc-50/50 transition-colors {{ $clickUrl ? 'cursor-pointer' : '' }}" 
+                             @if($clickUrl) onclick="window.location.href='{{ $clickUrl }}'" @endif>
+                            <div class="flex items-center gap-4">
+                                {{-- Icon --}}
+                                <div class="w-10 h-10 rounded-xl bg-white border border-zinc-100 flex items-center justify-center text-xl shadow-sm shrink-0">
+                                    {{ $icon }}
+                                </div>
+
+                                {{-- Details --}}
+                                <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2">
-                                        <span class="text-[15px] font-black text-zinc-900 uppercase tracking-tight truncate">Заказ #{{ $transaction->increment_id }}</span>
-                                        @php
-                                            $orderStatusColors = [
-                                                'completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                                                'pending'   => 'bg-amber-50 text-amber-600 border-amber-100',
-                                                'processing'=> 'bg-blue-50 text-blue-600 border-blue-100',
-                                                'canceled'  => 'bg-red-50 text-red-600 border-red-100',
-                                            ];
-                                            $orderStatusClass = $orderStatusColors[$transaction->status] ?? 'bg-zinc-50 text-zinc-500 border-zinc-100';
-                                        @endphp
-                                        <span class="text-[9px] px-1.5 py-0.5 border {{ $orderStatusClass }} uppercase tracking-[0.2em] font-black shrink-0">
-                                            {{ $transaction->status }}
+                                        <span class="text-[14px] font-black text-[#1a0050] uppercase tracking-tight italic truncate">
+                                            {{ $title }}
+                                        </span>
+                                        <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest {{ $statusClass }}">
+                                            {{ $status }}
                                         </span>
                                     </div>
-                                    <div class="text-[12px] text-zinc-500 leading-tight">Покупка в магазине</div>
-                                    <div class="text-[11px] text-zinc-400 font-medium">
+                                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5 truncate">
+                                        {{ $subtitle }}
+                                    </div>
+                                    <div class="text-[9px] text-zinc-300 font-medium uppercase tracking-tighter mt-1">
                                         {{ $transaction->created_at->format('d.m.Y — H:i') }}
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    <div class="text-right shrink-0">
-                                        <div class="text-[16px] font-black font-mono text-red-500 tracking-tight">
-                                            -{{ core()->formatPrice($transaction->grand_total) }}
-                                        </div>
-                                        <div class="text-[10px] text-zinc-400 font-black mt-0.5 uppercase tracking-[0.1em]">
-                                            BAGISTO SHOP</div>
+
+                                {{-- Amount --}}
+                                <div class="text-right shrink-0">
+                                    <div class="text-[15px] font-black font-mono {{ $amountColor }} tracking-tighter whitespace-nowrap">
+                                        {{ $amount }}
+                                    </div>
+                                    <div class="text-[9px] text-zinc-300 font-black uppercase tracking-widest mt-0.5">
+                                        {{ $isOrder ? 'Shop Order' : 'Wallet' }}
                                     </div>
                                 </div>
                             </div>
-                        @else
-                            {{-- Original Transaction Row --}}
-                            <div class="p-5 hover:bg-zinc-50/50 flex items-center justify-between">
-                                <div class="flex flex-col gap-1.5 min-w-0 pr-4">
-                                    <div class="flex items-center gap-2">
-                                        @php
-                                            $typeLabels = ['deposit' => 'Пополнение', 'withdrawal' => 'Списание', 'purchase' => 'Оплата', 'refund' => 'Возврат', 'transfer_debit' => 'Перевод от вас', 'transfer_credit' => 'Перевод вам', 'cashback' => '💸 Кэшбек'];
-                                            $typeLabel = $typeLabels[$transaction->type] ?? $transaction->type;
-                                            $statusColors = ['completed' => 'bg-emerald-50 text-emerald-600 border-emerald-100', 'pending' => 'bg-amber-50 text-amber-600 border-amber-100', 'failed' => 'bg-red-50 text-red-600 border-red-100'];
-                                            $statusClass = $statusColors[$transaction->status] ?? 'bg-zinc-50 text-zinc-500 border-zinc-100';
-                                        @endphp
-                                        <span
-                                            class="text-[15px] font-black text-zinc-900 uppercase tracking-tight truncate">{{ $typeLabel }}</span>
-                                        <span
-                                            class="text-[9px] px-1.5 py-0.5 border {{ $statusClass }} uppercase tracking-[0.2em] font-black shrink-0">{{ $transaction->status }}</span>
-                                    </div>
-                                    @if($transaction->notes)
-                                        <div class="text-[12px] text-zinc-500 leading-tight">{{ $transaction->notes }}</div>
-                                    @endif
-                                    <div class="text-[11px] text-zinc-400 font-medium">
-                                        {{ $transaction->created_at->format('d.m.Y — H:i') }}
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4">
-                                    @if (in_array($transaction->type, ['transfer_debit', 'transfer_credit']))
-                                        @php
-                                            $targetId = $transaction->type === 'transfer_debit'
-                                                ? ($transaction->metadata['recipient_id'] ?? null)
-                                                : ($transaction->metadata['sender_id'] ?? null);
-                                            $targetAlias = $transaction->type === 'transfer_debit'
-                                                ? ($transaction->metadata['recipient_alias'] ?? 'User')
-                                                : ($transaction->metadata['sender_alias'] ?? 'User');
-                                        @endphp
-
-                                    @endif
-
-                                    <div class="text-right shrink-0">
-                                        @php
-                                            $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
-                                            $isDebit = in_array($transaction->type, $debitTypes);
-                                            $sign = $isDebit ? '-' : '+';
-                                            $colorClass = $isDebit ? 'text-red-500' : 'text-emerald-500';
-                                        @endphp
-                                        <div class="text-[16px] font-black font-mono {{ $colorClass }} tracking-tight">
-                                            {{ $sign }}{{ core()->formatPrice($transaction->amount) }}
-                                        </div>
-                                        <div class="text-[10px] text-zinc-400 font-black mt-0.5 uppercase tracking-[0.1em]">
-                                            #{{ $transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A' }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     @endforeach
                 </div>
-                <div class="p-6 border-t border-zinc-50">
-                    {{ $transactions->links() }}
-                </div>
+
+                @if ($transactions->hasPages())
+                    <div class="p-6 border-t border-zinc-50">
+                        {{ $transactions->links() }}
+                    </div>
+                @endif
             @else
                 <div class="flex flex-col items-center justify-center py-24 text-zinc-400 px-10 text-center">
-                    <div class="w-20 h-20 bg-zinc-50  flex items-center justify-center mb-6 shadow-inner text-3xl">
+                    <div class="w-20 h-20 bg-zinc-50 flex items-center justify-center mb-6 shadow-inner text-3xl rounded-3xl">
+                        📭
+                    </div>
+                    <p class="text-[15px] font-black text-[#1a0050] uppercase tracking-tighter italic">История пуста</p>
+                    <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-2">Здесь будут отображаться ваши операции</p>
+                </div>
+            @endif
+        </div>nter justify-center mb-6 shadow-inner text-3xl">
                         📭</div>
                     <p class="text-[17px] font-black text-zinc-700 tracking-tight">Транзакций не найдено</p>
                 </div>
