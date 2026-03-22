@@ -130,24 +130,22 @@
                     
                     var options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
-                    // --- Force Resident Keys for Passkeys ---
+                    // Force Passkey requirements
                     if (!options.authenticatorSelection) {
                         options.authenticatorSelection = {};
                     }
                     options.authenticatorSelection.residentKey = 'required';
                     options.authenticatorSelection.requireResidentKey = true;
-                    options.authenticatorSelection.userVerification = 'required';
-
-                    btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
-                    
-                    // Force Resident Keys (Ensure it's really there)
-                    if (!options.authenticatorSelection) options.authenticatorSelection = {};
-                    options.authenticatorSelection.residentKey = 'required';
-                    options.authenticatorSelection.requireResidentKey = true;
                     options.authenticatorSelection.userVerification = 'preferred';
 
-                    // Step 3: Trigger Browser Prompt using SimpleWebAuthn
+                    console.log('[Passkey] RP ID:', options.rp ? options.rp.id : 'N/A');
+                    console.log('[Passkey] User:', JSON.stringify(options.user));
+                    console.log('[Passkey] authenticatorSelection:', JSON.stringify(options.authenticatorSelection));
                     console.log('[Passkey] Starting registration with options:', options);
+
+                    btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
+
+                    // Trigger Browser Prompt using SimpleWebAuthn
                     const attResp = await SimpleWebAuthn.startRegistration(options);
                     console.log('[Passkey] Credential created:', attResp);
                     
