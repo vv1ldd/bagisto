@@ -15,7 +15,7 @@
     "name": "vue"
   },
   "src/Resources/assets/css/app.css": {
-    "file": "assets/app-COONlnHu.css",
+    "file": "assets/app-BcekSxVB.css",
     "src": "src/Resources/assets/css/app.css",
     "isEntry": true
   },
@@ -96,7 +96,7 @@
     "src": "src/Resources/assets/images/wishlist.png"
   },
   "src/Resources/assets/js/app.js": {
-    "file": "assets/app-C8Qzhi3-.js",
+    "file": "assets/app-Uf7B0po9.js",
     "name": "app",
     "src": "src/Resources/assets/js/app.js",
     "isEntry": true,
@@ -106,7 +106,7 @@
       "_veeValidate-D4V7J_JP.js"
     ],
     "css": [
-      "assets/app-BTrsSETB.css"
+      "assets/app-DvxTawQK.css"
     ]
   }
 }

@@ -44,18 +44,7 @@
                 Участник получит письмо со ссылкой на защищенную комнату
             </p>
 
-            <div class="mt-8 pt-8 border-t border-white/5 flex flex-col gap-4">
-                <div class="flex items-center justify-between bg-black/40 rounded-2xl p-4 border border-white/10 group hover:border-[#7C45F5]/30 transition-all">
-                    <div class="overflow-hidden">
-                        <div class="text-[8px] font-black uppercase tracking-widest text-zinc-500 mb-1">Ваша ссылка на комнату</div>
-                        <div class="text-[10px] text-zinc-300 truncate font-mono">{{ roomUrl }}</div>
-                    </div>
-                    <button @click="copyLink" 
-                            class="flex-shrink-0 ml-4 px-6 py-3 bg-white/5 hover:bg-[#7C45F5] text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2">
-                        <span>{{ copied ? 'Скопировано! ✅' : 'Скопировать' }}</span>
-                    </button>
-                </div>
-            </div>
+
         </div>
     </div>
 </template>
@@ -69,7 +58,6 @@ export default {
             email: '',
             isSubmitting: false,
             roomUuid: this.generateUuid(),
-            copied: false
         }
     },
 
@@ -103,15 +91,7 @@ export default {
             });
         },
 
-        async copyLink() {
-            try {
-                await navigator.clipboard.writeText(this.roomUrl);
-                this.copied = true;
-                setTimeout(() => this.copied = false, 3000);
-            } catch (err) {
-                console.error('Copy failed', err);
-            }
-        }
+
     }
 }
 </script>
