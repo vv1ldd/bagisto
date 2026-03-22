@@ -70,16 +70,20 @@
     @push('scripts')
         <script>
             let checkTimeout;
-            const nicknameInput = document.getElementById('nickname-input');
-            const nicknameIcon = document.getElementById('nickname-icon');
-            const nicknameStatus = document.getElementById('nickname-status');
-            const registerBtn = document.getElementById('start-registration-btn');
-
             let isUsernameValid = false;
             let isChecking = false;
 
-            nicknameInput.addEventListener('input', function() {
+            document.addEventListener('input', function(e) {
+                if (e.target && e.target.id === 'nickname-input') {
+                    handleNicknameInput(e.target);
+                }
+            });
+
+            function handleNicknameInput(inputEl) {
                 clearTimeout(checkTimeout);
+                
+                const nicknameIcon = document.getElementById('nickname-icon');
+                const nicknameStatus = document.getElementById('nickname-status');
                 
                 // reset visual
                 nicknameIcon.className = 'ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-0 transition-opacity text-sm';
@@ -89,7 +93,7 @@
                 isUsernameValid = false;
                 updateButtonState();
 
-                const val = this.value.trim();
+                const val = inputEl.value.trim();
                 if (!val) return;
 
                 if (!/^[a-zA-Z0-9_\-\.]{3,30}$/.test(val)) {
@@ -133,23 +137,33 @@
                     }
                     updateButtonState();
                 }, 500); // 500ms debounce
-            });
+            }
 
             function showStatus(iconHTML, text, type) {
-                nicknameIcon.innerHTML = iconHTML;
-                nicknameIcon.className = 'ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-100 transition-opacity text-sm';
+                const nicknameIcon = document.getElementById('nickname-icon');
+                const nicknameStatus = document.getElementById('nickname-status');
+
+                if (nicknameIcon) {
+                    nicknameIcon.innerHTML = iconHTML;
+                    nicknameIcon.className = 'ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-100 transition-opacity text-sm';
+                }
                 
-                if (text) {
-                    nicknameStatus.textContent = text;
-                    nicknameStatus.className = `text-xs mt-2 text-center font-medium ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`;
-                    nicknameStatus.classList.remove('hidden');
-                } else {
-                    nicknameStatus.classList.add('hidden');
+                if (nicknameStatus) {
+                    if (text) {
+                        nicknameStatus.textContent = text;
+                        nicknameStatus.className = `text-xs mt-2 text-center font-medium ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`;
+                        nicknameStatus.classList.remove('hidden');
+                    } else {
+                        nicknameStatus.classList.add('hidden');
+                    }
                 }
             }
 
             function updateButtonState() {
-                registerBtn.disabled = !isUsernameValid || isChecking;
+                const registerBtn = document.getElementById('start-registration-btn');
+                if (registerBtn) {
+                    registerBtn.disabled = !isUsernameValid || isChecking;
+                }
             }
 
             /**
@@ -164,7 +178,7 @@
                 const btn = document.getElementById('start-registration-btn');
                 const originalText = btn.innerHTML;
                 
-                const nickname = nicknameInput.value.trim();
+                const nickname = document.getElementById('nickname-input').value.trim();
 
                 if (!window.PublicKeyCredential) {
                     alert('Ваш браузер не поддерживает Passkey. Пожалуйста, используйте современный браузер.');
