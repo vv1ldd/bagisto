@@ -74,7 +74,15 @@ class CreditController extends Controller
 
         $defaultBillingEntity = $this->billingEntityRepository->skipCache()->getDefault();
 
-        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations', 'defaultBillingEntity'));
+        $allAssets = [
+            'bitcoin' => ['icon' => '₿'],
+            'ethereum' => ['icon' => 'Ξ'],
+            'ton' => ['icon' => '💎'],
+            'usdt_ton' => ['icon' => '₮'],
+            'dash' => ['icon' => 'Đ']
+        ];
+
+        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations', 'defaultBillingEntity', 'allAssets'));
     }
 
     /**
