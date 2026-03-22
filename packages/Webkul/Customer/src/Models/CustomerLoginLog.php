@@ -20,6 +20,7 @@ class CustomerLoginLog extends Model implements CustomerLoginLogContract
         'browser',
         'last_active_at',
         'logged_out_at',
+        'event_type',
     ];
 
     protected $appends = ['location'];

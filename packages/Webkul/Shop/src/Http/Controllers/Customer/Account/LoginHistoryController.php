@@ -35,6 +35,7 @@ class LoginHistoryController extends Controller
         $activeSessions = $this->customerLoginLogRepository
             ->scopeQuery(function ($query) use ($customer, $lifetime) {
                 return $query->where('customer_id', $customer->id)
+                    ->where('event_type', 'login')
                     ->where('logged_out_at', null)
                     ->where('last_active_at', '>=', now()->subMinutes($lifetime));
             })->get();

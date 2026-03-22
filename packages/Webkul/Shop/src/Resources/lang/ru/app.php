@@ -82,7 +82,7 @@ return [
             ],
 
             'login-activity' => [
-                'title' => 'Активность входа',
+                'title' => 'История активности',
                 'active-sessions' => 'Активные сессии',
                 'login-history' => 'История входов',
                 'revoke-failed' => 'Не удалось отозвать сессию.',
@@ -1268,7 +1268,7 @@ return [
         'reviews' => 'Отзывы',
         'wishlist' => 'Список желаний',
         'passkeys' => 'Ключи доступа',
-        'login-activity' => 'Активность входа',
+        'login-activity' => 'История активности',
     ],
 
     'subscription' => [

@@ -61,6 +61,40 @@ class CustomerLoginLogRepository extends Repository
     }
 
     /**
+     * Log a specific event for a customer.
+     *
+     * @param  \Webkul\Customer\Models\Customer  $customer
+     * @param  string  $eventType
+     * @param  array   $details
+     * @return void
+     */
+    public function logEvent($customer, $eventType, $details = [])
+    {
+        $userAgent = request()->userAgent();
+
+        $currentIp = request()->header('CF-Connecting-IP')
+            ?? request()->header('X-Forwarded-For')
+            ?? request()->header('X-Real-IP')
+            ?? request()->ip();
+
+        if (str_contains($currentIp, ',')) {
+            $currentIp = trim(explode(',', $currentIp)[0]);
+        }
+
+        $this->create(array_merge([
+            'customer_id'    => $customer->id,
+            'session_id'     => session()->getId(),
+            'ip_address'     => $currentIp,
+            'user_agent'     => $userAgent,
+            'device_name'    => $this->getDeviceName($userAgent),
+            'platform'       => $this->getPlatform($userAgent),
+            'browser'        => $this->getBrowser($userAgent),
+            'last_active_at' => now(),
+            'event_type'     => $eventType,
+        ], $details));
+    }
+
+    /**
      * Track activity for the current session.
      *
      * @param  \Webkul\Customer\Models\Customer  $customer

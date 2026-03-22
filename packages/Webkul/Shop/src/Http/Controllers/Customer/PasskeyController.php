@@ -155,6 +155,11 @@ class PasskeyController extends Controller
             Cookie::queue('device_trust_token', $cookieToken, 60 * 24 * 365);
             // ------------------------------
 
+            // Log activity
+            app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->logEvent($user, 'passkey_registered', [
+                'device_name' => $deviceName,
+            ]);
+
             return response()->json(['message' => 'Passkey registered successfully.']);
         } catch (\Exception $e) {
             $message = $e->getMessage();
@@ -199,7 +204,13 @@ class PasskeyController extends Controller
         $user = Auth::guard('customer')->user();
 
         $passkey = $user->passkeys()->findOrFail($id);
+        $deviceName = $passkey->name;
         $passkey->delete();
+
+        // Log activity
+        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->logEvent($user, 'passkey_deleted', [
+            'device_name' => $deviceName,
+        ]);
 
         session()->flash('success', 'Passkey deleted successfully.');
 
