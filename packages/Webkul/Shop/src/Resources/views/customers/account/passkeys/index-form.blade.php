@@ -76,9 +76,11 @@
 
                     <!-- Passkeys & Trusted Devices -->
                     <div class="mb-10">
-                        <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
-                            Passkeys & Безопасность
-                        </h3>
+                        @if (!($isOnboarding ?? false))
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
+                                Passkeys & Безопасность
+                            </h3>
+                        @endif
 
                         <div class="nav-grid">
                             @if ($customer->passkeys->count())

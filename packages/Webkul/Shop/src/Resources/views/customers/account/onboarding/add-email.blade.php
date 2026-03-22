@@ -18,7 +18,7 @@
                     </svg>
                 </div>
                 <h1 class="text-2xl font-black tracking-tight mb-2">Привязать почту</h1>
-                <p class="text-zinc-500 text-sm text-center">Она понадобится для восстановления доступа и важных уведомлений</p>
+                <p class="text-zinc-500 text-sm text-center">Она понадобится для получения кодов активации и цифровых товаров</p>
             </div>
 
             <form @submit.prevent="submitEmail" id="email-form">
