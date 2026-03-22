@@ -77,14 +77,7 @@
                 </div>
             @endforeach
 
-            {{-- Action: History --}}
-            <button onclick="switchStep('transactions')" class="nav-tile p-6 hover:border-[#7C45F5] group">
-                <div class="w-12 h-12 bg-zinc-50 text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
-                    📜
-                </div>
-                <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">История</div>
-                <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Транзакции</div>
-            </button>
+
 
             @if ($user->is_b2b_enabled)
                 {{-- Action: Companies --}}
@@ -100,53 +93,39 @@
             {{-- Deposit Options Section Title --}}
             <div class="col-span-2 mt-2 px-2 flex items-center justify-between">
                 <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] opacity-80">Способы пополнения</span>
-                @if(!$user->is_investor)
-                    <span class="text-[9px] font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 border border-amber-200">Доступно инвесторам</span>
-                @endif
             </div>
 
-            @if($user->is_investor)
-                {{-- Crypto Option (Full Width) --}}
-                <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
-                    <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
-                        🪙
-                    </div>
-                    <div class="flex flex-col items-start flex-1">
-                        <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Криптовалюта</div>
-                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">USDT, TON, BTC, ETH</div>
-                    </div>
-                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
-                        <span class="icon-arrow-right text-xl"></span>
-                    </div>
-                </button>
-
-                {{-- B2B Option (Half) --}}
-                <button onclick="goToB2BManagement()" class="nav-tile p-6 hover:border-[#7C45F5] group">
-                    <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
-                        🏢
-                    </div>
-                    <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для компаний</div>
-                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Оплата от юр. лица</div>
-                </button>
-
-                {{-- B2C Option (Half) --}}
-                <button onclick="goToB2CManagement()" class="nav-tile p-6 hover:border-[#7C45F5] group">
-                    <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
-                        👤
-                    </div>
-                    <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для физ. лиц</div>
-                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">По реквизитам</div>
-                </button>
-            @else
-                {{-- Disabled state for non-investors --}}
-                <div class="col-span-2 nav-tile !flex-row p-6 bg-zinc-50 border-zinc-100 text-zinc-400 cursor-not-allowed opacity-60 !justify-center gap-3">
-                    <span class="text-2xl">🔒</span>
-                    <div class="flex flex-col items-start translate-y-[1px]">
-                        <span class="text-[15px] font-black uppercase tracking-tighter italic leading-none">Пополнить баланс</span>
-                        <span class="text-[9px] font-bold uppercase tracking-[0.2em] leading-none mt-1">У вас пока нет доступа</span>
-                    </div>
+            {{-- Crypto Option (Full Width) --}}
+            <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
+                <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
+                    🪙
                 </div>
-            @endif
+                <div class="flex flex-col items-start flex-1">
+                    <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Криптовалюта</div>
+                    <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">USDT, TON, BTC, ETH</div>
+                </div>
+                <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
+                    <span class="icon-arrow-right text-xl"></span>
+                </div>
+            </button>
+
+            {{-- B2B Option (Half) --}}
+            <button onclick="goToB2BManagement()" class="nav-tile p-6 hover:border-[#7C45F5] group">
+                <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
+                    🏢
+                </div>
+                <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для компаний</div>
+                <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Оплата от юр. лица</div>
+            </button>
+
+            {{-- B2C Option (Half) --}}
+            <button onclick="goToB2CManagement()" class="nav-tile p-6 hover:border-[#7C45F5] group">
+                <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
+                    👤
+                </div>
+                <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для физ. лиц</div>
+                <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">По реквизитам</div>
+            </button>
         </div>
 
         {{-- Step 2: Transactions --}}
