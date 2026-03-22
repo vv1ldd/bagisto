@@ -275,14 +275,36 @@ class PasskeyController extends Controller
         }
 
         try {
+            $credentialResponse = $request->input('start_authentication_response');
+            
+            if (is_string($credentialResponse)) {
+                $decoded = json_decode($credentialResponse, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $credentialResponse = $decoded;
+                } else {
+                    Log::warning('Passkey login: Failed to decode start_authentication_response string', [
+                        'raw' => substr($credentialResponse, 0, 100) . '...'
+                    ]);
+                }
+            }
+
+            Log::debug('Passkey login: Final credential response for validation', [
+                'type' => gettype($credentialResponse),
+                'is_array' => is_array($credentialResponse),
+                'has_id' => is_array($credentialResponse) && isset($credentialResponse['id']),
+            ]);
+
             $passkey = $findPasskeyAction->execute(
-                $request->input('start_authentication_response'),
+                $credentialResponse,
                 $optionsJson,
             );
 
             if (!$passkey) {
-                Log::warning('Passkey login failed: FindPasskeyAction returned null');
-                return response()->json(['message' => 'Invalid passkey. Device not found or validation failed.'], 400);
+                Log::warning('Passkey login failed: FindPasskeyAction returned null', [
+                    'user_id' => auth()->guard('customer')->id() ?? 'guest',
+                    'credential_id' => $credentialResponse['id'] ?? 'N/A',
+                ]);
+                return response()->json(['message' => 'Invalid passkey. Device not found or validation failed.'], 401);
             }
 
             $user = $passkey->authenticatable;

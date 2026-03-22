@@ -81,27 +81,6 @@
                     }
                 })();
 
-                // Passkey helpers 
-                function _b64ToUint8Array(base64) {
-                    if (!base64) return new Uint8Array(0);
-                    var padding = '='.repeat((4 - base64.length % 4) % 4);
-                    var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                    var rawData = window.atob(b64);
-                    var outputArray = new Uint8Array(rawData.length);
-                    for (var i = 0; i < rawData.length; ++i) {
-                        outputArray[i] = rawData.charCodeAt(i);
-                    }
-                    return outputArray;
-                }
-
-                function _bufToBase64URL(buffer) {
-                    var binary = '';
-                    var bytes = new Uint8Array(buffer);
-                    for (var i = 0; i < bytes.byteLength; i++) {
-                        binary += String.fromCharCode(bytes[i]);
-                    }
-                    return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-                }
 
                 /**
                  * Handle Passkey Login
@@ -112,14 +91,12 @@
                         e.stopPropagation();
                     }
 
-                    console.log('[Passkey] handlePasskeyLogin started');
-
+                    const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
                     var button = document.getElementById('passkey-login-button');
                     var originalContent = button.innerHTML;
 
                     if (!window.PublicKeyCredential) {
-                        console.error('[Passkey] PublicKeyCredential not supported');
-                        alert('Ваш браузер или соединение (требуется HTTPS) не поддерживают Passkey.');
+                        alert('Ваш браузер не поддерживает Passkey.');
                         return;
                     }
 
@@ -127,7 +104,6 @@
                     button.innerText = 'Подготовка...';
 
                     try {
-                        console.log('[Passkey] Fetching options from:', '{{ route('passkeys.login-options') }}');
                         var response = await fetch('{{ route('passkeys.login-options') }}', {
                             method: 'POST',
                             headers: {
@@ -138,57 +114,26 @@
                         });
 
                         if (!response.ok) {
-                            var errText = await response.text();
-                            console.error('[Passkey] Options error:', response.status, errText);
                             throw new Error('Ошибка связи с сервером (' + response.status + ')');
                         }
 
-                        var options = await response.json();
-                        console.log('[Passkey] Received options:', options);
+                        var rawOptions = await response.json();
+                        var options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
-                        if (!options || !options.challenge) {
-                            throw new Error('Сервер прислал некорректные данные (нет challenge).');
-                        }
-
-                        // Convert base64 to buffer
-                        options.challenge = _b64ToUint8Array(options.challenge);
-                        if (options.allowCredentials) {
-                            options.allowCredentials.forEach(function (cred) {
-                                cred.id = _b64ToUint8Array(cred.id);
-                            });
+                        // --- Domain/RP Check ---
+                        const currentDomain = window.location.hostname;
+                        if (options.rpId && options.rpId !== currentDomain) {
+                            console.warn('[Passkey] RP ID mismatch. Server sent:', options.rpId, 'Current domain:', currentDomain);
                         }
 
                         button.innerText = 'Подтвердите личность...';
-                        console.log('[Passkey] Calling navigator.credentials.get with options:', options);
 
-                        var credential = await navigator.credentials.get({
-                            publicKey: options
-                        });
-
-                        if (!credential) {
-                            console.warn('[Passkey] No credential returned (user likely cancelled)');
-                            throw new Error('Операция отменена пользователем.');
-                        }
-
-                        console.log('[Passkey] Credential obtained, id:', credential.id);
+                        // Use SimpleWebAuthn library
+                        var asseResp = await SimpleWebAuthn.startAuthentication(options);
+                        console.log('[Passkey] Authentication response obtained:', asseResp);
+                        
                         button.innerText = 'Проверка...';
 
-                        var payload = {
-                            start_authentication_response: JSON.stringify({
-                                id: credential.id,
-                                rawId: _bufToBase64URL(credential.rawId),
-                                response: {
-                                    clientDataJSON: _bufToBase64URL(credential.response.clientDataJSON),
-                                    authenticatorData: _bufToBase64URL(credential.response.authenticatorData),
-                                    signature: _bufToBase64URL(credential.response.signature),
-                                    userHandle: credential.response.userHandle ? _bufToBase64URL(credential.response.userHandle) : null,
-                                },
-                                type: credential.type,
-                                clientExtensionResults: credential.getClientExtensionResults() || {},
-                            })
-                        };
-
-                        console.log('[Passkey] Sending authentication payload to server...');
                         var loginResponse = await fetch('{{ route('passkeys.login') }}', {
                             method: 'POST',
                             headers: {
@@ -196,20 +141,21 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Accept': 'application/json'
                             },
-                            body: JSON.stringify(payload)
+                            body: JSON.stringify({
+                                start_authentication_response: asseResp,
+                                remember: true
+                            })
                         });
 
                         var result = await loginResponse.json();
-                        console.log('[Passkey] Login result:', result);
-
                         if (loginResponse.ok) {
                             window.location.href = result.redirect_url || '{{ route('shop.customers.account.index') }}';
                         } else {
-                            throw new Error(result.message || 'Ошибка проверки Passkey на сервере.');
+                            throw new Error(result.message || 'Ошибка входа.');
                         }
                     } catch (err) {
-                        console.error('[Passkey] Error during login flow:', err.name, err.message);
-                        if (err.name !== 'NotAllowedError' && err.message !== 'Операция отменена пользователем.') {
+                        console.error('[Passkey] Error:', err);
+                        if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
                             alert(err.message);
                         }
                     } finally {
