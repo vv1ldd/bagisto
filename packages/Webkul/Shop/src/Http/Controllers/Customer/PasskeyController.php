@@ -60,6 +60,9 @@ class PasskeyController extends Controller
         // Ensure user name and display name are present (Chrome mobile is strict)
         $optionsArr = json_decode($optionsJson, true);
         if (isset($optionsArr['user'])) {
+            // Chrome/Android can be picky about ID type and length
+            $optionsArr['user']['id'] = (string) ($optionsArr['user']['id'] ?? $user->id);
+            
             if (empty($optionsArr['user']['name'])) {
                 $optionsArr['user']['name'] = $user->username ?? $user->email ?? 'User-' . $user->id;
             }
@@ -67,12 +70,23 @@ class PasskeyController extends Controller
                 $optionsArr['user']['displayName'] = ($user->first_name ?? 'User') . ' ' . ($user->last_name ?? '');
                 $optionsArr['user']['displayName'] = trim($optionsArr['user']['displayName']) ?: $optionsArr['user']['name'];
             }
+
+            // Chrome/Android fixes
+            if (!isset($optionsArr['pubKeyCredParams']) || empty($optionsArr['pubKeyCredParams'])) {
+                $optionsArr['pubKeyCredParams'] = [
+                    ['type' => 'public-key', 'alg' => -7],   // ES256
+                    ['type' => 'public-key', 'alg' => -257], // RS256
+                ];
+            }
+            $optionsArr['attestation'] = 'none';
+
             $optionsJson = json_encode($optionsArr);
         }
 
         Log::info('Passkey registration options generated', [
             'user_id' => $user->id,
-            'linking_flow' => $linkingFlow,
+            'user_id_in_options' => $optionsArr['user']['id'] ?? 'N/A',
+            'rp_id' => $optionsArr['rp']['id'] ?? config('passkeys.relying_party.id'),
             'user_name' => $optionsArr['user']['name'] ?? 'N/A',
             'session_id' => session()->getId(),
         ]);
@@ -274,7 +288,8 @@ class PasskeyController extends Controller
     {
         // Force correct RP ID at runtime
         $currentHost = request()->getHost();
-        if (config('passkeys.relying_party.id') === 'localhost' || config('passkeys.relying_party.id') === '127.0.0.1') {
+        $rpId = config('passkeys.relying_party.id');
+        if (empty($rpId) || $rpId === 'localhost' || $rpId === '127.0.0.1') {
             config(['passkeys.relying_party.id' => $currentHost]);
         }
 
