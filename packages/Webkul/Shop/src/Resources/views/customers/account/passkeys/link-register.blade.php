@@ -7,11 +7,25 @@
         Привязка устройства
     </x-slot>
 
-    <div class="min-h-screen flex flex-col items-center justify-center bg-[#F0EFFF] py-12 px-4 text-[#1a0050]">
+    <div class="h-[100dvh] w-full flex flex-col items-center justify-center bg-[#F0EFFF] px-4 text-[#1a0050] overflow-hidden">
         
-        <div class="w-full max-w-[440px] bg-white rounded-[32px] p-8 md:p-10 shadow-2xl shadow-purple-500/10 border border-[#e2d9ff]">
-            
-            <div class="mb-8 flex flex-col items-center">
+        {{-- Logo Section --}}
+        <div class="mb-8 flex flex-col items-center">
+            <div class="relative w-16 h-16 flex items-center justify-center">
+                <!-- Meanly Logo Replacement -->
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#7C45F5"/>
+                    <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16Z" fill="#7C45F5"/>
+                </svg>
+            </div>
+            <div class="h-1 w-8 bg-[#7C45F5] mt-2"></div>
+        </div>
+
+        <div class="w-full max-w-[440px] bg-white rounded-[32px] p-8 md:p-10 shadow-2xl shadow-purple-500/10 border border-[#e2d9ff] relative overflow-hidden">
+            {{-- Decoration --}}
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>
+
+            <div class="mb-8 flex flex-col items-center relative z-10">
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#F0EFFF] mb-6">
                     <svg class="w-8 h-8 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
@@ -21,7 +35,7 @@
                 <p class="text-zinc-500 text-sm text-center">Вы привязываете это устройство к аккаунту <span class="font-bold text-[#7C45F5] uppercase tracking-tighter">{{ $user->username }}</span></p>
             </div>
 
-            <div class="w-full space-y-6">
+            <div class="w-full space-y-6 relative z-10">
                 <button id="register-device-btn"
                     class="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#7C45F5] px-8 py-5 text-center text-sm font-black text-white shadow-xl shadow-[#7C45F5]/30 transition-all hover:bg-[#6534d4] active:scale-[0.98] group uppercase tracking-wider">
                     <span id="btn-text">ПРИВЯЗАТЬ УСТРОЙСТВО</span>
@@ -47,7 +61,12 @@
             if (!btn) return;
 
             btn.addEventListener('click', async () => {
-                const { startRegistration } = window.SimpleWebAuthnBrowser;
+                const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
+
+                if (!SimpleWebAuthn) {
+                    alert('Ошибка: Библиотека WebAuthn не загружена. Пожалуйста, обновите страницу.');
+                    return;
+                }
 
                 if (!window.PublicKeyCredential) {
                     alert('Ваш браузер не поддерживает Passkey (требуется iOS 16+, Android 9+ или современный браузер Desktop).');
@@ -59,6 +78,7 @@
                 btnText.innerText = 'ПОДГОТОВКА...';
 
                 try {
+                    console.log('Fetching registration options...');
                     const res = await fetch('{{ route('passkeys.register-options') }}', {
                         method: 'POST',
                         headers: { 
@@ -70,12 +90,18 @@
 
                     if (!res.ok) throw new Error('Не удалось получить настройки с сервера.');
                     
-                    const options = await res.json();
+                    const rawOptions = await res.json();
+                    console.log('Raw options received:', rawOptions);
+
+                    // Ensure we have the correct part of the object for SimpleWebAuthn
+                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
                     btnText.innerText = 'ОЖИДАНИЕ...';
 
                     // Start WebAuthn registration
-                    const attResp = await startRegistration(options);
+                    console.log('Starting registration with options:', options);
+                    const attResp = await SimpleWebAuthn.startRegistration(options);
+                    console.log('Registration response:', attResp);
 
                     btnText.innerText = 'СОХРАНЕНИЕ...';
 

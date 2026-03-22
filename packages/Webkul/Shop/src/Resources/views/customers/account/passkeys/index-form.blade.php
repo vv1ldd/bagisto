@@ -209,16 +209,6 @@
                         }
                     };
 
-                    const _u8 = (b64) => {
-                        const padding = '='.repeat((4 - b64.length % 4) % 4);
-                        const b = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                        const bin = window.atob(b);
-                        const arr = new Uint8Array(bin.length);
-                        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-                        return arr;
-                    };
-                    const _b64 = (buf) => window.btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
                     // Show Modal
                     window.showQrModal = async function() {
                         const qrModal = document.getElementById('qr-modal');
@@ -268,6 +258,13 @@
                     });
 
                     window.startPasskeyRegistration = async function (btnElement) {
+                        const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
+
+                        if (!SimpleWebAuthn) {
+                            window.showAlert('error', 'Ошибка', 'Библиотека WebAuthn не загружена. Пожалуйста, обновите страницу.');
+                            return;
+                        }
+
                         if (!window.PublicKeyCredential) {
                             window.showAlert('error', 'Ошибка', 'Ваш браузер не поддерживает Passkey (требуется HTTPS).');
                             return;
@@ -285,7 +282,11 @@
                         try {
                             const response = await fetch('{{ route('passkeys.register-options') }}', {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                                headers: { 
+                                    'Content-Type': 'application/json', 
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                }
                             });
 
                             if (!response.ok) throw new Error('Не удалось получить настройки с сервера.');
@@ -295,36 +296,17 @@
 
                             if (!options || !options.challenge) throw new Error('Некорректные настройки.');
 
-                            options.challenge = _u8(options.challenge);
-                            options.user.id = _u8(options.user.id);
-
-                            if (options.excludeCredentials) {
-                                options.excludeCredentials.forEach(cred => cred.id = _u8(cred.id));
-                            }
-
                             if (buttonText) buttonText.innerText = 'Ожидание устройства...';
 
-                            const credential = await navigator.credentials.create({ publicKey: options });
-                            if (!credential) throw new Error('Отмена пользователем.');
+                            // Start WebAuthn registration
+                            const attResp = await SimpleWebAuthn.startRegistration(options);
 
                             if (buttonText) buttonText.innerText = 'Сохранение...';
-
-                            const registrationData = {
-                                id: credential.id,
-                                rawId: _b64(credential.rawId),
-                                response: {
-                                    clientDataJSON: _b64(credential.response.clientDataJSON),
-                                    attestationObject: _b64(credential.response.attestationObject),
-                                    transports: credential.response.getTransports ? credential.response.getTransports() : [],
-                                },
-                                type: credential.type,
-                                clientExtensionResults: credential.getClientExtensionResults() || {},
-                            };
 
                             const saveRes = await fetch('{{ route('passkeys.register') }}', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                                body: JSON.stringify(registrationData)
+                                body: JSON.stringify(attResp)
                             });
 
                             if (saveRes.ok) {
@@ -343,7 +325,7 @@
                             let title = 'Ошибка';
                             let type = 'error';
 
-                            if (error.name === 'NotAllowedError' || message.includes('отмена') || message.includes('cancelled') || message.includes('Отмена')) {
+                            if (error.name === 'NotAllowedError' || message.includes('отмена') || message.includes('cancelled') || message.includes('Отмена') || error.name === 'AbortError') {
                                 title = 'Отменено';
                                 message = 'Действие отменено пользователем.';
                                 type = 'warning';
