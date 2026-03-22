@@ -172,10 +172,10 @@
                     </div>
 
                     <div class="w-full space-y-3">
-                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="w-full py-4 bg-[#7C45F5] text-white font-bold rounded-xl shadow-lg shadow-[#7C45F5]/30 hover:bg-[#6534d4] transition-all active:scale-[0.98]">
-                            ПРИВЯЗАТЬ ЭТО УСТРОЙСТВО
+                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl shadow-lg shadow-[#7C45F5]/30 hover:bg-[#6b34d4] transition-all active:scale-[0.98] uppercase tracking-wider text-sm">
+                            Привязать это устройство
                         </button>
-                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-400 hover:text-zinc-600 font-bold transition-colors">Закрыть</button>
+                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-400 hover:text-zinc-600 font-bold transition-colors text-sm uppercase tracking-widest">Закрыть</button>
                     </div>
                 </div>
             </div>
