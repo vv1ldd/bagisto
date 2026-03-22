@@ -130,12 +130,13 @@
                     
                     const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
-                    // --- Domain/RP Check ---
-                    const currentDomain = window.location.hostname;
-                    if (options.rp && options.rp.id && options.rp.id !== currentDomain) {
-                        console.warn('[Passkey] RP ID mismatch. Server sent:', options.rp.id, 'Current domain:', currentDomain);
-                        // options.rp.id = currentDomain; 
+                    // --- Force Resident Keys for Passkeys ---
+                    if (!options.authenticatorSelection) {
+                        options.authenticatorSelection = {};
                     }
+                    options.authenticatorSelection.residentKey = 'required';
+                    options.authenticatorSelection.requireResidentKey = true;
+                    options.authenticatorSelection.userVerification = 'required';
 
                     btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
 

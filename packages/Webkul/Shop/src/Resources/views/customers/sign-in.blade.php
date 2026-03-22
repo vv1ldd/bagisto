@@ -142,7 +142,7 @@
                                 'Accept': 'application/json'
                             },
                             body: JSON.stringify({
-                                start_authentication_response: asseResp,
+                                start_authentication_response: JSON.stringify(asseResp),
                                 remember: true
                             })
                         });
