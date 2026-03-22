@@ -343,14 +343,6 @@
                         </svg>
                     </button>
 
-                    <!-- Back Button (Minimizes Overlay) -->
-                    <button @click.stop="isActive = false" 
-                            class="h-12 w-12 md:h-16 md:w-16 bg-white/5 text-white/40 flex items-center justify-center transition-all hover:scale-110 hover:text-white active:scale-90 border border-white/5 backdrop-blur-md">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
-                        </svg>
-                    </button>
-
                     <!-- 5. End Call (Distinct Red) -->
                     <button @click.stop="endCall" 
                             class="h-12 w-12 md:h-16 md:w-16 bg-red-600 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xl border border-red-500/30">
