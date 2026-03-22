@@ -5,6 +5,7 @@ namespace Webkul\Shop\Http\Controllers\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Webkul\Core\Repositories\SubscribersListRepository;
@@ -40,6 +41,33 @@ class RegistrationController extends Controller
         return view('shop::customers.sign-up');
     }
 
+    /**
+     * Check if username is available (live validation).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkUsernameAvailability(Request $request)
+    {
+        $username = $request->input('username');
+
+        if (!$username || !preg_match('/^[a-zA-Z0-9_\-\.]+$/', $username) || strlen($username) < 3 || strlen($username) > 30) {
+            return response()->json(['available' => false, 'message' => 'Некорректный псевдоним']);
+        }
+
+        // Check if exists in DB
+        $exists = $this->customerRepository->where('username', $username)->exists();
+        if ($exists) {
+            return response()->json(['available' => false, 'message' => 'Никнейм занят']);
+        }
+
+        // Check if currently locked in cache by another session
+        $lockKey = 'registration:username:' . strtolower($username);
+        if (Cache::has($lockKey) && Cache::get($lockKey) !== session()->getId()) {
+            return response()->json(['available' => false, 'message' => 'Никнейм регистрируется прямо сейчас']);
+        }
+
+        return response()->json(['available' => true, 'message' => 'Никнейм свободен']);
+    }
 
     /**
      * Prepare for passkey-only registration.
@@ -50,16 +78,29 @@ class RegistrationController extends Controller
     public function passkeyPrepare(Request $request)
     {
         $request->validate([
-            'username' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_\-\.]+$/', 'unique:customers,username'],
+            'username' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_\-\.]+$/'],
         ], [
             'username.required' => 'Укажите псевдоним',
             'username.min' => 'Псевдоним должен содержать от 3 до 30 символов',
             'username.max' => 'Псевдоним должен содержать от 3 до 30 символов',
             'username.regex' => 'Псевдоним может содержать только латиницу, цифры, минус, подчеркивание и точку',
-            'username.unique' => 'Этот псевдоним уже занят',
         ]);
 
         $username = $request->input('username');
+        
+        // 1. Double check DB uniqueness
+        if ($this->customerRepository->where('username', $username)->exists()) {
+             return response()->json(['message' => 'Этот псевдоним уже занят', 'errors' => ['username' => ['Этот псевдоним уже занят']]], 422);
+        }
+
+        // 2. Concurrency Check via Cache Lock
+        $lockKey = 'registration:username:' . strtolower($username);
+        if (Cache::has($lockKey) && Cache::get($lockKey) !== session()->getId()) {
+            return response()->json(['message' => 'Этот псевдоним регистрируется прямо сейчас другим пользователем. Попробуйте другой.', 'errors' => ['username' => ['Этот псевдоним регистрируется прямо сейчас.']]], 422);
+        }
+
+        // Lock for 5 minutes
+        Cache::put($lockKey, session()->getId(), now()->addMinutes(5));
 
         $currentIp = request()->header('CF-Connecting-IP')
             ?? request()->header('X-Forwarded-For')
@@ -70,7 +111,7 @@ class RegistrationController extends Controller
             $currentIp = trim(explode(',', $currentIp)[0]);
         }
 
-        // Create skeleton customer (no seed phrase generated yet - user can do it from dashboard)
+        // Generate data for future insertion
         $customerGroup = core()->getConfigData('customer.settings.create_new_account_options.default_group');
         
         $data = [
@@ -78,8 +119,8 @@ class RegistrationController extends Controller
             'last_name' => '',
             'username' => $username,
             'email' => null, // Allowed per migration
-            'password' => bcrypt(Str::random(40)), // Secure random password, not tied to seed phrase
-            'mnemonic_hash' => null, // Will be set when user chooses to create backup
+            'password' => bcrypt(Str::random(40)),
+            'mnemonic_hash' => null,
             'api_token' => Str::random(80),
             'is_verified' => 1,
             'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,
@@ -91,25 +132,22 @@ class RegistrationController extends Controller
             'subscribed_to_news_letter' => 1,
         ];
 
-        // If already logged in as a placeholder (no email), reuse the account
-        $customer = auth()->guard('customer')->user();
+        // Ensure we don't accidentally reuse an existing placeholder (we want passkeys to correspond 1-to-1)
         
-        if ($customer && is_null($customer->email)) {
-            // Reuse existing placeholder
-        } else {
-            Event::dispatch('customer.registration.before');
-
-            $customer = $this->customerRepository->create($data);
-
-            Event::dispatch('customer.registration.after', $customer);
-
-            // Store in session for Passkey creation, but do NOT log in yet
-            session(['link_user_id' => $customer->id]);
-        }
+        // Abstract a Mock Customer for options generation
+        $mockCustomer = new \Webkul\Customer\Models\Customer($data);
+        $mockCustomer->transient_passkey_id = (string) Str::uuid(); // stable unique ID for WebAuthn challenge
         
+        // Store in session
+        session([
+            'pending_registration_data' => $data,
+            'pending_registration_id' => $mockCustomer->transient_passkey_id
+        ]);
+
         // Return passkey options via the PasskeyController logic
-        return app(\Webkul\Shop\Http\Controllers\Customer\PasskeyController::class)->registerOptions(request(), app(\Spatie\LaravelPasskeys\Actions\GeneratePasskeyRegisterOptionsAction::class));
+        return app(\Webkul\Shop\Http\Controllers\Customer\PasskeyController::class)->registerOptions(request(), app(\Spatie\LaravelPasskeys\Actions\GeneratePasskeyRegisterOptionsAction::class), $mockCustomer);
     }
+
 
     /**
      * Method to store user's sign up form data to DB.

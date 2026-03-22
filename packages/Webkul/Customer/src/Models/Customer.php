@@ -38,6 +38,15 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         return $this->email ?? $this->username;
     }
 
+    /**
+     * Get the ID for the passkey.
+     * Overriding to support transient/unsaved users during registration flow.
+     */
+    public function getPasskeyId(): string
+    {
+        return (string) ($this->id ?? $this->transient_passkey_id ?? '');
+    }
+
 
     /**
      * The table associated with the model.

@@ -41,15 +41,17 @@
                             class="w-full text-right outline-none bg-transparent text-zinc-500 font-medium focus:text-[#7C45F5] focus:placeholder-transparent pb-0.5 text-[15px]"
                             placeholder="nickname" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
                             pattern="^[a-zA-Z0-9_\-\.]{3,30}$">
+                        <!-- Status Icon -->
+                        <div id="nickname-icon" class="ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-0 transition-opacity text-sm"></div>
                     </div>
                 </div>
             </div>
-            <p id="nickname-error" class="text-xs text-red-500 mt-2 hidden text-center font-medium"></p>
+            <p id="nickname-status" class="text-xs text-red-500 mt-2 hidden text-center font-medium"></p>
         </div>
 
         <!-- Primary Action Button -->
-        <button type="button" id="start-registration-btn" onclick="handlePasskeyRegistration(event)"
-            class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-5 text-center font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-xl shadow-[#7C45F5]/30 uppercase tracking-[0.2em] text-sm active:scale-[0.98]">
+        <button type="button" id="start-registration-btn" onclick="handlePasskeyRegistration(event)" disabled
+            class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-5 text-center font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-xl shadow-[#7C45F5]/30 uppercase tracking-[0.2em] text-sm active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 disabled:shadow-none">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 <circle cx="12" cy="11" r="3"></circle>
@@ -67,6 +69,88 @@
 
     @push('scripts')
         <script>
+            let checkTimeout;
+            const nicknameInput = document.getElementById('nickname-input');
+            const nicknameIcon = document.getElementById('nickname-icon');
+            const nicknameStatus = document.getElementById('nickname-status');
+            const registerBtn = document.getElementById('start-registration-btn');
+
+            let isUsernameValid = false;
+            let isChecking = false;
+
+            nicknameInput.addEventListener('input', function() {
+                clearTimeout(checkTimeout);
+                
+                // reset visual
+                nicknameIcon.className = 'ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-0 transition-opacity text-sm';
+                nicknameIcon.innerHTML = '';
+                nicknameStatus.classList.add('hidden');
+                
+                isUsernameValid = false;
+                updateButtonState();
+
+                const val = this.value.trim();
+                if (!val) return;
+
+                if (!/^[a-zA-Z0-9_\-\.]{3,30}$/.test(val)) {
+                    showStatus('❌', 'Некорректный формат (разрешены буквы, цифры, минус, точка, подчеркивание, длина 3-30)', 'error');
+                    return;
+                }
+
+                // Show loading spinner
+                showStatus('<div class="w-3.5 h-3.5 border-2 border-[#7C45F5] border-r-transparent rounded-full animate-spin"></div>', '', 'checking');
+                isChecking = true;
+                updateButtonState();
+
+                checkTimeout = setTimeout(async () => {
+                    try {
+                        const formData = new FormData();
+                        formData.append('username', val);
+                        formData.append('_token', '{{ csrf_token() }}');
+
+                        const res = await fetch('{{ route('shop.customers.register.check_username') }}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        const data = await res.json();
+                        
+                        isChecking = false;
+                        
+                        if (data.available) {
+                            showStatus('✅', data.message, 'success');
+                            isUsernameValid = true;
+                        } else {
+                            showStatus('❌', data.message, 'error');
+                            isUsernameValid = false;
+                        }
+                    } catch (e) {
+                        isChecking = false;
+                        showStatus('❌', 'Ошибка проверки', 'error');
+                    }
+                    updateButtonState();
+                }, 500); // 500ms debounce
+            });
+
+            function showStatus(iconHTML, text, type) {
+                nicknameIcon.innerHTML = iconHTML;
+                nicknameIcon.className = 'ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-100 transition-opacity text-sm';
+                
+                if (text) {
+                    nicknameStatus.textContent = text;
+                    nicknameStatus.className = `text-xs mt-2 text-center font-medium ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`;
+                    nicknameStatus.classList.remove('hidden');
+                } else {
+                    nicknameStatus.classList.add('hidden');
+                }
+            }
+
+            function updateButtonState() {
+                registerBtn.disabled = !isUsernameValid || isChecking;
+            }
 
             /**
              * Main execution logic
@@ -74,22 +158,13 @@
             async function handlePasskeyRegistration(e) {
                 e.preventDefault();
                 
+                if (!isUsernameValid) return;
+
                 const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
                 const btn = document.getElementById('start-registration-btn');
                 const originalText = btn.innerHTML;
                 
-                const nicknameInput = document.getElementById('nickname-input');
-                const nicknameError = document.getElementById('nickname-error');
                 const nickname = nicknameInput.value.trim();
-
-                nicknameError.classList.add('hidden');
-
-                if (!nickname) {
-                    nicknameError.textContent = 'Укажите псевдоним';
-                    nicknameError.classList.remove('hidden');
-                    nicknameInput.focus();
-                    return;
-                }
 
                 if (!window.PublicKeyCredential) {
                     alert('Ваш браузер не поддерживает Passkey. Пожалуйста, используйте современный браузер.');
@@ -120,8 +195,7 @@
                         } else if (errorData.message) {
                             errorMessage = errorData.message;
                         }
-                        nicknameError.textContent = errorMessage;
-                        nicknameError.classList.remove('hidden');
+                        showStatus('❌', errorMessage, 'error');
                         throw new Error(errorMessage);
                     }
 

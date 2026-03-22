@@ -30,13 +30,13 @@ class PasskeyController extends Controller
     /**
      * Generate registration options for a new passkey.
      */
-    public function registerOptions(Request $request, GeneratePasskeyRegisterOptionsAction $generateOptionsAction)
+    public function registerOptions(Request $request, GeneratePasskeyRegisterOptionsAction $generateOptionsAction, $mockUser = null)
     {
         // Always sync RP ID to current request host
         $currentHost = $request->getHost();
         config(['passkeys.relying_party.id' => $currentHost]);
 
-        $user = Auth::guard('customer')->user();
+        $user = Auth::guard('customer')->user() ?? $mockUser;
         
         $linkingFlow = false;
         // Handle linking flow where user is found via session or manual auth during landing
@@ -59,7 +59,7 @@ class PasskeyController extends Controller
         $optionsArr = json_decode($optionsJson, true);
         if (isset($optionsArr['user'])) {
             // user.name: always ASCII — use username (Latin letters/digits only)
-            $asciiName = $user->username ?? 'user-' . $user->id;
+            $asciiName = $user->username ?? 'user-' . ($user->id ?? 'new');
             $optionsArr['user']['name'] = $asciiName;
 
             // user.displayName: Google Password Manager rejects Cyrillic/non-ASCII
@@ -69,7 +69,8 @@ class PasskeyController extends Controller
             // user.id: must be stable random bytes, NOT a sequential integer
             // We generate a stable base64url ID from a HMAC of the user's DB id
             // This is consistent across registrations for the same user
-            $stableKey = hash_hmac('sha256', 'passkey-user-id:' . $user->id, config('app.key'), true);
+            $userIdForHash = $user->id ?? $user->transient_passkey_id;
+            $stableKey = hash_hmac('sha256', 'passkey-user-id:' . $userIdForHash, config('app.key'), true);
             $optionsArr['user']['id'] = rtrim(strtr(base64_encode(substr($stableKey, 0, 32)), '+/', '-_'), '=');
 
             // Ensure pubKeyCredParams is populated
@@ -146,8 +147,9 @@ class PasskeyController extends Controller
             $linkingFlow = true;
         }
 
-        if (!$user) {
-            Log::warning('Passkey register failed: Unauthenticated.', [
+        $pendingRegistrationData = session('pending_registration_data');
+        if (!$user && !$pendingRegistrationData) {
+            Log::warning('Passkey register failed: Unauthenticated and no pending registration.', [
                 'session_has_link_user_id' => session()->has('link_user_id'),
                 'session_id' => session()->getId(),
             ]);
@@ -157,8 +159,9 @@ class PasskeyController extends Controller
         $optionsJson = $request->session()->get('passkey-registration-options-json');
 
         Log::info('Passkey registration attempt', [
-            'user_id' => $user->id,
+            'user_id' => $user->id ?? 'pending',
             'linking_flow' => $linkingFlow,
+            'is_new_registration' => !empty($pendingRegistrationData),
             'has_options_in_session' => !empty($optionsJson),
             'session_id' => session()->getId(),
         ]);
@@ -170,6 +173,27 @@ class PasskeyController extends Controller
         try {
             $userAgent = $request->userAgent();
             $deviceName = $this->getDeviceName($userAgent);
+            
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $isNewRegistration = false;
+            if (!$user && $pendingRegistrationData) {
+                // Verify the caching lock hasn't expired / is still ours
+                $username = $pendingRegistrationData['username'];
+                $lockKey = 'registration:username:' . strtolower($username);
+                // Even if lock is missing, we try inserting (DB unique constraint will catch duplicates)
+                
+                // Fire before event
+                \Illuminate\Support\Facades\Event::dispatch('customer.registration.before');
+
+                $user = app(\Webkul\Customer\Repositories\CustomerRepository::class)->create($pendingRegistrationData);
+                $isNewRegistration = true;
+
+                \Illuminate\Support\Facades\Event::dispatch('customer.registration.after', $user);
+                
+                // Clear the cache lock
+                \Illuminate\Support\Facades\Cache::forget($lockKey);
+            }
 
             $storePasskeyAction->execute(
                 authenticatable: $user,
@@ -202,10 +226,14 @@ class PasskeyController extends Controller
             }
 
             $request->session()->forget('passkey-registration-options-json');
+            if ($isNewRegistration) {
+                $request->session()->forget('pending_registration_data');
+                $request->session()->forget('pending_registration_id');
+            }
 
             // ---- TRUSTED DEVICE LOGIC ----
             $cookieToken = Str::random(64);
-            $trustedDeviceRepository = app(CustomerTrustedDeviceRepository::class);
+            $trustedDeviceRepository = app(\Webkul\Customer\Repositories\CustomerTrustedDeviceRepository::class);
 
             $trustedDeviceRepository->create([
                 'customer_id' => $user->id,
@@ -224,7 +252,7 @@ class PasskeyController extends Controller
                 'device_name' => $deviceName,
             ]);
 
-            if (!Auth::guard('customer')->check() && $linkingFlow) {
+            if (!Auth::guard('customer')->check() && ($linkingFlow || $isNewRegistration)) {
                 Auth::guard('customer')->login($user);
                 session()->forget('link_user_id');
                 
@@ -232,8 +260,17 @@ class PasskeyController extends Controller
                 app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($user);
             }
 
+            \Illuminate\Support\Facades\DB::commit();
+
             return response()->json(['message' => 'Passkey registered successfully.']);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            
+            // If the user was just created in this transaction, clear lock as it failed
+            if (isset($pendingRegistrationData['username'])) {
+                 \Illuminate\Support\Facades\Cache::forget('registration:username:' . strtolower($pendingRegistrationData['username']));
+            }
+            
             $message = $e->getMessage();
             if ($e->getPrevious()) {
                 $message .= ' (Prev: ' . $e->getPrevious()->getMessage() . ')';

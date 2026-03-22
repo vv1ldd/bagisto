@@ -77,6 +77,8 @@ Route::prefix('customer')->group(function () {
         Route::prefix('register')->group(function () {
             Route::get('', 'index')->name('shop.customers.register.index');
 
+            Route::post('check-username', 'checkUsernameAvailability')->name('shop.customers.register.check_username');
+
             Route::post('passkey/prepare', 'passkeyPrepare')->name('shop.customers.register.passkey.prepare');
 
             Route::post('', 'store')->name('shop.customers.register.store');
