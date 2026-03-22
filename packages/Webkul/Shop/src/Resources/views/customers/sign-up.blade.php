@@ -67,32 +67,6 @@
 
     @push('scripts')
         <script>
-            /**
-             * Base64 to ArrayBuffer helper
-             */
-            function _b64ToUint8Array(base64) {
-                if (!base64) return new Uint8Array(0);
-                var padding = '='.repeat((4 - base64.length % 4) % 4);
-                var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                var rawData = window.atob(b64);
-                var outputArray = new Uint8Array(rawData.length);
-                for (var i = 0; i < rawData.length; ++i) {
-                    outputArray[i] = rawData.charCodeAt(i);
-                }
-                return outputArray;
-            }
-
-            /**
-             * ArrayBuffer to Base64URL helper
-             */
-            function _bufToBase64URL(buffer) {
-                var binary = '';
-                var bytes = new Uint8Array(buffer);
-                for (var i = 0; i < bytes.byteLength; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-            }
 
             /**
              * Main execution logic
@@ -100,6 +74,7 @@
             async function handlePasskeyRegistration(e) {
                 e.preventDefault();
                 
+                const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
                 const btn = document.getElementById('start-registration-btn');
                 const originalText = btn.innerHTML;
                 
@@ -116,22 +91,8 @@
                     return;
                 }
 
-                if (nickname.length < 3 || nickname.length > 30) {
-                    nicknameError.textContent = 'Псевдоним должен содержать от 3 до 30 символов';
-                    nicknameError.classList.remove('hidden');
-                    nicknameInput.focus();
-                    return;
-                }
-
-                if (!/^[a-zA-Z0-9_\-\.]+$/.test(nickname)) {
-                    nicknameError.textContent = 'Псевдоним может содержать только латиницу, цифры, минус, подчеркивание и точку';
-                    nicknameError.classList.remove('hidden');
-                    nicknameInput.focus();
-                    return;
-                }
-
                 if (!window.PublicKeyCredential) {
-                    alert('Ваш браузер не поддерживает Passkey. Пожалуйста, обновите браузер или используйте современное устройство.');
+                    alert('Ваш браузер не поддерживает Passkey. Пожалуйста, используйте современный браузер.');
                     return;
                 }
 
@@ -153,58 +114,38 @@
 
                     if (!prepareResponse.ok) {
                         const errorData = await prepareResponse.json();
-                        
-                        // Handle Laravel Validation format
                         let errorMessage = 'Ошибка инициализации регистрации.';
                         if (errorData.errors && errorData.errors.username) {
                             errorMessage = errorData.errors.username[0];
                         } else if (errorData.message) {
                             errorMessage = errorData.message;
                         }
-
                         nicknameError.textContent = errorMessage;
                         nicknameError.classList.remove('hidden');
                         throw new Error(errorMessage);
                     }
 
-                    const options = await prepareResponse.json();
-                    console.log('[Passkey] Received options:', options);
+                    const rawOptions = await prepareResponse.json();
+                    console.log('[Passkey] Received options:', rawOptions);
+                    
+                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
-                    // Step 2: Convert options for navigator.credentials.create
-                    options.challenge = _b64ToUint8Array(options.challenge);
-                    options.user.id = _b64ToUint8Array(options.user.id);
-                    if (options.excludeCredentials) {
-                        options.excludeCredentials.forEach(cred => {
-                            cred.id = _b64ToUint8Array(cred.id);
-                        });
+                    // --- Domain/RP Check ---
+                    const currentDomain = window.location.hostname;
+                    if (options.rp && options.rp.id && options.rp.id !== currentDomain) {
+                        console.warn('[Passkey] RP ID mismatch. Server sent:', options.rp.id, 'Current domain:', currentDomain);
+                        // options.rp.id = currentDomain; 
                     }
 
                     btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
 
-                    // Step 3: Trigger Browser Prompt
-                    const credential = await navigator.credentials.create({
-                        publicKey: options
-                    });
-
-                    if (!credential) {
-                        throw new Error('Не удалось создать ключ доступа.');
-                    }
-
-                    console.log('[Passkey] Credential created:', credential.id);
+                    // Step 3: Trigger Browser Prompt using SimpleWebAuthn
+                    const attResp = await SimpleWebAuthn.startRegistration(options);
+                    console.log('[Passkey] Credential created:', attResp);
+                    
                     btn.innerHTML = '<span class="animate-pulse">Сохранение...</span>';
 
                     // Step 4: Send credential back to server to finalize
-                    const registerPayload = {
-                        id: credential.id,
-                        rawId: _bufToBase64URL(credential.rawId),
-                        response: {
-                            clientDataJSON: _bufToBase64URL(credential.response.clientDataJSON),
-                            attestationObject: _bufToBase64URL(credential.response.attestationObject),
-                        },
-                        type: credential.type,
-                        clientExtensionResults: credential.getClientExtensionResults() || {},
-                    };
-
                     const storeResponse = await fetch('{{ route('passkeys.register') }}', {
                         method: 'POST',
                         headers: {
@@ -212,7 +153,7 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify(registerPayload)
+                        body: JSON.stringify(attResp)
                     });
 
                     if (!storeResponse.ok) {
@@ -223,12 +164,11 @@
                     console.log('[Passkey] Registration success! Redirecting...');
                     btn.innerHTML = 'Готово!';
                     
-                    // Step 5: Redirect to focused security onboarding page
                     window.location.href = '{{ route('shop.customers.account.onboarding.security') }}';
 
                 } catch (err) {
                     console.error('[Passkey] Error:', err);
-                    if (err.name !== 'NotAllowedError') {
+                    if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
                         alert('Ошибка: ' + err.message);
                     }
                     btn.disabled = false;

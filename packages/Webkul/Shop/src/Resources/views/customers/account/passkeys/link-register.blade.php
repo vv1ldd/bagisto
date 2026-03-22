@@ -103,16 +103,13 @@
                         // options.rp.id = currentDomain; // We can't easily fix it because the challenge is bound to it, but we can log it.
                     }
 
-                    // --- Force Platform Authenticator ---
+                    // Force Resident Keys
                     if (!options.authenticatorSelection) {
                         options.authenticatorSelection = {};
                     }
-                    // Residents keys are required for passkeys
                     options.authenticatorSelection.residentKey = 'required';
                     options.authenticatorSelection.requireResidentKey = true;
                     options.authenticatorSelection.userVerification = 'required';
-                    // Force using the device itself
-                    options.authenticatorSelection.authenticatorAttachment = 'platform';
 
                     btnText.innerText = 'ОЖИДАНИЕ...';
 
