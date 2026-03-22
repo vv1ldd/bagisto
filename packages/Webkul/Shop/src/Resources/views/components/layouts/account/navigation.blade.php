@@ -61,8 +61,8 @@ $menuIcons = [
                          onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
                         <span class="w-12 h-12 flex items-center justify-center bg-zinc-800 text-white rounded-2xl shrink-0 text-xl transition-transform group-hover:scale-105 shadow-sm">📞</span>
                         <div class="flex flex-col">
-                            <span class="nav-label">Звонки</span>
-                            <span class="text-[12px] text-zinc-500 font-medium">История вызовов</span>
+                            <span class="nav-label">Видеовстреча</span>
+                            <span class="text-[12px] text-zinc-500 font-medium">Создать встречу или позвонить</span>
                         </div>
                         <span class="nav-arrow">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

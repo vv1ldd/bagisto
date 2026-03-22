@@ -1,43 +1,10 @@
 <x-shop::layouts.account :show-back="true">
     <!-- Page Title -->
     <x-slot:title>
-        Звонки P2P
+        Видеовстреча
     </x-slot:title>
 
-    <div class="mx-4 mt-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @foreach($contacts as $contact)
-                <div class="glass-card !bg-white/60 p-5 flex items-center justify-between hover:scale-[1.02] transition-all cursor-pointer border border-zinc-100 shadow-sm"
-                    onclick="console.log('Tile clicked. window.$emitter is:', window.$emitter); if (window.$emitter) { window.$emitter.emit('start-call', { userId: {{ $contact['id'] }}, userName: '{{ $contact['name'] }}' }) } else { alert('Критическая ошибка: window.$emitter не найден. Попробуйте обновить страницу (Ctrl+F5)') }">
-
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-14 h-14 bg-zinc-50 rounded-full flex items-center justify-center text-3xl shadow-inner border border-zinc-100">
-                            {{ $contact['icon'] }}
-                        </div>
-
-                        <div class="flex flex-col">
-                            <span class="text-lg font-bold text-zinc-900 tracking-tight">{{ $contact['name'] }}</span>
-                            <span
-                                class="text-[11px] font-black uppercase tracking-widest text-zinc-400">{{ $contact['description'] }}</span>
-                        </div>
-                    </div>
-
-                    <div
-                        class="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-lg shadow-emerald-100 active:scale-95 transition-all">
-                        <span class="icon-phone text-xl"></span>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        @if(count($contacts) <= 1 && auth()->guard('customer')->user()->is_investor)
-            <div class="mt-8 p-6 bg-amber-50 border border-amber-100 text-center">
-                <span class="text-2xl mb-2 block">🤝</span>
-                <p class="text-[13px] text-amber-900 font-medium">Других доступных инвесторов пока нет в сети.</p>
-            </div>
-        @endif
-
+    <div class="mx-4 mt-2 mb-10">
         <v-meeting-inviter 
             action="{{ route('shop.call.store') }}" 
             csrf-token="{{ csrf_token() }}"
@@ -45,7 +12,7 @@
             caller-email="{{ auth()->guard('customer')->user()->email }}"
         >
             <!-- Fallback for no-JS or pre-mount -->
-            <div class="mt-10 p-8 bg-zinc-900 rounded-[2rem] text-white shadow-2xl relative overflow-hidden border border-white/5">
+            <div class="p-8 bg-zinc-900 rounded-[2rem] text-white shadow-2xl relative overflow-hidden border border-white/5">
                 <div class="absolute inset-0 bg-gradient-to-tr from-[#7C45F5]/20 to-transparent pointer-events-none"></div>
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-6">
@@ -74,8 +41,8 @@
             </div>
         </v-meeting-inviter>
 
-        <div class="mt-8 p-4 bg-zinc-50 border border-zinc-100 text-[12px] text-zinc-500 leading-relaxed rounded-2xl">
-            <p><strong>Безопасность:</strong> Все P2P звонки осуществляются напрямую между устройствами и не записываются на сервере. Соединение защищено сквозным E2E шифрованием по умолчанию.</p>
+        <div class="mt-8 p-6 bg-white/50 border border-zinc-100 text-[13px] text-zinc-500 leading-relaxed rounded-[2rem] shadow-sm">
+            <p><strong class="text-zinc-900">Безопасность:</strong> Все видеовстречи осуществляются напрямую между устройствами и не записываются на сервере. Соединение защищено сквозным E2E шифрованием по умолчанию.</p>
         </div>
     </div>
 </x-shop::layouts.account>
