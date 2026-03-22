@@ -257,10 +257,16 @@ class CustomerController extends Controller
             }
         }
 
-        return response()->json([
-            'status'  => 'success',
-            'message' => 'Статус подписки обновлен',
-        ]);
+        if (request()->ajax()) {
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Статус подписки обновлен',
+            ]);
+        }
+
+        session()->flash('success', 'Статус подписки обновлен');
+
+        return redirect()->back();
     }
 
     /**
