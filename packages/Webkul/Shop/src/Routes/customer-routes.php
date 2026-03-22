@@ -119,6 +119,13 @@ Route::prefix('customer')->group(function () {
         ->name('shop.customers.account.passkeys.link')
         ->middleware('signed');
 
+    // Passkey registration routes — accessible WITHOUT being logged in
+    // (user may be pre-created but not yet authenticated; controller uses link_user_id session)
+    Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
+        Route::post('register-options', 'registerOptions')->name('passkeys.register-options');
+        Route::post('register', 'register')->name('passkeys.register');
+    });
+
     Route::group(['middleware' => ['customer']], function () {
         Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
             /**
@@ -132,8 +139,6 @@ Route::prefix('customer')->group(function () {
             Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
                 Route::get('', 'index')->name('shop.customers.account.passkeys.index');
                 Route::get('generate-link', 'generateLink')->name('shop.customers.account.passkeys.generate-link');
-                Route::post('register-options', 'registerOptions')->name('passkeys.register-options');
-                Route::post('register', 'register')->name('passkeys.register');
                 Route::delete('{id}', 'destroy')->name('passkeys.destroy');
             });
 

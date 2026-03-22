@@ -166,8 +166,8 @@
                 } catch (err) {
                     console.error('[Passkey] Error:', err);
                     if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
-                        const rpId = (options && options.rp) ? options.rp.id : 'N/A';
-                        alert('Ошибка: ' + err.message + '\n\nRP ID: ' + rpId + '\nUser: ' + (options && options.user ? options.user.name : 'N/A'));
+                        const rpId = (typeof optionsJSON !== 'undefined' && optionsJSON.rp) ? optionsJSON.rp.id : 'N/A';
+                        alert('Ошибка: ' + err.message + '\n\nRP ID: ' + rpId);
                     }
                     btn.disabled = false;
                     btn.innerHTML = originalText;
