@@ -124,12 +124,24 @@
                                 </div>
                             @endif
 
-                            <div class="p-5 bg-white/50 border-t border-zinc-100">
-                                <button type="button" id="add-passkey-button"
-                                    onclick="window.startPasskeyRegistration()"
-                                    class="flex w-full items-center justify-center gap-2  border border-zinc-200 bg-white py-4 text-[15px] font-bold text-zinc-700 transition hover:bg-zinc-50 disabled:opacity-50">
-                                    <span class="icon-add text-lg"></span>
-                                    <span id="add-passkey-button-text">Привязать новое устройство</span>
+                            <div class="px-5 py-4 bg-white/50 border-t border-zinc-100/60">
+                                <button type="button" id="add-device-btn" onclick="window.showQrModal()" class="group flex w-full items-center justify-between text-left transition-all hover:bg-zinc-50 rounded-xl p-2 -m-2">
+                                    <div class="flex items-center gap-4">
+                                        <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                            </svg>
+                                        </span>
+                                        <div class="flex flex-col min-w-0">
+                                            <span class="text-[15px] font-bold text-zinc-900">Добавить устройство</span>
+                                            <span class="text-[12px] text-zinc-500 font-medium">Вход через TouchID или FaceID</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-zinc-400 group-hover:text-[#7C45F5] transition-colors pr-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </span>
                                 </button>
                             </div>
                         </div>
@@ -140,178 +152,208 @@
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
                 </div>
             @endif
+        {{-- === QR Code Modal === --}}
+        <div id="qr-modal" class="fixed inset-0 z-[9999] hidden">
+            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" id="qr-modal-overlay"></div>
+            <div class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
+                <div class="bg-white rounded-[2rem] shadow-2xl border border-[#e2d9ff] w-full max-w-sm p-8 flex flex-col items-center text-center pointer-events-auto transition-transform duration-300 scale-95 opacity-0" id="qr-modal-content">
+                    <div class="mb-6">
+                        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#7C45F5]/10 text-[#7C45F5] mb-4">
+                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-[#1a0050] text-xl font-black tracking-tight mb-2">Привязка устройства</h3>
+                        <p class="text-zinc-500 text-sm">Отсканируйте этот QR-код камерой телефона, чтобы войти без пароля.</p>
+                    </div>
+
+                    <div id="qrcode-container" class="bg-white p-4 border border-[#e2d9ff] rounded-2xl shadow-sm mb-8 flex items-center justify-center w-48 h-48 overflow-hidden">
+                        <div class="animate-pulse text-[#7C45F5] font-bold text-xs uppercase tracking-widest">Создание...</div>
+                    </div>
+
+                    <div class="w-full space-y-3">
+                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="w-full py-4 bg-[#7C45F5] text-white font-bold rounded-xl shadow-lg shadow-[#7C45F5]/30 hover:bg-[#6534d4] transition-all active:scale-[0.98]">
+                            ПРИВЯЗАТЬ ЭТО УСТРОЙСТВО
+                        </button>
+                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-400 hover:text-zinc-600 font-bold transition-colors">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @push('scripts')
+            <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
             <script>
-                window.startPasskeyRegistration = async function () {
-                    console.log('Passkey registration started');
-                    const button = document.getElementById('add-passkey-button');
-                    const buttonText = document.getElementById('add-passkey-button-text');
-                    const originalText = buttonText?.innerText || 'Привязать новое устройство';
-
-                    if (!window.PublicKeyCredential) {
-                        alert('Ваш браузер или текущее соединение не поддерживают технологию Passkey (требуется HTTPS).');
-                        return;
-                    }
-
-                    if (button) button.disabled = true;
-                    if (buttonText) buttonText.innerText = 'Подготовка...';
-
-                    function base64ToUint8Array(base64) {
-                        const padding = '='.repeat((4 - base64.length % 4) % 4);
-                        const b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                        const rawData = window.atob(b64);
-                        const outputArray = new Uint8Array(rawData.length);
-                        for (let i = 0; i < rawData.length; ++i) {
-                            outputArray[i] = rawData.charCodeAt(i);
-                        }
-                        return outputArray;
-                    }
-
-                    function arrayBufferToBase64URL(buffer) {
-                        let binary = '';
-                        const bytes = new Uint8Array(buffer);
-                        const len = bytes.byteLength;
-                        for (let i = 0; i < len; i++) {
-                            binary += String.fromCharCode(bytes[i]);
-                        }
-                        return window.btoa(binary)
-                            .replace(/\+/g, '-')
-                            .replace(/\//g, '_')
-                            .replace(/=/g, '');
-                    }
-
-                    try {
-                        console.log('Fetching registration options...');
-                        const response = await fetch('{{ route('passkeys.register-options') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            }
-                        });
-
-                        if (!response.ok) {
-                            const errorText = await response.text();
-                            console.error('Options fetch failed:', errorText);
-                            throw new Error('Не удалось получить настройки с сервера.');
-                        }
-
-                        const rawOptions = await response.json();
-                        console.log('Options received:', rawOptions);
-
-                        const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
-
-                        if (!options || !options.challenge) {
-                            throw new Error('Получены некорректные настройки с сервера (отсутствует challenge).');
-                        }
-
-                        // Robust Challenge conversion
-                        console.log('Raw challenge type:', typeof options.challenge, 'Value:', options.challenge);
-                        options.challenge = base64ToUint8Array(options.challenge);
-                        console.log('Converted challenge:', options.challenge);
-
-                        options.user.id = base64ToUint8Array(options.user.id);
-
-                        if (options.excludeCredentials) {
-                            options.excludeCredentials.forEach(cred => {
-                                cred.id = base64ToUint8Array(cred.id);
-                            });
-                        }
-
-                        if (buttonText) buttonText.innerText = 'Ожидание устройства...';
-                        console.log('Calling navigator.credentials.create...');
-
-                        const credential = await navigator.credentials.create({
-                            publicKey: options
-                        });
-
-                        if (!credential) throw new Error('Отмена пользователем.');
-                        console.log('Credential created successfully:', credential);
-
-                        if (buttonText) buttonText.innerText = 'Сохранение...';
-
-                        const transports = (credential.response.getTransports) ? credential.response.getTransports() : [];
-
-                        const registrationData = {
-                            id: credential.id,
-                            rawId: arrayBufferToBase64URL(credential.rawId),
-                            response: {
-                                clientDataJSON: arrayBufferToBase64URL(credential.response.clientDataJSON),
-                                attestationObject: arrayBufferToBase64URL(credential.response.attestationObject),
-                                transports: transports,
-                            },
-                            type: credential.type,
-                            clientExtensionResults: credential.getClientExtensionResults() || {},
-                        };
-
-                        console.log('Sending final registration data to server:', registrationData);
-
-                        const registrationResponse = await fetch('{{ route('passkeys.register') }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify(registrationData)
-                        });
-
-                        if (registrationResponse.ok) {
-                            console.log('Registration success confirmed by server');
-                            @if (isset($isCompleteRegistration) && $isCompleteRegistration)
-                                window.location.href = '{!! route('shop.customers.account.profile.complete_registration_success') !!}';
-                            @else
-                                window.location.reload();
-                            @endif
+                (function() {
+                    // Global alert handler for Meanly style
+                    window.showAlert = function (type, title, message) {
+                        if (window.app && window.app.config && window.app.config.globalProperties && window.app.config.globalProperties.$emitter) {
+                            window.app.config.globalProperties.$emitter.emit('add-flash', { type, message });
                         } else {
-                            const errorData = await registrationResponse.json();
-                            console.error('Registration rejected by server:', errorData);
-                            window.showAlert('error', 'Ошибка', errorData.message || 'Ошибка сохранения Passkey');
-                        }
-                    } catch (error) {
-                        console.error('Passkey registration error:', error);
-                        
-                        let message = error.message;
-                        let title = 'Ошибка';
-                        let type = 'error';
-
-                        // Handle cancellation
-                        if (error.name === 'NotAllowedError' || message.includes('отмена') || message.includes('cancelled')) {
-                            title = 'Запрос отменен';
-                            message = 'Действие отменено пользователем.';
-                            type = 'warning';
-                        }
-
-                        window.showAlert(type, title, message);
-                    } finally {
-                        if (button) button.disabled = false;
-                        if (buttonText) buttonText.innerText = originalText;
-                    }
-                };
-
-                // Global alert handler for Meanly style
-                window.showAlert = function (type, title, message) {
-                    // Try to use Bagisto's flash emitter first
-                    if (window.app && window.app.config && window.app.config.globalProperties && window.app.config.globalProperties.$emitter) {
-                        window.app.config.globalProperties.$emitter.emit('add-flash', { type, message });
-                    } else {
-                        // Fallback to Meanly-styled alert
-                        const alertBox = document.createElement('div');
-                        alertBox.className = `fixed bottom-10 left-1/2 -translate-x-1/2 z-[10001] p-5 font-bold text-white shadow-2xl transition-all border-l-4 min-w-[300px] animate-in slide-in-from-bottom-5 duration-300 ${type === 'success' ? 'bg-zinc-900 border-green-500' : (type === 'warning' ? 'bg-zinc-900 border-orange-500' : 'bg-red-600 border-white')}`;
-                        alertBox.innerHTML = `
-                            <div class="flex items-start gap-4">
-                                <div class="flex-1">
-                                    <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-1">${title}</div>
-                                    <div class="text-[14px] leading-tight">${message}</div>
+                            const alertBox = document.createElement('div');
+                            alertBox.className = `fixed bottom-10 left-1/2 -translate-x-1/2 z-[10001] p-5 font-bold text-white shadow-2xl transition-all border-l-4 min-w-[300px] animate-in slide-in-from-bottom-5 duration-300 ${type === 'success' ? 'bg-zinc-900 border-green-500' : (type === 'warning' ? 'bg-zinc-900 border-orange-500' : 'bg-red-600 border-white')}`;
+                            alertBox.innerHTML = `
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-1">
+                                        <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-1">${title}</div>
+                                        <div class="text-[14px] leading-tight">${message}</div>
+                                    </div>
+                                    <button onclick="this.parentElement.parentElement.remove()" class="text-white/40 hover:text-white">✕</button>
                                 </div>
-                                <button onclick="this.parentElement.parentElement.remove()" class="text-white/40 hover:text-white">✕</button>
-                            </div>
-                        `;
-                        document.body.appendChild(alertBox);
+                            `;
+                            document.body.appendChild(alertBox);
+                            setTimeout(() => {
+                                alertBox.classList.add('opacity-0', 'translate-y-5');
+                                setTimeout(() => alertBox.remove(), 300);
+                            }, 5000);
+                        }
+                    };
+
+                    const _u8 = (b64) => {
+                        const padding = '='.repeat((4 - b64.length % 4) % 4);
+                        const b = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+                        const bin = window.atob(b);
+                        const arr = new Uint8Array(bin.length);
+                        for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+                        return arr;
+                    };
+                    const _b64 = (buf) => window.btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+
+                    // Show Modal
+                    window.showQrModal = async function() {
+                        const qrModal = document.getElementById('qr-modal');
+                        const qrModalContent = document.getElementById('qr-modal-content');
+                        const qrCodeContainer = document.getElementById('qrcode-container');
+                        
+                        if (!qrModal || !qrModalContent || !qrCodeContainer) return;
+
+                        qrModal.classList.remove('hidden');
                         setTimeout(() => {
-                            alertBox.classList.add('opacity-0', 'translate-y-5');
-                            setTimeout(() => alertBox.remove(), 300);
-                        }, 5000);
-                    }
-                };
+                            qrModalContent.classList.remove('scale-95', 'opacity-0');
+                        }, 10);
+
+                        try {
+                            const res = await fetch('{{ route('shop.customers.account.passkeys.generate-link') }}');
+                            const data = await res.json();
+                            
+                            qrCodeContainer.innerHTML = '';
+                            new QRCode(qrCodeContainer, {
+                                text: data.url,
+                                width: 160,
+                                height: 160,
+                                colorDark : "#1a0050",
+                                colorLight : "#ffffff",
+                                correctLevel : QRCode.CorrectLevel.M
+                            });
+                        } catch (err) {
+                            qrCodeContainer.innerHTML = '<span class="text-red-500 font-bold text-xs text-center">Ошибка<br>загрузки</span>';
+                        }
+                    };
+
+                    // Close Modal
+                    window.hideQrModal = function() {
+                        const qrModal = document.getElementById('qr-modal');
+                        const qrModalContent = document.getElementById('qr-modal-content');
+                        if (!qrModal || !qrModalContent) return;
+                        
+                        qrModalContent.classList.add('scale-95', 'opacity-0');
+                        setTimeout(() => { qrModal.classList.add('hidden'); }, 300);
+                    };
+
+                    // Close on overlay click
+                    document.addEventListener('click', function(e) {
+                        if (e.target.id === 'qr-modal-overlay') {
+                            window.hideQrModal();
+                        }
+                    });
+
+                    window.startPasskeyRegistration = async function (btnElement) {
+                        if (!window.PublicKeyCredential) {
+                            window.showAlert('error', 'Ошибка', 'Ваш браузер не поддерживает Passkey (требуется HTTPS).');
+                            return;
+                        }
+
+                        // Determine which button triggered it (Add new vs QR modal button)
+                        const isMainButton = !(btnElement && btnElement instanceof HTMLElement);
+                        const button = isMainButton ? document.getElementById('add-passkey-button') : btnElement;
+                        const buttonText = isMainButton ? document.getElementById('add-passkey-button-text') : button;
+                        const originalText = buttonText?.innerText || 'Привязать новое устройство';
+
+                        if (button) button.disabled = true;
+                        if (buttonText) buttonText.innerText = 'Подготовка...';
+
+                        try {
+                            const response = await fetch('{{ route('passkeys.register-options') }}', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                            });
+
+                            if (!response.ok) throw new Error('Не удалось получить настройки с сервера.');
+
+                            const rawOptions = await response.json();
+                            const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+
+                            if (!options || !options.challenge) throw new Error('Некорректные настройки.');
+
+                            options.challenge = _u8(options.challenge);
+                            options.user.id = _u8(options.user.id);
+
+                            if (options.excludeCredentials) {
+                                options.excludeCredentials.forEach(cred => cred.id = _u8(cred.id));
+                            }
+
+                            if (buttonText) buttonText.innerText = 'Ожидание устройства...';
+
+                            const credential = await navigator.credentials.create({ publicKey: options });
+                            if (!credential) throw new Error('Отмена пользователем.');
+
+                            if (buttonText) buttonText.innerText = 'Сохранение...';
+
+                            const registrationData = {
+                                id: credential.id,
+                                rawId: _b64(credential.rawId),
+                                response: {
+                                    clientDataJSON: _b64(credential.response.clientDataJSON),
+                                    attestationObject: _b64(credential.response.attestationObject),
+                                    transports: credential.response.getTransports ? credential.response.getTransports() : [],
+                                },
+                                type: credential.type,
+                                clientExtensionResults: credential.getClientExtensionResults() || {},
+                            };
+
+                            const saveRes = await fetch('{{ route('passkeys.register') }}', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                body: JSON.stringify(registrationData)
+                            });
+
+                            if (saveRes.ok) {
+                                @if (isset($isCompleteRegistration) && $isCompleteRegistration)
+                                    window.location.href = '{!! route('shop.customers.account.profile.complete_registration_success') !!}';
+                                @else
+                                    window.location.reload();
+                                @endif
+                                return;
+                            } else {
+                                const errorData = await saveRes.json();
+                                throw new Error(errorData.message || 'Ошибка сохранения Passkey');
+                            }
+                        } catch (error) {
+                            let message = error.message;
+                            let title = 'Ошибка';
+                            let type = 'error';
+
+                            if (error.name === 'NotAllowedError' || message.includes('отмена') || message.includes('cancelled') || message.includes('Отмена')) {
+                                title = 'Отменено';
+                                message = 'Действие отменено пользователем.';
+                                type = 'warning';
+                            }
+                            window.showAlert(type, title, message);
+                        } finally {
+                            if (button) button.disabled = false;
+                            if (buttonText) buttonText.innerText = originalText;
+                        }
+                    };
+                })();
             </script>
         @endpush
