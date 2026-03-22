@@ -97,27 +97,56 @@
                 </button>
             @endif
 
-            {{-- Action: Deposit --}}
-            <div class="col-span-2">
-                @if($user->is_investor)
-                    <button onclick="goToDeposit()"
-                        class="nav-tile !flex-row p-6 bg-[#7C45F5] border-[#7C45F5] hover:bg-[#6b35e4] text-white group !justify-center gap-3 active:scale-[0.98] transition-all">
-                        <span class="text-2xl transition-transform group-hover:scale-125">➕</span>
-                        <div class="flex flex-col items-start translate-y-[1px]">
-                            <span class="text-[15px] font-black uppercase tracking-tighter italic leading-none">Пополнить баланс</span>
-                            <span class="text-[9px] font-bold uppercase tracking-[0.2em] opacity-80 leading-none mt-1">Моментальное зачисление</span>
-                        </div>
-                    </button>
-                @else
-                    <div class="nav-tile !flex-row p-6 bg-zinc-50 border-zinc-100 text-zinc-400 cursor-not-allowed opacity-60 !justify-center gap-3">
-                        <span class="text-2xl">🔒</span>
-                        <div class="flex flex-col items-start translate-y-[1px]">
-                            <span class="text-[15px] font-black uppercase tracking-tighter italic leading-none">Пополнить баланс</span>
-                            <span class="text-[9px] font-bold uppercase tracking-[0.2em] leading-none mt-1">Доступно только инвесторам</span>
-                        </div>
-                    </div>
+            {{-- Deposit Options Section Title --}}
+            <div class="col-span-2 mt-2 px-2 flex items-center justify-between">
+                <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] opacity-80">Способы пополнения</span>
+                @if(!$user->is_investor)
+                    <span class="text-[9px] font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-2 py-0.5 border border-amber-200">Доступно инвесторам</span>
                 @endif
             </div>
+
+            @if($user->is_investor)
+                {{-- Crypto Option (Full Width) --}}
+                <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
+                    <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
+                        🪙
+                    </div>
+                    <div class="flex flex-col items-start flex-1">
+                        <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Криптовалюта</div>
+                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">USDT, TON, BTC, ETH</div>
+                    </div>
+                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
+                        <span class="icon-arrow-right text-xl"></span>
+                    </div>
+                </button>
+
+                {{-- B2B Option (Half) --}}
+                <button onclick="goToB2BManagement()" class="nav-tile p-6 hover:border-[#7C45F5] group">
+                    <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
+                        🏢
+                    </div>
+                    <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для компаний</div>
+                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">Оплата от юр. лица</div>
+                </button>
+
+                {{-- B2C Option (Half) --}}
+                <button onclick="goToB2CManagement()" class="nav-tile p-6 hover:border-[#7C45F5] group">
+                    <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
+                        👤
+                    </div>
+                    <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для физ. лиц</div>
+                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">По реквизитам</div>
+                </button>
+            @else
+                {{-- Disabled state for non-investors --}}
+                <div class="col-span-2 nav-tile !flex-row p-6 bg-zinc-50 border-zinc-100 text-zinc-400 cursor-not-allowed opacity-60 !justify-center gap-3">
+                    <span class="text-2xl">🔒</span>
+                    <div class="flex flex-col items-start translate-y-[1px]">
+                        <span class="text-[15px] font-black uppercase tracking-tighter italic leading-none">Пополнить баланс</span>
+                        <span class="text-[9px] font-bold uppercase tracking-[0.2em] leading-none mt-1">У вас пока нет доступа</span>
+                    </div>
+                </div>
+            @endif
         </div>
 
         {{-- Step 2: Transactions --}}
@@ -800,67 +829,7 @@
             </div>
         </div>
 
-        {{-- Step: Deposit Type Selection --}}
-        <div id="step-deposit-type" class="hidden nav-grid !grid-cols-1">
-            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-2 px-2 opacity-70">
-                Выберите способ пополнения
-            </p>
-            <div class="space-y-4">
-                {{-- Crypto Option --}}
-                <button onclick="goToCryptoManagement()"
-                    class="flex items-center gap-4 p-6 bg-white border border-[#f0ebff] shadow-sm hover:border-[#7C45F5] transition-all text-left group active:scale-[0.98]">
-                    <div
-                        class="w-14 h-14 bg-[#f8f6ff] flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors rounded-2xl">
-                        🪙
-                    </div>
-                    <div class="flex-1">
-                        <h3
-                            class="text-[16px] font-black text-[#1a0050] uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors italic">
-                            Криптовалюта</h3>
-                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">USDT, TON, BTC или ETH</p>
-                    </div>
-                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors">
-                        <span class="icon-arrow-right text-xl"></span>
-                    </div>
-                </button>
 
-                {{-- B2B Bank Transfer Option --}}
-                <button onclick="goToB2BManagement()"
-                    class="flex items-center gap-4 p-6 bg-white border border-[#f0ebff] shadow-sm hover:border-[#7C45F5] transition-all text-left group active:scale-[0.98]">
-                    <div
-                        class="w-14 h-14 bg-[#f8f6ff] flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors rounded-2xl">
-                        🏢
-                    </div>
-                    <div class="flex-1">
-                        <h3
-                            class="text-[16px] font-black text-[#1a0050] uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors italic">
-                            Для компаний</h3>
-                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Безналичная оплата от юр. лица (B2B)</p>
-                    </div>
-                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors">
-                        <span class="icon-arrow-right text-xl"></span>
-                    </div>
-                </button>
-
-                {{-- B2C Bank Transfer Option --}}
-                <button onclick="goToB2CManagement()"
-                    class="flex items-center gap-4 p-6 bg-white border border-[#f0ebff] shadow-sm hover:border-[#7C45F5] transition-all text-left group active:scale-[0.98]">
-                    <div
-                        class="w-14 h-14 bg-[#f8f6ff] flex items-center justify-center text-[#7C45F5] text-2xl shrink-0 group-hover:bg-[#7C45F5] group-hover:text-white transition-colors rounded-2xl">
-                        👤
-                    </div>
-                    <div class="flex-1">
-                        <h3
-                            class="text-[16px] font-black text-[#1a0050] uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors italic">
-                            Для физ. лиц</h3>
-                        <p class="text-[12px] text-zinc-500 mt-0.5 leading-snug">Перевод по реквизитам через банк</p>
-                    </div>
-                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors">
-                        <span class="icon-arrow-right text-xl"></span>
-                    </div>
-                </button>
-            </div>
-        </div>
 
         {{-- Step: Empty (Crypto) --}}
         <div id="step-empty"
@@ -1362,7 +1331,7 @@
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
-                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-deposit-type', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
+                ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.classList.add('hidden');
                 });
@@ -1389,7 +1358,6 @@
                         if (currentStep === 'add-bank-account') titleEl.innerText = "Новый счет";
                         if (currentStep === 'organization-details') titleEl.innerText = "Детали";
                         if (currentStep === 'empty') titleEl.innerText = "Кошельки";
-                        if (currentStep === 'deposit-type') titleEl.innerText = "Пополнить баланс";
                         if (currentStep === 'details') titleEl.innerText = "Детали пополнения";
                         if (currentStep === 'management') titleEl.innerText = "Кошельки для пополнения";
                         if (currentStep === 'b2b-management') titleEl.innerText = "Мои организации";
@@ -1406,17 +1374,14 @@
                 else if (currentStep === 'add-organization') switchStep('organizations');
                 else if (currentStep === 'add-bank-account') switchStep('organizations');
                 else if (currentStep === 'organization-details') switchStep('organizations');
-                else if (currentStep === 'deposit-type') switchStep('dashboard');
-                else if (currentStep === 'empty') switchStep('deposit-type');
+                else if (currentStep === 'empty') switchStep('dashboard');
                 else if (currentStep === 'details') switchStep('management');
-                else if (currentStep === 'management') switchStep('deposit-type');
-                else if (currentStep === 'b2b-management') switchStep('deposit-type');
-                else if (currentStep === 'b2c-details') switchStep('deposit-type');
+                else if (currentStep === 'management') switchStep('dashboard');
+                else if (currentStep === 'b2b-management') switchStep('dashboard');
+                else if (currentStep === 'b2c-details') switchStep('dashboard');
                 else if (currentStep === 'add-wallet') switchStep('management');
                 else if (currentStep === 'topup-details') switchStep('b2b-management');
             }
-
-            function goToDeposit() { switchStep('deposit-type'); }
             function goToOrganizations() { switchStep('organizations'); }
             function goToAddOrganization() {
                 switchStep('add-organization');
