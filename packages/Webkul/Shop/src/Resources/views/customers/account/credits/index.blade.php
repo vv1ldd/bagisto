@@ -19,14 +19,14 @@
             ];
         @endphp
 
+        {{-- Global Tabs for Overview/History --}}
+        <div id="wallet-tabs" class="flex items-center gap-6 mb-6 border-b border-[#e2d9ff]">
+            <button id="tab-dashboard" onclick="switchStep('dashboard')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]">Обзор</button>
+            <button id="tab-transactions" onclick="switchStep('transactions')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]">История</button>
+        </div>
+
         {{-- Step 1: Dashboard --}}
         <div id="step-dashboard" class="nav-grid">
-            {{-- Tabs --}}
-            <div class="col-span-2 flex items-center gap-6 mb-2 border-b border-[#e2d9ff]">
-                <button class="text-[14px] font-black text-[#1a0050] border-b-2 border-[#7C45F5] pb-3 uppercase tracking-tight cursor-default">Обзор</button>
-                <button onclick="switchStep('transactions')" class="text-[14px] font-black text-zinc-400 hover:text-[#1a0050] border-b-2 border-transparent hover:border-[#e2d9ff] pb-3 transition-all uppercase tracking-tight">История</button>
-            </div>
-
             {{-- Total Balance Tile (Main) --}}
             <div class="nav-tile col-span-2 p-8 !flex-row !items-center !justify-between bg-white border-[#e2d9ff]">
                 <div class="flex flex-col gap-1">
@@ -136,12 +136,6 @@
 
         {{-- Step 2: Transactions --}}
         <div id="step-transactions" class="hidden">
-            {{-- Tabs --}}
-            <div class="flex items-center gap-6 mb-6 border-b border-[#e2d9ff]">
-                <button onclick="switchStep('dashboard')" class="text-[14px] font-black text-zinc-400 hover:text-[#1a0050] border-b-2 border-transparent hover:border-[#e2d9ff] pb-3 transition-all uppercase tracking-tight">Обзор</button>
-                <button class="text-[14px] font-black text-[#1a0050] border-b-2 border-[#7C45F5] pb-3 uppercase tracking-tight cursor-default">История</button>
-            </div>
-
             <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
             @if ($transactions->count() > 0)
                 <div class="flex flex-col divide-y divide-zinc-50">
@@ -1318,7 +1312,7 @@
 
     @push('scripts')
         <script>
-            let currentStep = 'das                 hboard';
+            let currentStep = 'dashboard';
             const initialTitle = "Meanly Wallet";
 
             function switchStep(newStep) {
@@ -1328,6 +1322,28 @@
                 });
                 const target = document.getElementById('step-' + newStep);
                 if (target) target.classList.remove('hidden');
+                
+                // Update Tabs State
+                const tabDashboard = document.getElementById('tab-dashboard');
+                const tabTransactions = document.getElementById('tab-transactions');
+                const walletTabs = document.getElementById('wallet-tabs');
+
+                if (newStep === 'dashboard' || newStep === 'transactions') {
+                    if (walletTabs) walletTabs.classList.remove('hidden');
+                    if (tabDashboard) {
+                        tabDashboard.className = newStep === 'dashboard' 
+                            ? "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]"
+                            : "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]";
+                    }
+                    if (tabTransactions) {
+                        tabTransactions.className = newStep === 'transactions' 
+                            ? "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]"
+                            : "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]";
+                    }
+                } else {
+                    if (walletTabs) walletTabs.classList.add('hidden');
+                }
+
                 currentStep = newStep;
                 updateHeader();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
