@@ -3,7 +3,7 @@
         Начать видеозвонок — Meanly 
     </x-slot:title>
 
-    <div class="flex-grow flex items-center justify-center px-4 py-12 md:py-20">
+    <div class="flex-grow flex items-center justify-center px-4 py-12 md:py-20" data-echo-bootstrap>
         <div class="w-full max-w-[460px] bg-white border border-zinc-100 p-8 md:p-12 shadow-[0_24px_80px_rgba(124,69,245,0.08)] relative overflow-hidden">
             <!-- Background Decoration -->
             <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>

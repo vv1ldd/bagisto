@@ -15,56 +15,63 @@ import { createApp } from "vue/dist/vue.esm-bundler";
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 
-window.Pusher = Pusher;
+window.bootstrapEcho = function() {
+    if (window.Echo) return;
 
-const laravelEnv = window.Laravel || {};
+    const laravelEnv = window.Laravel || {};
 
-if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
-    // Enable Pusher logging
-    Pusher.logToConsole = true;
+    if (laravelEnv.reverbAppKey || laravelEnv.pusherAppKey) {
+        // Enable Pusher logging only in DEV if needed, usually false in PROD
+        Pusher.logToConsole = false;
 
-    const wsPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 80);
-    const wssPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 443);
-    const forceTLS = (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https';
-    const host = laravelEnv.reverbHost || laravelEnv.pusherHost || `ws-${laravelEnv.pusherCluster}.pusher.com`;
+        const wsPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 80);
+        const wssPort = parseInt(laravelEnv.reverbPort || laravelEnv.pusherPort || 443);
+        const forceTLS = (laravelEnv.reverbScheme || laravelEnv.pusherScheme || 'https') === 'https';
+        const host = laravelEnv.reverbHost || laravelEnv.pusherHost || `ws-${laravelEnv.pusherCluster}.pusher.com`;
 
-    console.log(`Echo: Connecting to ${forceTLS ? 'wss' : 'ws'}://${host}:${forceTLS ? wssPort : wsPort}`);
+        console.log(`Echo: Connecting to ${forceTLS ? 'wss' : 'ws'}://${host}:${forceTLS ? wssPort : wsPort}`);
 
-    // Store for UI diagnostics
-    window.$signalingServer = { host, port: forceTLS ? wssPort : wsPort, scheme: forceTLS ? 'wss' : 'ws' };
+        // Store for UI diagnostics
+        window.$signalingServer = { host, port: forceTLS ? wssPort : wsPort, scheme: forceTLS ? 'wss' : 'ws' };
 
-    try {
-        window.Echo = new Echo({
-            broadcaster: 'pusher', // Use standard pusher broadcaster for better proxy compatibility
-            key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
-            wsHost: host,
-            wsPort: wsPort,
-            wssPort: wssPort,
-            forceTLS: forceTLS,
-            cluster: laravelEnv.reverbAppCluster || laravelEnv.pusherCluster || 'mt1',
-            enabledTransports: ['ws', 'wss'],
-            authEndpoint: '/broadcasting/auth',
-            enableStats: false,
-        });
+        try {
+            window.Echo = new Echo({
+                broadcaster: 'pusher',
+                key: laravelEnv.reverbAppKey || laravelEnv.pusherAppKey,
+                wsHost: host,
+                wsPort: wsPort,
+                wssPort: wssPort,
+                forceTLS: forceTLS,
+                cluster: laravelEnv.reverbAppCluster || laravelEnv.pusherCluster || 'mt1',
+                enabledTransports: ['ws', 'wss'],
+                authEndpoint: '/broadcasting/auth',
+                enableStats: false,
+            });
 
-        // Diagnostic logs for Echo
-        window.Echo.connector.pusher.connection.bind('connected', () => {
-            console.log('Echo STATUS: Connected to signaling server');
-        });
+            // Diagnostic logs for Echo
+            window.Echo.connector.pusher.connection.bind('connected', () => {
+                console.log('Echo STATUS: Connected to signaling server');
+            });
 
-        window.Echo.connector.pusher.connection.bind('unavailable', () => {
-            console.warn('Echo STATUS: Signaling server unavailable');
-        });
+            window.Echo.connector.pusher.connection.bind('unavailable', () => {
+                console.warn('Echo STATUS: Signaling server unavailable');
+            });
 
-        window.Echo.connector.pusher.connection.bind('state_change', (states) => {
-            console.log('Echo Connection State Change:', states.previous, '->', states.current);
-            window.$emitter.emit('echo-state-change', states.current);
-        });
-    } catch (e) {
-        console.error('Echo: Failed to initialize signaling connection (Cluster or Config error)', e);
+            window.Echo.connector.pusher.connection.bind('state_change', (states) => {
+                console.log('Echo Connection State Change:', states.previous, '->', states.current);
+                window.$emitter.emit('echo-state-change', states.current);
+            });
+        } catch (e) {
+            console.error('Echo: Failed to initialize signaling connection', e);
+        }
+    } else {
+        console.warn('Pusher/Reverb App Key is missing. P2P calls will not work.');
     }
-} else {
-    console.warn('Pusher/Reverb App Key is missing. P2P calls (incoming signals) will not work.');
+};
+
+// Selective initialization: only start if the page requests it (e.g. video-rooms)
+if (document.querySelector('[data-echo-bootstrap]')) {
+    window.bootstrapEcho();
 }
 
 /**
