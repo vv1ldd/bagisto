@@ -18,7 +18,7 @@ contract MeanlyCoin is ERC20, AccessControl {
      * @param defaultAdmin Address of the Cold Wallet (Owner)
      * @param minter Address of the Backend Hot Wallet (Minter)
      */
-    constructor(address defaultAdmin, address minter) ERC20("Meanly", "MNL") {
+    constructor(address defaultAdmin, address minter) ERC20("MEANLY", "MNLY") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
     }
