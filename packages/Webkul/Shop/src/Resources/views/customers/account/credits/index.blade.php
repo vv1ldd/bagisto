@@ -948,25 +948,31 @@
                                 </div>
                             </div>
 
-                            {{-- Balance + Sync Status --}}
-                            <div class="flex items-center gap-3 mt-0.5">
-                                <span class="text-[16px] font-black font-mono text-black">
-                                    {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                    <span
-                                        class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.1em] ml-1">{{ $m[1] }}</span>
-                                </span>
-                                <div class="flex items-center gap-1 text-[12px] font-bold text-zinc-400 opacity-60">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                    @if($address->updated_at)
-                                        {{ $address->updated_at->diffForHumans() }}
-                                    @else
-                                        не синхронизирован
-                                    @endif
+                            {{-- Balance + Sync Status + Send Shortcut --}}
+                            <div class="flex items-center justify-between mt-0.5 pr-2">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-[16px] font-black font-mono text-black">
+                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                        <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.1em] ml-1">{{ $m[1] }}</span>
+                                    </span>
+                                    <div class="flex items-center gap-1 text-[11px] font-bold text-zinc-400 opacity-60">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        @if($address->updated_at)
+                                            {{ $address->updated_at->shortDiffForHumans() }}
+                                        @endif
+                                    </div>
                                 </div>
+
+                                @if(str_contains($address->network, 'arbitrum'))
+                                    <button type="button" 
+                                        onclick="event.stopPropagation(); openSendModal('{{ $address->id }}', '{{ $address->network }}', '{{ $m[1] }}', '{{ $address->balance ?? 0 }}')"
+                                        class="flex items-center gap-1.5 px-3 py-1.5 bg-[#7C45F5] text-white text-[10px] font-black uppercase tracking-wider hover:bg-[#6534d4] transition-all active:scale-95 shadow-lg shadow-violet-100">
+                                        <span class="icon-arrow-right -rotate-45 text-[10px]"></span>
+                                        Отправить
+                                    </button>
+                                @endif
                             </div>
                         </div>
 
@@ -1267,11 +1273,71 @@
                                 <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы
                                 система смогла автоматически зачислить платеж.
                             </p>
+                        {{-- Send Button --}}
+                        <div class="w-full max-w-sm mt-4">
+                            <button type="button" onclick="openSendModal('{{ $address->id }}', '{{ $address->network }}', '{{ $m[1] }}', '{{ $address->balance }}')"
+                                    class="w-full bg-zinc-900 text-white font-black py-5 px-10 shadow-xl transition-all active:scale-95 uppercase tracking-[0.2em] text-[14px] hover:bg-[#7C45F5] flex items-center justify-center gap-3">
+                                <span>📤</span>
+                                <span>Перевести {{ $m[1] }}</span>
+                            </button>
                         </div>
 
                     </div>
                 </div>
             @endforeach
+        </div>
+
+        {{-- Step: Send (New) --}}
+        <div id="step-send" class="hidden">
+            <div class="bg-white border border-zinc-100 shadow-sm p-6 space-y-8">
+                <div class="flex items-center gap-4 border-b border-zinc-50 pb-8">
+                    <div id="send-coin-icon" class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">📤</div>
+                    <div>
+                        <h3 class="text-[20px] font-black text-zinc-900 leading-tight tracking-tight">Перевод активов</h3>
+                        <p id="send-network-label" class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] mt-1.5 opacity-80">
+                            Ethereum Network (Arbitrum)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    {{-- Recipient --}}
+                    <div>
+                        <label class="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Получатель</label>
+                        <div class="relative">
+                            <input type="text" id="send-recipient" oninput="resolveRecipient(this.value)"
+                                placeholder="@alias или 0x..."
+                                class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[14px] text-zinc-900 focus:bg-white focus:border-[#7C45F5] transition-all">
+                            <div id="recipient-resolve-status" class="absolute right-5 top-1/2 -translate-y-1/2 text-[11px] font-bold"></div>
+                        </div>
+                        <p class="text-[11px] text-zinc-400 mt-2 italic px-1" id="recipient-resolved-addr"></p>
+                    </div>
+
+                    {{-- Amount --}}
+                    <div>
+                        <label class="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Сумма</label>
+                        <div class="relative">
+                            <input type="number" id="send-amount" step="any" placeholder="0.00"
+                                class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[24px] font-black text-zinc-900 focus:bg-white focus:border-[#7C45F5] transition-all">
+                            <div class="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 font-black" id="send-coin-symbol">ETH</div>
+                        </div>
+                        <div class="flex justify-between items-center mt-2 px-1">
+                            <p class="text-[11px] text-zinc-400">Доступно: <span id="send-max-balance" class="font-bold text-zinc-600">0.0000</span></p>
+                            <button type="button" onclick="setMaxSendAmount()" class="text-[10px] font-black uppercase text-[#7C45F5] hover:underline">Макс.</button>
+                        </div>
+                    </div>
+
+                    {{-- Passkey Authorization Button --}}
+                    <div class="pt-6">
+                        <button type="button" id="initiate-send-btn" onclick="authorizeAndSend()"
+                            class="w-full bg-zinc-900 hover:bg-[#7C45F5] text-white font-black py-5 px-10 shadow-xl transition-all active:scale-95 flex items-center justify-center gap-4 text-[14px] uppercase tracking-[0.2em]">
+                            <span id="send-btn-text">Подписать и отправить</span>
+                            <span id="send-btn-passkey-icon">🔐</span>
+                            <div id="send-btn-loader" class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{-- Step: Add Wallet --}}
@@ -1349,9 +1415,10 @@
         <script>
             let currentStep = 'dashboard';
             const initialTitle = "Meanly Wallet";
+            let _sendContext = { walletId: null, network: null, symbol: null, balance: 0 };
 
             function switchStep(newStep) {
-                const steps = ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details'];
+                const steps = ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details', 'step-send'];
                 
                 steps.forEach(id => {
                     const el = document.getElementById(id);
@@ -1420,6 +1487,7 @@
                         if (currentStep === 'add-wallet') titleEl.innerText = "Новый кошелек";
                         if (currentStep === 'b2c-details') titleEl.innerText = "Реквизиты для оплаты";
                         if (currentStep === 'topup-details') titleEl.innerText = "Оформление счета";
+                        if (currentStep === 'send') titleEl.innerText = "Отправить активы";
                     }
                 }
             }
@@ -1437,7 +1505,158 @@
                 else if (currentStep === 'b2c-details') switchStep('dashboard');
                 else if (currentStep === 'add-wallet') switchStep('management');
                 else if (currentStep === 'topup-details') switchStep('b2b-management');
+                else if (currentStep === 'send') switchStep('details');
             }
+
+            // --- Ethereum Send / Transfer Logic ---
+            let recipientTimeout = null;
+
+            function openSendModal(id, network, symbol, balance) {
+                _sendContext = { 
+                    walletId: id, 
+                    network: network, 
+                    symbol: symbol, 
+                    balance: parseFloat(balance), 
+                    recipientAddr: null 
+                };
+                
+                document.getElementById('send-coin-symbol').innerText = symbol;
+                document.getElementById('send-max-balance').innerText = balance;
+                document.getElementById('send-network-label').innerText = network.replace('_', ' ').toUpperCase();
+                
+                // Reset inputs
+                document.getElementById('send-recipient').value = '';
+                document.getElementById('send-amount').value = '';
+                document.getElementById('recipient-resolve-status').innerText = '';
+                document.getElementById('recipient-resolved-addr').innerText = '';
+                
+                switchStep('send');
+            }
+
+            function setMaxSendAmount() {
+                document.getElementById('send-amount').value = _sendContext.balance;
+            }
+
+            function resolveRecipient(val) {
+                const status = document.getElementById('recipient-resolve-status');
+                const addrLabel = document.getElementById('recipient-resolved-addr');
+                
+                status.innerText = '';
+                addrLabel.innerText = '';
+                _sendContext.recipientAddr = null;
+                
+                if (!val || val.length < 2) return;
+                
+                if (val.startsWith('@')) {
+                    clearTimeout(recipientTimeout);
+                    status.innerText = '🔍';
+                    recipientTimeout = setTimeout(async () => {
+                        try {
+                            const res = await fetch(`{{ route('shop.customers.account.credits.lookup') }}?alias=${encodeURIComponent(val)}`);
+                            const data = await res.json();
+                            if (data.address) {
+                                status.innerText = '✅';
+                                status.style.color = '#22c55e';
+                                addrLabel.innerText = data.address + (data.name ? ` (${data.name})` : '');
+                                _sendContext.recipientAddr = data.address;
+                            } else {
+                                status.innerText = '❌';
+                                status.style.color = '#ef4444';
+                                addrLabel.innerText = 'Пользователь не найден';
+                            }
+                        } catch (e) {
+                            status.innerText = '❓';
+                        }
+                    }, 500);
+                } else if (val.startsWith('0x') && val.length === 42) {
+                    status.innerText = '✅';
+                    status.style.color = '#22c55e';
+                    _sendContext.recipientAddr = val;
+                }
+            }
+
+            async function authorizeAndSend() {
+                const recipient = _sendContext.recipientAddr;
+                const amount = parseFloat(document.getElementById('send-amount').value);
+                
+                if (!recipient) { 
+                    window.showAlert('error', 'Ошибка', 'Укажите корректного получателя (@псевдоним или 0x адрес)');
+                    return; 
+                }
+                
+                if (!amount || amount <= 0 || amount > _sendContext.balance) { 
+                    window.showAlert('error', 'Ошибка', 'Некорректная сумма перевода');
+                    return; 
+                }
+                
+                const btn = document.getElementById('initiate-send-btn');
+                const btnText = document.getElementById('send-btn-text');
+                const btnIcon = document.getElementById('send-btn-passkey-icon');
+                const btnLoader = document.getElementById('send-btn-loader');
+                
+                btn.disabled = true;
+                btnText.innerText = 'Подготовка...';
+                btnIcon.classList.add('hidden');
+                btnLoader.classList.remove('hidden');
+                
+                try {
+                    // 1. Get Passkey Assertion Options
+                    const optionsResponse = await fetch('{{ route('passkeys.login-options') }}', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}', 
+                            'Accept': 'application/json' 
+                        }
+                    });
+                    
+                    if (!optionsResponse.ok) throw new Error('Ошибка получения настроек с сервера');
+                    const options = await optionsResponse.json();
+                    
+                    btnText.innerText = 'Подтвердите Passkey...';
+                    
+                    // 2. Trigger Passkey Prompt (using SimpleWebAuthn library)
+                    const { startAuthentication } = SimpleWebAuthnBrowser;
+                    const asseResp = await startAuthentication(options);
+                    
+                    btnText.innerText = 'Транзакция...';
+                    
+                    // 3. Submit Transaction with Assertion
+                    const sendResponse = await fetch("{{ route('shop.customers.account.crypto.send') }}", {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}', 
+                            'Accept': 'application/json' 
+                        },
+                        body: JSON.stringify({
+                            wallet_id: _sendContext.walletId,
+                            recipient: recipient,
+                            amount: amount,
+                            assertion: JSON.stringify(asseResp)
+                        })
+                    });
+                    
+                    const result = await sendResponse.json();
+                    if (result.success) {
+                        window.showAlert('success', 'Успех', 'Транзакция успешно подписана и отправлена!');
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        throw new Error(result.message || 'Ошибка обработки транзакции');
+                    }
+                } catch (err) {
+                    console.error('Send Error:', err);
+                    if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
+                        window.showAlert('error', 'Ошибка', err.message);
+                    }
+                    
+                    btn.disabled = false;
+                    btnText.innerText = 'Подписать и отправить';
+                    btnIcon.classList.remove('hidden');
+                    btnLoader.classList.add('hidden');
+                }
+            }
+
             function goToOrganizations() { switchStep('organizations'); }
             function goToAddOrganization() {
                 switchStep('add-organization');

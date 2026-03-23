@@ -184,6 +184,8 @@ Route::prefix('customer')->group(function () {
                  * Credits (formerly Transactions).
                  */
                 Route::group(['middleware' => ['passkey.timeout', \Webkul\Shop\Http\Middleware\CheckWalletAccess::class]], function () {
+                    Route::get('credits/lookup', [\Webkul\Shop\Http\Controllers\Customer\Account\RecipientLookupController::class, 'lookup'])->name('shop.customers.account.credits.lookup');
+                    Route::post('crypto/send', [\Webkul\Shop\Http\Controllers\Customer\Account\CryptoSendController::class, 'store'])->name('shop.customers.account.crypto.send');
                     Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');
                     Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
                     Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
