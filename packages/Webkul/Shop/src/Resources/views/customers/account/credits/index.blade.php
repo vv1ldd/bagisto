@@ -265,13 +265,6 @@
                 @endif
             </div>
         </div>
-                    <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-2">Здесь будут отображаться ваши операции</p>
-                </div>
-            @endif
-                </div>
-            @endif
-        </div>
-    </div>
 
 
 
