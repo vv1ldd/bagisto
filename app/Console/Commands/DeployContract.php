@@ -34,45 +34,74 @@ class DeployContract extends Command
         }
 
         // ---------------------------------------------------------------
-        // 2. Install Foundry if forge is not found
+        // 2. Locate forge (check common paths before installing)
         // ---------------------------------------------------------------
-        $forgeExists = trim(shell_exec('which forge 2>/dev/null'));
+        $home        = rtrim(getenv('HOME') ?: '/root', '/');
+        $forgeDirect  = "{$home}/.foundry/bin/forge";
+        $forgeInPath  = trim(shell_exec('which forge 2>/dev/null'));
 
-        if (empty($forgeExists)) {
+        if (is_executable($forgeDirect)) {
+            $forge = $forgeDirect;
+            $this->info("Found forge at: {$forge}");
+        } elseif (!empty($forgeInPath) && is_executable($forgeInPath)) {
+            $forge = $forgeInPath;
+            $this->info("Found forge at: {$forge}");
+        } else {
             $this->warn('Foundry (forge) not found. Installing...');
 
-            // Download and run the Foundry installer non-interactively
-            passthru('curl -L https://foundry.paradigm.xyz | bash', $installResult);
-
-            if ($installResult !== 0) {
-                $this->error('Failed to install Foundry. Please install it manually: https://getfoundry.sh');
+            passthru('curl -L https://foundry.paradigm.xyz | bash', $r1);
+            if ($r1 !== 0) {
+                $this->error('Failed to download Foundry installer.');
                 return 1;
             }
 
-            // Source the profile and run foundryup
-            passthru('$HOME/.foundry/bin/foundryup', $foundryUpResult);
-
-            if ($foundryUpResult !== 0) {
-                $this->error('foundryup failed. Please run `foundryup` manually and retry.');
+            passthru("{$home}/.foundry/bin/foundryup", $r2);
+            if ($r2 !== 0) {
+                $this->error('foundryup failed. Please run `foundryup` manually.');
                 return 1;
             }
 
-            $forgeExists = trim(shell_exec('which $HOME/.foundry/bin/forge 2>/dev/null')) 
-                        ?: ($HOME = getenv('HOME')) . '/.foundry/bin/forge';
-
+            $forge = $forgeDirect;
             $this->info('Foundry installed successfully!');
         }
 
-        $forge = !empty($forgeExists) ? $forgeExists : (getenv('HOME') . '/.foundry/bin/forge');
+        $this->line("Using forge: {$forge}");
+        $this->line('');
 
         // ---------------------------------------------------------------
-        // 3. Check if forge binary is executable
+        // 3. Check ETH balance — required to broadcast
         // ---------------------------------------------------------------
-        if (!is_executable($forge)) {
-            $forge = getenv('HOME') . '/.foundry/bin/forge';
+        $this->info("Checking ETH balance on {$ownerAddr}...");
+        $balanceJson = @file_get_contents($rpcUrl, false, stream_context_create([
+            'http' => [
+                'method'  => 'POST',
+                'header'  => 'Content-Type: application/json',
+                'content' => json_encode([
+                    'jsonrpc' => '2.0',
+                    'method'  => 'eth_getBalance',
+                    'params'  => [$ownerAddr, 'latest'],
+                    'id'      => 1,
+                ]),
+            ],
+        ]));
+
+        if ($balanceJson) {
+            $balanceData = json_decode($balanceJson, true);
+            $weiHex = $balanceData['result'] ?? '0x0';
+            $wei    = hexdec(ltrim($weiHex, '0x') ?: '0');
+            $eth    = $wei / 1e18;
+            $this->line("  Balance: {$eth} ETH");
+
+            if ($eth < 0.0001) {
+                $this->error("❌ Insufficient balance! The hot wallet needs ETH to pay for gas.");
+                $this->line("   Send at least $1–2 worth of ETH (Arbitrum One network) to:");
+                $this->line("   {$ownerAddr}");
+                $this->line('');
+                $this->line("   Then re-run: php artisan crypto:deploy-contract");
+                return 1;
+            }
         }
 
-        $this->info("Using forge at: {$forge}");
         $this->line('');
 
         // ---------------------------------------------------------------
