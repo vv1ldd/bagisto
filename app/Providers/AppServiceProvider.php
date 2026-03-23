@@ -42,5 +42,7 @@ class AppServiceProvider extends ServiceProvider
         ParallelTesting::setUpTestDatabase(function (string $database, int $token) {
             Artisan::call('db:seed');
         });
+
+        \Illuminate\Support\Facades\Event::listen('sales.invoice.save.after', [\App\Listeners\MintNftOnPurchase::class, 'handle']);
     }
 }
