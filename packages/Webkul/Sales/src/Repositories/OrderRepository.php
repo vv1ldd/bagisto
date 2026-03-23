@@ -183,10 +183,20 @@ class OrderRepository extends Repository
 
                         // ─── Dispatch On-Chain Cashback Minting Job ───
                         if (!empty($order->customer->credits_id) && str_starts_with($order->customer->credits_id, '0x')) {
+                            // Convert to target currency (e.g., USD) if configured
+                            $targetCurrency = config('meanly.cashback_coin_currency', 'RUB');
+                            $mintAmount = (float) $cashbackAmount;
+
+                            if ($targetCurrency !== 'RUB') {
+                                // convertPrice uses Bagisto's internal rates
+                                $mintAmount = core()->convertPrice($cashbackAmount, $targetCurrency);
+                            }
+
                             \App\Jobs\ProcessCashbackMintingJob::dispatch(
                                 $order->id,
                                 $order->customer_id,
-                                (float) $cashbackAmount
+                                (float) $mintAmount,
+                                $targetCurrency
                             );
                         }
                     }

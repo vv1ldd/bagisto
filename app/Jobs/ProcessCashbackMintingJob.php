@@ -17,6 +17,7 @@ class ProcessCashbackMintingJob implements ShouldQueue
     public $orderId;
     public $customerId;
     public $amount;
+    public $currency;
 
     /**
      * Create a new job instance.
@@ -24,12 +25,14 @@ class ProcessCashbackMintingJob implements ShouldQueue
      * @param int $orderId
      * @param int $customerId
      * @param float $amount The cashback amount in coins
+     * @param string $currency The code of the currency used for minting
      */
-    public function __construct(int $orderId, int $customerId, float $amount)
+    public function __construct(int $orderId, int $customerId, float $amount, string $currency = 'RUB')
     {
         $this->orderId = $orderId;
         $this->customerId = $customerId;
         $this->amount = $amount;
+        $this->currency = $currency;
     }
 
     /**
@@ -71,10 +74,11 @@ class ProcessCashbackMintingJob implements ShouldQueue
                 'status' => 'completed',
                 'reference_type' => get_class($order),
                 'reference_id' => $order->id,
-                'notes' => "On-Chain Cashback (Arbitrum) for Order #{$order->increment_id}",
+                'notes' => "On-Chain Cashback ({$this->currency}) for Order #{$order->increment_id}",
                 'metadata' => [
                     'transaction_id' => $txHash,
                     'network' => 'arbitrum_one',
+                    'currency' => $this->currency,
                 ],
             ]);
         } else {
