@@ -167,20 +167,43 @@
                             <div class="absolute -right-4 -top-4 w-16 h-16 bg-[#7C45F5] opacity-[0.03] rounded-full blur-xl group-hover:opacity-[0.08] transition-opacity"></div>
                             
                             <div class="w-12 h-12 bg-[#7C45F5] text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-lg shadow-[#7C45F5]/20 mr-4 shrink-0 group-hover:scale-110">
-                                ⚡️
+                                {{ $netLabels['arbitrum_one']['icon'] ?? '⚡️' }}
                             </div>
                             <div class="flex flex-col items-start flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
                                     <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Прямой перевод</div>
                                     <span class="bg-[#7C45F5] text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">рекомендуется</span>
                                 </div>
-                                <div class="text-[11px] text-[#7C45F5] font-bold uppercase tracking-widest mt-0.5 truncate w-full">Arbitrum One — {{ $primaryArbAddress->address }}</div>
+                                <div class="text-[11px] text-[#7C45F5] font-bold uppercase tracking-widest mt-0.5 truncate w-full">Arbitrum One (ETH)</div>
                             </div>
                             <div class="text-[#7C45F5] ml-4">
                                 <span class="icon-arrow-right text-xl"></span>
                             </div>
                         </button>
                     @endif
+
+                    {{-- Other Verified Wallets (Cold Wallets) --}}
+                    @foreach($allAddresses as $address)
+                        @if(!$primaryArbAddress || $address->id !== $primaryArbAddress->id)
+                            @if($address->verified_at)
+                                @php
+                                    $m = $netLabels[$address->network] ?? ['label' => strtoupper($address->network), 'icon' => '🪙'];
+                                @endphp
+                                <button onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
+                                    <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
+                                        {{ $m['icon'] ?? '⚡️' }}
+                                    </div>
+                                    <div class="flex flex-col items-start flex-1">
+                                        <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">{{ $address->alias ?: $m['label'] }}</div>
+                                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">{{ strtoupper($address->network) }} — {{ $address->address }}</div>
+                                    </div>
+                                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
+                                        <span class="icon-arrow-right text-xl"></span>
+                                    </div>
+                                </button>
+                            @endif
+                        @endif
+                    @endforeach
                     @if ($user->is_crypto_enabled)
                         <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
                             <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
@@ -1317,8 +1340,9 @@
         <div id="step-details" class="hidden">
             @foreach($allAddresses as $address)
                 @php
-                    $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH']];
+                    $nm = ['bitcoin' => ['Bitcoin', 'BTC'], 'ethereum' => ['Ethereum', 'ETH'], 'ton' => ['TON', 'TON'], 'usdt_ton' => ['USDT (TON)', 'USDT'], 'dash' => ['Dash', 'DASH'], 'arbitrum_one' => ['Arbitrum', 'ETH'], 'usdt_arbitrum_one' => ['USDT (Arb)', 'USDT']];
                     $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc'];
+                    $platformAddress = config("crypto.verification_addresses.{$address->network}");
                 @endphp
                 <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
                     <div class="bg-white  shadow-sm overflow-hidden p-5 flex flex-col items-center">
@@ -1326,7 +1350,7 @@
                         {{-- QR Code Section --}}
                         <div class="relative inline-block mt-4 mb-2">
                             <div class="border border-zinc-100  p-6 pb-8 bg-white shadow-sm inline-block">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($address->address) }}"
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($platformAddress) }}"
                                     alt="QR Code" class="w-56 h-56 mx-auto" />
                             </div>
                             {{-- Floated Label --}}
@@ -1340,13 +1364,13 @@
 
                         {{-- Address Copy Section --}}
                         <div class="w-full max-w-sm mt-8 bg-zinc-50  p-6 text-center cursor-pointer active:scale-95 transition-all group"
-                            onclick="copyAddr('{{ $address->address }}', this.querySelector('.copy-txt'))">
+                            onclick="copyAddr('{{ $platformAddress }}', this.querySelector('.copy-txt'))">
                             <code class="font-mono text-[14px] text-zinc-800 break-all block leading-relaxed mb-6">
-                                                                                                                                                                                                                                                                    {{ $address->address }}
-                                                                                                                                                                                                                                                                </code>
+                                {{ $platformAddress }}
+                            </code>
                             <div
                                 class="flex items-center justify-center gap-2 text-black font-black text-[11px] uppercase tracking-wider">
-                                <span class="copy-txt">Скопировать</span>
+                                <span class="copy-txt">Скопировать адрес пополнения</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -1358,10 +1382,15 @@
                         {{-- Verification Warning --}}
                         <div class="w-full max-w-sm mt-8 p-5 bg-violet-50/50  flex gap-3 text-left">
                             <span class="text-lg">⚠️</span>
-                            <p class="text-[12px] text-violet-700 leading-snug">
-                                <b>Внимание:</b> Переводите средства исключительно из верифицированного кошелька, чтобы
-                                система смогла автоматически зачислить платеж.
-                            </p>
+                            <div class="flex flex-col gap-1.5">
+                                <p class="text-[12px] text-violet-700 leading-snug">
+                                    <b>Внимание:</b> Переводите средства исключительно С вашего верифицированного кошелька <b>{{ $address->alias ?: $address->address }}</b>, чтобы система смогла автоматически зачислить платеж.
+                                </p>
+                                <p class="text-[10px] text-violet-500 uppercase font-black tracking-widest mt-1">
+                                    Сеть: {{ strtoupper($address->network) }}
+                                </p>
+                            </div>
+                        </div>
                         {{-- Send Button --}}
                         <div class="w-full max-w-sm mt-4">
                             <button type="button" onclick="openSendModal('{{ $address->id }}', '{{ $address->network }}', '{{ $m[1] }}', '{{ $address->balance }}')"

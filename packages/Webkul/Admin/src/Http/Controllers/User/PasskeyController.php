@@ -35,12 +35,14 @@ class PasskeyController extends Controller
         $currentHost = $request->getHost();
         config(['passkeys.relying_party.id' => $currentHost]);
 
+        /** @var \Webkul\User\Models\Admin $user */
         $user = Auth::guard('admin')->user();
         
         if (!$user || !($user instanceof \Spatie\LaravelPasskeys\Models\Concerns\HasPasskeys)) {
             return response()->json(['message' => 'Unauthenticated or Passkeys not supported.'], 401);
         }
 
+        /** @var \Spatie\LaravelPasskeys\Models\Concerns\HasPasskeys $user */
         $optionsJson = $generateOptionsAction->execute($user, asJson: true);
         
         // Patch options for Google Password Manager compatibility (similar to shop)
