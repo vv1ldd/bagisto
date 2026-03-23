@@ -22,12 +22,17 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
     // Gas safety limit for batch operations
     uint256 public constant MAX_BATCH_SIZE = 200;
 
+    // Address of the project treasury for economic operations
+    address public treasury;
+
     // Production Events for analytics and transparency
-    event GiftMinted(address indexed to, uint256 indexed tokenId, string uri);
+    event GiftMinted(address indexed to, uint256 indexed tokenId, string uri, string reason);
+    event BurnedWithReason(address indexed from, uint256 indexed tokenId, string reason);
     event MinterAdded(address indexed account);
     event MinterRemoved(address indexed account);
     event MaxMintPerTxUpdated(uint256 oldLimit, uint256 newLimit);
     event BatchMint(uint256 recipientsCount);
+    event TreasuryUpdated(address indexed oldTreasury, address indexed newTreasury);
 
     /**
      * @dev Constructor
@@ -43,22 +48,22 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
     }
 
     /**
-     * @dev Mints a new NFT with metadata URI. Restricted to MINTER_ROLE and only when not paused.
+     * @dev Mints a new NFT with metadata URI and audit reason. Restricted to MINTER_ROLE.
      */
-    function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) whenNotPaused {
+    function safeMint(address to, string memory uri, string memory reason) public onlyRole(MINTER_ROLE) whenNotPaused {
         require(to != address(0), "Meanly: mint to the zero address");
         
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
         
-        emit GiftMinted(to, tokenId, uri);
+        emit GiftMinted(to, tokenId, uri, reason);
     }
 
     /**
-     * @dev Gas-efficient batch minting for multiple recipients/URIs.
+     * @dev Gas-efficient batch minting for multiple recipients/URIs with audit reason.
      */
-    function batchMint(address[] calldata recipients, string[] calldata uris) 
+    function batchMint(address[] calldata recipients, string[] calldata uris, string memory reason) 
         external 
         onlyRole(MINTER_ROLE) 
         whenNotPaused 
@@ -73,10 +78,27 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
             _safeMint(recipients[i], tokenId);
             _setTokenURI(tokenId, uris[i]);
             
-            emit GiftMinted(recipients[i], tokenId, uris[i]);
+            emit GiftMinted(recipients[i], tokenId, uris[i], reason);
         }
 
         emit BatchMint(recipients.length);
+    }
+
+    /**
+     * @dev Destroys an NFT with an audit reason.
+     */
+    function burnWithReason(uint256 tokenId, string memory reason) public whenNotPaused {
+        _burn(tokenId);
+        emit BurnedWithReason(msg.sender, tokenId, reason);
+    }
+
+    /**
+     * @dev Updates the treasury address. Only Admin can call this.
+     */
+    function setTreasury(address newTreasury) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newTreasury != address(0), "Meanly: treasury is zero address");
+        emit TreasuryUpdated(treasury, newTreasury);
+        treasury = newTreasury;
     }
 
     /**

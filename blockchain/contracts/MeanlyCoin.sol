@@ -19,11 +19,17 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
     // Gas safety limit for batch operations
     uint256 public constant MAX_BATCH_SIZE = 200;
 
+    // Address of the project treasury for economic operations
+    address public treasury;
+
     // Production Events for analytics and transparency
     event MinterAdded(address indexed account);
     event MinterRemoved(address indexed account);
     event MaxMintPerTxUpdated(uint256 oldLimit, uint256 newLimit);
     event BatchMint(uint256 recipientsCount);
+    event MintedWithReason(address indexed to, uint256 amount, string reason);
+    event BurnedWithReason(address indexed from, uint256 amount, string reason);
+    event TreasuryUpdated(address indexed oldTreasury, address indexed newTreasury);
 
     /**
      * @dev Constructor
@@ -40,12 +46,36 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
     }
 
     /**
-     * @dev Mints new tokens. Restricted by MINTER_ROLE and safety limits.
+     * @dev Mints new tokens. Restricted to MINTER_ROLE and only when not paused.
+     * @param to Recipient address
+     * @param amount Amount to mint
+     * @param reason Purpose of minting (e.g., "Cashback Order #123")
      */
-    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) whenNotPaused {
+    function mint(address to, uint256 amount, string memory reason) public onlyRole(MINTER_ROLE) whenNotPaused {
         require(to != address(0), "Meanly: mint to the zero address");
         require(amount <= maxMintPerTx, "Meanly: amount exceeds maxMintPerTx");
+        
         _mint(to, amount);
+        emit MintedWithReason(to, amount, reason);
+    }
+
+    /**
+     * @dev Destroys tokens.
+     * @param amount Amount to burn
+     * @param reason Purpose of burning (e.g., "Payment for Order #456")
+     */
+    function burnWithReason(uint256 amount, string memory reason) public whenNotPaused {
+        _burn(msg.sender, amount);
+        emit BurnedWithReason(msg.sender, amount, reason);
+    }
+
+    /**
+     * @dev Updates the treasury address. Only Admin can call this.
+     */
+    function setTreasury(address newTreasury) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newTreasury != address(0), "Meanly: treasury is zero address");
+        emit TreasuryUpdated(treasury, newTreasury);
+        treasury = newTreasury;
     }
 
     /**
@@ -59,8 +89,11 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
 
     /**
      * @dev Gas-efficient batch minting for multiple recipients.
+     * @param recipients List of recipient addresses
+     * @param amounts List of amounts corresponding to each recipient
+     * @param reason Purpose of the batch (e.g., "Monthly Bonus Distribution")
      */
-    function batchMint(address[] calldata recipients, uint256[] calldata amounts) 
+    function batchMint(address[] calldata recipients, uint256[] calldata amounts, string memory reason) 
         external 
         onlyRole(MINTER_ROLE) 
         whenNotPaused 
@@ -72,6 +105,7 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
             require(recipients[i] != address(0), "Meanly: mint to the zero address");
             require(amounts[i] <= maxMintPerTx, "Meanly: exceeds maxMintPerTx");
             _mint(recipients[i], amounts[i]);
+            emit MintedWithReason(recipients[i], amounts[i], reason);
         }
 
         emit BatchMint(recipients.length);
