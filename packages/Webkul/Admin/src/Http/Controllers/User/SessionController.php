@@ -48,12 +48,19 @@ class SessionController extends Controller
             return redirect()->back();
         }
 
-        if (! auth()->guard('admin')->user()->status) {
+        $user = auth()->guard('admin')->user();
+
+        if (! $user->status) {
             session()->flash('warning', trans('admin::app.settings.users.activate-warning'));
 
             auth()->guard('admin')->logout();
 
             return redirect()->route('admin.session.create');
+        }
+
+        // Onboarding check: Redirect to security setup if no Passkey is configured
+        if (! $user->passkeys->count()) {
+            return redirect()->route('admin.security.onboarding.index');
         }
 
         if (! bouncer()->hasPermission('dashboard')) {
