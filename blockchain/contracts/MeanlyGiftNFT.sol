@@ -4,15 +4,15 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
  * @title MeanlyGiftNFT
- * @dev ERC721 Non-Fungible Token for Purchase Gifts.
- * The Hot Wallet (Minter) can mint new NFTs to users.
- * The Cold Wallet (Admin) manages the minter roles.
+ * @dev ERC721 Token for Purchase Gifts with production safety features.
  */
-contract MeanlyGiftNFT is ERC721, ERC721URIStorage, AccessControl {
+contract MeanlyGiftNFT is ERC721, ERC721URIStorage, AccessControl, Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    
     uint256 private _nextTokenId;
 
     /**
@@ -29,13 +29,33 @@ contract MeanlyGiftNFT is ERC721, ERC721URIStorage, AccessControl {
     }
 
     /**
-     * @dev Mints a new NFT with a specific metadata URI to a buyer's address.
-     * Can only be called by an account with the MINTER_ROLE.
+     * @dev Mints a new NFT with metadata URI. Restricted to MINTER_ROLE and only when not paused.
      */
-    function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) {
+    function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) whenNotPaused {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+    }
+
+    /**
+     * @dev Pauses all minting and transfers. Emergency "Panic Button".
+     */
+    function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _pause();
+    }
+
+    /**
+     * @dev Unpauses the contract.
+     */
+    function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _unpause();
+    }
+
+    /**
+     * @dev Hook that is called before any token transfer.
+     */
+    function _update(address to, uint256 tokenId, address auth) internal override(ERC721) whenNotPaused returns (address) {
+        return super._update(to, tokenId, auth);
     }
 
     // The following functions are overrides required by Solidity for multiple inheritance.
