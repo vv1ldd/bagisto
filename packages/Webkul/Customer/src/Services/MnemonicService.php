@@ -138,6 +138,49 @@ class MnemonicService
     }
 
     /**
+     * Generate a "story" or narrative text from a mnemonic phrase.
+     * Weaves the words into a semi-coherent narrative to make it more memorable.
+     *
+     * @param  array  $words
+     * @return string
+     */
+    public function generateStory(array $words): string
+    {
+        $narratives = [
+            'В древнем лесу ', 'Странник увидел ', 'Там, где ', 'Внезапно появился ',
+            'Под светом луны ', 'Среди облаков ', 'В самом сердце ', 'Легенда гласит, что ',
+            'На вершине горы ', 'Тихо шептали ', 'Золотой блик ', 'Ветер принес ',
+            'В отражении воды ', 'Старый ключ ', 'Путь через ', 'Оставляя за собой ',
+            'Скрытая дверь ', 'Вспышка света ', 'Давным-давно ', 'В конце пути '
+        ];
+
+        $connectors = [
+            ' нашел ', ' превратился в ', ' вел через ', ' скрывал ',
+            ' за которым был ', ' осветил ', ' пел о ', ' принес ',
+            ' изменил ', ' открыл ', ' сохранил ', ' защитил ',
+            ' пробудил ', ' унес ', ' показал ', ' встретил ',
+            ' напомнил о ', ' создал ', ' украсил ', ' закончил '
+        ];
+
+        $story = $narratives[array_rand($narratives)];
+        
+        foreach ($words as $index => $word) {
+            $story .= "**" . $word . "**";
+            
+            if ($index < count($words) - 1) {
+                $story .= $connectors[$index % count($connectors)];
+                
+                // Add natural breaks
+                if (($index + 1) % 4 === 0) {
+                    $story .= ". " . $narratives[($index + 1) % count($narratives)];
+                }
+            }
+        }
+
+        return $story . ".";
+    }
+
+    /**
      * Get the entire BIP39 wordlist.
      *
      * @return array

@@ -44,8 +44,10 @@ class CustomerController extends Controller
 
         // If already backed up and VERIFIED, just redirect to the view screen
         if ($customer->mnemonic_hash && $customer->mnemonic_verified_at && session()->has('pending_recovery_key')) {
+            $words = explode(' ', session('pending_recovery_key'));
             return view('shop::customers.account.profile.recovery-key', [
-                'words' => explode(' ', session('pending_recovery_key'))
+                'words' => $words,
+                'story' => $this->mnemonicService->generateStory($words)
             ]);
         }
 
@@ -63,7 +65,8 @@ class CustomerController extends Controller
         session(['pending_recovery_key' => $recoveryKey]);
 
         return view('shop::customers.account.profile.recovery-key', [
-            'words' => $mnemonicWords
+            'words' => $mnemonicWords,
+            'story' => $this->mnemonicService->generateStory($mnemonicWords)
         ]);
     }
 

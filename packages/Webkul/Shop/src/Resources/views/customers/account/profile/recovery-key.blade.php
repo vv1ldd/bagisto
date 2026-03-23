@@ -44,6 +44,24 @@
                 @endforeach
             </div>
 
+            {{-- Mnemonics Story (Memorization Aid) --}}
+            @if(isset($story))
+                <div class="w-full mb-8 text-left">
+                    <div class="flex items-center gap-2 mb-3 px-1">
+                        <span class="text-[10px] font-black text-[#7C45F5] uppercase tracking-wider">История для запоминания (Мнемоника)</span>
+                        <div class="h-px bg-gradient-to-r from-[#7C45F5]/20 to-transparent flex-1"></div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-[#F8F7FF] to-white border border-[#7C45F5]/10 p-5 md:p-6 rounded-[1.5rem] shadow-inner relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#7C45F5]/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                        
+                        <p class="text-[#1a0050] text-[15px] md:text-base leading-relaxed font-medium relative z-10">
+                            {!! preg_replace('/\*\*(.*?)\*\*/', '<span class="text-[#7C45F5] font-black underline decoration-2 decoration-[#7C45F5]/20 underline-offset-4">$1</span>', $story) !!}
+                        </p>
+                    </div>
+                </div>
+            @endif
+
             <div class="w-full flex flex-col items-center gap-4">
                 <a id="finish-btn" href="{{ route('shop.customers.account.profile.verify_recovery_key') }}"
                     class="flex w-full items-center justify-center gap-2 !rounded-xl bg-[#7C45F5] px-6 py-4 text-center text-sm font-bold text-white shadow-xl shadow-[#7C45F5]/30 transition-all hover:bg-[#6534d4] active:scale-[0.98] max-w-xs group">
