@@ -76,18 +76,18 @@ class DeployContract extends Command
         $this->line('');
 
         // ---------------------------------------------------------------
-        // 4. Build forge create command (key passed via env var, NOT as arg)
+        // 4. Build forge create command
+        //    We set PRIVATE_KEY via putenv() so the child process inherits it.
         // ---------------------------------------------------------------
-        $cmd = implode(' ', [
-            "PRIVATE_KEY=" . escapeshellarg($privateKey),
-            escapeshellarg($forge),
-            'create',
-            escapeshellarg("{$contractPath}:MeanlyGifts"),
-            '--rpc-url', escapeshellarg($rpcUrl),
-            '--private-key', '$PRIVATE_KEY',
-            '--constructor-args', escapeshellarg($ownerAddr),
-            '--broadcast',
-        ]);
+        putenv("PRIVATE_KEY={$privateKey}");
+
+        $contractPath = escapeshellarg("{$contractPath}:MeanlyGifts");
+        $rpcUrlEsc    = escapeshellarg($rpcUrl);
+        $ownerEsc     = escapeshellarg($ownerAddr);
+        $forgeEsc     = escapeshellarg($forge);
+
+        // Use `sh -c` so the shell expands $PRIVATE_KEY from the env
+        $cmd = "sh -c '{$forgeEsc} create {$contractPath} --rpc-url {$rpcUrlEsc} --private-key \"\$PRIVATE_KEY\" --constructor-args {$ownerEsc} 2>&1'";
 
         $this->info('Compiling and deploying MeanlyGifts.sol to Arbitrum...');
         $this->line('(this may take 30–60 seconds)');
@@ -98,7 +98,7 @@ class DeployContract extends Command
         // ---------------------------------------------------------------
         $output = [];
         $exitCode = 0;
-        exec($cmd . ' 2>&1', $output, $exitCode);
+        exec($cmd, $output, $exitCode);
 
         $fullOutput = implode("\n", $output);
         $this->line($fullOutput);
