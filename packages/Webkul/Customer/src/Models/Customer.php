@@ -107,6 +107,8 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'is_crypto_enabled',
         'mnemonic_hash',
         'mnemonic_verified_at',
+        'public_key',
+        'public_key_hash',
     ];
 
     /**

@@ -58,8 +58,19 @@ class CustomerController extends Controller
         $recoveryKey = implode(' ', $mnemonicWords);
         $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
 
-        // Save the hash to the customer record
-        $this->customerRepository->update(['mnemonic_hash' => $mnemonicHash], $customer->id);
+        // Derive deterministic fields
+        $blockchainAddressService = app(\Webkul\Customer\Services\BlockchainAddressService::class);
+        $blockchainAddress = $blockchainAddressService->deriveEthereumAddress($mnemonicWords);
+        $publicKeyData = $blockchainAddressService->derivePublicKeyData($mnemonicWords);
+
+        // Save the hash and derived fields to the customer record
+        $this->customerRepository->update([
+            'mnemonic_hash'         => $mnemonicHash,
+            'credits_id'            => $blockchainAddress,
+            'public_key'            => $publicKeyData['public_key'] ?? null,
+            'public_key_hash'       => $publicKeyData['public_key_hash'] ?? null,
+            'mnemonic_verified_at'  => null, // Reset verification on new key
+        ], $customer->id);
 
         // Store full phrase in session so recovery-key view can display it
         session(['pending_recovery_key' => $recoveryKey]);
@@ -95,8 +106,11 @@ class CustomerController extends Controller
             return redirect()->route('shop.customers.account.index');
         }
 
+        $words = explode(' ', $recoveryKey);
+
         return view('shop::customers.account.profile.recovery-key', [
-            'words' => explode(' ', $recoveryKey)
+            'words' => $words,
+            'story' => $this->mnemonicService->generateStory($words),
         ]);
     }
 

@@ -27,7 +27,8 @@ class RegistrationController extends Controller
         protected CustomerRepository $customerRepository,
         protected CustomerGroupRepository $customerGroupRepository,
         protected SubscribersListRepository $subscriptionRepository,
-        protected \Webkul\Customer\Services\MnemonicService $mnemonicService
+        protected \Webkul\Customer\Services\MnemonicService $mnemonicService,
+        protected \Webkul\Customer\Services\BlockchainAddressService $blockchainAddressService
     ) {
     }
 
@@ -182,6 +183,8 @@ class RegistrationController extends Controller
         $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
         $recoveryKey = implode(' ', $mnemonicWords);
         $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+        $blockchainAddress = $this->blockchainAddressService->deriveEthereumAddress($mnemonicWords);
+        $publicKeyData = $this->blockchainAddressService->derivePublicKeyData($mnemonicWords);
 
         // Store in session — will be shown after email link click
         session(['pending_recovery_key' => $recoveryKey]);
@@ -195,6 +198,9 @@ class RegistrationController extends Controller
             'username' => 'user_' . Str::random(8),
             'password' => bcrypt($recoveryKey),
             'mnemonic_hash' => $mnemonicHash,
+            'credits_id' => $blockchainAddress,
+            'public_key' => $publicKeyData['public_key'] ?? null,
+            'public_key_hash' => $publicKeyData['public_key_hash'] ?? null,
             'api_token' => Str::random(80),
             'is_verified' => !core()->getConfigData('customer.settings.email.verification'),
             'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,
