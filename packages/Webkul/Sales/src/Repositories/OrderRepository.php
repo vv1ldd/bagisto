@@ -180,6 +180,15 @@ class OrderRepository extends Repository
                             'reference_id' => $order->id,
                             'notes' => "Кэшбек {$cashbackPercent}% с заказа #{$order->increment_id}",
                         ]);
+
+                        // ─── Dispatch On-Chain Cashback Minting Job ───
+                        if (!empty($order->customer->credits_id) && str_starts_with($order->customer->credits_id, '0x')) {
+                            \App\Jobs\ProcessCashbackMintingJob::dispatch(
+                                $order->id,
+                                $order->customer_id,
+                                (float) $cashbackAmount
+                            );
+                        }
                     }
                 } catch (\Exception $e) {
                     Log::error('Cashback failed for order #' . $order->increment_id . ': ' . $e->getMessage());

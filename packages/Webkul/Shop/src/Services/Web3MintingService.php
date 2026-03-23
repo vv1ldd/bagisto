@@ -31,54 +31,72 @@ class Web3MintingService
      */
     public function mintGiftNft(string $recipientAddress, int $tokenId, int $amount = 1): ?string
     {
-        if (empty($this->privateKey) || empty($this->contractAddress)) {
-            Log::error("Web3MintingService: Missing PRIVATE_KEY or CONTRACT_ADDRESS in .env");
+        return $this->sendMintTransaction($this->contractAddress, '731133e9', $recipientAddress, $tokenId, $amount, true);
+    }
+
+    /**
+     * Mint an ERC-20 Cashback Coin to a specific user.
+     *
+     * @param string $recipientAddress The user's 0x address
+     * @param float $amount The amount of coins to mint (will be adjusted for 18 decimals)
+     * @return string|null The Transaction Hash (TxHash) or null on failure
+     */
+    public function mintCashbackCoin(string $recipientAddress, float $amount): ?string
+    {
+        $tokenContract = config('meanly.cashback_token_contract_address');
+        if (empty($tokenContract)) {
+            Log::error("Web3MintingService: Missing CASHBACK_TOKEN_CONTRACT_ADDRESS in config/meanly.php");
+            return null;
+        }
+
+        // ERC-20 typically has 18 decimals. 
+        // We convert the float amount to a large integer: amount * 10^18
+        $amountWithDecimals = number_format($amount, 18, '.', '');
+        $amountBI = new BigInteger(str_replace('.', '', $amountWithDecimals));
+
+        return $this->sendMintTransaction($tokenContract, '40c10f19', $recipientAddress, $amountBI, null, false);
+    }
+
+    /**
+     * Generic helper to send a mint/transfer transaction.
+     */
+    protected function sendMintTransaction(string $contract, string $selector, string $recipient, $val1, $val2 = null, bool $isErc1155 = false): ?string
+    {
+        if (empty($this->privateKey) || empty($contract)) {
+            Log::error("Web3MintingService: Missing PRIVATE_KEY or CONTRACT_ADDRESS");
             return null;
         }
 
         try {
-            // 1. Get current Nonce (Transaction count) for the Admin wallet
             $adminAddress = $this->privateKeyToAddress($this->privateKey);
             $nonce = $this->getTransactionCount($adminAddress);
 
-            // 2. Build the data payload for the ERC-1155 mint(address,uint256,uint256,bytes) function
-            // Function selector: keccak256("mint(address,uint256,uint256,bytes)") = 0x731133e9
-            $functionSelector = '731133e9';
-            $paddedAddress = str_pad(str_replace('0x', '', $recipientAddress), 64, '0', STR_PAD_LEFT);
-            $paddedTokenId = str_pad(dechex($tokenId), 64, '0', STR_PAD_LEFT);
-            $paddedAmount = str_pad(dechex($amount), 64, '0', STR_PAD_LEFT);
-            // Default empty bytes parameter for 'data'
-            $dataPointer = str_pad(dechex(128), 64, '0', STR_PAD_LEFT);
-            $dataLength = str_pad(dechex(0), 64, '0', STR_PAD_LEFT);
+            $paddedAddress = str_pad(str_replace('0x', '', $recipient), 64, '0', STR_PAD_LEFT);
             
-            $dataPayload = $functionSelector . $paddedAddress . $paddedTokenId . $paddedAmount . $dataPointer . $dataLength;
+            if ($isErc1155) {
+                // ERC-1155 mint(address,id,amount,bytes)
+                $paddedId = str_pad(dechex((int)$val1), 64, '0', STR_PAD_LEFT);
+                $paddedAmount = str_pad(dechex((int)$val2), 64, '0', STR_PAD_LEFT);
+                $dataPointer = str_pad(dechex(128), 64, '0', STR_PAD_LEFT);
+                $dataLength = str_pad(dechex(0), 64, '0', STR_PAD_LEFT);
+                $dataPayload = $selector . $paddedAddress . $paddedId . $paddedAmount . $dataPointer . $dataLength;
+            } else {
+                // ERC-20 mint(address,amount)
+                // val1 is BigInteger
+                $amountHex = $val1->toHex();
+                $paddedAmount = str_pad($amountHex, 64, '0', STR_PAD_LEFT);
+                $dataPayload = $selector . $paddedAddress . $paddedAmount;
+            }
 
-            // 3. Get network gas price (Arbitrum is very cheap)
             $gasPriceHex = $this->getGasPrice();
-            // Estimate gas limit, default to 150000 for minting
             $gasLimitHex = dechex(150000);
-
-            // 4. Construct raw transaction object
-            // Arbitrum Sepolia chain ID is 421614. Arbitrum One is 42161.
             $chainId = env('EVM_CHAIN_ID', 421614); 
 
-            $transaction = new Transaction(
-                dechex($nonce),
-                $gasPriceHex,
-                $gasLimitHex,
-                $this->contractAddress,
-                '0', // Sending 0 ETH with this transaction
-                $dataPayload
-            );
-
-            // 5. Sign the offline raw transaction
+            $transaction = new Transaction(dechex($nonce), $gasPriceHex, $gasLimitHex, $contract, '0', $dataPayload);
             $signedTx = $transaction->getRaw($this->privateKey, $chainId);
-
-            // 6. Broadcast to Alchemy
             $txHash = $this->sendRawTransaction('0x' . $signedTx);
 
-            Log::info("Web3MintingService: Successfully sent mint transaction. TxHash: " . $txHash);
-            
+            Log::info("Web3MintingService: Tx sent. Hash: " . $txHash);
             return $txHash;
 
         } catch (\Exception $e) {

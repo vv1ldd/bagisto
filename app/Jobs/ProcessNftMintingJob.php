@@ -59,13 +59,19 @@ class ProcessNftMintingJob implements ShouldQueue
             
             // Log this transaction locally so the user can see it in their history
             \Webkul\Customer\Models\CustomerTransaction::create([
+                'uuid' => \Illuminate\Support\Str::uuid(),
                 'customer_id' => $customer->id,
-                'transaction_id' => $txHash,
-                'type' => 'nft_gift',
                 'amount' => 1,
+                'type' => 'nft_gift',
                 'status' => 'completed',
-                'currency' => 'MGF', // Meanly Gift Token
-                'title' => 'Подарочный NFT за заказ #' . $order->id,
+                'reference_type' => get_class($order),
+                'reference_id' => $order->id,
+                'notes' => 'Подарочный NFT за заказ #' . $order->increment_id,
+                'metadata' => [
+                    'transaction_id' => $txHash,
+                    'token_id' => $this->tokenId,
+                    'currency' => 'MGF',
+                ],
             ]);
         } else {
             Log::error("ProcessNftMintingJob: Failed to mint NFT for Customer [{$customer->id}].");
