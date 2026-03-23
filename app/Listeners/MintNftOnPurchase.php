@@ -42,10 +42,10 @@ class MintNftOnPurchase implements ShouldQueue
             return;
         }
 
-        // Mint generic "First Purchase" or "Purchase Reward" badge (ID = 1)
-        $giftId = 1;
+        // Use the Order ID as the unique NFT token ID, creating a verified 1:1 receipt!
+        $giftId = $order->id;
 
-        Log::info("Attempting to auto-mint NFT Gift #{$giftId} for Customer {$customer->id} ({$walletAddress})");
+        Log::info("Attempting to auto-mint NFT Receipt #{$giftId} (Order #{$order->id}) for Customer {$customer->id} ({$walletAddress})");
 
         $result = $this->nftService->mintGift($walletAddress, $giftId, 1);
 
