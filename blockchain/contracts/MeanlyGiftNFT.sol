@@ -15,10 +15,15 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     
     uint256 private _nextTokenId;
+    
+    // Safety limit for batch operations and mass emission
+    uint256 public maxMintPerTx = 50;
 
     // Production Events for analytics and transparency
+    event GiftMinted(address indexed to, uint256 indexed tokenId, string uri);
     event MinterAdded(address indexed account);
     event MinterRemoved(address indexed account);
+    event MaxMintPerTxUpdated(uint256 oldLimit, uint256 newLimit);
 
     /**
      * @dev Constructor
@@ -38,9 +43,42 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
      */
     function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) whenNotPaused {
         require(to != address(0), "Meanly: mint to the zero address");
+        
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+        
+        emit GiftMinted(to, tokenId, uri);
+    }
+
+    /**
+     * @dev Gas-efficient batch minting for multiple recipients/URIs.
+     */
+    function batchMint(address[] calldata recipients, string[] calldata uris) 
+        external 
+        onlyRole(MINTER_ROLE) 
+        whenNotPaused 
+    {
+        require(recipients.length == uris.length, "Meanly: length mismatch");
+        require(recipients.length <= maxMintPerTx, "Meanly: exceeds maxMintPerTx");
+
+        for (uint256 i = 0; i < recipients.length; i++) {
+            require(recipients[i] != address(0), "Meanly: mint to the zero address");
+            
+            uint256 tokenId = _nextTokenId++;
+            _safeMint(recipients[i], tokenId);
+            _setTokenURI(tokenId, uris[i]);
+            
+            emit GiftMinted(recipients[i], tokenId, uris[i]);
+        }
+    }
+
+    /**
+     * @dev Updates the safety limit. Only Admin (Cold Wallet) can call this.
+     */
+    function setMaxMintPerTx(uint256 newLimit) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        emit MaxMintPerTxUpdated(maxMintPerTx, newLimit);
+        maxMintPerTx = newLimit;
     }
 
     /**
