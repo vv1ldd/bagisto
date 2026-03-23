@@ -116,7 +116,11 @@ class RegistrationController extends Controller
         $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
         $recoveryKey = implode(' ', $mnemonicWords);
         $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
-        $blockchainAddress = $this->blockchainAddressService->deriveEthereumAddress($mnemonicWords);
+        
+        // Derive full wallet (address + private key)
+        $walletData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
+        $blockchainAddress = $walletData['address'];
+        $encryptedPrivateKey = \Illuminate\Support\Facades\Crypt::encryptString($walletData['private_key']);
 
         // Store in session — will be shown after passkey registration
         session(['pending_recovery_key' => $recoveryKey]);
@@ -133,6 +137,7 @@ class RegistrationController extends Controller
             'email' => null, // Allowed per migration
             'password' => bcrypt(Str::random(40)),
             'mnemonic_hash' => $mnemonicHash,
+            'encrypted_private_key' => $encryptedPrivateKey,
             'api_token' => Str::random(80),
             'is_verified' => 1,
             'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,
@@ -195,7 +200,10 @@ class RegistrationController extends Controller
         $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
         $recoveryKey = implode(' ', $mnemonicWords);
         $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
-        $blockchainAddress = $this->blockchainAddressService->deriveEthereumAddress($mnemonicWords);
+        
+        $walletData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
+        $blockchainAddress = $walletData['address'];
+        $encryptedPrivateKey = \Illuminate\Support\Facades\Crypt::encryptString($walletData['private_key']);
         $publicKeyData = $this->blockchainAddressService->derivePublicKeyData($mnemonicWords);
 
         // Store in session — will be shown after email link click
@@ -212,6 +220,7 @@ class RegistrationController extends Controller
             'password' => bcrypt($recoveryKey),
             'mnemonic_hash' => $mnemonicHash,
             'credits_id' => $blockchainAddress,
+            'encrypted_private_key' => $encryptedPrivateKey,
             'public_key' => $publicKeyData['public_key'] ?? null,
             'public_key_hash' => $publicKeyData['public_key_hash'] ?? null,
             'api_token' => Str::random(80),

@@ -21,8 +21,8 @@
             ];
         @endphp
 
-        {{-- Wallet Upgrade Banner (For users with old seeds) --}}
-        @if($user->mnemonic_hash && !$user->encrypted_private_key)
+        {{-- Wallet Upgrade Banner (For users with old M- format IDs) --}}
+        @if($user->credits_id && !str_starts_with($user->credits_id, '0x'))
             <div class="bg-amber-50 border border-amber-100 rounded-3xl p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm group">
                 <div class="flex items-start md:items-center gap-4">
                     <div class="w-12 h-12 bg-white text-amber-500 rounded-2xl flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-110 transition-transform">
