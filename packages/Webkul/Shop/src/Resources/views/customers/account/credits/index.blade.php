@@ -84,8 +84,8 @@
                                         <span class="text-[9px] text-zinc-400 font-mono tracking-tighter mt-0.5 opacity-70 flex items-center gap-2">
                                             {{$user->credits_id}}
 
-                                            @if(str_starts_with($user->credits_id, '0x'))
-                                                <svg class="w-2.5 h-2.5 text-[#10b981]" viewBox="0 0 20 20" fill="currentColor">
+                                            @if(str_starts_with($user->credits_id, '0x') && $user->encrypted_private_key)
+                                                <svg class="w-2.5 h-2.5 text-[#10b981]" viewBox="0 0 20 20" fill="currentColor" title="Верифицированный Web3-адрес">
                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                 </svg>
                                             @endif
