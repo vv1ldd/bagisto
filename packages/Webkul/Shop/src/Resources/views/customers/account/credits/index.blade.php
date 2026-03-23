@@ -49,11 +49,7 @@
             <div class="nav-tile col-span-2 p-8 !flex-row !items-center !justify-between bg-white border-[#e2d9ff]">
                 <div class="flex flex-col gap-1">
                     <div class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
-                        @if($user->is_investor)
-                            Инвестиционный Лимит
-                        @else
-                            Ваш Баланс
-                        @endif
+                        Ваш Баланс
                     </div>
                 </div>
             </div>
@@ -1995,6 +1991,7 @@
                 if (target) {
                     target.classList.remove('hidden');
                 } else {
+                    alert('Ошибка: детали кошелька (' + walletId + ') не найдены. Обратитесь в поддержку.');
                     console.error('Wallet details not found for:', walletId);
                 }
             }
