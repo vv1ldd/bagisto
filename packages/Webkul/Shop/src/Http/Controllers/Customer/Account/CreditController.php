@@ -82,7 +82,13 @@ class CreditController extends Controller
             'dash' => ['icon' => 'Đ']
         ];
 
-        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations', 'defaultBillingEntity', 'allAssets'));
+        // Fetch successful orders for NFT display
+        $nftOrders = $customer->orders()
+            ->whereIn('status', ['processing', 'completed', 'closed'])
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('shop::customers.account.credits.index', compact('verifiedAddresses', 'allAddresses', 'transactions', 'organizations', 'defaultBillingEntity', 'allAssets', 'nftOrders'));
     }
 
     /**

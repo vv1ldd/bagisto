@@ -46,6 +46,7 @@
         <div id="wallet-tabs" class="flex items-center gap-6 mb-6 border-b border-[#e2d9ff]">
             <button id="tab-dashboard" onclick="switchStep('dashboard')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]">Обзор</button>
             <button id="tab-transactions" onclick="switchStep('transactions')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]">История</button>
+            <button id="tab-nfts" onclick="switchStep('nfts')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]">Мои NFT</button>
         </div>
 
         {{-- Step 1: Dashboard --}}
@@ -298,6 +299,39 @@
         </div>
 
 
+
+        {{-- Step 2.5: NFTs (Digital Receipts) --}}
+        <div id="step-nfts" class="hidden">
+            @if(isset($nftOrders) && $nftOrders->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                    @foreach($nftOrders as $order)
+                        <div class="relative group rounded-[2rem] overflow-hidden bg-[#1a0050] shadow-sm hover:shadow-2xl hover:shadow-[#7C45F5]/20 transition-all duration-500 border border-[#e2d9ff]">
+                            <img src="{{ route('api.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-[#1a0050]/80 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm px-6 text-center">
+                                <span class="text-white font-black text-[14px] uppercase tracking-widest mb-4">On-Chain Asset</span>
+                                <a href="{{ route('api.nft.metadata', ['id' => $order->id]) }}" target="_blank" class="px-5 py-2.5 bg-[#7C45F5] text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#6b36e0] transition-colors shadow-lg active:scale-95 text-center block w-full max-w-[150px]">
+                                    JSON Данные
+                                </a>
+                                <p class="text-zinc-400 text-[10px] mt-4 max-w-xs font-mono">ID: {{ $order->id }} / B: {{ $order->base_grand_total }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="flex flex-col items-center justify-center py-32 text-zinc-400 px-10 text-center relative overflow-hidden bg-white border border-[#e2d9ff] shadow-sm rounded-3xl">
+                    <div class="absolute inset-0 bg-[#f8f6ff] opacity-10"></div>
+                    <div class="relative z-10">
+                        <div class="w-24 h-24 bg-white border border-[#e2d9ff] flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-transform duration-500 mx-auto">
+                            🏆
+                        </div>
+                        <h3 class="text-[18px] font-black text-[#1a0050] uppercase tracking-tighter italic mb-2">Коллекция пуста</h3>
+                        <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest max-w-[280px] leading-relaxed mx-auto">
+                            У вас пока нет NFT-подарков. Совершите первую покупку, чтобы получить цифровой бейдж!
+                        </p>
+                    </div>
+                </div>
+            @endif
+        </div>
 
         {{-- Step2.6: Organizations --}}
         <div id="step-organizations" class="hidden">
@@ -1442,7 +1476,7 @@
             let _sendContext = { walletId: null, network: null, symbol: null, balance: 0 };
 
             function switchStep(newStep) {
-                const steps = ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details', 'step-send'];
+                const steps = ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details', 'step-send', 'step-nfts'];
                 
                 steps.forEach(id => {
                     const el = document.getElementById(id);
@@ -1461,9 +1495,10 @@
                 // Update Tabs State
                 const tabDashboard = document.getElementById('tab-dashboard');
                 const tabTransactions = document.getElementById('tab-transactions');
+                const tabNfts = document.getElementById('tab-nfts');
                 const walletTabs = document.getElementById('wallet-tabs');
 
-                if (newStep === 'dashboard' || newStep === 'transactions') {
+                if (newStep === 'dashboard' || newStep === 'transactions' || newStep === 'nfts') {
                     if (walletTabs) {
                         walletTabs.style.display = 'flex';
                         walletTabs.classList.remove('hidden');
@@ -1475,6 +1510,11 @@
                     }
                     if (tabTransactions) {
                         tabTransactions.className = newStep === 'transactions' 
+                            ? "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]"
+                            : "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]";
+                    }
+                    if (tabNfts) {
+                        tabNfts.className = newStep === 'nfts' 
                             ? "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]"
                             : "text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]";
                     }
