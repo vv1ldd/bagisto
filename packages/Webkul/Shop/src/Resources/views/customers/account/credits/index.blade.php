@@ -59,7 +59,17 @@
                                     <span class="w-1 h-1 bg-[#7C45F5] rounded-full animate-pulse"></span>
                                     <span class="flex flex-col">
                                         <span>@ {{$user->credits_alias}}</span>
-                                        <span class="text-[9px] text-zinc-400 font-mono tracking-tighter mt-0.5 opacity-70">{{$user->credits_id}}</span>
+                                        <span class="text-[9px] text-zinc-400 font-mono tracking-tighter mt-0.5 opacity-70 flex items-center gap-2">
+                                            {{$user->credits_id}}
+                                            @if(str_starts_with($user->credits_id, 'M-'))
+                                                <form action="{{ route('shop.customers.account.crypto.upgrade_credits_id') }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <button type="submit" onclick="return confirm('Вы уверены, что хотите обновить ваш ID до формата 0x крипто-адреса?');" class="bg-[#7C45F5] text-white px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest hover:bg-[#6534d4] transition-colors" title="Обновить до крипто-адреса">
+                                                        0x ⚡️
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </span>
                                     </span>
                                 </div>
                                 <div class="px-2 py-0.5 bg-amber-50 text-amber-500 border border-amber-100 rounded text-[9px] font-black uppercase tracking-widest">Инвестор</div>
