@@ -62,6 +62,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
+# Copy blockchain folder and install dependencies early for caching
+COPY blockchain/ blockchain/
+RUN cd blockchain && npm install --ignore-engines
+
 # Copy composer files and packages first (needed for path repositories)
 COPY composer.json composer.lock ./
 COPY packages/ packages/
