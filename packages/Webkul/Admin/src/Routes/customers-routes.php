@@ -27,8 +27,6 @@ Route::prefix('customers')->group(function () {
 
         Route::get('search', 'search')->name('admin.customers.customers.search');
 
-        Route::get('login-as-customer/{id}', 'loginAsCustomer')->name('admin.customers.customers.login_as_customer');
-
         Route::post('note/{id}', 'storeNotes')->name('admin.customer.note.store');
 
         Route::put('edit/{id}', 'update')->name('admin.customers.customers.update');

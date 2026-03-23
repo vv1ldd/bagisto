@@ -209,22 +209,6 @@ class CustomerController extends Controller
     }
 
     /**
-     * Login as customer
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function loginAsCustomer(int $id)
-    {
-        $customer = $this->customerRepository->findOrFail($id);
-
-        auth()->guard('customer')->login($customer);
-
-        session()->flash('success', trans('admin::app.customers.customers.index.login-message', ['customer_name' => $customer->name]));
-
-        return redirect(route('shop.customers.account.index'));
-    }
-
-    /**
      * To store the response of the note.
      *
      * @return \Illuminate\Http\RedirectResponse
