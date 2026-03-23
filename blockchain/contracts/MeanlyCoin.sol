@@ -2,14 +2,15 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
 /**
  * @title MeanlyCoin
- * @dev ERC20 Token for Cashback system with production safety features.
+ * @dev ERC20 Token for Cashback system with production safety and burn features.
  */
-contract MeanlyCoin is ERC20, AccessControl, Pausable {
+contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     
     // Safety limit to prevent accidental or malicious mass emission
