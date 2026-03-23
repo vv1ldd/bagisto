@@ -46,11 +46,32 @@
                     </div>
                 </form>
 
+                <div class="mt-8 pt-8 border-t border-zinc-100">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-amber-50 text-amber-500 rounded-lg flex items-center justify-center text-sm shadow-sm">
+                                💡
+                            </div>
+                            <p class="text-[12px] text-zinc-500 font-bold uppercase tracking-tight">Потеряли секретную фразу?</p>
+                        </div>
+                        
+                        <p class="text-[13px] text-zinc-500 leading-relaxed">
+                            Если вы не сохранили старую фразу, но у вас есть **привязанный Passkey**, вы можете перевыпустить ключи. Старый адрес ({{ $customer->credits_id }}) будет заменен на новый.
+                        </p>
+
+                        <a href="{{ route('shop.customers.account.profile.generate_recovery_key') }}" 
+                           class="inline-flex items-center justify-center gap-2 px-6 py-4 bg-[#f8f6ff] text-[#7C45F5] border-2 border-[#eee6ff] rounded-xl text-[13px] font-black uppercase tracking-widest hover:bg-[#7C45F5] hover:text-white hover:border-[#7C45F5] transition-all group/reissue">
+                           <span class="icon-add-new text-lg group-hover/reissue:rotate-90 transition-transform"></span>
+                           Перевыпустить фразу и адрес
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
 
         <div class="text-center mt-6">
-            <p class="text-[11px] text-zinc-400 font-medium">Если вы потеряли свою секретную фразу,<br><a href="{{ route('shop.customers.account.security.index') }}" class="text-[#7C45F5] font-bold hover:underline">сгенерируйте новый Recovery Key</a> в настройках.</p>
+            <p class="text-[11px] text-zinc-400 font-medium italic">Безопасность вашего кошелька — наш приоритет.</p>
         </div>
 
     </div>
