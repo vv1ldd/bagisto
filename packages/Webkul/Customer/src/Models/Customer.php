@@ -446,8 +446,34 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
                 $customer->username = static::generateUniqueCreditsAlias();
             }
 
-            if (!$customer->credits_alias) {
+            if ($customer->isDirty('username') && empty($customer->credits_alias)) {
                 $customer->credits_alias = $customer->username;
+            }
+
+            // Sync credits_id to CryptoAddress record for background syncing
+            if ($customer->isDirty('credits_id') && !empty($customer->credits_id)) {
+                $customer->crypto_addresses()->updateOrCreate(
+                    ['network' => 'arbitrum_one'],
+                    [
+                        'address'     => $customer->credits_id,
+                        'is_active'   => true,
+                        'verified_at' => now(), // Trusted since we generated it
+                    ]
+                );
+            }
+        });
+
+        static::created(function ($customer) {
+            // Ensure CryptoAddress is created for new customers with credits_id
+            if (!empty($customer->credits_id)) {
+                $customer->crypto_addresses()->updateOrCreate(
+                    ['network' => 'arbitrum_one'],
+                    [
+                        'address'     => $customer->credits_id,
+                        'is_active'   => true,
+                        'verified_at' => now(),
+                    ]
+                );
             }
         });
     }

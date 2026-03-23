@@ -16,6 +16,8 @@
                 'bitcoin' => ['label' => 'BTC', 'symbol' => '₿', 'color' => '#F7931A', 'icon' => '₿'],
                 'ethereum' => ['label' => 'ETH', 'symbol' => 'Ξ', 'color' => '#627EEA', 'icon' => 'Ξ'],
                 'dash' => ['label' => 'DASH', 'symbol' => 'D', 'color' => '#1c75bc', 'icon' => 'D'],
+                'arbitrum_one' => ['label' => 'ARBITRUM', 'symbol' => 'Ξ', 'color' => '#28A0F0', 'icon' => '🔵'],
+                'usdt_arbitrum_one' => ['label' => 'USDT (Arb)', 'symbol' => '₮', 'color' => '#26A17B', 'icon' => '₮'],
             ];
         @endphp
 
@@ -32,10 +34,13 @@
                 <div class="flex flex-col gap-1">
                     <div class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
                         @if($user->is_investor)
-                            Покупательная способность
+                            Инвестиционный Лимит
                         @else
                             Ваш Баланс
-            {{-- Unified Balance Card --}}
+                        @endif
+                    </div>
+                </div>
+            </div>
             <div class="col-span-2 bg-white border border-[#e2d9ff] p-8 shadow-sm relative overflow-hidden group hover:border-[#7C45F5] transition-all duration-500">
                 {{-- Decorative gradient background --}}
                 <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5] opacity-[0.03] rounded-full blur-3xl group-hover:opacity-[0.06] transition-opacity"></div>
@@ -147,107 +152,119 @@
         </div>
 
         {{-- Step 2: Transactions --}}
+        {{-- Step 2: History --}}
         <div id="step-transactions" class="hidden">
-            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
+            <div class="bg-white border border-[#e2d9ff] shadow-sm rounded-3xl overflow-hidden">
                 @if ($transactions->count() > 0)
-                <div class="flex flex-col">
-                    @foreach ($transactions as $transaction)
-                        @php
-                            $isOrder = ($transaction->merged_type === 'order');
-                            
-                            // Status setup
-                            $status = $transaction->status;
-                            $statusColors = [
-                                'completed'  => 'text-emerald-500 bg-emerald-50',
-                                'pending'    => 'text-amber-500 bg-amber-50',
-                                'processing' => 'text-blue-500 bg-blue-50',
-                                'canceled'   => 'text-red-500 bg-red-50',
-                                'failed'     => 'text-red-500 bg-red-50',
-                            ];
-                            $statusClass = $statusColors[$status] ?? 'text-zinc-400 bg-zinc-50';
-
-                            // Type & Icon setup
-                            if ($isOrder) {
-                                $icon = '📦';
-                                $title = "Заказ #" . $transaction->increment_id;
-                                $subtitle = "Покупка в магазине";
-                                $amount = "-" . core()->formatPrice($transaction->grand_total);
-                                $amountColor = "text-red-500";
-                                $clickUrl = route('shop.customers.account.orders.view', $transaction->id);
-                            } else {
-                                $typeLabels = [
-                                    'deposit'         => ['icon' => '📥', 'label' => 'Пополнение'],
-                                    'withdrawal'      => ['icon' => '📤', 'label' => 'Списание'],
-                                    'purchase'        => ['icon' => '🛍', 'label' => 'Оплата'],
-                                    'refund'          => ['icon' => '💸', 'label' => 'Возврат'],
-                                    'transfer_debit'  => ['icon' => '↔️', 'label' => 'Перевод от вас'],
-                                    'transfer_credit' => ['icon' => '↔️', 'label' => 'Перевод вам'],
-                                    'cashback'        => ['icon' => '💰', 'label' => 'Кэшбек'],
-                                ];
-                                $config = $typeLabels[$transaction->type] ?? ['icon' => '📄', 'label' => $transaction->type];
-                                $icon = $config['icon'];
-                                $title = $config['label'];
-                                $subtitle = $transaction->notes ?: "#" . ($transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A');
+                    <div class="flex flex-col">
+                        @foreach ($transactions as $transaction)
+                            @php
+                                $isOrder = ($transaction->merged_type === 'order');
                                 
-                                $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
-                                $isDebit = in_array($transaction->type, $debitTypes);
-                                $amount = ($isDebit ? '-' : '+') . core()->formatPrice($transaction->amount);
-                                $amountColor = $isDebit ? "text-red-500" : "text-emerald-500";
-                                $clickUrl = null;
-                            }
-                        @endphp
+                                // Status setup
+                                $status = strtolower($transaction->status);
+                                $statusColors = [
+                                    'completed'  => 'text-emerald-500 bg-emerald-50 border-emerald-100',
+                                    'pending'    => 'text-amber-500 bg-amber-50 border-amber-100',
+                                    'processing' => 'text-blue-500 bg-blue-50 border-blue-100',
+                                    'canceled'   => 'text-red-500 bg-red-50 border-red-100',
+                                    'failed'     => 'text-red-500 bg-red-50 border-red-100',
+                                ];
+                                $statusClass = $statusColors[$status] ?? 'text-zinc-400 bg-zinc-50 border-zinc-100';
 
-                        <div class="p-4 border-b border-zinc-50 last:border-0 hover:bg-zinc-50/50 transition-colors {{ $clickUrl ? 'cursor-pointer' : '' }}" 
-                             @if($clickUrl) onclick="window.location.href='{{ $clickUrl }}'" @endif>
-                            <div class="flex items-center gap-4">
-                                {{-- Icon --}}
-                                <div class="w-10 h-10 rounded-xl bg-white border border-zinc-100 flex items-center justify-center text-xl shadow-sm shrink-0">
-                                    {{ $icon }}
-                                </div>
+                                // Type & Icon setup
+                                if ($isOrder) {
+                                    $icon = '📦';
+                                    $title = "Заказ #" . $transaction->increment_id;
+                                    $subtitle = "Покупка в магазине";
+                                    $amount = "-" . core()->formatPrice($transaction->grand_total);
+                                    $amountColor = "text-[#1a0050]";
+                                    $clickUrl = route('shop.customers.account.orders.view', $transaction->id);
+                                } else {
+                                    $typeLabels = [
+                                        'deposit'         => ['icon' => '📥', 'label' => 'Пополнение'],
+                                        'withdrawal'      => ['icon' => '📤', 'label' => 'Списание'],
+                                        'purchase'        => ['icon' => '🛍', 'label' => 'Оплата'],
+                                        'refund'          => ['icon' => '💸', 'label' => 'Возврат'],
+                                        'transfer_debit'  => ['icon' => '↔️', 'label' => 'Перевод от вас'],
+                                        'transfer_credit' => ['icon' => '↔️', 'label' => 'Перевод вам'],
+                                        'cashback'        => ['icon' => '💰', 'label' => 'Кэшбек'],
+                                    ];
+                                    $config = $typeLabels[$transaction->type] ?? ['icon' => '📄', 'label' => $transaction->type];
+                                    $icon = $config['icon'];
+                                    $title = $config['label'];
+                                    $subtitle = $transaction->notes ?: "#" . ($transaction->uuid ? substr($transaction->uuid, 0, 8) : 'N/A');
+                                    
+                                    $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
+                                    $isDebit = in_array($transaction->type, $debitTypes);
+                                    $amount = ($isDebit ? '-' : '+') . core()->formatPrice($transaction->amount);
+                                    $amountColor = $isDebit ? "text-[#1a0050]" : "text-emerald-500";
+                                    $clickUrl = null;
+                                }
+                            @endphp
 
-                                {{-- Details --}}
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-[14px] font-black text-[#1a0050] uppercase tracking-tight italic truncate">
-                                            {{ $title }}
-                                        </span>
-                                        <span class="text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-widest {{ $statusClass }}">
-                                            {{ $status }}
-                                        </span>
+                            <div class="px-6 py-5 border-b border-zinc-50 last:border-0 hover:bg-[#fcfbff] transition-all group {{ $clickUrl ? 'cursor-pointer' : '' }}" 
+                                 @if($clickUrl) onclick="window.location.href='{{ $clickUrl }}'" @endif>
+                                <div class="flex items-center gap-5">
+                                    {{-- Icon --}}
+                                    <div class="w-12 h-12 rounded-2xl bg-white border border-[#f0ebff] flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-110 transition-transform">
+                                        {{ $icon }}
                                     </div>
-                                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5 truncate">
-                                        {{ $subtitle }}
-                                    </div>
-                                    <div class="text-[9px] text-zinc-300 font-medium uppercase tracking-tighter mt-1">
-                                        {{ $transaction->created_at->format('d.m.Y — H:i') }}
-                                    </div>
-                                </div>
 
-                                {{-- Amount --}}
-                                <div class="text-right shrink-0">
-                                    <div class="text-[15px] font-black font-mono {{ $amountColor }} tracking-tighter whitespace-nowrap">
-                                        {{ $amount }}
+                                    {{-- Details --}}
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-[15px] font-black text-[#1a0050] uppercase tracking-tight italic truncate">
+                                                {{ $title }}
+                                            </span>
+                                            <span class="text-[8px] px-2 py-0.5 rounded-full border font-black uppercase tracking-widest {{ $statusClass }}">
+                                                {{ $status }}
+                                            </span>
+                                        </div>
+                                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5 truncate opacity-70">
+                                            {{ $subtitle }}
+                                        </div>
+                                        <div class="text-[9px] text-zinc-300 font-bold uppercase tracking-tighter mt-1.5 flex items-center gap-2">
+                                            <span class="w-1 h-1 bg-zinc-200 rounded-full"></span>
+                                            {{ $transaction->created_at->format('d.m.Y — H:i') }}
+                                        </div>
                                     </div>
-                                    <div class="text-[9px] text-zinc-300 font-black uppercase tracking-widest mt-0.5">
-                                        {{ $isOrder ? 'Shop Order' : 'Wallet' }}
+
+                                    {{-- Amount --}}
+                                    <div class="text-right shrink-0">
+                                        <div class="text-[17px] font-black font-mono {{ $amountColor }} tracking-tighter whitespace-nowrap">
+                                            {{ $amount }}
+                                        </div>
+                                        <div class="text-[9px] text-zinc-300 font-bold uppercase tracking-[0.2em] mt-1">
+                                            {{ $isOrder ? 'Shop Order' : 'Wallet' }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
 
-                @if ($transactions->hasPages())
-                    <div class="p-6 border-t border-zinc-50">
-                        {{ $transactions->links() }}
+                    @if ($transactions->hasPages())
+                        <div class="p-8 border-t border-zinc-50 bg-[#fcfbff]/50">
+                            {{ $transactions->links() }}
+                        </div>
+                    @endif
+                @else
+                    <div class="flex flex-col items-center justify-center py-32 text-zinc-400 px-10 text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[#f8f6ff] opacity-10"></div>
+                        <div class="relative z-10">
+                            <div class="w-24 h-24 bg-white border border-[#e2d9ff] flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-transform duration-500 mx-auto">
+                                📭
+                            </div>
+                            <h3 class="text-[18px] font-black text-[#1a0050] uppercase tracking-tighter italic mb-2">История пуста</h3>
+                            <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest max-w-[240px] leading-relaxed mx-auto">
+                                У вас пока нет транзакций. Пополните баланс, чтобы совершать покупки.
+                            </p>
+                        </div>
                     </div>
                 @endif
-            @else
-                <div class="flex flex-col items-center justify-center py-24 text-zinc-400 px-10 text-center">
-                    <div class="w-20 h-20 bg-zinc-50 flex items-center justify-center mb-6 shadow-inner text-3xl rounded-3xl">
-                        📭
-                    </div>
-                    <p class="text-[15px] font-black text-[#1a0050] uppercase tracking-tighter italic">История пуста</p>
+            </div>
+        </div>
                     <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-2">Здесь будут отображаться ваши операции</p>
                 </div>
             @endif
@@ -860,7 +877,9 @@
                         'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
                         'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
                         'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
-                        'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/']
+                        'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/'],
+                        'arbitrum_one' => ['Arbitrum', 'ETH', 'Ξ', '#28A0F0', '#28A0F0', 'ARB', 'https://arbiscan.io/address/'],
+                        'usdt_arbitrum_one' => ['Arbitrum', 'USDT', '₮', '#26A17B', '#4DBFA0', 'ARB', 'https://arbiscan.io/address/'],
                     ];
                     $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
 
@@ -869,7 +888,9 @@
                         'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
                         'bitcoin' => ['chain' => 'btc'],
                         'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
-                        'dash' => ['chain' => 'dash']
+                        'dash' => ['chain' => 'dash'],
+                        'arbitrum_one' => ['chain' => 'arb'],
+                        'usdt_arbitrum_one' => ['chain' => 'arb', 'token' => 'usdt'],
                     ];
                     $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
 
