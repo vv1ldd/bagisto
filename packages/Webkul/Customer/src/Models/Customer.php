@@ -486,7 +486,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     public static function generateUniqueCreditsId(): string
     {
         do {
-            $id = 'M-' . strtoupper(bin2hex(random_bytes(5)));
+            $id = '0x' . bin2hex(random_bytes(20));
         } while (static::where('credits_id', $id)->exists());
 
         return $id;

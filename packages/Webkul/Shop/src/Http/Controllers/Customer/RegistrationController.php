@@ -112,6 +112,15 @@ class RegistrationController extends Controller
             $currentIp = trim(explode(',', $currentIp)[0]);
         }
 
+        // Generate a random-length BIP39 mnemonic (12 words for passkey)
+        $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
+        $recoveryKey = implode(' ', $mnemonicWords);
+        $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+        $blockchainAddress = $this->blockchainAddressService->deriveEthereumAddress($mnemonicWords);
+
+        // Store in session — will be shown after passkey registration
+        session(['pending_recovery_key' => $recoveryKey]);
+
         // Generate data for future insertion
         $customerGroup = core()->getConfigData('customer.settings.create_new_account_options.default_group');
         
@@ -120,9 +129,10 @@ class RegistrationController extends Controller
             'last_name' => '',
             'username' => $username,
             'credits_alias' => $username,
+            'credits_id' => $blockchainAddress,
             'email' => null, // Allowed per migration
             'password' => bcrypt(Str::random(40)),
-            'mnemonic_hash' => null,
+            'mnemonic_hash' => $mnemonicHash,
             'api_token' => Str::random(80),
             'is_verified' => 1,
             'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,

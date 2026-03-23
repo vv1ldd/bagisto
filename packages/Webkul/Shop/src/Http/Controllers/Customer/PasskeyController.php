@@ -252,6 +252,11 @@ class PasskeyController extends Controller
                 'device_name' => $deviceName,
             ]);
 
+            if ($isNewRegistration && session()->has('pending_recovery_key')) {
+                session()->flash('recovery_key', session('pending_recovery_key'));
+                session()->forget('pending_recovery_key');
+            }
+
             if (!Auth::guard('customer')->check() && ($linkingFlow || $isNewRegistration)) {
                 Auth::guard('customer')->login($user);
                 session()->forget('link_user_id');
