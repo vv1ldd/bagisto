@@ -19,11 +19,15 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
     // Safety limit for batch operations and mass emission
     uint256 public maxMintPerTx = 50;
 
+    // Gas safety limit for batch operations
+    uint256 public constant MAX_BATCH_SIZE = 200;
+
     // Production Events for analytics and transparency
     event GiftMinted(address indexed to, uint256 indexed tokenId, string uri);
     event MinterAdded(address indexed account);
     event MinterRemoved(address indexed account);
     event MaxMintPerTxUpdated(uint256 oldLimit, uint256 newLimit);
+    event BatchMint(uint256 recipientsCount);
 
     /**
      * @dev Constructor
@@ -60,7 +64,7 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
         whenNotPaused 
     {
         require(recipients.length == uris.length, "Meanly: length mismatch");
-        require(recipients.length <= maxMintPerTx, "Meanly: exceeds maxMintPerTx");
+        require(recipients.length <= MAX_BATCH_SIZE, "Meanly: batch too large");
 
         for (uint256 i = 0; i < recipients.length; i++) {
             require(recipients[i] != address(0), "Meanly: mint to the zero address");
@@ -71,6 +75,8 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
             
             emit GiftMinted(recipients[i], tokenId, uris[i]);
         }
+
+        emit BatchMint(recipients.length);
     }
 
     /**

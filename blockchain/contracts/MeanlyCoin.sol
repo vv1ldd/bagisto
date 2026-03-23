@@ -16,10 +16,14 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
     // Safety limit to prevent accidental or malicious mass emission
     uint256 public maxMintPerTx;
 
+    // Gas safety limit for batch operations
+    uint256 public constant MAX_BATCH_SIZE = 200;
+
     // Production Events for analytics and transparency
     event MinterAdded(address indexed account);
     event MinterRemoved(address indexed account);
     event MaxMintPerTxUpdated(uint256 oldLimit, uint256 newLimit);
+    event BatchMint(uint256 recipientsCount);
 
     /**
      * @dev Constructor
@@ -62,12 +66,15 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
         whenNotPaused 
     {
         require(recipients.length == amounts.length, "Meanly: length mismatch");
+        require(recipients.length <= MAX_BATCH_SIZE, "Meanly: batch too large");
         
         for (uint256 i = 0; i < recipients.length; i++) {
             require(recipients[i] != address(0), "Meanly: mint to the zero address");
             require(amounts[i] <= maxMintPerTx, "Meanly: exceeds maxMintPerTx");
             _mint(recipients[i], amounts[i]);
         }
+
+        emit BatchMint(recipients.length);
     }
 
     /**
