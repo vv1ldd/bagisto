@@ -122,7 +122,6 @@
             </div>
         </div>
 
-        @stack('scripts')
 
         @push('scripts')
             <script>
