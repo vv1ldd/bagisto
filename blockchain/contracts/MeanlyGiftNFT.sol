@@ -77,6 +77,7 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
      * @dev Updates the safety limit. Only Admin (Cold Wallet) can call this.
      */
     function setMaxMintPerTx(uint256 newLimit) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newLimit > 0, "Meanly: limit must be > 0");
         emit MaxMintPerTxUpdated(maxMintPerTx, newLimit);
         maxMintPerTx = newLimit;
     }
@@ -94,8 +95,16 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
      * @dev Explicitly removes a minter. Only Admin (Cold Wallet) can call this.
      */
     function removeMinter(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(account != msg.sender, "Meanly: cannot remove yourself");
         revokeRole(MINTER_ROLE, account);
         emit MinterRemoved(account);
+    }
+
+    /**
+     * @dev Simple helper to check if an account is a minter.
+     */
+    function isMinter(address account) external view returns (bool) {
+        return hasRole(MINTER_ROLE, account);
     }
 
     /**

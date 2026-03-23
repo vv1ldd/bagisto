@@ -48,8 +48,26 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
      * @dev Updates the safety limit. Only Admin (Cold Wallet) can call this.
      */
     function setMaxMintPerTx(uint256 newLimit) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newLimit > 0, "Meanly: limit must be > 0");
         emit MaxMintPerTxUpdated(maxMintPerTx, newLimit);
         maxMintPerTx = newLimit;
+    }
+
+    /**
+     * @dev Gas-efficient batch minting for multiple recipients.
+     */
+    function batchMint(address[] calldata recipients, uint256[] calldata amounts) 
+        external 
+        onlyRole(MINTER_ROLE) 
+        whenNotPaused 
+    {
+        require(recipients.length == amounts.length, "Meanly: length mismatch");
+        
+        for (uint256 i = 0; i < recipients.length; i++) {
+            require(recipients[i] != address(0), "Meanly: mint to the zero address");
+            require(amounts[i] <= maxMintPerTx, "Meanly: exceeds maxMintPerTx");
+            _mint(recipients[i], amounts[i]);
+        }
     }
 
     /**
@@ -65,8 +83,16 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
      * @dev Explicitly removes a minter. Only Admin (Cold Wallet) can call this.
      */
     function removeMinter(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(account != msg.sender, "Meanly: cannot remove yourself");
         revokeRole(MINTER_ROLE, account);
         emit MinterRemoved(account);
+    }
+
+    /**
+     * @dev Simple helper to check if an account is a minter.
+     */
+    function isMinter(address account) external view returns (bool) {
+        return hasRole(MINTER_ROLE, account);
     }
 
     /**
