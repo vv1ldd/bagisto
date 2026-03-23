@@ -19,6 +19,10 @@ async function main() {
   await coin.waitForDeployment();
   console.log(`MeanlyCoin deployed to: ${await coin.getAddress()}`);
 
+  // Wait 10 seconds to avoid "nonce too low" errors on Arbitrum
+  console.log("Waiting 10 seconds for network synchronization...");
+  await new Promise(resolve => setTimeout(resolve, 10000));
+
   // 2. Deploy MeanlyGiftNFT (ERC721 Gift)
   console.log("Deploying MeanlyGiftNFT...");
   const MeanlyGiftNFT = await hre.ethers.getContractFactory("MeanlyGiftNFT");
