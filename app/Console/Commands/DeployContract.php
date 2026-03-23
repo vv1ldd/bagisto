@@ -87,7 +87,8 @@ class DeployContract extends Command
         $forgeEsc     = escapeshellarg($forge);
 
         // Use `sh -c` so the shell expands $PRIVATE_KEY from the env
-        $cmd = "sh -c '{$forgeEsc} create {$contractPath} --rpc-url {$rpcUrlEsc} --private-key \"\$PRIVATE_KEY\" --constructor-args {$ownerEsc} 2>&1'";
+        // --broadcast flag is required to actually send the TX, otherwise forge only does a dry run
+        $cmd = "sh -c '{$forgeEsc} create {$contractPath} --rpc-url {$rpcUrlEsc} --private-key \"\$PRIVATE_KEY\" --constructor-args {$ownerEsc} --broadcast 2>&1'";
 
         $this->info('Compiling and deploying MeanlyGifts.sol to Arbitrum...');
         $this->line('(this may take 30–60 seconds)');
