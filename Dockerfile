@@ -31,6 +31,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     unzip \
     supervisor \
     nginx \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
     && curl -sSLf \
     -o /usr/local/bin/install-php-extensions \
     https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
