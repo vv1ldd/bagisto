@@ -158,7 +158,129 @@
                         </x-admin::form.control-group>
                     </x-slot>
                 </x-admin::accordion>
+
+                <!-- Passkeys -->
+                <x-admin::accordion>
+                    <x-slot:header>
+                        <p class="p-2.5 text-base font-semibold text-gray-800 dark:text-white">
+                            Passkeys
+                        </p>
+                    </x-slot>
+
+                    <x-slot:content>
+                        <div class="flex flex-col gap-2">
+                             @if ($user->passkeys->count())
+                                @foreach ($user->passkeys as $passkey)
+                                    <div class="flex items-center justify-between gap-4 border-b pb-2 last:border-0 last:pb-0 dark:border-gray-800">
+                                        <div class="flex flex-col gap-0.5 min-w-0">
+                                            <p class="text-sm font-semibold text-gray-800 dark:text-white truncate">
+                                                {{ $passkey->name ?: 'Passkey' }}
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ $passkey->created_at->format('d/m/Y') }}
+                                            </p>
+                                        </div>
+
+                                        <form action="{{ route('admin.passkey.destroy', $passkey->id) }}" method="POST" onsubmit="return confirm('Удалить этот ключ?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            
+                                            <button type="submit" class="text-red-500 hover:text-red-600 transition-colors p-1" title="Удалить">
+                                                <span class="icon-delete text-xl"></span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    У вас пока нет привязанных ключей доступа.
+                                </p>
+                            @endif
+
+                             <button type="button" id="add-passkey-button" onclick="startPasskeyRegistration()"
+                                class="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                                <span class="icon-add-new text-lg"></span>
+                                Добавить ключ (Passkey)
+                            </button>
+                        </div>
+                    </x-slot>
+                </x-admin::accordion>
              </div>
         </div>
     </x-admin::form>
 </x-admin::layouts>
+
+@push('scripts')
+    <script>
+        /**
+         * Start Passkey Registration
+         */
+        async function startPasskeyRegistration() {
+            const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
+            const button = document.getElementById('add-passkey-button');
+            const originalText = button.innerHTML;
+
+            if (!SimpleWebAuthn) {
+                alert('Библиотека WebAuthn не загружена.');
+                return;
+            }
+
+            if (!window.PublicKeyCredential) {
+                alert('Ваш браузер не поддерживает Passkey (требуется HTTPS).');
+                return;
+            }
+
+            button.disabled = true;
+            button.innerText = 'Подготовка...';
+
+            try {
+                const response = await fetch('{{ route('admin.passkey.register_options') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Не удалось получить настройки с сервера.');
+
+                const rawOptions = await response.json();
+                const optionsJSON = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+
+                button.innerText = 'Ожидание устройства...';
+
+                // Start WebAuthn registration
+                const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
+
+                button.innerText = 'Сохранение...';
+
+                const saveRes = await fetch('{{ route('admin.passkey.register') }}', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(attResp)
+                });
+
+                if (saveRes.ok) {
+                    window.location.reload();
+                    return;
+                } else {
+                    const errorData = await saveRes.json();
+                    throw new Error(errorData.message || 'Ошибка сохранения Passkey');
+                }
+            } catch (error) {
+                console.error('[Passkey] Error:', error);
+                if (error.name !== 'NotAllowedError' && !error.message.includes('отмена') && error.name !== 'AbortError') {
+                    alert(error.message);
+                }
+            } finally {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+    </script>
+@endpush

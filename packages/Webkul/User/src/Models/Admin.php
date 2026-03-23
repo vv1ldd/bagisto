@@ -12,9 +12,12 @@ use Webkul\Admin\Mail\Admin\ResetPasswordNotification;
 use Webkul\User\Contracts\Admin as AdminContract;
 use Webkul\User\Database\Factories\AdminFactory;
 
-class Admin extends Authenticatable implements AdminContract
+use Spatie\LaravelPasskeys\Models\Concerns\HasPasskeys;
+use Spatie\LaravelPasskeys\Models\Concerns\InteractsWithPasskeys;
+
+class Admin extends Authenticatable implements AdminContract, HasPasskeys
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, InteractsWithPasskeys;
 
     /**
      * The attributes that are mass assignable.

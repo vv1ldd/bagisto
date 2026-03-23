@@ -7,6 +7,7 @@ use Webkul\Admin\Http\Controllers\DataGrid\SavedFilterController;
 use Webkul\Admin\Http\Controllers\MagicAIController;
 use Webkul\Admin\Http\Controllers\TinyMCEController;
 use Webkul\Admin\Http\Controllers\User\AccountController;
+use Webkul\Admin\Http\Controllers\User\PasskeyController;
 use Webkul\Admin\Http\Controllers\User\SessionController;
 
 /**
@@ -56,6 +57,14 @@ Route::controller(AccountController::class)->prefix('account')->group(function (
     Route::get('', 'edit')->name('admin.account.edit');
 
     Route::put('', 'update')->name('admin.account.update');
+
+    Route::controller(PasskeyController::class)->prefix('passkeys')->group(function () {
+        Route::post('register-options', 'registerOptions')->name('admin.passkey.register_options');
+
+        Route::post('register', 'register')->name('admin.passkey.register');
+
+        Route::delete('{id}', 'destroy')->name('admin.passkey.destroy');
+    });
 });
 
 Route::delete('logout', [SessionController::class, 'destroy'])->name('admin.session.destroy');

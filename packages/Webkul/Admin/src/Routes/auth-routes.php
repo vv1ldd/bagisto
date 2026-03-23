@@ -28,6 +28,15 @@ Route::group(['prefix' => config('app.admin_url')], function () {
     });
 
     /**
+     * Passkey login routes.
+     */
+    Route::controller(PasskeyController::class)->prefix('passkey')->group(function () {
+        Route::post('login-options', 'loginOptions')->name('admin.passkey.login_options');
+
+        Route::post('login', 'login')->name('admin.passkey.login');
+    });
+
+    /**
      * Forget password routes.
      */
     Route::controller(ForgetPasswordController::class)->prefix('forget-password')->group(function () {
