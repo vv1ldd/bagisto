@@ -110,15 +110,9 @@ class DeployContract extends Command
         // ---------------------------------------------------------------
         $tmpScript = sys_get_temp_dir() . '/meanly_deploy_' . time() . '.sh';
 
-        $scriptContent = <<<BASH
-#!/usr/bin/env bash
-export PRIVATE_KEY="{$privateKey}"
-"{$forge}" create "{$contractPath}:MeanlyGifts" \\
-    --rpc-url "{$rpcUrl}" \\
-    --private-key "\$PRIVATE_KEY" \\
-    --constructor-args "{$ownerAddr}" \\
-    --broadcast
-BASH;
+        $scriptContent = "#!/usr/bin/env bash\n"
+                       . "export PRIVATE_KEY=\"{$privateKey}\"\n"
+                       . "\"{$forge}\" create \"{$contractPath}:MeanlyGifts\" --rpc-url \"{$rpcUrl}\" --private-key \"\$PRIVATE_KEY\" --constructor-args \"{$ownerAddr}\" --broadcast --legacy\n";
 
         file_put_contents($tmpScript, $scriptContent);
         chmod($tmpScript, 0700);
