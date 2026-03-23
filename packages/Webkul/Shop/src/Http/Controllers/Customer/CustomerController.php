@@ -60,12 +60,15 @@ class CustomerController extends Controller
 
         // Derive deterministic fields
         $blockchainAddressService = app(\Webkul\Customer\Services\BlockchainAddressService::class);
-        $blockchainAddress = $blockchainAddressService->deriveEthereumAddress($mnemonicWords);
+        $wData = $blockchainAddressService->deriveEthereumWallet($mnemonicWords);
+        $blockchainAddress = $wData['address'] ?? null;
+        $privateKeyHex = $wData['private_key'] ?? null;
         $publicKeyData = $blockchainAddressService->derivePublicKeyData($mnemonicWords);
 
-        // Save the hash and derived fields to the customer record
+        // Save the hash, encrypted PK, and derived fields to the customer record
         $this->customerRepository->update([
             'mnemonic_hash'         => $mnemonicHash,
+            'encrypted_private_key' => $privateKeyHex ? \Illuminate\Support\Facades\Crypt::encryptString($privateKeyHex) : null,
             'credits_id'            => $blockchainAddress,
             'public_key'            => $publicKeyData['public_key'] ?? null,
             'public_key_hash'       => $publicKeyData['public_key_hash'] ?? null,

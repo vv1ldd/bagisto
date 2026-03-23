@@ -139,6 +139,81 @@ class BlockchainAddressService
     }
 
     /**
+     * Derive a standard Ethereum/Arbitrum One wallet (address + private key) from a BIP39 mnemonic.
+     * Uses the standard derivation path: m/44'/60'/0'/0/0
+     *
+     * @param string|array $mnemonic
+     * @param string $passphrase Optional BIP39 passphrase
+     * @return array|null ['address' => '0x...', 'private_key' => '0x...']
+     */
+    public function deriveEthereumWallet($mnemonic, string $passphrase = ''): ?array
+    {
+        try {
+            if (is_array($mnemonic)) {
+                $mnemonic = implode(' ', $mnemonic);
+            }
+
+            // 1. Generate Seed (BIP39)
+            $salt = "mnemonic" . $passphrase;
+            $seed = hash_pbkdf2('sha512', $mnemonic, $salt, 2048, 64, true);
+
+            // 2. Derive Master Private Key (BIP32)
+            $hmac = new Hash('sha512');
+            $hmac->setKey('Bitcoin seed');
+            $I = $hmac->hash($seed);
+            
+            $masterPrivateKey = substr($I, 0, 32);
+            $masterChainCode = substr($I, 32, 32);
+
+            // 3. Follow Derivation Path: m/44'/60'/0'/0/0
+            $path = [
+                44 | 0x80000000,
+                60 | 0x80000000,
+                0  | 0x80000000,
+                0,
+                0
+            ];
+
+            $currKey = $masterPrivateKey;
+            $currChainCode = $masterChainCode;
+
+            foreach ($path as $index) {
+                list($currKey, $currChainCode) = $this->deriveChildKey($currKey, $currChainCode, $index);
+            }
+
+            // 4. Derive Public Key from Private Key (SECP256K1) using raw curve math
+            $curve = new \phpseclib3\Crypt\EC\Curves\secp256k1();
+            $privateKeyHex = bin2hex($currKey);
+            $privateKeyInt = new BigInteger($privateKeyHex, 16);
+            
+            // Public Key = Private Key * G
+            $publicKeyPoint = $curve->multiplyPoint($curve->getBasePoint(), $privateKeyInt);
+            $affinePoint = $curve->convertToAffine($publicKeyPoint);
+            
+            // Ethereum address uses raw X and Y coordinates (32 bytes each)
+            $xHex = str_pad($affinePoint[0]->toBigInteger()->toHex(), 64, '0', STR_PAD_LEFT);
+            $yHex = str_pad($affinePoint[1]->toBigInteger()->toHex(), 64, '0', STR_PAD_LEFT);
+            $publicKeyBin = hex2bin($xHex . $yHex);
+
+            // 5. Generate Ethereum Address (Keccak256 hash of public key)
+            $keccak = new Hash('keccak256');
+            $hash = $keccak->hash($publicKeyBin);
+            
+            // Link address is the last 20 bytes of the hash
+            $address = '0x' . substr(bin2hex($hash), -40);
+
+            return [
+                'address' => $this->toChecksumAddress($address),
+                'private_key' => $privateKeyHex,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error("Ethereum wallet derivation failed: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Derive a child key from parent key and chain code.
      */
     protected function deriveChildKey(string $parentKey, string $parentChainCode, int $index): array
