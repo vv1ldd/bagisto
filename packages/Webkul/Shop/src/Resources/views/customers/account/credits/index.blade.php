@@ -1,11 +1,5 @@
 <x-shop::layouts.account :is-cardless="true" :title="__('Meanly Wallet')">
     <div class="mt-0 mb-8 w-full max-w-[800px] mx-auto px-2">
-        {{-- Back Button for SPA-like navigation --}}
-        <button id="step-back-btn" onclick="handleStepBack()" 
-            class="hidden items-center gap-2 text-[13px] font-black text-[#7C45F5] mb-6 hover:-translate-x-1 transition-all">
-            <span class="icon-arrow-left text-lg"></span>
-            Назад
-        </button>
         @php
             $user = auth()->guard('customer')->user();
             $balances = $user->balances;
@@ -1532,10 +1526,18 @@
     @push('scripts')
         <script>
             let currentStep = 'dashboard';
+            let prevStep = 'dashboard';
             const initialTitle = "Meanly Wallet";
             let _sendContext = { walletId: null, network: null, symbol: null, balance: 0 };
 
             function switchStep(newStep) {
+                if (currentStep === newStep) return;
+
+                // Track previous step for smarter "Back" navigation
+                if (['dashboard', 'management', 'organizations', 'b2b-management'].includes(currentStep)) {
+                    prevStep = currentStep;
+                }
+
                 const steps = ['step-dashboard', 'step-transactions', 'step-organizations', 'step-add-organization', 'step-add-bank-account', 'step-organization-details', 'step-details', 'step-management', 'step-add-wallet', 'step-empty', 'step-b2b-management', 'step-b2c-details', 'step-topup-details', 'step-send', 'step-nfts'];
                 
                 steps.forEach(id => {
@@ -1591,14 +1593,21 @@
             }
 
             function updateHeader() {
-                const titleEl = document.querySelector('h1#page-title') || document.querySelector('h1.text-\\[20px\\]');
-                const backBtn = document.getElementById('step-back-btn');
+                const titleEl = document.querySelector('h1');
+                const layoutBackBtn = document.querySelector('button[onclick*="window.history.back()"]');
+
+                if (layoutBackBtn) {
+                    // Repurpose layout back button for SPA steps
+                    if (currentStep === 'dashboard' || currentStep === 'transactions' || currentStep === 'nfts') {
+                        layoutBackBtn.onclick = () => { window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'; };
+                    } else {
+                        layoutBackBtn.onclick = (e) => { e.preventDefault(); handleStepBack(); };
+                    }
+                }
 
                 if (currentStep === 'dashboard' || currentStep === 'transactions' || currentStep === 'nfts') {
                     if (titleEl) titleEl.innerText = initialTitle;
-                    if (backBtn) backBtn.style.display = 'none';
                 } else {
-                    if (backBtn) backBtn.style.display = 'flex';
                     if (titleEl) {
                         if (currentStep === 'organizations') titleEl.innerText = "Мои компании";
                         if (currentStep === 'add-organization') titleEl.innerText = "Новая компания";
@@ -1617,19 +1626,22 @@
             }
 
             function handleStepBack() {
-                if (currentStep === 'transactions') switchStep('dashboard');
+                if (currentStep === 'details' || currentStep === 'send') {
+                    // If we came from management, go back to management. Otherwise (from dashboard), go back to dashboard.
+                    switchStep(prevStep === 'management' ? 'management' : 'dashboard');
+                }
+                else if (currentStep === 'transactions') switchStep('dashboard');
                 else if (currentStep === 'organizations') switchStep('dashboard');
                 else if (currentStep === 'add-organization') switchStep('organizations');
                 else if (currentStep === 'add-bank-account') switchStep('organizations');
                 else if (currentStep === 'organization-details') switchStep('organizations');
                 else if (currentStep === 'empty') switchStep('dashboard');
-                else if (currentStep === 'details') switchStep('management');
                 else if (currentStep === 'management') switchStep('dashboard');
                 else if (currentStep === 'b2b-management') switchStep('dashboard');
                 else if (currentStep === 'b2c-details') switchStep('dashboard');
                 else if (currentStep === 'add-wallet') switchStep('management');
                 else if (currentStep === 'topup-details') switchStep('b2b-management');
-                else if (currentStep === 'send') switchStep('details');
+                else switchStep('dashboard');
             }
 
             // --- Ethereum Send / Transfer Logic ---
@@ -1977,16 +1989,14 @@
             function goToManagement() { switchStep('management'); }
             function goToAddWallet() { switchStep('add-wallet'); }
             function selectAsset(assetKey, walletId) {
-                // Check if wallet is verified, ideally this should be handled better, but simple check for now
-                const form = document.getElementById('delete-wallet-form-' + walletId);
-                if (form && !form.closest('div.bg-white').querySelector('svg[viewBox="0 0 24 24"]')) {
-                    alert('Сначала верифицируйте кошелек для пополнения.');
-                    return;
-                }
                 switchStep('details');
                 document.querySelectorAll('.wallet-details-view').forEach(el => el.classList.add('hidden'));
                 const target = document.getElementById('details-wallet-' + walletId);
-                if (target) target.classList.remove('hidden');
+                if (target) {
+                    target.classList.remove('hidden');
+                } else {
+                    console.error('Wallet details not found for:', walletId);
+                }
             }
 
             let _selectedTopupOrgId = null;
@@ -2583,6 +2593,8 @@
                         newBankSuggestionsBox.classList.add('hidden');
                     }
                 });
+                // Initial UI state
+                updateHeader();
             });
 
         </script>
