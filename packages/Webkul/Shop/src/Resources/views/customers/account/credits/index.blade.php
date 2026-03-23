@@ -46,13 +46,16 @@
                             <div class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 opacity-80 italic">Покупательная способность</div>
                             <div class="flex items-baseline gap-2">
                                 <span class="text-[48px] font-black text-[#1a0050] tracking-tighter leading-none">
-                                    {{ core()->formatPrice($user->credits?->amount ?? 0) }}
+                                    {{ core()->formatPrice($user->balance ?? 0) }}
                                 </span>
                             </div>
                             <div class="flex items-center gap-3 mt-4">
                                 <div class="px-2 py-0.5 bg-[#f8f6ff] text-[#7C45F5] border border-[#eee6ff] rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
                                     <span class="w-1 h-1 bg-[#7C45F5] rounded-full animate-pulse"></span>
-                                    @ {{$user->credits_alias}}
+                                    <span class="flex flex-col">
+                                        <span>@ {{$user->credits_alias}}</span>
+                                        <span class="text-[9px] text-zinc-400 font-mono tracking-tighter mt-0.5 opacity-70">{{$user->credits_id}}</span>
+                                    </span>
                                 </div>
                                 <div class="px-2 py-0.5 bg-amber-50 text-amber-500 border border-amber-100 rounded text-[9px] font-black uppercase tracking-widest">Инвестор</div>
                             </div>

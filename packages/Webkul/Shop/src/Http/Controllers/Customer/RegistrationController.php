@@ -119,6 +119,7 @@ class RegistrationController extends Controller
             'first_name' => 'Пользователь',
             'last_name' => '',
             'username' => $username,
+            'credits_alias' => $username,
             'email' => null, // Allowed per migration
             'password' => bcrypt(Str::random(40)),
             'mnemonic_hash' => null,
@@ -195,7 +196,8 @@ class RegistrationController extends Controller
         ]), [
             'first_name' => 'Пользователь',
             'last_name' => '',
-            'username' => 'user_' . Str::random(8),
+            'username' => $username = 'user_' . Str::random(8),
+            'credits_alias' => $username,
             'password' => bcrypt($recoveryKey),
             'mnemonic_hash' => $mnemonicHash,
             'credits_id' => $blockchainAddress,

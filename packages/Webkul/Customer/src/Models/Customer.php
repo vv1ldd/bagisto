@@ -431,6 +431,10 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
             if (!$customer->username) {
                 $customer->username = static::generateUniqueCreditsAlias();
             }
+
+            if (!$customer->credits_alias) {
+                $customer->credits_alias = $customer->username;
+            }
         });
 
         static::saving(function ($customer) {
@@ -440,6 +444,10 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
 
             if (!$customer->username) {
                 $customer->username = static::generateUniqueCreditsAlias();
+            }
+
+            if (!$customer->credits_alias) {
+                $customer->credits_alias = $customer->username;
             }
         });
     }

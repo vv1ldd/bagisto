@@ -30,7 +30,7 @@ $menuIcons = [
     <div class="p-0">
         <div class="nav-grid">
             {{-- Wallet --}}
-            @if ($customer && $customer->username)
+            @if ($customer instanceof \Webkul\Customer\Models\Customer && !empty($customer->username))
                 @php
                     $hasPasskey = $customer->passkeys()->exists();
                     $unlockedAt = session('wallet_unlocked_at') ?: (session('logged_in_via_passkey') ? session('passkey_unlocked_at') : null);
