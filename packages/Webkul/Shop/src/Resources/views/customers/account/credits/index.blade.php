@@ -21,6 +21,27 @@
             ];
         @endphp
 
+        {{-- Wallet Upgrade Banner (For users with old seeds) --}}
+        @if($user->mnemonic_hash && !$user->encrypted_private_key)
+            <div class="bg-amber-50 border border-amber-100 rounded-3xl p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm group">
+                <div class="flex items-start md:items-center gap-4">
+                    <div class="w-12 h-12 bg-white text-amber-500 rounded-2xl flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-110 transition-transform">
+                        ⚡
+                    </div>
+                    <div>
+                        <h4 class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic mt-1 md:mt-0">Активируйте функции NFT</h4>
+                        <p class="text-[11px] font-bold text-amber-700/70 mt-1 uppercase tracking-wide max-w-sm">
+                            Ваш кошелек нужно обновить, чтобы мы могли начислять вам подарочные NFT.
+                        </p>
+                    </div>
+                </div>
+                <a href="{{ route('shop.customers.account.crypto.show_upgrade_wallet') }}"
+                   class="shrink-0 w-full md:w-auto text-center bg-[#1a0050] text-white px-5 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-[#2a0080] transition-colors active:scale-95 shadow-lg shadow-[#1a0050]/20">
+                    Активировать
+                </a>
+            </div>
+        @endif
+
         {{-- Global Tabs for Overview/History --}}
         <div id="wallet-tabs" class="flex items-center gap-6 mb-6 border-b border-[#e2d9ff]">
             <button id="tab-dashboard" onclick="switchStep('dashboard')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]">Обзор</button>

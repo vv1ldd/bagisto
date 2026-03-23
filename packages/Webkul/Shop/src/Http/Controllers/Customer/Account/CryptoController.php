@@ -193,4 +193,60 @@ class CryptoController extends Controller
 
         return redirect()->route('shop.customers.account.credits.index');
     }
+
+    /**
+     * Show the wallet upgrade form for existing users.
+     */
+    public function showUpgradeWallet()
+    {
+        $customer = auth()->guard('customer')->user();
+        
+        // If they already have an encrypted key, redirect back.
+        if ($customer->encrypted_private_key) {
+            return redirect()->route('shop.customers.account.credits.index');
+        }
+
+        return view('shop::customers.account.crypto.upgrade-wallet');
+    }
+
+    /**
+     * Process the wallet upgrade.
+     */
+    public function upgradeWallet(Request $request, \Webkul\Customer\Services\MnemonicService $mnemonicService)
+    {
+        $request->validate([
+            'phrase' => 'required|string',
+        ]);
+
+        $customer = auth()->guard('customer')->user();
+
+        if ($customer->encrypted_private_key) {
+            return redirect()->route('shop.customers.account.credits.index');
+        }
+
+        // Parse Phrase
+        $phraseStr = preg_replace('/\s+/', ' ', trim($request->input('phrase')));
+        $words = explode(' ', $phraseStr);
+
+        // Verify Hash matches
+        $hash = $mnemonicService->hashMnemonic($words);
+        if ($hash !== $customer->mnemonic_hash) {
+            return back()->withErrors(['phrase' => 'Секретная фраза не совпадает с сохраненной для вашего аккаунта.']);
+        }
+
+        // Derive and encrypt private key
+        $addressService = app(\Webkul\Customer\Services\BlockchainAddressService::class);
+        $wData = $addressService->deriveEthereumWallet($words);
+
+        if (!$wData || !isset($wData['private_key'])) {
+            return back()->withErrors(['phrase' => 'Не удалось получить ключи от кошелька. Обратитесь в поддержку.']);
+        }
+
+        $customer->encrypted_private_key = \Illuminate\Support\Facades\Crypt::encryptString($wData['private_key']);
+        $customer->save();
+
+        session()->flash('success', 'Ваш Web3-кошелек успешно активирован для NFT!');
+
+        return redirect()->route('shop.customers.account.credits.index');
+    }
 }

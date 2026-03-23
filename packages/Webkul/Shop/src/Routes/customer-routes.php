@@ -339,6 +339,8 @@ Route::prefix('customer')->group(function () {
                  */
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->prefix('crypto')->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.crypto.index');
+                    Route::get('upgrade-wallet', 'showUpgradeWallet')->name('shop.customers.account.crypto.show_upgrade_wallet');
+                    Route::post('upgrade-wallet', 'upgradeWallet')->name('shop.customers.account.crypto.upgrade_wallet');
 
                     Route::post('create', 'store')->name('shop.customers.account.crypto.store');
 
