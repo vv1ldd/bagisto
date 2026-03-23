@@ -50,7 +50,7 @@
         </div>
 
         <div class="text-center mt-6">
-            <p class="text-[11px] text-zinc-400 font-medium">Если вы потеряли свою секретную фразу,<br><a href="{{ route('shop.customers.account.security') }}" class="text-[#7C45F5] font-bold hover:underline">сгенерируйте новый Recovery Key</a> в настройках.</p>
+            <p class="text-[11px] text-zinc-400 font-medium">Если вы потеряли свою секретную фразу,<br><a href="{{ route('shop.customers.account.security.index') }}" class="text-[#7C45F5] font-bold hover:underline">сгенерируйте новый Recovery Key</a> в настройках.</p>
         </div>
 
     </div>
