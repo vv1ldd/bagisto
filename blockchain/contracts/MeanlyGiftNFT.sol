@@ -20,7 +20,7 @@ contract MeanlyGiftNFT is ERC721, ERC721URIStorage, AccessControl, Pausable {
      * @param defaultAdmin Address of the Cold Wallet (Owner)
      * @param minter Address of the Backend Hot Wallet (Minter)
      */
-    constructor(address defaultAdmin, address minter) ERC721("Meanly Gift", "MGIFT") {
+    constructor(address defaultAdmin, address minter) ERC721("Meanly Gift", "MFT") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
         
