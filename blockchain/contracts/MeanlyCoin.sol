@@ -15,6 +15,11 @@ contract MeanlyCoin is ERC20, AccessControl, Pausable {
     // Safety limit to prevent accidental or malicious mass emission
     uint256 public maxMintPerTx;
 
+    // Production Events for analytics and transparency
+    event MinterAdded(address indexed account);
+    event MinterRemoved(address indexed account);
+    event MaxMintPerTxUpdated(uint256 oldLimit, uint256 newLimit);
+
     /**
      * @dev Constructor
      * @param defaultAdmin Address of the Cold Wallet (Owner)
@@ -24,14 +29,16 @@ contract MeanlyCoin is ERC20, AccessControl, Pausable {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
         
-        // Initial safety limit: 10,000 MNLY (can be changed by Admin)
-        maxMintPerTx = 10000 * 10**decimals();
+        // Initial safety limit: 10,000 MNLY
+        maxMintPerTx = 10000 ether;
+        emit MaxMintPerTxUpdated(0, maxMintPerTx);
     }
 
     /**
      * @dev Mints new tokens. Restricted by MINTER_ROLE and safety limits.
      */
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) whenNotPaused {
+        require(to != address(0), "Meanly: mint to the zero address");
         require(amount <= maxMintPerTx, "Meanly: amount exceeds maxMintPerTx");
         _mint(to, amount);
     }
@@ -40,7 +47,25 @@ contract MeanlyCoin is ERC20, AccessControl, Pausable {
      * @dev Updates the safety limit. Only Admin (Cold Wallet) can call this.
      */
     function setMaxMintPerTx(uint256 newLimit) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        emit MaxMintPerTxUpdated(maxMintPerTx, newLimit);
         maxMintPerTx = newLimit;
+    }
+
+    /**
+     * @dev Explicitly adds a new minter. Only Admin (Cold Wallet) can call this.
+     */
+    function addMinter(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(account != address(0), "Meanly: minter is the zero address");
+        grantRole(MINTER_ROLE, account);
+        emit MinterAdded(account);
+    }
+
+    /**
+     * @dev Explicitly removes a minter. Only Admin (Cold Wallet) can call this.
+     */
+    function removeMinter(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        revokeRole(MINTER_ROLE, account);
+        emit MinterRemoved(account);
     }
 
     /**

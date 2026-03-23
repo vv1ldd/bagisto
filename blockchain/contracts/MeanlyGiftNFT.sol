@@ -15,6 +15,10 @@ contract MeanlyGiftNFT is ERC721, ERC721URIStorage, AccessControl, Pausable {
     
     uint256 private _nextTokenId;
 
+    // Production Events for analytics and transparency
+    event MinterAdded(address indexed account);
+    event MinterRemoved(address indexed account);
+
     /**
      * @dev Constructor
      * @param defaultAdmin Address of the Cold Wallet (Owner)
@@ -32,9 +36,27 @@ contract MeanlyGiftNFT is ERC721, ERC721URIStorage, AccessControl, Pausable {
      * @dev Mints a new NFT with metadata URI. Restricted to MINTER_ROLE and only when not paused.
      */
     function safeMint(address to, string memory uri) public onlyRole(MINTER_ROLE) whenNotPaused {
+        require(to != address(0), "Meanly: mint to the zero address");
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
+    }
+
+    /**
+     * @dev Explicitly adds a new minter. Only Admin (Cold Wallet) can call this.
+     */
+    function addMinter(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(account != address(0), "Meanly: minter is the zero address");
+        grantRole(MINTER_ROLE, account);
+        emit MinterAdded(account);
+    }
+
+    /**
+     * @dev Explicitly removes a minter. Only Admin (Cold Wallet) can call this.
+     */
+    function removeMinter(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        revokeRole(MINTER_ROLE, account);
+        emit MinterRemoved(account);
     }
 
     /**
