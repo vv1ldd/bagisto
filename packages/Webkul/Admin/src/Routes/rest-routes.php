@@ -68,4 +68,16 @@ Route::controller(AccountController::class)->prefix('account')->group(function (
     });
 });
 
+
+/**
+ * Admin security onboarding routes.
+ */
+Route::controller(SecurityOnboardingController::class)->prefix('security-onboarding')->group(function () {
+    Route::get('', 'index')->name('admin.security.onboarding.index');
+
+    Route::post('generate-mnemonic', 'generateMnemonic')->name('admin.security.onboarding.generate_mnemonic');
+
+    Route::post('verify-mnemonic', 'verifyMnemonic')->name('admin.security.onboarding.verify_mnemonic');
+});
+
 Route::delete('logout', [SessionController::class, 'destroy'])->name('admin.session.destroy');
