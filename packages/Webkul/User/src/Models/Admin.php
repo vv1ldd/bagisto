@@ -32,6 +32,13 @@ class Admin extends Authenticatable implements AdminContract, HasPasskeys
         'api_token',
         'role_id',
         'status',
+        'credits_id',
+        'credits_alias',
+        'mnemonic_hash',
+        'encrypted_private_key',
+        'mnemonic_verified_at',
+        'public_key',
+        'public_key_hash',
     ];
 
     /**
@@ -43,6 +50,7 @@ class Admin extends Authenticatable implements AdminContract, HasPasskeys
         'password',
         'api_token',
         'remember_token',
+        'encrypted_private_key',
     ];
 
     /**
