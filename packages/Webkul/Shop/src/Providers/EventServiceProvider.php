@@ -53,6 +53,7 @@ class EventServiceProvider extends ServiceProvider
          */
         'checkout.order.save.after' => [
             [Order::class, 'afterCreated'],
+            [\App\Listeners\MintGiftNftListener::class, 'handle'],
         ],
 
         'sales.order.cancel.after' => [

@@ -28,8 +28,10 @@
         "kalnoy/nestedset": "^6.0",
         "khaled.alshamaa/ar-php": "^6.0.0",
         "konekt/concord": "^1.2",
+        "kornrunner/ethereum-offline-raw-tx": "^0.9.0",
         "laravel/framework": "^11.0",
         "laravel/octane": "^2.3",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.0",
@@ -43,10 +45,10 @@
         "prettus/l5-repository": "^2.6",
         "pusher/pusher-php-server": "^7.0",
         "shetabit/visitor": "^4.1",
+        "simplito/elliptic-php": "^1.0",
+        "spatie/laravel-passkeys": "^1.0",
         "spatie/laravel-responsecache": "^7.4",
         "spatie/laravel-sitemap": "^7.3",
-        "spatie/laravel-passkeys": "^1.0",
-        "laravel/reverb": "^1.0",
         "stevebauman/purify": "^6.3"
     },
     "require-dev": {
