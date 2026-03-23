@@ -55,6 +55,48 @@ services:
       - elasticsearch
       - mailpit
 
+  # ---------------------------------------------------------------
+  # One-shot service: deploy MeanlyGifts.sol to Arbitrum
+  # Run manually:  docker compose run --rm deploy-contract
+  # ---------------------------------------------------------------
+  deploy-contract:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    container_name: bagisto-deploy-contract
+    environment:
+      ALCHEMY_RPC_URL:        "${ALCHEMY_RPC_URL}"
+      ADMIN_ETH_PRIVATE_KEY:  "${ADMIN_ETH_PRIVATE_KEY}"
+      ADMIN_ETH_PUBLIC_ADDRESS: "${ADMIN_ETH_PUBLIC_ADDRESS:-0xB1ABfEab7E90B8565F715871f8a0fF1B9FD9F9AA}"
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        HOME=/root
+        FORGE="$HOME/.foundry/bin/forge"
+
+        # Install forge if not present
+        if [ ! -x "$$FORGE" ]; then
+          echo "Installing Foundry..."
+          curl -L https://foundry.paradigm.xyz | bash
+          $$HOME/.foundry/bin/foundryup
+        fi
+
+        echo "Deploying MeanlyGifts.sol to Arbitrum..."
+        $$FORGE create /var/www/html/contracts/MeanlyGifts.sol:MeanlyGifts \
+          --rpc-url "$$ALCHEMY_RPC_URL" \
+          --private-key "$$ADMIN_ETH_PRIVATE_KEY" \
+          --constructor-args "$$ADMIN_ETH_PUBLIC_ADDRESS" \
+          --broadcast
+
+        echo ""
+        echo "Copy the 'Deployed to: 0x...' address above into your .env as:"
+        echo "MINT_CONTRACT_ADDRESS=0x..."
+    networks:
+      - bagisto-network
+
   reverb:
     build:
       context: .
