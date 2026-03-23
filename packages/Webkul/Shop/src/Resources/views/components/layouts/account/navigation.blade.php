@@ -136,7 +136,7 @@ $menuIcons = [
                 </span>
                 <div class="flex flex-col">
                     <span class="nav-label">Безопасность</span>
-                    <span class="text-[12px] text-zinc-500 font-medium">Пароль, фраза и устройства</span>
+                    <span class="text-[12px] text-zinc-500 font-medium">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
