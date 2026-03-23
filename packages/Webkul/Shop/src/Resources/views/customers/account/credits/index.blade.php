@@ -150,6 +150,30 @@
                 </div>
 
                 <div class="nav-grid">
+                    {{-- Primary: Direct Arbitrum Transfer --}}
+                    @php
+                        $primaryArbAddress = $allAddresses->where('network', 'arbitrum_one')->first();
+                    @endphp
+
+                    @if($primaryArbAddress)
+                        <button onclick="selectAsset('arbitrum_one', '{{ $primaryArbAddress->id }}')" class="nav-tile !flex-row col-span-2 p-6 border-[#7C45F5]/30 bg-[#fbfaff] group relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 w-16 h-16 bg-[#7C45F5] opacity-[0.03] rounded-full blur-xl group-hover:opacity-[0.08] transition-opacity"></div>
+                            
+                            <div class="w-12 h-12 bg-[#7C45F5] text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-lg shadow-[#7C45F5]/20 mr-4 shrink-0 group-hover:scale-110">
+                                ⚡️
+                            </div>
+                            <div class="flex flex-col items-start flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Прямой перевод</div>
+                                    <span class="bg-[#7C45F5] text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">рекомендуется</span>
+                                </div>
+                                <div class="text-[11px] text-[#7C45F5] font-bold uppercase tracking-widest mt-0.5 truncate w-full">Arbitrum One — {{ $primaryArbAddress->address }}</div>
+                            </div>
+                            <div class="text-[#7C45F5] ml-4">
+                                <span class="icon-arrow-right text-xl"></span>
+                            </div>
+                        </button>
+                    @endif
                     @if ($user->is_crypto_enabled)
                         <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
                             <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
@@ -1534,7 +1558,7 @@
                 const titleEl = document.querySelector('h1#page-title') || document.querySelector('h1.text-\\[20px\\]');
                 const backBtn = document.getElementById('step-back-btn');
 
-                if (currentStep === 'dashboard' || currentStep === 'transactions') {
+                if (currentStep === 'dashboard' || currentStep === 'transactions' || currentStep === 'nfts') {
                     if (titleEl) titleEl.innerText = initialTitle;
                     if (backBtn) backBtn.style.display = 'none';
                 } else {
