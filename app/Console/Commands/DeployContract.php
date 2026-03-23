@@ -76,30 +76,37 @@ class DeployContract extends Command
         $this->line('');
 
         // ---------------------------------------------------------------
-        // 4. Build forge create command
-        //    We set PRIVATE_KEY via putenv() so the child process inherits it.
+        // 4. Write a temporary shell script so we don't have to worry
+        //    about quoting/escaping – every argument goes on its own line.
         // ---------------------------------------------------------------
-        putenv("PRIVATE_KEY={$privateKey}");
+        $tmpScript = sys_get_temp_dir() . '/meanly_deploy_' . time() . '.sh';
 
-        $contractPath = escapeshellarg("{$contractPath}:MeanlyGifts");
-        $rpcUrlEsc    = escapeshellarg($rpcUrl);
-        $ownerEsc     = escapeshellarg($ownerAddr);
-        $forgeEsc     = escapeshellarg($forge);
+        $scriptContent = <<<BASH
+#!/usr/bin/env bash
+export PRIVATE_KEY="{$privateKey}"
+"{$forge}" create "{$contractPath}:MeanlyGifts" \\
+    --rpc-url "{$rpcUrl}" \\
+    --private-key "\$PRIVATE_KEY" \\
+    --constructor-args "{$ownerAddr}" \\
+    --broadcast
+BASH;
 
-        // Use `sh -c` so the shell expands $PRIVATE_KEY from the env
-        // --broadcast flag is required to actually send the TX, otherwise forge only does a dry run
-        $cmd = "sh -c '{$forgeEsc} create {$contractPath} --rpc-url {$rpcUrlEsc} --private-key \"\$PRIVATE_KEY\" --constructor-args {$ownerEsc} --broadcast 2>&1'";
+        file_put_contents($tmpScript, $scriptContent);
+        chmod($tmpScript, 0700);
 
         $this->info('Compiling and deploying MeanlyGifts.sol to Arbitrum...');
         $this->line('(this may take 30–60 seconds)');
         $this->line('');
 
         // ---------------------------------------------------------------
-        // 5. Run forge create
+        // 5. Run the temporary script
         // ---------------------------------------------------------------
-        $output = [];
+        $output   = [];
         $exitCode = 0;
-        exec($cmd, $output, $exitCode);
+        exec("{$tmpScript} 2>&1", $output, $exitCode);
+
+        // Clean up temp script immediately after execution
+        @unlink($tmpScript);
 
         $fullOutput = implode("\n", $output);
         $this->line($fullOutput);
