@@ -913,7 +913,7 @@
 
                 <div class="bg-white  shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
                     {{-- Clickable Area for Deposit --}}
-                    <button type="button" onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')"
+                    <div onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" role="button" tabindex="0"
                         class="flex-1 flex gap-4 p-5 min-w-0 text-left cursor-pointer items-center">
                         {{-- Icon Column --}}
                         <div class="relative shrink-0">
@@ -980,7 +980,7 @@
                         </div>
 
                         {{-- Removal of redundant chevron --}}
-                    </button>
+                    </div>
 
                     {{-- Action Column (Delete) --}}
                     <div class="shrink-0 flex items-center pr-8 pl-2 border-l border-zinc-50 ml-2">
