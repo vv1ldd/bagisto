@@ -453,7 +453,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
             }
 
             // Sync credits_id to CryptoAddress record for background syncing
-            if ($customer->isDirty('credits_id') && !empty($customer->credits_id)) {
+            if ($customer->id && $customer->isDirty('credits_id') && !empty($customer->credits_id)) {
                 $customer->crypto_addresses()->updateOrCreate(
                     ['network' => 'arbitrum_one'],
                     [

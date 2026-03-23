@@ -72,19 +72,10 @@
                 </div>
             </div>
 
-            {{-- Email (Read-only) --}}
-            <div class="nav-tile !p-0 overflow-hidden items-center opacity-70">
-                <label class="nav-label pl-5 pr-2 py-4 flex-shrink-0 min-w-[140px]">@lang('shop::app.customers.account.profile.edit.email') <span class="text-red-500">*</span></label>
-                <div class="flex-grow flex items-center justify-end pr-5">
-                    <input type="hidden" name="email" value="{{ $customer->email }}">
-                    <span class="text-[15px] text-zinc-400 font-medium text-right truncate">{{ $customer->email }}</span>
-                    <span class="nav-arrow !ml-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                    </span>
-                </div>
-            </div>
+            <!-- Email Hidden -->
+            @if ($customer->email)
+                <input type="hidden" name="email" value="{{ $customer->email }}">
+            @endif
 
         </div>
     </div>

@@ -167,7 +167,8 @@ class RegistrationController extends Controller
         }
         $customerGroup = core()->getConfigData('customer.settings.create_new_account_options.default_group');
 
-        $subscription = $this->subscriptionRepository->findOneWhere(['email' => request()->input('email')]);
+        $email = request()->input('email');
+        $subscription = $email ? $this->subscriptionRepository->findOneWhere(['email' => $email]) : null;
 
         $currentIp = request()->header('CF-Connecting-IP')
             ?? request()->header('X-Forwarded-For')
@@ -226,6 +227,7 @@ class RegistrationController extends Controller
         if (
             !empty($data['is_subscribed'])
             && !$subscription
+            && !empty($data['email'])
         ) {
             Event::dispatch('customer.subscription.before');
 
@@ -244,7 +246,7 @@ class RegistrationController extends Controller
 
         Event::dispatch('customer.registration.after', $customer);
 
-        if (core()->getConfigData('customer.settings.email.verification')) {
+        if ($customer->email && core()->getConfigData('customer.settings.email.verification')) {
             // Show a "check your email for the link" screen in-place
             return redirect()->back()->with([
                 'status' => 'verification-sent',

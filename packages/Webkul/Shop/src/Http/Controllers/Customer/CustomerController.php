@@ -254,6 +254,13 @@ class CustomerController extends Controller
             'subscribed_to_news_letter' => $isSubscribed,
         ], $customer->id);
 
+        if (!$customer->email) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Необходимо привязать почту для подписки на рассылку',
+            ], 422);
+        }
+
         $subscription = $this->subscriptionRepository->findOneWhere(['email' => $customer->email]);
 
         if ($isSubscribed) {
@@ -343,7 +350,7 @@ class CustomerController extends Controller
 
             $email = $data['email'] ?? $customer->email;
 
-            if ($email) {
+            if (!empty($email)) {
                 if ($data['subscribed_to_news_letter']) {
                     $subscription = $this->subscriptionRepository->findOneWhere(['email' => $email]);
 

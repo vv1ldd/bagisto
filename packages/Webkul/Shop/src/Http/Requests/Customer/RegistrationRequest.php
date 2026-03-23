@@ -13,7 +13,7 @@ class RegistrationRequest extends FormRequest
      * @var array
      */
     private $rules = [
-        'email' => 'email|required|unique:customers,email',
+        'email' => 'nullable|email|unique:customers,email',
     ];
 
     /**
