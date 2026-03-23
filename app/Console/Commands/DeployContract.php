@@ -112,7 +112,7 @@ class DeployContract extends Command
 
         $scriptContent = "#!/usr/bin/env bash\n"
                        . "export PRIVATE_KEY=\"{$privateKey}\"\n"
-                       . "\"{$forge}\" create \"{$contractPath}:MeanlyGifts\" --rpc-url \"{$rpcUrl}\" --private-key \"\$PRIVATE_KEY\" --broadcast --legacy --constructor-args \"{$ownerAddr}\"\n";
+                       . "\"{$forge}\" create \"{$contractPath}:MeanlyGifts\" --rpc-url \"{$rpcUrl}\" --private-key \"\$PRIVATE_KEY\" --broadcast --legacy --gas-price 100000000 --constructor-args \"{$ownerAddr}\"\n";
 
         file_put_contents($tmpScript, $scriptContent);
         chmod($tmpScript, 0700);
