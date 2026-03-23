@@ -10,4 +10,12 @@ return [
         'arbitrum_one' => env('CRYPTO_VERIFICATION_ARBITRUM_ADDRESS', '0x0000000000000000000000000000000000000000'),
         'usdt_arbitrum_one' => env('CRYPTO_VERIFICATION_USDT_ARBITRUM_ADDRESS', '0x0000000000000000000000000000000000000000'),
     ],
+    
+    // Hot Wallet Minter Configuration
+    'hot_wallet_address' => env('HOT_WALLET_ADDRESS', ''),
+    'hot_wallet_private_key' => env('HOT_WALLET_PRIVATE_KEY', ''),
+    'meanly_coin_address' => env('MEANLY_COIN_ADDRESS', ''),
+    'meanly_gift_address' => env('MEANLY_GIFT_ADDRESS', ''),
+    'rpc_url_arbitrum' => env('ARBITRUM_RPC_URL', 'https://arb1.arbitrum.io/rpc'),
+    'arbitrum_chain_id' => env('ARBITRUM_CHAIN_ID', 42161),
 ];

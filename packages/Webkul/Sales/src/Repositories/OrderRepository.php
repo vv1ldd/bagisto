@@ -181,24 +181,20 @@ class OrderRepository extends Repository
                             'notes' => "Кэшбек {$cashbackPercent}% с заказа #{$order->increment_id}",
                         ]);
 
-                        // ─── Dispatch On-Chain Cashback Minting Job ───
-                        if (!empty($order->customer->credits_id) && str_starts_with($order->customer->credits_id, '0x')) {
-                            // Convert to target currency (e.g., USD) if configured
-                            $targetCurrency = config('meanly.cashback_coin_currency', 'RUB');
-                            $mintAmount = (float) $cashbackAmount;
+                        // ─── Dispatch On-Chain Cashback & Gift Minting Job ───
+                        $targetCurrency = config('meanly.cashback_coin_currency', 'RUB');
+                        $mintAmount = (float) $cashbackAmount;
 
-                            if ($targetCurrency !== 'RUB') {
-                                // convertPrice uses Bagisto's internal rates
-                                $mintAmount = core()->convertPrice($cashbackAmount, $targetCurrency);
-                            }
-
-                            \App\Jobs\ProcessCashbackMintingJob::dispatch(
-                                $order->id,
-                                $order->customer_id,
-                                (float) $mintAmount,
-                                $targetCurrency
-                            );
+                        if ($targetCurrency !== 'RUB') {
+                            $mintAmount = core()->convertPrice($cashbackAmount, $targetCurrency);
                         }
+
+                        \App\Jobs\ProcessCashbackMintingJob::dispatch(
+                            $order->id,
+                            $order->customer_id,
+                            (float) $mintAmount,
+                            $targetCurrency
+                        );
                     }
                 } catch (\Exception $e) {
                     Log::error('Cashback failed for order #' . $order->increment_id . ': ' . $e->getMessage());

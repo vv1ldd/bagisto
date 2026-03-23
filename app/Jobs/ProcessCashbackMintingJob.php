@@ -39,7 +39,7 @@ class ProcessCashbackMintingJob implements ShouldQueue
      * Execute the job.
      */
     public function handle(
-        Web3MintingService $mintingService,
+        \Webkul\Customer\Services\HotWalletService $hotWalletService,
         CustomerRepository $customerRepository,
         OrderRepository $orderRepository
     ) {
@@ -51,20 +51,29 @@ class ProcessCashbackMintingJob implements ShouldQueue
             return;
         }
 
-        // Only mint if they have an active crypto address (credits_id starting with 0x)
-        if (empty($customer->credits_id) || strpos($customer->credits_id, '0x') !== 0) {
-            Log::warning("ProcessCashbackMintingJob: Customer [{$customer->id}] does not have a valid 0x credits_id for on-chain cashback.");
+        // Get primary crypto address (using service logic or fallback)
+        $cryptoAddress = $this->getRecipientAddress($customer);
+        if (!$cryptoAddress) {
+            Log::warning("ProcessCashbackMintingJob: No verified Arbitrum address for Customer [{$customer->id}]. Skipping on-chain minting.");
             return;
         }
 
-        Log::info("ProcessCashbackMintingJob: Starting On-Chain Cashback Minting for Customer [{$customer->id}] and Order [{$order->id}]. Amount: {$this->amount}");
+        Log::info("ProcessCashbackMintingJob: Starting On-Chain Minting for Customer [{$customer->id}] and Order [{$order->id}].");
 
-        // Mint the cashback coins
-        $txHash = $mintingService->mintCashbackCoin($customer->credits_id, $this->amount);
+        // 1. Mint Cashback Coin (ERC20)
+        $coinTxHash = null;
+        if ($this->amount > 0) {
+            Log::info("ProcessCashbackMintingJob: Minting {$this->amount} {$this->currency} for {$cryptoAddress}");
+            $coinTxHash = $hotWalletService->mintCoin($customer, $this->amount);
+        }
 
-        if ($txHash) {
-            Log::info("ProcessCashbackMintingJob: Successfully minted cashback tokens. TxHash: {$txHash}");
-            
+        // 2. Mint Gift NFT (ERC721)
+        // Metadata URI can be a generic one or linked to order
+        $nftMetadataUri = url("/nft/metadata/{$order->id}");
+        Log::info("ProcessCashbackMintingJob: Minting Gift NFT for {$cryptoAddress}");
+        $nftTxHash = $hotWalletService->mintGift($customer, $nftMetadataUri);
+
+        if ($coinTxHash || $nftTxHash) {
             // Record this in the wallet history
             CustomerTransaction::create([
                 'uuid' => \Illuminate\Support\Str::uuid(),
@@ -74,17 +83,30 @@ class ProcessCashbackMintingJob implements ShouldQueue
                 'status' => 'completed',
                 'reference_type' => get_class($order),
                 'reference_id' => $order->id,
-                'notes' => "On-Chain Cashback ({$this->currency}) for Order #{$order->increment_id}",
+                'notes' => "On-Chain Reward for Order #{$order->increment_id}",
                 'metadata' => [
-                    'transaction_id' => $txHash,
+                    'coin_tx' => $coinTxHash,
+                    'nft_tx' => $nftTxHash,
                     'network' => 'arbitrum_one',
                     'currency' => $this->currency,
+                    'address' => $cryptoAddress,
                 ],
             ]);
+            
+            Log::info("ProcessCashbackMintingJob: Completed. CoinTx: " . ($coinTxHash ?? 'none') . " | NftTx: " . ($nftTxHash ?? 'none'));
         } else {
-            Log::error("ProcessCashbackMintingJob: Failed to mint cashback tokens for Customer [{$customer->id}].");
-            // Throwing exception so the queue worker retries (depending on queue config)
-            throw new \Exception("Web3 Cashback Minting Failed.");
+            Log::error("ProcessCashbackMintingJob: Failed both minting operations for Customer [{$customer->id}].");
+            throw new \Exception("Web3 Minting Failed.");
         }
+    }
+
+    protected function getRecipientAddress($customer): ?string
+    {
+        $addressRecord = $customer->crypto_addresses()
+            ->where('network', '=', 'arbitrum_one')
+            ->whereNotNull('verified_at')
+            ->first();
+
+        return $addressRecord ? $addressRecord->address : (str_starts_with((string)$customer->credits_id, '0x') ? $customer->credits_id : null);
     }
 }

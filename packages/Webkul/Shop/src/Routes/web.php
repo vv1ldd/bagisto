@@ -16,3 +16,11 @@ require 'customer-routes.php';
  * cart, coupons, etc will be placed here.
  */
 require 'checkout-routes.php';
+
+/**
+ * NFT Metadata routes.
+ */
+Route::prefix('nft')->group(function () {
+    Route::get('metadata/{id}', 'Webkul\Shop\Http\Controllers\NFTMetadataController@metadata')->name('shop.nft.metadata');
+    Route::get('image/{id}', 'Webkul\Shop\Http\Controllers\NFTMetadataController@image')->name('shop.nft.image');
+});
