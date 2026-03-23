@@ -35,101 +35,118 @@
                             Покупательная способность
                         @else
                             Ваш Баланс
-                        @endif
-                    </div>
-                    <div class="text-4xl md:text-5xl font-black text-[#1a0050] tracking-tighter italic">
-                        {{ core()->formatPrice($user->getTotalFiatBalance()) }}
-                    </div>
-                    <div class="flex items-center gap-2 mt-2">
-                        <div class="text-[11px] font-mono text-zinc-400 bg-zinc-50 px-2.5 py-1 border border-zinc-100 font-bold">
-                            @ {{ $user->username }}
-                        </div>
-                        @if($user->is_investor)
-                            <div class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 border border-amber-200 uppercase tracking-widest">
-                                Инвестор
-                            </div>
-                        @endif
-                    </div>
-                </div>
+            {{-- Unified Balance Card --}}
+            <div class="col-span-2 bg-white border border-[#e2d9ff] p-8 shadow-sm relative overflow-hidden group hover:border-[#7C45F5] transition-all duration-500">
+                {{-- Decorative gradient background --}}
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5] opacity-[0.03] rounded-full blur-3xl group-hover:opacity-[0.06] transition-opacity"></div>
                 
-                <div class="hidden md:flex flex-col items-end gap-1 opacity-20">
-                    <span class="icon-security text-5xl text-[#7C45F5]"></span>
-                    <span class="text-[8px] font-black uppercase tracking-widest text-[#7C45F5]">SSL Secure</span>
-                </div>
-            </div>
-
-            {{-- Asset Tiles --}}
-            @foreach($balances as $balance)
-                @php
-                    $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888', 'icon' => '💰'];
-                    $rate = $exchangeRateService->getRate($balance->currency_code);
-                    $fiat = $balance->amount * $rate;
-                    $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
-                @endphp
-                <div class="nav-tile p-6 group">
-                    <div class="flex items-center justify-between w-full mb-4">
-                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-lg font-bold transition-transform group-hover:scale-110" 
-                             style="background: {{ $m['color'] }}15; color: {{ $m['color'] }}">
-                            {{ $m['icon'] }}
+                <div class="relative z-10">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 opacity-80 italic">Покупательная способность</div>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-[48px] font-black text-[#1a0050] tracking-tighter leading-none">
+                                    {{ core()->formatPrice($user->credits?->amount ?? 0) }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-4">
+                                <div class="px-2 py-0.5 bg-[#f8f6ff] text-[#7C45F5] border border-[#eee6ff] rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                                    <span class="w-1 h-1 bg-[#7C45F5] rounded-full animate-pulse"></span>
+                                    @ {{$user->credits_alias}}
+                                </div>
+                                <div class="px-2 py-0.5 bg-amber-50 text-amber-500 border border-amber-100 rounded text-[9px] font-black uppercase tracking-widest">Инвестор</div>
+                            </div>
                         </div>
-                        <div class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{{ $m['label'] }}</div>
+
+                        <div class="flex flex-col items-end gap-1 opacity-20 hidden md:flex">
+                            <span class="icon-security text-5xl text-[#7C45F5]"></span>
+                            <span class="text-[8px] font-black uppercase tracking-widest text-[#7C45F5]">SSL Secure</span>
+                        </div>
                     </div>
-                    <div class="text-[18px] font-black text-[#1a0050] tracking-tight truncate w-full">
-                        {{ $amount }} {{ $m['label'] }}
+
+                    {{-- Assets Divider --}}
+                    <div class="h-px bg-zinc-50 my-8"></div>
+
+                    {{-- Assets List --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @foreach($balances as $balance)
+                            @php
+                                $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888', 'icon' => '💰'];
+                                $rate = $exchangeRateService->getRate($balance->currency_code);
+                                $fiat = $balance->amount * $rate;
+                                $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
+                            @endphp
+                            <div class="flex items-center justify-between p-3 rounded-2xl bg-zinc-50/50 border border-transparent hover:border-[#f0ebff] hover:bg-white transition-all group/asset">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-white border border-zinc-100 flex items-center justify-center text-lg shadow-sm group-hover/asset:scale-110 transition-transform">
+                                        {{ $m['icon'] }}
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[12px] font-black text-[#1a0050] uppercase tracking-tight">{{ $m['label'] }}</span>
+                                        <span class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">{{ $amount }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[13px] font-black text-[#1a0050] tracking-tight">{{ core()->formatPrice($fiat) }}</span>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                    <div class="text-[13px] text-zinc-500 font-medium mt-1">
-                        ≈ {{ core()->formatPrice($fiat) }}
+
+                    {{-- Top Up Button --}}
+                    <div class="mt-8">
+                        <button onclick="toggleDepositMethods()" class="w-full bg-[#7C45F5] hover:bg-[#6b36e0] text-white py-5 rounded-2xl shadow-lg shadow-[#7C45F5]/20 flex items-center justify-center gap-3 transition-all active:scale-[0.98] group/btn">
+                            <span class="text-[14px] font-black uppercase tracking-[0.2em]">Пополнить баланс</span>
+                            <span class="icon-arrow-down text-xl transition-transform group-hover:translate-y-0.5"></span>
+                        </button>
                     </div>
                 </div>
-            @endforeach
-
-
-
-            @if ($user->is_b2b_enabled)
-                {{-- Action: Companies --}}
-                <button onclick="goToOrganizations()" class="nav-tile p-6 hover:border-[#7C45F5] group">
-                    <div class="w-12 h-12 bg-zinc-50 text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mb-4">
-                        🏢
-                    </div>
-                    <div class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic">Компании</div>
-                    <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">B2B Управление</div>
-                </button>
-            @endif
-
-            {{-- Deposit Options Section Title --}}
-            <div class="col-span-2 mt-2 px-2 flex items-center justify-between">
-                <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] opacity-80">Способы пополнения</span>
             </div>
 
-            @if ($user->is_crypto_enabled)
-                {{-- Crypto Option (Full Width) --}}
-                <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
-                    <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
-                        🪙
-                    </div>
-                    <div class="flex flex-col items-start flex-1">
-                        <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Криптовалюта</div>
-                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">USDT, TON, BTC, ETH</div>
-                    </div>
-                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
-                        <span class="icon-arrow-right text-xl"></span>
-                    </div>
-                </button>
-            @endif
+            {{-- Hidden Deposit Methods Section --}}
+            <div id="deposit-methods-section" class="col-span-2 hidden opacity-0 translate-y-4 transition-all duration-500">
+                <div class="mt-4 px-2 flex items-center justify-between mb-2">
+                    <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] opacity-80 italic">Активные способы пополнения</span>
+                </div>
 
-            @if ($user->is_b2b_enabled)
-                {{-- B2B Option (Full Width Horizontal) --}}
-                <button onclick="goToB2BManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
-                    <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
-                        🏢
-                    </div>
-                    <div class="flex flex-col items-start flex-1">
-                        <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для компаний</div>
-                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">Оплата от юр. лица</div>
-                    </div>
-                    <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
+                <div class="nav-grid">
+                    @if ($user->is_crypto_enabled)
+                        <button onclick="goToCryptoManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
+                            <div class="w-12 h-12 bg-[#f8f6ff] text-[#7C45F5] group-hover:bg-[#7C45F5] group-hover:text-white rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
+                                🪙
+                            </div>
+                            <div class="flex flex-col items-start flex-1">
+                                <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Криптовалюта</div>
+                                <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">USDT, TON, BTC, ETH</div>
+                            </div>
+                            <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
+                                <span class="icon-arrow-right text-xl"></span>
+                            </div>
+                        </button>
+                    @endif
+
+                    @if ($user->is_b2b_enabled)
+                        <button onclick="goToB2BManagement()" class="nav-tile !flex-row col-span-2 p-6 hover:border-[#7C45F5] group">
+                            <div class="w-12 h-12 bg-white border border-[#f0ebff] text-zinc-400 group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] rounded-2xl flex items-center justify-center text-2xl transition-all shadow-sm mr-4 shrink-0">
+                                🏢
+                            </div>
+                            <div class="flex flex-col items-start flex-1">
+                                <div class="text-[16px] font-black text-[#1a0050] uppercase tracking-tighter italic">Для компаний</div>
+                                <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5">Оплата от юр. лица</div>
+                            </div>
+                            <div class="text-zinc-300 group-hover:text-[#7C45F5] transition-colors ml-4">
+                                <span class="icon-arrow-right text-xl"></span>
+                            </div>
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        {{-- Step 2: Transactions --}}
         <div id="step-transactions" class="hidden">
-            @if ($transactions->count() > 0)
+            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
+                @if ($transactions->count() > 0)
                 <div class="flex flex-col">
                     @foreach ($transactions as $transaction)
                         @php
@@ -231,9 +248,6 @@
                     <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-2">Здесь будут отображаться ваши операции</p>
                 </div>
             @endif
-        </div>nter justify-center mb-6 shadow-inner text-3xl">
-                        📭</div>
-                    <p class="text-[17px] font-black text-zinc-700 tracking-tight">Транзакций не найдено</p>
                 </div>
             @endif
         </div>
@@ -1410,6 +1424,28 @@
             function goToCryptoManagement() { switchStep(@json($allAddresses->isEmpty() ? 'empty' : 'management')); }
             function goToB2BManagement() { switchStep('b2b-management'); }
             function goToB2CManagement() { switchStep('b2c-details'); }
+
+            function toggleDepositMethods() {
+                const section = document.getElementById('deposit-methods-section');
+                if (section.classList.contains('hidden')) {
+                    section.classList.remove('hidden');
+                    // Force reflow
+                    section.offsetHeight;
+                    section.classList.remove('opacity-0', 'translate-y-4');
+                    section.classList.add('opacity-100', 'translate-y-0');
+                    
+                    // Smooth scroll
+                    setTimeout(() => {
+                        section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
+                } else {
+                    section.classList.add('opacity-0', 'translate-y-4');
+                    section.classList.remove('opacity-100', 'translate-y-0');
+                    setTimeout(() => {
+                        section.classList.add('hidden');
+                    }, 500);
+                }
+            }
 
             function goToAddOrgStep1() {
                 document.getElementById('add-org-step-1').classList.remove('hidden');
