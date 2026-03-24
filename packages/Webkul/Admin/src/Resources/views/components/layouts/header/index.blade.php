@@ -129,7 +129,7 @@
                         @lang('admin::app.components.layouts.header.my-account')
                     </a>
 
-                    <v-admin-refuel></v-admin-refuel>
+
 
                     <!--Admin logout-->
                     <x-admin::form
@@ -153,62 +153,7 @@
 </header>
 
 @pushOnce('scripts')
-    <script type="text/x-template" id="v-admin-refuel-template">
-        <div 
-            class="cursor-pointer px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-950 sm:px-5 sm:text-base flex items-center justify-between"
-            @click="refuel"
-            :class="{'opacity-50 cursor-not-allowed': isLoading}"
-        >
-            <div class="flex items-center gap-2">
-                <span class="icon-payment text-xl"></span>
-                <span>@{{ isLoading ? 'Refueling...' : 'Refuel Gas (0.01 ETH)' }}</span>
-            </div>
 
-            <span v-if="isLoading" class="icon-settings-outline animate-spin text-lg"></span>
-        </div>
-    </script>
-
-    <script type="module">
-        app.component('v-admin-refuel', {
-            template: '#v-admin-refuel-template',
-
-            data() {
-                return {
-                    isLoading: false,
-                }
-            },
-
-            methods: {
-                refuel() {
-                    if (this.isLoading) return;
-
-                    this.isLoading = true;
-
-                    this.$axios.post("{{ route('admin.passkey.refuel') }}")
-                        .then(response => {
-                            this.isLoading = false;
-                            
-                            this.$emitter.emit('add-flash', { 
-                                type: 'success', 
-                                message: response.data.message 
-                            });
-
-                            if (response.data.explorer_url) {
-                                window.open(response.data.explorer_url, '_blank');
-                            }
-                        })
-                        .catch(error => {
-                            this.isLoading = false;
-
-                            this.$emitter.emit('add-flash', { 
-                                type: 'error', 
-                                message: error.response?.data?.message || 'Failed to refuel gas.' 
-                            });
-                        });
-                }
-            }
-        });
-    </script>
 @endPushOnce
 
 <!-- Menu Sidebar Drawer -->
