@@ -59,6 +59,13 @@
                     >
                         @lang('admin::app.errors.dashboard')
                     </a>
+
+                    <a
+                        href="{{ route('shop.home.index') }}"
+                        class="cursor-pointer text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors border border-gray-800 hover:border-gray-500 bg-gray-950 px-6 py-3"
+                    >
+                        @lang('shop::app.errors.go-to-home')
+                    </a>
                 </div>
 
             </div>

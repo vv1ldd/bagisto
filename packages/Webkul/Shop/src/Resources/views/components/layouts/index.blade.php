@@ -340,14 +340,21 @@
 
             window.handleMeanlyWalletPasskey = async function (el, redirectUrl = null) {
                 if (el && el.classList.contains('opacity-50')) return;
+                
+                const SWAB = window.SimpleWebAuthnBrowser;
+                if (!SWAB) {
+                    alert('Библиотека аутентификации не загружена. Попробуйте обновить страницу.');
+                    return;
+                }
+
                 if (!window.PublicKeyCredential) {
                     alert('Ваш браузер или соединение (требуется HTTPS) не поддерживают Passkey.');
                     return;
                 }
+
                 if (el) el.classList.add('opacity-50', 'pointer-events-none');
                 
                 try {
-                    const { startAuthentication } = SimpleWebAuthnBrowser;
                     var response = await fetch('{{ route('passkeys.login-options') }}', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -355,7 +362,15 @@
                     if (!response.ok) throw new Error('Ошибка связи с сервером');
                     var options = await response.json();
                     
-                    var asseResp = await startAuthentication(options);
+                    // Safari Hardening: Ensure base64url fields are clean
+                    if (options.challenge) options.challenge = options.challenge.replace(/=/g, '');
+                    if (options.allowCredentials) {
+                        options.allowCredentials.forEach(cred => {
+                            if (cred.id) cred.id = cred.id.replace(/=/g, '');
+                        });
+                    }
+
+                    var asseResp = await SWAB.startAuthentication(options);
 
                     var loginResponse = await fetch('{{ route('passkeys.login') }}', {
                         method: 'POST',
@@ -370,7 +385,12 @@
                         throw new Error(result.message || 'Ошибка проверки Passkey');
                     }
                 } catch (err) {
-                    if (err.name !== 'NotAllowedError') alert(err.message);
+                    if (err.name !== 'NotAllowedError') {
+                        console.error('Passkey Auth Error:', err);
+                        alert(err.message === 'The string did not match the expected pattern' 
+                            ? 'Ошибка формата данных в Safari. Пожалуйста, попробуйте еще раз или используйте другой браузер.' 
+                            : err.message);
+                    }
                 } finally {
                     if (el) el.classList.remove('opacity-50', 'pointer-events-none');
                 }

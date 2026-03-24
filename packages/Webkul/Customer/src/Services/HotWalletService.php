@@ -1,4 +1,4 @@
-
+<?php
 
 namespace Webkul\Customer\Services;
 
@@ -206,7 +206,7 @@ class HotWalletService
     protected function getPrimaryCryptoAddress(Customer $customer): ?string
     {
         $addressRecord = $customer->crypto_addresses()
-            ->where('network', '=', 'arbitrum_one')
+            ->where('network', 'arbitrum_one')
             ->whereNotNull('verified_at')
             ->first();
 

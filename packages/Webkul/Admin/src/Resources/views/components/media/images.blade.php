@@ -555,7 +555,10 @@
                 getBase64ToFile(base64, filename) {
                     var arr = base64.split(','),
                         mime = arr[0].match(/:(.*?);/)[1],
-                        bstr = atob(arr[arr.length - 1]), 
+                        b64 = arr[arr.length - 1].replace(/-/g, '+').replace(/_/g, '/'),
+                        pad = b64.length % 4,
+                        padded = pad ? b64 + '===='.slice(pad) : b64,
+                        bstr = atob(padded), 
                         n = bstr.length, 
                         u8arr = new Uint8Array(n);
 

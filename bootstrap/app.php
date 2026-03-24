@@ -57,8 +57,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'mnemonic',
         ]);
 
-        if (! config('app.debug')) {
-            $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, \Illuminate\Http\Request $request) {
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, \Illuminate\Http\Request $request) {
                 $statusCode = $e->getStatusCode();
                 
                 if (in_array($statusCode, [401, 403, 404, 500, 503])) {
@@ -82,5 +81,4 @@ return Application::configure(basePath: dirname(__DIR__))
                     }
                 }
             });
-        }
     })->create();
