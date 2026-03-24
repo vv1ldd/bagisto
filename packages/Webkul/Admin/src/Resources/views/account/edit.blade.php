@@ -298,7 +298,7 @@
                 button.innerText = 'Ожидание устройства...';
 
                 // Start WebAuthn registration
-                const attResp = await SimpleWebAuthnBrowser.startRegistration(optionsJSON);
+                const attResp = await SimpleWebAuthn.startRegistration(optionsJSON);
 
                 button.innerText = 'Сохранение...';
 
@@ -321,9 +321,13 @@
                 }
             } catch (error) {
                 console.error('[Passkey] Error:', error);
-                if (error.name !== 'NotAllowedError' && !error.message.includes('отмена') && error.name !== 'AbortError') {
-                    alert(error.message);
+                
+                if (error.name === 'NotAllowedError' || error.message.includes('отмена') || error.name === 'AbortError' || error.message.includes('cancelled')) {
+                    // Canceled by user, just silent return
+                    return;
                 }
+                
+                alert('Произошла ошибка при добавлении ключа: ' + error.message);
             } finally {
                 button.disabled = false;
                 button.innerHTML = originalText;
