@@ -56,6 +56,7 @@ services:
       - coolify
     volumes:
       - 'bagisto-storage:/var/www/html/storage'
+      - 'bagisto-blockchain-data:/var/www/html/blockchain/data'
     depends_on:
       - elasticsearch
       - mailpit
@@ -109,6 +110,7 @@ services:
       - coolify
     volumes:
       - 'bagisto-storage:/var/www/html/storage'
+      - 'bagisto-blockchain-data:/var/www/html/blockchain/data'
     depends_on:
       - elasticsearch
       - mailpit
@@ -177,6 +179,11 @@ services:
       REVERB_APP_ID: "${REVERB_APP_ID}"
       REVERB_APP_KEY: "${REVERB_APP_KEY}"
       REVERB_APP_SECRET: "${REVERB_APP_SECRET}"
+      REVERB_HOST: "${REVERB_HOST}"
+      REVERB_PORT: "${REVERB_PORT:-8088}"
+      REVERB_SCHEME: "${REVERB_SCHEME:-http}"
+    volumes:
+      - 'bagisto-blockchain-data:/var/www/html/blockchain/data'
     ports:
       - "${REVERB_SERVER_PORT:-8088}:8088"
     networks:
@@ -259,5 +266,7 @@ volumes:
   bagisto-elasticsearch-data:
     driver: local
   bagisto-storage:
+    driver: local
+  bagisto-blockchain-data:
     driver: local
 

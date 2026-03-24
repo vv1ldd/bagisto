@@ -1,6 +1,6 @@
 import json
 
-with open('ton_events.json') as f:
+with open('blockchain/data/ton_events.json') as f:
     data = json.load(f)
 
 for event in data.get('events', []):
