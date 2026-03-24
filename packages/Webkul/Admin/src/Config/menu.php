@@ -258,6 +258,24 @@ return [
     ],
 
     /**
+     * Web3.
+     */
+    [
+        'key'   => 'web3',
+        'name'  => 'Web3 Wallet',
+        'route' => 'admin.web3.index',
+        'sort'  => 6,
+        'icon'  => 'icon-dashboard', // Or a custom icon if available
+    ],
+    [
+        'key'   => 'web3.wallet',
+        'name'  => 'Горячий Кошелек',
+        'route' => 'admin.web3.index',
+        'sort'  => 1,
+        'icon'  => '',
+    ],
+
+    /**
      * Reporting.
      */
     [

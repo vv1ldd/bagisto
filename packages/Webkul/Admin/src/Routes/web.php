@@ -44,6 +44,13 @@ Route::group(['domain' => config('app.admin_domain')], function () {
         require 'cms-routes.php';
 
         /**
+         * Web3 (Hot Wallet) route.
+         */
+        Route::controller(\Webkul\Admin\Http\Controllers\Web3Controller::class)->prefix('web3')->group(function () {
+            Route::get('', 'index')->name('admin.web3.index');
+        });
+
+        /**
          * Reporting routes.
          */
         require 'reporting-routes.php';
