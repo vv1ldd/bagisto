@@ -102,130 +102,34 @@
 
         <style>
             html {
-                /* Reserve space for scrollbar to prevent layout shift (jitter) */
                 scrollbar-gutter: stable;
             }
 
-            /* Meanly Custom Scrollbar */
+            /* Meanly Custom Scrollbar - Brutalist */
             ::-webkit-scrollbar {
-                width: 10px;
-                height: 10px;
+                width: 12px;
+                height: 12px;
             }
 
             ::-webkit-scrollbar-track {
-                background: #f8fafc;
+                background: #000;
             }
 
             ::-webkit-scrollbar-thumb {
-                background: #7C45F5;
-                /* Note: Meanly style often uses sharp corners, but scrollbars benefit from a tiny radius for usability */
-                border: 3px solid #f8fafc;
-                border-radius: 10px;
+                background: var(--brutalist-neon);
+                border: 3px solid #000;
             }
 
             ::-webkit-scrollbar-thumb:hover {
-                background: #6a39d1;
+                background: #fff;
             }
 
             /* For Firefox */
             * {
                 scrollbar-width: thin;
-                scrollbar-color: #7C45F5 #f8fafc;
+                scrollbar-color: var(--brutalist-neon) #000;
             }
 
-            /* Force sharp corners globally (Meanly brutalist style) */
-            *, *::before, *::after {
-                border-radius: 0 !important;
-                -webkit-border-radius: 0 !important;
-                -moz-border-radius: 0 !important;
-            }
-            
-            /* Target all input types and states */
-            input, textarea, select, button, .v-field, .v-field__overlay, .v-field__outline, .form-control {
-                border-radius: 0 !important;
-            }
-
-            .ios-tile-relative {
-                position: relative !important;
-            }
-
-            .ios-group {
-                background-color: #fff !important;
-                border: 1px solid #f3f4f6 !important;
-                margin-bottom: 20px !important;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04) !important;
-            }
-
-            .ios-close-button {
-                position: absolute !important;
-                top: 20px !important;
-                right: 20px !important;
-                left: auto !important;
-                z-index: 20 !important;
-                width: 32px !important;
-                height: 32px !important;
-                background-color: #ef4444 !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                color: #ffffff !important;
-                transition: all 0.2s ease !important;
-                box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2) !important;
-            }
-
-            .ios-close-button:hover {
-                background-color: #dc2626 !important;
-                transform: scale(1.05) !important;
-            }
-
-            .ios-close-button:active {
-                transform: scale(0.95) !important;
-            }
-
-            .ios-back-button {
-                position: absolute !important;
-                top: 20px !important;
-                left: 20px !important;
-                right: auto !important;
-                z-index: 20 !important;
-                width: 32px !important;
-                height: 32px !important;
-                background-color: #fff !important;
-                border: 1px solid #f4f4f5 !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                color: #a1a1aa !important;
-                transition: all 0.2s ease !important;
-            }
-
-            .ios-back-button:hover {
-                color: #7C45F5 !important;
-                border-color: #e4e4e7 !important;
-            }
-
-            .ios-back-button:active {
-                transform: scale(0.95) !important;
-            }
-
-            /* Unified Red Cross Style for Modals/Drawers */
-            .ios-red-cross {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                width: 32px !important;
-                height: 32px !important;
-                background-color: #ef4444 !important;
-                color: #ffffff !important;
-                transition: all 0.2s ease !important;
-                cursor: pointer !important;
-                font-size: 18px !important;
-            }
-
-            .ios-red-cross:hover {
-                background-color: #dc2626 !important;
-                transform: scale(1.05) !important;
-            }
             {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
         </style>
 
@@ -249,14 +153,13 @@
             Skip to main content
         </a>
 
-        <!-- Premium Background Layer - Refined Mesh Gradient -->
-        <!-- Solid Background Layer (Matches Sidebar for Seamless integration) -->
-        <div class="fixed inset-0 -z-30" style="background-color: #F0EFFF;"></div>
+        <!-- Neo-Brutalist Background Layer -->
+        <div class="fixed inset-0 -z-30 bg-[#1a0050]"></div>
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative">
             
-            <div id="main-content-wrapper" class="flex flex-col min-h-screen bg-transparent px-0 md:px-0">
+            <div id="main-content-wrapper" class="flex flex-col min-h-screen bg-transparent">
                 <!-- Flash Message Blade Component -->
                 <x-shop::flash-group />
 

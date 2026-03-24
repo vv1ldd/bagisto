@@ -25,9 +25,9 @@
     >
         <div class="max-md:max-y-6 flex justify-center gap-6 max-lg:flex-wrap max-md:grid max-md:grid-cols-2 max-md:gap-x-2.5 max-md:text-center">
             @foreach ($customization->options['services'] as $service)
-                <div class="flex items-center gap-5 bg-white max-md:grid max-md:gap-2.5 max-sm:gap-1 max-sm:px-2">
+                <div class="flex items-center gap-5 brutalist-card p-6 max-md:grid max-md:gap-2.5 max-sm:gap-1 max-sm:px-4">
                     <span
-                        class="{{ $service['service_icon'] }} flex items-center justify-center w-[60px] h-[60px] bg-white border border-black  text-4xl text-navyBlue p-2.5 max-md:m-auto max-md:w-16 max-md:h-16 max-sm:w-10 max-sm:h-10 max-sm:text-2xl"
+                        class="{{ $service['service_icon'] }} flex items-center justify-center w-[60px] h-[60px] bg-[#D6FF00] border-4 border-black text-4xl text-black p-2.5 max-md:m-auto max-md:w-16 max-md:h-16 max-sm:w-12 max-sm:h-12 max-sm:text-2xl box-shadow-sm"
                         role="presentation"
                     >
                     </span>

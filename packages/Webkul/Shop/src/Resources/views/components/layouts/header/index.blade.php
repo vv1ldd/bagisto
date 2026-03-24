@@ -1,4 +1,4 @@
-<div id="shop-header" class="fixed top-0 left-0 right-0 z-[1000] bg-white border-b border-zinc-200" style="will-change: transform;">
+<div id="shop-header" class="fixed top-0 left-0 right-0 z-[1000] bg-white border-b-4 border-black box-shadow-sm" style="will-change: transform;">
     {!! view_render_event('bagisto.shop.layout.header.before') !!}
 
     @if(core()->getCurrentChannel()->locales()->count() > 1 || core()->getCurrentChannel()->currencies()->count() > 1)

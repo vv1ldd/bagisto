@@ -21,8 +21,8 @@
     ]);
 @endphp
 
-<footer class="mt-8 bg-transparent max-sm:mt-4">
-    <div class="glass-footer px-4 md:px-[60px] py-6 max-sm:px-5">
+<footer class="mt-12 bg-white max-sm:mt-8 brutalist-footer">
+    <div class="px-4 md:px-[60px] py-12 max-sm:px-5">
         <div class="mx-auto flex flex-col items-center justify-center gap-2 w-full max-w-7xl">
 
             <!-- Footer Links -->
