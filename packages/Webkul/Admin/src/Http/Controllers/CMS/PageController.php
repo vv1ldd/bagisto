@@ -51,7 +51,17 @@ class PageController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'url_key' => ['required', 'unique:cms_page_translations,url_key', new \Webkul\Core\Rules\Slug],
+            'url_key' => [
+                'required',
+                'unique:cms_page_translations,url_key',
+                new \Webkul\Core\Rules\Slug,
+                function ($attribute, $value, $fail) {
+                    $routes = collect(\Illuminate\Support\Facades\Route::getRoutes()->getRoutes());
+                    if ($routes->contains(fn($r) => trim($r->uri(), '/') === trim($value, '/'))) {
+                        $fail('Этот URL занят системным маршрутом.');
+                    }
+                }
+            ],
             'page_title' => 'required',
             'html_content' => 'required',
             'channels' => 'required|array|min:1',
@@ -102,11 +112,21 @@ class PageController extends Controller
         $locale = core()->getRequestedLocaleCode();
 
         $this->validate(request(), [
-            $locale.'.url_key' => ['required', new Slug, function ($attribute, $value, $fail) use ($id) {
-                if (! $this->pageRepository->isUrlKeyUnique($id, $value)) {
-                    $fail(trans('admin::app.cms.index.already-taken', ['name' => 'Page']));
+            $locale.'.url_key' => [
+                'required', 
+                new Slug, 
+                function ($attribute, $value, $fail) use ($id) {
+                    if (! $this->pageRepository->isUrlKeyUnique($id, $value)) {
+                        $fail(trans('admin::app.cms.index.already-taken', ['name' => 'Page']));
+                    }
+                },
+                function ($attribute, $value, $fail) {
+                    $routes = collect(\Illuminate\Support\Facades\Route::getRoutes()->getRoutes());
+                    if ($routes->contains(fn($r) => trim($r->uri(), '/') === trim($value, '/'))) {
+                        $fail('Этот URL занят системным маршрутом.');
+                    }
                 }
-            }],
+            ],
             $locale.'.page_title' => 'required',
             $locale.'.html_content' => 'required',
             'channels' => 'required|array|min:1',

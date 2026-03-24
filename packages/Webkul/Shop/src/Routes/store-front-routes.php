@@ -17,12 +17,7 @@ use Webkul\Shop\Http\Controllers\AliasProfileController;
  */
 Route::get('@{alias}', [AliasProfileController::class, 'index'])->name('shop.alias_profile.index');
 
-/**
- * CMS pages.
- */
-Route::get('page/{slug}', [PageController::class, 'view'])
-    ->name('shop.cms.page')
-    ->middleware('cache.response');
+
 
 /**
  * Fallback route.

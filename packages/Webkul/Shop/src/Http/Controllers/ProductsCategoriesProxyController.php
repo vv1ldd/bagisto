@@ -7,6 +7,7 @@ use Webkul\Category\Repositories\CategoryRepository;
 use Webkul\Marketing\Repositories\URLRewriteRepository;
 use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Theme\Repositories\ThemeCustomizationRepository;
+use Webkul\CMS\Repositories\PageRepository;
 
 class ProductsCategoriesProxyController extends Controller
 {
@@ -26,7 +27,8 @@ class ProductsCategoriesProxyController extends Controller
         protected CategoryRepository $categoryRepository,
         protected ProductRepository $productRepository,
         protected ThemeCustomizationRepository $themeCustomizationRepository,
-        protected URLRewriteRepository $urlRewriteRepository
+        protected URLRewriteRepository $urlRewriteRepository,
+        protected PageRepository $pageRepository
     ) {}
 
     /**
@@ -50,6 +52,19 @@ class ProductsCategoriesProxyController extends Controller
             ]);
 
             return view('shop::home.index', compact('customizations'));
+        }
+
+        /**
+         * Try to find a CMS Page first
+         */
+        $cmsPage = $this->pageRepository
+            ->whereHas('channels', function ($query) {
+                $query->where('id', core()->getCurrentChannel()->id);
+            })
+            ->whereTranslation('url_key', $slugOrURLKey)->first();
+
+        if ($cmsPage) {
+            return view('shop::cms.page')->with('page', $cmsPage);
         }
 
         $category = $this->categoryRepository->findBySlug($slugOrURLKey);
@@ -113,6 +128,19 @@ class ProductsCategoriesProxyController extends Controller
 
         if ($categoryURLRewrite) {
             return redirect()->to($categoryURLRewrite->target_path, $categoryURLRewrite->redirect_type);
+        }
+
+        /**
+         * CMS url rewrite matching
+         */
+        $cmsURLRewrite = $this->urlRewriteRepository->findOneWhere([
+            'entity_type' => 'cms_page',
+            'request_path' => $slugOrURLKey,
+            'locale' => app()->getLocale(),
+        ]);
+
+        if ($cmsURLRewrite) {
+            return redirect()->to($cmsURLRewrite->target_path, $cmsURLRewrite->redirect_type);
         }
 
         /**
