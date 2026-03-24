@@ -14,6 +14,7 @@ use Spatie\LaravelPasskeys\Http\Requests\AuthenticateUsingPasskeysRequest;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use Webkul\User\Repositories\AdminRepository;
+use Webkul\Customer\Services\HotWalletService;
 
 class PasskeyController extends Controller
 {
@@ -198,6 +199,43 @@ class PasskeyController extends Controller
         } catch (\Exception $e) {
             Log::error('Admin Passkey login error: ' . $e->getMessage());
             return response()->json(['message' => 'Authentication failed.'], 400);
+        }
+    }
+
+    /**
+     * Refuel the admin's wallet with a small amount of gas (0.01 ETH).
+     */
+    public function refuel(Request $request, \Webkul\Customer\Services\HotWalletService $hotWalletService)
+    {
+        $user = Auth::guard('admin')->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        // We use credits_id as the primary wallet address for the admin
+        $toAddress = $user->credits_id;
+
+        if (empty($toAddress)) {
+            return response()->json(['message' => 'Admin wallet address (credits_id) is not configured.'], 400);
+        }
+
+        try {
+            // Send a fixed amount of 0.01 ETH for gas
+            $amount = 0.01;
+            $txHash = $hotWalletService->sendEth($toAddress, $amount);
+
+            if ($txHash) {
+                return response()->json([
+                    'message' => "Successfully sent {$amount} ETH to your wallet.",
+                    'tx_hash' => $txHash,
+                    'explorer_url' => "https://arbiscan.io/tx/{$txHash}"
+                ]);
+            }
+
+            return response()->json(['message' => 'Failed to send ETH. Check logs for details.'], 500);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Refuel failed: ' . $e->getMessage()], 500);
         }
     }
 

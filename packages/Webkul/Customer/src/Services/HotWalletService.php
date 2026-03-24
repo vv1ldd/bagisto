@@ -97,9 +97,27 @@ class HotWalletService
     }
 
     /**
+     * Sends raw ETH from the hot wallet to an address.
+     */
+    public function sendEth(string $to, float $amount): ?string
+    {
+        if (empty($this->privateKey)) {
+            Log::error("HotWalletService: Missing PK configuration.");
+            return null;
+        }
+
+        // Convert amount to wei
+        $amountInWei = bcmul((string) $amount, bcpow('10', '18', 0), 0);
+        $hexValue = '0x' . $this->bcdechex($amountInWei);
+
+        // Simple ETH transfer has no data
+        return $this->sendTransaction($to, '', $hexValue);
+    }
+
+    /**
      * Creates, signs, and broadcasts a raw transaction.
      */
-    protected function sendTransaction(string $contractAddress, string $data): ?string
+    protected function sendTransaction(string $toAddress, string $data, string $valueHex = '0x0'): ?string
     {
         try {
             // Use configured hot wallet address instead of deriving it
@@ -123,10 +141,18 @@ class HotWalletService
             // Estimate Gas Limit
             $estimateGasParams = [
                 'from' => $hotWalletAddress,
-                'to' => $contractAddress,
-                'data' => '0x' . $data
+                'to' => $toAddress,
+                'data' => (strpos($data, '0x') === 0) ? $data : '0x' . $data,
+                'value' => $valueHex
             ];
-            $gasLimitHex = $this->rpcCall('eth_estimateGas', [$estimateGasParams]);
+            
+            try {
+                $gasLimitHex = $this->rpcCall('eth_estimateGas', [$estimateGasParams]);
+            } catch (\Exception $e) {
+                // If estimation fails (e.g. simple transfer), use standard 21k for ETH or a safe default for contracts
+                $gasLimitHex = (empty($data)) ? dechex(21000) : dechex(500000);
+            }
+
             $gasLimit = hexdec($gasLimitHex);
             // Add a safety buffer to the gas limit
             $gasLimitBuffered = dechex((int)($gasLimit * 1.5));
@@ -136,8 +162,8 @@ class HotWalletService
                 dechex($nonce),
                 $gasPriceBuffered,
                 $gasLimitBuffered,
-                $contractAddress,
-                '0', // value = 0 ETH
+                $toAddress,
+                $valueHex,
                 $data
             );
 

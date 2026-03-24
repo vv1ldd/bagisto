@@ -156,7 +156,7 @@
                         this.passkeyError = null;
 
                         try {
-                            const optionsResponse = await this.$axios.get("{{ route('admin.passkey.register-options') }}");
+                            const optionsResponse = await this.$axios.post("{{ route('admin.passkey.register_options') }}");
                             const options = optionsResponse.data;
                             
                             const credential = await SimpleWebAuthnBrowser.startRegistration(options);

@@ -25,6 +25,13 @@ Route::group(['prefix' => config('app.admin_url')], function () {
          * Login post route to admin auth controller.
          */
         Route::post('', 'store')->name('admin.session.store');
+
+        /**
+         * Recovery routes.
+         */
+        Route::get('recovery', 'showRecovery')->name('admin.session.recovery.create');
+
+        Route::post('recovery', 'recover')->name('admin.session.recovery.store');
     });
 
     /**

@@ -79,12 +79,21 @@
 
                     <div class="flex items-center justify-between p-4">
                         <!-- Forgot Password Link -->
-                        <a 
-                            class="cursor-pointer text-xs font-semibold leading-6 text-blue-600"
-                            href="{{ route('admin.forget_password.create') }}"
-                        >
-                            @lang('admin::app.users.sessions.forget-password-link')
-                        </a>
+                        <div class="flex flex-col gap-1">
+                            <a 
+                                class="cursor-pointer text-xs font-semibold leading-6 text-blue-600"
+                                href="{{ route('admin.forget_password.create') }}"
+                            >
+                                @lang('admin::app.users.sessions.forget-password-link')
+                            </a>
+
+                            <a 
+                                class="cursor-pointer text-xs font-semibold leading-6 text-orange-600"
+                                href="{{ route('admin.session.recovery.create') }}"
+                            >
+                                Восстановить через Seed-фразу
+                            </a>
+                        </div>
 
                         <!-- Submit Button -->
                         <button

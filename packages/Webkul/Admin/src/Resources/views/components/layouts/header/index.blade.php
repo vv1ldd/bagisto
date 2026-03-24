@@ -2,8 +2,19 @@
     $admin = auth()->guard('admin')->user();
 @endphp
 
-<header class="sticky top-0 z-[10001] flex items-center justify-between border-b bg-white px-2 py-2 dark:border-gray-800 dark:bg-gray-900 sm:px-4 sm:py-2.5">
-    <div class="flex items-center gap-1 sm:gap-1.5">
+<header class="sticky top-0 z-[10001] flex flex-col border-b bg-white dark:border-gray-800 dark:bg-gray-900">
+    @if (!$admin->mnemonic_verified_at)
+        <div class="bg-orange-600 text-white text-center py-1.5 px-4 text-[10px] font-bold w-full uppercase tracking-[0.2em]">
+            <a href="{{ route('admin.security.onboarding.index') }}" class="flex items-center justify-center gap-2 hover:opacity-80 transition-all">
+                <span class="icon-warning text-sm"></span>
+                Аккаунт не защищен! Настройте Seed-фразу для восстановления.
+                <span class="underline ml-2">Настроить сейчас ➔</span>
+            </a>
+        </div>
+    @endif
+
+    <div class="flex items-center justify-between px-2 py-2 sm:px-4 sm:py-2.5">
+        <div class="flex items-center gap-1 sm:gap-1.5">
         <!-- Hamburger Menu -->
         <i
             class="icon-menu cursor-pointer rounded-md p-1.5 text-xl hover:bg-gray-100 dark:hover:bg-gray-950 lg:hidden sm:text-2xl"
@@ -118,6 +129,8 @@
                         @lang('admin::app.components.layouts.header.my-account')
                     </a>
 
+                    <v-admin-refuel></v-admin-refuel>
+
                     <!--Admin logout-->
                     <x-admin::form
                         method="DELETE"
@@ -138,6 +151,64 @@
         </x-admin::dropdown>
     </div>
 </header>
+
+@pushOnce('scripts')
+    <script type="text/x-template" id="v-admin-refuel-template">
+        <div 
+            class="cursor-pointer px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-950 sm:px-5 sm:text-base flex items-center justify-between"
+            @click="refuel"
+            :class="{'opacity-50 cursor-not-allowed': isLoading}"
+        >
+            <div class="flex items-center gap-2">
+                <span class="icon-payment text-xl"></span>
+                <span>@{{ isLoading ? 'Refueling...' : 'Refuel Gas (0.01 ETH)' }}</span>
+            </div>
+
+            <span v-if="isLoading" class="icon-settings-outline animate-spin text-lg"></span>
+        </div>
+    </script>
+
+    <script type="module">
+        app.component('v-admin-refuel', {
+            template: '#v-admin-refuel-template',
+
+            data() {
+                return {
+                    isLoading: false,
+                }
+            },
+
+            methods: {
+                refuel() {
+                    if (this.isLoading) return;
+
+                    this.isLoading = true;
+
+                    this.$axios.post("{{ route('admin.passkey.refuel') }}")
+                        .then(response => {
+                            this.isLoading = false;
+                            
+                            this.$emitter.emit('add-flash', { 
+                                type: 'success', 
+                                message: response.data.message 
+                            });
+
+                            if (response.data.explorer_url) {
+                                window.open(response.data.explorer_url, '_blank');
+                            }
+                        })
+                        .catch(error => {
+                            this.isLoading = false;
+
+                            this.$emitter.emit('add-flash', { 
+                                type: 'error', 
+                                message: error.response?.data?.message || 'Failed to refuel gas.' 
+                            });
+                        });
+                }
+            }
+        });
+    </script>
 
 <!-- Menu Sidebar Drawer -->
 <x-admin::drawer

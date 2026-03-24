@@ -94,6 +94,44 @@ class SessionController extends Controller
     }
 
     /**
+     * Show recovery form.
+     */
+    public function showRecovery()
+    {
+        return view('admin::users.sessions.recovery');
+    }
+
+    /**
+     * Recover access using mnemonic.
+     */
+    public function recover()
+    {
+        $this->validate(request(), [
+            'mnemonic' => 'required',
+        ]);
+
+        $mnemonic = trim(request('mnemonic'));
+        $admins = \Webkul\User\Models\Admin::all();
+        $user = null;
+
+        foreach ($admins as $admin) {
+            if ($admin->mnemonic_hash && \Illuminate\Support\Facades\Hash::check($mnemonic, $admin->mnemonic_hash)) {
+                $user = $admin;
+                break;
+            }
+        }
+
+        if (!$user) {
+            session()->flash('error', 'Неверная сид-фраза.');
+            return redirect()->back();
+        }
+
+        auth()->guard('admin')->login($user);
+
+        return redirect()->route('admin.dashboard.index');
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id

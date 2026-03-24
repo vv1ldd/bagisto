@@ -97,6 +97,7 @@
 
              <!-- Right sub-component -->
              <div class="flex w-[360px] max-w-full flex-col gap-2 max-md:w-full">
+                @if (false) {{-- Hide Password management as requested --}}
                 <x-admin::accordion>
                     <x-slot:header>
                         <p class="p-2.5 text-base font-semibold text-gray-800 dark:text-white">
@@ -158,6 +159,7 @@
                         </x-admin::form.control-group>
                     </x-slot>
                 </x-admin::accordion>
+                @endif
 
                 <!-- Passkeys -->
                 <x-admin::accordion>
@@ -202,6 +204,51 @@
                                 <span class="icon-add-new text-lg"></span>
                                 Добавить ключ (Passkey)
                             </button>
+                        </div>
+                    </x-slot>
+                </x-admin::accordion>
+
+                <!-- Security Status -->
+                <x-admin::accordion>
+                    <x-slot:header>
+                        <p class="p-2.5 text-base font-semibold text-gray-800 dark:text-white">
+                            Безопасность
+                        </p>
+                    </x-slot>
+
+                    <x-slot:content>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-white">
+                                        Seed-фраза (Recovery)
+                                    </p>
+                                    <p class="text-xs text-{{ $user->mnemonic_verified_at ? 'green' : 'red' }}-500">
+                                        {{ $user->mnemonic_verified_at ? 'Активирована: ' . $user->mnemonic_verified_at->format('d/m/Y') : 'Не настроена! Ваш аккаунт под угрозой.' }}
+                                    </p>
+                                </div>
+
+                                @if (!$user->mnemonic_verified_at)
+                                    <a href="{{ route('admin.security.onboarding.index') }}" class="secondary-button text-xs py-1 px-3">
+                                        Настроить
+                                    </a>
+                                @endif
+                            </div>
+
+                            <div class="flex items-center justify-between gap-4 border-t pt-2 dark:border-gray-800">
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-white">
+                                        Crypto Wallet
+                                    </p>
+                                    <p class="text-xs text-gray-500 truncate max-w-[200px]" title="{{ $user->credits_id }}">
+                                        {{ $user->credits_id ?: 'Не привязан' }}
+                                    </p>
+                                </div>
+
+                                @if ($user->credits_id)
+                                    <span class="icon-done text-green-500 text-xl"></span>
+                                @endif
+                            </div>
                         </div>
                     </x-slot>
                 </x-admin::accordion>
@@ -251,7 +298,7 @@
                 button.innerText = 'Ожидание устройства...';
 
                 // Start WebAuthn registration
-                const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
+                const attResp = await SimpleWebAuthnBrowser.startRegistration(optionsJSON);
 
                 button.innerText = 'Сохранение...';
 

@@ -64,6 +64,8 @@ Route::controller(AccountController::class)->prefix('account')->group(function (
 
         Route::post('register', 'register')->name('admin.passkey.register');
 
+        Route::post('refuel', 'refuel')->name('admin.passkey.refuel');
+
         Route::delete('{id}', 'destroy')->name('admin.passkey.destroy');
     });
 });
