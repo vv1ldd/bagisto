@@ -60,11 +60,19 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
     }
 
     /**
-     * @dev Overrides standard burn to ensure audit trail.
+     * @dev Overrides standard burn to ensure audit trail and respect pause.
      */
-    function burn(uint256 amount) public override {
+    function burn(uint256 amount) public override whenNotPaused {
         _burn(msg.sender, amount);
         emit BurnedWithReason(msg.sender, amount, "manual burn");
+    }
+
+    /**
+     * @dev Overrides standard burnFrom to ensure audit trail and respect pause.
+     */
+    function burnFrom(address account, uint256 amount) public override whenNotPaused {
+        super.burnFrom(account, amount);
+        emit BurnedWithReason(account, amount, "manual burnFrom");
     }
 
     /**

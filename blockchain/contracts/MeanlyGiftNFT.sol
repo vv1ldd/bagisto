@@ -85,9 +85,9 @@ contract MeanlyGiftNFT is ERC721URIStorage, ERC721Burnable, AccessControl, Pausa
     }
 
     /**
-     * @dev Overrides standard burn to ensure audit trail.
+     * @dev Overrides standard burn to ensure audit trail and respect pause.
      */
-    function burn(uint256 tokenId) public override {
+    function burn(uint256 tokenId) public override whenNotPaused {
         _burn(tokenId);
         emit BurnedWithReason(msg.sender, tokenId, "manual burn");
     }
