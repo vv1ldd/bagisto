@@ -35,14 +35,7 @@ Route::prefix('customer')->group(function () {
     /**
      * Guest routes (redirect logged-in users to account)
      */
-    Route::group(['middleware' => [
-        function ($request, $next) {
-            if (auth()->guard('customer')->check()) {
-                return redirect()->route('shop.customers.account.index');
-            }
-            return $next($request);
-        }
-    ]], function () {
+    Route::group(['middleware' => [\Webkul\Shop\Http\Middleware\RedirectIfAuthenticated::class]], function () {
         
         /**
          * Forgot password routes.

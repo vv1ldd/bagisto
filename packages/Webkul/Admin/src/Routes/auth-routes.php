@@ -14,12 +14,7 @@ Route::group(['domain' => config('app.admin_domain')], function () {
         'prefix'     => config('app.admin_url'),
         'middleware' => [
             'throttle:10,1',
-            function ($request, $next) {
-                if (auth()->guard('admin')->check()) {
-                    return redirect()->route('admin.dashboard.index');
-                }
-                return $next($request);
-            }
+            \Webkul\Admin\Http\Middleware\RedirectIfAuthenticated::class
         ],
     ], function () {
         /**
