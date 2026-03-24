@@ -101,7 +101,7 @@
                     btnText.innerText = 'ОЖИДАНИЕ...';
 
                     // Start WebAuthn registration (v8+ format)
-                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
+                    const attResp = await SimpleWebAuthn.startRegistration(optionsJSON);
 
                     console.log('Registration response:', attResp);
 

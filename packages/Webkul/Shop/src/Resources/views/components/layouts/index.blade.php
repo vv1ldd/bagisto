@@ -318,11 +318,12 @@
             // ── Global Passkey Wallet Helper ──────────────────────────────
             function _b64ToUint8Array(base64) {
                 if (!base64) return new Uint8Array(0);
-                var padding = '='.repeat((4 - base64.length % 4) % 4);
-                var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                var rawData = window.atob(b64);
-                var outputArray = new Uint8Array(rawData.length);
-                for (var i = 0; i < rawData.length; ++i) {
+                const b64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                const pad = b64.length % 4;
+                const padded = pad ? b64 + '===='.slice(pad) : b64;
+                const rawData = window.atob(padded);
+                const outputArray = new Uint8Array(rawData.length);
+                for (let i = 0; i < rawData.length; ++i) {
                     outputArray[i] = rawData.charCodeAt(i);
                 }
                 return outputArray;

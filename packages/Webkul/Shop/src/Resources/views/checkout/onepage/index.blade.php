@@ -179,47 +179,20 @@
                                 }
                             }, 100);
                         },
-                        _b64ToUint8Array(base64) {
-                            if (!base64) return new Uint8Array(0);
-                            var padding = '='.repeat((4 - base64.length % 4) % 4);
-                            var b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                            var rawData = window.atob(b64);
-                            var outputArray = new Uint8Array(rawData.length);
-                            for (var i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-                            return outputArray;
-                        },
-                        _bufToBase64URL(buffer) {
-                            var binary = '';
-                            var bytes = new Uint8Array(buffer);
-                            for (var i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-                            return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-                        },
+                        // Removed manual base64 helpers as we now use SimpleWebAuthnBrowser
                         async payWithPasskey() {
                             this.isPlacingOrder = true;
                             try {
+                                const { startAuthentication } = window.SimpleWebAuthnBrowser;
                                 const optionsResponse = await this.$axios.post('{{ route('passkeys.login-options') }}');
-                                let options = optionsResponse.data;
-                                options.challenge = this._b64ToUint8Array(options.challenge);
-                                if (options.allowCredentials) {
-                                    options.allowCredentials.forEach(cred => { cred.id = this._b64ToUint8Array(cred.id); });
-                                }
-                                const credential = await navigator.credentials.get({ publicKey: options });
-                                if (!credential) throw new Error('Аутентификация отменена');
-                                const payload = {
-                                    start_authentication_response: JSON.stringify({
-                                        id: credential.id,
-                                        rawId: this._bufToBase64URL(credential.rawId),
-                                        response: {
-                                            clientDataJSON: this._bufToBase64URL(credential.response.clientDataJSON),
-                                            authenticatorData: this._bufToBase64URL(credential.response.authenticatorData),
-                                            signature: this._bufToBase64URL(credential.response.signature),
-                                            userHandle: credential.response.userHandle ? this._bufToBase64URL(credential.response.userHandle) : null,
-                                        },
-                                        type: credential.type,
-                                        clientExtensionResults: credential.getClientExtensionResults() || {},
-                                    })
-                                };
-                                await this.$axios.post('{{ route('passkeys.login') }}', payload);
+                                const options = optionsResponse.data;
+                                
+                                const asseResp = await startAuthentication(options);
+
+                                await this.$axios.post('{{ route('passkeys.login') }}', {
+                                    start_authentication_response: JSON.stringify(asseResp),
+                                    remember: false
+                                });
                                 this.executePlaceOrder();
                             } catch (error) {
                                 this.isPlacingOrder = false;

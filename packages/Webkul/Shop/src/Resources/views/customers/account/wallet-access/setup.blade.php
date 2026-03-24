@@ -81,9 +81,11 @@
                 if (buttonText) buttonText.innerText = 'Подготовка...';
 
                 function base64ToUint8Array(base64) {
-                    const padding = '='.repeat((4 - base64.length % 4) % 4);
-                    const b64 = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
-                    const rawData = window.atob(b64);
+                    if (!base64) return new Uint8Array(0);
+                    const b64 = base64.replace(/-/g, '+').replace(/_/g, '/');
+                    const pad = b64.length % 4;
+                    const padded = pad ? b64 + '===='.slice(pad) : b64;
+                    const rawData = window.atob(padded);
                     const outputArray = new Uint8Array(rawData.length);
                     for (let i = 0; i < rawData.length; ++i) {
                         outputArray[i] = rawData.charCodeAt(i);
@@ -94,8 +96,7 @@
                 function arrayBufferToBase64URL(buffer) {
                     let binary = '';
                     const bytes = new Uint8Array(buffer);
-                    const len = bytes.byteLength;
-                    for (let i = 0; i < len; i++) {
+                    for (let i = 0; i < bytes.byteLength; i++) {
                         binary += String.fromCharCode(bytes[i]);
                     }
                     return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');

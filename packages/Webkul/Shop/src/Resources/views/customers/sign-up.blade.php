@@ -224,7 +224,7 @@
                     btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
 
                     // Pass server options directly (v8+ format)
-                    const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
+                    const attResp = await SimpleWebAuthn.startRegistration(optionsJSON);
                     console.log('[Passkey] Credential created:', attResp);
                     
                     btn.innerHTML = '<span class="animate-pulse">Сохранение...</span>';

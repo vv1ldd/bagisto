@@ -302,7 +302,7 @@
                             if (buttonText) buttonText.innerText = 'Ожидание устройства...';
 
                             // Start WebAuthn registration (v8+ format)
-                            const attResp = await SimpleWebAuthn.startRegistration({ optionsJSON });
+                            const attResp = await SimpleWebAuthn.startRegistration(optionsJSON);
 
 
                             if (buttonText) buttonText.innerText = 'Сохранение...';
