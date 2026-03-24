@@ -8,7 +8,11 @@ use Webkul\Core\Http\Middleware\NoCacheMiddleware;
  */
 require 'auth-routes.php';
 
-Route::group(['middleware' => ['admin', NoCacheMiddleware::class], 'prefix' => config('app.admin_url')], function () {
+Route::group([
+    'domain'     => config('app.admin_domain'),
+    'prefix'     => config('app.admin_url'),
+    'middleware' => ['admin', NoCacheMiddleware::class],
+], function () {
     /**
      * Configuration routes.
      */

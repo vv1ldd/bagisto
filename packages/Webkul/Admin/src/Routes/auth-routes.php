@@ -9,7 +9,10 @@ use Webkul\Admin\Http\Controllers\User\SessionController;
 /**
  * Auth routes.
  */
-Route::group(['prefix' => config('app.admin_url')], function () {
+Route::group([
+    'domain' => config('app.admin_domain'),
+    'prefix' => config('app.admin_url'),
+], function () {
     /**
      * Redirect route.
      */
