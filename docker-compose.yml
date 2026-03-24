@@ -70,8 +70,8 @@ services:
       APP_ENV: "${APP_ENV:-production}"
       APP_KEY: "${APP_KEY}"
       APP_DEBUG: "${APP_DEBUG:-false}"
-      APP_URL: "${APP_ADMIN_URL_FULL:-https://admin.meanly.ru}"
-      APP_ADMIN_DOMAIN: "${APP_ADMIN_DOMAIN}"
+      APP_URL: "${APP_URL}"
+      APP_ADMIN_DOMAIN: "${APP_ADMIN_DOMAIN:-${SERVICE_FQDN_ADMIN}}"
       APP_ADMIN_URL: "" # Root access on the admin domain
       DB_CONNECTION: mysql
       DB_HOST: "${DB_HOST:-mysql}"
