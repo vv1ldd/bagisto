@@ -7,7 +7,6 @@ return [
     'api_domain' => env('MAGIC_AI_API_DOMAIN'),
 
     'knowledge_base' => [
-        'embedding_model' => env('MAGIC_AI_EMBEDDING_MODEL', 'nomic-embed-text'),
-        'ollama_base_url' => env('MAGIC_AI_OLLAMA_BASE_URL', 'http://ollama-api:11434'),
+        'embedding_model' => env('MAGIC_AI_EMBEDDING_MODEL', 'text-embedding-3-small'),
     ],
 ];

@@ -11,35 +11,9 @@ class EmbeddingService
      */
     public function getEmbedding(string $text, string $model = null): array
     {
-        $model = $model ?: config('magic_ai_settings.knowledge_base.embedding_model') ?: 'nomic-embed-text';
-        $ollamaBaseUrl = config('magic_ai_settings.knowledge_base.ollama_base_url') ?: 'http://ollama-api:11434';
+        $model = $model ?: config('magic_ai_settings.knowledge_base.embedding_model') ?: 'text-embedding-3-small';
 
-        if (str_contains($model, 'text-embedding')) {
-            return $this->getOpenAIEmbedding($text, $model);
-        }
-
-        return $this->getOllamaEmbedding($text, $model, $ollamaBaseUrl);
-    }
-
-    /**
-     * Get embedding from Ollama.
-     */
-    protected function getOllamaEmbedding(string $text, string $model, string $ollamaBaseUrl): array
-    {
-        $httpClient = new Client();
-
-        $endpoint = rtrim($ollamaBaseUrl, '/') . '/api/embeddings';
-
-        $response = $httpClient->request('POST', $endpoint, [
-            'json' => [
-                'model' => $model,
-                'prompt' => $text,
-            ],
-        ]);
-
-        $data = json_decode($response->getBody()->getContents(), true);
-
-        return $data['embedding'] ?? [];
+        return $this->getOpenAIEmbedding($text, $model);
     }
 
     /**

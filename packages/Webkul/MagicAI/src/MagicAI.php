@@ -4,7 +4,6 @@ namespace Webkul\MagicAI;
 
 use Webkul\MagicAI\Services\Gemini;
 use Webkul\MagicAI\Services\GroqAI;
-use Webkul\MagicAI\Services\Ollama;
 use Webkul\MagicAI\Services\OpenAI;
 
 class MagicAI
@@ -170,7 +169,7 @@ class MagicAI
     /**
      * Get LLM model instance.
      */
-    public function getModelInstance(): OpenAI|Ollama|Gemini|GroqAI
+    public function getModelInstance(): OpenAI|Gemini|GroqAI
     {
         if (in_array($this->model, ['gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini', 'dall-e-2', 'dall-e-3'])) {
             return new OpenAI(
@@ -192,21 +191,10 @@ class MagicAI
             );
         }
 
-        if (in_array($this->model, ['gemini-2.0-flash'])) {
-            return new Gemini(
-                $this->model,
-                $this->prompt,
-                $this->stream,
-                $this->raw,
-                $this->attachment,
-                $this->mimeType,
-            );
-        }
-
-        return new Ollama(
+        // Default to Gemini if no other model explicitly matched
+        return new Gemini(
             $this->model,
             $this->prompt,
-            $this->temperature,
             $this->stream,
             $this->raw,
             $this->attachment,
