@@ -92,7 +92,8 @@
                     });
 
                     if (!optionsResp.ok) throw new Error();
-                    const options = await optionsResp.json();
+                    const rawOptions = await optionsResp.json();
+                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
                     
                     // Robust base64url conversion for Safari
                     const toBase64Url = (str) => {

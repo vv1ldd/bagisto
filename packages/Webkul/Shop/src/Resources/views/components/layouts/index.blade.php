@@ -263,7 +263,8 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
                     });
                     if (!response.ok) throw new Error('Ошибка связи с сервером');
-                    var options = await response.json();
+                    var rawOptions = await response.json();
+                    var options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
                     
                     // Robust base64url conversion for Safari
                     const toBase64Url = (str) => {
