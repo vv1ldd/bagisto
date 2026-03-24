@@ -209,6 +209,7 @@
             }
         });
     </script>
+@endPushOnce
 
 <!-- Menu Sidebar Drawer -->
 <x-admin::drawer
