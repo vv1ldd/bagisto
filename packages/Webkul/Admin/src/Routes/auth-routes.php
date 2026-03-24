@@ -12,7 +12,15 @@ use Webkul\Admin\Http\Controllers\User\SessionController;
 Route::group(['domain' => config('app.admin_domain')], function () {
     Route::group([
         'prefix'     => config('app.admin_url'),
-        'middleware' => ['throttle:10,1'],
+        'middleware' => [
+            'throttle:10,1',
+            function ($request, $next) {
+                if (auth()->guard('admin')->check()) {
+                    return redirect()->route('admin.dashboard.index');
+                }
+                return $next($request);
+            }
+        ],
     ], function () {
         /**
          * Redirect route.
