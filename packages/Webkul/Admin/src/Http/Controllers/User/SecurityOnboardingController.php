@@ -39,14 +39,24 @@ class SecurityOnboardingController extends Controller
         $mnemonicService = app(MnemonicService::class);
         $blockchainService = app(BlockchainAddressService::class);
 
-        $mnemonic = $mnemonicService->generate();
-        $keys = $blockchainService->deriveKey($mnemonic);
+        // Generate mnemonic array and convert to space-separated string
+        $mnemonicWords = $mnemonicService->generateMnemonic();
+        $mnemonic = implode(' ', $mnemonicWords);
+        
+        // Derive keys and address
+        $wallet = $blockchainService->deriveEthereumWallet($mnemonic);
+        $pubData = $blockchainService->derivePublicKeyData($mnemonic);
+
+        if (!$wallet || !$pubData) {
+            return response()->json(['error' => 'Key derivation failed'], 500);
+        }
 
         $user->update([
             'mnemonic_hash'         => Hash::make($mnemonic),
-            'credits_id'            => $keys['address'],
-            'encrypted_private_key' => Crypt::encrypt($keys['privateKey']),
-            'public_key'            => $keys['publicKey'],
+            'credits_id'            => $wallet['address'],
+            'encrypted_private_key' => Crypt::encrypt($wallet['private_key']),
+            'public_key'            => $pubData['public_key'],
+            'public_key_hash'       => $pubData['public_key_hash'],
         ]);
 
         return response()->json([
