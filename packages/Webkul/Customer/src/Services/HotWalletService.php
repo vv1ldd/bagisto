@@ -206,11 +206,15 @@ class HotWalletService
     protected function getPrimaryCryptoAddress(Customer $customer): ?string
     {
         $addressRecord = $customer->crypto_addresses()
-            ->where('network', 'arbitrum_one')
+            ->where('network', '=', 'arbitrum_one')
             ->whereNotNull('verified_at')
             ->first();
 
-        return $addressRecord ? $addressRecord->address : $customer->credits_id;
+        if ($addressRecord && isset($addressRecord->address)) {
+            return (string) $addressRecord->address;
+        }
+
+        return $customer->credits_id;
     }
 
     protected function bcdechex(string $dec): string

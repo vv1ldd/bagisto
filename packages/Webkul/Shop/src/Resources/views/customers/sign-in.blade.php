@@ -120,6 +120,19 @@
                         var rawOptions = await response.json();
                         var options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
+                        // Robust base64url conversion for Safari
+                        const toBase64Url = (str) => {
+                            if (!str || typeof str !== 'string') return str;
+                            return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                        };
+
+                        if (options.challenge) options.challenge = toBase64Url(options.challenge);
+                        if (options.allowCredentials) {
+                            options.allowCredentials.forEach(cred => {
+                                if (cred.id) cred.id = toBase64Url(cred.id);
+                            });
+                        }
+
                         // --- Domain/RP Check ---
                         const currentDomain = window.location.hostname;
                         if (options.rpId && options.rpId !== currentDomain) {
@@ -149,7 +162,7 @@
 
                         var result = await loginResponse.json();
                         if (loginResponse.ok) {
-                            window.location.href = result.redirect_url || '{{ route('shop.customers.account.index') }}';
+                            window.location.href = '{{ route('shop.home.index') }}';
                         } else {
                             throw new Error(result.message || 'Ошибка входа.');
                         }

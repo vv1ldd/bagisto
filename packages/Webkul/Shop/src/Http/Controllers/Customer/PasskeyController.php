@@ -423,9 +423,13 @@ class PasskeyController extends Controller
 
             session()->forget('passkey-authentication-options-json');
 
+            $redirectUrl = ($currentUser && $currentUser->id === $user->id)
+                ? redirect()->intended(route('shop.customers.account.index'))->getTargetUrl()
+                : route('shop.home.index');
+
             return response()->json([
                 'message' => 'Successfully authenticated.',
-                'redirect_url' => redirect()->intended(route('shop.customers.account.index'))->getTargetUrl(),
+                'redirect_url' => $redirectUrl,
             ]);
         } catch (\Exception $e) {
             Log::error('Passkey login error', [

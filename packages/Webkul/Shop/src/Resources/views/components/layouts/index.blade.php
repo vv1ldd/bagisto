@@ -265,11 +265,16 @@
                     if (!response.ok) throw new Error('Ошибка связи с сервером');
                     var options = await response.json();
                     
-                    // Safari Hardening: Ensure base64url fields are clean
-                    if (options.challenge) options.challenge = options.challenge.replace(/=/g, '');
+                    // Robust base64url conversion for Safari
+                    const toBase64Url = (str) => {
+                        if (!str || typeof str !== 'string') return str;
+                        return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                    };
+
+                    if (options.challenge) options.challenge = toBase64Url(options.challenge);
                     if (options.allowCredentials) {
                         options.allowCredentials.forEach(cred => {
-                            if (cred.id) cred.id = cred.id.replace(/=/g, '');
+                            if (cred.id) cred.id = toBase64Url(cred.id);
                         });
                     }
 

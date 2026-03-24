@@ -297,6 +297,20 @@
 
                             if (!optionsJSON || !optionsJSON.challenge) throw new Error('Некорректные настройки.');
 
+                            // Robust base64url conversion for Safari
+                            const toBase64Url = (str) => {
+                                if (!str || typeof str !== 'string') return str;
+                                return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                            };
+
+                            if (optionsJSON.challenge) optionsJSON.challenge = toBase64Url(optionsJSON.challenge);
+                            if (optionsJSON.user && optionsJSON.user.id) optionsJSON.user.id = toBase64Url(optionsJSON.user.id);
+                            if (optionsJSON.excludeCredentials) {
+                                optionsJSON.excludeCredentials.forEach(cred => {
+                                    if (cred.id) cred.id = toBase64Url(cred.id);
+                                });
+                            }
+
                             console.log('[Passkey] RP ID:', optionsJSON.rp ? optionsJSON.rp.id : 'N/A');
 
                             if (buttonText) buttonText.innerText = 'Ожидание устройства...';

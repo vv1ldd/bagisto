@@ -94,6 +94,19 @@
                     if (!optionsResp.ok) throw new Error();
                     const options = await optionsResp.json();
                     
+                    // Robust base64url conversion for Safari
+                    const toBase64Url = (str) => {
+                        if (!str || typeof str !== 'string') return str;
+                        return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                    };
+
+                    if (options.challenge) options.challenge = toBase64Url(options.challenge);
+                    if (options.allowCredentials) {
+                        options.allowCredentials.forEach(cred => {
+                            if (cred.id) cred.id = toBase64Url(cred.id);
+                        });
+                    }
+
                     const asseResp = await startAuthentication(options);
 
                     const verificationResp = await fetch("{{ route('passkeys.login') }}", {
