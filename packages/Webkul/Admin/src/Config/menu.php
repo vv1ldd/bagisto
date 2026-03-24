@@ -265,7 +265,7 @@ return [
         'name'  => 'Web3 Wallet',
         'route' => 'admin.web3.index',
         'sort'  => 6,
-        'icon'  => 'icon-dashboard', // Or a custom icon if available
+        'icon'  => 'icon-web3',
     ],
     [
         'key'   => 'web3.wallet',
