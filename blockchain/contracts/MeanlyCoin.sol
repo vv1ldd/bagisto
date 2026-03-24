@@ -60,7 +60,15 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
     }
 
     /**
-     * @dev Destroys tokens.
+     * @dev Overrides standard burn to ensure audit trail.
+     */
+    function burn(uint256 amount) public override {
+        _burn(msg.sender, amount);
+        emit BurnedWithReason(msg.sender, amount, "manual burn");
+    }
+
+    /**
+     * @dev Destroys tokens with a specific reason.
      * @param amount Amount to burn
      * @param reason Purpose of burning (e.g., "Payment for Order #456")
      */
