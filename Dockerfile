@@ -8,14 +8,16 @@ RUN apk add --no-cache build-base git python3
 COPY package.json package-lock.json* ./
 # Cache NPM packages and install root dependencies
 RUN --mount=type=cache,target=/root/.npm \
-    npm i
+    npm i --legacy-peer-deps
 COPY . .
 RUN npm run build
 
 # Install and build Shop package frontend assets (Vue components)
 RUN --mount=type=cache,target=/root/.npm \
-    npm --prefix packages/Webkul/Shop install \
-    && npm --prefix packages/Webkul/Shop run build
+    NODE_OPTIONS="--max-old-space-size=4096" \
+    npm --prefix packages/Webkul/Shop install --legacy-peer-deps \
+    && NODE_OPTIONS="--max-old-space-size=4096" \
+    npm --prefix packages/Webkul/Shop run build
 
 # Stage 2: PHP Application
 FROM mirror.gcr.io/library/php:8.3-fpm

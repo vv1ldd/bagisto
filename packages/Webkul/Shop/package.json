@@ -19,7 +19,7 @@
   "dependencies": {
     "@vee-validate/i18n": "^4.9.1",
     "@vee-validate/rules": "^4.9.1",
-    "@vitejs/plugin-vue": "^4.2.3",
+    "@vitejs/plugin-vue": "^5.0.0",
     "dotenv": "^16.4.7",
     "intl-tel-input": "^26.7.5",
     "laravel-echo": "^2.3.1",
