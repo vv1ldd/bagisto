@@ -27,7 +27,6 @@
     "playwright": "^1.48.1",
     "pusher-js": "^8.4.0",
     "readline-sync": "^1.4.10",
-    "matrix-js-sdk": "^34.8.0",
     "vee-validate": "^4.9.1",
     "vue-flatpickr": "^2.3.0"
   }
