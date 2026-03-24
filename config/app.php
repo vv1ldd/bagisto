@@ -88,7 +88,9 @@ return [
     |
     */
 
-    'admin_domain' => env('APP_ADMIN_DOMAIN'),
+    // Coolify auto-sets SERVICE_FQDN_ADMIN when you assign a domain to the "admin" service.
+    // APP_ADMIN_DOMAIN is a manual fallback for local dev or non-Coolify deployments.
+    'admin_domain' => env('SERVICE_FQDN_ADMIN', env('APP_ADMIN_DOMAIN')),
 
     /*
     |--------------------------------------------------------------------------
