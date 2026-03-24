@@ -56,4 +56,31 @@ return Application::configure(basePath: dirname(__DIR__))
             'password_confirmation',
             'mnemonic',
         ]);
+
+        if (! config('app.debug')) {
+            $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, \Illuminate\Http\Request $request) {
+                $statusCode = $e->getStatusCode();
+                
+                if (in_array($statusCode, [401, 403, 404, 500, 503])) {
+                    $isAdmin = $request->is(config('app.admin_url').'/*') || $request->getHost() === config('app.admin_domain', 'timebeing.meanly.ru');
+                    $namespace = $isAdmin ? 'admin' : 'shop';
+
+                    if ($request->wantsJson() || $request->is('api/*')) {
+                        return response()->json([
+                            'error' => trans("{$namespace}::app.errors.{$statusCode}.title"),
+                            'description' => trans("{$namespace}::app.errors.{$statusCode}.description"),
+                        ], $statusCode);
+                    }
+
+                    $viewPath = "{$namespace}::errors.{$statusCode}";
+                    if (! view()->exists($viewPath)) {
+                        $viewPath = "{$namespace}::errors.index";
+                    }
+
+                    if (view()->exists($viewPath)) {
+                        return response()->view($viewPath, ['errorCode' => $statusCode], $statusCode);
+                    }
+                }
+            });
+        }
     })->create();
