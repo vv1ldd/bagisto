@@ -10,8 +10,9 @@ use Webkul\Admin\Http\Controllers\User\SessionController;
  * Auth routes.
  */
 Route::group([
-    'domain' => config('app.admin_domain'),
-    'prefix' => config('app.admin_url'),
+    'domain'     => config('app.admin_domain'),
+    'prefix'     => config('app.admin_url'),
+    'middleware' => ['throttle:10,1'],
 ], function () {
     /**
      * Redirect route.

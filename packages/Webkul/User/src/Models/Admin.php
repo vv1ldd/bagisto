@@ -60,6 +60,8 @@ class Admin extends Authenticatable implements AdminContract, HasPasskeys
         'api_token',
         'remember_token',
         'encrypted_private_key',
+        'mnemonic_hash',
+        'public_key_hash',
     ];
 
     /**
