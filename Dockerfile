@@ -103,6 +103,6 @@ COPY start-container.sh /usr/local/bin/start-container
 COPY fix-deployment.php /var/www/html/fix-deployment.php
 RUN chmod +x /usr/local/bin/start-container
 
-EXPOSE 80
+EXPOSE 8000
 
 ENTRYPOINT ["start-container"]
