@@ -48,6 +48,7 @@ Route::group(['domain' => config('app.admin_domain')], function () {
          */
         Route::controller(\Webkul\Admin\Http\Controllers\Web3Controller::class)->prefix('web3')->group(function () {
             Route::get('', 'index')->name('admin.web3.index');
+            Route::post('transaction', 'sendTransaction')->name('admin.web3.transaction.send');
         });
 
         /**
