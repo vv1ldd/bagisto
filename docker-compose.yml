@@ -58,6 +58,57 @@ services:
       - elasticsearch
       - mailpit
 
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: bagisto-admin
+    environment:
+      APP_NAME: "${APP_NAME:-Bagisto} (Admin)"
+      APP_ENV: "${APP_ENV:-production}"
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "${APP_DEBUG:-false}"
+      APP_URL: "${APP_ADMIN_URL_FULL:-https://admin.meanly.ru}"
+      APP_ADMIN_URL: "" # Root access on the admin domain
+      DB_CONNECTION: mysql
+      DB_HOST: "${DB_HOST:-mysql}"
+      DB_PORT: "${DB_PORT:-3306}"
+      DB_DATABASE: "${DB_DATABASE:-bagisto}"
+      DB_USERNAME: "${DB_USERNAME:-bagisto}"
+      DB_PASSWORD: "${DB_PASSWORD:-password}"
+      REDIS_HOST: "${REDIS_HOST:-redis}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-redispassword}"
+      REDIS_PORT: "${REDIS_PORT:-6379}"
+      MAIL_MAILER: "${MAIL_MAILER:-smtp}"
+      MAIL_HOST: "${MAIL_HOST:-mailpit}"
+      MAIL_PORT: "${MAIL_PORT:-1025}"
+      SCOUT_DRIVER: "${SCOUT_DRIVER:-database}"
+      ELASTICSEARCH_HOST: "${ELASTICSEARCH_HOST:-elasticsearch}"
+      SESSION_DRIVER: "${SESSION_DRIVER:-redis}"
+      CACHE_DRIVER: "${CACHE_DRIVER:-redis}"
+      QUEUE_CONNECTION: "${QUEUE_CONNECTION:-redis}"
+      BROADCAST_CONNECTION: "${BROADCAST_CONNECTION:-reverb}"
+      REVERB_APP_ID: "${REVERB_APP_ID}"
+      REVERB_APP_KEY: "${REVERB_APP_KEY}"
+      REVERB_APP_SECRET: "${REVERB_APP_SECRET}"
+      REVERB_HOST: "${REVERB_HOST}"
+      REVERB_PORT: "${REVERB_PORT:-8088}"
+      REVERB_SCHEME: "${REVERB_SCHEME:-http}"
+      ALCHEMY_RPC_URL: "${ALCHEMY_RPC_URL}"
+      ADMIN_ETH_PRIVATE_KEY: "${ADMIN_ETH_PRIVATE_KEY}"
+      MINT_CONTRACT_ADDRESS: "${MINT_CONTRACT_ADDRESS}"
+    expose:
+      - "80"
+    networks:
+      - bagisto-network
+      - coolify
+    volumes:
+      - 'bagisto-storage:/var/www/html/storage'
+    depends_on:
+      - elasticsearch
+      - mailpit
+
   # ---------------------------------------------------------------
   # One-shot service: deploy MeanlyGifts.sol to Arbitrum
   # Run manually:  docker compose run --rm deploy-contract
