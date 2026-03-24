@@ -42,6 +42,15 @@ class Admin extends Authenticatable implements AdminContract, HasPasskeys
     ];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'mnemonic_verified_at' => 'datetime',
+    ];
+
+    /**
      * The attributes that should be hidden for arrays.
      *
      * @var array
