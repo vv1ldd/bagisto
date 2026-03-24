@@ -18,9 +18,14 @@
             </div>
 
             <div class="mt-8 text-center">
-                <a href="{{ route('admin.session.destroy') }}" class="text-sm font-semibold text-gray-500 hover:text-gray-800 dark:hover:text-white transition-all">
+                <a href="{{ route('admin.session.destroy') }}" class="text-sm font-semibold text-gray-500 hover:text-gray-800 dark:hover:text-white transition-all" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     Выйти из системы
                 </a>
+
+                <form id="logout-form" action="{{ route('admin.session.destroy') }}" method="POST" class="hidden">
+                    @csrf
+                    @method('DELETE')
+                </form>
             </div>
         </div>
     </div>
@@ -196,6 +201,8 @@
                                 mnemonic: this.mnemonicVerification.trim()
                             });
                             this.step = 'success';
+                            this.mnemonic = ''; // Clear sensitive data from memory
+                            this.mnemonicVerification = '';
                         } catch (error) {
                             this.verificationError = 'Неверная фраза. Пожалуйста, проверьте правильность ввода.';
                         } finally {
@@ -204,8 +211,17 @@
                     },
 
                     finish() {
+                        this.mnemonic = '';
+                        this.mnemonicVerification = '';
                         window.location.href = "{{ route('admin.dashboard.index') }}";
                     }
+                }
+            });
+
+            // Prevent browser back-forward cache (BFCache) from exposing the view
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) {
+                    window.location.reload();
                 }
             });
         </script>
