@@ -33,8 +33,20 @@ Route::prefix('customer')->group(function () {
     });
 
     /**
-     * Forgot password routes.
+     * Guest routes (redirect logged-in users to account)
      */
+    Route::group(['middleware' => [
+        function ($request, $next) {
+            if (auth()->guard('customer')->check()) {
+                return redirect()->route('shop.customers.account.index');
+            }
+            return $next($request);
+        }
+    ]], function () {
+        
+        /**
+         * Forgot password routes.
+         */
     Route::controller(ForgotPasswordController::class)->prefix('forgot-password')->group(function () {
         Route::get('', 'create')->name('shop.customers.forgot_password.create');
 
@@ -105,6 +117,8 @@ Route::prefix('customer')->group(function () {
         Route::get('seed', 'showSeedForm')->name('shop.customers.recovery.seed');
         Route::post('seed', 'recoverBySeed')->name('shop.customers.recovery.seed.post');
     });
+
+    }); // End of guest routes group
 
     /**
      * Customer authenticated routes. All the below routes only be accessible
