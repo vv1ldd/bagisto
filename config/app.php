@@ -91,7 +91,7 @@ return [
     // Coolify auto-sets SERVICE_FQDN_ADMIN when you assign a domain to the "admin" service.
     // APP_ADMIN_DOMAIN is a manual fallback for local dev or non-Coolify deployments.
     // We actively strip http:// or https:// so Laravel Route::domain() works perfectly.
-    'admin_domain' => preg_replace('#^https?://#', '', (string) env('SERVICE_FQDN_ADMIN', env('APP_ADMIN_DOMAIN'))),
+    'admin_domain' => preg_replace('#^https?://|/.*$#', '', (string) env('SERVICE_FQDN_ADMIN', env('APP_ADMIN_DOMAIN'))),
 
     /*
     |--------------------------------------------------------------------------

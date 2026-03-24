@@ -44,8 +44,13 @@ class ShopServiceProvider extends ServiceProvider
         $router->aliasMiddleware('customer', AuthenticateCustomer::class);
         $router->aliasMiddleware('passkey.timeout', \Webkul\Shop\Http\Middleware\CheckPasskeyTimeout::class);
 
-        Route::middleware(['web', 'shop', PreventRequestsDuringMaintenance::class])->group(__DIR__ . '/../Routes/web.php');
-        Route::middleware(['web', 'shop', PreventRequestsDuringMaintenance::class])->group(__DIR__ . '/../Routes/api.php');
+        $adminDomain = config('app.admin_domain');
+        $isConsole = app()->runningInConsole();
+
+        if ($isConsole || !$adminDomain || request()->getHost() !== $adminDomain) {
+            Route::middleware(['web', 'shop', PreventRequestsDuringMaintenance::class])->group(__DIR__ . '/../Routes/web.php');
+            Route::middleware(['web', 'shop', PreventRequestsDuringMaintenance::class])->group(__DIR__ . '/../Routes/api.php');
+        }
 
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
 
