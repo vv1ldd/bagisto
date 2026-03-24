@@ -7,72 +7,77 @@
         Сохранение фраз восстановления
     </x-slot>
 
-    <div class="min-h-screen flex flex-col items-center justify-center bg-[#F0EFFF] py-6 px-4">
-        <div class="bg-white p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden w-full max-w-2xl shadow-xl border border-[#e2d9ff] rounded-[2rem]">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-[#F0EFFF] py-12 px-4 animate-in fade-in duration-700">
+        <div class="bg-white p-8 md:p-12 flex flex-col items-center text-center relative overflow-hidden w-full max-w-3xl border-4 border-zinc-900 shadow-[16px_16px_0px_0px_rgba(124,69,245,1)]">
             
-            {{-- Protection Icon --}}
-            <div class="mb-4 flex flex-col items-center">
-                 <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#7C45F5] to-[#a78bfa] shadow-lg shadow-[#7C45F5]/30 mb-3 transition-transform hover:scale-105 duration-300">
-                    <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <!-- Header Section -->
+            <div class="mb-10 flex flex-col items-center w-full">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-[#7C45F5] border-3 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] mb-6 rotate-3">
+                    <svg class="w-10 h-10 text-white -rotate-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
                 </div>
-                <h1 class="text-[#1a0050] text-xl md:text-2xl font-black tracking-tight mb-1">Фразы восстановления</h1>
-                <p class="text-zinc-500 text-sm max-w-xs mx-auto">Единственный способ восстановить доступ.</p>
+                <h1 class="text-zinc-900 text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4 leading-none">Фразы<br>Восстановления</h1>
+                <div class="h-1.5 w-24 bg-[#FF4D6D] border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]"></div>
             </div>
 
-            <div class="flex flex-col items-center gap-2 mb-6">
-                <div class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 font-bold text-[10px] border border-red-100 rounded-lg shadow-sm">
-                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <div class="flex flex-col items-center gap-4 mb-10 w-full">
+                <div class="inline-flex items-center px-4 py-2 bg-[#FF4D6D] text-white font-black text-xs border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] uppercase tracking-widest">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
-                    НЕ ДЕЛАЙТЕ СКРИНШОТ
+                    Никаких скриншотов
                 </div>
-                <p class="text-zinc-500 text-[13px] leading-snug max-w-[400px]">
+                <p class="text-zinc-600 font-bold text-sm leading-relaxed max-w-[500px] uppercase tracking-wide">
                     Запишите слова на бумагу в правильном порядке. <br class="hidden md:block">
-                    <span class="font-black text-[#1a0050]">Она показывается только один раз!</span>
+                    <span class="text-zinc-900 font-black underline decoration-[#7C45F5] decoration-4">Это ваш единственный доступ к аккаунту.</span>
                 </p>
             </div>
 
-            <!-- Word Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 w-full mb-8">
+            <!-- Word Grid (Brutalist) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full mb-12">
                 @foreach($words as $index => $word)
-                    <div class="flex items-center gap-2.5 bg-[#f5f4fc] border border-[#e2d9ff] py-2 px-3 shadow-sm hover:border-[#7C45F5] transition-all group rounded-xl">
-                        <span class="text-[10px] font-black text-[#7C45F5]/40 select-none group-hover:text-[#7C45F5]/60 transition-colors w-4">{{ $index + 1 }}</span>
-                        <span class="text-[#1a0050] font-mono font-bold tracking-tight text-sm select-all break-all text-left flex-1">{{ $word }}</span>
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-zinc-100 border-2 border-zinc-900 translate-x-1 translate-y-1"></div>
+                        <div class="relative flex items-center gap-3 bg-white border-2 border-zinc-900 py-3 px-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5">
+                            <span class="text-[10px] font-black text-[#7C45F5] select-none w-5 text-left border-r border-zinc-100 mr-1">{{ $index + 1 }}</span>
+                            <span class="text-zinc-900 font-black tracking-tight text-sm select-all break-all text-left flex-1 lowercase">{{ $word }}</span>
+                        </div>
                     </div>
                 @endforeach
             </div>
 
-            {{-- Mnemonics Story (Memorization Aid) --}}
+            {{-- Mnemonics Story (Premium Glassmorphism/Brutalist mix) --}}
             @if(isset($story))
-                <div class="w-full mb-8 text-left">
-                    <div class="flex items-center gap-2 mb-3 px-1">
-                        <span class="text-[10px] font-black text-[#7C45F5] uppercase tracking-wider">История для запоминания (Мнемоника)</span>
-                        <div class="h-px bg-gradient-to-r from-[#7C45F5]/20 to-transparent flex-1"></div>
+                <div class="w-full mb-12 text-left">
+                    <div class="flex items-center gap-3 mb-6">
+                        <span class="text-[11px] font-black text-[#7C45F5] uppercase tracking-[0.3em]">Мнемоника</span>
+                        <div class="h-0.5 bg-zinc-900 flex-1"></div>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-[#F8F7FF] to-white border border-[#7C45F5]/10 p-5 md:p-6 rounded-[1.5rem] shadow-inner relative overflow-hidden group">
-                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#7C45F5]/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                        
-                        <p class="text-[#1a0050] text-[15px] md:text-base leading-relaxed font-medium relative z-10">
-                            {!! preg_replace('/\*\*(.*?)\*\*/', '<span class="text-[#7C45F5] font-black underline decoration-2 decoration-[#7C45F5]/20 underline-offset-4">$1</span>', $story) !!}
-                        </p>
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-[#7C45F5]/5 border-2 border-zinc-900 translate-x-2 translate-y-2"></div>
+                        <div class="relative bg-white border-2 border-zinc-900 p-6 md:p-8 overflow-hidden group">
+                            <p class="text-zinc-800 text-lg md:text-xl leading-relaxed font-bold relative z-10 italic">
+                                {!! preg_replace('/\*\*(.*?)\*\*/', '<span class="text-[#7C45F5] font-black not-italic border-b-4 border-[#7C45F5]/20">$1</span>', $story) !!}
+                            </p>
+                        </div>
                     </div>
                 </div>
             @endif
 
-            <div class="w-full flex flex-col items-center gap-4">
+            <div class="w-full flex flex-col items-center gap-6">
                 <a id="finish-btn" href="{{ route('shop.customers.account.profile.verify_recovery_key') }}"
-                    class="flex w-full items-center justify-center gap-2 !rounded-xl bg-[#7C45F5] px-6 py-4 text-center text-sm font-bold text-white shadow-xl shadow-[#7C45F5]/30 transition-all hover:bg-[#6534d4] active:scale-[0.98] max-w-xs group">
+                    class="group relative flex w-full max-w-md items-center justify-center gap-4 bg-[#7C45F5] border-2 border-zinc-900 px-8 py-6 text-center font-black text-white transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-sm overflow-hidden">
+                    <div class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
                     <span>Я ЗАПИСАЛ СЛОВА</span>
-                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
                 </a>
                 
-                <p class="text-zinc-400 text-[11px] max-w-xs leading-relaxed">
-                    Нажимая кнопку, вы подтверждаете, что сохранили фразу в надежном месте.
+                <p class="text-zinc-400 text-[10px] font-bold uppercase tracking-widest max-w-xs leading-relaxed">
+                    Нажимая кнопку, вы подтверждаете полную ответственность за сохранность фразы.
                 </p>
             </div>
         </div>

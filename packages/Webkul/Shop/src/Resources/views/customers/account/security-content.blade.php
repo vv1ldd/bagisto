@@ -6,7 +6,7 @@
     $isOnboarding = $isOnboarding ?? false;
 @endphp
 
-<div class="nav-grid">
+<div class="space-y-6">
     {{-- Seed Phrase --}}
     @php
         $needsUpgrade = str_starts_with($customer->credits_id, 'M-') || 
@@ -14,74 +14,85 @@
     @endphp
 
     @if (!$isVerified || $needsUpgrade)
-        <a href="{{ route('shop.customers.account.profile.generate_recovery_key') }}" class="nav-tile group mt-1">
-            <span class="w-12 h-12 flex items-center justify-center {{ $needsUpgrade ? 'bg-amber-500' : 'bg-red-500' }} text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-            </span>
-            <div class="flex flex-col min-w-0 pr-4">
-                <div class="flex items-center gap-2">
-                    <span class="nav-label">Фразы восстановления</span>
-                    @if ($needsUpgrade)
-                        <span class="bg-amber-100 text-amber-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">нужен апгрейд</span>
-                    @else
-                        <span class="bg-red-100 text-red-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">важно</span>
-                    @endif
+        <a href="{{ route('shop.customers.account.profile.generate_recovery_key') }}" 
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-6 md:p-8 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(255,77,109,1)]">
+            <div class="flex items-start gap-6">
+                <div class="w-16 h-16 flex items-center justify-center {{ $needsUpgrade ? 'bg-amber-400' : 'bg-[#FF4D6D]' }} border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
+                    <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
                 </div>
-                <span class="text-[12px] text-zinc-500 font-medium truncate">
-                    {{ $needsUpgrade ? 'Нажмите, чтобы перевыпустить и активировать' : 'Единственный способ восстановления' }}
-                </span>
+                <div class="flex-1 min-w-0 pt-1">
+                    <div class="flex flex-wrap items-center gap-3 mb-2">
+                        <span class="text-zinc-900 text-xl font-black uppercase tracking-tight">Фразы восстановления</span>
+                        @if ($needsUpgrade)
+                            <span class="bg-amber-400 border-2 border-zinc-900 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">нужен апгрейд</span>
+                        @else
+                            <span class="bg-[#FF4D6D] border-2 border-zinc-900 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">критично</span>
+                        @endif
+                    </div>
+                    <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">
+                        {{ $needsUpgrade ? 'Нажмите, чтобы перевыпустить и активировать защиту' : 'Единственный способ вернуть доступ к данным и средствам' }}
+                    </p>
+                </div>
+                <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </div>
             </div>
-            <span class="nav-arrow">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                </svg>
-            </span>
         </a>
     @endif
 
     {{-- Manage Passkeys --}}
-    <a href="{{ route('shop.customers.account.passkeys.index', ['onboarding' => $isOnboarding]) }}" class="nav-tile group mt-1 w-full text-left">
-        <span class="w-12 h-12 flex items-center justify-center bg-blue-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
-        </span>
-        <div class="flex flex-col min-w-0 pr-4">
-            <div class="flex items-center gap-2">
-                <span class="nav-label">Управление устройствами</span>
-                @if($passkeyCount > 0)
-                    <span class="bg-blue-100 text-blue-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">{{ $passkeyCount }} {{ $passkeyCount === 1 ? 'ключ' : 'ключа' }}</span>
-                @endif
+    <a href="{{ route('shop.customers.account.passkeys.index', ['onboarding' => $isOnboarding]) }}" 
+        class="group relative block w-full bg-white border-4 border-zinc-900 p-6 md:p-8 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(124,69,245,1)]">
+        <div class="flex items-start gap-6">
+            <div class="w-16 h-16 flex items-center justify-center bg-[#7C45F5] border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-3 text-white">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
             </div>
-            <span class="text-[12px] text-zinc-500 font-medium truncate">Удаление и просмотр ключей</span>
+            <div class="flex-1 min-w-0 pt-1">
+                <div class="flex flex-wrap items-center gap-3 mb-2">
+                    <span class="text-zinc-900 text-xl font-black uppercase tracking-tight">Устройства (Passkeys)</span>
+                    @if($passkeyCount > 0)
+                        <span class="bg-[#7C45F5] border-2 border-zinc-900 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                            {{ $passkeyCount }} {{ $passkeyCount === 1 ? 'ключ' : 'ключа' }}
+                        </span>
+                    @endif
+                </div>
+                <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">Безопасный вход без пароля на этом и других устройствах</p>
+            </div>
+            <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                <svg class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                </svg>
+            </div>
         </div>
-        <span class="nav-arrow">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-            </svg>
-        </span>
     </a>
 
     {{-- Items hidden during onboarding --}}
     @if (!$isOnboarding)
         {{-- Activity Log --}}
-        <a href="{{ route('shop.customers.account.login_activity.index') }}" class="nav-tile group mt-1 text-left">
-            <span class="w-12 h-12 flex items-center justify-center bg-emerald-500 text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A9 9 0 112.182 19.818l4.636-4.636a2.121 2.121 0 113.001-3.001l4.635-4.635z"/>
-                </svg>
-            </span>
-            <div class="flex flex-col min-w-0 pr-4">
-                <span class="nav-label">Активность входа</span>
-                <span class="text-[12px] text-zinc-500 font-medium truncate">Безопасность сессий</span>
+        <a href="{{ route('shop.customers.account.login_activity.index') }}" 
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-6 md:p-8 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(0,255,148,1)]">
+            <div class="flex items-start gap-6">
+                <div class="w-16 h-16 flex items-center justify-center bg-[#00FF94] border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6 text-zinc-900">
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A9 9 0 112.182 19.818l4.636-4.636a2.121 2.121 0 113.001-3.001l4.635-4.635z"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0 pt-1">
+                    <span class="text-zinc-900 text-xl font-black uppercase tracking-tight block mb-2">Активность входа</span>
+                    <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">Мониторинг активных сессий и истории доступа</p>
+                </div>
+                <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </div>
             </div>
-            <span class="nav-arrow">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                </svg>
-            </span>
         </a>
     @endif
 </div>

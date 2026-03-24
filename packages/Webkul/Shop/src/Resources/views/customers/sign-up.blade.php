@@ -10,58 +10,62 @@
 
     {!! view_render_event('bagisto.shop.customers.signup.before') !!}
 
-    <div id="registration-wizard" class="flex flex-col items-center">
-        <!-- Back Button -->
-        <div class="flex flex-col items-center mb-8">
+    <div id="registration-wizard" class="flex flex-col items-center w-full max-w-[440px] mx-auto py-6 animate-in fade-in slide-in-from-bottom-5 duration-700">
+        <!-- Back Button (Brutalist) -->
+        <div class="w-full mb-10">
             <a href="{{ route('shop.customer.session.index') }}" 
-                class="group flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-[#7C45F5] transition-colors">
-                <span class="icon-arrow-left text-base transition-transform group-hover:-translate-x-1"></span>
-                @lang('shop::app.customers.login-form.back-to-login-options')
+                class="inline-flex items-center gap-2 px-4 py-2 bg-zinc-50 border-2 border-zinc-900 text-[10px] font-black uppercase tracking-widest text-zinc-900 hover:bg-zinc-900 hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:shadow-none active:translate-x-1 active:translate-y-1 group">
+                <svg class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <path d="M19 12H5m7-7l-7 7 7 7"/>
+                </svg>
+                Назад
             </a>
         </div>
 
-        <div class="mb-4 text-center">
-            <h1 class="text-2xl font-bold text-zinc-900 mb-2">Создать аккаунт</h1>
-            <p class="text-sm text-zinc-500 max-w-[320px] mx-auto leading-relaxed">
-                Используйте Passkey для мгновенного и безопасного входа без пароля.
+        <div class="mb-12 text-left w-full">
+            <h1 class="text-4xl font-black text-zinc-900 mb-4 uppercase tracking-tighter leading-none">Создать<br>Аккаунт</h1>
+            <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">
+                Безопасность <span class="text-[#7C45F5]">нового уровня</span> с технологией Passkey.
             </p>
         </div>
 
-
-
-
-        <!-- Nickname Input -->
-        <div class="w-full max-w-[340px] mx-auto mb-6">
-            <div class="bg-white border border-gray-100 shadow-sm overflow-hidden rounded-md">
-                <div class="flex items-center justify-between py-3 px-4 min-h-[52px] relative focus-within:bg-gray-50 transition-colors">
-                    <label for="nickname-input" class="text-[15px] font-medium text-zinc-900 whitespace-nowrap flex-shrink-0">Псевдоним</label>
-                    <div class="flex-grow ml-4 flex justify-end items-center relative">
-                        <span class="text-zinc-400 mr-0.5 text-[15px] select-none flex-shrink-0 font-medium">@</span>
-                        <input type="text" id="nickname-input" required
-                            class="w-full text-right outline-none bg-transparent text-zinc-500 font-medium focus:text-[#7C45F5] focus:placeholder-transparent pb-0.5 text-[15px]"
-                            placeholder="nickname" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-                            pattern="^[a-zA-Z0-9_\-\.]{3,30}$">
-                        <!-- Status Icon -->
-                        <div id="nickname-icon" class="ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-0 transition-opacity text-sm"></div>
+        <!-- Nickname Input (Premium Brutalist) -->
+        <div class="w-full mb-10 group">
+            <div class="relative">
+                <!-- Decorative background -->
+                <div class="absolute inset-0 bg-zinc-100 border-2 border-zinc-900 translate-x-1 translate-y-1"></div>
+                
+                <div class="relative bg-white border-2 border-zinc-900 group-focus-within:border-[#7C45F5] transition-colors overflow-hidden">
+                    <div class="flex items-center justify-between py-4 px-6 min-h-[64px]">
+                        <label for="nickname-input" class="text-xs font-black text-zinc-400 uppercase tracking-widest flex-shrink-0 group-focus-within:text-[#7C45F5] transition-colors">Никнейм</label>
+                        <div class="flex-grow ml-4 flex justify-end items-center relative">
+                            <span class="text-zinc-900 mr-1 text-xl select-none flex-shrink-0 font-black">@</span>
+                            <input type="text" id="nickname-input" required
+                                class="w-full text-right outline-none bg-transparent text-zinc-900 font-black focus:placeholder-transparent pb-0.5 text-xl tracking-tight placeholder:text-zinc-200"
+                                placeholder="твой_ник" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                                pattern="^[a-zA-Z0-9_\-\.]{3,30}$">
+                            <!-- Status Icon -->
+                            <div id="nickname-icon" class="ml-3 w-5 h-5 flex-shrink-0 flex items-center justify-center opacity-0 transition-opacity text-sm"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <p id="nickname-status" class="text-xs mt-2 text-center font-medium min-h-[16px] transition-opacity duration-200 opacity-0"></p>
+            <p id="nickname-status" class="text-[10px] mt-4 text-left font-black uppercase tracking-widest min-h-[16px] transition-opacity duration-200 opacity-0 px-2"></p>
         </div>
 
-        <!-- Primary Action Button -->
+        <!-- Primary Action Button (Brutalist style) -->
         <button type="button" id="start-registration-btn" onclick="handlePasskeyRegistration(event)" disabled
-            class="flex w-full items-center justify-center gap-3 !rounded-none bg-[#7C45F5] px-8 py-5 text-center font-bold text-white transition-all hover:bg-[#6534d4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 shadow-xl shadow-[#7C45F5]/30 uppercase tracking-[0.2em] text-sm active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#7C45F5] disabled:active:scale-100 disabled:shadow-none">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] border-2 border-zinc-900 px-8 py-6 text-center font-black text-white transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-sm overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-8">
+            <div class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 <circle cx="12" cy="11" r="3"></circle>
-                <path d="M12 14v1"></path>
             </svg>
-            Создать аккаунт
+            Создать через Passkey
         </button>
 
-        <p class="mt-8 text-center text-[11px] text-zinc-400 max-w-[280px] leading-relaxed italic">
-            Нажимая «Создать аккаунт», вы подтверждаете согласие с условиями использования сервиса.
+        <p class="text-center text-[10px] text-zinc-400 font-bold uppercase tracking-[0.15em] leading-relaxed max-w-[320px]">
+            Нажимая кнопку, вы подтверждаете согласие с <a href="#" class="text-zinc-600 underline underline-offset-2 decoration-2 decoration-[#7C45F5]/30 hover:text-[#7C45F5]">правилами сервиса</a>.
         </p>
     </div>
 
@@ -145,15 +149,15 @@
 
                 if (nicknameIcon) {
                     nicknameIcon.innerHTML = iconHTML;
-                    nicknameIcon.className = 'ml-2 w-4 h-4 flex-shrink-0 flex items-center justify-center opacity-100 transition-opacity text-sm';
+                    nicknameIcon.className = 'ml-3 w-5 h-5 flex-shrink-0 flex items-center justify-center opacity-100 transition-opacity text-sm';
                 }
                 
                 if (nicknameStatus) {
                     if (text) {
                         nicknameStatus.textContent = text;
-                        nicknameStatus.className = `text-xs mt-2 text-center font-medium min-h-[16px] transition-opacity duration-200 opacity-100 ${type === 'success' ? 'text-emerald-500' : 'text-red-500'}`;
+                        nicknameStatus.className = `text-[10px] mt-4 text-left font-black uppercase tracking-widest min-h-[16px] transition-opacity duration-200 opacity-100 px-2 ${type === 'success' ? 'text-emerald-500' : 'text-[#FF4D6D]'}`;
                     } else {
-                        nicknameStatus.className = `text-xs mt-2 text-center font-medium min-h-[16px] transition-opacity duration-200 opacity-0`;
+                        nicknameStatus.className = `text-[10px] mt-4 text-left font-black uppercase tracking-widest min-h-[16px] transition-opacity duration-200 opacity-0 px-2`;
                     }
                 }
             }
