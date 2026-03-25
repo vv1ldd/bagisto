@@ -70,7 +70,7 @@
             {!! view_render_event('bagisto.shop.components.products.card.name.before') !!}
             <h2
                 class="line-clamp-2 text-[13px] font-bold leading-tight text-zinc-900 dark:text-white group-hover:text-[#7C45F5] dark:group-hover:text-[#7C45F5] transition-colors text-center tracking-tight">
-                <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`">
+                <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`" class="!text-current">
                     @{{ product.name }}
                 </a>
             </h2>
@@ -80,7 +80,7 @@
         <div class="mt-auto">
             <div class="flex items-center justify-center">
                 {!! view_render_event('bagisto.shop.components.products.card.price.before') !!}
-                <div class="text-base font-black tracking-tighter text-[#7C45F5] text-center [&>del]:text-[11px] [&>del]:font-normal [&>del]:text-zinc-500 [&>del]:opacity-60"
+                <div class="text-base font-black tracking-tighter text-center [&_.regular-price]:!text-zinc-500 [&_.regular-price]:dark:!text-zinc-400 [&_.regular-price]:!text-[11px] [&_.regular-price]:!font-normal [&_.regular-price]:line-through [&_.active-price]:!text-[#7C45F5] [&_.price]:!text-[#7C45F5] dark:[&_.price]:!text-white dark:[&_.active-price]:!text-white [&_span]:transition-colors"
                     v-html="product.price_html">
                 </div>
                 {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
@@ -166,14 +166,16 @@
         {!! view_render_event('bagisto.shop.components.products.card.name.before') !!}
 
         <p class="text-base font-bold text-zinc-900 dark:text-white transition-colors">
-            @{{ product.name }}
+            <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`" class="!text-current">
+                @{{ product.name }}
+            </a>
         </p>
 
         {!! view_render_event('bagisto.shop.components.products.card.name.after') !!}
 
         {!! view_render_event('bagisto.shop.components.products.card.price.before') !!}
 
-        <div class="flex gap-2.5 text-lg font-black text-[#7C45F5]" v-html="product.price_html">
+        <div class="flex gap-2.5 text-lg font-black text-[#7C45F5] [&_.regular-price]:!text-zinc-500 [&_.regular-price]:dark:!text-zinc-400 [&_.regular-price]:!text-[11px] [&_.regular-price]:!font-normal [&_.regular-price]:line-through [&_.active-price]:!text-[#7C45F5] [&_.price]:!text-[#7C45F5] dark:[&_.price]:!text-white dark:[&_.active-price]:!text-white [&_span]:transition-colors" v-html="product.price_html">
         </div>
 
         {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
