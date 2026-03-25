@@ -609,27 +609,28 @@ img.lazy {
     }
 
     .primary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-bold rounded-2xl text-white px-8 py-4 max-w-max cursor-pointer transition-all shadow-lg active:scale-95;
-        background: var(--brand-gradient);
-        box-shadow: 0 10px 30px rgba(124, 69, 245, 0.25);
+        @apply flex gap-x-1.5 items-center place-content-center font-bold rounded-2xl text-white px-8 py-4 max-w-max cursor-pointer transition-all active:scale-95;
+        background-color: #7C45F5;
+        box-shadow: 0 10px 30px rgba(124, 69, 245, 0.3);
     }
 
     .primary-button:hover {
-        @apply shadow-xl opacity-100;
-        box-shadow: 0 15px 40px rgba(124, 69, 245, 0.35);
+        background-color: #6b35e4;
+        box-shadow: 0 15px 40px rgba(124, 69, 245, 0.45);
         transform: translateY(-2px);
     }
 
     .secondary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-bold rounded-2xl px-8 py-4 max-w-max cursor-pointer transition-all backdrop-blur-xl border-white/40;
-        background: rgba(255, 255, 255, 0.3);
-        color: var(--accent-purple);
-        border: 1px solid rgba(255, 255, 255, 0.4);
+        @apply flex gap-x-1.5 items-center place-content-center font-bold rounded-2xl px-8 py-4 max-w-max cursor-pointer transition-all;
+        background: rgba(255, 255, 255, 0.07);
+        color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .secondary-button:hover {
-        background: rgba(255, 255, 255, 0.5);
-        @apply opacity-100;
+        background: rgba(124, 69, 245, 0.12);
+        border-color: rgba(124, 69, 245, 0.4);
+        color: #a78bfa;
     }
 
     .shimmer {

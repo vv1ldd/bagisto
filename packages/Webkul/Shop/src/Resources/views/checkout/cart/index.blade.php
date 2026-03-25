@@ -82,7 +82,7 @@
                                     class="text-xs font-bold uppercase tracking-widest text-red-400 hover:text-red-500 transition-colors"
                                     @click="removeAllItems"
                                 >
-                                    @lang('shop::app.checkout.cart.index.remove-all')
+                                    Удалить все
                                 </button>
                             </div>
 
