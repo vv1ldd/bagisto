@@ -22,12 +22,12 @@
     ]);
 @endphp
 
-<footer class="mt-12 bg-zinc-50 dark:bg-[#0d091a] text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-white/5 font-sans pt-12 pb-16 max-sm:mt-8 transition-colors duration-500">
+<footer class="mt-12 bg-zinc-50 dark:bg-[#0d091a] text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-white/5 font-sans pt-8 pb-6 max-sm:mt-8 transition-colors duration-500">
     <div class="px-4 md:px-[60px] max-sm:px-5">
         <div class="mx-auto w-full max-w-7xl">
             
             <!-- Top Section: Navigation Links -->
-            <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] font-bold uppercase tracking-wide mb-8">
+            <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] font-light tracking-[0.08em] uppercase mb-6">
                 @if ($customization && $customization->options)
                     @foreach ($customization->options as $footerLinkSection)
                         @foreach ($footerLinkSection as $index => $link)
