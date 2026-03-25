@@ -129,29 +129,29 @@
                 scrollbar-gutter: stable;
             }
 
-            /* Meanly Custom Scrollbar - Brutalist */
+            /* Scrollbar */
             ::-webkit-scrollbar {
-                width: 12px;
-                height: 12px;
+                width: 8px;
+                height: 8px;
             }
 
             ::-webkit-scrollbar-track {
-                background: #000;
+                background: transparent;
             }
 
             ::-webkit-scrollbar-thumb {
-                background: var(--brutalist-neon);
-                border: 3px solid #000;
+                background: rgba(124, 69, 245, 0.25);
+                border-radius: 9999px;
             }
 
             ::-webkit-scrollbar-thumb:hover {
-                background: #fff;
+                background: rgba(124, 69, 245, 0.5);
             }
 
             /* For Firefox */
             * {
                 scrollbar-width: thin;
-                scrollbar-color: var(--brutalist-neon) #000;
+                scrollbar-color: rgba(124, 69, 245, 0.25) transparent;
             }
 
             {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
@@ -177,8 +177,8 @@
             Skip to main content
         </a>
 
-        <!-- Neo-Brutalist Background Layer -->
-        <div class="fixed inset-0 -z-30 bg-[#FAFAFA] dark:bg-[#1a0050] transition-colors duration-500"></div>
+        <!-- Background Layer -->
+        <div class="fixed inset-0 -z-30 bg-[#F7F8FA] dark:bg-[#100c24] transition-colors duration-500"></div>
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative text-zinc-900 dark:text-white transition-colors duration-500">
