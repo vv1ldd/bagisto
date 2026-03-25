@@ -235,7 +235,6 @@
                     </form>
                 </x-shop::form>
             </script>
-                                                                        </script>
 
             <script type="module">
                 app.component('v-product', {
@@ -244,7 +243,7 @@
                     data() {
                         return {
                             isWishlist: false,
-                            isCustomer: '{{ auth()->guard('customer')->check() }}',
+                            isCustomer: {{ auth()->guard('customer')->check() ? 'true' : 'false' }},
                             is_buy_now: 0,
                             isStoring: {
                                 addToCart: false,
