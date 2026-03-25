@@ -26,5 +26,6 @@ class ModuleServiceProvider extends CoreModuleServiceProvider
         \Webkul\Customer\Models\Organization::class,
         \Webkul\Customer\Models\OrganizationSettlementAccount::class,
         \Webkul\Customer\Models\Bank::class,
+        \Webkul\Customer\Models\Handshake::class,
     ];
 }

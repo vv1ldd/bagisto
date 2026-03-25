@@ -210,6 +210,16 @@ Route::group(['prefix' => 'customer'], function () {
                     Route::prefix('credits')->controller(TransferController::class)->group(function () {
                         Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
                     });
+
+                    /**
+                     * Handshakes (Peer-to-peer social connections).
+                     */
+                    Route::prefix('handshakes')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\HandshakeController::class)->group(function () {
+                        Route::get('', 'index')->name('shop.customers.account.handshakes.index');
+                        Route::post('ping', 'ping')->name('shop.customers.account.handshakes.ping');
+                        Route::post('acknowledge/{id}', 'acknowledge')->name('shop.customers.account.handshakes.acknowledge');
+                        Route::delete('terminate/{id}', 'terminate')->name('shop.customers.account.handshakes.terminate');
+                    });
                 });
                 Route::controller(CustomerController::class)->group(function () {
                     Route::group(['prefix' => 'profile'], function () {

@@ -24,6 +24,7 @@ use Spatie\LaravelPasskeys\Models\Concerns\HasPasskeys;
 use Spatie\LaravelPasskeys\Models\Concerns\InteractsWithPasskeys;
 use Webkul\Customer\Models\CustomerBalanceProxy;
 use Webkul\Customer\Services\ExchangeRateService;
+use Webkul\Customer\Models\HandshakeProxy;
 
 class Customer extends Authenticatable implements CustomerContract, HasPasskeys
 {
@@ -398,6 +399,53 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     public function subscription()
     {
         return $this->hasOne(SubscribersListProxy::modelClass(), 'customer_id');
+    }
+
+    /**
+     * Get all handshakes initiated by this customer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function handshakesSent()
+    {
+        return $this->hasMany(HandshakeProxy::modelClass(), 'sender_id');
+    }
+
+    /**
+     * Get all handshakes received by this customer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function handshakesReceived()
+    {
+        return $this->hasMany(HandshakeProxy::modelClass(), 'receiver_id');
+    }
+
+    /**
+     * Get all handshakes (both sent and received).
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function handshakes()
+    {
+        return $this->handshakesSent->merge($this->handshakesReceived);
+    }
+
+    /**
+     * Check if a handshake exists with another customer.
+     *
+     * @param  int  $customerId
+     * @return \Webkul\Customer\Models\Handshake|null
+     */
+    public function getHandshakeWith($customerId)
+    {
+        return HandshakeProxy::where(function ($query) use ($customerId) {
+            $query->where('sender_id', $this->id)
+                ->where('receiver_id', $customerId);
+        })->orWhere(function ($query) use ($customerId) {
+            $query->where('sender_id', $customerId)
+                ->where('receiver_id', $this->id);
+        })->first();
     }
 
     /**
