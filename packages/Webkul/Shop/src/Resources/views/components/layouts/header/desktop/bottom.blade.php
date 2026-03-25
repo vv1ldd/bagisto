@@ -131,6 +131,10 @@
                             this.cartCount = r.data?.data?.items_count ?? r.data?.data?.items?.length ?? 0; 
                         })
                         .catch(() => {});
+                }
+            }
+        });
+
         app.component('v-theme-switcher', {
             template: `
                 <div class="flex items-center gap-1 bg-black/5 dark:bg-white/5 backdrop-blur-md rounded-full p-1 border border-black/10 dark:border-white/10 transition-colors">
