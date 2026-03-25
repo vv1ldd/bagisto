@@ -140,7 +140,6 @@
                         $creditsUrl = route('shop.customers.account.credits.index', ['recipient' => '@' . $customer->credits_alias]);
                     @endphp
                     <a href="{{ $creditsUrl }}"
-                       onclick="handleMeanlyWalletPasskey(this, '{{ $creditsUrl }}'); return false;"
                        class="action-button">
                         Отправить Credits
                     </a>

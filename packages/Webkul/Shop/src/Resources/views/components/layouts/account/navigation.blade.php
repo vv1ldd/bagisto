@@ -31,14 +31,8 @@ $menuIcons = [
         <div class="nav-grid">
             {{-- Wallet --}}
             @if ($customer instanceof \Webkul\Customer\Models\Customer && !empty($customer->username))
-                @php
-                    $hasPasskey = $customer->passkeys()->exists();
-                    $unlockedAt = session('wallet_unlocked_at') ?: (session('logged_in_via_passkey') ? session('passkey_unlocked_at') : null);
-                    $isUnlocked = $unlockedAt && (time() - $unlockedAt <= 900);
-                @endphp
- 
                 <div class="nav-tile cursor-pointer group"
-                     onclick="{{ $isUnlocked ? 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'' : ($hasPasskey ? 'handleMeanlyWalletPasskey(this)' : 'window.location.href=\'' . route('shop.customers.account.credits.index') . '\'') }}">
+                     onclick="window.location.href='{{ route('shop.customers.account.credits.index') }}'">
                     <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>

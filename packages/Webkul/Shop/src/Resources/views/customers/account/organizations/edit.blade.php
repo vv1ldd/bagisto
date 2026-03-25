@@ -13,5 +13,5 @@
             @if (request()->ajax()) 
                 onclick="switchStep('organizations')" 
             @else 
-                onclick="handleMeanlyWalletPasskey(this, '{{ $creditsUrl }}'); return false;" 
+                onclick="window.location='{{ $creditsUrl }}'" 
             @endif

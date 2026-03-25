@@ -72,7 +72,6 @@ Route::prefix('customer')->group(function () {
     /**
      * Passkey routes.
      */
-    Route::post('passkeys/login-options', [PasskeyController::class, 'loginOptions'])->name('passkeys.login-options');
     Route::post('passkeys/login', [PasskeyController::class, 'login'])->name('passkeys.login');
 
     /**
@@ -112,6 +111,11 @@ Route::prefix('customer')->group(function () {
     });
 
     }); // End of guest routes group
+ 
+    /**
+     * Passkey login options (accessible to both guests and authenticated users for step-up auth)
+     */
+    Route::post('passkeys/login-options', [PasskeyController::class, 'loginOptions'])->name('passkeys.login-options');
 
     /**
      * Customer authenticated routes. All the below routes only be accessible
@@ -190,7 +194,7 @@ Route::prefix('customer')->group(function () {
                 /**
                  * Credits (formerly Transactions).
                  */
-                Route::group(['middleware' => ['passkey.timeout', \Webkul\Shop\Http\Middleware\CheckWalletAccess::class]], function () {
+                Route::group([], function () {
                     Route::get('credits/lookup', [\Webkul\Shop\Http\Controllers\Customer\Account\RecipientLookupController::class, 'lookup'])->name('shop.customers.account.credits.lookup');
                     Route::post('crypto/send', [\Webkul\Shop\Http\Controllers\Customer\Account\CryptoSendController::class, 'store'])->name('shop.customers.account.crypto.send');
                     Route::get('credits', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'index'])->name('shop.customers.account.credits.index');

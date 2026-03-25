@@ -84,6 +84,9 @@ class CryptoSendController extends Controller
             $notes = "Authorized via Passkey: (" . substr($passkey->credential_id, 0, 8) . "...)";
 
             $this->internalTransferService->transfer($currentUser, $recipient, $amount, $notes);
+            
+            // Clear Passkey options from session once used successfully
+            session()->forget('passkey-authentication-options-json');
 
             return response()->json(['success' => true]);
 

@@ -1,9 +1,5 @@
 <x-shop::layouts.account :show-back="false">
     <div class="flex-auto pb-3  ios-group max-w-[800px] mx-auto">
-        @php $creditsUrl = route('shop.customers.account.credits.index'); @endphp
-        <a href="{{ $creditsUrl }}" 
-           onclick="handleMeanlyWalletPasskey(this, '{{ $creditsUrl }}'); return false;"
-
         <div class="px-5 pt-7 pb-2">
             <h1 class="text-[22px] font-bold text-zinc-900 leading-tight">
                 @lang('shop::app.customers.account.organizations.index.title')
