@@ -5,7 +5,7 @@
 @pushOnce('scripts')
     <script type="text/x-template" id="v-coupon-template">
                             <div class="flex items-center justify-between">
-                                <p class="text-sm font-medium text-zinc-500">
+                                <p class="text-sm font-bold uppercase tracking-wider text-[10px] text-zinc-500 dark:text-zinc-400">
                                     @{{ cart.coupon_code ? "@lang('shop::app.checkout.coupon.applied')" : "@lang('shop::app.checkout.coupon.discount')" }}
                                 </p>
 
@@ -37,7 +37,7 @@
 
                                                 <!-- Modal Header -->
                                                 <x-slot:header class="!p-6 !pb-2">
-                                                    <h2 class="text-xl font-bold text-zinc-800">
+                                                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
                                                         @lang('shop::app.checkout.coupon.apply')
                                                     </h2>
                                                 </x-slot>
@@ -47,7 +47,7 @@
                                                     <x-shop::form.control-group class="!mb-0">
                                                         <x-shop::form.control-group.control
                                                             type="text"
-                                                            class=" border border-zinc-100 bg-zinc-50 px-5 py-3.5 text-sm font-medium focus:border-[#7C45F5] focus:bg-white focus:ring-[#7C45F5] transition-all"
+                                                            class="border border-zinc-100 dark:border-white/10 bg-zinc-50 dark:bg-zinc-900 px-5 py-3.5 text-sm font-medium text-zinc-900 dark:text-white focus:border-[#7C45F5] focus:bg-white dark:focus:bg-zinc-800 focus:ring-[#7C45F5] transition-all rounded-xl"
                                                             name="code"
                                                             rules="required"
                                                             :placeholder="trans('shop::app.checkout.coupon.enter-your-code')"
@@ -64,10 +64,10 @@
                                                 <x-slot:footer class="!px-6 !pb-8 !pt-4">
                                                     <div class="flex items-center justify-between gap-4">
                                                         <div class="flex flex-col">
-                                                            <p class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                                                            <p class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
                                                                 @lang('shop::app.checkout.coupon.subtotal')
                                                             </p>
-                                                            <p class="text-xl font-black text-zinc-900 mt-0.5">
+                                                            <p class="text-xl font-black text-zinc-900 dark:text-white mt-0.5">
                                                                 @{{ cart.formatted_sub_total }}
                                                             </p>
                                                         </div>
@@ -88,7 +88,7 @@
 
                                     <!-- Applied Coupon Information Container -->
                                     <div 
-                                        class="flex items-center gap-2  bg-[#7C45F5]/10 px-3 py-1.5 text-[#7C45F5] border border-[#7C45F5]/10"
+                                        class="flex items-center gap-2 bg-[#7C45F5]/10 dark:bg-[#7C45F5]/20 px-3 py-1.5 text-[#7C45F5] border border-[#7C45F5]/10 dark:border-[#7C45F5]/30 rounded-full"
                                         v-if="cart.coupon_code"
                                     >
                                         <p 
@@ -99,7 +99,7 @@
                                         </p>
 
                                         <div 
-                                            class="flex h-5 w-5 cursor-pointer items-center justify-center bg-red-500 text-white transition-all hover:bg-red-600 active:scale-95"
+                                            class="flex h-5 w-5 cursor-pointer items-center justify-center bg-red-500 text-white transition-all hover:bg-red-600 active:scale-95 rounded-full"
                                             title="@lang('shop::app.checkout.coupon.remove')"
                                             @click="destroyCoupon"
                                         >

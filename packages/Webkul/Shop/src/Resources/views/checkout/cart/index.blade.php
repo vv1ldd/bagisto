@@ -80,10 +80,10 @@
                     >
                         <div class="space-y-6 flex-1 w-full">
                             <!-- Cart items card -->
-                            <div class="bg-white p-6 sm:p-8 shadow-sm flex flex-col overflow-hidden">
+                            <div class="ios-group p-6 sm:p-8 flex flex-col overflow-hidden">
 
                                 <!-- Header -->
-                                <div class="flex items-center justify-between pb-4 border-b border-zinc-100">
+                                <div class="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-white/5">
                                     <div class="flex select-none items-center gap-2">
                                     <input
                                         type="checkbox"
@@ -139,7 +139,7 @@
                                     </div>
 
                                     <span
-                                        class="cursor-pointer text-base text-red-600 hover:text-red-700 transition-colors max-sm:text-xs pr-2"
+                                        class="cursor-pointer text-base text-red-500 hover:text-red-400 transition-colors max-sm:text-xs pr-2 font-bold uppercase tracking-wider"
                                         role="button"
                                         tabindex="0"
                                         @click="removeAllItems"
@@ -155,7 +155,7 @@
 
                                 <!-- Cart Item Listing -->
                                 <div
-                                    class="divide-y divide-zinc-100"
+                                    class="divide-y divide-zinc-100 dark:divide-white/5"
                                     v-for="item in cart?.items"
                                     :key="item.id"
                                 >
@@ -198,7 +198,7 @@
                                     <div class="flex flex-1 flex-col gap-1 min-w-0">
                                         {!! view_render_event('bagisto.shop.checkout.cart.item_name.before') !!}
                                         <a :href="`{{ route('shop.product_or_category.index', '') }}/${item.product_url_key}`">
-                                            <p class="text-sm font-semibold leading-snug text-zinc-800 line-clamp-2">@{{ item.name }}</p>
+                                            <p class="text-sm font-bold leading-snug text-zinc-900 dark:text-white line-clamp-2 hover:text-[#7C45F5] transition-colors">@{{ item.name }}</p>
                                         </a>
                                         {!! view_render_event('bagisto.shop.checkout.cart.item_name.after') !!}
 
@@ -227,7 +227,7 @@
                                             {!! view_render_event('bagisto.shop.checkout.cart.quantity_changer.before') !!}
                                             <x-shop::quantity-changer
                                                 v-if="item.can_change_qty"
-                                                class="flex max-w-max items-center gap-x-2  border border-zinc-200 px-3 py-1 text-sm"
+                                                class="flex max-w-max items-center gap-x-2 border border-zinc-200 dark:border-white/10 px-3 py-1 text-sm bg-transparent dark:text-white rounded-xl"
                                                 name="quantity"
                                                 ::value="item?.quantity"
                                                 @change="setItemQuantity(item.id, $event)"
@@ -235,7 +235,7 @@
                                             {!! view_render_event('bagisto.shop.checkout.cart.quantity_changer.after') !!}
 
                                             {!! view_render_event('bagisto.shop.checkout.cart.formatted_total.before') !!}
-                                            <p class="ml-auto text-sm font-semibold text-zinc-800">
+                                            <p class="ml-auto text-sm font-black text-zinc-900 dark:text-white">
                                                 <template v-if="displayTax.prices == 'including_tax'">@{{ item.formatted_total_incl_tax }}</template>
                                                 <template v-else>@{{ item.formatted_total }}</template>
                                             </p>
@@ -244,7 +244,7 @@
                                             {!! view_render_event('bagisto.shop.checkout.cart.remove_button.before') !!}
                                             <button
                                                 type="button"
-                                                class="text-xs text-zinc-400 hover:text-red-500 transition-colors"
+                                                class="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors"
                                                 @click="removeItem(item.id)"
                                             >
                                                 @lang('shop::app.checkout.cart.index.remove')
@@ -263,7 +263,7 @@
                             <div class="flex justify-end gap-3 mt-4">
                                 {!! view_render_event('bagisto.shop.checkout.cart.continue_shopping.before') !!}
                                 <a
-                                    class="bg-[#7C45F5]/10 text-[#7C45F5] font-semibold px-5 py-2.5 text-sm rounded transition-colors hover:bg-[#7C45F5]/20"
+                                    class="secondary-button !px-6 !py-3 !text-[13px] !rounded-2xl"
                                     href="{{ route('shop.home.index') }}"
                                 >
                                     @lang('shop::app.checkout.cart.index.continue-shopping')
@@ -272,7 +272,7 @@
 
                                 {!! view_render_event('bagisto.shop.checkout.cart.update_cart.before') !!}
                                 <x-shop::button
-                                    class="bg-[#7C45F5]/10 text-[#7C45F5] font-semibold px-5 py-2.5 text-sm rounded transition-colors hover:bg-[#7C45F5]/20 disabled:opacity-50"
+                                    class="secondary-button !px-6 !py-3 !text-[13px] !rounded-2xl disabled:opacity-50"
                                     :title="trans('shop::app.checkout.cart.index.update-cart')"
                                     ::loading="isStoring"
                                     ::disabled="isStoring"
