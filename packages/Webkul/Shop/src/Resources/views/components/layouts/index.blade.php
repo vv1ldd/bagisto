@@ -482,7 +482,7 @@
         </script>
 
         @php
-            $chatwootEnabled = core()->getConfigData('general.content.chatwoot.enabled');
+            $chatwootEnabled = filter_var(core()->getConfigData('general.content.chatwoot.enabled'), FILTER_VALIDATE_BOOLEAN);
             $chatwootToken = core()->getConfigData('general.content.chatwoot.website_token');
             $chatwootBaseUrl = core()->getConfigData('general.content.chatwoot.base_url') ?? 'https://support.wildcloud.ru';
 
