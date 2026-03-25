@@ -22,7 +22,7 @@
     ]);
 @endphp
 
-<footer class="mt-12 bg-zinc-950 text-zinc-400 border-t border-white/5 font-sans pt-16 pb-12 max-sm:mt-8">
+<footer class="mt-12 bg-[#FAFAFA] dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-white/5 font-sans pt-16 pb-12 max-sm:mt-8 transition-colors duration-500">
     <div class="px-4 md:px-[60px] max-sm:px-5">
         <div class="mx-auto w-full max-w-7xl flex flex-col items-center">
 
@@ -38,7 +38,7 @@
 
                         @foreach ($footerLinkSection as $link)
                             <a href="{{ $link['url'] }}"
-                                class="text-[14px] font-bold text-zinc-500 hover:text-white tracking-tight transition-all uppercase">
+                                class="text-[14px] font-bold text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-white tracking-tight transition-colors uppercase">
                                 {{ $link['title'] }}
                             </a>
                         @endforeach
@@ -48,27 +48,27 @@
 
             <!-- Ultimate Bottom Bar: Contacts - Copyright - Company -->
             <div
-                class="flex flex-wrap justify-between items-center w-full gap-y-6 pt-8 border-t border-white/5 text-[11px] font-medium tracking-[0.1em] uppercase text-zinc-500 max-lg:flex-col max-lg:text-center">
+                class="flex flex-wrap justify-between items-center w-full gap-y-6 pt-8 border-t border-zinc-200 dark:border-white/5 text-[11px] font-medium tracking-[0.1em] uppercase text-zinc-500 max-lg:flex-col max-lg:text-center transition-colors">
 
                 <!-- Contact Details -->
                 @if (core()->getConfigData('general.design.footer.show_footer_info'))
                     <div class="flex flex-wrap justify-center items-center gap-4">
                         <a href="tel:{{ preg_replace('/[^0-9+]/', '', core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95') }}"
-                            class="hover:text-white transition-colors">
+                            class="hover:text-zinc-900 dark:hover:text-white transition-colors">
                             {{ core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95' }}
                         </a>
-                        <span class="w-1 h-1 bg-zinc-800 rounded-full"></span>
+                        <span class="w-1 h-1 bg-zinc-300 dark:bg-zinc-800 rounded-full transition-colors"></span>
                         <a href="mailto:{{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}"
-                            class="hover:text-white transition-colors">
+                            class="hover:text-zinc-900 dark:hover:text-white transition-colors">
                             {{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}
                         </a>
-                        <span class="w-1 h-1 bg-zinc-800 rounded-full"></span>
+                        <span class="w-1 h-1 bg-zinc-300 dark:bg-zinc-800 rounded-full transition-colors"></span>
                         <p class="text-zinc-600">{{ core()->getConfigData('general.design.footer.schedule') ?: 'ПН-ВС 24ч' }}</p>
                     </div>
                 @endif
 
                 <!-- Copyright -->
-                <div class="flex items-center tracking-[0.2em] text-zinc-600 max-lg:order-last">
+                <div class="flex items-center tracking-[0.2em] text-zinc-500 max-lg:order-last">
                     {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
                     <p>&copy; {{ date('Y') }} MEANLY. ALL RIGHTS RESERVED.</p>
                     {!! view_render_event('bagisto.shop.layout.footer.footer_text.after') !!}
@@ -78,8 +78,8 @@
                 @if (core()->getConfigData('general.design.footer.show_footer_info'))
                     <div class="flex flex-wrap justify-center items-center gap-4">
                         <p class="text-zinc-500">{{ core()->getConfigData('general.design.footer.company_name') ?: 'ИП АТАНИЯЗОВА ДЖЕННЕТ' }}</p>
-                        <span class="w-1 h-1 bg-zinc-800 rounded-full"></span>
-                        <p class="text-zinc-600">ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}</p>
+                        <span class="w-1 h-1 bg-zinc-300 dark:bg-zinc-800 rounded-full transition-colors"></span>
+                        <p class="text-zinc-500">ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}</p>
                     </div>
                 @endif
             </div>

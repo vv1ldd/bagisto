@@ -37,7 +37,9 @@
         </div>
 
         <!-- Right Navigation -->
-        <div class="flex items-center">
+        <div class="flex items-center gap-2">
+            <v-theme-switcher></v-theme-switcher>
+
             @auth('customer')
                 <div class="flex items-center gap-2">
                     <div class="relative shrink-0 min-w-[28px]">

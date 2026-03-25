@@ -32,7 +32,9 @@
     </div>
 
     {{-- RIGHT: Server-side rendered nav — no Vue, no CLS --}}
-    <div class="flex items-center gap-3 flex-shrink-0">
+    <div class="flex items-center gap-4 flex-shrink-0">
+        <v-theme-switcher></v-theme-switcher>
+
         @auth('customer')
             {{-- Logged-in: Avatar + Alias --}}
             <div class="flex items-center gap-2.5">
@@ -129,6 +131,50 @@
                             this.cartCount = r.data?.data?.items_count ?? r.data?.data?.items?.length ?? 0; 
                         })
                         .catch(() => {});
+        app.component('v-theme-switcher', {
+            template: `
+                <div class="flex items-center gap-1 bg-black/5 dark:bg-white/5 backdrop-blur-md rounded-full p-1 border border-black/10 dark:border-white/10 hidden sm:flex transition-colors">
+                    <button @click="setTheme('light')" :class="{'bg-white dark:bg-[#7C45F5] text-[#7C45F5] dark:text-white shadow-sm': currentMode === 'light', 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white': currentMode !== 'light'}" class="w-7 h-7 flex items-center justify-center rounded-full transition-all" title="Светлая">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                    <button @click="setTheme('dark')" :class="{'bg-zinc-800 dark:bg-[#7C45F5] text-white shadow-sm': currentMode === 'dark', 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white': currentMode !== 'dark'}" class="w-7 h-7 flex items-center justify-center rounded-full transition-all" title="Темная">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    <button @click="setTheme('auto')" :class="{'bg-[#7C45F5] text-white shadow-sm': currentMode === 'auto', 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white': currentMode !== 'auto'}" class="w-7 h-7 flex items-center justify-center rounded-full transition-all" title="Автоматически (по времени)">
+                        <span class="text-[9px] font-bold tracking-wider leading-none">AUTO</span>
+                    </button>
+                </div>
+            `,
+            data() {
+                return {
+                    currentMode: 'auto'
+                }
+            },
+            mounted() {
+                let localTheme = localStorage.getItem('theme');
+                if (localTheme === 'dark' || localTheme === 'light') {
+                    this.currentMode = localTheme;
+                }
+            },
+            methods: {
+                setTheme(theme) {
+                    this.currentMode = theme;
+                    if (theme === 'auto') {
+                        localStorage.removeItem('theme');
+                        var hour = new Date().getHours();
+                        if (hour >= 18 || hour < 6) {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                    } else {
+                        localStorage.setItem('theme', theme);
+                        if (theme === 'dark') {
+                            document.documentElement.classList.add('dark');
+                        } else {
+                            document.documentElement.classList.remove('dark');
+                        }
+                    }
                 }
             }
         });

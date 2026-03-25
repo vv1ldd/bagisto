@@ -16,6 +16,30 @@
 
         <title>{{ $title ?? '' }}</title>
 
+        <!-- Global Theme Switcher (Anti-FOUC) -->
+        <script>
+            (function() {
+                try {
+                    var localTheme = localStorage.getItem('theme');
+                    var themeToApply = 'light';
+                    
+                    if (localTheme === 'dark' || localTheme === 'light') {
+                        themeToApply = localTheme;
+                    } else {
+                        var hour = new Date().getHours();
+                        if (hour >= 18 || hour < 6) {
+                            themeToApply = 'dark';
+                        }
+                    }
+                    
+                    if (themeToApply === 'dark') {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                } catch (e) {}
+            })();
+        </script>
         <meta charset="UTF-8">
 
         <meta
@@ -154,10 +178,10 @@
         </a>
 
         <!-- Neo-Brutalist Background Layer -->
-        <div class="fixed inset-0 -z-30 bg-[#1a0050]"></div>
+        <div class="fixed inset-0 -z-30 bg-[#FAFAFA] dark:bg-[#1a0050] transition-colors duration-500"></div>
 
         <!-- Built With Bagisto -->
-        <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative">
+        <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative text-zinc-900 dark:text-white transition-colors duration-500">
             
             <div id="main-content-wrapper" class="flex flex-col min-h-screen bg-transparent">
                 <!-- Flash Message Blade Component -->
