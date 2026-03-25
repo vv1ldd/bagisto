@@ -65,7 +65,7 @@
                 </div>
 
                 <a href="{{ route('shop.customers.account.index') }}"
-                    class="text-[13px] font-bold text-zinc-400 hover:text-white transition-colors truncate max-w-[140px] tracking-tight">
+                    class="text-[13px] font-bold text-zinc-600 dark:text-zinc-400 hover:text-[#7C45F5] dark:hover:text-white transition-colors truncate max-w-[140px] tracking-tight">
                     {{ '@' . $userName }}@if($authUser->is_investor) <span title="Инвестор" class="text-xs leading-none ml-1">💎</span>@endif
                 </a>
             </div>
