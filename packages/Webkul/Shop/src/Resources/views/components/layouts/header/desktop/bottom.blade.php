@@ -133,7 +133,7 @@
                         .catch(() => {});
         app.component('v-theme-switcher', {
             template: `
-                <div class="flex items-center gap-1 bg-black/5 dark:bg-white/5 backdrop-blur-md rounded-full p-1 border border-black/10 dark:border-white/10 hidden sm:flex transition-colors">
+                <div class="flex items-center gap-1 bg-black/5 dark:bg-white/5 backdrop-blur-md rounded-full p-1 border border-black/10 dark:border-white/10 transition-colors">
                     <button @click="setTheme('light')" :class="{'bg-white dark:bg-[#7C45F5] text-[#7C45F5] dark:text-white shadow-sm': currentMode === 'light', 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white': currentMode !== 'light'}" class="w-7 h-7 flex items-center justify-center rounded-full transition-all" title="Светлая">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                     </button>
