@@ -178,7 +178,7 @@
         </a>
 
         <!-- Background Layer -->
-        <div class="fixed inset-0 -z-30 bg-[#F7F8FA] dark:bg-[#100c24] transition-colors duration-500"></div>
+        <div class="fixed inset-0 -z-30 bg-[#F0EFFF] dark:bg-[#100c24] transition-colors duration-500"></div>
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative text-zinc-900 dark:text-white transition-colors duration-500">
