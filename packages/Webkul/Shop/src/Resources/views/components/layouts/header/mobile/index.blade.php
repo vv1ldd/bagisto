@@ -64,7 +64,7 @@
                             user-initial="{{ $userInitial }}"
                         ></v-cart-badge>
                     </div>
-                    <a href="{{ route('shop.customers.account.index') }}" class="text-[13px] font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-1 whitespace-nowrap tracking-tight">
+                    <a href="{{ route('shop.customers.account.index') }}" class="text-[13px] font-bold text-zinc-600 dark:text-zinc-400 hover:text-[#7C45F5] dark:hover:text-white transition-colors flex items-center gap-1 whitespace-nowrap tracking-tight">
                         @
                         {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
                         @if(auth()->guard('customer')->user()->is_investor)
