@@ -191,15 +191,7 @@
                                 </a>
                                 {!! view_render_event('bagisto.shop.checkout.cart.continue_shopping.after') !!}
 
-                                {!! view_render_event('bagisto.shop.checkout.cart.update_cart.before') !!}
-                                <x-shop::button
-                                    class="secondary-button !px-6 !py-3 !text-[13px] !rounded-2xl disabled:opacity-50"
-                                    :title="trans('shop::app.checkout.cart.index.update-cart')"
-                                    ::loading="isStoring"
-                                    ::disabled="isStoring"
-                                    @click="update()"
-                                />
-                                {!! view_render_event('bagisto.shop.checkout.cart.update_cart.after') !!}
+                                {{-- Update button removed for auto-update UX --}}
                             </div>
                         </div>
 
@@ -282,25 +274,35 @@
                 },
 
                 update() {
+                    if (this.isStoring) return;
+
                     this.isStoring = true;
 
-                    this.$axios.put('{{ route('shop.api.checkout.cart.update') }}', { qty: this.applied.quantity })
-                        .then(response => {
-                            if (response.data.message) {
-                                this.cart = response.data.data;
-                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
-                            } else {
-                                this.$emitter.emit('add-flash', { type: 'warning', message: response.data.data.message });
-                            }
-                            this.isStoring = false;
-                        })
-                        .catch(error => {
-                            this.isStoring = false;
-                        });
+                    // Clear any pending update to debounce if called rapidly
+                    if (this.updateTimer) clearTimeout(this.updateTimer);
+
+                    this.updateTimer = setTimeout(() => {
+                        this.$axios.put('{{ route('shop.api.checkout.cart.update') }}', { qty: this.applied.quantity })
+                            .then(response => {
+                                if (response.data.message) {
+                                    this.cart = response.data.data;
+                                    this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+                                    this.$emitter.emit('update-mini-cart', response.data.data);
+                                } else {
+                                    this.$emitter.emit('add-flash', { type: 'warning', message: response.data.data.message });
+                                }
+                                this.isStoring = false;
+                            })
+                            .catch(error => {
+                                this.isStoring = false;
+                            });
+                    }, 300);
                 },
 
                 setItemQuantity(itemId, quantity) {
                     this.applied.quantity[itemId] = quantity;
+                    
+                    this.update();
                 },
 
                 removeItem(itemId) {
