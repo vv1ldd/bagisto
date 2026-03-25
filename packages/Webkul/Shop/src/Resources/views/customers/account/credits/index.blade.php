@@ -37,74 +37,63 @@
         @endif
 
         {{-- Global Tabs for Overview/History --}}
-        <div id="wallet-tabs" class="flex items-center gap-6 mb-6 border-b border-[#e2d9ff]">
-            <button id="tab-dashboard" onclick="switchStep('dashboard')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-[#1a0050]">Обзор</button>
-            <button id="tab-transactions" onclick="switchStep('transactions')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]">История</button>
-            <button id="tab-nfts" onclick="switchStep('nfts')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-400 hover:text-[#1a0050]">Мои NFT</button>
+        <div id="wallet-tabs" class="flex items-center gap-6 mb-8 border-b border-white/10">
+            <button id="tab-dashboard" onclick="switchStep('dashboard')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-white">Обзор</button>
+            <button id="tab-transactions" onclick="switchStep('transactions')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-500 hover:text-white">История</button>
+            <button id="tab-nfts" onclick="switchStep('nfts')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-500 hover:text-white">Библиотека</button>
         </div>
 
         {{-- Step 1: Dashboard --}}
-        <div id="step-dashboard" class="nav-grid">
-            {{-- Total Balance Tile (Main) --}}
-            <div class="nav-tile col-span-2 p-8 !flex-row !items-center !justify-between bg-white border-[#e2d9ff]">
-                <div class="flex flex-col gap-1">
-                    <div class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
-                        Ваш Баланс
-                    </div>
-                </div>
-            </div>
-            <div class="col-span-2 bg-white border border-[#e2d9ff] p-8 shadow-sm relative overflow-hidden group hover:border-[#7C45F5] transition-all duration-500">
+        <div id="step-dashboard" class="space-y-6">
+            {{-- Main Unified Wallet Card --}}
+            <div class="relative overflow-hidden rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-2xl p-8 shadow-2xl group">
                 {{-- Decorative gradient background --}}
-                <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5] opacity-[0.03] rounded-full blur-3xl group-hover:opacity-[0.06] transition-opacity"></div>
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5] opacity-[0.05] rounded-full blur-3xl group-hover:opacity-[0.1] transition-opacity duration-1000"></div>
+                <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#7C45F5] opacity-[0.03] rounded-full blur-3xl group-hover:opacity-[0.06] transition-opacity duration-1000"></div>
                 
                 <div class="relative z-10">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
-                            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 opacity-80 italic">Покупательная способность</div>
+                            <div class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3 opacity-80 italic">Покупательная способность</div>
                             <div class="flex items-baseline gap-2">
-                                <span class="text-[48px] font-black text-[#1a0050] tracking-tighter leading-none">
+                                <span class="text-[56px] font-black text-white tracking-tighter leading-none">
                                     {{ core()->formatPrice($user->balance ?? 0) }}
                                 </span>
                             </div>
-                            <div class="flex items-center gap-3 mt-4">
-                                <div class="px-2 py-0.5 bg-[#f8f6ff] text-[#7C45F5] border border-[#eee6ff] rounded text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
-                                    <span class="w-1 h-1 bg-[#7C45F5] rounded-full animate-pulse"></span>
-                                    <span class="flex flex-col">
-                                        <span>@ {{$user->credits_alias}}</span>
-                                        <span class="text-[9px] text-zinc-400 font-mono tracking-tighter mt-0.5 opacity-70 flex items-center gap-2">
-                                            {{$user->credits_id}}
-
+                            
+                            {{-- User Identifier Badge --}}
+                            <div class="flex items-center gap-3 mt-6">
+                                <div class="px-3 py-1.5 bg-white/5 text-[#7C45F5] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full animate-pulse"></span>
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2">
+                                            <span>@ {{$user->credits_alias}}</span>
                                             @if(str_starts_with($user->credits_id, '0x') && $user->encrypted_private_key)
-                                                <svg class="w-2.5 h-2.5 text-[#10b981]" viewBox="0 0 20 20" fill="currentColor" title="Верифицированный Web3-адрес">
+                                                <svg class="w-3 h-3 text-[#10b981]" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                 </svg>
                                             @endif
-
-                                            @if(str_starts_with($user->credits_id, 'M-'))
-                                                <form action="{{ route('shop.customers.account.crypto.upgrade_credits_id') }}" method="POST" class="inline">
-                                                    @csrf
-                                                    <button type="submit" onclick="return confirm('Вы уверены, что хотите обновить ваш ID до формата 0x крипто-адреса?');" class="bg-[#7C45F5] text-white px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest hover:bg-[#6534d4] transition-colors" title="Обновить до крипто-адреса">
-                                                        0x ⚡️
-                                                    </button>
-                                                </form>
-                                            @endif
+                                        </div>
+                                        <span class="text-[9px] text-zinc-500 font-mono tracking-tighter mt-0.5 opacity-70">
+                                            {{$user->credits_id}}
                                         </span>
-                                    </span>
+                                    </div>
                                 </div>
-                                <div class="px-2 py-0.5 bg-amber-50 text-amber-500 border border-amber-100 rounded text-[9px] font-black uppercase tracking-widest">Инвестор</div>
+                                <div class="px-3 py-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest">Инвестор</div>
                             </div>
                         </div>
 
-                        <div class="flex flex-col items-end gap-1 opacity-20 hidden md:flex">
-                            <span class="icon-security text-5xl text-[#7C45F5]"></span>
-                            <span class="text-[8px] font-black uppercase tracking-widest text-[#7C45F5]">SSL Secure</span>
+                        {{-- Security Badge --}}
+                        <div class="flex flex-col items-end gap-1 opacity-10 hidden md:flex">
+                            <span class="icon-security text-6xl text-white"></span>
+                            <span class="text-[8px] font-black uppercase tracking-widest text-white">SSL Encrypted</span>
                         </div>
                     </div>
 
                     {{-- Assets Divider --}}
-                    <div class="h-px bg-zinc-50 my-8"></div>
+                    <div class="h-px bg-white/5 my-8"></div>
 
-                    {{-- Assets List --}}
+                    {{-- Unified Assets Grid --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach($balances as $balance)
                             @php
@@ -113,30 +102,30 @@
                                 $fiat = $balance->amount * $rate;
                                 $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
                             @endphp
-                            <div class="flex items-center justify-between p-3 rounded-2xl bg-zinc-50/50 border border-transparent hover:border-[#f0ebff] hover:bg-white transition-all group/asset">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-white border border-zinc-100 flex items-center justify-center text-lg shadow-sm group-hover/asset:scale-110 transition-transform">
+                            <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#7C45F5]/30 hover:bg-white/[0.05] transition-all group/asset">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl shadow-inner group-hover/asset:scale-110 group-hover/asset:border-[#7C45F5]/50 transition-all duration-500">
                                         {{ $m['icon'] }}
                                     </div>
                                     <div class="flex flex-col">
-                                        <span class="text-[12px] font-black text-[#1a0050] uppercase tracking-tight">{{ $m['label'] }}</span>
-                                        <span class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">{{ $amount }}</span>
+                                        <span class="text-[13px] font-black text-white uppercase tracking-tight">{{ $m['label'] }}</span>
+                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{{ $amount }}</span>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-[13px] font-black text-[#1a0050] tracking-tight">{{ core()->formatPrice($fiat) }}</span>
+                                    <span class="text-[15px] font-black text-white tracking-tight">{{ core()->formatPrice($fiat) }}</span>
                                 </div>
                             </div>
                         @endforeach
                     </div>
-
-
+                </div>
+            </div>
         </div>
 
         {{-- Step 2: Transactions --}}
         {{-- Step 2: History --}}
         <div id="step-transactions" class="hidden">
-            <div class="bg-white border border-[#e2d9ff] shadow-sm rounded-3xl overflow-hidden">
+            <div class="bg-white/5 border border-white/10 shadow-2xl rounded-[2.5rem] overflow-hidden backdrop-blur-xl">
                 @if ($transactions->count() > 0)
                     <div class="flex flex-col">
                         @foreach ($transactions as $transaction)
@@ -206,8 +195,8 @@
                                         <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5 truncate opacity-70">
                                             {{ $subtitle }}
                                         </div>
-                                        <div class="text-[9px] text-zinc-300 font-bold uppercase tracking-tighter mt-1.5 flex items-center gap-2">
-                                            <span class="w-1 h-1 bg-zinc-200 rounded-full"></span>
+                                        <div class="text-[9px] text-zinc-500 font-bold uppercase tracking-tighter mt-1.5 flex items-center gap-2">
+                                            <span class="w-1 h-1 bg-zinc-600 rounded-full"></span>
                                             {{ $transaction->created_at->format('d.m.Y — H:i') }}
                                         </div>
                                     </div>
@@ -232,14 +221,14 @@
                         </div>
                     @endif
                 @else
-                    <div class="flex flex-col items-center justify-center py-32 text-zinc-400 px-10 text-center relative overflow-hidden">
-                        <div class="absolute inset-0 bg-[#f8f6ff] opacity-10"></div>
+                    <div class="flex flex-col items-center justify-center py-32 text-zinc-500 px-10 text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-white/5 opacity-10"></div>
                         <div class="relative z-10">
-                            <div class="w-24 h-24 bg-white border border-[#e2d9ff] flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-transform duration-500 mx-auto">
+                            <div class="w-24 h-24 bg-white/5 border border-white/10 flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-all duration-500 mx-auto backdrop-blur-md">
                                 📭
                             </div>
-                            <h3 class="text-[18px] font-black text-[#1a0050] uppercase tracking-tighter italic mb-2">История пуста</h3>
-                            <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest max-w-[240px] leading-relaxed mx-auto">
+                            <h3 class="text-[18px] font-black text-white uppercase tracking-tighter italic mb-2">История пуста</h3>
+                            <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-widest max-w-[240px] leading-relaxed mx-auto">
                                 У вас пока нет транзакций. Пополните баланс, чтобы совершать покупки.
                             </p>
                         </div>
@@ -255,7 +244,7 @@
             @if(isset($nftOrders) && $nftOrders->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                     @foreach($nftOrders as $order)
-                        <div class="relative group rounded-[2rem] overflow-hidden bg-[#1a0050] shadow-sm hover:shadow-2xl hover:shadow-[#7C45F5]/20 transition-all duration-500 border border-[#e2d9ff]">
+                        <div class="relative group rounded-[2rem] overflow-hidden bg-white/5 shadow-2xl hover:shadow-[#7C45F5]/20 transition-all duration-500 border border-white/10 backdrop-blur-xl">
                             <img src="{{ route('api.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105">
                             <div class="absolute inset-0 bg-[#1a0050]/80 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm px-6 text-center">
                                 <span class="text-white font-black text-[14px] uppercase tracking-widest mb-4">On-Chain Asset</span>
@@ -268,14 +257,14 @@
                     @endforeach
                 </div>
             @else
-                <div class="flex flex-col items-center justify-center py-32 text-zinc-400 px-10 text-center relative overflow-hidden bg-white border border-[#e2d9ff] shadow-sm rounded-3xl">
-                    <div class="absolute inset-0 bg-[#f8f6ff] opacity-10"></div>
+                <div class="flex flex-col items-center justify-center py-32 text-zinc-500 px-10 text-center relative overflow-hidden bg-white/5 border border-white/10 shadow-2xl rounded-[2.5rem] backdrop-blur-xl">
+                    <div class="absolute inset-0 bg-white/5 opacity-10"></div>
                     <div class="relative z-10">
-                        <div class="w-24 h-24 bg-white border border-[#e2d9ff] flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-transform duration-500 mx-auto">
+                        <div class="w-24 h-24 bg-white/5 border border-white/10 flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-all duration-500 mx-auto backdrop-blur-md">
                             🏆
                         </div>
-                        <h3 class="text-[18px] font-black text-[#1a0050] uppercase tracking-tighter italic mb-2">Коллекция пуста</h3>
-                        <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest max-w-[280px] leading-relaxed mx-auto">
+                        <h3 class="text-[18px] font-black text-white uppercase tracking-tighter italic mb-2">Библиотека пуста</h3>
+                        <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-widest max-w-[280px] leading-relaxed mx-auto">
                             У вас пока нет NFT-подарков. Совершите первую покупку, чтобы получить цифровой бейдж!
                         </p>
                     </div>
@@ -1089,7 +1078,7 @@
 
         {{-- Step: Top-up Details --}}
         <div id="step-topup-details" class="hidden">
-            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden p-6">
+            <div class="bg-white/5 border border-white/10 shadow-2xl rounded-[2.5rem] overflow-hidden backdrop-blur-xl p-8">
                 <div class="flex items-center gap-4 mb-10 border-b border-zinc-50 pb-8">
                     <div class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">
                         🏢</div>
