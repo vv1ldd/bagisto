@@ -21,13 +21,13 @@
     ]);
 @endphp
 
-<footer class="mt-12 bg-white max-sm:mt-8 brutalist-footer">
-    <div class="px-4 md:px-[60px] py-12 max-sm:px-5">
-        <div class="mx-auto flex flex-col items-center justify-center gap-2 w-full max-w-7xl">
+<footer class="mt-12 bg-zinc-950 text-zinc-400 border-t border-white/5 font-sans pt-16 pb-12 max-sm:mt-8">
+    <div class="px-4 md:px-[60px] max-sm:px-5">
+        <div class="mx-auto w-full max-w-7xl flex flex-col items-center">
 
             <!-- Footer Links -->
             @if ($customization?->options)
-                <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 min-h-[30px]" v-pre>
+                <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 mb-12" v-pre>
                     @foreach ($customization->options as $footerLinkSection)
                         @php
                             usort($footerLinkSection, function ($a, $b) {
@@ -37,7 +37,7 @@
 
                         @foreach ($footerLinkSection as $link)
                             <a href="{{ $link['url'] }}"
-                                class="text-[13px] font-medium text-zinc-500 hover:text-black tracking-wide transition-colors whitespace-nowrap">
+                                class="text-[14px] font-bold text-zinc-500 hover:text-white tracking-tight transition-all uppercase">
                                 {{ $link['title'] }}
                             </a>
                         @endforeach
@@ -47,43 +47,39 @@
 
             <!-- Ultimate Bottom Bar: Contacts - Copyright - Company -->
             <div
-                class="flex flex-wrap justify-between items-center w-full gap-y-4 max-lg:justify-center max-lg:flex-col text-[11px] font-medium text-zinc-400/80 tracking-[0.1em] uppercase mt-4 pt-4 border-t border-zinc-200/50">
+                class="flex flex-wrap justify-between items-center w-full gap-y-6 pt-8 border-t border-white/5 text-[11px] font-medium tracking-[0.1em] uppercase text-zinc-500 max-lg:flex-col max-lg:text-center">
 
                 <!-- Contact Details -->
                 @if (core()->getConfigData('general.design.footer.show_footer_info'))
-                    <div class="flex flex-wrap justify-center items-center gap-3">
+                    <div class="flex flex-wrap justify-center items-center gap-4">
                         <a href="tel:{{ preg_replace('/[^0-9+]/', '', core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95') }}"
-                            class="hover:text-zinc-600 transition-colors">
+                            class="hover:text-white transition-colors">
                             {{ core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95' }}
                         </a>
-                        <span class="text-zinc-300">|</span>
+                        <span class="w-1 h-1 bg-zinc-800 rounded-full"></span>
                         <a href="mailto:{{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}"
-                            class="hover:text-zinc-600 transition-colors">
+                            class="hover:text-white transition-colors">
                             {{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}
                         </a>
-                        <span class="text-zinc-300">|</span>
-                        <p>{{ core()->getConfigData('general.design.footer.schedule') ?: 'ПН-ВС 24ч' }}</p>
+                        <span class="w-1 h-1 bg-zinc-800 rounded-full"></span>
+                        <p class="text-zinc-600">{{ core()->getConfigData('general.design.footer.schedule') ?: 'ПН-ВС 24ч' }}</p>
                     </div>
-                @else
-                    <div class="max-lg:hidden"></div>
                 @endif
 
                 <!-- Copyright -->
-                <div class="flex items-center tracking-[0.15em] max-lg:order-last max-lg:mt-2">
+                <div class="flex items-center tracking-[0.2em] text-zinc-600 max-lg:order-last">
                     {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
-                    <p>@lang('shop::app.components.layouts.footer.footer-text', ['current_year' => date('Y')])</p>
+                    <p>&copy; {{ date('Y') }} MEANLY. ALL RIGHTS RESERVED.</p>
                     {!! view_render_event('bagisto.shop.layout.footer.footer_text.after') !!}
                 </div>
 
                 <!-- Company Info -->
                 @if (core()->getConfigData('general.design.footer.show_footer_info'))
-                    <div class="flex flex-wrap justify-center items-center gap-3">
-                        <p>{{ core()->getConfigData('general.design.footer.company_name') ?: 'ИП АТАНИЯЗОВА ДЖЕННЕТ' }}</p>
-                        <span class="text-zinc-300">|</span>
-                        <p>ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}</p>
+                    <div class="flex flex-wrap justify-center items-center gap-4">
+                        <p class="text-zinc-500">{{ core()->getConfigData('general.design.footer.company_name') ?: 'ИП АТАНИЯЗОВА ДЖЕННЕТ' }}</p>
+                        <span class="w-1 h-1 bg-zinc-800 rounded-full"></span>
+                        <p class="text-zinc-600">ИНН {{ core()->getConfigData('general.design.footer.inn') ?: '526217178798' }}</p>
                     </div>
-                @else
-                    <div class="max-lg:hidden"></div>
                 @endif
             </div>
         </div>

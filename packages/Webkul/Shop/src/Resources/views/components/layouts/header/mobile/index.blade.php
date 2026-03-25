@@ -23,10 +23,10 @@
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.before') !!}
 
-            <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2"
+            <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2 group"
                 aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
                 <span
-                    class="text-2xl font-black tracking-tighter text-[#7C45F5]">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
+                    class="text-2xl font-black tracking-tighter text-white transition-all group-hover:drop-shadow-[0_0_8px_rgba(124,69,245,0.5)]">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
             </a>
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.after') !!}
@@ -40,10 +40,10 @@
                         <a href="{{ $cartItemsCount > 0 ? route('shop.checkout.cart.index') : route('shop.customers.account.index') }}" 
                            class="block relative group"
                            id="header-mobile-avatar-link">
-                            <div class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-bold text-[10px] shadow-sm leading-none ring-2 ring-white transition-all group-hover:scale-105 active:scale-95">
+                            <div class="flex h-8 w-8 items-center justify-center bg-[#7C45F5] text-white font-bold text-[11px] shadow-[0_0_15px_rgba(124,69,245,0.3)] leading-none ring-1 ring-white/10 transition-all group-hover:scale-105 active:scale-95 rounded-full">
                                 @if ($cartItemsCount > 0)
                                     <span class="icon-cart text-base"></span>
-                                    <span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center bg-white text-[8px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
+                                    <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center bg-white text-[9px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20 rounded-full">
                                         {{ $cartItemsCount }}
                                     </span>
                                 @else
@@ -58,18 +58,18 @@
                             user-initial="{{ $userInitial }}"
                         ></v-cart-badge>
                     </div>
-                    <a href="{{ route('shop.customers.account.index') }}" class="text-[13px] font-medium text-zinc-700 flex items-center gap-1 whitespace-nowrap">
+                    <a href="{{ route('shop.customers.account.index') }}" class="text-[13px] font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-1 whitespace-nowrap tracking-tight">
                         @
                         {{ auth()->guard('customer')->user()->credits_alias ?: auth()->guard('customer')->user()->username }}
                         @if(auth()->guard('customer')->user()->is_investor)
-                            <span title="Инвестор" class="text-[13px] leading-none">💎</span>
+                            <span title="Инвестор" class="text-[13px] leading-none ml-0.5">💎</span>
                         @endif
                     </a>
                 </div>
             @else
                 <v-header-cart></v-header-cart>
                 <a href="{{ route('shop.customer.session.index') }}"
-                    class="flex items-center justify-center ml-2 bg-gradient-to-r from-[#7C45F5] to-[#FF4D6D] px-4 py-2 text-[13px] font-bold text-white shadow-md shadow-purple-500/20 transition-all hover:shadow-purple-500/40 active:scale-[0.97] whitespace-nowrap">
+                    class="flex items-center justify-center ml-2 bg-[#7C45F5] px-4 py-2 text-[13px] font-bold text-white shadow-[0_0_15px_rgba(124,69,245,0.4)] transition-all hover:bg-[#8A5CF7] active:scale-[0.97] rounded-full whitespace-nowrap">
                     Войти
                 </a>
             @endauth

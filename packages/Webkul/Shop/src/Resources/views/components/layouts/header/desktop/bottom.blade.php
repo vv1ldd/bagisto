@@ -14,9 +14,9 @@
     <div class="flex items-center flex-shrink-0">
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
 
-        <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2"
+        <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2 group"
             aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
-            <span class="text-2xl font-black tracking-tighter text-[#7C45F5] leading-none select-none">
+            <span class="text-2xl font-black tracking-tighter text-white leading-none select-none transition-all group-hover:drop-shadow-[0_0_8px_rgba(124,69,245,0.5)]">
                 {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}
             </span>
         </a>
@@ -38,14 +38,14 @@
                     <a href="{{ $cartCount > 0 ? route('shop.checkout.cart.index') : route('shop.customers.account.index') }}" 
                        class="relative group block" 
                        id="header-avatar-link">
-                        <div class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-sm leading-none ring-2 ring-white transition-all group-hover:scale-105 active:scale-95">
+                        <div class="flex h-8 w-8 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-[0_0_15px_rgba(124,69,245,0.3)] leading-none ring-1 ring-white/10 transition-all group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(124,69,245,0.5)] active:scale-95 rounded-full">
                             @if ($cartCount > 0)
                                 <span class="icon-cart text-base"></span>
-                                <span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center bg-white text-[8px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
+                                <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center bg-white text-[9px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20 rounded-full">
                                     {{ $cartCount }}
                                 </span>
                             @else
-                                <span class="text-[10px] uppercase">{{ $userInitial }}</span>
+                                <span class="text-[11px] uppercase">{{ $userInitial }}</span>
                             @endif
                         </div>
                     </a>
@@ -60,14 +60,14 @@
                 </div>
 
                 <a href="{{ route('shop.customers.account.index') }}"
-                    class="text-xs font-black text-zinc-600 hover:text-[#7C45F5] transition-colors truncate max-w-[120px]">
-                    {{ '@' . $userName }}@if($authUser->is_investor) <span title="Инвестор" class="text-xs leading-none">💎</span>@endif
+                    class="text-[13px] font-bold text-zinc-400 hover:text-white transition-colors truncate max-w-[140px] tracking-tight">
+                    {{ '@' . $userName }}@if($authUser->is_investor) <span title="Инвестор" class="text-xs leading-none ml-1">💎</span>@endif
                 </a>
             </div>
         @else
             {{-- Guest: Login button --}}
             <a href="{{ route('shop.customer.session.index') }}"
-                class="flex items-center justify-center border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-6 py-2 text-[14px] font-bold text-[#7C45F5] transition-all hover:bg-[#7C45F5]/10 active:scale-[0.97]">
+                class="flex items-center justify-center bg-[#7C45F5] px-6 py-2.5 text-[14px] font-bold text-white shadow-[0_0_20px_rgba(124,69,245,0.4)] transition-all hover:bg-[#8A5CF7] hover:shadow-[0_0_30px_rgba(124,69,245,0.6)] active:scale-[0.97] rounded-full">
                 Войти / Регистрация
             </a>
         @endauth
@@ -83,17 +83,17 @@
         app.component('v-cart-badge', {
             template: `
                 <div class="absolute inset-0 z-10">
-                    <a :href="cartCount > 0 ? cartUrl : avatarUrl" 
-                       class="flex h-7 w-7 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-sm leading-none ring-2 ring-white transition-all hover:scale-105 active:scale-95">
-                        <template v-if="cartCount > 0">
-                            <span class="icon-cart text-base"></span>
-                            <span class="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center bg-white text-[8px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20">
-                                @{{ cartCount }}
-                            </span>
-                        </template>
-                        <template v-else>
-                            <span class="text-[10px] uppercase">@{{ userInitial }}</span>
-                        </template>
+                        <div class="flex h-8 w-8 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-[0_0_15px_rgba(124,69,245,0.3)] leading-none ring-1 ring-white/10 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(124,69,245,0.5)] active:scale-95 rounded-full">
+                            <template v-if="cartCount > 0">
+                                <span class="icon-cart text-base"></span>
+                                <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center bg-white text-[9px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20 rounded-full">
+                                    @{{ cartCount }}
+                                </span>
+                            </template>
+                            <template v-else>
+                                <span class="text-[11px] uppercase">@{{ userInitial }}</span>
+                            </template>
+                        </div>
                     </a>
                 </div>
             `,
