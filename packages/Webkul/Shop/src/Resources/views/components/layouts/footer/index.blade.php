@@ -40,7 +40,7 @@
             </div>
 
             @php
-                $showFooterInfo = core()->getConfigData('general.design.footer.show_footer_info');
+                $showFooterInfo = filter_var(core()->getConfigData('general.design.footer.show_footer_info'), FILTER_VALIDATE_BOOLEAN);
                 $footerPhone = core()->getConfigData('general.design.footer.phone');
                 $footerEmail = core()->getConfigData('general.design.footer.email');
                 $footerSchedule = core()->getConfigData('general.design.footer.schedule');
@@ -108,8 +108,13 @@
             <div class="text-center">
                 <div class="text-[11px] leading-relaxed opacity-50 font-medium uppercase tracking-[0.05em]">
                     @php
-                        $copyright = core()->getConfigData('general.design.copyright.copyright_text') 
-                            ?: '© :year :company. All rights reserved. All trademarks are property of their respective owners.';
+                        $copyrightKey = 'general.design.copyright.copyright_text';
+                        $copyright = core()->getConfigData($copyrightKey) 
+                             ?? core()->getConfigData('general.design.footer.copyright_text'); // Fallback to old key if new one is empty
+                        
+                        if (! $copyright) {
+                            $copyright = '© :year :company. All rights reserved. All trademarks are property of their respective owners.';
+                        }
                         
                         $copyright = str_replace(
                             [':year', ':company'],
