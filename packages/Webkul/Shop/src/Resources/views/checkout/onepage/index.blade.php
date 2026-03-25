@@ -2,17 +2,23 @@
     <x-slot:title>@lang('shop::app.checkout.onepage.index.checkout')</x-slot>
 
     <style>
-        body {
-            background: linear-gradient(135deg, #fdf4ff 0%, #ffffff 50%, #f5f3ff 100%);
-            min-height: 100vh;
-        }
-
-        [v-cloak] {
-            display: none;
-        }
+        [v-cloak] { display: none; }
     </style>
 
-    <div class="px-4 py-3 md:py-8 max-w-7xl mx-auto" v-cloak>
+    <!-- Steam-style step breadcrumb -->
+    <div class="border-b border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-black/20">
+        <div class="max-w-7xl mx-auto px-4 md:px-[60px] py-4 flex items-center gap-3 text-sm font-bold">
+            <span class="bg-[#7C45F5] text-white px-4 py-1.5 rounded-full text-xs uppercase tracking-widest">
+                Payment Info
+            </span>
+            <svg class="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+            <span class="text-zinc-400 text-xs uppercase tracking-widest">Review + Purchase</span>
+        </div>
+    </div>
+
+    <div class="px-4 py-6 md:py-10 max-w-7xl mx-auto" v-cloak>
         <v-checkout>
             <x-shop::shimmer.checkout.onepage />
         </v-checkout>

@@ -17,11 +17,10 @@
                     <template v-else>
                         {!! view_render_event('bagisto.shop.checkout.onepage.payment_method.accordion.before') !!}
 
-                        <div class="flex items-center justify-between mb-3 px-1">
-                            <h2 class="text-sm font-black text-zinc-500 uppercase tracking-widest">
-                                Способ оплаты
-                            </h2>
-                        </div>
+                        <h2 class="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-1">
+                            PAYMENT METHOD
+                        </h2>
+                        <p class="text-sm text-zinc-400 mb-5">Please select a payment method</p>
 
                         <div class="grid grid-cols-1 gap-4 w-full max-w-[450px]">
                             <div 
