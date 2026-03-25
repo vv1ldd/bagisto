@@ -46,7 +46,7 @@
             <div class="h-px w-full bg-zinc-200 dark:bg-white/5 mb-8"></div>
 
             <!-- Middle Section: Secondary Navigation & Social -->
-            <div class="flex flex-wrap justify-between items-center gap-6 mb-12">
+            <div class="flex flex-wrap justify-between items-center gap-6">
                 <!-- Secondary Links -->
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-black tracking-tight uppercase text-zinc-800 dark:text-zinc-300">
                     @if (core()->getConfigData('general.design.footer.show_footer_info'))
@@ -87,9 +87,9 @@
                 @endif
             </div>
 
-            <!-- Bottom Section: Copyright & Branding -->
-            <div class="flex flex-col items-center text-center space-y-6 pt-8 border-t border-zinc-200 dark:border-white/5">
-                <div class="max-w-3xl text-[11px] leading-relaxed opacity-50 font-medium uppercase tracking-[0.05em]">
+            <!-- Bottom Section: Copyright -->
+            <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-white/5 text-center">
+                <div class="text-[11px] leading-relaxed opacity-50 font-medium uppercase tracking-[0.05em]">
                     @php
                         $copyright = core()->getConfigData('general.design.footer.copyright_text') 
                             ?: '© :year :company. All rights reserved. All trademarks are property of their respective owners.';
@@ -101,11 +101,6 @@
                         );
                     @endphp
                     <p>{{ $copyright }}</p>
-                </div>
-
-                <!-- Subtle MEANLY Branding -->
-                <div class="text-[48px] font-black tracking-[0.2em] opacity-[0.03] pointer-events-none select-none dark:opacity-[0.05] mt-4">
-                    MEANLY
                 </div>
             </div>
         </div>
