@@ -75,8 +75,14 @@ html,
 body {
     overscroll-behavior: none;
     scrollbar-gutter: stable;
-    @apply bg-[#1a0050];
-    background-color: var(--brutalist-bg);
+    /* Light mode: dark slate-gray (like Steam) */
+    background-color: #1e1e2e;
+}
+
+/* Dark mode: deeper pure dark */
+html.dark body,
+html.dark {
+    background-color: #0d091a;
 }
 
 /* Global Brutalist Resets */
