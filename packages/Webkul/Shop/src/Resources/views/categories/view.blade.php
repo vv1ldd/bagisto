@@ -135,9 +135,9 @@
                                                                                 <!-- Empty -->
                                                                                 <template v-else>
                                                                                     <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                                                    <div class="mb-4 flex h-24 w-24 items-center justify-center  bg-zinc-100 text-zinc-300">
-                                                                                        <span class="icon-cart text-[54px]"></span>
-                                                                                    </div>
+                                                                                        <div class="mb-6 flex h-24 w-24 items-center justify-center bg-white/5 border border-white/10 text-zinc-500 rounded-3xl backdrop-blur-xl">
+                                                                                            <span class="icon-cart text-[54px] opacity-20"></span>
+                                                                                        </div>
 
                                                                                         <p
                                                                                             class="text-xl max-md:text-sm"

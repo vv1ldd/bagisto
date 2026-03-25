@@ -13,6 +13,7 @@
 @php
     $channel = core()->getCurrentChannel();
 
+    /** @var \Webkul\Theme\Models\ThemeCustomization|null $customization */
     $customization = $themeCustomizationRepository->findOneWhere([
         'type' => 'footer_links',
         'status' => 1,
@@ -26,7 +27,7 @@
         <div class="mx-auto w-full max-w-7xl flex flex-col items-center">
 
             <!-- Footer Links -->
-            @if ($customization?->options)
+            @if ($customization && $customization->options)
                 <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4 mb-12" v-pre>
                     @foreach ($customization->options as $footerLinkSection)
                         @php

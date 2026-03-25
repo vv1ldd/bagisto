@@ -4,10 +4,10 @@
 @pushOnce('scripts')
 <script type="text/x-template" id="v-product-card-template">
         <!-- Grid Card -->
-<div class="group w-full  border border-white/40 bg-white/40 backdrop-blur-3xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#7C45F5]/40 hover:shadow-xl relative flex flex-col overflow-hidden isolate"
+<div class="group w-full bg-zinc-900/40 backdrop-blur-xl border border-white/5 shadow-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-[#7C45F5]/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] relative flex flex-col overflow-hidden isolate rounded-3xl"
     style="isolation: isolate;" v-if="mode != 'list'">
     <!-- Image Container -->
-    <div class="relative aspect-square w-full overflow-hidden bg-zinc-100 p-2">
+    <div class="relative aspect-square w-full overflow-hidden bg-black/20 p-4">
         {!! view_render_event('bagisto.shop.components.products.card.image.before') !!}
 
         <!-- Product Image -->
@@ -69,7 +69,7 @@
         <div class="mb-2">
             {!! view_render_event('bagisto.shop.components.products.card.name.before') !!}
             <h2
-                class="line-clamp-2 text-xs font-semibold leading-tight text-zinc-800 group-hover:text-[#7C45F5] transition-colors text-center">
+                class="line-clamp-2 text-[13px] font-bold leading-tight text-white group-hover:text-[#7C45F5] transition-colors text-center tracking-tight">
                 <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`">
                     @{{ product.name }}
                 </a>
@@ -80,7 +80,7 @@
         <div class="mt-auto">
             <div class="flex items-center justify-center">
                 {!! view_render_event('bagisto.shop.components.products.card.price.before') !!}
-                <div class="text-sm font-black tracking-tight text-[#7C45F5] text-center [&>del]:text-[10px] [&>del]:font-normal [&>del]:text-zinc-400 [&>del]:opacity-80"
+                <div class="text-base font-black tracking-tighter text-[#7C45F5] text-center [&>del]:text-[11px] [&>del]:font-normal [&>del]:text-zinc-500 [&>del]:opacity-60"
                     v-html="product.price_html">
                 </div>
                 {!! view_render_event('bagisto.shop.components.products.card.price.after') !!}
@@ -91,7 +91,7 @@
                 <div class="flex flex-col gap-2 w-full mt-3 max-sm:hidden">
                     {!! view_render_event('bagisto.shop.components.products.card.buy_now.before') !!}
                     <button
-                        class="flex w-full items-center justify-center gap-2  bg-[#7C45F5] py-2.5 text-center text-[13px] font-bold text-white transition-all hover:bg-[#6c39e0] active:scale-[0.98] disabled:opacity-50"
+                        class="flex w-full items-center justify-center gap-2 bg-[#7C45F5] py-3 text-center text-[12px] font-black uppercase tracking-widest text-white transition-all hover:bg-[#8A5CF7] shadow-[0_0_20px_rgba(124,69,245,0.3)] active:scale-[0.96] disabled:opacity-50 rounded-2xl"
                         :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(true)">
                         <span class="icon-checkout text-base" v-if="!isAddingToCart"></span>
                         <span class="icon-spinner animate-spin text-base" v-else></span>
@@ -101,7 +101,7 @@
 
                     {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
                     <button
-                        class="flex w-full items-center justify-center gap-2  bg-zinc-900 py-2.5 text-center text-[13px] font-bold text-white transition-all hover:bg-[#7C45F5] border border-zinc-900 hover:border-[#7C45F5] active:scale-[0.98] disabled:opacity-50 disabled:hover:bg-zinc-900 disabled:hover:border-zinc-900"
+                        class="flex w-full items-center justify-center gap-2 bg-white/5 border border-white/10 py-3 text-center text-[12px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 active:scale-[0.96] disabled:opacity-50 rounded-2xl"
                         :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(false)">
                         <span class="icon-cart text-base" v-if="!isAddingToCart"></span>
                         <span class="icon-spinner animate-spin text-base" v-else></span>
