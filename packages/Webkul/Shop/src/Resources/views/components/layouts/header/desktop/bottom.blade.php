@@ -14,11 +14,14 @@
     <div class="flex items-center flex-shrink-0">
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.before') !!}
 
-        <a href="{{ route('shop.home.index') }}" class="flex items-center gap-2 group"
+        <a href="{{ route('shop.home.index') }}" class="group"
             aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
-            <span class="text-2xl font-black tracking-tighter text-white leading-none select-none transition-all group-hover:drop-shadow-[0_0_8px_rgba(124,69,245,0.5)]">
-                {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}
-            </span>
+            <div class="relative w-9 h-9">
+                <div class="absolute inset-0 bg-[#7C45F5] rounded-[0.6rem] rotate-6 group-hover:rotate-12 transition-transform duration-500 shadow-lg shadow-[#7C45F5]/20"></div>
+                <div class="absolute inset-0 bg-white rounded-[0.6rem] flex items-center justify-center -rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                    <span class="text-[17px] font-black text-zinc-900 tracking-tighter italic ml-[1px] mt-[1px]">M</span>
+                </div>
+            </div>
         </a>
 
         {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.logo.after') !!}
