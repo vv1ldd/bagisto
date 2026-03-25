@@ -26,33 +26,27 @@
     <div class="px-4 md:px-[60px] max-sm:px-5">
         <div class="mx-auto w-full max-w-7xl">
             
-            <!-- Top Section: Legal & Links -->
-            <div class="flex flex-col items-center text-center space-y-4 mb-8">
-                <div class="max-w-3xl text-[12px] leading-relaxed opacity-80">
-                    <p>&copy; {{ date('Y') }} {{ core()->getConfigData('general.design.footer.company_name') ?: 'Meanly Pay' }}. All rights reserved. All trademarks are property of their respective owners.</p>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] font-bold uppercase tracking-wide">
-                    @if ($customization && $customization->options)
-                        @foreach ($customization->options as $footerLinkSection)
-                            @foreach ($footerLinkSection as $index => $link)
-                                <a href="{{ $link['url'] }}" class="hover:text-[#7C45F5] transition-colors">
-                                    {{ $link['title'] }}
-                                </a>
-                                @if (!$loop->last)
-                                    <span class="opacity-20">|</span>
-                                @endif
-                            @endforeach
+            <!-- Top Section: Navigation Links -->
+            <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[12px] font-bold uppercase tracking-wide mb-8">
+                @if ($customization && $customization->options)
+                    @foreach ($customization->options as $footerLinkSection)
+                        @foreach ($footerLinkSection as $index => $link)
+                            <a href="{{ $link['url'] }}" class="hover:text-[#7C45F5] transition-colors">
+                                {{ $link['title'] }}
+                            </a>
+                            @if (!$loop->last)
+                                <span class="opacity-20">|</span>
+                            @endif
                         @endforeach
-                    @endif
-                </div>
+                    @endforeach
+                @endif
             </div>
 
             <!-- Divider -->
             <div class="h-px w-full bg-zinc-200 dark:bg-white/5 mb-8"></div>
 
-            <!-- Bottom Section: Navigation & Social -->
-            <div class="flex flex-wrap justify-between items-center gap-6">
+            <!-- Middle Section: Secondary Navigation & Social -->
+            <div class="flex flex-wrap justify-between items-center gap-6 mb-12">
                 <!-- Secondary Links -->
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-black tracking-tight uppercase text-zinc-800 dark:text-zinc-300">
                     @if (core()->getConfigData('general.design.footer.show_footer_info'))
@@ -91,6 +85,28 @@
                         @endforeach
                     </div>
                 @endif
+            </div>
+
+            <!-- Bottom Section: Copyright & Branding -->
+            <div class="flex flex-col items-center text-center space-y-6 pt-8 border-t border-zinc-200 dark:border-white/5">
+                <div class="max-w-3xl text-[11px] leading-relaxed opacity-50 font-medium uppercase tracking-[0.05em]">
+                    @php
+                        $copyright = core()->getConfigData('general.design.footer.copyright_text') 
+                            ?: '© :year :company. All rights reserved. All trademarks are property of their respective owners.';
+                        
+                        $copyright = str_replace(
+                            [':year', ':company'],
+                            [date('Y'), core()->getConfigData('general.design.footer.company_name') ?: 'Meanly Pay'],
+                            $copyright
+                        );
+                    @endphp
+                    <p>{{ $copyright }}</p>
+                </div>
+
+                <!-- Subtle MEANLY Branding -->
+                <div class="text-[48px] font-black tracking-[0.2em] opacity-[0.03] pointer-events-none select-none dark:opacity-[0.05] mt-4">
+                    MEANLY
+                </div>
             </div>
         </div>
     </div>
