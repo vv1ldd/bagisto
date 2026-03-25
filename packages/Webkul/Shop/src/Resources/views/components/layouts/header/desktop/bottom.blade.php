@@ -82,20 +82,19 @@
          */
         app.component('v-cart-badge', {
             template: `
-                <div class="absolute inset-0 z-10">
-                        <div class="flex h-8 w-8 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-[0_0_15px_rgba(124,69,245,0.3)] leading-none ring-1 ring-white/10 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(124,69,245,0.5)] active:scale-95 rounded-full">
-                            <template v-if="cartCount > 0">
-                                <span class="icon-cart text-base"></span>
-                                <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center bg-white text-[9px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20 rounded-full">
-                                    @{{ cartCount }}
-                                </span>
-                            </template>
-                            <template v-else>
-                                <span class="text-[11px] uppercase">@{{ userInitial }}</span>
-                            </template>
-                        </div>
-                    </a>
-                </div>
+                <a :href="cartCount > 0 ? cartUrl : avatarUrl" class="absolute inset-0 z-10 block">
+                    <div class="flex h-8 w-8 items-center justify-center bg-[#7C45F5] text-white font-bold shadow-[0_0_15px_rgba(124,69,245,0.3)] leading-none ring-1 ring-white/10 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(124,69,245,0.5)] active:scale-95 rounded-full">
+                        <template v-if="cartCount > 0">
+                            <span class="icon-cart text-base"></span>
+                            <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center bg-white text-[9px] font-black text-[#7C45F5] shadow-sm border border-[#7C45F5]/20 rounded-full">
+                                @{{ cartCount }}
+                            </span>
+                        </template>
+                        <template v-else>
+                            <span class="text-[11px] uppercase">@{{ userInitial }}</span>
+                        </template>
+                    </div>
+                </a>
             `,
 
             props: {
