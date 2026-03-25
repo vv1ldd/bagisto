@@ -40,7 +40,7 @@ Route::group(['prefix' => 'customer'], function () {
         /**
          * Forgot password routes.
          */
-    Route::controller(ForgotPasswordController::class)->group(['prefix' => 'forgot-password'], function () {
+    Route::prefix('forgot-password')->controller(ForgotPasswordController::class)->group(function () {
         Route::get('', 'create')->name('shop.customers.forgot_password.create');
 
         Route::post('', 'store')->name('shop.customers.forgot_password.store');
@@ -49,7 +49,7 @@ Route::group(['prefix' => 'customer'], function () {
     /**
      * Reset password routes.
      */
-    Route::controller(ResetPasswordController::class)->group(['prefix' => 'reset-password'], function () {
+    Route::prefix('reset-password')->controller(ResetPasswordController::class)->group(function () {
         Route::get('{token}', 'create')->name('shop.customers.reset_password.create');
 
         Route::post('', 'store')->name('shop.customers.reset_password.store');
@@ -58,7 +58,7 @@ Route::group(['prefix' => 'customer'], function () {
     /**
      * Login routes.
      */
-    Route::controller(SessionController::class)->group(['prefix' => 'login'], function () {
+    Route::prefix('login')->controller(SessionController::class)->group(function () {
         Route::get('', 'index')->name('shop.customer.session.index');
 
         // Standard and Magic Link login methods disabled in favor of Passkeys
@@ -105,7 +105,7 @@ Route::group(['prefix' => 'customer'], function () {
     /**
      * Recovery routes.
      */
-    Route::controller(\Webkul\Shop\Http\Controllers\Customer\RecoveryController::class)->group(['prefix' => 'recovery'], function () {
+    Route::prefix('recovery')->controller(\Webkul\Shop\Http\Controllers\Customer\RecoveryController::class)->group(function () {
         Route::get('seed', 'showSeedForm')->name('shop.customers.recovery.seed');
         Route::post('seed', 'recoverBySeed')->name('shop.customers.recovery.seed.post');
     });
@@ -149,7 +149,7 @@ Route::group(['prefix' => 'customer'], function () {
             /**
              * Passkey authenticated routes.
              */
-            Route::controller(PasskeyController::class)->group(['prefix' => 'passkeys'], function () {
+            Route::prefix('passkeys')->controller(PasskeyController::class)->group(function () {
                 Route::get('', 'index')->name('shop.customers.account.passkeys.index');
                 Route::get('generate-link', 'generateLink')->name('shop.customers.account.passkeys.generate-link');
                 Route::delete('{id}', 'destroy')->name('passkeys.destroy');
@@ -158,7 +158,7 @@ Route::group(['prefix' => 'customer'], function () {
             /**
              * Login activity routes.
              */
-            Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\LoginHistoryController::class)->group(['prefix' => 'login-activity'], function () {
+            Route::prefix('login-activity')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\LoginHistoryController::class)->group(function () {
                 Route::get('', 'index')->name('shop.customers.account.login_activity.index');
                 Route::delete('{id}', 'destroy')->name('shop.customers.account.login_activity.destroy');
             });
@@ -187,7 +187,7 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * Wallet Access (Passkey) Setup & Unlock
                  */
-                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\WalletAccessController::class)->group(['prefix' => 'wallet-access'], function () {
+                Route::prefix('wallet-access')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\WalletAccessController::class)->group(function () {
                     Route::get('setup', 'setup')->name('shop.customers.account.wallet.setup');
                 });
 
@@ -207,7 +207,7 @@ Route::group(['prefix' => 'customer'], function () {
                     Route::get('credits/organizations/{id}/bank-accounts', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'getBankAccounts'])->name('shop.customers.account.credits.organizations.bank_accounts');
 
                     // Credits Transfer
-                    Route::controller(TransferController::class)->group(['prefix' => 'credits'], function () {
+                    Route::prefix('credits')->controller(TransferController::class)->group(function () {
                         Route::post('transfer', 'store')->name('shop.customers.account.credits.transfer');
                     });
                 });
@@ -244,7 +244,7 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * GDPR.
                  */
-                Route::controller(GDPRController::class)->group(['prefix' => 'gdpr'], function () {
+                Route::prefix('gdpr')->controller(GDPRController::class)->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.gdpr.index');
 
                     Route::post('', 'store')->name('shop.customers.account.gdpr.store');
@@ -265,7 +265,7 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * Addresses.
                  */
-                Route::controller(AddressController::class)->group(['prefix' => 'addresses'], function () {
+                Route::prefix('addresses')->controller(AddressController::class)->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.addresses.index');
 
                     Route::get('create', 'create')->name('shop.customers.account.addresses.create');
@@ -284,7 +284,7 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * Orders.
                  */
-                Route::controller(OrderController::class)->group(['prefix' => 'orders'], function () {
+                Route::prefix('orders')->controller(OrderController::class)->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.orders.index');
 
                     Route::get('view/{id}', 'view')->name('shop.customers.account.orders.view');
@@ -299,7 +299,7 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * Downloadable products.
                  */
-                Route::controller(DownloadableProductController::class)->group(['prefix' => 'downloadable-products'], function () {
+                Route::prefix('downloadable-products')->controller(DownloadableProductController::class)->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.downloadable_products.index');
 
                     Route::get('download/{id}', 'download')->name('shop.customers.account.downloadable_products.download');
@@ -308,14 +308,14 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * Magic AI routes.
                  */
-                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\MagicAIController::class)->group(['prefix' => 'magic-ai'], function () {
+                Route::prefix('magic-ai')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\MagicAIController::class)->group(function () {
                     Route::post('parse-bank-details', 'parseBankDetails')->name('shop.customers.account.magic_ai.parse_bank_details');
                 });
 
                 /**
                  * Organizations.
                  */
-                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\OrganizationController::class)->group(['prefix' => 'organizations'], function () {
+                Route::prefix('organizations')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\OrganizationController::class)->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.organizations.index');
 
                     Route::get('create', 'create')->name('shop.customers.account.organizations.create');
@@ -348,7 +348,7 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * Crypto Wallets.
                  */
-                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->group(['prefix' => 'crypto'], function () {
+                Route::prefix('crypto')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\CryptoController::class)->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.crypto.index');
                     Route::get('upgrade-wallet', 'showUpgradeWallet')->name('shop.customers.account.crypto.show_upgrade_wallet');
                     Route::post('upgrade-wallet', 'upgradeWallet')->name('shop.customers.account.crypto.upgrade_wallet');
@@ -366,7 +366,7 @@ Route::group(['prefix' => 'customer'], function () {
                 /**
                  * Calls.
                  */
-                Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\CallController::class)->group(['prefix' => 'calls'], function () {
+                Route::prefix('calls')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\CallController::class)->group(function () {
                     Route::get('', 'index')->name('shop.customers.account.calls.index');
                     Route::post('signal', 'signal')->name('shop.customers.account.calls.signal');
                 });
