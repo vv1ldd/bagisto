@@ -45,52 +45,8 @@
             <!-- Divider -->
             <div class="h-px w-full bg-zinc-200 dark:bg-white/5 mb-6"></div>
 
-            @php
-                $socialLinks = $themeCustomizationRepository->findOneWhere([
-                    'type'       => 'social_links',
-                    'status'     => 1,
-                    'channel_id' => $channel->id,
-                ]);
-                $showMiddle = core()->getConfigData('general.design.footer.show_footer_info') || ($socialLinks && $socialLinks->options);
-            @endphp
-
-            @if ($showMiddle)
-                <!-- Middle Section: Secondary Navigation & Social -->
-                <div class="flex flex-wrap justify-between items-center gap-6 mb-6">
-                    <!-- Secondary Links -->
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] font-black tracking-tight uppercase text-zinc-800 dark:text-zinc-300">
-                        @if (core()->getConfigData('general.design.footer.show_footer_info'))
-                            <a href="mailto:{{ core()->getConfigData('general.design.footer.email') ?: 'support@meanly.ru' }}" class="hover:text-[#7C45F5] transition-colors">Support</a>
-                            <span class="opacity-10">|</span>
-                            <p class="cursor-default">{{ core()->getConfigData('general.design.footer.phone') ?: '+7 (933) 415-18-95' }}</p>
-                            <span class="opacity-10">|</span>
-                            <p class="cursor-default uppercase font-bold text-[10px] text-zinc-400">{{ core()->getConfigData('general.design.footer.inn') ?: 'INN 526217178798' }}</p>
-                        @endif
-                    </div>
-
-                    @if ($socialLinks && $socialLinks->options)
-                        <div class="flex items-center gap-6">
-                            @foreach ($socialLinks->options as $link)
-                                <a href="{{ $link['url'] }}" 
-                                   class="text-zinc-400 hover:text-[#7C45F5] transition-all transform hover:scale-110 flex items-center justify-center w-5 h-5" 
-                                   aria-label="{{ $link['title'] }}" 
-                                   target="_blank">
-                                    @if (str_contains($link['icon_svg'], '<svg'))
-                                        {!! $link['icon_svg'] !!}
-                                    @else
-                                        <svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
-                                            {!! $link['icon_svg'] !!}
-                                        </svg>
-                                    @endif
-                                </a>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            @endif
-
             <!-- Bottom Section: Copyright -->
-            <div class="mt-6 pt-6 border-t border-zinc-200 dark:border-white/5 text-center">
+            <div class="text-center">
                 <div class="text-[11px] leading-relaxed opacity-50 font-medium uppercase tracking-[0.05em]">
                     @php
                         $copyright = core()->getConfigData('general.design.footer.copyright_text') 
