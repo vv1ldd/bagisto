@@ -4,10 +4,10 @@
 @pushOnce('scripts')
 <script type="text/x-template" id="v-product-card-template">
         <!-- Grid Card -->
-<div class="group w-full bg-zinc-900/40 backdrop-blur-xl border border-white/5 shadow-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-[#7C45F5]/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] relative flex flex-col overflow-hidden isolate rounded-3xl"
+<div class="group w-full bg-white/70 dark:bg-zinc-900/40 backdrop-blur-xl border border-zinc-200 dark:border-white/5 shadow-lg dark:shadow-2xl transition-all duration-500 hover:-translate-y-1.5 hover:border-[#7C45F5]/30 hover:shadow-xl dark:hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)] relative flex flex-col overflow-hidden isolate rounded-3xl"
     style="isolation: isolate;" v-if="mode != 'list'">
     <!-- Image Container -->
-    <div class="relative aspect-square w-full overflow-hidden bg-black/20 p-4">
+    <div class="relative aspect-square w-full overflow-hidden bg-zinc-100 dark:bg-black/20 p-4 transition-colors">
         {!! view_render_event('bagisto.shop.components.products.card.image.before') !!}
 
         <!-- Product Image -->
@@ -27,12 +27,12 @@
         <!-- Product Sale/New Badges -->
         <div class="absolute left-3 top-3 z-10 flex flex-col gap-1">
             <span
-                class=" bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF4D6D] border border-[#FF4D6D]/30 shadow-[0_0_10px_rgba(255,77,109,0.2)] backdrop-blur-md"
+                class="bg-white/90 dark:bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF4D6D] border border-[#FF4D6D]/30 shadow-[0_0_10px_rgba(255,77,109,0.2)] backdrop-blur-md"
                 v-if="product.on_sale">
                 @lang('shop::app.components.products.card.sale')
             </span>
             <span
-                class=" bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#7C45F5] border border-[#7C45F5]/30 shadow-[0_0_10px_rgba(124,69,245,0.2)] backdrop-blur-md"
+                class="bg-white/90 dark:bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#7C45F5] border border-[#7C45F5]/30 shadow-[0_0_10px_rgba(124,69,245,0.2)] backdrop-blur-md"
                 v-else-if="product.is_new">
                 @lang('shop::app.components.products.card.new')
             </span>
@@ -56,8 +56,8 @@
         <!-- Product Ratings overlay at bottom of image -->
         {!! view_render_event('bagisto.shop.components.products.card.average_ratings.before') !!}
         <div class="absolute bottom-3 left-3 z-10" v-if="product.ratings.total || product.reviews.total">
-            <div class="flex items-center gap-1  bg-black/70 px-1 py-0.5 text-[10px] text-white backdrop-blur-md">
-                <span class="icon-star-fill text-[9px] text-amber-400"></span>
+            <div class="flex items-center gap-1 bg-white/80 dark:bg-black/70 px-1 py-0.5 text-[10px] text-zinc-900 dark:text-white backdrop-blur-md shadow-sm">
+                <span class="icon-star-fill text-[9px] text-amber-500 dark:text-amber-400"></span>
                 <span class="font-medium">@{{ product.ratings.average }}</span>
             </div>
         </div>
@@ -69,7 +69,7 @@
         <div class="mb-2">
             {!! view_render_event('bagisto.shop.components.products.card.name.before') !!}
             <h2
-                class="line-clamp-2 text-[13px] font-bold leading-tight text-white group-hover:text-[#7C45F5] transition-colors text-center tracking-tight">
+                class="line-clamp-2 text-[13px] font-bold leading-tight text-zinc-900 dark:text-white group-hover:text-[#7C45F5] dark:group-hover:text-[#7C45F5] transition-colors text-center tracking-tight">
                 <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`">
                     @{{ product.name }}
                 </a>
@@ -101,7 +101,7 @@
 
                     {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
                     <button
-                        class="flex w-full items-center justify-center gap-2 bg-white/5 border border-white/10 py-3 text-center text-[12px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 active:scale-[0.96] disabled:opacity-50 rounded-2xl"
+                        class="flex w-full items-center justify-center gap-2 bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 py-3 text-center text-[12px] font-black uppercase tracking-widest text-[#7C45F5] dark:text-white transition-all hover:bg-zinc-200 dark:hover:bg-white/10 active:scale-[0.96] disabled:opacity-50 rounded-2xl"
                         :disabled="! product.is_saleable || isAddingToCart" @click="addToCart(false)">
                         <span class="icon-cart text-base" v-if="!isAddingToCart"></span>
                         <span class="icon-spinner animate-spin text-base" v-else></span>
@@ -123,7 +123,7 @@
 
         <a :href="`{{ route('shop.product_or_category.index', '') }}/${product.url_key}`">
             <x-shop::media.images.lazy
-                class="after:content-[' '] relative min-w-[250px] bg-zinc-100 transition-all duration-300 after:block after:pb-[calc(100%+9px)] group-hover:scale-105"
+                class="after:content-[' '] relative min-w-[250px] bg-zinc-100 dark:bg-black/20 transition-all duration-300 after:block after:pb-[calc(100%+9px)] group-hover:scale-105"
                 ::src="product.base_image.medium_image_url" ::key="product.id" ::index="product.id" width="291"
                 height="300" ::alt="product.name" />
         </a>
@@ -131,12 +131,12 @@
         {!! view_render_event('bagisto.shop.components.products.card.image.after') !!}
 
         <div class="action-items">
-            <p class="absolute top-4 inline-block  bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF4D6D] border border-[#FF4D6D]/30 shadow-[0_0_10px_rgba(255,77,109,0.2)] backdrop-blur-md ltr:left-4 rtl:right-4"
+            <p class="absolute top-4 inline-block bg-white/90 dark:bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#FF4D6D] border border-[#FF4D6D]/30 shadow-[0_0_10px_rgba(255,77,109,0.2)] backdrop-blur-md ltr:left-4 rtl:right-4"
                 v-if="product.on_sale">
                 @lang('shop::app.components.products.card.sale')
             </p>
 
-            <p class="absolute top-4 inline-block  bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#7C45F5] border border-[#7C45F5]/30 shadow-[0_0_10px_rgba(124,69,245,0.2)] backdrop-blur-md ltr:left-4 rtl:right-4"
+            <p class="absolute top-4 inline-block bg-white/90 dark:bg-zinc-900/90 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[#7C45F5] border border-[#7C45F5]/30 shadow-[0_0_10px_rgba(124,69,245,0.2)] backdrop-blur-md ltr:left-4 rtl:right-4"
                 v-else-if="product.is_new">
                 @lang('shop::app.components.products.card.new')
             </p>
@@ -165,7 +165,7 @@
 
         {!! view_render_event('bagisto.shop.components.products.card.name.before') !!}
 
-        <p class="text-base">
+        <p class="text-base font-bold text-zinc-900 dark:text-white transition-colors">
             @{{ product.name }}
         </p>
 
@@ -219,7 +219,7 @@
                 {!! view_render_event('bagisto.shop.components.products.card.buy_now.after') !!}
 
                 {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.before') !!}
-                <x-shop::button class="secondary-button whitespace-nowrap px-8 py-2.5"
+                <x-shop::button class="secondary-button whitespace-nowrap px-8 py-2.5 !bg-zinc-100 dark:!bg-white/5 !text-zinc-600 dark:!text-white border border-zinc-200 dark:border-white/10 hover:!bg-zinc-200 dark:hover:!bg-white/10"
                     :title="trans('shop::app.components.products.card.add-to-cart')" ::loading="isAddingToCart"
                     ::disabled="! product.is_saleable || isAddingToCart" @click="addToCart(false)" />
                 {!! view_render_event('bagisto.shop.components.products.card.add_to_cart.after') !!}
