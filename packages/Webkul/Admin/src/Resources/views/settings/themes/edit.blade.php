@@ -101,6 +101,9 @@
                 <!-- Footer Template -->
                 @includeWhen($theme->type === 'footer_links', 'admin::settings.themes.edit.footer-links')
 
+                <!-- Social Links Template -->
+                @includeWhen($theme->type === 'social_links', 'admin::settings.themes.edit.social-links')
+
                 <!-- Services-content Template -->
                 @includeWhen($theme->type === 'services_content', 'admin::settings.themes.edit.services-content')
             </div>

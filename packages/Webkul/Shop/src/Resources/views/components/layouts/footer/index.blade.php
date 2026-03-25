@@ -65,22 +65,32 @@
                 </div>
 
                 <!-- Social Icons -->
-                <div class="flex items-center gap-6">
-                    <!-- Facebook -->
-                    <a href="#" class="text-zinc-400 hover:text-[#7C45F5] transition-all transform hover:scale-110" aria-label="Facebook">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-                    </a>
-                    
-                    <!-- X (formerly Twitter) -->
-                    <a href="#" class="text-zinc-400 hover:text-[#7C45F5] transition-all transform hover:scale-110" aria-label="X">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                    </a>
+                @php
+                    $socialLinks = $themeCustomizationRepository->findOneWhere([
+                        'type'       => 'social_links',
+                        'status'     => 1,
+                        'channel_id' => $channel->id,
+                    ]);
+                @endphp
 
-                    <!-- Bluesky / Butterfly Icon -->
-                    <a href="#" class="text-zinc-400 hover:text-[#7C45F5] transition-all transform hover:scale-110" aria-label="Bluesky">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 10.8c-1.3-1.6-3.8-4.3-6.5-5.3-2.7-1-4.8-.4-4.8 2.3 0 .7.3 3.6.5 4.7.4 2.1 2.3 2.6 4.3 2.1-2 1.4-4.5 2.1-4.5 5 0 2.7 2.1 3.3 4.8 2.3 2.7-1 5.2-3.7 6.5-5.3 1.3 1.6 3.8 4.3 6.5 5.3 2.7 1 4.8.4 4.8-2.3 0-2.9-2.5-3.6-4.5-5 2 .5 3.9 0 4.3-2.1.2-1.1.5-4 .5-4.7 0-2.7-2.1-3.3-4.8-2.3-2.7 1-5.2 3.7-6.5 5.3z"/></svg>
-                    </a>
-                </div>
+                @if ($socialLinks && $socialLinks->options)
+                    <div class="flex items-center gap-6">
+                        @foreach ($socialLinks->options as $link)
+                            <a href="{{ $link['url'] }}" 
+                               class="text-zinc-400 hover:text-[#7C45F5] transition-all transform hover:scale-110 flex items-center justify-center w-5 h-5" 
+                               aria-label="{{ $link['title'] }}" 
+                               target="_blank">
+                                @if (str_contains($link['icon_svg'], '<svg'))
+                                    {!! $link['icon_svg'] !!}
+                                @else
+                                    <svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
+                                        {!! $link['icon_svg'] !!}
+                                    </svg>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </div>
     </div>
