@@ -104,14 +104,36 @@ class BlockchainSyncService
                 'usdt_ton' => $this->fetchUsdtTonBalance($cryptoAddress->address),
                 'dash' => $this->fetchDashBalance($cryptoAddress->address),
                 'arbitrum_one' => $this->fetchArbitrumBalance($cryptoAddress->address),
+                'meanly_coin' => $this->fetchMeanlyCoinBalance($cryptoAddress->address),
                 default => null,
             };
 
             if ($balance !== null) {
-                $cryptoAddress->update([
-                    'balance' => $balance,
-                    'last_sync_at' => now(),
-                ]);
+                \Illuminate\Support\Facades\DB::transaction(function () use ($cryptoAddress, $balance) {
+                    $cryptoAddress->update([
+                        'balance' => $balance,
+                        'last_sync_at' => now(),
+                    ]);
+
+                    // Update the customer_balances table for internal wallet compatibility
+                    $customer = $cryptoAddress->customer;
+                    $currencyCode = ($cryptoAddress->network === 'arbitrum_one') ? 'arbitrum_one' : $cryptoAddress->network;
+                    
+                    if ($cryptoAddress->network === 'arbitrum_one') {
+                        // For Arbitrum Ether, also sync the Meanly Coin (ERC20)
+                        $this->syncMeanlyCoin($cryptoAddress);
+                    }
+
+                    $customerBalance = $customer->balances()->firstOrCreate(
+                        ['currency_code' => $currencyCode]
+                    );
+                    $customerBalance->amount = $balance;
+                    $customerBalance->save();
+
+                    // Recalculate and update the main customer balance field (fiat equivalent)
+                    $customer->balance = $customer->getTotalFiatBalance();
+                    $customer->save();
+                });
 
                 return true;
             }
@@ -929,5 +951,48 @@ class BlockchainSyncService
         }
 
         return $results;
+    }
+
+    /**
+     * Fetch Meanly Coin (ERC20) balance on Arbitrum.
+     */
+    protected function fetchMeanlyCoinBalance(string $address): ?float
+    {
+        $coinAddress = config('crypto.meanly_coin_address');
+        if (empty($coinAddress)) return null;
+
+        $response = Http::get("https://api.arbiscan.io/api", [
+            'module' => 'account',
+            'action' => 'tokenbalance',
+            'contractaddress' => $coinAddress,
+            'address' => $address,
+            'tag' => 'latest',
+        ]);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            if (isset($data['result']) && $data['status'] === "1") {
+                // Meanly Coin uses 18 decimals
+                return (float) ($data['result'] / 10 ** 18);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Sync Meanly Coin balance for a customer.
+     */
+    protected function syncMeanlyCoin(CryptoAddress $cryptoAddress): void
+    {
+        $balance = $this->fetchMeanlyCoinBalance($cryptoAddress->address);
+        if ($balance === null) return;
+
+        $customer = $cryptoAddress->customer;
+        $customerBalance = $customer->balances()->firstOrCreate(
+            ['currency_code' => 'meanly_coin']
+        );
+        $customerBalance->amount = $balance;
+        $customerBalance->save();
     }
 }

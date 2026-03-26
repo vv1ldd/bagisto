@@ -6,18 +6,18 @@
     {!! view_render_event('bagisto.shop.customers.login.before') !!}
 
     <div id="login-container" class="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-black text-white uppercase tracking-tighter mb-3 leading-none">Вход в Meanly</h1>
-            <p class="text-sm text-zinc-400 font-bold uppercase tracking-widest leading-relaxed">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-black text-white uppercase tracking-tighter mb-2 leading-none">Вход в Meanly</h1>
+            <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest leading-relaxed">
                 Доступ через <span class="text-[#7C45F5]">Passkey</span> — мгновенно, надежно, без пароля.
             </p>
         </div>
 
         <!-- Passkey Login Button -->
         <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
-            class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] text-white h-16 font-black uppercase tracking-[0.2em] text-sm transition-all hover:bg-[#8A5CF7] shadow-lg shadow-[#7C45F5]/20 active:scale-[0.98] rounded-2xl overflow-hidden mb-12">
+            class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] text-white h-14 font-black uppercase tracking-[0.2em] text-sm transition-all hover:bg-[#8A5CF7] shadow-lg shadow-[#7C45F5]/20 active:scale-[0.98] rounded-2xl overflow-hidden mb-8">
             <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
-            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
             </svg>
@@ -25,24 +25,24 @@
         </button>
 
         <!-- Footer Actions -->
-        <div class="space-y-8">
-            <div class="flex items-center gap-4 w-full opacity-20">
+        <div class="space-y-6">
+            <div class="flex items-center gap-3 w-full opacity-20">
                 <div class="h-px flex-1 bg-white"></div>
-                <span class="text-[9px] font-black text-white uppercase tracking-[0.4em]">Или</span>
+                <span class="text-[8px] font-black text-white uppercase tracking-[0.4em]">Или</span>
                 <div class="h-px flex-1 bg-white"></div>
             </div>
 
-            <div class="flex flex-col items-center gap-6">
+            <div class="flex flex-col items-center gap-4">
                 <a href="{{ route('shop.customers.register.index') }}" 
-                    class="w-full h-14 bg-white/5 border border-white/10 text-white flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[11px] rounded-2xl transition-all hover:bg-white/10 active:scale-[0.98] group">
+                    class="w-full h-14 bg-white/5 border border-white/10 text-white flex items-center justify-center gap-3 font-black uppercase tracking-widest text-[10px] rounded-2xl transition-all hover:bg-white/10 active:scale-[0.98] group">
                     Создать аккаунт
-                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                    <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path d="M5 12h14m-7-7l7 7-7 7"/>
                     </svg>
                 </a>
 
                 <a href="{{ route('shop.customers.recovery.seed') }}" 
-                    class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500 hover:text-red-400 transition-colors text-center leading-loose">
+                    class="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-red-400 transition-colors text-center leading-loose opacity-60">
                     Восстановить через секретную фразу
                 </a>
             </div>

@@ -83,9 +83,10 @@ class HandshakeController extends Controller
      * Acknowledge (accept) a handshake.
      *
      * @param  int  $id
+     * @param  \Webkul\Customer\Services\HotWalletService  $hotWalletService
      * @return \Illuminate\Http\Response
      */
-    public function acknowledge($id)
+    public function acknowledge($id, \Webkul\Customer\Services\HotWalletService $hotWalletService)
     {
         $customer = auth()->guard('customer')->user();
 
@@ -98,9 +99,43 @@ class HandshakeController extends Controller
             return response()->json(['message' => 'Handshake request not found or unauthorized.'], 404);
         }
 
-        $handshake->update(['status' => 'accepted']);
+        // 1. Check if user has at least 1.0 Meanly Coin
+        $mcBalance = $customer->balances()->where('currency_code', 'meanly_coin')->first();
+        if (!$mcBalance || $mcBalance->amount < 1.0) {
+            return response()->json(['message' => 'Insufficient Meanly Coin balance. 1.0 MC required for handshake confirmation.'], 403);
+        }
 
-        return response()->json(['message' => 'Handshake acknowledged. Connection established.']);
+        // 2. Deduct 1.0 MC from internal balance
+        if ($mcBalance) {
+            $mcBalance->amount -= 1.0;
+            $mcBalance->save();
+        }
+
+        // 3. Initiate On-Chain Transaction
+        $reason = "Handshake #{$handshake->id} confirmed by {$customer->credits_id}";
+        $txHash = $hotWalletService->mintCoin($handshake->sender, 1.0, $reason);
+
+        if (!$txHash) {
+            // Revert balance if TX fails to send
+            $mcBalance->amount += 1.0;
+            $mcBalance->save();
+            return response()->json(['message' => 'Failed to initiate blockchain transaction. Please try again later.'], 500);
+        }
+
+        // 4. Update status to processing
+        $handshake->update([
+            'status'    => 'processing',
+            'tx_hash'   => $txHash,
+            'tx_status' => 'pending',
+        ]);
+
+        // 5. Dispatch async confirmation job
+        \Webkul\Customer\Jobs\ConfirmHandshakeTransactionJob::dispatch($handshake);
+
+        return response()->json([
+            'message' => 'Handshake acknowledgment initiated on-chain. Confirming...',
+            'tx_hash' => $txHash,
+        ]);
     }
 
     /**

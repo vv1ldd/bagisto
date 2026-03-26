@@ -48,7 +48,26 @@ $menuIcons = [
                         </svg>
                     </span>
                 </div>
- 
+
+                {{-- Messages / Matrix --}}
+                <div class="nav-tile cursor-pointer group mt-1"
+                     onclick="window.location.href='{{ route('shop.customers.account.matrix.index') }}'">
+                    <span class="w-12 h-12 flex items-center justify-center bg-[#00D1FF] text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                    </span>
+                    <div class="flex flex-col">
+                        <span class="nav-label">Сообщения</span>
+                        <span class="text-[12px] text-zinc-500 font-medium">Децентрализованный чат (Matrix)</span>
+                    </div>
+                    <span class="nav-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
+
                 {{-- Calls --}}
                 @if ($customer->is_call_enabled)
                     <div class="nav-tile cursor-pointer group mt-1"

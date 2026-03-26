@@ -48,8 +48,9 @@
                                 @php
                                     $isSender = $handshake->sender_id == auth()->guard('customer')->id();
                                     $partner = $isSender ? $handshake->receiver : $handshake->sender;
-                                @php
-                                <div class="flex items-center justify-between p-6 hover:bg-white/[0.02] transition-colors">
+                                @endphp
+
+                                <div class="flex items-center justify-between p-6 hover:bg-white/[0.02] transition-colors" id="handshake-{{ $handshake->id }}">
                                     <div class="flex items-center gap-4">
                                         <div class="w-12 h-12 rounded-full bg-[#7C45F5]/20 flex items-center justify-center border border-[#7C45F5]/30">
                                             <span class="text-xl">👤</span>
@@ -57,23 +58,40 @@
                                         <div>
                                             <p class="text-base font-bold text-zinc-900 dark:text-white">@ {{ $partner->credits_alias ?? $partner->username }}</p>
                                             <p class="text-xs text-zinc-500 font-mono">{{ substr($partner->credits_id, 0, 10) }}...{{ substr($partner->credits_id, -8) }}</p>
+                                            @if($handshake->tx_hash)
+                                                <a href="https://arbiscan.io/tx/{{ $handshake->tx_hash }}" target="_blank" class="text-[10px] text-[#7C45F5] hover:underline flex items-center gap-1 mt-1 opacity-60">
+                                                    <span>⛓️ View Transaction</span>
+                                                    <x-shop::icons.chevron-right class="w-2 h-2" />
+                                                </a>
+                                            @endif
                                         </div>
                                     </div>
 
                                     <div class="flex items-center gap-4">
                                         @if($handshake->status == 'pending')
                                             @if(!$isSender)
-                                                <button class="text-xs font-bold uppercase tracking-widest text-green-400 hover:text-green-500 transition-colors">
-                                                    Принять
+                                                <button 
+                                                    onclick="acknowledgeHandshake({{ $handshake->id }})"
+                                                    class="text-xs font-bold uppercase tracking-widest text-green-400 hover:text-green-500 transition-colors"
+                                                >
+                                                    Принять (1.0 MC)
                                                 </button>
                                             @else
                                                 <span class="text-xs font-bold uppercase tracking-widest text-zinc-500">Ожидание...</span>
                                             @endif
+                                        @elseif($handshake->status == 'processing')
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-3 h-3 border-2 border-[#7C45F5] border-t-transparent rounded-full animate-spin"></div>
+                                                <span class="text-xs font-bold uppercase tracking-widest text-[#7C45F5] animate-pulse">Блокчейн...</span>
+                                            </div>
                                         @else
                                             <span class="text-xs font-bold uppercase tracking-widest text-green-500/50">Соединено</span>
                                         @endif
 
-                                        <button class="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors">
+                                        <button 
+                                            onclick="terminateHandshake({{ $handshake->id }})"
+                                            class="text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors"
+                                        >
                                             {{ $handshake->status == 'pending' ? 'Отмена' : 'Разорвать' }}
                                         </button>
                                     </div>
@@ -85,4 +103,55 @@
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function acknowledgeHandshake(id) {
+            if (!confirm('Подтверждение хендшейка стоит 1.0 Meanly Coin. Продолжить?')) return;
+
+            const btn = event.currentTarget;
+            btn.disabled = true;
+            btn.innerText = 'ПОДПИСЬ...';
+
+            fetch(`/account/handshakes/acknowledge/${id}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.tx_hash) {
+                    window.showAlert('success', data.message);
+                    location.reload(); // Reload to show processing state
+                } else {
+                    window.showAlert('error', data.message || 'Ошибка блокчейна');
+                    btn.disabled = false;
+                    btn.innerText = 'ПРИНЯТЬ (1.0 MC)';
+                }
+            })
+            .catch(err => {
+                window.showAlert('error', 'Сетевая ошибка');
+                btn.disabled = false;
+            });
+        }
+
+        function terminateHandshake(id) {
+            if (!confirm('Вы уверены, что хотите разорвать эту связь?')) return;
+
+            fetch(`/account/handshakes/terminate/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                window.showAlert('success', data.message);
+                document.getElementById(`handshake-${id}`).remove();
+            });
+        }
+    </script>
+    @endpush
 </x-shop::layouts.account>

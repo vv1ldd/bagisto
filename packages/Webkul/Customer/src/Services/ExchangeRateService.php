@@ -21,8 +21,8 @@ class ExchangeRateService
         $cryptoSymbol = strtolower($cryptoSymbol);
         $fiatCurrency = strtoupper($fiatCurrency ?? core()->getBaseCurrencyCode());
 
-        // RUB is the base currency — always 1:1
-        if ($cryptoSymbol === 'rub') {
+        // Custom internal coins or base currency — always 1:1
+        if (in_array($cryptoSymbol, ['rub', 'meanly_coin'])) {
             return 1.0;
         }
 

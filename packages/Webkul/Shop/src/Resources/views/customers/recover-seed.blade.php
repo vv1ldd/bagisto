@@ -41,11 +41,11 @@
                 @endif
 
                 <!-- Progress Header -->
-                <div class="mb-12" v-if="currentStep > 0 && currentStep <= totalSteps">
-                    <div class="flex justify-between items-end mb-6">
+                <div class="mb-8" v-if="currentStep > 0 && currentStep <= totalSteps">
+                    <div class="flex justify-between items-end mb-4">
                         <div>
-                            <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-2 leading-none">Security / Recovery</p>
-                            <h2 class="text-3xl font-black text-white uppercase tracking-tighter leading-none">Слово <span v-text="currentStep" class="text-[#7C45F5]"></span> <span class="text-white/20 px-1">/</span> <span v-text="totalSteps" class="text-white/40"></span></h2>
+                            <p class="text-[8px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-1.5 leading-none">Security / Recovery</p>
+                            <h2 class="text-2xl font-black text-white uppercase tracking-tighter leading-none">Слово <span v-text="currentStep" class="text-[#7C45F5]"></span> <span class="text-white/20 px-1">/</span> <span v-text="totalSteps" class="text-white/40"></span></h2>
                         </div>
                     </div>
                     <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
@@ -55,10 +55,10 @@
                 </div>
 
                 <!-- Step 0: Length Selection Header -->
-                <div class="mb-12 text-center" v-if="currentStep === 0">
-                    <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-4">Mnemonic Setup</p>
-                    <h2 class="text-4xl font-black text-white uppercase tracking-tighter mb-4 leading-none text-center">Длина<br>Фразы</h2>
-                    <p class="text-zinc-500 font-bold text-[10px] uppercase tracking-widest">Выберите количество слов в вашей фразе</p>
+                <div class="mb-8 text-center" v-if="currentStep === 0">
+                    <p class="text-[8px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-3">Mnemonic Setup</p>
+                    <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-3 leading-none text-center">Длина<br>Фразы</h2>
+                    <p class="text-zinc-500 font-bold text-[9px] uppercase tracking-widest">Выберите количество слов в вашей фразе</p>
                 </div>
 
                 <!-- Final Confirmation Header -->
@@ -105,7 +105,7 @@
                                 @keydown="handleKeydown"
                                 ref="wordInput"
                                 placeholder="..."
-                                class="w-full bg-transparent border-b-2 border-white/10 py-6 text-4xl font-black text-center text-white placeholder:text-white/5 focus:border-[#7C45F5] outline-none transition-all code-input"
+                                class="w-full bg-transparent border-b-2 border-white/10 py-4 text-3xl font-black text-center text-white placeholder:text-white/5 focus:border-[#7C45F5] outline-none transition-all code-input"
                                 autocomplete="off"
                                 autofocus
                             >
@@ -157,9 +157,9 @@
                     </div>
                 </form>
 
-                <div class="mt-14 text-center" v-if="currentStep <= totalSteps">
+                <div class="mt-8 text-center" v-if="currentStep <= totalSteps">
                     <a href="{{ route('shop.customer.session.index') }}"
-                        class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600 hover:text-white transition-colors">
+                        class="text-[8px] font-black uppercase tracking-[0.4em] text-zinc-600 hover:text-white transition-colors">
                         Отмена
                     </a>
                 </div>

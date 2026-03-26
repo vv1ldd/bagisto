@@ -91,6 +91,11 @@ return [
     ],
     'matrix' => [
         'homeserver_url'             => env('MATRIX_SERVER_URL', 'https://matrix.wildflow.dev'),
+        'homeserver_domain'          => env('MATRIX_HOMESERVER_DOMAIN', 'meanly.ru'),
         'registration_shared_secret' => env('MATRIX_REGISTRATION_SHARED_SECRET'),
+    ],
+    'telegram' => [
+        'bot_token'    => env('TELEGRAM_BOT_TOKEN'),
+        'bot_username' => env('TELEGRAM_BOT_USERNAME', 'MeanlyBot'),
     ],
 ];

@@ -1,19 +1,31 @@
+@pushOnce('styles')
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<style>
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined' !important;
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+    }
+</style>
+@endPushOnce
+
 {!! view_render_event('bagisto.shop.layout.footer.before') !!}
 
-<!--
-    The category repository is injected directly here because there is no way
-    to retrieve it from the view composer, as this is an anonymous component.
--->
 @inject('themeCustomizationRepository', 'Webkul\Theme\Repositories\ThemeCustomizationRepository')
 
-<!--
-    This code needs to be refactored to reduce the amount of PHP in the Blade
-    template as much as possible.
--->
 @php
     $channel = core()->getCurrentChannel();
 
-    /** @var \Webkul\Theme\Models\ThemeCustomization|null $customization */
     $customization = $themeCustomizationRepository->findOneWhere([
         'type' => 'footer_links',
         'status' => 1,
@@ -109,12 +121,10 @@
                 <div class="text-[11px] leading-relaxed opacity-50 font-medium uppercase tracking-[0.05em]">
                     @php
                         $copyrightKey = 'general.design.copyright.copyright_text';
+                        // Use ?: operator to skip empty strings and fallback to old key or default Russian text
                         $copyright = core()->getConfigData($copyrightKey) 
-                             ?? core()->getConfigData('general.design.footer.copyright_text'); // Fallback to old key if new one is empty
-                        
-                        if (! $copyright) {
-                            $copyright = '© :year :company. All rights reserved. All trademarks are property of their respective owners.';
-                        }
+                             ?: core()->getConfigData('general.design.footer.copyright_text')
+                             ?: '© :year :company. Все права защищены.';
                         
                         $copyright = str_replace(
                             [':year', ':company'],

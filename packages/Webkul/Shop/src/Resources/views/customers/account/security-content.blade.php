@@ -94,5 +94,74 @@
                 </div>
             </div>
         </a>
+    {{-- Telegram Notifications --}}
+    @if (!$isOnboarding)
+        <div class="group relative block w-full bg-white border-4 border-zinc-900 p-6 md:p-8 transition-all {{ !$customer->telegram_chat_id ? 'hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none' : '' }} shadow-[8px_8px_0px_0px_rgba(34,197,94,1)]">
+            <div class="flex items-start gap-6">
+                <div class="w-16 h-16 flex items-center justify-center {{ $customer->telegram_chat_id ? 'bg-green-500' : 'bg-[#0088cc]' }} border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-6 text-white">
+                    @if ($customer->telegram_chat_id)
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    @else
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06-.01.12-.02.19z"/>
+                        </svg>
+                    @endif
+                </div>
+                <div class="flex-1 min-w-0 pt-1">
+                    <div class="flex flex-wrap items-center gap-3 mb-2">
+                        <span class="text-zinc-900 text-xl font-black uppercase tracking-tight">Telegram Уведомления</span>
+                        @if ($customer->telegram_chat_id)
+                            <span class="bg-green-500 border-2 border-zinc-900 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">подключено</span>
+                        @endif
+                    </div>
+                    <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">
+                        {{ $customer->telegram_chat_id ? 'Бот Meanly привязан и готов к работе' : 'Привяжите бота, чтобы получать мгновенные уведомления о событиях' }}
+                    </p>
+                    
+                    @if (!$customer->telegram_chat_id)
+                        <button id="linkTelegramBtn" class="mt-4 px-6 py-2 bg-[#0088cc] border-3 border-zinc-900 text-white font-black uppercase tracking-tighter shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all">
+                            Подключить бота
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const btn = document.getElementById('linkTelegramBtn');
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        btn.disabled = true;
+                        btn.innerText = 'Генерация...';
+                        
+                        fetch('{{ route('shop.customers.account.security.telegram_token') }}')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    window.open(data.link, '_blank');
+                                    btn.innerText = 'Переход в Telegram...';
+                                    setTimeout(() => {
+                                        btn.innerText = 'Подключить бота';
+                                        btn.disabled = false;
+                                    }, 3000);
+                                } else {
+                                    alert('Ошибка при генерации токена. Попробуйте позже.');
+                                    btn.innerText = 'Подключить бота';
+                                    btn.disabled = false;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Сетевая ошибка. Проверьте соединение.');
+                                btn.innerText = 'Подключить бота';
+                                btn.disabled = false;
+                            });
+                    });
+                }
+            });
+        </script>
     @endif
 </div>

@@ -30,7 +30,7 @@ class HotWalletService
     /**
      * Mints Meanly Coin (ERC20) to a user's verified crypto address.
      */
-    public function mintCoin(Customer $customer, float $amount): ?string
+    public function mintCoin(Customer $customer, float $amount, string $reason = 'Cashback'): ?string
     {
         if (empty($this->privateKey) || empty($this->coinAddress)) {
             Log::error("HotWalletService: Missing PK or Coin Address configuration.");
@@ -44,20 +44,21 @@ class HotWalletService
         }
 
         // Amount needs to be converted to wei (assuming 18 decimals)
-        // e.g., 5.5 = 5500000000000000000
         $amountInWei = bcmul((string) $amount, bcpow('10', '18', 0), 0);
         
-        // mint(address,uint256) signature is 0x40c10f19
-        $functionSignature = '40c10f19';
-        $paddedAddress = str_pad(str_replace('0x', '', $cryptoAddress), 64, '0', STR_PAD_LEFT);
+        // mint(address,uint256,string) signature is 0xd3fc9864
+        $functionSignature = 'd3fc9864';
         
-        // Convert wei amount to hex
-        $hexAmount = dechex((int)$amountInWei); // Simple conversion, might need BigInteger for very large amounts
-        // Let's use a robust hex converter for large numbers
-        $hexAmount = $this->bcdechex($amountInWei);
-        $paddedAmount = str_pad($hexAmount, 64, '0', STR_PAD_LEFT);
-
-        $data = $functionSignature . $paddedAddress . $paddedAmount;
+        // Encode arguments: address (32), uint256 (32), string offset (32), string length (32), string data (...)
+        $data = $functionSignature;
+        $data .= str_pad(str_replace('0x', '', strtolower($cryptoAddress)), 64, '0', STR_PAD_LEFT);
+        $data .= str_pad($this->bcdechex($amountInWei), 64, '0', STR_PAD_LEFT);
+        
+        // Offset for string starts after the first 3 static slots (3 * 32 = 96 = 0x60)
+        $data .= str_pad(dechex(96), 64, '0', STR_PAD_LEFT);
+        
+        // String data (length + content padding)
+        $data .= $this->encodeString($reason);
 
         return $this->sendTransaction($this->coinAddress, $data);
     }
@@ -65,7 +66,7 @@ class HotWalletService
     /**
      * Mints a Meanly Gift NFT (ERC721) to a user's verified crypto address.
      */
-    public function mintGift(Customer $customer, string $metadataUri): ?string
+    public function mintGift(Customer $customer, string $metadataUri, string $reason = 'Purchase Gift'): ?string
     {
         if (empty($this->privateKey) || empty($this->nftAddress)) {
             Log::error("HotWalletService: Missing PK or NFT Address configuration.");
@@ -78,20 +79,23 @@ class HotWalletService
             return null;
         }
 
-        // safeMint(address,string) signature is 0xd204c45e
-        $functionSignature = 'd204c45e';
-        $paddedAddress = str_pad(str_replace('0x', '', $cryptoAddress), 64, '0', STR_PAD_LEFT);
+        // safeMint(address,string,string) signature is 0xeca81d42
+        $functionSignature = 'eca81d42';
         
-        // Encode dynamic string type for ABI (Offset, Length, Data, Padding)
-        $offset = str_pad(dechex(64), 64, '0', STR_PAD_LEFT); // Offset is always 0x40 (64 bytes) for the second parameter here
-        $length = str_pad(dechex(strlen($metadataUri)), 64, '0', STR_PAD_LEFT);
-        $encodedString = bin2hex($metadataUri);
-        $paddingBytes = 64 - (strlen($encodedString) % 64);
-        if ($paddingBytes < 64) {
-            $encodedString .= str_repeat('0', $paddingBytes);
-        }
-
-        $data = $functionSignature . $paddedAddress . $offset . $length . $encodedString;
+        // Encode arguments: address (32), string1 offset (32), string2 offset (32)
+        $data = $functionSignature;
+        $data .= str_pad(str_replace('0x', '', strtolower($cryptoAddress)), 64, '0', STR_PAD_LEFT);
+        
+        // Offset for string 1 starts after 3 static slots (3 * 32 = 96 = 0x60)
+        $data .= str_pad(dechex(96), 64, '0', STR_PAD_LEFT);
+        
+        // Calculate offset for string 2: 96 + 32 (length1) + padded data1
+        $encodedString1 = $this->encodeString($metadataUri);
+        $offset2 = 96 + (strlen($encodedString1) / 2); // Divide by 2 because it's hex
+        $data .= str_pad(dechex($offset2), 64, '0', STR_PAD_LEFT);
+        
+        $data .= $encodedString1;
+        $data .= $this->encodeString($reason);
 
         return $this->sendTransaction($this->nftAddress, $data);
     }
@@ -183,6 +187,27 @@ class HotWalletService
     }
 
     /**
+     * Checks the receipt of a transaction to see if it was successful.
+     */
+    public function getTransactionReceipt(string $txHash): ?array
+    {
+        try {
+            $receipt = $this->rpcCall('eth_getTransactionReceipt', [$txHash]);
+            
+            if ($receipt) {
+                return [
+                    'status' => hexdec($receipt['status'] ?? '0x0') === 1 ? 'success' : 'failed',
+                    'blockNumber' => hexdec($receipt['blockNumber'] ?? '0x0'),
+                ];
+            }
+            
+            return null; // Still pending or not found
+        } catch (\Exception $e) {
+            Log::error("HotWalletService: Failed to get transaction receipt: " . $e->getMessage());
+            return null;
+        }
+    }
+    /**
      * RPC Helper block
      */
     protected function rpcCall(string $method, array $params)
@@ -226,5 +251,22 @@ class HotWalletService
             $dec = bcdiv(bcsub($dec, $last), 16);
         } while ($dec > 0);
         return $hex ?: '0';
+    }
+
+    protected function encodeString(string $str): string
+    {
+        $hexStr = bin2hex($str);
+        $length = strlen($str);
+        
+        $encoded = str_pad(dechex($length), 64, '0', STR_PAD_LEFT);
+        $encoded .= $hexStr;
+        
+        // Pad to multiple of 32 bytes (64 hex characters)
+        $paddingBytes = 64 - (strlen($hexStr) % 64);
+        if ($paddingBytes < 64) {
+            $encoded .= str_repeat('0', $paddingBytes);
+        }
+        
+        return $encoded;
     }
 }

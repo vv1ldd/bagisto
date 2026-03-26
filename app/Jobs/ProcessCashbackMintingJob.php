@@ -63,15 +63,16 @@ class ProcessCashbackMintingJob implements ShouldQueue
         // 1. Mint Cashback Coin (ERC20)
         $coinTxHash = null;
         if ($this->amount > 0) {
-            Log::info("ProcessCashbackMintingJob: Minting {$this->amount} {$this->currency} for {$cryptoAddress}");
-            $coinTxHash = $hotWalletService->mintCoin($customer, $this->amount);
+            $reason = "Order #{$order->increment_id} Cashback";
+            Log::info("ProcessCashbackMintingJob: Minting {$this->amount} {$this->currency} for {$cryptoAddress} (Reason: {$reason})");
+            $coinTxHash = $hotWalletService->mintCoin($customer, $this->amount, $reason);
         }
 
         // 2. Mint Gift NFT (ERC721)
-        // Metadata URI can be a generic one or linked to order
         $nftMetadataUri = url("/nft/metadata/{$order->id}");
-        Log::info("ProcessCashbackMintingJob: Minting Gift NFT for {$cryptoAddress}");
-        $nftTxHash = $hotWalletService->mintGift($customer, $nftMetadataUri);
+        $nftReason = "Order #{$order->increment_id} Gift";
+        Log::info("ProcessCashbackMintingJob: Minting Gift NFT for {$cryptoAddress} (Reason: {$nftReason})");
+        $nftTxHash = $hotWalletService->mintGift($customer, $nftMetadataUri, $nftReason);
 
         if ($coinTxHash || $nftTxHash) {
             // Record this in the wallet history

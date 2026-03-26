@@ -10,7 +10,7 @@
 
     <div class="fixed inset-0 z-[-30] bg-[#1a0050]"></div>
 
-    <div class="relative min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8 overflow-x-hidden">
+    <div class="relative min-h-screen w-full flex flex-col items-center justify-center p-2 md:p-4 overflow-x-hidden">
         
         <!-- Background Decorative Elements -->
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#7C45F5]/10 blur-[120px] rounded-full"></div>
@@ -20,8 +20,8 @@
         <div class="relative w-full {{ $contentWidth }} bg-zinc-900/40 backdrop-blur-2xl border border-white/5 shadow-2xl rounded-[2.5rem] overflow-hidden animate-in fade-in zoom-in duration-700">
             
             <!-- Card Header: Logo/Branding -->
-            <div class="pt-12 pb-8 px-8 md:px-12 flex flex-col items-center">
-                <a href="{{ route('shop.home.index') }}" class="group mb-8">
+            <div class="pt-8 pb-4 px-8 md:px-12 flex flex-col items-center">
+                <a href="{{ route('shop.home.index') }}" class="group mb-4">
                     <div class="relative w-16 h-16">
                         <div class="absolute inset-0 bg-[#7C45F5] rounded-2xl rotate-6 group-hover:rotate-12 transition-transform duration-500 shadow-xl shadow-[#7C45F5]/20"></div>
                         <div class="absolute inset-0 bg-white rounded-2xl flex items-center justify-center -rotate-3 group-hover:rotate-0 transition-transform duration-500">
@@ -36,7 +36,7 @@
             </div>
 
             <!-- Content Slot -->
-            <div class="px-8 pb-12 md:px-12 md:pb-16 flex flex-col items-stretch">
+            <div class="px-8 pb-8 md:px-12 md:pb-10 flex flex-col items-stretch">
                 {{ $slot }}
             </div>
 

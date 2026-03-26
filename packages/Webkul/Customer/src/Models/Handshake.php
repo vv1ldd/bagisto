@@ -24,6 +24,9 @@ class Handshake extends Model implements HandshakeContract
         'sender_id',
         'receiver_id',
         'status',
+        'matrix_room_id',
+        'tx_hash',
+        'tx_status',
     ];
 
     /**

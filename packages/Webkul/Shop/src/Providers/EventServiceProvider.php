@@ -23,6 +23,7 @@ class EventServiceProvider extends ServiceProvider
          */
         'customer.registration.after' => [
             [Customer::class, 'afterCreated'],
+            [\App\Listeners\WelcomeBonusListener::class, 'handle'],
         ],
 
         'customer.password.update.after' => [

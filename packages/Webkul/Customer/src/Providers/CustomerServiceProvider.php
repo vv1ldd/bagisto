@@ -32,6 +32,7 @@ class CustomerServiceProvider extends ServiceProvider
                 \Webkul\Customer\Console\Commands\SyncCryptoBalances::class,
                 \Webkul\Customer\Console\Commands\ProcessRecharge::class,
                 \Webkul\Customer\Console\Commands\SyncBanks::class,
+                \Webkul\Customer\Console\Commands\UpdateHydrogenChat::class,
             ]);
 
             $this->callAfterResolving(\Illuminate\Console\Scheduling\Schedule::class, function (\Illuminate\Console\Scheduling\Schedule $schedule) {

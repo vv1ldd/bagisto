@@ -224,7 +224,7 @@ class RegistrationController extends Controller
             'public_key' => $publicKeyData['public_key'] ?? null,
             'public_key_hash' => $publicKeyData['public_key_hash'] ?? null,
             'api_token' => Str::random(80),
-            'is_verified' => !core()->getConfigData('customer.settings.email.verification'),
+            'is_verified' => 1,
             'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,
             'channel_id' => core()->getCurrentChannel()->id,
             'token' => md5(uniqid(rand(), true)),
@@ -265,15 +265,12 @@ class RegistrationController extends Controller
 
         Event::dispatch('customer.registration.after', $customer);
 
-        if ($customer->email && core()->getConfigData('customer.settings.email.verification')) {
-            // Show a "check your email for the link" screen in-place
-            return redirect()->back()->with([
-                'status' => 'verification-sent',
-                'email' => $customer->email,
-            ]);
-        }
+        // No email verification needed - account is verified by default
+        
+        // Dispatch Welcome Bonus Minting
+        \App\Jobs\ProcessWelcomeMintingJob::dispatch($customer->id);
 
-        // Verification disabled — log in immediately
+        // log in immediately
         auth()->guard('customer')->login($customer);
 
         $customerRepo = app(\Webkul\Customer\Repositories\CustomerRepository::class);
@@ -290,212 +287,5 @@ class RegistrationController extends Controller
         session()->forget('pending_recovery_key');
 
         return redirect()->route('shop.customers.account.profile.recovery_key');
-    }
-
-    /**
-     * Show the 6-digit code entry page after registration.
-     */
-    public function showVerifyCode()
-    {
-        $email = session('verification_email');
-
-        if (!$email) {
-            return redirect()->route('shop.customers.register.index');
-        }
-
-        return view('shop::customers.verify-code', compact('email'));
-    }
-
-    /**
-     * Verify account by the 6-digit code the user entered.
-     */
-    public function verifyByCode(Request $request)
-    {
-        $email = session('verification_email');
-
-        if (!$email) {
-            return redirect()->route('shop.customers.register.index');
-        }
-
-        // Assemble code from individual digit boxes (d0..d5), fall back to 'code' field
-        $enteredCode = '';
-        for ($i = 0; $i < 6; $i++) {
-            $enteredCode .= $request->input('d' . $i, '');
-        }
-        $enteredCode = preg_replace('/\D/', '', $enteredCode);
-
-        // Fallback: single 'code' field
-        if (strlen($enteredCode) !== 6) {
-            $enteredCode = preg_replace('/\D/', '', $request->input('code', ''));
-        }
-
-        if (strlen($enteredCode) !== 6) {
-            return back()->withErrors(['code' => 'Введите 6-значный код из письма.']);
-        }
-
-
-        // Find customer by email first
-        $customer = $this->customerRepository->findOneByField('email', $email);
-
-        if (!$customer) {
-            return back()->withErrors(['code' => 'Неверный код. Проверьте письмо и попробуйте снова.']);
-        }
-
-        // Validate code: session (most reliable) → DB column → cache
-        $storedCode = session('verification_code_pending')
-            ?? $customer->verification_code
-            ?? \Illuminate\Support\Facades\Cache::get("verification_code_{$email}");
-
-        if (!$storedCode || $storedCode !== $enteredCode) {
-            return back()->withErrors(['code' => 'Неверный код. Проверьте письмо и попробуйте снова.']);
-        }
-
-        $this->customerRepository->update([
-            'is_verified' => 1,
-            'token' => null,
-            'verification_code' => null,
-        ], $customer->id);
-
-        // Clear cache
-        \Illuminate\Support\Facades\Cache::forget("verification_code_{$email}");
-
-        if ((bool) core()->getConfigData('emails.general.notifications.registration')) {
-            Mail::queue(new RegistrationNotification($customer));
-        }
-
-        $this->customerRepository->syncNewRegisteredCustomerInformation($customer);
-
-        session()->forget('verification_email');
-
-        auth()->guard('customer')->login($customer);
-
-        $currentIp = request()->header('CF-Connecting-IP')
-            ?? request()->header('X-Forwarded-For')
-            ?? request()->header('X-Real-IP')
-            ?? request()->ip();
-
-        if (str_contains($currentIp, ',')) {
-            $currentIp = trim(explode(',', $currentIp)[0]);
-        }
-
-        $this->customerRepository->update([
-            'first_login_ip' => $currentIp,
-            'last_login_ip' => $currentIp,
-        ], $customer->id);
-
-        // Log login activity
-        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
-
-        Event::dispatch('customer.after.login', auth()->guard()->user());
-
-        session()->flash('success', 'Регистрация прошла успешно! Пожалуйста, заполните данные вашего профиля.');
-
-        return redirect()->route('shop.customers.account.profile.recovery_key');
-    }
-
-    /**
-     * Method to verify account.
-     *
-     * @param  string  $token
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function verifyAccount($token)
-    {
-        $customer = $this->customerRepository->findOneByField('token', $token);
-
-        if (!$customer) {
-            session()->flash('info', 'Ссылка уже была использована. Войдите в аккаунт или запросите новое письмо.');
-
-            return redirect()->route('shop.customer.session.index');
-        }
-
-        $this->customerRepository->update([
-            'is_verified' => 1,
-            'token' => null,
-            'verification_code' => null,
-        ], $customer->id);
-
-        if ((bool) core()->getConfigData('emails.general.notifications.registration')) {
-            Mail::queue(new RegistrationNotification($customer));
-        }
-
-        $this->customerRepository->syncNewRegisteredCustomerInformation($customer);
-
-        // Auto-login after clicking the verification link
-        auth()->guard('customer')->login($customer);
-
-        $currentIp = request()->header('CF-Connecting-IP')
-            ?? request()->header('X-Forwarded-For')
-            ?? request()->header('X-Real-IP')
-            ?? request()->ip();
-
-        if (str_contains($currentIp, ',')) {
-            $currentIp = trim(explode(',', $currentIp)[0]);
-        }
-
-        $this->customerRepository->update([
-            'first_login_ip' => $currentIp,
-            'last_login_ip' => $currentIp,
-        ], $customer->id);
-
-        // Log login activity
-        app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
-
-        Event::dispatch('customer.after.login', $customer);
-
-        // Flag to skip "Current Password" on first profile edit
-        session(['onboarding_no_password' => true]);
-
-        // Retrieve recovery key stored before email was sent and flash it for one-time display
-        $recoveryKey = session('pending_recovery_key');
-        if ($recoveryKey) {
-            session()->flash('recovery_key', $recoveryKey);
-            session()->forget('pending_recovery_key');
-        }
-
-        session()->flash('success', 'Почта подтверждена! Пожалуйста, заполните данные профиля.');
-
-        return redirect()->route('shop.customers.account.profile.recovery_key');
-    }
-
-    /**
-     * Resend verification email.
-     *
-     * @param  string  $email
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function resendVerificationEmail($email)
-    {
-        $verificationData = [
-            'email' => $email,
-            'token' => md5(uniqid(rand(), true)),
-        ];
-
-        $customer = $this->customerRepository->findOneByField('email', $email);
-
-        $this->customerRepository->update(['token' => $verificationData['token']], $customer->id);
-        $customer = $this->customerRepository->findOneByField('email', $email);
-
-        try {
-            Mail::queue(new EmailVerificationNotification($customer));
-
-            if (Cookie::has('enable-resend')) {
-                Cookie::queue(Cookie::forget('enable-resend'));
-            }
-
-            if (Cookie::has('email-for-resend')) {
-                Cookie::queue(Cookie::forget('email-for-resend'));
-            }
-        } catch (\Exception $e) {
-            report($e);
-
-            session()->flash('error', trans('shop::app.customers.signup-form.verification-not-sent'));
-
-            return redirect()->back();
-        }
-
-        session()->flash('success', trans('shop::app.customers.signup-form.verification-sent'));
-
-        return redirect()->back();
     }
 }

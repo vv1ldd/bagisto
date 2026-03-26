@@ -39,21 +39,23 @@ Route::group(['prefix' => 'customer'], function () {
         
         /**
          * Forgot password routes.
-         */
-    Route::prefix('forgot-password')->controller(ForgotPasswordController::class)->group(function () {
-        Route::get('', 'create')->name('shop.customers.forgot_password.create');
+         * Disabled in favor of Seed Phrase recovery
+         *
+        Route::prefix('forgot-password')->controller(ForgotPasswordController::class)->group(function () {
+            Route::get('', 'create')->name('shop.customers.forgot_password.create');
+            Route::post('', 'store')->name('shop.customers.forgot_password.store');
+        });
+        */
 
-        Route::post('', 'store')->name('shop.customers.forgot_password.store');
-    });
-
-    /**
-     * Reset password routes.
-     */
-    Route::prefix('reset-password')->controller(ResetPasswordController::class)->group(function () {
-        Route::get('{token}', 'create')->name('shop.customers.reset_password.create');
-
-        Route::post('', 'store')->name('shop.customers.reset_password.store');
-    });
+        /**
+         * Reset password routes.
+         * Disabled
+         *
+        Route::prefix('reset-password')->controller(ResetPasswordController::class)->group(function () {
+            Route::get('{token}', 'create')->name('shop.customers.reset_password.create');
+            Route::post('', 'store')->name('shop.customers.reset_password.store');
+        });
+        */
 
     /**
      * Login routes.
@@ -89,15 +91,13 @@ Route::group(['prefix' => 'customer'], function () {
         });
 
         /**
-         * Customer verification routes.
-         */
+         * Customer verification routes (Disabled - all users verified on registration)
+         *
         Route::get('verify-account/{token}', 'verifyAccount')->name('shop.customers.verify');
-
         Route::get('verify-code', 'showVerifyCode')->name('shop.customers.verify.code');
-
         Route::post('verify-code', 'verifyByCode')->name('shop.customers.verify.code.submit');
-
         Route::get('resend/verification/{email}', 'resendVerificationEmail')->name('shop.customers.resend.verification_email');
+        */
     });
 
 
@@ -177,11 +177,13 @@ Route::group(['prefix' => 'customer'], function () {
         Route::group(['prefix' => 'account'], function () {
             Route::get('', [CustomerController::class, 'account'])->name('shop.customers.account.index');
             Route::get('security', [CustomerController::class, 'showSecurity'])->name('shop.customers.account.security.index');
+            Route::get('security/telegram-token', [CustomerController::class, 'generateTelegramToken'])->name('shop.customers.account.security.telegram_token');
             Route::get('security-onboarding', [CustomerController::class, 'showSecurityOnboarding'])->name('shop.customers.account.onboarding.security');
-            Route::get('security-onboarding/add-email', [CustomerController::class, 'showAddEmail'])->name('shop.customers.account.onboarding.add_email');
-            Route::post('security-onboarding/add-email', [CustomerController::class, 'sendEmailVerificationCode'])->name('shop.customers.account.onboarding.add_email.post');
-            Route::get('security-onboarding/verify-email', [CustomerController::class, 'showVerifyEmailView'])->name('shop.customers.account.onboarding.verify_email_view');
-            Route::post('security-onboarding/verify-email', [CustomerController::class, 'verifyEmailCode'])->name('shop.customers.account.onboarding.verify_email.post');
+            // Email onboarding disabled
+            // Route::get('security-onboarding/add-email', [CustomerController::class, 'showAddEmail'])->name('shop.customers.account.onboarding.add_email');
+            // Route::post('security-onboarding/add-email', [CustomerController::class, 'sendEmailVerificationCode'])->name('shop.customers.account.onboarding.add_email.post');
+            // Route::get('security-onboarding/verify-email', [CustomerController::class, 'showVerifyEmailView'])->name('shop.customers.account.onboarding.verify_email_view');
+            // Route::post('security-onboarding/verify-email', [CustomerController::class, 'verifyEmailCode'])->name('shop.customers.account.onboarding.verify_email.post');
 
             Route::group(['middleware' => [NoCacheMiddleware::class]], function () {
                 /**
@@ -382,15 +384,16 @@ Route::group(['prefix' => 'customer'], function () {
                 });
 
                 /**
-                 * Matrix / Element X Integration (Disabled)
-                 *
+                 * Matrix / Hydrogen Integration
+                 */
                 Route::controller(\Webkul\Shop\Http\Controllers\Customer\Account\MatrixController::class)->prefix('matrix')->group(function () {
-                    Route::get('redirect', 'redirect')->name('shop.customers.account.matrix.redirect');
-                    Route::post('verify', 'verifyCredentials')->name('shop.customers.account.matrix.verify');
+                    Route::get('', 'index')->name('shop.customers.account.matrix.index');
+                    Route::post('sync', 'sync')->name('shop.customers.account.matrix.sync');
                 });
-                */
 
             });
         });
     });
+
+    Route::post('telegram/webhook', [\Webkul\Shop\Http\Controllers\Customer\TelegramBotController::class, 'webhook'])->name('shop.telegram.webhook');
 });
