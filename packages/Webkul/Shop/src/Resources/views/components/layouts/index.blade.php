@@ -264,9 +264,10 @@
              * been registered in the app. No matter what `app.mount()` should be
              * called in the last.
              */
-            window.addEventListener("load", async function (event) {
+            document.addEventListener("DOMContentLoaded", async function (event) {
                 // If in TMA and not logged in, trigger transparent login
                 if (window.isTMA && !document.querySelector('meta[name="customer-id"]')) {
+                    console.log('TMA: Initializing auto-login...');
                     try {
                         const tg = window.Telegram.WebApp;
                         const response = await fetch('{{ route('shop.tma.login') }}', {
@@ -297,6 +298,13 @@
                 }
 
                 app.mount("#app");
+            });
+
+            // If we are in load event and app isn't mounted yet, mount it just in case
+            window.addEventListener("load", () => {
+                if (document.getElementById('app') && !document.getElementById('app').__vue_app__) {
+                     try { app.mount("#app"); } catch(e) {}
+                }
             });
 
             // ── Global Passkey Wallet Helper ──────────────────────────────

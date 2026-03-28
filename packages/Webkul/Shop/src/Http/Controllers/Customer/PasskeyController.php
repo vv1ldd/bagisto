@@ -55,24 +55,10 @@ class PasskeyController extends Controller
 
         $optionsJson = $generateOptionsAction->execute($user, asJson: true);
         
-        // Patch options for Google Password Manager compatibility
+        // Use Spatie's generated options as a base, but ensure we have mandatory params 
+        // that some browsers (like Chrome/Mac) are picky about.
         $optionsArr = json_decode($optionsJson, true);
         if (isset($optionsArr['user'])) {
-            // user.name: always ASCII — use username (Latin letters/digits only)
-            $asciiName = $user->username ?? 'user-' . ($user->id ?? 'new');
-            $optionsArr['user']['name'] = $asciiName;
-
-            // user.displayName: Google Password Manager rejects Cyrillic/non-ASCII
-            // Always use the username (ASCII) as displayName
-            $optionsArr['user']['displayName'] = $asciiName;
-
-            // user.id: must be stable random bytes, NOT a sequential integer
-            // We generate a stable base64url ID from a HMAC of the user's DB id
-            // This is consistent across registrations for the same user
-            $userIdForHash = $user->id ?? $user->transient_passkey_id;
-            $stableKey = hash_hmac('sha256', 'passkey-user-id:' . $userIdForHash, config('app.key'), true);
-            $optionsArr['user']['id'] = base64_encode(substr($stableKey, 0, 32));
-
             // Ensure pubKeyCredParams is populated
             if (empty($optionsArr['pubKeyCredParams'])) {
                 $optionsArr['pubKeyCredParams'] = [

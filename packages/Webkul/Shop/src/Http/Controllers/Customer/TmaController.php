@@ -34,6 +34,11 @@ class TmaController extends Controller
     {
         $initData = $request->input('initData');
 
+        Log::info('TMA: Login attempt started', [
+            'has_initData' => !empty($initData),
+            'ip' => $request->ip()
+        ]);
+
         if (!$initData) {
             return response()->json(['message' => 'Missing initData'], 400);
         }
@@ -132,8 +137,8 @@ class TmaController extends Controller
                 'api_token'                 => Str::random(80),
                 'token'                     => md5(uniqid(rand(), true)),
                 'is_verified'               => 1,
-                'customer_group_id'         => app(\Webkul\Customer\Repositories\CustomerGroupRepository::class)->findOneWhere(['code' => $customerGroup])->id,
-                'channel_id'                => core()->getCurrentChannel()?->id,
+                'customer_group_id'         => app(\Webkul\Customer\Repositories\CustomerGroupRepository::class)->findOneWhere(['code' => $customerGroup])?->getKey(),
+                'channel_id'                => core()->getCurrentChannel()?->getKey(),
                 'registration_ip'           => $currentIp,
                 'last_login_ip'             => $currentIp,
                 'status'                    => 1,
@@ -168,6 +173,11 @@ class TmaController extends Controller
         app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
 
         session()->put('logged_in_via_tma', true);
+
+        Log::info('TMA: Login successful', [
+            'customer_id' => $customer->id,
+            'username' => $customer->username
+        ]);
 
         return response()->json([
             'success'               => true,

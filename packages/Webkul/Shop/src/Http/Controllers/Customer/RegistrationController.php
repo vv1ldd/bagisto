@@ -140,8 +140,8 @@ class RegistrationController extends Controller
             'encrypted_private_key' => $encryptedPrivateKey,
             'api_token' => Str::random(80),
             'is_verified' => 1,
-            'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,
-            'channel_id' => core()->getCurrentChannel()->id,
+            'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])?->getKey(),
+            'channel_id' => core()->getCurrentChannel()?->getKey(),
             'token' => md5(uniqid(rand(), true)),
             'registration_ip' => $currentIp,
             'last_login_ip' => $currentIp,
@@ -151,14 +151,17 @@ class RegistrationController extends Controller
 
         // Ensure we don't accidentally reuse an existing placeholder (we want passkeys to correspond 1-to-1)
         
+        // Generate credits_id and username early for stable Passkey ID
+        $data['credits_id'] = \Webkul\Customer\Models\Customer::generateUniqueCreditsId();
+        
         // Abstract a Mock Customer for options generation
         $mockCustomer = new \Webkul\Customer\Models\Customer($data);
-        $mockCustomer->transient_passkey_id = (string) Str::uuid(); // stable unique ID for WebAuthn challenge
+        $mockCustomer->transient_passkey_id = $data['credits_id']; 
         
         // Store in session
         session([
             'pending_registration_data' => $data,
-            'pending_registration_id' => $mockCustomer->transient_passkey_id
+            'pending_registration_id' => $data['credits_id']
         ]);
 
         // Return passkey options via the PasskeyController logic
@@ -225,8 +228,8 @@ class RegistrationController extends Controller
             'public_key_hash' => $publicKeyData['public_key_hash'] ?? null,
             'api_token' => Str::random(80),
             'is_verified' => 1,
-            'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])->id,
-            'channel_id' => core()->getCurrentChannel()->id,
+            'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])?->getKey(),
+            'channel_id' => core()->getCurrentChannel()?->getKey(),
             'token' => md5(uniqid(rand(), true)),
             'registration_ip' => $currentIp,
             'last_login_ip' => $currentIp,
@@ -253,7 +256,7 @@ class RegistrationController extends Controller
             $subscription = $this->subscriptionRepository->create([
                 'email' => $data['email'],
                 'customer_id' => $customer->id,
-                'channel_id' => core()->getCurrentChannel()->id,
+                'channel_id' => data_get(core()->getCurrentChannel(), 'id'),
                 'is_subscribed' => 1,
                 'token' => uniqid(),
             ]);

@@ -203,7 +203,10 @@
                         body: JSON.stringify(attResp)
                     });
 
-                    if (!storeRes.ok) throw new Error('Ошибка сохранения ключа.');
+                    if (!storeRes.ok) {
+                        const errData = await storeRes.json();
+                        throw new Error(errData.message || 'Ошибка сохранения ключа.');
+                    }
                     
                     btn.innerHTML = 'Готово!';
                     window.location.href = '{{ route('shop.customers.account.onboarding.security') }}';

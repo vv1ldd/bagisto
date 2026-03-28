@@ -45,7 +45,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
      */
     public function getPasskeyId(): string
     {
-        return (string) ($this->id ?? $this->transient_passkey_id ?? '');
+        return (string) ($this->credits_id ?? $this->id ?? $this->transient_passkey_id ?? '');
     }
 
 
