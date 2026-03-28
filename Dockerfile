@@ -1,9 +1,9 @@
 # Stage 1: Frontend & Blockchain Builder
-FROM mirror.gcr.io/library/node:18-alpine AS builder
+FROM mirror.gcr.io/library/node:18-bookworm-slim AS builder
 WORKDIR /app
 
 # Install build tools for native npm modules
-RUN apk add --no-cache build-base git python3
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential git python3 && rm -rf /var/lib/apt/lists/*
 
 # 1. Copy ALL manifest files first (Root, Admin, Shop, Blockchain)
 COPY package.json package-lock.json* ./
@@ -22,11 +22,13 @@ RUN --mount=type=cache,target=/root/.npm \
 COPY . .
 
 # 4. Run ALL builds (Root, Admin, Shop, Blockchain)
-# Admin build was missing in previous version!
-RUN npm run build && \
-    npm --prefix packages/Webkul/Admin run build && \
-    npm --prefix packages/Webkul/Shop run build && \
-    cd blockchain && npx hardhat compile
+# Separated into individual Docker layers for clearer build logs in Coolify
+ENV HARDHAT_TELEMETRY_DISABLED=1
+
+RUN npm run build
+RUN npm --prefix packages/Webkul/Admin run build
+RUN npm --prefix packages/Webkul/Shop run build
+RUN cd blockchain && npx hardhat compile
 
 
 # Stage 2: Final PHP Application
