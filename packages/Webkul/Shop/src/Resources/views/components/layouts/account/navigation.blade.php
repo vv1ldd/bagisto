@@ -127,6 +127,7 @@ $menuIcons = [
                                     @if($subMenuItem->getKey() === 'account.address') Адреса доставки
                                     @elseif($subMenuItem->getKey() === 'account.wishlist') Избранные товары
                                     @elseif($subMenuItem->getKey() === 'account.reviews') Ваши отзывы
+                                    @elseif($subMenuItem->getKey() === 'account.redeem') Активируйте бонусы и подарки
                                     @else Управление разделом
                                     @endif
                                 </span>
