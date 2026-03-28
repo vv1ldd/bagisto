@@ -506,6 +506,40 @@ img.lazy {
         content: "\e942";
     }
 
+    /* ─── Telegram Mini App (TMA) Mode ────────────────────────── */
+    html.tma-mode body {
+        background-color: var(--tma-bg, #ffffff);
+        color: var(--tma-text, #000000);
+        padding-top: 0 !important;
+    }
+
+    html.tma-mode main#main {
+        padding-top: 0 !important;
+    }
+
+    html.tma-mode header,
+    html.tma-mode footer,
+    html.tma-mode .glass-header,
+    html.tma-mode .glass-footer {
+        display: none !important;
+    }
+
+    html.tma-mode .primary-button {
+        background-color: var(--tma-button, #7C45F5) !important;
+        color: var(--tma-button-text, #ffffff) !important;
+    }
+
+    html.tma-mode a {
+        color: var(--tma-link, #7C45F5);
+    }
+
+    html.tma-mode .text-zinc-400,
+    html.tma-mode .text-zinc-500 {
+        color: var(--tma-hint, #999999) !important;
+    }
+
+    /* ─────────────────────────────────────────────────────────── */
+
     .journal-scroll::-webkit-scrollbar {
         width: 14px;
         cursor: pointer;

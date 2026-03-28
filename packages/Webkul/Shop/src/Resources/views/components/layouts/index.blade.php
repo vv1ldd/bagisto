@@ -8,7 +8,7 @@
 
 <html
     lang="{{ app()->getLocale() }}"
-    dir="{{ core()->getCurrentLocale()->direction }}"
+    dir="{{ core()->getCurrentLocale()?->direction ?? 'ltr' }}"
 >
     <head>
 
@@ -61,7 +61,7 @@
         >
         <meta
             name="currency"
-            content="{{ core()->getCurrentCurrency()->toJson() }}"
+            content="{{ json_encode(core()->getCurrentCurrency()) }}"
         >
         <meta 
             name="generator" 
@@ -99,6 +99,32 @@
 
         @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
         <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+        <script>
+            /**
+             * Telegram Mini App (TMA) Detection & Environment Setup
+             */
+            (function() {
+                const tg = window.Telegram?.WebApp;
+                if (tg && tg.initData) {
+                    document.documentElement.classList.add('tma-mode');
+                    
+                    // Sync Telegram theme colors to CSS variables
+                    const theme = tg.themeParams;
+                    if (theme.bg_color) document.documentElement.style.setProperty('--tma-bg', theme.bg_color);
+                    if (theme.text_color) document.documentElement.style.setProperty('--tma-text', theme.text_color);
+                    if (theme.hint_color) document.documentElement.style.setProperty('--tma-hint', theme.hint_color);
+                    if (theme.link_color) document.documentElement.style.setProperty('--tma-link', theme.link_color);
+                    if (theme.button_color) document.documentElement.style.setProperty('--tma-button', theme.button_color);
+                    if (theme.button_text_color) document.documentElement.style.setProperty('--tma-button-text', theme.button_text_color);
+
+                    window.isTMA = true;
+                } else {
+                    window.isTMA = false;
+                }
+            })();
+        </script>
 
         <link
             rel="preconnect"
@@ -238,7 +264,34 @@
              * been registered in the app. No matter what `app.mount()` should be
              * called in the last.
              */
-            window.addEventListener("load", function (event) {
+            window.addEventListener("load", async function (event) {
+                // If in TMA and not logged in, trigger transparent login
+                if (window.isTMA && !document.querySelector('meta[name="customer-id"]')) {
+                    try {
+                        const tg = window.Telegram.WebApp;
+                        const response = await fetch('{{ route('shop.tma.login') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ initData: tg.initData })
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            if (result.success) {
+                                // Reload to apply session and show authenticated state
+                                window.location.reload();
+                                return;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('TMA Auto-login failed:', e);
+                    }
+                }
+
                 app.mount("#app");
             });
 
