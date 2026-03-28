@@ -99,12 +99,6 @@
                             class="w-full bg-zinc-900 dark:bg-zinc-800 border-3 border-zinc-900 dark:border-white/10 p-5 text-white font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all">
                             Отправить PIN на Email
                         </button>
-
-                        <button v-if="!pinSent && has_passkeys" @click="authenticatePasskey" 
-                            :disabled="loading"
-                            class="w-full bg-[#7C45F5] border-3 border-zinc-900 dark:border-white/10 p-5 text-white font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all">
-                            🚀 Подтвердить с Passkey
-                        </button>
                     </div>
 
                     <button v-if="pinSent" @click="verifyPin" 

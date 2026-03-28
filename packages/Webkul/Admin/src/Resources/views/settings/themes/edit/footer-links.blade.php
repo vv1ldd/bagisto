@@ -45,7 +45,7 @@
                         <!-- Hidden Input -->
                         <input
                             type="hidden"
-                            :name="'{{ $currentLocale->code }}[options][' + link.column + '][' + key + ']'"
+                            :name="'{{ $currentLocaleCode }}[options][' + link.column + '][' + key + ']'"
                             :value="link.column"
                         />
 
@@ -273,7 +273,7 @@
 
             data() {
                 return {
-                    footerLinks: @json($theme->translate($currentLocale->code)['options'] ?? null),
+                    footerLinks: @json($theme->translate($currentLocaleCode)['options'] ?? null),
 
                     isUpdating: false,
                 };

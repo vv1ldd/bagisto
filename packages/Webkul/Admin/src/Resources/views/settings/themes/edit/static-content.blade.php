@@ -2,6 +2,10 @@
     <x-admin::shimmer.settings.themes.static-content />
 </v-static-content>
 
+@php
+    $currentLocaleCode = is_string($currentLocale) ? $currentLocale : $currentLocale->code;
+@endphp
+
 <!-- Static Content Vue Component -->
 @pushOnce('scripts')
     <script
@@ -84,13 +88,13 @@
 
                 <input
                     type="hidden"
-                    name="{{ $currentLocale->code }}[options][html]"
+                    name="{{ $currentLocaleCode }}[options][html]"
                     v-model="options.html"
                 />
 
                 <input
                     type="hidden"
-                    name="{{ $currentLocale->code }}[options][css]"
+                    name="{{ $currentLocaleCode }}[options][css]"
                     v-model="options.css"
                 />
 
@@ -141,7 +145,7 @@
                 return {
                     inittialEditor: 'v-html-editor-theme',
 
-                    options: @json($theme->translate($currentLocale->code)['options'] ?? null),
+                    options: @json($theme->translate($currentLocaleCode)['options'] ?? null),
 
                     isHtmlEditorActive: true,
                 };
@@ -226,7 +230,7 @@
             data() {
                 return {
                     options:{
-                        html: `{!! $theme->translate($currentLocale->code)['options']['html'] ?? '' !!}`,
+                        html: `{!! $theme->translate($currentLocaleCode)['options']['html'] ?? '' !!}`,
                     },
 
                     cursorPointer: {},
@@ -279,7 +283,7 @@
 
                     let formData = new FormData();
 
-                    formData.append('{{ $currentLocale->code }}[options][][image]', selectedImage);
+                    formData.append('{{ $currentLocaleCode }}[options][][image]', selectedImage);
                     formData.append('id', '{{ $theme->id }}');
                     formData.append('type', 'static_content');
 
@@ -315,7 +319,7 @@
             data() {
                 return {
                     options:{
-                        css: `{!! $theme->translate($currentLocale->code)['options']['css'] ?? '' !!}`,
+                        css: `{!! $theme->translate($currentLocaleCode)['options']['css'] ?? '' !!}`,
                     }
                 };
             },

@@ -1,15 +1,17 @@
 <v-product-carousel :errors="errors">
     <x-admin::shimmer.settings.themes.product-carousel />
 </v-product-carousel>
-
+ 
 @php
+    $currentLocaleCode = is_string($currentLocale) ? $currentLocale : $currentLocale->code;
+
     $filterableAttributes = app(Webkul\Attribute\Repositories\AttributeRepository::class)
         ->with([
             'options' => function ($query) {
                 $query->orderBy('sort_order');
             },
-            'options.translation' => function ($q) {
-                $q->where('locale', core()->getCurrentLocale()->code);
+            'options.translation' => function ($q) use ($currentLocaleCode) {
+                $q->where('locale', $currentLocaleCode);
             },
         ])
         ->getFilterableAttributes();
@@ -43,17 +45,17 @@
 
                     <v-field
                         type="text"
-                        name="{{ $currentLocale->code }}[options][title]"
-                        value="{{ $theme->translate($currentLocale->code)->options['title'] ?? '' }}"
+                        name="{{ $currentLocaleCode }}[options][title]"
+                        value="{{ $theme->translate($currentLocaleCode)->options['title'] ?? '' }}"
                         class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
-                        :class="[errors['{{ $currentLocale->code }}[options][title]'] ? 'border border-red-600 hover:border-red-600' : '']"
+                        :class="[errors['{{ $currentLocaleCode }}[options][title]'] ? 'border border-red-600 hover:border-red-600' : '']"
                         rules="required"
                         label="@lang('admin::app.settings.themes.edit.filter-title')"
                         placeholder="@lang('admin::app.settings.themes.edit.filter-title')"
                     >
                     </v-field>
 
-                    <x-admin::form.control-group.error control-name="{{ $currentLocale->code }}[options][title]" />
+                    <x-admin::form.control-group.error control-name="{{ $currentLocaleCode }}[options][title]" />
                 </x-admin::form.control-group>
 
                 <!-- Sort -->
@@ -66,14 +68,14 @@
                         name="{{ $currentLocale->code }}[options][filters][sort]"
                         v-slot="{ field }"
                         rules="required"
-                        value="{{ $theme->translate($currentLocale->code)->options['filters']['sort'] ?? '' }}"
+                        value="{{ $theme->translate($currentLocaleCode)->options['filters']['sort'] ?? '' }}"
                         label="@lang('admin::app.settings.themes.edit.sort')"
                     >
                         <select
-                            name="{{ $currentLocale->code }}[options][filters][sort]"
+                            name="{{ $currentLocaleCode }}[options][filters][sort]"
                             v-bind="field"
                             class="custom-select flex min-h-[39px] w-full rounded-md border bg-white px-3 py-1.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
-                            :class="[errors['{{ $currentLocale->code }}[options][filters][sort]'] ? 'border border-red-600 hover:border-red-600' : '']"
+                            :class="[errors['{{ $currentLocaleCode }}[options][filters][sort]'] ? 'border border-red-600 hover:border-red-600' : '']"
                         >
                             <option value="" selected disabled>
                                 @lang('admin::app.settings.themes.edit.select')
@@ -88,7 +90,7 @@
                         </select>
                     </v-field>
 
-                    <x-admin::form.control-group.error control-name="{{ $currentLocale->code }}[options][filters][sort]" />
+                    <x-admin::form.control-group.error control-name="{{ $currentLocaleCode }}[options][filters][sort]" />
                 </x-admin::form.control-group>
 
                 <!-- Limit -->
@@ -99,10 +101,10 @@
 
                     <v-field
                         type="select"
-                        name="{{ $currentLocale->code }}[options][filters][limit]"
+                        name="{{ $currentLocaleCode }}[options][filters][limit]"
                         v-slot="{ field }"
                         rules="required"
-                        value="{{ $theme->translate($currentLocale->code)->options['filters']['limit'] ?? '' }}"
+                        value="{{ $theme->translate($currentLocaleCode)->options['filters']['limit'] ?? '' }}"
                         label="@lang('admin::app.settings.themes.edit.limit')"
                     >
                         <select
@@ -119,7 +121,7 @@
                         </select>
                     </v-field>
 
-                    <x-admin::form.control-group.error control-name="{{ $currentLocale->code }}[options][filters][limit]" />
+                    <x-admin::form.control-group.error control-name="{{ $currentLocaleCode }}[options][filters][limit]" />
                 </x-admin::form.control-group>
 
                 <span class="mb-4 mt-4 block w-full border-b dark:border-gray-800"></span>
@@ -149,7 +151,7 @@
                     <!-- Hidden Input -->
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[options][filters][' + filter.key +']'"
+                        :name="'{{ $currentLocaleCode }}[options][filters][' + filter.key +']'"
                         :value="filter.value"
                     /> 
                 
@@ -305,7 +307,7 @@
 
             data() {
                 return {
-                    options: @json($theme->translate($currentLocale->code)['options'] ?? null),
+                    options: @json($theme->translate($currentLocaleCode)['options'] ?? null),
 
                     filters: {
                         available: [

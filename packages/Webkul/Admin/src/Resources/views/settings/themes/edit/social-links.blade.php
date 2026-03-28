@@ -33,10 +33,10 @@
                         v-for="(link, index) in socialLinks"
                         :key="index"
                     >
-                        <input type="hidden" :name="'{{ $currentLocale->code }}[options][' + index + '][title]'" :value="link.title" />
-                        <input type="hidden" :name="'{{ $currentLocale->code }}[options][' + index + '][url]'" :value="link.url" />
-                        <input type="hidden" :name="'{{ $currentLocale->code }}[options][' + index + '][icon_svg]'" :value="link.icon_svg" />
-                        <input type="hidden" :name="'{{ $currentLocale->code }}[options][' + index + '][sort_order]'" :value="link.sort_order" />
+                        <input type="hidden" :name="'{{ is_string($currentLocale) ? $currentLocale : $currentLocale->code }}[options][' + index + '][title]'" :value="link.title" />
+                        <input type="hidden" :name="'{{ is_string($currentLocale) ? $currentLocale : $currentLocale->code }}[options][' + index + '][url]'" :value="link.url" />
+                        <input type="hidden" :name="'{{ is_string($currentLocale) ? $currentLocale : $currentLocale->code }}[options][' + index + '][icon_svg]'" :value="link.icon_svg" />
+                        <input type="hidden" :name="'{{ is_string($currentLocale) ? $currentLocale : $currentLocale->code }}[options][' + index + '][sort_order]'" :value="link.sort_order" />
 
                         <div class="flex justify-between items-center">
                             <div class="flex gap-4 items-center">
@@ -117,7 +117,7 @@
             props: ['errors'],
             data() {
                 return {
-                    socialLinks: @json($theme->translate($currentLocale->code)['options'] ?? []),
+                    socialLinks: @json($theme->translate(is_string($currentLocale) ? $currentLocale : $currentLocale->code)['options'] ?? []),
                     isUpdating: false,
                 };
             },

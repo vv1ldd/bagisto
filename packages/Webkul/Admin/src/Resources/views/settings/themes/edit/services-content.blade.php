@@ -2,6 +2,10 @@
     <x-admin::shimmer.settings.themes.services-content />
 </v-services-content>
 
+@php
+    $currentLocaleCode = is_string($currentLocale) ? $currentLocale : $currentLocale->code;
+@endphp
+
 <!-- Services Content Vue Component -->
 @pushOnce('scripts')
     <script
@@ -35,7 +39,7 @@
                 <template v-for="(deletedService, index) in deletedServices">
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[deleted_services]['+ index +'][service_details]'"
+                        :name="'{{ $currentLocaleCode }}[deleted_services]['+ index +'][service_details]'"
                         :value="deletedService.service_details"
                     />
                 </template>
@@ -49,25 +53,25 @@
                     <input
                         type="file"
                         class="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][service_details]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][service_details]'"
                         :ref="'imageInput_' + index"
                     />
 
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][title]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][title]'"
                         :value="service_details.title"
                     />
 
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][description]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][description]'"
                         :value="service_details.description"
                     />
 
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][service_icon]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][service_icon]'"
                         :value="service_details.service_icon"
                     />
                 
@@ -187,14 +191,14 @@
 
                                 <x-admin::form.control-group.control
                                     type="text"
-                                    name="{{ $currentLocale->code }}[title]"
+                                    name="{{ $currentLocaleCode }}[title]"
                                     rules="required"
                                     v-model="selectedService.title"
                                     :label="trans('admin::app.settings.themes.edit.services-content.title')"
                                     :placeholder="trans('admin::app.settings.themes.edit.services-content.title')"
                                 />
 
-                                <x-admin::form.control-group.error control-name="{{ $currentLocale->code }}[title]" />
+                                <x-admin::form.control-group.error control-name="{{ $currentLocaleCode }}[title]" />
                             </x-admin::form.control-group>
 
                             <!-- Description -->
@@ -205,13 +209,13 @@
 
                                 <x-admin::form.control-group.control
                                     type="textarea"
-                                    name="{{ $currentLocale->code }}[description]"
+                                    name="{{ $currentLocaleCode }}[description]"
                                     v-model="selectedService.description"
                                     :label="trans('admin::app.settings.themes.edit.services-content.description')"
                                     :placeholder="trans('admin::app.settings.themes.edit.services-content.description')"
                                 />
 
-                                <x-admin::form.control-group.error control-name="{{ $currentLocale->code }}[description]" />
+                                <x-admin::form.control-group.error control-name="{{ $currentLocaleCode }}[description]" />
                             </x-admin::form.control-group>
 
                             <!-- Services Icon -->
@@ -222,14 +226,14 @@
 
                                 <x-admin::form.control-group.control
                                     type="text"
-                                    name="{{ $currentLocale->code }}[service_icon]"
+                                    name="{{ $currentLocaleCode }}[service_icon]"
                                     rules="required"
                                     v-model="selectedService.service_icon"
                                     :label="trans('admin::app.settings.themes.edit.services-content.service-icon-class')"
                                     :placeholder="trans('admin::app.settings.themes.edit.services-content.service-icon-class')"
                                 />
 
-                                <x-admin::form.control-group.error control-name="{{ $currentLocale->code }}[service_icon]" />
+                                <x-admin::form.control-group.error control-name="{{ $currentLocaleCode }}[service_icon]" />
                             </x-admin::form.control-group>
                         </x-slot>
 
@@ -257,7 +261,7 @@
             data() {
                 return {
                     
-                    servicesContent: @json($theme->translate($currentLocale->code)['options'] ?? null),
+                    servicesContent: @json($theme->translate($currentLocaleCode)['options'] ?? null),
 
                     deletedServices: [],
 
@@ -285,9 +289,9 @@
                             const serviceImage = formData.get("service_icon[]");
 
                             this.servicesContent.services.push({
-                                title: formData.get("{{ $currentLocale->code }}[title]"),
-                                description: formData.get("{{ $currentLocale->code }}[description]"),
-                                service_icon: formData.get("{{ $currentLocale->code }}[service_icon]"),
+                                title: formData.get("{{ $currentLocaleCode }}[title]"),
+                                description: formData.get("{{ $currentLocaleCode }}[description]"),
+                                service_icon: formData.get("{{ $currentLocaleCode }}[service_icon]"),
                             });
 
                             resetForm();

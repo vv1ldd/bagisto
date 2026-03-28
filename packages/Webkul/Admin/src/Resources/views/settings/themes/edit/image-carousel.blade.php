@@ -1,6 +1,10 @@
 <v-image-carousel :errors="errors">
     <x-admin::shimmer.settings.themes.image-carousel />
 </v-image-carousel>
+ 
+@php
+    $currentLocaleCode = is_string($currentLocale) ? $currentLocale : $currentLocale->code;
+@endphp
 
 <!-- Image Carousel Vue Component -->
 @pushOnce('scripts')
@@ -33,7 +37,7 @@
                 <template v-for="(deletedSlider, index) in deletedSliders">
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[deleted_sliders]['+ index +'][image]'"
+                        :name="'{{ $currentLocaleCode }}[deleted_sliders]['+ index +'][image]'"
                         :value="deletedSlider.image"
                     />
                 </template>
@@ -47,25 +51,25 @@
                     <input
                         type="file"
                         class="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][image]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][image]'"
                         :ref="'imageInput_' + index"
                     />
 
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][title]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][title]'"
                         :value="image.title"
                     />
 
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][link]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][link]'"
                         :value="image.link"
                     />
 
                     <input
                         type="hidden"
-                        :name="'{{ $currentLocale->code }}[options]['+ index +'][image]'"
+                        :name="'{{ $currentLocaleCode }}[options]['+ index +'][image]'"
                         :value="image.image"
                     />
                 
@@ -174,13 +178,13 @@
 
                                 <x-admin::form.control-group.control
                                     type="text"
-                                    name="{{ $currentLocale->code }}[title]"
+                                    name="{{ $currentLocaleCode }}[title]"
                                     rules="required"
                                     :placeholder="trans('admin::app.settings.themes.edit.image-title')"
                                     :label="trans('admin::app.settings.themes.edit.image-title')"
                                 />
 
-                                <x-admin::form.control-group.error control-name="{{ $currentLocale->code }}[title]" />
+                                <x-admin::form.control-group.error control-name="{{ $currentLocaleCode }}[title]" />
                             </x-admin::form.control-group>
 
                             <x-admin::form.control-group>
@@ -190,7 +194,7 @@
 
                                 <x-admin::form.control-group.control
                                     type="text"
-                                    name="{{ $currentLocale->code }}[link]"
+                                    name="{{ $currentLocaleCode }}[link]"
                                     :placeholder="trans('admin::app.settings.themes.edit.link')"
                                 />
                             </x-admin::form.control-group>
@@ -238,7 +242,7 @@
 
             data() {
                 return {
-                    sliders: @json($theme->translate($currentLocale->code)['options'] ?? null),
+                    sliders: @json($theme->translate($currentLocaleCode)['options'] ?? null),
 
                     deletedSliders: [],
                 };
@@ -265,8 +269,8 @@
                         }
 
                         this.sliders.images.push({
-                            title: formData.get("{{ $currentLocale->code }}[title]"),
-                            link: formData.get("{{ $currentLocale->code }}[link]"),
+                            title: formData.get("{{ $currentLocaleCode }}[title]"),
+                            link: formData.get("{{ $currentLocaleCode }}[link]"),
                             slider_image: sliderImage,
                         });
 
