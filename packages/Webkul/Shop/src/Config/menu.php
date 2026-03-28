@@ -36,7 +36,11 @@ return [
         'icon' => 'icon-orders',
         'sort' => 5,
     ],
-
-
-
+    [
+        'key' => 'account.redeem',
+        'name' => 'Активация ваучера',
+        'route' => 'shop.customers.account.redeem.index',
+        'icon' => 'icon-security',
+        'sort' => 6,
+    ],
 ];

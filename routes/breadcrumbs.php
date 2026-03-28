@@ -80,6 +80,12 @@ Breadcrumbs::for('crypto', function (BreadcrumbTrail $trail) {
     $trail->push('Крипто Адреса', route('shop.customers.account.crypto.index'));
 });
 
+// Home > My Account > Redeem
+Breadcrumbs::for('redeem', function (BreadcrumbTrail $trail) {
+    $trail->parent('account');
+    $trail->push('Активация ваучера', route('shop.customers.account.redeem.index'));
+});
+
 // Home > Cart
 Breadcrumbs::for('cart', function (BreadcrumbTrail $trail) {
     $trail->parent('home');

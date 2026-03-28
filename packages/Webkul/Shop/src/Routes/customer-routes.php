@@ -18,6 +18,7 @@ use Webkul\Shop\Http\Controllers\Customer\PasskeyController;
 use Spatie\LaravelPasskeys\Http\Controllers\AuthenticateUsingPasskeyController;
 use Spatie\LaravelPasskeys\Http\Controllers\GeneratePasskeyAuthenticationOptionsController;
 use Webkul\Shop\Http\Controllers\Customer\Account\TransferController;
+use Webkul\Shop\Http\Controllers\Customer\Account\RedeemController;
 
 Route::group(['prefix' => 'customer'], function () {
     Route::get('/test-mail', function () {
@@ -221,6 +222,16 @@ Route::group(['prefix' => 'customer'], function () {
                         Route::post('ping', 'ping')->name('shop.customers.account.handshakes.ping');
                         Route::post('acknowledge/{id}', 'acknowledge')->name('shop.customers.account.handshakes.acknowledge');
                         Route::delete('terminate/{id}', 'terminate')->name('shop.customers.account.handshakes.terminate');
+                    });
+
+                    /**
+                     * Redeem.
+                     */
+                    Route::prefix('redeem')->controller(RedeemController::class)->group(function () {
+                        Route::get('', 'index')->name('shop.customers.account.redeem.index');
+                        Route::post('verify', 'verify')->name('shop.customers.account.redeem.verify');
+                        Route::post('send-verification', 'sendVerification')->name('shop.customers.account.redeem.send_verification');
+                        Route::post('activate', 'activate')->name('shop.customers.account.redeem.activate');
                     });
                 });
                 Route::controller(CustomerController::class)->group(function () {

@@ -61,7 +61,9 @@
                                             @if($handshake->tx_hash)
                                                 <a href="https://arbiscan.io/tx/{{ $handshake->tx_hash }}" target="_blank" class="text-[10px] text-[#7C45F5] hover:underline flex items-center gap-1 mt-1 opacity-60">
                                                     <span>⛓️ View Transaction</span>
-                                                    <x-shop::icons.chevron-right class="w-2 h-2" />
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-2 h-2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                                    </svg>
                                                 </a>
                                             @endif
                                         </div>
