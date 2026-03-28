@@ -22,7 +22,7 @@ class AuthenticateCustomer
                 ], 401);
             }
 
-            return redirect()->route('shop.customer.session.index');
+            return redirect()->guest(route('shop.customer.session.index'));
         } else {
             if (! auth()->guard($guard)->user()->status) {
                 auth()->guard($guard)->logout();
@@ -35,7 +35,7 @@ class AuthenticateCustomer
 
                 session()->flash('warning', trans('shop::app.customers.login-form.not-activated'));
 
-                return redirect()->route('shop.customer.session.index');
+                return redirect()->guest(route('shop.customer.session.index'));
             }
         }
 

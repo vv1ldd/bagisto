@@ -423,9 +423,7 @@ class PasskeyController extends Controller
 
             session()->forget('passkey-authentication-options-json');
 
-            $redirectUrl = ($currentUser && $currentUser->id === $user->id)
-                ? redirect()->intended(route('shop.customers.account.index'))->getTargetUrl()
-                : route('shop.home.index');
+            $redirectUrl = redirect()->intended(route('shop.home.index'))->getTargetUrl();
 
             return response()->json([
                 'message' => 'Successfully authenticated.',

@@ -215,6 +215,11 @@ class CustomerController extends Controller
     {
         session()->flash('success', 'Аккаунт успешно создан и вход настроен!');
 
+        if ($intended = session()->get('registration_intended_url')) {
+            session()->forget('registration_intended_url');
+            return redirect()->to($intended);
+        }
+
         return redirect()->route('shop.home.index');
     }
 

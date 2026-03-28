@@ -284,6 +284,12 @@ class RegistrationController extends Controller
 
         Event::dispatch('customer.after.login', auth()->guard('customer')->user());
         session()->flash('recovery_key', $recoveryKey);
+        
+        // Capture intended URL for after-registration flow (multi-step seed backup)
+        if ($intended = session()->get('url.intended')) {
+            session(['registration_intended_url' => $intended]);
+        }
+        
         session()->forget('pending_recovery_key');
 
         return redirect()->route('shop.customers.account.profile.recovery_key');
