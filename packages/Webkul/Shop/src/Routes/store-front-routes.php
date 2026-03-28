@@ -17,6 +17,12 @@ use Webkul\Shop\Http\Controllers\AliasProfileController;
  */
 Route::get('@{alias}', [AliasProfileController::class, 'index'])->name('shop.alias_profile.index');
 
+/**
+ * CMS Page route.
+ */
+Route::get('page/{url_key}', [PageController::class, 'view'])->name('shop.cms.page');
+
+
 
 
 /**
