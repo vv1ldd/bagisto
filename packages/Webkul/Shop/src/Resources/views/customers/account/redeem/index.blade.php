@@ -216,7 +216,18 @@
                         });
                         
                         if (res.data.status === 'success') {
-                            this.currentStep = 2;
+                            if (this.redeem_form.email) {
+                                // User already has a verified email in profile, skip PIN/Passkey
+                                this.redeem_form.verification_code = 'TRUSTED_USER';
+                                
+                                if (this.hasContactInfo) {
+                                    this.activate();
+                                } else {
+                                    this.currentStep = 3;
+                                }
+                            } else {
+                                this.currentStep = 2;
+                            }
                         } else {
                             this.error = res.data.message || 'Ошибка проверки кода';
                         }

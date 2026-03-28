@@ -83,7 +83,7 @@ class RedeemController extends Controller
     {
         $request->validate([
             'code'              => 'required|string',
-            'verification_code' => 'required|numeric',
+            'verification_code' => 'required|string',
             'first_name'        => 'required|string|min:2',
             'last_name'         => 'required|string|min:2',
             'email'             => 'required|email',
