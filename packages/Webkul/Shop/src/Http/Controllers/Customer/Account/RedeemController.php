@@ -98,6 +98,17 @@ class RedeemController extends Controller
             $response = Http::withToken($token)
                 ->post($servicesUrl . '/activate', $payload);
 
+            if ($response->ok() && $response->json()['status'] === 'success') {
+                $customer = auth()->guard('customer')->user();
+                
+                // Update customer profile with the data used for redemption
+                $customer->update([
+                    'first_name' => $request->first_name,
+                    'last_name'  => $request->last_name,
+                    'phone'      => $request->phone,
+                ]);
+            }
+
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
             return response()->json(['message' => 'Ошибка при финальной активации'], 500);

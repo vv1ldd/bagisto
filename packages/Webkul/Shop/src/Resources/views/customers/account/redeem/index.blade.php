@@ -119,25 +119,7 @@
                     <input type="text" x-model="redeem_form.phone" @input="formatPhone" placeholder="+7 (___) ___-__-__" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold tracking-wider"/>
                 </div>
 
-                <!-- Conditional Fields based on form type (PSN) -->
-                <div x-show="metadata.type_form_id === 3" class="mt-6 p-4 bg-zinc-50 border-2 border-dashed border-zinc-300 mb-6 rounded-xl">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-[#00439c] text-white flex items-center justify-center rounded-lg font-black text-xs">PS</div>
-                        <span class="text-xs font-black uppercase tracking-tight text-zinc-900">Данные PlayStation Network</span>
-                    </div>
-                    <div class="space-y-3">
-                        <input type="email" placeholder="Email (PSN ID)" x-model="redeem_form.option[0].ps_network_id" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
-                        <input type="password" placeholder="Пароль" x-model="redeem_form.option[0].ps_network_password" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
-                        <input type="text" placeholder="Резервный код 2FA" x-model="redeem_form.option[0].ps_2fa_code" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
-                    </div>
-                </div>
-
-                <!-- Conditional Fields based on form type (Birthday) -->
-                <div x-show="metadata.type_form_id === 2" class="mt-6 mb-6">
-                    <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Дата рождения (для активации подписки)</label>
-                    <input type="date" x-model="redeem_form.option[1].ps_birthday" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold"/>
-                </div>
-
+                <!-- Simple Contact Data only -->
                 <button @click="activate" 
                     :disabled="loading"
                     class="w-full bg-[#00FF94] border-3 border-zinc-900 p-5 text-zinc-900 font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all">
@@ -187,11 +169,11 @@
                     verification_code: '',
                     first_name: @js(auth()->guard('customer')->user()->first_name ?? ''),
                     last_name: @js(auth()->guard('customer')->user()->last_name ?? ''),
-                    phone: '',
-                    option: [
-                        { check: '1', ps_network_id: '', ps_network_password: '', ps_2fa_code: '' },
-                        { check: '1', ps_birthday: '' }
-                    ]
+                    phone: @js(auth()->guard('customer')->user()->phone ?? '')
+                },
+
+                get hasContactInfo() {
+                    return this.redeem_form.first_name && this.redeem_form.last_name && this.redeem_form.phone;
                 },
 
                 get isValidCode() {
@@ -264,7 +246,11 @@
 
                 verifyPin() {
                     if (this.redeem_form.verification_code.length === 6) {
-                        this.currentStep = 3;
+                        if (this.hasContactInfo) {
+                            this.activate();
+                        } else {
+                            this.currentStep = 3;
+                        }
                     } else {
                         this.error = 'Введите 6-значный код';
                     }
@@ -288,11 +274,6 @@
                     this.loading = true;
                     this.error = null;
                     
-                    // Prepare options based on type_form_id
-                    let payload = { ...this.redeem_form };
-                    if (this.metadata.type_form_id !== 3) delete payload.option[0];
-                    if (this.metadata.type_form_id !== 2) delete payload.option[1];
-
                     try {
                         const res = await fetch('{{ route('shop.customers.account.redeem.activate') }}', {
                             method: 'POST',
@@ -300,7 +281,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
-                            body: JSON.stringify(payload)
+                            body: JSON.stringify(this.redeem_form)
                         });
                         const data = await res.json();
                         
