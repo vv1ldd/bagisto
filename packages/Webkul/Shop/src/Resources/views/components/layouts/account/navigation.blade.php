@@ -50,6 +50,25 @@ $menuIcons = [
                     </span>
                 </div>
 
+                {{-- Redeem / Voucher Activation (Hardcoded for Priority) --}}
+                <div class="nav-tile cursor-pointer group mt-1"
+                     onclick="window.location.href='{{ route('shop.customers.account.redeem.index') }}'">
+                    <span class="w-12 h-12 flex items-center justify-center bg-amber-500 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                        </svg>
+                    </span>
+                    <div class="flex flex-col">
+                        <span class="nav-label">Активация ваучера</span>
+                        <span class="text-[12px] text-zinc-500 font-medium">Активируйте бонусы и подарки</span>
+                    </div>
+                    <span class="nav-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </span>
+                </div>
+
                 {{-- Messages / Matrix --}}
                 <div class="nav-tile cursor-pointer group mt-1"
                      onclick="window.location.href='{{ route('shop.customers.account.matrix.index') }}'">
@@ -95,8 +114,8 @@ $menuIcons = [
                             @continue
                         @endif
                         
-                        {{-- Skip Profile, Passkeys, Orders, and Address --}}
-                        @if (in_array($subMenuItem->getKey(), ['account.profile', 'account.passkeys', 'account.orders', 'account.login_activity', 'account.address']))
+                        {{-- Skip Profile, Passkeys, Orders, Address, and Redeem (hardcoded above) --}}
+                        @if (in_array($subMenuItem->getKey(), ['account.profile', 'account.passkeys', 'account.orders', 'account.login_activity', 'account.address', 'account.redeem']))
                             @continue
                         @endif
  
@@ -142,24 +161,6 @@ $menuIcons = [
                 @endif
             @endforeach
  
-            {{-- Security (Grouped) --}}
-            <a href="{{ route('shop.customers.account.security.index') }}" class="nav-tile group mt-1">
-                <span class="w-12 h-12 flex items-center justify-center bg-violet-600 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                </span>
-                <div class="flex flex-col">
-                    <span class="nav-label">Безопасность</span>
-                    <span class="text-[12px] text-zinc-500 font-medium">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</span>
-                </div>
-                <span class="nav-arrow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </span>
-            </a>
- 
             {{-- Profile Edit --}}
             <a href="{{ route('shop.customers.account.profile.edit') }}" class="nav-tile group mt-1">
                 <span class="w-12 h-12 flex items-center justify-center bg-zinc-200 text-zinc-600 border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
@@ -170,6 +171,24 @@ $menuIcons = [
                 <div class="flex flex-col">
                     <span class="nav-label">Личные данные</span>
                     <span class="text-[12px] text-zinc-500 font-medium">Имя, почта и настройки</span>
+                </div>
+                <span class="nav-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </span>
+            </a>
+
+            {{-- Security (Grouped) --}}
+            <a href="{{ route('shop.customers.account.security.index') }}" class="nav-tile group mt-1">
+                <span class="w-12 h-12 flex items-center justify-center bg-violet-600 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </span>
+                <div class="flex flex-col">
+                    <span class="nav-label">Безопасность</span>
+                    <span class="text-[12px] text-zinc-500 font-medium">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</span>
                 </div>
                 <span class="nav-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
