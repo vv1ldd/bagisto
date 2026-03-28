@@ -388,7 +388,7 @@
                             <!-- Dropdown Actions -->
                             <div class="shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 relative">
                                 <x-shop::dropdown
-                                    position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
+                                    position="bottom-{{ (optional(core()->getCurrentLocale())->direction ?? 'ltr') === 'ltr' ? 'right' : 'left' }}">
                                     <x-slot:toggle>
                                         <button
                                             class="p-2 hover:bg-white rounded shadow-sm border border-zinc-200 transition text-zinc-500 hover:text-zinc-900"
@@ -1759,7 +1759,7 @@
                 const container = document.getElementById('org-details-bank-accounts');
                 container.innerHTML = '<div class="p-4 text-center text-zinc-400 text-[12px]">Загрузка счетов...</div>';
 
-                fetch(`/customer/account/credits/organizations/${id}/bank-accounts`)
+                fetch(`/account/credits/organizations/${id}/bank-accounts`)
                     .then(res => res.json())
                     .then(data => {
                         container.innerHTML = '';
@@ -1848,7 +1848,7 @@
                     formData.append('bank_name', document.getElementById('new-bank-name').value);
                     formData.append('correspondent_account', document.getElementById('new-bank-corr').value);
 
-                    const response = await fetch(`/customer/account/organizations/${orgId}/settlement-account`, {
+                    const response = await fetch(`/account/organizations/${orgId}/settlement-account`, {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
@@ -2227,7 +2227,7 @@
                 else if (step === 'management') goToManagement();
                 else if (step === 'b2b-management') goToB2BManagement();
 
-                @if($errors->any() && old('inn'))
+                @if((is_object($errors) ? $errors->any() : count($errors) > 0) && old('inn'))
                     goToB2BManagement();
                     // Let user know there was an error in the standalone create form if they were redirected back here.
                     // Though this shouldn't happen anymore with the controller change.
@@ -2422,7 +2422,9 @@
 
                                             if (bicInput) bicInput.value = item.bic;
                                             if (nameInput) nameInput.value = item.bank_name || item.name;
+                                            @if (isset($errors) && (is_object($errors) ? $errors->any() : count($errors) > 0))
                                             if (corrInput) corrInput.value = item.correspondent_account;
+                                            @endif
 
                                             bankSuggestionsBox.classList.add('hidden');
                                             bankSuggestionsBox.innerHTML = '';

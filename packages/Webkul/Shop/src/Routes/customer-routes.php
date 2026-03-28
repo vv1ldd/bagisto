@@ -18,7 +18,7 @@ use Webkul\Shop\Http\Controllers\Customer\PasskeyController;
 use Webkul\Shop\Http\Controllers\Customer\Account\TransferController;
 use Webkul\Shop\Http\Controllers\Customer\Account\RedeemController;
 
-Route::group(['prefix' => 'customer'], function () {
+Route::group([], function () {
     Route::get('/test-mail', function () {
         try {
             \Illuminate\Support\Facades\Mail::raw('This is a test email from Bagisto to verify mail configuration.', function ($message) {

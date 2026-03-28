@@ -2096,7 +2096,7 @@ export default {
 
             const payload = { signal_data: signalData, sender_name: this.localUserName };
             // Ensure endpoint selection is robust: if roomUuid exists, we are likely in room/guest mode
-            const endpoint = (this.isRoomMode || this.roomUuid) ? `/call/${this.roomUuid}/signal` : '/customer/account/calls/signal';
+            const endpoint = (this.isRoomMode || this.roomUuid) ? `/call/${this.roomUuid}/signal` : '/account/calls/signal';
             
             try {
                 await axios.post(endpoint, payload);

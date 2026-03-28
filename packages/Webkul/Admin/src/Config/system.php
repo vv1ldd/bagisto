@@ -129,7 +129,7 @@ return [
                 'title' => 'admin::app.configuration.index.general.content.speculation-rules.prerender.ignore-urls',
                 'info' => 'admin::app.configuration.index.general.content.speculation-rules.prerender.ignore-urls-info',
                 'type' => 'textarea',
-                'default' => '/customer/account/*|/checkout/*',
+                'default' => '/account/*|/checkout/*',
                 'depends' => 'prerender_enabled:true',
             ],
             [
@@ -172,7 +172,7 @@ return [
                 'title' => 'admin::app.configuration.index.general.content.speculation-rules.prefetch.ignore-urls',
                 'info' => 'admin::app.configuration.index.general.content.speculation-rules.prefetch.ignore-urls-info',
                 'type' => 'textarea',
-                'default' => '/customer/account/*|/checkout/*',
+                'default' => '/account/*|/checkout/*',
                 'depends' => 'prefetch_enabled:true',
             ],
             [
