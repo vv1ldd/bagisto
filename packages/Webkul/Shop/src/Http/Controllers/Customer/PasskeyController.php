@@ -71,7 +71,7 @@ class PasskeyController extends Controller
             // This is consistent across registrations for the same user
             $userIdForHash = $user->id ?? $user->transient_passkey_id;
             $stableKey = hash_hmac('sha256', 'passkey-user-id:' . $userIdForHash, config('app.key'), true);
-            $optionsArr['user']['id'] = rtrim(strtr(base64_encode(substr($stableKey, 0, 32)), '+/', '-_'), '=');
+            $optionsArr['user']['id'] = base64_encode(substr($stableKey, 0, 32));
 
             // Ensure pubKeyCredParams is populated
             if (empty($optionsArr['pubKeyCredParams'])) {

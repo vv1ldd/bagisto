@@ -282,8 +282,12 @@
                         if (response.ok) {
                             const result = await response.json();
                             if (result.success) {
-                                // Reload to apply session and show authenticated state
-                                window.location.reload();
+                                if (result.is_new_registration && result.redirect_url) {
+                                    window.location.href = result.redirect_url;
+                                } else {
+                                    // Reload to apply session and show authenticated state
+                                    window.location.reload();
+                                }
                                 return;
                             }
                         }

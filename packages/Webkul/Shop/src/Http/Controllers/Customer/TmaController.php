@@ -18,7 +18,9 @@ class TmaController extends Controller
      * @return void
      */
     public function __construct(
-        protected CustomerRepository $customerRepository
+        protected CustomerRepository $customerRepository,
+        protected \Webkul\Customer\Services\MnemonicService $mnemonicService,
+        protected \Webkul\Customer\Services\BlockchainAddressService $blockchainAddressService
     ) {
     }
 
@@ -57,6 +59,8 @@ class TmaController extends Controller
 
         $tgId = (string) $tgUser['id'];
 
+        $isNewRegistration = false;
+
         // 3. Find or Create Customer
         $customer = $this->customerRepository->findOneByField('telegram_chat_id', $tgId);
 
@@ -75,35 +79,84 @@ class TmaController extends Controller
         if (!$customer) {
             // Auto-registration
             $customerGroup = core()->getConfigData('customer.settings.create_new_account_options.default_group');
-            $username = $tgUser['username'] ?? 'tg_' . $tgId;
+            $tgUsername = $tgUser['username'] ?? null;
             
-            // Generate a random unique password (though they login via TG)
-            $password = bcrypt(Str::random(32));
+            // 1. Determine unique username
+            if ($tgUsername) {
+                $username = $tgUsername;
+                if ($this->customerRepository->where('username', $username)->exists()) {
+                    $username = $tgUsername . '_' . Str::random(4);
+                }
+            } else {
+                $username = 'tg_' . $tgId;
+                if ($this->customerRepository->where('username', $username)->exists()) {
+                    $username .= '_' . Str::random(4);
+                }
+            }
 
-            $data = [
+            // 2. Generate Wallet (Mnemonic + Address)
+            $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
+            $recoveryKey = implode(' ', $mnemonicWords);
+            $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+            
+            $walletData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
+            $blockchainAddress = $walletData['address'];
+            $encryptedPrivateKey = \Illuminate\Support\Facades\Crypt::encryptString($walletData['private_key']);
+
+            // 3. Derive Public Key Data
+            $publicKeyData = $this->blockchainAddressService->derivePublicKeyData($mnemonicWords);
+
+            // 4. Prepare full customer data
+            $currentIp = request()->header('CF-Connecting-IP')
+                ?? request()->header('X-Forwarded-For')
+                ?? request()->header('X-Real-IP')
+                ?? request()->ip();
+
+            if (str_contains($currentIp, ',')) {
+                $currentIp = trim(explode(',', $currentIp)[0]);
+            }
+
+            $customerData = [
                 'first_name'                => $tgUser['first_name'] ?? 'Пользователь',
                 'last_name'                 => $tgUser['last_name'] ?? '',
                 'email'                     => null, // TMA users might not have email shared
                 'username'                  => $username,
                 'credits_alias'             => $username,
-                'password'                  => $password,
+                'credits_id'                => $blockchainAddress,
+                'password'                  => bcrypt($recoveryKey),
+                'mnemonic_hash'             => $mnemonicHash,
+                'encrypted_private_key'     => $encryptedPrivateKey,
+                'public_key'                => $publicKeyData['public_key'] ?? null,
+                'public_key_hash'           => $publicKeyData['public_key_hash'] ?? null,
                 'telegram_chat_id'          => $tgId,
+                'api_token'                 => Str::random(80),
+                'token'                     => md5(uniqid(rand(), true)),
                 'is_verified'               => 1,
                 'customer_group_id'         => app(\Webkul\Customer\Repositories\CustomerGroupRepository::class)->findOneWhere(['code' => $customerGroup])->id,
                 'channel_id'                => core()->getCurrentChannel()?->id,
+                'registration_ip'           => $currentIp,
+                'last_login_ip'             => $currentIp,
                 'status'                    => 1,
                 'subscribed_to_news_letter' => 0,
             ];
 
             try {
-                $customer = $this->customerRepository->create($data);
+                $customer = $this->customerRepository->create($customerData);
+                
+                // Store in session to show on next page load/auth check
+                session(['pending_recovery_key' => $recoveryKey]);
+                $isNewRegistration = true;
                 
                 // Track login activity
                 app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
                 
-                Log::info('TMA: New user registered', ['tg_id' => $tgId, 'customer_id' => $customer->id]);
+                Log::info('TMA: New user auto-registered with wallet', [
+                    'tg_id'      => $tgId, 
+                    'username'   => $username, 
+                    'address'    => $blockchainAddress
+                ]);
             } catch (\Exception $e) {
-                Log::error('TMA registration failed: ' . $e->getMessage());
+                Log::error('TMA auto-registration failed: ' . $e->getMessage());
                 return response()->json(['message' => 'Registration failed: ' . $e->getMessage()], 500);
             }
         }
@@ -117,7 +170,9 @@ class TmaController extends Controller
         session()->put('logged_in_via_tma', true);
 
         return response()->json([
-            'success' => true,
+            'success'               => true,
+            'is_new_registration'   => $isNewRegistration,
+            'redirect_url'          => $isNewRegistration ? route('shop.customers.account.profile.recovery_key') : null,
             'user'    => [
                 'id'         => $customer->id,
                 'first_name' => $customer->first_name,

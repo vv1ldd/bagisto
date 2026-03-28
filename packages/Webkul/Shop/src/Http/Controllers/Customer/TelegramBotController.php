@@ -36,8 +36,9 @@ class TelegramBotController extends Controller
             $text = $message['text'] ?? '';
 
             // Handle /start <token> command
-            if (str_starts_with($text, '/start ')) {
-                $token = trim(substr($text, 7));
+            if (str_starts_with($text, '/start')) {
+                $args = explode(' ', $text);
+                $token = isset($args[1]) ? trim($args[1]) : null;
 
                 if ($token) {
                     $customer = $this->telegramService->linkCustomer($token, $chatId);
@@ -47,16 +48,52 @@ class TelegramBotController extends Controller
                             $chatId,
                             "<b>Аккаунт успешно привязан!</b>\n\nТеперь вы будете получать уведомления от Meanly в этот чат."
                         );
+                        
+                        // Also show the app button after linking
+                        $this->sendWelcomeWithAppButton($chatId);
                     } else {
                         $this->telegramService->sendMessage(
                             $chatId,
                             "Ошибка: Неверный или просроченный токен. Пожалуйста, получите новую ссылку в личном кабинете."
                         );
                     }
+                } else {
+                    // Standard /start without token
+                    $this->sendWelcomeWithAppButton($chatId);
                 }
+            } else {
+                // Any other message - show the button for convenience
+                $this->sendWelcomeWithAppButton($chatId);
             }
         }
 
         return response()->json(['status' => 'ok']);
+    }
+
+    /**
+     * Send a welcome message with a button to open the Mini App.
+     *
+     * @param  int  $chatId
+     * @return void
+     */
+    protected function sendWelcomeWithAppButton(int $chatId)
+    {
+        $appUrl = url('/');
+        
+        $this->telegramService->sendMessage(
+            $chatId,
+            "<b>Добро пожаловать в Meanly Market!</b>\n\nСамый современный маркетплейс уже здесь. Нажмите кнопку ниже, чтобы войти в приложение.",
+            'HTML',
+            [
+                'inline_keyboard' => [
+                    [
+                        [
+                            'text'    => '🚀 Открыть Meanly Market',
+                            'web_app' => ['url' => $appUrl]
+                        ]
+                    ]
+                ]
+            ]
+        );
     }
 }

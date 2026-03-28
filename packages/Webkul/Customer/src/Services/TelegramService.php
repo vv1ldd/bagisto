@@ -33,7 +33,7 @@ class TelegramService
      * @param  string  $parseMode
      * @return bool
      */
-    public function sendMessage(int $chatId, string $message, string $parseMode = 'HTML'): bool
+    public function sendMessage(int $chatId, string $message, string $parseMode = 'HTML', ?array $replyMarkup = null): bool
     {
         if (!$this->token) {
             Log::error('Telegram Bot Token not configured.');
@@ -41,11 +41,17 @@ class TelegramService
         }
 
         try {
-            $response = Http::post("https://api.telegram.org/bot{$this->token}/sendMessage", [
+            $params = [
                 'chat_id'    => $chatId,
                 'text'       => $message,
                 'parse_mode' => $parseMode,
-            ]);
+            ];
+
+            if ($replyMarkup) {
+                $params['reply_markup'] = json_encode($replyMarkup);
+            }
+
+            $response = Http::post("https://api.telegram.org/bot{$this->token}/sendMessage", $params);
 
             return $response->successful();
         } catch (\Exception $e) {

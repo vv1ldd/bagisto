@@ -187,18 +187,7 @@
                     const options = await prepareRes.json();
                     const optionsJSON = options.publicKey ? options.publicKey : options;
 
-                    const toBase64Url = (str) => {
-                        if (!str || typeof str !== 'string') return str;
-                        return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-                    };
 
-                    if (optionsJSON.challenge) optionsJSON.challenge = toBase64Url(optionsJSON.challenge);
-                    if (optionsJSON.user && optionsJSON.user.id) optionsJSON.user.id = toBase64Url(optionsJSON.user.id);
-                    if (optionsJSON.excludeCredentials) {
-                        optionsJSON.excludeCredentials.forEach(cred => {
-                            if (cred.id) cred.id = toBase64Url(cred.id);
-                        });
-                    }
 
                     btn.innerHTML = '<span class="animate-pulse">Создайте ключ...</span>';
                     const attResp = await SimpleWebAuthn.startRegistration(optionsJSON);
