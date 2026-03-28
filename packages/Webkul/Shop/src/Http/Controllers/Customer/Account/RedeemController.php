@@ -22,22 +22,26 @@ class RedeemController extends Controller
     public function verify(Request $request)
     {
         $request->validate([
-            'code' => 'required|string',
+            'code' => 'required|string|regex:/^W1C-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/',
         ]);
 
-        $apiUrl = config('services.redeem.url') . '/verify-code';
-        $token  = config('services.redeem.token');
+        $servicesUrl = config('services.redeem.url');
+        $token       = config('services.redeem.token');
+
+        if (!$servicesUrl || !$token) {
+            return response()->json(['message' => 'API configuration missing'], 500);
+        }
 
         try {
             $response = Http::withToken($token)
-                ->post($apiUrl, [
+                ->post($servicesUrl . '/verify-code', [
                     'code' => $request->code,
                 ]);
 
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
             return response()->json([
-                'error'   => 'API Connection Error',
+                'message' => 'Не удалось связаться с сервером активации',
                 'details' => $e->getMessage(),
             ], 500);
         }
@@ -53,21 +57,19 @@ class RedeemController extends Controller
             'email' => 'required|email',
         ]);
 
-        $apiUrl = config('services.redeem.url') . '/send-verification';
-        $token  = config('services.redeem.token');
+        $servicesUrl = config('services.redeem.url');
+        $token       = config('services.redeem.token');
 
         try {
             $response = Http::withToken($token)
-                ->post($apiUrl, [
+                ->post($servicesUrl . '/send-verification', [
                     'code'  => $request->code,
                     'email' => $request->email,
                 ]);
 
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'API Connection Error',
-            ], 500);
+            return response()->json(['message' => 'Ошибка при отправке кода подтверждения'], 500);
         }
     }
 
@@ -79,31 +81,26 @@ class RedeemController extends Controller
         $request->validate([
             'code'              => 'required|string',
             'verification_code' => 'required|numeric',
-            'first_name'        => 'required|string',
-            'last_name'         => 'required|string',
+            'first_name'        => 'required|string|min:2',
+            'last_name'         => 'required|string|min:2',
             'email'             => 'required|email',
             'phone'             => 'required|string',
+            'option'            => 'nullable|array',
         ]);
 
-        $apiUrl = config('services.redeem.url') . '/activate';
-        $token  = config('services.redeem.token');
+        $servicesUrl = config('services.redeem.url');
+        $token       = config('services.redeem.token');
 
         try {
+            // Pass the entire validated data + nested options
+            $payload = $request->all();
+
             $response = Http::withToken($token)
-                ->post($apiUrl, $request->only([
-                    'code',
-                    'verification_code',
-                    'first_name',
-                    'last_name',
-                    'email',
-                    'phone',
-                ]));
+                ->post($servicesUrl . '/activate', $payload);
 
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'API Connection Error',
-            ], 500);
+            return response()->json(['message' => 'Ошибка при финальной активации'], 500);
         }
     }
 }
