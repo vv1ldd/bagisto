@@ -179,10 +179,22 @@ class TmaController extends Controller
             'username' => $customer->username
         ]);
 
+        // Force session save to ensure common session persistence across background frames
+        session()->save();
+
+        $redirectUrl = $isNewRegistration ? route('shop.customers.account.profile.recovery_key') : null;
+        
+        // If the user came specifically to redeem a voucher, skip onboarding and go straight there
+        if ($intended = session()->get('registration_intended_url')) {
+            if (str_contains($intended, 'redeem')) {
+                $redirectUrl = $intended;
+            }
+        }
+
         return response()->json([
             'success'               => true,
             'is_new_registration'   => $isNewRegistration,
-            'redirect_url'          => $isNewRegistration ? route('shop.customers.account.profile.recovery_key') : null,
+            'redirect_url'          => $redirectUrl,
             'user'    => [
                 'id'         => $customer->id,
                 'first_name' => $customer->first_name,

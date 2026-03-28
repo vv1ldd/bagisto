@@ -295,6 +295,16 @@ class RegistrationController extends Controller
         
         session()->forget('pending_recovery_key');
 
+        // Force session save to ensure the next request sees the authentication state
+        session()->save();
+
+        // If the user came specifically to redeem a voucher, skip onboarding and go straight there
+        if ($intended = session()->get('registration_intended_url')) {
+            if (str_contains($intended, 'redeem')) {
+                return redirect()->to($intended);
+            }
+        }
+
         return redirect()->route('shop.customers.account.profile.recovery_key');
     }
 }

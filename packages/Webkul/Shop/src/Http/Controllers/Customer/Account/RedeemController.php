@@ -13,6 +13,12 @@ class RedeemController extends Controller
      */
     public function index()
     {
+        if (! auth()->guard('customer')->check()) {
+            if (! session()->has('registration_intended_url')) {
+                session(['registration_intended_url' => request()->fullUrl()]);
+            }
+        }
+
         $customer = auth()->guard('customer')->user();
         $hasPasskeys = $customer ? $customer->passkeys()->exists() : false;
 

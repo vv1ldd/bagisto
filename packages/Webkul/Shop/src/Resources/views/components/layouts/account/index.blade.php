@@ -88,7 +88,7 @@
                             <div class="flex items-center gap-3 mb-4 px-4 pt-4">
                                 <button type="button" 
                                     onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ $backLink ?? route('shop.customers.account.index') }}'"
-                                    class="w-10 h-10 bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 rounded-2xl active:scale-95 transition-all shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5]">
+                                    class="w-10 h-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 flex items-center justify-center text-zinc-500 dark:text-zinc-300 rounded-2xl active:scale-95 transition-all shadow-sm hover:text-[#7C45F5] hover:border-[#7C45F5] dark:hover:text-[#7C45F5] dark:hover:border-[#7C45F5]">
                                     <span class="icon-arrow-left text-2xl"></span>
                                 </button>
                                 <h1 class="text-[22px] font-black text-white tracking-tight">{{ $title }}</h1>
