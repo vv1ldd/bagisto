@@ -86,6 +86,12 @@ Breadcrumbs::for('redeem', function (BreadcrumbTrail $trail) {
     $trail->push('Активация ваучера', route('shop.customers.account.redeem.index'));
 });
 
+// Home > My Account > Handshakes
+Breadcrumbs::for('handshakes', function (BreadcrumbTrail $trail) {
+    $trail->parent('account');
+    $trail->push('Рукопожатия', route('shop.customers.account.handshakes.index'));
+});
+
 // Home > Cart
 Breadcrumbs::for('cart', function (BreadcrumbTrail $trail) {
     $trail->parent('home');

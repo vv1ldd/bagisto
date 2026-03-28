@@ -15,8 +15,6 @@ use Webkul\Shop\Http\Controllers\Customer\SessionController;
 
 use Webkul\Shop\Http\Controllers\DataGridController;
 use Webkul\Shop\Http\Controllers\Customer\PasskeyController;
-use Spatie\LaravelPasskeys\Http\Controllers\AuthenticateUsingPasskeyController;
-use Spatie\LaravelPasskeys\Http\Controllers\GeneratePasskeyAuthenticationOptionsController;
 use Webkul\Shop\Http\Controllers\Customer\Account\TransferController;
 use Webkul\Shop\Http\Controllers\Customer\Account\RedeemController;
 

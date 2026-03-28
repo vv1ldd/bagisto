@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Controllers\User\ForgetPasswordController;
+use Webkul\Admin\Http\Controllers\User\PasskeyController;
 use Webkul\Admin\Http\Controllers\User\ResetPasswordController;
 use Webkul\Admin\Http\Controllers\User\SessionController;
 
