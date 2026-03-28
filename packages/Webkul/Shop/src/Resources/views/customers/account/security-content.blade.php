@@ -95,7 +95,6 @@
             </div>
         </a>
     {{-- Telegram Notifications --}}
-    @if (!$isOnboarding)
         <div class="group relative block w-full bg-white border-4 border-zinc-900 p-6 md:p-8 transition-all {{ !$customer->telegram_chat_id ? 'hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none' : '' }} shadow-[8px_8px_0px_0px_rgba(34,197,94,1)]">
             <div class="flex items-start gap-6">
                 <div class="w-16 h-16 flex items-center justify-center {{ $customer->telegram_chat_id ? 'bg-green-500' : 'bg-[#0088cc]' }} border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-6 text-white">
