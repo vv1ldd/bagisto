@@ -18,6 +18,13 @@ use Webkul\Shop\Http\Controllers\AliasProfileController;
 Route::get('@{alias}', [AliasProfileController::class, 'index'])->name('shop.alias_profile.index');
 
 /**
+ * Direct Redeem Alias
+ */
+Route::get('redeem', [\Webkul\Shop\Http\Controllers\Customer\Account\RedeemController::class, 'index'])
+    ->middleware('customer')
+    ->name('shop.redeem.index');
+
+/**
  * CMS Page route.
  */
 Route::get('page/{url_key}', [PageController::class, 'view'])->name('shop.cms.page');

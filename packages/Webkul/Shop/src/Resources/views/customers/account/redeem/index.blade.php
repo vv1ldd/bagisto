@@ -3,7 +3,8 @@
         Активация ваучера
     </x-slot>
 
-    <div x-data="redeemApp()" class="w-full max-w-[600px] mx-auto px-4 py-6">
+    {{-- v-pre directive is added to prevent Vue from interfering with Alpine.js logic --}}
+    <div v-pre x-data="redeemVoucherApp()" x-cloak class="w-full max-w-[600px] mx-auto px-4 py-6">
         
         <!-- Step Indicator -->
         <div class="flex items-center justify-between mb-8 px-2">
@@ -36,7 +37,7 @@
                 
                 <div class="relative mb-6">
                     <input type="text" 
-                        x-model="form.code" 
+                        x-model="redeem_form.code" 
                         @input="formatCode"
                         placeholder="W1C-XXXX-XXXX-XXXX"
                         class="w-full bg-zinc-50 border-3 border-zinc-900 p-5 text-2xl font-black tracking-[0.2em] placeholder:text-zinc-300 focus:ring-4 focus:ring-[#7C45F5]/20 focus:outline-none transition-all uppercase"
@@ -69,7 +70,7 @@
                     <div>
                         <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Ваш Email</label>
                         <input type="email" 
-                            x-model="form.email" 
+                            x-model="redeem_form.email" 
                             class="w-full bg-zinc-50 border-3 border-zinc-900 p-4 font-black focus:outline-none transition-all"
                         />
                     </div>
@@ -77,7 +78,7 @@
                     <div x-show="pinSent">
                         <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Код подтверждения (6 цифр)</label>
                         <input type="text" 
-                            x-model="form.verification_code" 
+                            x-model="redeem_form.verification_code" 
                             maxlength="6"
                             class="w-full bg-zinc-50 border-3 border-zinc-900 p-4 font-black tracking-[1em] text-center focus:outline-none transition-all"
                         />
@@ -85,13 +86,13 @@
                 </div>
 
                 <button x-show="!pinSent" @click="sendPin" 
-                    :disabled="loading || !form.email"
+                    :disabled="loading || !redeem_form.email"
                     class="w-full bg-zinc-900 border-3 border-zinc-900 p-5 text-white font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(124,69,245,1)] transition-all">
                     Отправить PIN
                 </button>
 
                 <button x-show="pinSent" @click="verifyPin" 
-                    :disabled="loading || form.verification_code.length < 6"
+                    :disabled="loading || redeem_form.verification_code.length < 6"
                     class="w-full bg-[#7C45F5] border-3 border-zinc-900 p-5 text-white font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all">
                     Продолжить
                 </button>
@@ -105,17 +106,17 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Имя</label>
-                        <input type="text" x-model="form.first_name" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold uppercase"/>
+                        <input type="text" x-model="redeem_form.first_name" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold uppercase"/>
                     </div>
                     <div>
                         <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Фамилия</label>
-                        <input type="text" x-model="form.last_name" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold uppercase"/>
+                        <input type="text" x-model="redeem_form.last_name" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold uppercase"/>
                     </div>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Номер телефона</label>
-                    <input type="text" x-model="form.phone" @input="formatPhone" placeholder="+7 (___) ___-__-__" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold tracking-wider"/>
+                    <input type="text" x-model="redeem_form.phone" @input="formatPhone" placeholder="+7 (___) ___-__-__" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold tracking-wider"/>
                 </div>
 
                 <!-- Conditional Fields based on form type (PSN) -->
@@ -125,16 +126,16 @@
                         <span class="text-xs font-black uppercase tracking-tight text-zinc-900">Данные PlayStation Network</span>
                     </div>
                     <div class="space-y-3">
-                        <input type="email" placeholder="Email (PSN ID)" x-model="form.option[0].ps_network_id" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
-                        <input type="password" placeholder="Пароль" x-model="form.option[0].ps_network_password" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
-                        <input type="text" placeholder="Резервный код 2FA" x-model="form.option[0].ps_2fa_code" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
+                        <input type="email" placeholder="Email (PSN ID)" x-model="redeem_form.option[0].ps_network_id" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
+                        <input type="password" placeholder="Пароль" x-model="redeem_form.option[0].ps_network_password" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
+                        <input type="text" placeholder="Резервный код 2FA" x-model="redeem_form.option[0].ps_2fa_code" class="w-full bg-white border-2 border-zinc-900 p-3 text-sm font-bold"/>
                     </div>
                 </div>
 
                 <!-- Conditional Fields based on form type (Birthday) -->
                 <div x-show="metadata.type_form_id === 2" class="mt-6 mb-6">
                     <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Дата рождения (для активации подписки)</label>
-                    <input type="date" x-model="form.option[1].ps_birthday" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold"/>
+                    <input type="date" x-model="redeem_form.option[1].ps_birthday" class="w-full bg-zinc-50 border-2 border-zinc-900 p-3 font-bold"/>
                 </div>
 
                 <button @click="activate" 
@@ -170,7 +171,7 @@
 
     @push('scripts')
     <script>
-        function redeemApp() {
+        function redeemVoucherApp() {
             return {
                 currentStep: 1,
                 loading: false,
@@ -180,12 +181,12 @@
                     type_form_id: 1,
                     sku: null
                 },
-                form: {
+                redeem_form: {
                     code: '',
-                    email: '{{ auth()->guard('customer')->user()->email }}',
+                    email: @js(auth()->guard('customer')->user()->email ?? ''),
                     verification_code: '',
-                    first_name: '{{ auth()->guard('customer')->user()->first_name }}',
-                    last_name: '{{ auth()->guard('customer')->user()->last_name }}',
+                    first_name: @js(auth()->guard('customer')->user()->first_name ?? ''),
+                    last_name: @js(auth()->guard('customer')->user()->last_name ?? ''),
                     phone: '',
                     option: [
                         { check: '1', ps_network_id: '', ps_network_password: '', ps_2fa_code: '' },
@@ -194,18 +195,18 @@
                 },
 
                 get isValidCode() {
-                    return /^W1C-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(this.form.code);
+                    return /^W1C-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(this.redeem_form.code);
                 },
 
                 formatCode() {
-                    let val = this.form.code.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                    let val = this.redeem_form.code.toUpperCase().replace(/[^A-Z0-9]/g, '');
                     if (val.startsWith('W1C')) val = val.substring(3);
                     
                     let parts = [];
                     for (let i = 0; i < val.length && i < 12; i += 4) {
                         parts.push(val.substring(i, i + 4));
                     }
-                    this.form.code = 'W1C' + (parts.length ? '-' + parts.join('-') : '');
+                    this.redeem_form.code = 'W1C' + (parts.length ? '-' + parts.join('-') : '');
                 },
 
                 async verifyCode() {
@@ -218,7 +219,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
-                            body: JSON.stringify({ code: this.form.code })
+                            body: JSON.stringify({ code: this.redeem_form.code })
                         });
                         const data = await res.json();
                         
@@ -245,7 +246,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
-                            body: JSON.stringify({ code: this.form.code, email: this.form.email })
+                            body: JSON.stringify({ code: this.redeem_form.code, email: this.redeem_form.email })
                         });
                         const data = await res.json();
                         
@@ -262,7 +263,7 @@
                 },
 
                 verifyPin() {
-                    if (this.form.verification_code.length === 6) {
+                    if (this.redeem_form.verification_code.length === 6) {
                         this.currentStep = 3;
                     } else {
                         this.error = 'Введите 6-значный код';
@@ -270,7 +271,7 @@
                 },
 
                 formatPhone() {
-                    let val = this.form.phone.replace(/\D/g, '');
+                    let val = this.redeem_form.phone.replace(/\D/g, '');
                     if (val.startsWith('7')) val = val.substring(1);
                     if (val.length > 10) val = val.substring(0, 10);
                     
@@ -280,7 +281,7 @@
                     if (val.length > 6) res += '-' + val.substring(6, 8);
                     if (val.length > 8) res += '-' + val.substring(8, 10);
                     
-                    this.form.phone = res;
+                    this.redeem_form.phone = res;
                 },
 
                 async activate() {
@@ -288,7 +289,7 @@
                     this.error = null;
                     
                     // Prepare options based on type_form_id
-                    let payload = { ...this.form };
+                    let payload = { ...this.redeem_form };
                     if (this.metadata.type_form_id !== 3) delete payload.option[0];
                     if (this.metadata.type_form_id !== 2) delete payload.option[1];
 
