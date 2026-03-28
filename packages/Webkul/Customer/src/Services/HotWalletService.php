@@ -4,7 +4,7 @@ namespace Webkul\Customer\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Kornrunner\Ethereum\Transaction;
+use kornrunner\Ethereum\Transaction;
 use kornrunner\Keccak;
 use Webkul\Customer\Models\Customer;
 
