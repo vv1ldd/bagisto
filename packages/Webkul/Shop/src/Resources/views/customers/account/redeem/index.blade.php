@@ -8,6 +8,7 @@
         first_name="{{ auth()->guard('customer')->user()->first_name ?? '' }}"
         last_name="{{ auth()->guard('customer')->user()->last_name ?? '' }}"
         phone="{{ auth()->guard('customer')->user()->phone ?? '' }}"
+        :has_passkeys="{{ $hasPasskeys ? 'true' : 'false' }}"
     ></v-redeem-app>
 
     @push('scripts')
@@ -91,11 +92,19 @@
                         </div>
                     </div>
 
-                    <button v-if="!pinSent" @click="sendPin" 
-                        :disabled="loading || !redeem_form.email"
-                        class="w-full bg-zinc-900 border-3 border-zinc-900 p-5 text-white font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(124,69,245,1)] transition-all">
-                        Отправить PIN
-                    </button>
+                    <div class="space-y-4">
+                        <button v-if="!pinSent" @click="sendPin" 
+                            :disabled="loading || !redeem_form.email"
+                            class="w-full bg-zinc-900 border-3 border-zinc-900 p-5 text-white font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(124,69,245,1)] transition-all">
+                            Отправить PIN на Email
+                        </button>
+
+                        <button v-if="!pinSent && has_passkeys" @click="authenticatePasskey" 
+                            :disabled="loading"
+                            class="w-full bg-[#7C45F5] border-3 border-zinc-900 p-5 text-white font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all">
+                            🚀 Подтвердить с Passkey
+                        </button>
+                    </div>
 
                     <button v-if="pinSent" @click="verifyPin" 
                         :disabled="loading || redeem_form.verification_code.length < 6"
@@ -157,7 +166,7 @@
         app.component('v-redeem-app', {
             template: '#v-redeem-app-template',
             
-            props: ['email', 'first_name', 'last_name', 'phone'],
+            props: ['email', 'first_name', 'last_name', 'phone', 'has_passkeys'],
 
             data() {
                 return {
@@ -263,6 +272,65 @@
                     if (val.length > 8) res += '-' + val.substring(8, 10);
                     
                     this.redeem_form.phone = res;
+                },
+
+                async authenticatePasskey() {
+                    this.loading = true;
+                    this.error = null;
+
+                    try {
+                        // 1. Get Authentication Options
+                        const optionsRes = await this.$axios.post('{{ route('passkeys.login-options') }}');
+                        const options = optionsRes.data;
+
+                        // 2. Decode options from Base64 to ArrayBuffer (if needed by browser)
+                        if (options.challenge) {
+                            options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+                        }
+                        if (options.allowCredentials) {
+                            options.allowCredentials = options.allowCredentials.map(c => ({
+                                ...c,
+                                id: Uint8Array.from(atob(c.id.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
+                            }));
+                        }
+
+                        // 3. Trigger Browser Biometrics
+                        const credential = await navigator.credentials.get({ publicKey: options });
+
+                        // 4. Encode credential to JSON for server
+                        const credentialJson = {
+                            id: credential.id,
+                            rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                            type: credential.type,
+                            response: {
+                                authenticatorData: btoa(String.fromCharCode(...new Uint8Array(credential.response.authenticatorData))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                                clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                                signature: btoa(String.fromCharCode(...new Uint8Array(credential.response.signature))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                                userHandle: credential.response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(credential.response.userHandle))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '') : null
+                            }
+                        };
+
+                        // 5. Verify Passkey with Server
+                        const verifyRes = await this.$axios.post('{{ route('passkeys.login') }}', {
+                            start_authentication_response: credentialJson
+                        });
+
+                        if (verifyRes.data.redirect_url) {
+                            // Verification successful! Skip PIN and proceed.
+                            this.redeem_form.verification_code = 'PASSKEY_AUTH';
+
+                            if (this.hasContactInfo) {
+                                this.activate();
+                            } else {
+                                this.currentStep = 3;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Passkey authentication error:', e);
+                        this.error = 'Аутентификация не удалась или была отменена';
+                    } finally {
+                        this.loading = false;
+                    }
                 },
 
                 async activate() {

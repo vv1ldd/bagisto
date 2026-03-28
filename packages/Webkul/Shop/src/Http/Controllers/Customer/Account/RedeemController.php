@@ -13,7 +13,10 @@ class RedeemController extends Controller
      */
     public function index()
     {
-        return view('shop::customers.account.redeem.index');
+        $customer = auth()->guard('customer')->user();
+        $hasPasskeys = $customer ? $customer->passkeys()->exists() : false;
+
+        return view('shop::customers.account.redeem.index', compact('hasPasskeys'));
     }
 
     /**
@@ -105,6 +108,7 @@ class RedeemController extends Controller
                 $customer->update([
                     'first_name' => $request->first_name,
                     'last_name'  => $request->last_name,
+                    'email'      => $request->email,
                     'phone'      => $request->phone,
                 ]);
             }
