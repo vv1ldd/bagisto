@@ -50,7 +50,9 @@
             </div>
 
             @php
-                $showFooterInfo = filter_var(core()->getConfigData('general.design.footer.show_footer_info'), FILTER_VALIDATE_BOOLEAN);
+                $footerInfoConfig = core()->getConfigData('general.design.footer.show_footer_info');
+                $showFooterInfo = is_null($footerInfoConfig) ? true : filter_var($footerInfoConfig, FILTER_VALIDATE_BOOLEAN);
+
                 $footerPhone = core()->getConfigData('general.design.footer.phone');
                 $footerEmail = core()->getConfigData('general.design.footer.email');
                 $footerSchedule = core()->getConfigData('general.design.footer.schedule');
