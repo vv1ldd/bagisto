@@ -12,32 +12,32 @@
                 >
                     <!-- Header: title on the left, arrows on the right (desktop only) -->
                     <div
-                        class="mb-6 flex items-center justify-between max-md:hidden"
+                        class="mb-8 flex items-center justify-between max-md:hidden"
                         v-if="title"
                         style="direction: ltr;"
                     >
-                        <h2 class="text-2xl font-semibold text-black">@{{ title }}</h2>
+                        <h2 class="text-2xl font-black uppercase tracking-[0.2em] text-zinc-900">@{{ title }}</h2>
 
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-4">
                             <button
-                                class="flex h-10 w-10 items-center justify-center  border border-[#E0E0E0] text-black transition-all duration-200 hover:border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                                class="flex h-12 w-12 items-center justify-center bg-white border-4 border-zinc-900 text-zinc-900 transition-all duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none"
                                 :disabled="! canScrollLeft"
                                 aria-label="@lang('shop::components.carousel.previous')"
                                 @click="swipeLeft"
                             >
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                 </svg>
                             </button>
 
                             <button
-                                class="flex h-10 w-10 items-center justify-center  border border-[#E0E0E0] text-black transition-all duration-200 hover:border-black hover:bg-black hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                                class="flex h-12 w-12 items-center justify-center bg-white border-4 border-zinc-900 text-zinc-900 transition-all duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none"
                                 :disabled="! canScrollRight"
                                 aria-label="@lang('shop::components.carousel.next')"
                                 @click="swipeRight"
                             >
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                 </svg>
                             </button>
                         </div>
@@ -45,29 +45,18 @@
 
                     <!-- Items track wrapped in relative for gradient edge hints -->
                     <div class="relative" style="direction: ltr;">
-                        <!-- Right fade: signals more content. Hidden when can't scroll right -->
-                        <div
-                            class="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-transparent transition-opacity duration-300"
-                            :class="canScrollRight ? 'opacity-100' : 'opacity-0'"
-                        ></div>
-                        <!-- Left fade: signals you scrolled. Hidden when at start -->
-                        <div
-                            class="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-transparent transition-opacity duration-300"
-                            :class="canScrollLeft ? 'opacity-100' : 'opacity-0'"
-                        ></div>
-
                         <div
                             ref="swiperContainer"
                             class="scrollbar-hide flex gap-10 overflow-auto scroll-smooth max-lg:gap-4 max-md:px-4 max-md:pb-2"
                             @scroll="updateScrollState"
                         >
                             <div
-                                class="grid min-w-[120px] max-w-[120px] grid-cols-1 justify-items-center gap-4 font-medium max-md:min-w-20 max-md:max-w-20 max-md:gap-2.5 max-sm:min-w-[72px] max-sm:max-w-[72px] max-sm:gap-1.5"
+                                class="grid min-w-[120px] max-w-[120px] grid-cols-1 justify-items-center gap-5 font-medium max-md:min-w-20 max-md:max-w-20 max-md:gap-2.5 max-sm:min-w-[72px] max-sm:max-w-[72px] max-sm:gap-1.5"
                                 v-for="category in categories"
                             >
                                 <a
                                     :href="category.slug"
-                                    class="h-[110px] w-[110px]  bg-zinc-100 max-md:h-20 max-md:w-20 max-sm:h-[72px] max-sm:w-[72px]"
+                                    class="group relative h-[110px] w-[110px] bg-white border-3 border-zinc-900 shadow-[5px_5px_0px_0px_rgba(24,24,27,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none max-md:h-20 max-md:w-20 max-sm:h-[72px] max-sm:w-[72px] flex items-center justify-center overflow-hidden"
                                     :aria-label="category.name"
                                 >
                                     <x-shop::media.images.lazy
@@ -80,14 +69,14 @@
                                         sizes="(max-width: 640px) 72px, 110px"
                                         width="110"
                                         height="110"
-                                        class="w-full  max-sm:h-[72px] max-sm:w-[72px]"
+                                        class="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                                         ::alt="category.name"
                                     />
                                 </a>
 
-                                <a :href="category.slug">
+                                <a :href="category.slug" class="mt-1">
                                     <p
-                                        class="text-center text-lg text-black max-md:text-base max-md:font-normal max-sm:text-sm"
+                                        class="text-center text-[10px] font-black uppercase tracking-widest text-zinc-900 leading-tight"
                                         v-text="category.name"
                                     ></p>
                                 </a>
@@ -97,14 +86,14 @@
 
                     <!-- Scroll progress bar (shown when there's content to scroll) -->
                     <div
-                        class="mt-4 h-1 w-full overflow-hidden  bg-zinc-200 max-md:mt-3"
+                        class="mt-8 h-2 w-full overflow-hidden bg-zinc-100 border border-zinc-200 max-md:mt-3"
                         v-show="canScrollRight || canScrollLeft"
                         style="direction: ltr;"
                         role="scrollbar"
                         aria-hidden="true"
                     >
                         <div
-                            class="h-full  bg-[#7C45F5] transition-[width] duration-200"
+                            class="h-full bg-[#7C45F5] transition-[width] duration-300"
                             :style="{ width: scrollProgress + '%' }"
                         ></div>
                     </div>

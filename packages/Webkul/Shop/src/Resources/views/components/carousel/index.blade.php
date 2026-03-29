@@ -41,50 +41,43 @@
             </div>
 
             <!-- Navigation -->
-            <div class="absolute inset-x-0 top-1/2 z-50 flex -translate-y-1/2 justify-between px-4 pointer-events-none md:px-6" style="direction: ltr;">
-                <span
-                    class="pointer-events-auto flex h-11 w-11 cursor-pointer items-center justify-center  bg-white/90 text-black shadow-lg transition-all duration-300 hover:bg-black hover:text-white md:h-12 md:w-12"
-                    :class="{
-                        'opacity-30 cursor-not-allowed': direction == 'ltr' && currentIndex == 0,
-                        'hover:scale-110': direction == 'ltr' ? currentIndex > 0 : currentIndex <= 0
-                    }"
+            <div class="absolute inset-x-0 top-1/2 z-50 flex -translate-y-1/2 justify-between px-6 pointer-events-none md:px-12" style="direction: ltr;">
+                <button
+                    class="pointer-events-auto flex h-14 w-14 cursor-pointer items-center justify-center bg-white border-4 border-zinc-900 text-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] transition-all duration-300 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:opacity-30 disabled:cursor-not-allowed"
                     role="button"
                     aria-label="@lang('shop::components.carousel.previous')"
                     tabindex="0"
                     v-if="images?.length >= 2"
                     @click="navigate('prev')"
+                    :disabled="direction == 'ltr' && currentIndex == 0"
                 >
-                    <svg class="h-6 w-6 md:h-8 md:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
-                </span>
+                </button>
 
-                <span
-                    class="pointer-events-auto flex h-11 w-11 cursor-pointer items-center justify-center  bg-white/90 text-black shadow-lg transition-all duration-300 hover:bg-black hover:text-white md:h-12 md:w-12"
-                    :class="{
-                        'opacity-30 cursor-not-allowed': direction == 'rtl' && currentIndex == 0,
-                        'hover:scale-110': direction == 'rtl' ? currentIndex < 0 : currentIndex >= 0
-                    }"
+                <button
+                    class="pointer-events-auto flex h-14 w-14 cursor-pointer items-center justify-center bg-white border-4 border-zinc-900 text-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] transition-all duration-300 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none disabled:opacity-30 disabled:cursor-not-allowed"
                     role="button"
                     aria-label="@lang('shop::components.carousel.next')"
                     tabindex="0"
                     v-if="images?.length >= 2"
                     @click="navigate('next')"
+                    :disabled="direction == 'rtl' && currentIndex == 0"
                 >
-                    <svg class="h-6 w-6 md:h-8 md:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
-                </span>
+                </button>
             </div>
 
             <!-- Pagination -->
-            <div class="absolute bottom-5 left-0 flex w-full justify-center max-md:bottom-3.5 max-sm:bottom-2.5">
+            <div class="absolute bottom-8 left-0 flex w-full justify-center gap-3 max-md:bottom-4">
                 <div
                     v-for="(image, index) in images"
                     :key="index"
-                    class="sm:p-2.5 mx-1 h-3 w-3 cursor-pointer  max-md:h-2 max-md:w-2 max-sm:h-1.5 max-sm:w-1.5
-                    p-2 focus:outline-none"
-                    :class="{ 'bg-navyBlue': index === Math.abs(currentIndex), 'opacity-30 bg-gray-500': index !== Math.abs(currentIndex) }"
+                    class="h-4 w-4 cursor-pointer border-2 border-zinc-900 transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:scale-110"
+                    :class="{ 'bg-[#7C45F5] scale-110 shadow-none -translate-x-0.5 -translate-y-0.5': index === Math.abs(currentIndex), 'bg-white opacity-60': index !== Math.abs(currentIndex) }"
                     role="button"
                     tabindex="0"
                     :aria-label="'Go to slide ' + (index + 1)"

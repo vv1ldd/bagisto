@@ -28,174 +28,180 @@ $menuIcons = [
         <h1 class="text-2xl font-black text-white uppercase tracking-tighter mix-blend-difference">Личный кабинет</h1>
     </div>
 
-    <div class="p-0">
-        <div class="nav-grid">
-            {{-- Wallet --}}
-            @if ($customer instanceof \Webkul\Customer\Models\Customer && !empty($customer->username))
-                <div class="nav-tile cursor-pointer group"
-                     onclick="window.location.href='{{ route('shop.customers.account.credits.index') }}'">
-                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+    <div class="p-0 space-y-4 md:space-y-6 px-4">
+        {{-- Wallet --}}
+        @if ($customer instanceof \Webkul\Customer\Models\Customer && !empty($customer->username))
+            <a href="{{ route('shop.customers.account.credits.index') }}" 
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(124,69,245,1)]">
+                <div class="flex items-center gap-4 md:gap-6">
+                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-[#7C45F5] border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
-                    </span>
-                    <div class="flex flex-col">
-                        <span class="nav-label">Wallet</span>
-                        <span class="text-[12px] text-zinc-500 font-medium">Ваш баланс и транзакции</span>
                     </div>
-                    <span class="nav-arrow">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </span>
-                </div>
-
-                {{-- Redeem / Voucher Activation (Hardcoded for Priority) --}}
-                <div class="nav-tile cursor-pointer group mt-1"
-                     onclick="window.location.href='{{ route('shop.customers.account.redeem.index') }}'">
-                    <span class="w-12 h-12 flex items-center justify-center bg-amber-500 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
-                        </svg>
-                    </span>
-                    <div class="flex flex-col">
-                        <span class="nav-label">Активация ваучера</span>
-                        <span class="text-[12px] text-zinc-500 font-medium">Активируйте бонусы и подарки</span>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Wallet</span>
+                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Ваш баланс и транзакции</p>
                     </div>
-                    <span class="nav-arrow">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
-                    </span>
-                </div>
-
-                {{-- Messages / Matrix --}}
-                <div class="nav-tile cursor-pointer group mt-1"
-                     onclick="window.location.href='{{ route('shop.customers.account.matrix.index') }}'">
-                    <span class="w-12 h-12 flex items-center justify-center bg-[#00D1FF] text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                    </span>
-                    <div class="flex flex-col">
-                        <span class="nav-label">Сообщения</span>
-                        <span class="text-[12px] text-zinc-500 font-medium">Децентрализованный чат (Matrix)</span>
                     </div>
-                    <span class="nav-arrow">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </span>
                 </div>
+            </a>
 
-                {{-- Calls --}}
-                @if ($customer->is_call_enabled)
-                    <div class="nav-tile cursor-pointer group mt-1"
-                         onclick="window.location.href='{{ route('shop.customers.account.calls.index') }}'">
-                        <span class="w-12 h-12 flex items-center justify-center bg-zinc-800 text-white border-2 border-black shrink-0 text-xl transition-transform group-hover:scale-105 shadow-sm">📞</span>
-                        <div class="flex flex-col">
-                            <span class="nav-label">Видеовстреча</span>
-                            <span class="text-[12px] text-zinc-500 font-medium">Создать встречу или позвонить</span>
+            {{-- Redeem / Voucher Activation --}}
+            <a href="{{ route('shop.customers.account.redeem.index') }}" 
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(245,158,11,1)]">
+                <div class="flex items-center gap-4 md:gap-6">
+                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-amber-500 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Активация ваучера</span>
+                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Активируйте бонусы и подарки</p>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            {{-- Messages / Matrix --}}
+            <a href="{{ route('shop.customers.account.matrix.index') }}" 
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(0,209,255,1)]">
+                <div class="flex items-center gap-4 md:gap-6">
+                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-[#00D1FF] border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Сообщения</span>
+                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Децентрализованный чат (Matrix)</p>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            {{-- Calls (Conditional) --}}
+            @if ($customer->is_call_enabled)
+                <a href="{{ route('shop.customers.account.calls.index') }}" 
+                    class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(39,39,42,1)]">
+                    <div class="flex items-center gap-4 md:gap-6">
+                        <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-zinc-800 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-6 text-xl">📞</div>
+                        <div class="flex-1 min-w-0">
+                            <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Видеовстреча</span>
+                            <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Создать встречу или позвонить</p>
                         </div>
-                        <span class="nav-arrow">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                             </svg>
-                        </span>
+                        </div>
                     </div>
-                @endif
+                </a>
             @endif
+        @endif
  
-            {{-- Dynamic Items --}}
-            @foreach (menu()->getItems('customer') as $menuItem)
-                @if ($menuItem->haveChildren())
-                    @foreach ($menuItem->getChildren() as $subMenuItem)
-                        @if ($subMenuItem->getKey() === 'account.organizations' && !$customer->is_b2b_enabled)
-                            @continue
-                        @endif
-                        
-                        {{-- Skip Profile, Passkeys, Orders, Address, and Redeem (hardcoded above) --}}
-                        @if (in_array($subMenuItem->getKey(), ['account.profile', 'account.passkeys', 'account.orders', 'account.login_activity', 'account.address', 'account.redeem']))
-                            @continue
-                        @endif
- 
-                        @php $icon = $menuIcons[$subMenuItem->getKey()] ?? null; @endphp
- 
-                <a href="{{ $subMenuItem->getUrl() }}" class="nav-tile group">
-                            @if ($icon)
-                                <span class="w-12 h-12 flex items-center justify-center border-2 border-black transition-transform group-hover:scale-105 shadow-sm">
-                                    @php
-                                        $bgClass = 'bg-zinc-400';
-                                        if (str_contains($icon['bg'], 'violet')) $bgClass = 'bg-violet-500';
-                                        elseif (str_contains($icon['bg'], 'blue')) $bgClass = 'bg-blue-500';
-                                        elseif (str_contains($icon['bg'], 'amber')) $bgClass = 'bg-amber-500';
-                                        elseif (str_contains($icon['bg'], 'emerald')) $bgClass = 'bg-emerald-500';
-                                        elseif (str_contains($icon['bg'], 'pink')) $bgClass = 'bg-pink-500';
-                                        elseif (str_contains($icon['bg'], 'indigo')) $bgClass = 'bg-indigo-500';
-                                    @endphp
-                                    <div class="w-full h-full flex items-center justify-center {{ $bgClass }} text-white">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            {!! $icon['svg'] !!}
-                                        </svg>
-                                    </div>
-                                </span>
+        {{-- Dynamic Items (Wishlist, Reviews, Addresses) --}}
+        @foreach (menu()->getItems('customer') as $menuItem)
+            @if ($menuItem->haveChildren())
+                @foreach ($menuItem->getChildren() as $subMenuItem)
+                    @if ($subMenuItem->getKey() === 'account.organizations' && !$customer->is_b2b_enabled)
+                        @continue
+                    @endif
+                    
+                    @if (in_array($subMenuItem->getKey(), ['account.profile', 'account.passkeys', 'account.orders', 'account.login_activity', 'account.address', 'account.redeem']))
+                        @continue
+                    @endif
+
+                    @php 
+                        $iconData = $menuIcons[$subMenuItem->getKey()] ?? ['bg' => 'bg-zinc-400', 'color' => 'text-white', 'svg' => ''];
+                        $bgColor = 'bg-zinc-500';
+                        $shadowColor = 'rgba(113,113,122,1)';
+                        if ($subMenuItem->getKey() === 'account.wishlist') { $bgColor = 'bg-pink-500'; $shadowColor = 'rgba(236,72,153,1)'; }
+                        elseif ($subMenuItem->getKey() === 'account.reviews') { $bgColor = 'bg-amber-500'; $shadowColor = 'rgba(245,158,11,1)'; }
+                        elseif ($subMenuItem->getKey() === 'account.orders') { $bgColor = 'bg-blue-500'; $shadowColor = 'rgba(59,130,246,1)'; }
+                    @endphp
+
+            <a href="{{ $subMenuItem->getUrl() }}" 
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_{{ $shadowColor }}]">
+                <div class="flex items-center gap-4 md:gap-6">
+                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center {{ $bgColor }} border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            {!! $iconData['svg'] !!}
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">{{ $subMenuItem->getName() }}</span>
+                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">
+                            @if($subMenuItem->getKey() === 'account.wishlist') Избранные товары
+                            @elseif($subMenuItem->getKey() === 'account.reviews') Ваши отзывы
+                            @else Управление разделом
                             @endif
-                            <div class="flex flex-col">
-                                <span class="nav-label">{{ $subMenuItem->getName() }}</span>
-                                <span class="text-[12px] text-zinc-500 font-medium">
-                                    @if($subMenuItem->getKey() === 'account.address') Адреса доставки
-                                    @elseif($subMenuItem->getKey() === 'account.wishlist') Избранные товары
-                                    @elseif($subMenuItem->getKey() === 'account.reviews') Ваши отзывы
-                                    @elseif($subMenuItem->getKey() === 'account.redeem') Активируйте бонусы и подарки
-                                    @else Управление разделом
-                                    @endif
-                                </span>
-                            </div>
-                            <span class="nav-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </span>
-                        </a>
-                    @endforeach
-                @endif
-            @endforeach
- 
-            {{-- Security (Grouped) --}}
-            <a href="{{ route('shop.customers.account.security.index') }}" class="nav-tile group mt-1">
-                <span class="w-12 h-12 flex items-center justify-center bg-violet-600 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        </p>
+                    </div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+                @endforeach
+            @endif
+        @endforeach
+
+        {{-- Security (Grouped) --}}
+        <a href="{{ route('shop.customers.account.security.index') }}" 
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(124,69,245,1)]">
+            <div class="flex items-center gap-4 md:gap-6">
+                <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-violet-600 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-2">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
-                </span>
-                <div class="flex flex-col">
-                    <span class="nav-label">Безопасность</span>
-                    <span class="text-[12px] text-zinc-500 font-medium">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</span>
                 </div>
-                <span class="nav-arrow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                <div class="flex-1 min-w-0">
+                    <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Безопасность</span>
+                    <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</p>
+                </div>
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
-                </span>
-            </a>
- 
-            {{-- Logout --}}
-            <a href="{{ route('shop.customer.session.destroy.get') }}" class="nav-tile group hover:!border-red-200">
-                <span class="w-12 h-12 flex items-center justify-center bg-red-500 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                </div>
+            </div>
+        </a>
+
+        {{-- Logout --}}
+        <a href="{{ route('shop.customer.session.destroy.get') }}" 
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(239,68,68,1)]">
+            <div class="flex items-center gap-4 md:gap-6">
+                <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-red-500 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
-                </span>
-                <div class="flex flex-col">
-                    <span class="nav-label !text-red-500">Выйти</span>
-                    <span class="text-[12px] text-red-300 font-medium">Завершить сеанс</span>
                 </div>
-                <span class="nav-arrow !text-red-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                <div class="flex-1 min-w-0">
+                    <span class="text-red-500 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Выйти</span>
+                    <p class="text-[10px] md:text-sm text-red-300 font-bold uppercase tracking-wider leading-tight">Завершить сеанс</p>
+                </div>
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
-                </span>
-            </a>
-        </div>
+                </div>
+            </div>
+        </a>
     </div>
 </div>

@@ -71,36 +71,39 @@
     </x-slot>
 
     {{-- Main Categories Container (Centered Layout) --}}
-    <div class="max-w-[600px] mx-auto px-4 mt-8 space-y-12 pb-12">
+    <div class="max-w-[600px] mx-auto px-4 mt-8 space-y-10 pb-12">
         
         {{-- Section: FOR YOU --}}
         @if ($personalizedCategories->isNotEmpty())
             <section class="animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <p class="text-zinc-400 text-[11px] font-black uppercase tracking-[0.3em] mb-4 opacity-60 px-2">
+                <p class="text-zinc-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6 px-2">
                     Для вас
                 </p>
                 
-                <div class="nav-grid">
+                <div class="space-y-4">
                     @foreach ($personalizedCategories as $category)
-                        <a href="{{ $category->url }}" class="nav-tile group mt-1">
-                            <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5]/10 text-[#7C45F5] rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                                @if ($category->logo_url)
-                                    <img src="{{ $category->logo_url }}" 
-                                         class="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-500" 
-                                         alt="{{ $category->name }}">
-                                @else
-                                    <span class="text-2xl grayscale group-hover:grayscale-0 transition-all">📦</span>
-                                @endif
-                            </span>
-                            <div class="flex flex-col min-w-0 pr-4">
-                                <span class="nav-label text-[#7C45F5]">{{ $category->name }}</span>
-                                <span class="text-[12px] text-zinc-500 font-medium truncate">Подобранно для вас</span>
+                        <a href="{{ $category->url }}" 
+                            class="group relative block w-full bg-white border-4 border-zinc-900 p-4 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(124,69,245,1)]">
+                            <div class="flex items-center gap-5">
+                                <div class="w-14 h-14 flex items-center justify-center bg-[#7C45F5]/10 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-3">
+                                    @if ($category->logo_url)
+                                        <img src="{{ $category->logo_url }}" 
+                                             class="w-9 h-9 object-contain group-hover:scale-110 transition-transform duration-500" 
+                                             alt="{{ $category->name }}">
+                                    @else
+                                        <span class="text-2xl grayscale group-hover:grayscale-0 transition-all">📦</span>
+                                    @endif
+                                </div>
+                                <div class="flex-1 min-w-0 pr-4">
+                                    <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-0.5 leading-tight">{{ $category->name }}</span>
+                                    <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">Подобранно для вас</span>
+                                </div>
+                                <div class="opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                </div>
                             </div>
-                            <span class="nav-arrow">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </span>
                         </a>
                     @endforeach
                 </div>
@@ -109,36 +112,39 @@
 
         {{-- Section: CATALOG --}}
         <section class="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-            <p class="text-zinc-400 text-[11px] font-black uppercase tracking-[0.3em] mb-4 opacity-60 px-2">
+            <p class="text-zinc-400 text-[10px] font-black uppercase tracking-[0.4em] mb-6 px-2">
                 Каталог
             </p>
             
-            <div class="nav-grid">
+            <div class="space-y-4">
                 @foreach ($displayPinnedCategories as $category)
-                    <a href="{{ $category->url }}" class="nav-tile group mt-1">
-                        <span class="w-12 h-12 flex items-center justify-center bg-zinc-100 text-zinc-600 rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                            @if ($category->logo_url)
-                                <img src="{{ $category->logo_url }}" 
-                                     class="w-7 h-7 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" 
-                                     alt="{{ $category->name }}">
-                            @else
-                                <span class="w-2 h-2 bg-zinc-300 rounded-full group-hover:bg-[#7C45F5] transition-colors"></span>
-                            @endif
-                        </span>
-                        <div class="flex flex-col min-w-0 pr-4">
-                            <span class="nav-label">{{ $category->name }}</span>
+                    <a href="{{ $category->url }}" 
+                        class="group relative block w-full bg-white border-4 border-zinc-900 p-4 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 flex items-center justify-center bg-zinc-100 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(200,200,200,1)] shrink-0 transition-transform group-hover:rotate-3">
+                                @if ($category->logo_url)
+                                    <img src="{{ $category->logo_url }}" 
+                                         class="w-9 h-9 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" 
+                                         alt="{{ $category->name }}">
+                                @else
+                                    <div class="w-2.5 h-2.5 bg-zinc-400 rounded-full group-hover:bg-[#7C45F5] transition-colors"></div>
+                                @endif
+                            </div>
+                            <div class="flex-1 min-w-0 pr-4">
+                                <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block leading-tight">{{ $category->name }}</span>
+                            </div>
+                            <div class="opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </div>
                         </div>
-                        <span class="nav-arrow">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </span>
                     </a>
                 @endforeach
                 
                 @if ($displayPinnedCategories->isEmpty() && $personalizedCategories->isEmpty())
-                    <div class="py-20 text-center bg-zinc-50 border border-dashed border-zinc-200 rounded-[2rem]">
-                        <p class="text-zinc-400 font-medium">Категории пока не настроены</p>
+                    <div class="py-16 text-center bg-white border-4 border-dashed border-zinc-200">
+                        <p class="text-zinc-400 font-black uppercase tracking-widest text-[10px]">Категории пока не настроены</p>
                     </div>
                 @endif
             </div>

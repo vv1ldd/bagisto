@@ -17,7 +17,7 @@
         </v-profile-edit>
     </x-shop::layouts.split-screen>
 @else
-    <x-shop::layouts.account :is-cardless="true" :title="$pageTitle" :back-link="route('shop.customers.account.index')">
+    <x-shop::layouts.account :is-cardless="true" :back-link="route('shop.customers.account.index')">
         <div class="relative w-full max-w-[600px] mx-auto">
             {{-- Header with Back Button --}}
             <div class="flex items-center gap-3 mb-2 px-4 pt-2">
