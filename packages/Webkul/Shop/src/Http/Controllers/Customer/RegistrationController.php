@@ -270,8 +270,7 @@ class RegistrationController extends Controller
 
         // No email verification needed - account is verified by default
         
-        // Dispatch Welcome Bonus Minting
-        \App\Jobs\ProcessWelcomeMintingJob::dispatch($customer->id);
+        // Welcome Bonus Minting is handled via WelcomeBonusListener on customer.registration.after
 
         // log in immediately
         auth()->guard('customer')->login($customer);

@@ -54,10 +54,10 @@
                 <div class="relative z-10">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
-                            <div class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3 opacity-80 italic">Покупательная способность</div>
+                            <div class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3 opacity-80 italic">Баланс Meanly Coin (MC)</div>
                             <div class="flex items-baseline gap-2">
                                 <span class="text-[56px] font-black text-white tracking-tighter leading-none">
-                                    {{ core()->formatPrice($user->balance ?? 0) }}
+                                    {{ number_format($user->balance ?? 0, 2, '.', '') }} MC
                                 </span>
                             </div>
                             
@@ -160,6 +160,7 @@
                                         'transfer_debit'  => ['icon' => '↔️', 'label' => 'Перевод от вас'],
                                         'transfer_credit' => ['icon' => '↔️', 'label' => 'Перевод вам'],
                                         'cashback'        => ['icon' => '💰', 'label' => 'Кэшбек'],
+                                        'registration_minting' => ['icon' => '✨', 'label' => 'Минтинг (Регистрация)'],
                                     ];
                                     $config = $typeLabels[$transaction->type] ?? ['icon' => '📄', 'label' => $transaction->type];
                                     $icon = $config['icon'];
@@ -168,7 +169,7 @@
                                     
                                     $debitTypes = ['purchase', 'withdrawal', 'transfer_debit'];
                                     $isDebit = in_array($transaction->type, $debitTypes);
-                                    $amount = ($isDebit ? '-' : '+') . core()->formatPrice($transaction->amount);
+                                    $amountStr = ($isDebit ? '-' : '+') . number_format($transaction->amount, 2, '.', '') . " MC";
                                     $amountColor = $isDebit ? "text-[#1a0050]" : "text-emerald-500";
                                     $clickUrl = null;
                                 }
@@ -204,7 +205,7 @@
                                     {{-- Amount --}}
                                     <div class="text-right shrink-0">
                                         <div class="text-[17px] font-black font-mono {{ $amountColor }} tracking-tighter whitespace-nowrap">
-                                            {{ $amount }}
+                                            {{ $amountStr }}
                                         </div>
                                         <div class="text-[9px] text-zinc-300 font-bold uppercase tracking-[0.2em] mt-1">
                                             {{ $isOrder ? 'Shop Order' : 'Wallet' }}

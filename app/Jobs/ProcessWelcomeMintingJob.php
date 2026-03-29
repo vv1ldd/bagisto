@@ -54,8 +54,8 @@ class ProcessWelcomeMintingJob implements ShouldQueue
 
         Log::info("ProcessWelcomeMintingJob: Starting Welcome Minting for Customer [{$customer->id}].");
 
-        // 2. Mint Welcome Coin (ERC20)
-        $reason = "Welcome Bonus";
+        // 2. Mint Registration Meanly Coin (ERC20)
+        $reason = "Registration Bonus";
         $txHash = $hotWalletService->mintCoin($customer, $this->amount, $reason);
 
         if ($txHash) {
@@ -64,9 +64,9 @@ class ProcessWelcomeMintingJob implements ShouldQueue
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'customer_id' => $customer->id,
                 'amount' => $this->amount,
-                'type' => 'welcome_bonus',
+                'type' => 'registration_minting',
                 'status' => 'completed',
-                'notes' => 'Приветственный бонус за регистрацию',
+                'notes' => 'Минтинг Meanly Coins (Регистрация)',
                 'metadata' => [
                     'tx_hash' => $txHash,
                     'network' => 'arbitrum_one',
