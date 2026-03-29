@@ -28,6 +28,10 @@ class RecoveryController extends Controller
      */
     public function showSeedForm()
     {
+        if (auth()->guard('customer')->check()) {
+            return redirect()->route('shop.customers.account.index');
+        }
+
         return view('shop::customers.recover-seed');
     }
 
@@ -39,6 +43,10 @@ class RecoveryController extends Controller
      */
     public function recoverBySeed(Request $request)
     {
+        if (auth()->guard('customer')->check()) {
+             return redirect()->route('shop.customers.account.index');
+        }
+
         $request->validate([
             'words' => 'required|array|min:12|max:24',
         ]);

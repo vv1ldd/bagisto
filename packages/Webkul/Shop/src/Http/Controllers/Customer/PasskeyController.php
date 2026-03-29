@@ -142,6 +142,16 @@ class PasskeyController extends Controller
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
+        // Security check: If we have pending registration data, but someone is ALREADY logged in,
+        // we must not allow merging the new passkey into the existing account.
+        if ($user && $pendingRegistrationData) {
+             Log::error('Passkey registration conflict: User already logged in during new registration.', [
+                'auth_user_id' => $user->id,
+                'pending_username' => $pendingRegistrationData['username'] ?? 'unknown',
+            ]);
+            return response()->json(['message' => 'Вы уже вошли в другой аккаунт. Пожалуйста, выйдите перед регистрацией.'], 403);
+        }
+
         $optionsJson = $request->session()->get('passkey-registration-options-json');
 
         Log::info('Passkey registration attempt', [

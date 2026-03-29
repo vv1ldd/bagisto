@@ -39,6 +39,10 @@ class RegistrationController extends Controller
      */
     public function index()
     {
+        if (auth()->guard('customer')->check()) {
+            return redirect()->route('shop.customers.account.index');
+        }
+
         return view('shop::customers.sign-up');
     }
 
@@ -82,6 +86,10 @@ class RegistrationController extends Controller
      */
     public function passkeyPrepare(Request $request)
     {
+        if (auth()->guard('customer')->check()) {
+             return response()->json(['message' => 'Вы уже вошли в аккаунт'], 403);
+        }
+
         $request->validate([
             'username' => ['required', 'string', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_\-\.]+$/'],
         ], [

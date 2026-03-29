@@ -34,7 +34,7 @@ Route::group([], function () {
     /**
      * Guest routes (redirect logged-in users to account)
      */
-    Route::group(['middleware' => [\Webkul\Shop\Http\Middleware\RedirectIfAuthenticated::class]], function () {
+    Route::group(['middleware' => [\Webkul\Shop\Http\Middleware\RedirectIfAuthenticated::class . ':customer']], function () {
         
         /**
          * Forgot password routes.
