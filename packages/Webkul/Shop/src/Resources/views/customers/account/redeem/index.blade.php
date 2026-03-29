@@ -143,6 +143,11 @@
                     <span>@{{ error }}</span>
                 </div>
 
+                <!-- Patience Hint -->
+                <div v-if="loading && showPatienceHint" class="mt-4 p-4 bg-blue-50 dark:bg-blue-950/30 border-2 border-dashed border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest text-center animate-pulse">
+                    Активация может занять до минуты. Пожалуйста, не закрывайте страницу.
+                </div>
+
                 <!-- Success Screen -->
                 <div v-if="currentStep === 4" class="text-center py-8">
                     <div class="w-20 h-20 bg-[#00FF94] border-4 border-zinc-900 dark:border-white/20 rounded-full mx-auto mb-6 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
@@ -170,6 +175,9 @@
                     error: null,
                     pinSent: false,
                     loadingText: '',
+                    showPatienceHint: false,
+                    patienceTimer: null,
+                    statusInterval: null,
                     redeem_form: {
                         code: '',
                         email: this.email || '',
@@ -188,6 +196,23 @@
 
                 isValidCode() {
                     return /^W1C-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(this.redeem_form.code);
+                }
+            },
+
+            watch: {
+                currentStep(newStep) {
+                    this.$nextTick(() => {
+                        const firstInput = this.$el.querySelector('input');
+                        if (firstInput) firstInput.focus();
+                    });
+                },
+
+                loading(isLoading) {
+                    if (isLoading) {
+                        this.startSwissWatch();
+                    } else {
+                        this.stopSwissWatch();
+                    }
                 }
             },
 
@@ -365,6 +390,38 @@
                     } finally {
                         this.loading = false;
                     }
+                },
+
+                startSwissWatch() {
+                    this.showPatienceHint = false;
+                    
+                    // Show patience hint after 15s
+                    this.patienceTimer = setTimeout(() => {
+                        this.showPatienceHint = true;
+                    }, 15000);
+
+                    // Dynamic status messages
+                    const statuses = [
+                        'Проверка данных...',
+                        'Связь с сервером...',
+                        'Авторизация транзакции...',
+                        'Финальная активация...',
+                        'Синхронизация баланса...'
+                    ];
+                    let i = 0;
+                    this.loadingText = statuses[0];
+                    
+                    this.statusInterval = setInterval(() => {
+                        i = (i + 1) % statuses.length;
+                        this.loadingText = statuses[i];
+                    }, 4000);
+                },
+
+                stopSwissWatch() {
+                    clearTimeout(this.patienceTimer);
+                    clearInterval(this.statusInterval);
+                    this.showPatienceHint = false;
+                    this.loadingText = '';
                 }
             }
         });

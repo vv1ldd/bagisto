@@ -27,16 +27,12 @@
         <!-- Nickname Input -->
         <div class="w-full mb-4 group">
             <div class="relative h-20 bg-white/5 border border-white/10 rounded-2xl group-focus-within:border-[#7C45F5]/50 group-focus-within:bg-[#7C45F5]/5 transition-all duration-300">
-                <div class="absolute top-4 left-6 pointer-events-none">
-                    <span class="text-[8px] font-black text-zinc-500 uppercase tracking-[0.2em] group-focus-within:text-[#7C45F5] transition-colors">Никнейм</span>
-                </div>
-                
                 <div class="h-full flex items-end px-6 pb-4">
                     <div class="flex-grow flex items-center justify-end relative">
                         <span class="text-white/20 mr-2 text-xl select-none font-black italic">@</span>
                         <input type="text" id="nickname-input" required
-                            class="w-full text-right outline-none bg-transparent text-white font-black text-2xl tracking-tighter placeholder:text-white/5"
-                            placeholder="твой_ник" autocomplete="off" 
+                            class="w-full text-right outline-none bg-transparent text-white font-black text-2xl tracking-tighter placeholder:text-white/5 placeholder:uppercase"
+                            placeholder="Никнейм" autocomplete="off" 
                             pattern="^[a-zA-Z0-9_\-\.]{3,30}$">
                         
                         <div id="nickname-icon" class="ml-4 w-6 h-6 flex-shrink-0 flex items-center justify-center opacity-0 transition-opacity"></div>
