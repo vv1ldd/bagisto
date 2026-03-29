@@ -35,8 +35,8 @@
             </div>
 
             <div class="w-full space-y-8 relative z-10">
-                <button type="button" id="register-device-btn" 
-                        class="group flex items-center justify-between w-full p-5 bg-white border-3 border-zinc-900 rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                <button type="button" onclick="window.startPasskeyRegistration(this)" 
+                        class="group flex items-center justify-between w-full p-5 bg-white border-3 border-zinc-900 rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer">
                     <div class="flex items-center gap-5 flex-1 min-w-0">
                         <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] border-2 border-zinc-900 text-white rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
                             <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
@@ -84,12 +84,12 @@
                 }, 5000);
             };
 
-            const btn = document.getElementById('register-device-btn');
-            const btnText = document.getElementById('btn-text');
-            const btnSubtext = document.getElementById('btn-subtext');
-            if (!btn) return;
+            window.startPasskeyRegistration = async function (btnElement) {
+                // Hard alert for debugging
+                alert('Кнопка нажата! Инициализация...');
 
-            btn.addEventListener('click', async () => {
+                const btnText = document.getElementById('btn-text');
+                const btnSubtext = document.getElementById('btn-subtext');
                 const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
 
                 if (!SimpleWebAuthn) {
@@ -102,7 +102,7 @@
                     return;
                 }
 
-                btn.disabled = true;
+                btnElement.disabled = true;
                 const originalText = btnText.innerText;
                 const originalSubtext = btnSubtext.innerText;
                 
@@ -175,11 +175,11 @@
                         window.showAlert('error', 'Ошибка', err.message);
                     }
                     
-                    btn.disabled = false;
+                    btnElement.disabled = false;
                     btnText.innerText = originalText;
                     btnSubtext.innerText = originalSubtext;
                 }
-            });
+            };
         })();
     </script>
     @endpush
