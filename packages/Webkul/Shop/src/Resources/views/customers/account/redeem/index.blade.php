@@ -349,7 +349,7 @@
                             this.error = res.data.message || 'Ошибка активации';
                         }
                     } catch (e) {
-                        this.error = e.response?.data?.message || 'Сетевая ошибка';
+                        this.error = e.response?.data?.message || e.response?.data?.details || 'Сетевая ошибка';
                     } finally {
                         this.loading = false;
                     }

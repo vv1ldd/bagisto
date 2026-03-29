@@ -104,6 +104,10 @@ class RedeemController extends Controller
         $servicesUrl = config('services.redeem.url');
         $token       = config('services.redeem.token');
 
+        if (!$servicesUrl || !$token) {
+            return response()->json(['message' => 'API configuration missing'], 500);
+        }
+
         try {
             // Pass the entire validated data + nested options
             $payload = $request->all();
