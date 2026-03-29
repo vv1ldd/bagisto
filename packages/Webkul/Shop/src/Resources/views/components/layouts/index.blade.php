@@ -16,27 +16,10 @@
 
         <title>{{ $title ?? '' }}</title>
 
-        <!-- Global Theme Switcher (Time-based Auto) -->
+        <!-- Permanent Light Mode -->
         <script>
-            (function() {
-                try {
-                    // Set theme based strictly on time of day (20:00 - 07:00 is dark)
-                    var hour = new Date().getHours();
-                    var isNight = hour >= 20 || hour < 7;
-                    var themeToApply = isNight ? 'dark' : 'light';
-                    
-                    if (themeToApply === 'dark') {
-                        document.documentElement.classList.add('dark');
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                    }
-                    
-                    // Store for Vue components to pick up if needed
-                    localStorage.setItem('theme', themeToApply);
-                } catch (e) {
-                    console.error('Theme switch failed:', e);
-                }
-            })();
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
         </script>
         <meta charset="UTF-8">
 

@@ -18,25 +18,27 @@
 <div class="flex h-full items-center gap-4 px-4 shadow-none lg:hidden bg-white">
     <div class="flex items-center justify-between w-full h-full">
         <!-- Left Navigation -->
-        <div class="flex items-center gap-x-5 h-full">
+        <div class="flex items-center gap-x-4 h-full">
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.before') !!}
 
             <a href="{{ route('shop.home.index') }}" class="group flex items-center h-full"
                 aria-label="{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}">
-                <div class="relative w-9 h-9 flex items-center justify-center bg-white border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-200">
+                <div class="relative w-9 h-9 flex items-center justify-center bg-white border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-200">
                     <span class="text-[17px] font-black text-zinc-900 tracking-tighter italic ml-[1px] mt-[1px]">M</span>
                 </div>
             </a>
 
             {!! view_render_event('bagisto.shop.components.layouts.header.mobile.logo.after') !!}
+        </div>
+
         <!-- Middle: Search -->
         <div class="flex-grow px-2 md:px-4 max-w-sm">
-            <form action="{{ route('shop.search.index') }}" method="GET" class="flex items-center bg-white border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-200">
+            <form action="{{ route('shop.search.index') }}" method="GET" class="flex items-center h-9 bg-white border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-200">
                 <input 
                     type="text" 
                     name="query" 
                     placeholder="ПОИСК..." 
-                    class="w-full h-9 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-900 placeholder-zinc-300 focus:outline-none border-none ring-0 bg-transparent"
+                    class="w-full h-full px-3 text-[10px] font-black uppercase tracking-widest text-zinc-900 placeholder-zinc-300 focus:outline-none border-none ring-0 bg-transparent"
                 >
                 <button type="submit" class="pr-3 flex items-center justify-center text-zinc-900 hover:text-[#7C45F5] transition-colors">
                     <span class="icon-search text-lg"></span>
@@ -85,7 +87,7 @@
             @else
                 <v-header-cart></v-header-cart>
                 <a href="{{ route('shop.customer.session.index') }}"
-                    class="bg-[#7C45F5] border-2 border-zinc-900 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all whitespace-nowrap">
+                    class="bg-[#7C45F5] border-2 border-zinc-900 px-4 h-9 flex items-center text-[11px] font-black uppercase tracking-widest text-white shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all whitespace-nowrap">
                     Войти
                 </a>
             @endauth
