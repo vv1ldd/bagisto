@@ -35,11 +35,21 @@
             </div>
 
             <div class="w-full space-y-8 relative z-10">
-                <button id="register-device-btn"
-                    class="flex w-full items-center justify-center gap-4 bg-[#7C45F5] border-3 border-zinc-900 px-8 py-6 text-center text-xs font-black text-white shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all group uppercase tracking-[0.2em]">
-                    <span id="btn-text">ПРИВЯЗАТЬ УСТРОЙСТВО</span>
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                <button type="button" id="register-device-btn" 
+                        class="group flex items-center justify-between w-full p-5 bg-white border-3 border-zinc-900 rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                    <div class="flex items-center gap-5 flex-1 min-w-0">
+                        <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] border-2 border-zinc-900 text-white rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                            </svg>
+                        </span>
+                        <div class="flex flex-col text-left">
+                            <span id="btn-text" class="text-zinc-900 font-black text-sm uppercase tracking-tight">Это устройство</span>
+                            <span id="btn-subtext" class="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Привязать текущий телефон/ПК</span>
+                        </div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-900 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M9 5l7 7-7 7"/>
                     </svg>
                 </button>
                 
@@ -76,13 +86,14 @@
 
             const btn = document.getElementById('register-device-btn');
             const btnText = document.getElementById('btn-text');
+            const btnSubtext = document.getElementById('btn-subtext');
             if (!btn) return;
 
             btn.addEventListener('click', async () => {
                 const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
 
                 if (!SimpleWebAuthn) {
-                    window.showAlert('error', 'Ошибка', 'Библиотека WebAuthn не загружена. Пожалуйста, обновите страницу.');
+                    window.showAlert('error', 'Ошибка', 'Библиотека не загружена. Пожалуйста, обновите страницу.');
                     return;
                 }
 
@@ -93,7 +104,10 @@
 
                 btn.disabled = true;
                 const originalText = btnText.innerText;
+                const originalSubtext = btnSubtext.innerText;
+                
                 btnText.innerText = 'ПОДГОТОВКА...';
+                btnSubtext.innerText = 'ПОЛУЧЕНИЕ НАСТРОЕК';
 
                 try {
                     const res = await fetch('{{ route('passkeys.register-options') }}', {
@@ -125,11 +139,13 @@
                     }
 
                     btnText.innerText = 'ОЖИДАНИЕ...';
+                    btnSubtext.innerText = 'СЛЕДУЙТЕ ИНСТРУКЦИЯМ НА ЭКРАНЕ';
 
                     // Start WebAuthn registration
                     const attResp = await SimpleWebAuthn.startRegistration(options);
 
                     btnText.innerText = 'СОХРАНЕНИЕ...';
+                    btnSubtext.innerText = 'ПОДТВЕРЖДЕНИЕ ВЛАДЕНИЯ';
 
                     const saveRes = await fetch('{{ route('passkeys.register') }}', {
                         method: 'POST',
@@ -145,8 +161,8 @@
                         throw new Error(errorData.message || 'Ошибка сохранения Passkey');
                     }
                     
-                    btn.classList.add('bg-emerald-500');
                     btnText.innerText = 'ГОТОВО!';
+                    btnSubtext.innerText = 'УСТРОЙСТВО ПРИВЯЗАНО';
                     
                     setTimeout(() => { 
                         window.location.href = '{{ route('shop.customers.account.index') }}'; 
@@ -161,6 +177,7 @@
                     
                     btn.disabled = false;
                     btnText.innerText = originalText;
+                    btnSubtext.innerText = originalSubtext;
                 }
             });
         })();
