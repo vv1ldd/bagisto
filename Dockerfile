@@ -67,8 +67,8 @@ RUN --mount=type=cache,target=/root/.composer/cache \
 COPY . .
 
 # Copy Built Assets from Parallel Builders
-COPY --from=admin-builder /app/public/themes /var/www/html/public/themes
-COPY --from=shop-builder /app/public/build /var/www/html/public/build
+COPY --from=admin-builder /app/public/themes/admin /var/www/html/public/themes/admin
+COPY --from=shop-builder /app/public/themes/shop /var/www/html/public/themes/shop
 # Root assets (if any) built by root-builder
 COPY --from=root-builder /app/public/build /var/www/html/public/build
 
