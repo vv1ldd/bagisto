@@ -66,7 +66,7 @@
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container !max-w-none px-[60px] max-lg:px-8 max-md:px-4 account-animate-in pt-4 pb-4 max-md:pt-2 max-md:pb-2 mt-0">
+            class="container !max-w-none px-[60px] max-lg:px-8 max-md:px-4 account-animate-in flex-grow flex flex-col items-center justify-center mt-0 py-6">
 
             @php
                 $customer = auth()->guard('customer')->user();

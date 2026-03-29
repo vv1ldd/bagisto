@@ -76,10 +76,18 @@
 
                     <div class="space-y-4 mb-6">
                         <div>
-                            <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Ваш Email</label>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="block text-xs font-black uppercase text-zinc-400">Ваш Email</label>
+                                <button v-if="pinSent" 
+                                    @click="pinSent = false; redeem_form.verification_code = ''" 
+                                    class="text-[10px] font-black uppercase text-[#7C45F5] hover:underline transition-all">
+                                    Изменить
+                                </button>
+                            </div>
                             <input type="email" 
                                 v-model="redeem_form.email" 
-                                class="w-full bg-zinc-50 dark:bg-zinc-950 border-3 border-zinc-900 dark:border-white/20 dark:text-white p-4 font-black focus:outline-none transition-all"
+                                :disabled="pinSent"
+                                class="w-full bg-zinc-50 dark:bg-zinc-950 border-3 border-zinc-900 dark:border-white/20 dark:text-white p-4 font-black focus:outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                             />
                         </div>
 
