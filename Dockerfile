@@ -48,7 +48,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 # Install PHP extensions
 ENV IPE_GD_WITHOUTAVIF=1
-RUN install-php-extensions pdo_mysql exif pcntl bcmath calendar redis soap gd intl gmp zip
+RUN install-php-extensions pdo_mysql exif pcntl bcmath calendar soap gd intl gmp zip \
+    && install-php-extensions igbinary msgpack redis
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
