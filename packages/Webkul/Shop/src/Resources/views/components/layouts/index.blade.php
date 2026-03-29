@@ -16,28 +16,26 @@
 
         <title>{{ $title ?? '' }}</title>
 
-        <!-- Global Theme Switcher (Anti-FOUC) -->
+        <!-- Global Theme Switcher (Time-based Auto) -->
         <script>
             (function() {
                 try {
-                    var localTheme = localStorage.getItem('theme');
-                    var themeToApply = 'light';
-                    
-                    if (localTheme === 'dark' || localTheme === 'light') {
-                        themeToApply = localTheme;
-                    } else {
-                        var hour = new Date().getHours();
-                        if (hour >= 18 || hour < 6) {
-                            themeToApply = 'dark';
-                        }
-                    }
+                    // Set theme based strictly on time of day (20:00 - 07:00 is dark)
+                    var hour = new Date().getHours();
+                    var isNight = hour >= 20 || hour < 7;
+                    var themeToApply = isNight ? 'dark' : 'light';
                     
                     if (themeToApply === 'dark') {
                         document.documentElement.classList.add('dark');
                     } else {
                         document.documentElement.classList.remove('dark');
                     }
-                } catch (e) {}
+                    
+                    // Store for Vue components to pick up if needed
+                    localStorage.setItem('theme', themeToApply);
+                } catch (e) {
+                    console.error('Theme switch failed:', e);
+                }
             })();
         </script>
         <meta charset="UTF-8">
@@ -203,8 +201,8 @@
             Skip to main content
         </a>
 
-        <!-- Background Layer -->
-        <div class="fixed inset-0 -z-30 bg-[#F0EFFF] dark:bg-[#100c24] transition-colors duration-500"></div>
+        <!-- Background Layer (Brutalist High-Contrast) -->
+        <div class="fixed inset-0 -z-30 bg-white dark:bg-[#09090b] transition-colors duration-700"></div>
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative text-zinc-900 dark:text-white transition-colors duration-500">

@@ -46,7 +46,6 @@
 
     {{-- RIGHT: Actions --}}
     <div class="flex items-center gap-6 flex-shrink-0">
-        <v-theme-switcher></v-theme-switcher>
 
         @auth('customer')
             <div class="flex items-center gap-4">
@@ -104,14 +103,6 @@
                 });
             }
         });
-
-        app.component('v-theme-switcher', {
-            template: `
-                <div class="flex items-center gap-1.5 bg-zinc-50 border-2 border-zinc-900 p-1 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
-                    <button @click="setTheme('light')" :class="{'bg-zinc-900 text-white': currentMode === 'light', 'text-zinc-500 hover:text-zinc-900': currentMode !== 'light'}" class="w-7 h-7 flex items-center justify-center transition-all" title="Light Mode">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    </button>
-                    <button @click="setTheme('dark')" :class="{'bg-zinc-900 text-white': currentMode === 'dark', 'text-zinc-500 hover:text-zinc-900': currentMode !== 'dark'}" class="w-7 h-7 flex items-center justify-center transition-all" title="Dark Mode">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                     </button>
                 </div>

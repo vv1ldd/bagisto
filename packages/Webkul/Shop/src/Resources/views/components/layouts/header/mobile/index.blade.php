@@ -56,7 +56,6 @@
                 </a>
             @endif
 
-            <v-theme-switcher></v-theme-switcher>
 
             @auth('customer')
                 <div class="flex items-center gap-3">
