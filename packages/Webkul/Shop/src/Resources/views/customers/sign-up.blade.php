@@ -7,7 +7,7 @@
 
     <div id="registration-wizard" class="animate-in fade-in slide-in-from-bottom-4 duration-1000">
         <!-- Back Button -->
-        <div class="mb-4">
+        <div class="mb-3">
             <a href="{{ route('shop.customer.session.index') }}" 
                 class="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-[8px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all group">
                 <svg class="w-2.5 h-2.5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -17,15 +17,15 @@
             </a>
         </div>
 
-        <div class="mb-6 text-center">
-            <h1 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter leading-none">Создать<br>Аккаунт</h1>
+        <div class="mb-4 text-center">
+            <h1 class="text-2xl font-black text-white mb-1.5 uppercase tracking-tighter leading-none">Создать<br>Аккаунт</h1>
             <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider leading-relaxed">
-                Безопасность <span class="text-[#7C45F5]">нового уровня</span> с технологией Passkey.
+                Безопасность <span class="text-[#7C45F5]">нового уровня</span> с Passkey.
             </p>
         </div>
 
         <!-- Nickname Input -->
-        <div class="w-full mb-6 group">
+        <div class="w-full mb-4 group">
             <div class="relative h-20 bg-white/5 border border-white/10 rounded-2xl group-focus-within:border-[#7C45F5]/50 group-focus-within:bg-[#7C45F5]/5 transition-all duration-300">
                 <div class="absolute top-4 left-6 pointer-events-none">
                     <span class="text-[8px] font-black text-zinc-500 uppercase tracking-[0.2em] group-focus-within:text-[#7C45F5] transition-colors">Никнейм</span>
@@ -203,13 +203,8 @@
                         body: JSON.stringify(attResp)
                     });
 
-                    if (!storeRes.ok) {
-                        const errData = await storeRes.json();
-                        throw new Error(errData.message || 'Ошибка сохранения ключа.');
-                    }
-                    
-                    btn.innerHTML = 'Готово!';
-                    window.location.href = '{{ route('shop.customers.account.onboarding.security') }}';
+                    const data = await storeRes.json();
+                    window.location.href = data.redirect_url || '{{ route('shop.customers.account.onboarding.security') }}';
 
                 } catch (err) {
                     if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {

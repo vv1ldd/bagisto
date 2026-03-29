@@ -29,8 +29,6 @@
     $customization = $themeCustomizationRepository->findOneWhere([
         'type' => 'footer_links',
         'status' => 1,
-        'theme_code' => $channel->theme,
-        'channel_id' => $channel->id,
     ]);
 @endphp
 
@@ -52,12 +50,12 @@
             </div>
 
             @php
-                $showFooterInfo = filter_var(core()->getConfigData('general.design.footer.show_footer_info', $channel->code), FILTER_VALIDATE_BOOLEAN);
-                $footerPhone = core()->getConfigData('general.design.footer.phone', $channel->code);
-                $footerEmail = core()->getConfigData('general.design.footer.email', $channel->code);
-                $footerSchedule = core()->getConfigData('general.design.footer.schedule', $channel->code);
-                $footerCompanyName = core()->getConfigData('general.design.footer.company_name', $channel->code);
-                $footerInn = core()->getConfigData('general.design.footer.inn', $channel->code);
+                $showFooterInfo = filter_var(core()->getConfigData('general.design.footer.show_footer_info'), FILTER_VALIDATE_BOOLEAN);
+                $footerPhone = core()->getConfigData('general.design.footer.phone');
+                $footerEmail = core()->getConfigData('general.design.footer.email');
+                $footerSchedule = core()->getConfigData('general.design.footer.schedule');
+                $footerCompanyName = core()->getConfigData('general.design.footer.company_name');
+                $footerInn = core()->getConfigData('general.design.footer.inn');
             @endphp
 
             @if ($showFooterInfo)
@@ -128,7 +126,7 @@
                         
                         $copyright = str_replace(
                             [':year', ':company'],
-                            [date('Y'), core()->getConfigData('general.design.footer.company_name', $channel->code) ?: 'Meanly Pay'],
+                            [date('Y'), core()->getConfigData('general.design.footer.company_name') ?: 'Meanly Pay'],
                             $copyright
                         );
                     @endphp

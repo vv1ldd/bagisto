@@ -14,6 +14,8 @@ class RedeemController extends Controller
     public function index()
     {
         if (! auth()->guard('customer')->check()) {
+            session(['url.intended' => request()->fullUrl()]);
+
             if (! session()->has('registration_intended_url')) {
                 session(['registration_intended_url' => request()->fullUrl()]);
             }
@@ -43,6 +45,7 @@ class RedeemController extends Controller
 
         try {
             $response = Http::withToken($token)
+                ->timeout(10)
                 ->post($servicesUrl . '/verify-code', [
                     'code' => $request->code,
                 ]);
@@ -71,6 +74,7 @@ class RedeemController extends Controller
 
         try {
             $response = Http::withToken($token)
+                ->timeout(10)
                 ->post($servicesUrl . '/send-verification', [
                     'code'  => $request->code,
                     'email' => $request->email,
@@ -105,6 +109,7 @@ class RedeemController extends Controller
             $payload = $request->all();
 
             $response = Http::withToken($token)
+                ->timeout(10)
                 ->post($servicesUrl . '/activate', $payload);
 
             if ($response->ok() && $response->json()['status'] === 'success') {

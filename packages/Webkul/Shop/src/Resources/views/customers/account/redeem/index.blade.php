@@ -61,7 +61,7 @@
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Загрузка...
+                            @{{ loadingText || 'Загрузка...' }}
                         </span>
                     </button>
                 </div>
@@ -169,6 +169,7 @@
                     loading: false,
                     error: null,
                     pinSent: false,
+                    loadingText: '',
                     redeem_form: {
                         code: '',
                         email: this.email || '',
@@ -209,6 +210,7 @@
                     }
 
                     this.loading = true;
+                    this.loadingText = 'Проверка кода...';
                     this.error = null;
                     try {
                         const res = await this.$axios.post('{{ route('shop.customers.account.redeem.verify') }}', { 
@@ -221,7 +223,8 @@
                                 this.redeem_form.verification_code = 'TRUSTED_USER';
                                 
                                 if (this.hasContactInfo) {
-                                    this.activate();
+                                    this.loadingText = 'Активация...';
+                                    await this.activate();
                                 } else {
                                     this.currentStep = 3;
                                 }
@@ -235,6 +238,7 @@
                         this.error = e.response?.data?.message || 'Сетевая ошибка';
                     } finally {
                         this.loading = false;
+                        this.loadingText = '';
                     }
                 },
 

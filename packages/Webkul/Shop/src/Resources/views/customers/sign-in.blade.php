@@ -6,16 +6,16 @@
     {!! view_render_event('bagisto.shop.customers.login.before') !!}
 
     <div id="login-container" class="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-black text-white uppercase tracking-tighter mb-2 leading-none">Вход в Meanly</h1>
+        <div class="text-center mb-4">
+            <h1 class="text-2xl font-black text-white uppercase tracking-tighter mb-1 leading-none">Вход в Meanly</h1>
             <p class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest leading-relaxed">
-                Доступ через <span class="text-[#7C45F5]">Passkey</span> — мгновенно, надежно, без пароля.
+                Доступ через <span class="text-[#7C45F5]">Passkey</span> — мгновенно, без пароля.
             </p>
         </div>
 
         <!-- Passkey Login Button -->
         <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
-            class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] text-white h-14 font-black uppercase tracking-[0.2em] text-sm transition-all hover:bg-[#8A5CF7] shadow-lg shadow-[#7C45F5]/20 active:scale-[0.98] rounded-2xl overflow-hidden mb-8">
+            class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] text-white h-14 font-black uppercase tracking-[0.2em] text-sm transition-all hover:bg-[#8A5CF7] shadow-lg shadow-[#7C45F5]/20 active:scale-[0.98] rounded-2xl overflow-hidden mb-4">
             <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                 <circle cx="12" cy="12" r="3"></circle>
@@ -25,7 +25,7 @@
         </button>
 
         <!-- Footer Actions -->
-        <div class="space-y-6">
+        <div class="space-y-4">
             <div class="flex items-center gap-3 w-full opacity-20">
                 <div class="h-px flex-1 bg-white"></div>
                 <span class="text-[8px] font-black text-white uppercase tracking-[0.4em]">Или</span>
@@ -121,7 +121,8 @@
                     });
 
                     if (loginResponse.ok) {
-                        window.location.href = '{{ route('shop.home.index') }}';
+                        const data = await loginResponse.json();
+                        window.location.href = data.redirect_url || '{{ route('shop.home.index') }}';
                     } else {
                         var result = await loginResponse.json();
                         throw new Error(result.message || 'Ошибка входа.');

@@ -253,7 +253,12 @@ class PasskeyController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
-            return response()->json(['message' => 'Passkey registered successfully.']);
+            $redirectUrl = redirect()->intended(route('shop.customers.account.onboarding.security'))->getTargetUrl();
+
+            return response()->json([
+                'message'      => 'Passkey registered successfully.',
+                'redirect_url' => $redirectUrl,
+            ]);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\DB::rollBack();
             
