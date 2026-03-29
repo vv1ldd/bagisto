@@ -28,7 +28,8 @@ ENV HARDHAT_TELEMETRY_DISABLED=1
 RUN npm run build
 RUN npm --prefix packages/Webkul/Admin run build
 RUN npm --prefix packages/Webkul/Shop run build
-RUN cd blockchain && npx hardhat compile
+# Use pre-compiled artifacts to avoid compiler download timeout in CI
+# RUN cd blockchain && npx hardhat compile
 
 
 # Stage 2: Final PHP Application
