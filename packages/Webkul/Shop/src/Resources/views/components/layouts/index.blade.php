@@ -1,7 +1,7 @@
 @props([
     'hasHeader'  => true,
     'hasFeature' => true,
-    'hasFooter'  => true,
+    'hasFooter'  => true, // Can be true, false, or 'mini'
 ])
 
 <!DOCTYPE html>
@@ -223,7 +223,9 @@
                 @endif
 
                 <!-- Page Footer Blade Component -->
-                @if ($hasFooter)
+                @if ($hasFooter === 'mini')
+                    <x-shop::layouts.footer.mini />
+                @elseif ($hasFooter)
                     <x-shop::layouts.footer />
                 @endif
             </div>

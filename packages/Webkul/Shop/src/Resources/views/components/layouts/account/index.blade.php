@@ -3,7 +3,7 @@
     'backLink' => null,
     'backText' => null,
     'hasHeader' => true,
-    'hasFooter' => true,
+    'hasFooter' => 'mini',
     'isCardless' => false,
     'title'      => null,
 ])
