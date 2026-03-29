@@ -9,41 +9,41 @@
     <script type="text/x-template" id="v-checkout-address-guest-template">
         <div class="transition-all duration-500">
             <!-- State: Selection -->
-            <div v-if="state == 'selection'" class="p-8 text-center bg-white/40 backdrop-blur-md  border border-white/20 shadow-sm">
-                <h2 class="text-2xl font-medium text-navyBlue mb-8">@lang('shop::app.checkout.onepage.address.selection-title')</h2>
+            <div v-if="state == 'selection'" class="p-10 text-center bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                <h2 class="text-3xl font-black uppercase tracking-[0.2em] mb-12 text-zinc-900">@lang('shop::app.checkout.onepage.address.selection-title')</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Login -->
                     <a href="{{ route('shop.customer.session.index') }}?return_to=checkout" 
-                       class="p-6  border border-zinc-200 hover:border-navyBlue hover:bg-navyBlue/5 transition-all group">
-                        <span class="icon-profile text-4xl text-zinc-400 group-hover:text-navyBlue mb-4 block"></span>
-                        <p class="font-medium text-navyBlue">@lang('shop::app.checkout.onepage.address.login')</p>
+                       class="p-8 bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group flex flex-col items-center">
+                        <span class="icon-profile text-5xl text-zinc-900 mb-6 block"></span>
+                        <p class="font-black uppercase tracking-widest text-zinc-900">@lang('shop::app.checkout.onepage.address.login')</p>
                     </a>
 
                     <!-- Register -->
                     <a href="{{ route('shop.customers.register.index') }}?return_to=checkout" 
-                       class="p-6  border border-zinc-200 hover:border-navyBlue hover:bg-navyBlue/5 transition-all group">
-                        <span class="icon-plus text-4xl text-zinc-400 group-hover:text-navyBlue mb-4 block"></span>
-                        <p class="font-medium text-navyBlue">@lang('shop::app.checkout.onepage.address.register')</p>
+                       class="p-8 bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all group flex flex-col items-center">
+                        <span class="icon-plus text-5xl text-zinc-900 mb-6 block"></span>
+                        <p class="font-black uppercase tracking-widest text-zinc-900">@lang('shop::app.checkout.onepage.address.register')</p>
                     </a>
 
                     <!-- Guest -->
                     <div @click="state = 'email'" 
-                         class="p-6  border border-zinc-200 hover:border-purple-600 hover:bg-purple-50 cursor-pointer transition-all group">
-                        <span class="icon-cart text-4xl text-zinc-400 group-hover:text-purple-600 mb-4 block"></span>
-                        <p class="font-medium text-navyBlue group-hover:text-purple-700">@lang('shop::app.checkout.onepage.address.guest-checkout')</p>
+                         class="p-8 bg-[#7C45F5] border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 cursor-pointer transition-all group flex flex-col items-center">
+                        <span class="icon-cart text-5xl text-white mb-6 block"></span>
+                        <p class="font-black uppercase tracking-widest text-white">@lang('shop::app.checkout.onepage.address.guest-checkout')</p>
                     </div>
                 </div>
             </div>
 
             <!-- State: Email Input -->
-            <div v-if="state == 'email'" class="max-w-md mx-auto p-8 bg-white/40 backdrop-blur-md  border border-white/20 shadow-sm">
-                <div class="flex items-center gap-4 mb-6">
-                    <span class="icon-arrow-left text-2xl cursor-pointer text-zinc-400 hover:text-navyBlue" @click="state = 'selection'"></span>
-                    <h2 class="text-xl font-medium text-navyBlue">@lang('shop::app.checkout.onepage.address.enter-email')</h2>
+            <div v-if="state == 'email'" class="max-w-2xl mx-auto p-10 bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                <div class="flex items-center gap-6 mb-10 pb-6 border-b-4 border-zinc-900">
+                    <span class="icon-arrow-left text-3xl cursor-pointer text-zinc-900 hover:text-[#7C45F5]" @click="state = 'selection'"></span>
+                    <h2 class="text-2xl font-black uppercase tracking-[0.15em] text-zinc-900">@lang('shop::app.checkout.onepage.address.enter-email')</h2>
                 </div>
 
-                <div class="mb-6 text-zinc-500 text-sm">
+                <div class="mb-10 text-zinc-500 text-[11px] font-black uppercase tracking-widest leading-relaxed">
                     На указанный адрес будет отправлен одноразовый код для подтверждения.
                 </div>
 
@@ -52,33 +52,34 @@
                         type="email"
                         name="email"
                         v-model="email"
-                        class="! border-zinc-200 focus:border-purple-500 focus:ring-purple-500"
+                        class="!border-4 !border-zinc-900 !rounded-none !py-6 !px-6 !text-lg !font-bold focus:!ring-[#7C45F5]/20"
                         placeholder="example@mail.com"
                         rules="required|email"
                     />
                 </x-shop::form.control-group>
 
-                <div class="mt-8">
-                    <x-shop::button
-                        class="primary-button w-full  py-3 shadow-lg hover:shadow-xl transition-all"
-                        ::disabled="!email || isSendingOtp"
-                        ::loading="isSendingOtp"
+                <div class="mt-12">
+                    <button
+                        class="bg-[#7C45F5] border-4 border-zinc-900 w-full py-6 text-[14px] font-black uppercase tracking-widest text-white shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50"
+                        :disabled="!email || isSendingOtp"
                         @click="sendOtp"
-                        title="{{ trans('shop::app.checkout.onepage.address.send-otp') }}"
-                    />
+                    >
+                        <span v-if="!isSendingOtp">@lang('shop::app.checkout.onepage.address.send-otp')</span>
+                        <span v-else class="animate-pulse">@lang('shop::app.checkout.onepage.address.send-otp')...</span>
+                    </button>
                 </div>
             </div>
 
             <!-- State: OTP Verification -->
-            <div v-if="state == 'otp'" class="max-w-md mx-auto p-8 bg-white/40 backdrop-blur-md  border border-white/20 shadow-sm">
-                <div class="flex items-center gap-4 mb-6">
-                    <span class="icon-arrow-left text-2xl cursor-pointer text-zinc-400 hover:text-navyBlue" @click="state = 'email'"></span>
-                    <h2 class="text-xl font-medium text-navyBlue">@lang('shop::app.checkout.onepage.address.verify-otp')</h2>
+            <div v-if="state == 'otp'" class="max-w-2xl mx-auto p-10 bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                <div class="flex items-center gap-6 mb-10 pb-6 border-b-4 border-zinc-900">
+                    <span class="icon-arrow-left text-3xl cursor-pointer text-zinc-900 hover:text-[#7C45F5]" @click="state = 'email'"></span>
+                    <h2 class="text-2xl font-black uppercase tracking-[0.15em] text-zinc-900">@lang('shop::app.checkout.onepage.address.verify-otp')</h2>
                 </div>
 
-                <div class="mb-6 p-4  bg-purple-50 border border-purple-100 text-purple-700 text-sm">
-                    <p class="font-medium mb-1">@lang('shop::app.checkout.onepage.address.otp-sent')</p>
-                    <p class="opacity-80">@{{ email }}</p>
+                <div class="mb-10 p-6 bg-[#7C45F5] border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] text-white">
+                    <p class="text-[10px] font-black uppercase tracking-widest mb-1">@lang('shop::app.checkout.onepage.address.otp-sent')</p>
+                    <p class="text-lg font-black tabular-nums">@{{ email }}</p>
                 </div>
 
                 <x-shop::form.control-group>
@@ -86,27 +87,28 @@
                         type="text"
                         name="otp"
                         v-model="otp"
-                        class="! border-zinc-200 focus:border-purple-500 focus:ring-purple-500 text-center text-2xl tracking-[0.5em] font-bold"
+                        class="!border-4 !border-zinc-900 !rounded-none !py-8 !px-6 !text-3xl !font-black !text-center !tracking-[0.8em]"
                         maxlength="6"
                         placeholder="000000"
                     />
                 </x-shop::form.control-group>
                 
-                <p v-if="otpError" class="mt-2 text-sm text-red-500 text-center">@{{ otpError }}</p>
+                <p v-if="otpError" class="mt-4 text-xs font-black uppercase tracking-widest text-red-600 text-center">@{{ otpError }}</p>
 
-                <div class="mt-8">
-                    <x-shop::button
-                        class="primary-button w-full  py-3 shadow-lg hover:shadow-xl transition-all"
-                        ::disabled="otp.length < 6 || isVerifyingOtp"
-                        ::loading="isVerifyingOtp"
+                <div class="mt-12">
+                    <button
+                        class="bg-[#7C45F5] border-4 border-zinc-900 w-full py-6 text-[14px] font-black uppercase tracking-widest text-white shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50"
+                        :disabled="otp.length < 6 || isVerifyingOtp"
                         @click="verifyOtp"
-                        title="{{ trans('shop::app.checkout.onepage.address.confirm') }}"
-                    />
+                    >
+                        <span v-if="!isVerifyingOtp">@lang('shop::app.checkout.onepage.address.confirm')</span>
+                        <span v-else class="animate-pulse">@lang('shop::app.checkout.onepage.address.confirm')...</span>
+                    </button>
                 </div>
                 
-                <p class="mt-6 text-center text-sm text-zinc-400">
+                <p class="mt-8 text-center text-[10px] font-black uppercase tracking-widest text-zinc-400">
                     Не получили код? 
-                    <button @click="sendOtp" class="text-purple-600 font-medium hover:underline" :disabled="isSendingOtp">Отправить еще раз</button>
+                    <button @click="sendOtp" class="text-[#7C45F5] hover:underline" :disabled="isSendingOtp">Отправить еще раз</button>
                 </p>
             </div>
 
@@ -114,13 +116,13 @@
             <div v-if="state == 'address'">
                 <x-shop::form v-slot="{ meta, errors, handleSubmit }" as="div">
                     <form @submit="handleSubmit($event, addAddress)">
-                        <div class="mb-4">
+                        <div class="mb-8 overflow-hidden">
                             <!-- Billing Address Header -->
-                            <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-xl font-medium text-navyBlue">
+                            <div class="flex items-center justify-between mb-8 pb-4 border-b-2 border-zinc-100">
+                                <h2 class="text-2xl font-black uppercase tracking-[0.15em] text-zinc-900">
                                     @lang('shop::app.checkout.onepage.address.billing-address')
                                 </h2>
-                                <p class="text-sm text-zinc-500">@{{ email }}</p>
+                                <p class="text-[12px] font-black text-[#7C45F5] tabular-nums">@{{ email }}</p>
                             </div>
 
                             <!-- Billing Address Form -->
@@ -128,25 +130,26 @@
                                 :address="{ email: email, ... (cart.billing_address || {}) }"></v-checkout-address-form>
 
                             <!-- Use for Shipping Checkbox -->
-                            <x-shop::form.control-group class="!mb-0 flex items-center gap-2.5 mt-4" v-if="cart.have_stockable_items">
-                                <x-shop::form.control-group.control type="checkbox" name="billing.use_for_shipping"
-                                    id="use_for_shipping" for="use_for_shipping" value="1"
-                                    @change="useBillingAddressForShipping = ! useBillingAddressForShipping"
-                                    ::checked="!! useBillingAddressForShipping" />
+                            <div class="mt-8 p-6 bg-zinc-50 border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] flex items-center gap-4 cursor-pointer select-none"
+                                @click="useBillingAddressForShipping = ! useBillingAddressForShipping"
+                                v-if="cart.have_stockable_items">
+                                
+                                <div class="flex h-8 w-8 items-center justify-center border-4 border-zinc-900 transition-all shrink-0"
+                                    :class="[useBillingAddressForShipping ? 'bg-[#7C45F5]' : 'bg-white']">
+                                    <span v-if="useBillingAddressForShipping" class="icon-checkmark text-white font-black text-lg"></span>
+                                </div>
 
-                                <label
-                                    class="cursor-pointer select-none text-base text-zinc-500"
-                                    for="use_for_shipping">
+                                <label class="cursor-pointer text-[12px] font-black uppercase tracking-widest text-zinc-900">
                                     @lang('shop::app.checkout.onepage.address.same-as-billing')
                                 </label>
-                            </x-shop::form.control-group>
+                            </div>
                         </div>
 
                         <!-- Guest Shipping Address -->
                         <template v-if="cart.have_stockable_items">
-                            <div class="mt-8" v-if="! useBillingAddressForShipping">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h2 class="text-xl font-medium text-navyBlue">
+                            <div class="mt-14" v-if="! useBillingAddressForShipping">
+                                <div class="flex items-center justify-between mb-8 pb-4 border-b-2 border-zinc-100">
+                                    <h2 class="text-2xl font-black uppercase tracking-[0.15em] text-zinc-900">
                                         @lang('shop::app.checkout.onepage.address.shipping-address')
                                     </h2>
                                 </div>
@@ -157,12 +160,15 @@
                         </template>
 
                         <!-- Proceed Button -->
-                        <div class="mt-8 flex justify-end">
-                            <x-shop::button
-                                class="primary-button  px-12 py-4 text-lg shadow-lg hover:shadow-xl transition-all"
-                                :title="trans('shop::app.checkout.onepage.address.proceed')" 
-                                ::loading="isStoring"
-                                ::disabled="isStoring" />
+                        <div class="mt-14 pt-10 border-t-4 border-zinc-900 flex justify-end">
+                            <button
+                                class="bg-zinc-900 border-4 border-zinc-900 px-16 py-6 text-[16px] font-black uppercase tracking-widest text-white shadow-[8px_8px_0px_0px_rgba(124,69,245,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all disabled:opacity-50"
+                                :disabled="isStoring"
+                                type="submit"
+                            >
+                                <span v-if="!isStoring">@lang('shop::app.checkout.onepage.address.proceed')</span>
+                                <span v-else class="animate-spin h-6 w-6 border-4 border-white border-t-transparent rounded-full mx-auto"></span>
+                            </button>
                         </div>
                     </form>
                 </x-shop::form>

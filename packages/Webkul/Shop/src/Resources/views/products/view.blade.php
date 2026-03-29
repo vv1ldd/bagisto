@@ -86,14 +86,14 @@
                         <input type="hidden" name="is_buy_now" v-model="is_buy_now">
                         <input type="hidden" name="quantity" v-model="qty">
 
-                        <div class="w-full max-w-6xl mx-auto px-4 lg:px-6 space-y-4 pt-4 flex flex-col md:flex-row md:items-start md:gap-6 lg:gap-10">
+                        <div class="w-full max-w-6xl mx-auto px-4 lg:px-6 space-y-6 pt-6 flex flex-col md:flex-row md:items-start md:gap-8 lg:gap-12 pb-20">
 
                             <!-- LEFT COLUMN: Product Card -->
-                            <div class="bg-zinc-900/40 backdrop-blur-xl border border-white/5 shadow-2xl overflow-hidden flex flex-col items-stretch w-full md:max-w-[480px] shrink-0 rounded-[2rem]">
+                            <div class="bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] overflow-hidden flex flex-col items-stretch w-full md:max-w-[480px] shrink-0">
 
                                 <!-- Header: Title + Actions (Heart + Cross) -->
-                                <div class="px-6 py-5 max-sm:px-4 max-sm:py-4 flex items-center justify-between gap-4 relative z-10 w-full border-b border-white/5">
-                                    <h1 class="text-xl font-black text-white uppercase tracking-tighter leading-tight flex-1">
+                                <div class="px-6 py-5 max-sm:px-4 max-sm:py-4 flex items-center justify-between gap-4 relative z-10 w-full border-b-4 border-zinc-900 bg-zinc-50">
+                                    <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter leading-tight flex-1">
                                         {{ $product->name }}
                                     </h1>
 
@@ -101,15 +101,15 @@
                                         @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
                                             <button
                                                 type="button"
-                                                class="flex h-10 w-10 cursor-pointer items-center justify-center border border-white/5 bg-white/5 text-lg transition-all hover:bg-white/10 hover:text-red-500 active:scale-90 rounded-full"
-                                                :class="isWishlist ? 'icon-heart-fill text-red-500' : 'icon-heart text-zinc-500'"
+                                                class="flex h-10 w-10 cursor-pointer items-center justify-center border-2 border-zinc-900 bg-white text-lg transition-all hover:bg-zinc-50 hover:text-red-500 active:translate-x-0.5 active:translate-y-0.5 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:shadow-none"
+                                                :class="isWishlist ? 'icon-heart-fill text-red-500' : 'icon-heart text-zinc-400'"
                                                 @click="addToWishlist"
                                                 title="В избранное"
                                             ></button>
                                         @endif
 
                                         <a href="javascript:history.back()"
-                                           class="w-10 h-10 bg-white/5 border border-white/5 flex items-center justify-center text-zinc-400 active:scale-95 transition-all hover:bg-white/10 hover:text-white rounded-full"
+                                           class="w-10 h-10 bg-white border-2 border-zinc-900 flex items-center justify-center text-zinc-900 active:translate-x-0.5 active:translate-y-0.5 transition-all hover:bg-zinc-50 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] active:shadow-none"
                                            title="Закрыть">
                                             <span class="icon-cancel text-xl"></span>
                                         </a>
@@ -117,94 +117,94 @@
                                 </div>
 
                                 <!-- Product Image (Full width of the card) -->
-                                <div class="relative w-full flex items-center justify-center bg-black/10 border-y border-white/5 p-8 z-0">
+                                <div class="relative w-full flex items-center justify-center bg-zinc-50 border-b-4 border-zinc-900 p-8 z-0 overflow-hidden">
                                      <img src="{{ $productBaseImage['medium_image_url'] }}"
-                                          class="w-full h-auto object-contain transition-transform duration-700 hover:scale-110 drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
+                                          class="w-full h-auto object-contain transition-transform duration-700 hover:scale-105"
                                           style="max-height: 320px;"
                                          alt="{{ $product->name }}">
                                 </div>
 
                                 <!-- Info, Price, Actions -->
-                                <div class="flex flex-col gap-3 p-5 max-sm:p-4 bg-transparent relative z-10 text-center items-center">
+                                <div class="flex flex-col gap-4 p-6 max-sm:p-4 bg-white relative z-10 text-center items-center">
 
                                     <div class="space-y-4 w-full">
                                         <!-- Attributes / Brand -->
                                         @if ($attributeData->count())
                                             <div class="flex flex-wrap gap-2 justify-center">
                                                 @foreach ($attributeData as $attribute)
-                                                    <div class="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 border border-white/10 rounded-lg">
+                                                    <div class="flex items-center gap-1.5 bg-zinc-50 px-2.5 py-1.5 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                                                         <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ $attribute['label'] }}:</span>
-                                                        <span class="text-[10px] font-black text-white uppercase tracking-tight">{{ $attribute['value'] }}</span>
+                                                        <span class="text-[10px] font-black text-zinc-900 uppercase tracking-tight">{{ $attribute['value'] }}</span>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         @endif
 
                                         <!-- Price & Quantity Row -->
-                                        <div class="flex items-center justify-between gap-4 w-full border-y border-white/5 py-4">
-                                            <div class="text-3xl font-black tracking-tighter text-[#7C45F5] md:text-4xl text-left drop-shadow-[0_0_15px_rgba(124,69,245,0.3)] [&>del]:text-[12px] [&>del]:font-normal [&>del]:text-zinc-500 [&>del]:opacity-60">
+                                        <div class="flex items-center justify-between gap-4 w-full border-y-[3px] border-zinc-900 py-6 my-2">
+                                            <div class="text-4xl font-black tracking-tighter text-zinc-900 md:text-5xl text-left [&>del]:text-[14px] [&>del]:font-normal [&>del]:text-zinc-400 [&>del]:opacity-60 block">
                                                 {!! $product->getTypeInstance()->getPriceHtml() !!}
                                             </div>
 
                                             <!-- Quantity Selector -->
-                                            <div class="flex items-center bg-white/5 border border-white/10 h-11 rounded-xl overflow-hidden px-1 gap-1">
+                                            <div class="flex items-center bg-white border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] h-12 overflow-hidden gap-1">
                                                 <button
                                                     type="button"
-                                                    class="w-9 h-9 flex items-center justify-center hover:bg-white/10 transition-all active:scale-90 disabled:opacity-30 rounded-lg text-white"
+                                                    class="w-10 h-full flex items-center justify-center hover:bg-zinc-50 transition-all active:bg-zinc-100 disabled:opacity-30 text-zinc-900 border-r-2 border-zinc-900"
                                                     @click="decreaseQty"
                                                     :disabled="qty <= 1"
                                                 >
-                                                    <span class="icon-line text-[12px]"></span>
+                                                    <span class="icon-line text-[14px]"></span>
                                                 </button>
                                                 <input
                                                     type="text"
-                                                    class="w-10 text-center bg-transparent border-none font-black text-white focus:ring-0 text-sm p-0"
+                                                    class="w-10 text-center bg-transparent border-none font-black text-zinc-900 focus:ring-0 text-base p-0"
                                                     v-model="qty"
                                                     readonly
                                                 >
                                                 <button
                                                     type="button"
-                                                    class="w-9 h-9 flex items-center justify-center hover:bg-white/10 transition-all active:scale-90 rounded-lg text-white"
+                                                    class="w-10 h-full flex items-center justify-center hover:bg-zinc-50 transition-all active:bg-zinc-100 text-zinc-900 border-l-2 border-zinc-900"
                                                     @click="increaseQty"
                                                 >
-                                                    <span class="icon-plus text-[12px]"></span>
+                                                    <span class="icon-plus text-[14px]"></span>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Buy Buttons Row -->
-                                    <div class="flex gap-2 w-full mt-2">
+                                    <div class="flex flex-col gap-3 w-full">
                                         <button
                                             type="button"
-                                            class="flex-[1.5] bg-[#7C45F5] text-white h-14 font-black text-[12px] uppercase tracking-widest transition-all hover:bg-[#8A5CF7] shadow-lg shadow-[#7C45F5]/20 active:scale-[0.97] disabled:opacity-50 flex items-center justify-center gap-2 rounded-2xl"
+                                            class="w-full bg-[#7C45F5] text-white h-16 border-[3px] border-zinc-900 font-black text-[13px] uppercase tracking-[0.2em] transition-all hover:bg-[#8A5CF7] shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 flex items-center justify-center gap-3"
                                             :disabled="isStoring.buyNow"
                                             @click="is_buy_now = 1; addToCart()"
                                         >
-                                            <span v-if="!isStoring.buyNow" class="icon-payment text-lg"></span>
-                                            <span v-else class="icon-spinner animate-spin text-lg"></span>
+                                            <span v-if="!isStoring.buyNow" class="icon-payment text-xl"></span>
+                                            <span v-else class="icon-spinner animate-spin text-xl"></span>
                                             Купить сейчас
                                         </button>
 
                                         <button
                                             type="button"
-                                            class="flex-1 bg-white/5 border border-white/10 text-white h-14 font-black text-[12px] uppercase tracking-widest transition-all hover:bg-white/10 active:scale-[0.97] disabled:opacity-50 flex items-center justify-center gap-2 rounded-2xl"
+                                            class="w-full bg-white border-[3px] border-zinc-900 text-zinc-900 h-16 font-black text-[13px] uppercase tracking-[0.2em] transition-all hover:bg-zinc-50 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-50 flex items-center justify-center gap-3"
                                             :disabled="isStoring.addToCart"
                                             @click="is_buy_now = 0; addToCart()"
                                         >
-                                            <span v-if="!isStoring.addToCart" class="icon-cart text-lg"></span>
-                                            <span v-else class="icon-spinner animate-spin text-lg"></span>
+                                            <span v-if="!isStoring.addToCart" class="icon-cart text-xl"></span>
+                                            <span v-else class="icon-spinner animate-spin text-xl"></span>
                                             В корзину
                                         </button>
                                     </div>
 
-                                    <!-- Bottom section: badgets/info -->
-                                    <div class="flex flex-col gap-3 mt-3">
+                                    <!-- Bottom section: badges/info -->
+                                    <div class="flex flex-col gap-3 mt-2 w-full">
                                         @if (in_array($product->type, ['downloadable', 'virtual']))
                                             <!-- Digital delivery badge -->
-                                            <div class="flex items-center justify-center text-center gap-2 border border-[#7C45F5]/20 bg-[#7C45F5]/5 px-3 py-2.5">
-                                                <span class="text-[#7C45F5] text-sm shrink-0">✉</span>
-                                                <p class="text-[10px] font-semibold text-[#7C45F5] leading-tight">Цифровой товар — пришлём на e-mail после оплаты</p>
+                                            <div class="flex items-center justify-center text-center gap-3 border-[3px] border-zinc-900 bg-[#7C45F5]/5 px-4 py-4 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                                                <span class="text-[#7C45F5] text-xl shrink-0 font-bold">✉</span>
+                                                <p class="text-[11px] font-black text-zinc-900 leading-tight uppercase tracking-tight">Цифровой товар — пришлём на e-mail сразу после оплаты</p>
                                             </div>
                                         @endif
                                     </div>
@@ -213,9 +213,12 @@
 
                             <!-- RIGHT COLUMN: Description Section -->
                             @if ($product->description)
-                                <div class="flex flex-col gap-6 flex-1 min-w-0 md:pt-4">
-                                    <h2 class="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500 pl-1 opacity-60">Описание</h2>
-                                    <div class="text-zinc-300 leading-relaxed text-base max-sm:text-sm prose prose-invert prose-zinc max-w-none w-full" v-pre>
+                                <div class="flex flex-col gap-8 flex-1 min-w-0 md:pt-4">
+                                    <div class="space-y-2">
+                                        <h2 class="text-[12px] font-black uppercase tracking-[0.4em] text-zinc-400 pl-1 ">Описание товара</h2>
+                                        <div class="w-12 h-1 bg-zinc-900"></div>
+                                    </div>
+                                    <div class="text-zinc-800 leading-relaxed text-base max-sm:text-sm prose prose-zinc max-w-none w-full font-medium" v-pre>
                                         {!! $product->description !!}
                                     </div>
                                 </div>

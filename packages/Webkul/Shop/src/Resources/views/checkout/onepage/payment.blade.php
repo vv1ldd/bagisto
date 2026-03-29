@@ -22,49 +22,51 @@
                         </h2>
                         <p class="text-sm text-zinc-400 mb-5">Please select a payment method</p>
 
-                        <div class="grid grid-cols-1 gap-4 w-full max-w-[450px]">
+                        <div class="grid grid-cols-1 gap-6 w-full max-w-[450px]">
                             <div 
                                 v-for="(payment, index) in methods"
                                 :key="payment.method"
-                                class="relative border transition-all duration-300 group cursor-pointer flex flex-col justify-start bg-white"
-                                style="height: 56px;"
-                                :class="[selectedPaymentMethod == payment.method ? 'border-[#7C45F5] ring-1 ring-[#7C45F5] shadow-lg shadow-[#7C45F5]/5' : 'border-zinc-100 hover:border-zinc-200 shadow-sm']"
+                                class="relative border-2 border-zinc-900 transition-all duration-200 cursor-pointer flex flex-col bg-white p-4"
+                                :class="[selectedPaymentMethod == payment.method ? 'bg-[#7C45F5] text-white shadow-none translate-x-1 translate-y-1' : 'text-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5']"
                                 @click="handleSelection(payment)"
                             >
-                                <div class="flex items-center justify-between h-full px-2.5">
-                                    <div class="flex items-center gap-2">
-                                        <div class="h-8 w-8  bg-zinc-50 border border-zinc-100 p-1 flex items-center justify-center shrink-0">
+                                <div class="flex items-center justify-between h-full px-2">
+                                    <div class="flex items-center gap-4">
+                                        <div 
+                                            class="h-10 w-10 border-2 border-zinc-900 p-1 flex items-center justify-center shrink-0"
+                                            :class="[selectedPaymentMethod == payment.method ? 'bg-white' : 'bg-zinc-50']"
+                                        >
                                             <img :src="payment.image" class="max-h-full max-w-full object-contain" />
                                         </div>
                                         <div class="min-w-0">
-                                            <p class="text-[13px] font-bold truncate transition-colors" :class="[selectedPaymentMethod == payment.method ? 'text-[#7C45F5]' : 'text-zinc-800']">
+                                            <p class="text-[14px] font-black uppercase tracking-widest truncate">
                                                 @{{ payment.method_title }}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div 
-                                        class="h-4 w-4  border flex items-center justify-center transition-all bg-zinc-50"
-                                        :class="[selectedPaymentMethod == payment.method ? 'border-[#7C45F5] bg-[#7C45F5]' : 'border-zinc-300']"
+                                        class="h-5 w-5 border-2 border-zinc-900 flex items-center justify-center transition-all"
+                                        :class="[selectedPaymentMethod == payment.method ? 'bg-white' : 'bg-white']"
                                     >
-                                        <div v-if="selectedPaymentMethod == payment.method" class="h-1.5 w-1.5  bg-white"></div>
+                                        <div v-if="selectedPaymentMethod == payment.method" class="h-2.5 w-2.5 bg-[#7C45F5]"></div>
                                     </div>
                                 </div>
 
-                                <!-- Meanly Wallet: show total balance — absolutely positioned BELOW the tile, does NOT expand it -->
+                                <!-- Meanly Wallet Detail -->
                                 <div 
                                     v-if="payment.method === 'credits' && selectedPaymentMethod === 'credits'" 
-                                    class="absolute left-0 right-0 top-full z-10 p-2.5 bg-white border border-[#7C45F5]/20 border-t-0 animate-in fade-in slide-in-from-top-1 duration-200"
+                                    class="mt-4 pt-4 border-t-2 border-white/20 animate-in fade-in slide-in-from-top-1 duration-200"
                                 >
-                                    <div class="flex items-center justify-between px-1">
-                                        <span class="text-[9px] font-black text-zinc-400 uppercase tracking-wider">Баланс</span>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-black uppercase tracking-widest opacity-80">Баланс</span>
                                         @if(auth()->guard('customer')->check())
-                                            <span class="text-[13px] font-black text-zinc-800">
+                                            <span class="text-lg font-black tabular-nums">
                                                 {{ core()->currency(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
                                             </span>
                                         @endif
                                     </div>
-                                    <p class="mt-1 px-1 text-[10px] text-zinc-400">Спишем автоматически с вашего крипто-кошелька</p>
+                                    <p class="mt-1 text-[9px] font-black uppercase tracking-widest opacity-60">Спишем автоматически с вашего крипто-кошелька</p>
                                 </div>
                             </div>
                         </div>

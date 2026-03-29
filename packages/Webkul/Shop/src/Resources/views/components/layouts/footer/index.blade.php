@@ -16,6 +16,15 @@
         -webkit-font-feature-settings: 'liga';
         -webkit-font-smoothing: antialiased;
     }
+
+    footer .social-tile {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    footer .social-tile:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 4px 4px 0px 0px rgba(24,24,27,1);
+    }
 </style>
 @endPushOnce
 
@@ -26,33 +35,91 @@
 @php
     $channel = core()->getCurrentChannel();
 
-    $customization = $themeCustomizationRepository->findOneWhere([
-        'type' => 'footer_links',
+    $footerLinks = $themeCustomizationRepository->findOneWhere([
+        'type'   => 'footer_links',
+        'status' => 1,
+    ]);
+
+    $socialLinks = $themeCustomizationRepository->findOneWhere([
+        'type'   => 'social_links',
         'status' => 1,
     ]);
 @endphp
 
-<footer class="mt-12 bg-zinc-50 dark:bg-[#0d091a] text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-white/5 font-sans pt-8 pb-6 max-sm:mt-8 transition-colors duration-500">
-    <div class="px-4 md:px-[60px] max-sm:px-5">
+<footer class="mt-20 bg-white border-t-4 border-zinc-900 font-sans pt-16 pb-12 max-sm:mt-8 transition-colors duration-500">
+    <div class="container px-4 md:px-[60px] max-sm:px-5">
         <div class="mx-auto w-full max-w-7xl">
             
-            <!-- Top Section: Navigation Links -->
-            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12px] font-medium tracking-[0.05em] uppercase mb-8">
-                @if ($customization && $customization->options)
-                    @foreach ($customization->options as $footerLinkSection)
-                        @foreach ($footerLinkSection as $index => $link)
-                            <a href="{{ $link['url'] }}" class="hover:text-[#7C45F5] transition-colors">
-                                {{ $link['title'] }}
-                            </a>
+            <div class="flex flex-col md:flex-row justify-between gap-12 mb-16">
+                <!-- Brand Section -->
+                <div class="max-w-[300px]">
+                    <a href="{{ route('shop.home.index') }}" class="inline-block mb-6">
+                        @if ($logo = $channel->logo_url)
+                            <img 
+                                src="{{ $logo }}" 
+                                alt="{{ $channel->name }}" 
+                                class="h-10 w-auto"
+                            />
+                        @else
+                            <span class="text-2xl font-black uppercase tracking-tighter text-zinc-900 italic">
+                                {{ $channel->name ?? 'Meanly' }}<span class="text-[#7C45F5]">.</span>
+                            </span>
+                        @endif
+                    </a>
+                    
+                    <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500 leading-relaxed mb-8">
+                        The premium marketplace for gamers and crypto enthusiasts. Built on Trust.
+                    </p>
+
+                    <!-- Social Icons Section -->
+                    @if ($socialLinks && $socialLinks->options)
+                        <div class="flex flex-wrap gap-3">
+                            @foreach ($socialLinks->options as $social)
+                                <a 
+                                    href="{{ $social['url'] }}" 
+                                    target="_blank" 
+                                    class="social-tile flex h-10 w-10 items-center justify-center bg-white border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] text-zinc-900 group"
+                                    title="{{ $social['title'] }}"
+                                >
+                                    <div class="w-5 h-5 flex items-center justify-center fill-current">
+                                        {!! $social['icon_svg'] !!}
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Footer Links Section -->
+                <div class="flex-1 grid grid-cols-2 lg:grid-cols-4 gap-8">
+                    @if ($footerLinks && $footerLinks->options)
+                        @foreach ($footerLinks->options as $linkSection)
+                            <div class="flex flex-col gap-4">
+                                <h4 class="text-xs font-black uppercase tracking-[0.2em] text-zinc-900 pb-2 border-b-2 border-zinc-100">
+                                    Navigation
+                                </h4>
+                                
+                                <ul class="flex flex-col gap-3">
+                                    @foreach ($linkSection as $link)
+                                        <li>
+                                            <a 
+                                                href="{{ $link['url'] }}" 
+                                                class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 transition-colors"
+                                            >
+                                                {{ $link['title'] }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         @endforeach
-                    @endforeach
-                @endif
+                    @endif
+                </div>
             </div>
 
-
             <!-- Bottom Section: Copyright -->
-            <div class="text-center">
-                <div class="text-[11px] leading-relaxed opacity-50 font-medium uppercase tracking-[0.05em]">
+            <div class="pt-8 border-t-2 border-zinc-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-[10px] font-black uppercase tracking-[0.15em] text-zinc-400">
                     @php
                         $copyrightKey = 'general.design.copyright.copyright_text';
                         $copyright = core()->getConfigData($copyrightKey) 
@@ -64,7 +131,12 @@
                             $copyright
                         );
                     @endphp
-                    <p>{{ $copyright }}</p>
+                    {{ $copyright }}
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-[#7C45F5]">Built on Handshake</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Powered by Bagisto</span>
                 </div>
             </div>
         </div>

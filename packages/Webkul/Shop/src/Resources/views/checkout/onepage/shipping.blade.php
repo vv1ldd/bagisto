@@ -28,13 +28,10 @@
 
                                     <div
                                         v-for="rate in method.rates"
-                                        class="relative border transition-all duration-300 group cursor-pointer"
-                                        style="height: 80px;"
-                                        :class="[selectedShippingMethod == rate.method ? 'border-[#7C45F5] bg-white ring-1 ring-[#7C45F5] shadow-lg' : 'border-white/60 bg-white/40 backdrop-blur-3xl hover:border-white/80 shadow-sm']"
+                                        class="relative border-2 border-zinc-900 transition-all duration-200 cursor-pointer overflow-hidden p-6"
+                                        :class="[selectedShippingMethod == rate.method ? 'bg-[#7C45F5] text-white shadow-none translate-x-1 translate-y-1' : 'bg-white text-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5']"
                                         @click="store(rate.method)"
                                     >
-                                        <div class="absolute inset-0 bg-gradient-to-br from-transparent to-[#7C45F5]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
                                         <input 
                                             type="radio"
                                             name="shipping_method"
@@ -44,30 +41,37 @@
                                             :checked="selectedShippingMethod == rate.method"
                                         >
 
-                                        <div class="relative flex items-center justify-between h-full px-6">
+                                        <div class="relative flex items-center justify-between">
                                             <div class="flex items-center gap-4">
-                                                <div class="flex h-12 w-12 items-center justify-center  bg-[#7C45F5]/10 text-[#7C45F5] shrink-0">
+                                                <div 
+                                                    class="flex h-12 w-12 items-center justify-center border-4 border-zinc-900 shrink-0"
+                                                    :class="[selectedShippingMethod == rate.method ? 'bg-white text-[#7C45F5]' : 'bg-zinc-100 text-zinc-900']"
+                                                >
                                                     <span class="icon-flate-rate text-3xl"></span>
                                                 </div>
 
                                                 <div class="min-w-0">
-                                                    <p class="font-bold transition-colors duration-300 truncate" :class="[selectedShippingMethod == rate.method ? 'text-[#7C45F5]' : 'text-zinc-800']">
+                                                    <p class="text-sm font-black uppercase tracking-widest truncate">
                                                         @{{ rate.method_title }}
                                                     </p>
-                                                    <p class="text-xs font-medium text-zinc-400 truncate max-w-[160px]">@{{ rate.method_description }}</p>
+                                                    <p 
+                                                        class="text-[10px] font-black uppercase tracking-widest mt-1 opacity-60"
+                                                    >
+                                                        @{{ rate.method_description }}
+                                                    </p>
                                                 </div>
                                             </div>
 
                                             <div class="flex items-center gap-4 shrink-0">
-                                                <p class="text-lg font-black text-zinc-900">
+                                                <p class="text-xl font-black tabular-nums">
                                                     @{{ rate.base_formatted_price }}
                                                 </p>
 
                                                 <div 
-                                                    class="flex h-6 w-6 items-center justify-center  border-2 transition-all duration-300 shrink-0"
-                                                    :class="[selectedShippingMethod == rate.method ? 'border-[#7C45F5] bg-[#7C45F5] scale-110 shadow-md' : 'border-zinc-300 group-hover:border-zinc-400']"
+                                                    class="flex h-6 w-6 items-center justify-center border-2 border-zinc-900 transition-all duration-200"
+                                                    :class="[selectedShippingMethod == rate.method ? 'bg-white' : 'bg-white']"
                                                 >
-                                                    <div v-if="selectedShippingMethod == rate.method" class="h-2.5 w-2.5  bg-white"></div>
+                                                    <div v-if="selectedShippingMethod == rate.method" class="h-3 w-3 bg-[#7C45F5]"></div>
                                                 </div>
                                             </div>
                                         </div>

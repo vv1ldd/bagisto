@@ -5,20 +5,39 @@
         [v-cloak] { display: none; }
     </style>
 
-    <!-- Steam-style step breadcrumb -->
-    <div class="border-b border-zinc-200 dark:border-white/5 bg-zinc-50 dark:bg-black/20">
-        <div class="max-w-7xl mx-auto px-4 md:px-[60px] py-4 flex items-center gap-3 text-sm font-bold">
-            <span class="bg-[#7C45F5] text-white px-4 py-1.5 rounded-full text-xs uppercase tracking-widest">
-                Payment Info
-            </span>
-            <svg class="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-            <span class="text-zinc-400 text-xs uppercase tracking-widest">Review + Purchase</span>
+    <!-- Brutalist step breadcrumb -->
+    <div class="border-b-4 border-zinc-900 bg-white shadow-[0_4px_0px_0px_rgba(24,24,27,1)]">
+        <div class="max-w-7xl mx-auto px-4 md:px-[60px] py-6">
+            <div class="flex flex-wrap items-center gap-4">
+                <div 
+                    class="flex items-center gap-3 px-6 py-3 border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] transition-all"
+                    :class="['address', 'shipping', 'payment', 'review'].includes(currentStep) ? 'bg-[#7C45F5] text-white shadow-none translate-x-1 translate-y-1' : 'bg-white text-zinc-400'"
+                >
+                    <span class="text-[14px] font-black uppercase tracking-[0.2em]">01. @lang('shop::app.checkout.onepage.address.title')</span>
+                </div>
+
+                <div class="hidden md:block w-8 h-1 bg-zinc-900"></div>
+
+                <div 
+                    class="flex items-center gap-3 px-6 py-3 border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] transition-all"
+                    :class="['shipping', 'payment', 'review'].includes(currentStep) ? 'bg-[#7C45F5] text-white shadow-none translate-x-1 translate-y-1' : 'bg-white text-zinc-400'"
+                >
+                    <span class="text-[14px] font-black uppercase tracking-[0.2em]">02. @lang('shop::app.checkout.onepage.shipping.shipping-method')</span>
+                </div>
+
+                <div class="hidden md:block w-8 h-1 bg-zinc-900"></div>
+
+                <div 
+                    class="flex items-center gap-3 px-6 py-3 border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] transition-all"
+                    :class="['payment', 'review'].includes(currentStep) ? 'bg-[#7C45F5] text-white shadow-none translate-x-1 translate-y-1' : 'bg-white text-zinc-400'"
+                >
+                    <span class="text-[14px] font-black uppercase tracking-[0.2em]">03. @lang('shop::app.checkout.onepage.payment.payment-method')</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="px-4 py-6 md:py-10 max-w-7xl mx-auto" v-cloak>
+    <div class="px-4 py-10 max-w-7xl mx-auto" v-cloak>
         <v-checkout>
             <x-shop::shimmer.checkout.onepage />
         </v-checkout>
@@ -26,81 +45,83 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-checkout-template">
-                                            <template v-if="! cart">
-                                                <x-shop::shimmer.checkout.onepage />
-                                            </template>
+                                             <template v-if="! cart">
+                                                 <x-shop::shimmer.checkout.onepage />
+                                             </template>
 
-                                            <template v-else>
-                                                <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
-                                                    <!-- Steps Column (LEFT) -->
-                                                    <div class="space-y-6" id="steps-container">
-                                                        <!-- Mobile Order Summary -->
-                                                        <div class="lg:hidden">
-                                                            <div class="bg-white/40 backdrop-blur-3xl border border-white/60  p-6 shadow-sm mb-6 overflow-hidden">
-                                                                <div class="flex items-center justify-between mb-4 pb-4 border-b border-white/20">
-                                                                    <h3 class="text-lg font-black text-zinc-800 uppercase tracking-tight">Ваш заказ</h3>
-                                                                    <div class="px-3 py-1 bg-[#7C45F5]  text-white text-[10px] font-black uppercase">
-                                                                        @{{ cart.items.length }} поз.
-                                                                    </div>
-                                                                </div>
+                                             <template v-else>
+                                                 <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
+                                                     <!-- Steps Column (LEFT) -->
+                                                     <div class="space-y-8" id="steps-container">
+                                                         <!-- Mobile Order Summary -->
+                                                         <div class="lg:hidden">
+                                                             <div class="bg-white border-4 border-zinc-900 p-8 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-10 overflow-hidden">
+                                                                 <div class="flex items-center justify-between mb-6 pb-6 border-b-2 border-zinc-100">
+                                                                     <h3 class="text-xl font-black text-zinc-900 uppercase tracking-widest">Ваш заказ</h3>
+                                                                     <div class="px-4 py-2 bg-[#7C45F5] border-2 border-zinc-900 text-white text-[10px] font-black uppercase shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                                                                         @{{ cart.items.length }} поз.
+                                                                     </div>
+                                                                 </div>
 
-                                                                <div class="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
-                                                                    @include('shop::checkout.onepage.summary')
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                                 <div class="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                                                                     @include('shop::checkout.onepage.summary')
+                                                                 </div>
+                                                             </div>
+                                                         </div>
 
-                                                        <div class="bg-white p-6 sm:p-8 shadow-sm overflow-hidden flex flex-col gap-10">
-                                                            <!-- Address -->
-                                                            <div data-step="address">
-                                                                <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
-                                                                    @include('shop::checkout.onepage.address')
-                                                                </template>
-                                                            </div>
+                                                         <div class="bg-white border-4 border-zinc-900 p-8 md:p-12 shadow-[10px_10px_0px_0px_rgba(24,24,27,1)] overflow-hidden flex flex-col gap-14">
+                                                             <!-- Address -->
+                                                             <div data-step="address">
+                                                                 <template v-if="['address', 'shipping', 'payment', 'review'].includes(currentStep)">
+                                                                     @include('shop::checkout.onepage.address')
+                                                                 </template>
+                                                             </div>
 
-                                                            <!-- Shipping -->
-                                                            <div v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)" data-step="shipping">
-                                                                @include('shop::checkout.onepage.shipping')
-                                                            </div>
+                                                             <!-- Shipping -->
+                                                             <div v-if="cart.have_stockable_items && ['shipping', 'payment', 'review'].includes(currentStep)" data-step="shipping">
+                                                                 <div class="h-1 bg-zinc-100 w-full mb-14"></div>
+                                                                 @include('shop::checkout.onepage.shipping')
+                                                             </div>
 
-                                                            <!-- Payment -->
-                                                            <div v-if="['payment', 'review'].includes(currentStep)" data-step="payment">
-                                                                @include('shop::checkout.onepage.payment')
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                             <!-- Payment -->
+                                                             <div v-if="['payment', 'review'].includes(currentStep)" data-step="payment">
+                                                                 <div class="h-1 bg-zinc-100 w-full mb-14"></div>
+                                                                 @include('shop::checkout.onepage.payment')
+                                                             </div>
+                                                         </div>
+                                                     </div>
 
-                                                    <!-- Sidebar Column (RIGHT) -->
-                                                    <div class="hidden lg:block sticky top-8 space-y-4">
-                                                        <div class="bg-white p-6 sm:p-8 shadow-sm">
-                                                            @include('shop::checkout.onepage.summary')
+                                                     <!-- Sidebar Column (RIGHT) -->
+                                                     <div class="hidden lg:block sticky top-8">
+                                                         <div class="bg-white border-4 border-zinc-900 p-8 md:p-10 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                                                             @include('shop::checkout.onepage.summary')
 
-                                                            <div class="mt-8 space-y-4" v-if="canPlaceOrder">
-                                                                <button
-                                                                    type="button"
-                                                                    class="w-full  bg-[#7C45F5] py-4 text-base font-black text-white shadow-[0_10px_20px_-5px_rgba(124,69,245,0.4)] transition-all hover:bg-[#6b35e4] hover:shadow-[0_15px_30px_-5px_rgba(124,69,245,0.5)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3"
-                                                                    :disabled="isPlacingOrder"
-                                                                    @click="placeOrder"
-                                                                >
-                                                                    <span v-if="!isPlacingOrder">
-                                                                        <template v-if="cart.payment_method == 'credits'">Оплатить с Wallet</template>
-                                                                        <template v-else>@lang('shop::app.checkout.onepage.summary.place-order')</template>
-                                                                    </span>
-                                                                    <svg v-else class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
-                                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                                    </svg>
-                                                                </button>
+                                                             <div class="mt-10 pt-10 border-t-4 border-zinc-900 space-y-6" v-if="canPlaceOrder">
+                                                                 <button
+                                                                     type="button"
+                                                                     class="w-full bg-[#7C45F5] border-[3px] border-zinc-900 py-6 text-[16px] font-black uppercase tracking-widest text-white shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:bg-[#8A5CF7] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                                                                     :disabled="isPlacingOrder"
+                                                                     @click="placeOrder"
+                                                                 >
+                                                                     <span v-if="!isPlacingOrder">
+                                                                         <template v-if="cart.payment_method == 'credits'">Оплатить с Wallet</template>
+                                                                         <template v-else>@lang('shop::app.checkout.onepage.summary.place-order')</template>
+                                                                     </span>
+                                                                     <svg v-else class="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
+                                                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                     </svg>
+                                                                 </button>
 
-                                                                <p class="text-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
-                                                                    Нажимая "Оплатить", вы принимаете <br/> 
-                                                                    <a href="#" class="underline hover:text-[#7C45F5] transition-colors">условиями обслуживания</a>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </template>
+                                                                 <p class="text-center text-[11px] font-black text-zinc-400 uppercase tracking-widest leading-relaxed">
+                                                                     Нажимая "Оплатить", вы принимаете <br/> 
+                                                                     <a href="#" class="underline hover:text-zinc-900 transition-colors">условия обслуживания</a>
+                                                                 </p>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </template>
                                         </script>
 
             <script type="module">

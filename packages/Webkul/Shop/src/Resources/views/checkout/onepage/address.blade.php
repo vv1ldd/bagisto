@@ -2,24 +2,14 @@
 
 <!-- If the customer is guest -->
 <template v-if="cart.is_guest">
-    <x-shop::accordion
-        class="mb-7 mt-8 overflow-hidden  border border-white/40 bg-white/40 backdrop-blur-3xl shadow-sm !border-b-0 max-md:mb-4 max-md:mt-4">
-        <!-- Accordion Header Component Slot -->
-        <x-slot:header
-            class="!p-0 max-md:!mb-0 max-md: max-md:!p-3 max-md:text-sm max-md:font-medium max-sm:!p-2">
-            <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-medium max-md:text-base">
-                    @lang('shop::app.checkout.onepage.address.title')
-                </h2>
-            </div>
-            </x-slot>
-
-            <!-- Accordion Content Component Slot -->
-            <x-slot:content
-                class="mt-8 !p-0 max-md:mt-0 max-md: max-md:border max-md:border-t-0 max-md:!p-4">
-                @include('shop::checkout.onepage.address.guest')
-            </x-slot:content>
-    </x-shop::accordion>
+    <div class="mb-10 mt-8 bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] p-8 md:p-12">
+        <h2 class="text-3xl font-black uppercase tracking-[0.2em] mb-10 text-zinc-900">
+            @lang('shop::app.checkout.onepage.address.title')
+        </h2>
+        <div class="h-1.5 w-20 bg-zinc-900 -mt-8 mb-12"></div>
+        
+        @include('shop::checkout.onepage.address.guest')
+    </div>
 </template>
 
 <!-- If the customer is logged in -->
