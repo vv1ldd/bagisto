@@ -500,7 +500,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
                 $customer->username = static::generateUniqueCreditsAlias();
             }
 
-            if ($customer->isDirty('username') && empty($customer->credits_alias)) {
+            if ($customer->isDirty('username')) {
                 $customer->credits_alias = $customer->username;
             }
 

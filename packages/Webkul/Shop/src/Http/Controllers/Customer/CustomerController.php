@@ -235,8 +235,10 @@ class CustomerController extends Controller
         $customer = auth()->guard('customer')->user();
 
         $exists = $this->customerRepository->scopeQuery(function ($query) use ($username, $customer) {
-            return $query->where('username', $username)
-                ->where('id', '!=', $customer->id);
+            return $query->where(function($q) use ($username) {
+                $q->where('username', $username)
+                  ->orWhere('credits_alias', $username);
+            })->where('id', '!=', $customer->id);
         })->first();
 
         return response()->json([
@@ -401,11 +403,26 @@ class CustomerController extends Controller
 
             session()->flash('success', trans('shop::app.customers.account.profile.index.edit-success'));
 
+            if (request()->ajax() || request()->expectsJson()) {
+                return response()->json([
+                    'status'  => 'success',
+                    'message' => trans('shop::app.customers.account.profile.index.edit-success'),
+                    'customer' => $customer
+                ]);
+            }
+
             if ($customer->passkeys()->count() === 0) {
                 return redirect()->route('shop.customers.account.passkeys.index');
             }
 
             return redirect()->route('shop.customers.account.index');
+        }
+
+        if (request()->ajax() || request()->expectsJson()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => trans('shop::app.customer.account.profile.edit-fail')
+            ], 400);
         }
 
         session()->flash('success', trans('shop::app.customer.account.profile.edit-fail'));

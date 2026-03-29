@@ -55,8 +55,12 @@ class RegistrationController extends Controller
             return response()->json(['available' => false, 'message' => 'Некорректный псевдоним']);
         }
 
-        // Check if exists in DB
-        $exists = $this->customerRepository->where('username', $username)->exists();
+        // Check if exists in DB (both username and alias)
+        $exists = $this->customerRepository->where(function($q) use ($username) {
+            $q->where('username', $username)
+              ->orWhere('credits_alias', $username);
+        })->exists();
+
         if ($exists) {
             return response()->json(['available' => false, 'message' => 'Никнейм занят']);
         }

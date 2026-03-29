@@ -2614,13 +2614,31 @@
                         .then(response => {
                             this.originalUsername = this.username;
                             this.isEditing = false;
-                            window.showToast('success', 'Псевдоним успешно изменен');
+                            
+                            if (window.showAlert) {
+                                window.showAlert('success', response.data.message || 'Псевдоним успешно изменен');
+                            } else {
+                                alert(response.data.message || 'Псевдоним успешно изменен');
+                            }
+
+                            // Optional: update other parts of UI if needed
+                            // For now, refreshing the header might be needed if it's not reactive
+                            // But usually, the user is okay with a page refresh or seeing it on next load
+                            // Given we want standard behavior, we'll just show the alert
                         })
                         .catch(error => {
-                            if (error.response && error.response.data.errors) {
+                            let message = 'Ошибка при смене псевдонима';
+                            if (error.response && error.response.data && error.response.data.errors) {
                                 this.usernameError = error.response.data.errors.username[0];
+                                message = this.usernameError;
+                            } else if (error.response && error.response.data && error.response.data.message) {
+                                message = error.response.data.message;
+                            }
+
+                            if (window.showAlert) {
+                                window.showAlert('error', message);
                             } else {
-                                window.showToast('error', 'Ошибка при смене псевдонима');
+                                alert(message);
                             }
                         });
                     }

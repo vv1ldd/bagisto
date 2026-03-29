@@ -27,7 +27,10 @@ class RecipientLookupController extends Controller
             $alias = substr($alias, 1);
         }
 
-        $customer = Customer::where('credits_alias', $alias)->first();
+        $customer = Customer::where(function($q) use ($alias) {
+            $q->where('credits_alias', $alias)
+              ->orWhere('username', $alias);
+        })->first();
 
         if (! $customer || ! $customer->credits_id) {
             return response()->json(['error' => 'Not found'], 404);
