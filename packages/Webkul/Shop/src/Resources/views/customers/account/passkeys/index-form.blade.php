@@ -73,21 +73,25 @@
                 <!-- Redesigned Profile Settings View -->
                 <div class="mt-4 w-full">
                     {!! view_render_event('bagisto.shop.customers.account.profile.email.after') !!}
+                    
+                    @php
+                        $isOnboarding = $isOnboarding ?? false;
+                    @endphp
 
                     <!-- Passkeys & Trusted Devices -->
                     <div class="mb-10">
-                        @if (!($isOnboarding ?? false))
+                        @if (!$isOnboarding)
                             <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
                                 Passkeys & Безопасность
                             </h3>
                         @endif
 
-                        <div class="nav-grid">
+                        <div class="space-y-3">
                             @if ($customer->passkeys->count())
                                 @foreach ($customer->passkeys as $passkey)
-                                    <div class="nav-tile !cursor-default items-center">
+                                    <div class="relative group flex items-center p-4 bg-white/5 border border-white/5 rounded-2xl transition-all hover:bg-white/10">
                                         <div class="flex items-center gap-4 flex-1 min-w-0">
-                                            <span class="w-12 h-12 flex items-center justify-center bg-zinc-100 text-zinc-500 rounded-2xl shrink-0">
+                                            <span class="w-12 h-12 flex items-center justify-center bg-white/10 text-white rounded-xl shrink-0">
                                                 @php
                                                     $isMobile = stripos($passkey->user_agent, 'phone') !== false || stripos($passkey->user_agent, 'android') !== false;
                                                 @endphp
@@ -104,20 +108,20 @@
                                             
                                             <div class="flex flex-col min-w-0">
                                                 <div class="flex items-center gap-2 mb-0.5">
-                                                    <span class="nav-label">{{ $passkey->name ?: 'Passkey устройство' }}</span>
+                                                    <span class="text-white font-black text-sm uppercase tracking-tight">{{ $passkey->name ?: 'Passkey устройство' }}</span>
                                                     @if($passkey->id == session('current_session_passkey_id') || $passkey->id == request()->cookie('current_device_passkey_id'))
-                                                        <span class="bg-emerald-100 text-emerald-600 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">это устройство</span>
+                                                        <span class="bg-[#22c55e]/10 text-[#22c55e] text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest border border-[#22c55e]/20">это устройство</span>
                                                     @endif
                                                 </div>
-                                                <span class="text-[12px] text-zinc-500 font-medium">Добавлено: {{ $passkey->created_at->format('d.m.Y') }}</span>
+                                                <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Добавлено: {{ $passkey->created_at->format('d.m.Y') }}</span>
                                             </div>
                                         </div>
 
                                         <form action="{{ route('passkeys.destroy', $passkey->id) }}" method="POST"
-                                            onsubmit="return confirm('Удалить это устройство?')" class="shrink-0 flex items-center h-12">
+                                            onsubmit="return confirm('Удалить это устройство?')" class="shrink-0 flex items-center">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                                            <button type="submit" class="p-2 text-zinc-500 hover:text-red-400 transition-colors">
                                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
@@ -127,23 +131,22 @@
                                 @endforeach
                             @endif
 
-                            <button type="button" id="add-device-btn" onclick="window.showQrModal()" class="nav-tile group items-center text-left">
+                            <button type="button" id="add-device-btn" onclick="window.showQrModal()" 
+                                    class="group flex items-center justify-between w-full p-4 bg-white/5 border border-white/5 rounded-2xl transition-all hover:bg-white/10 hover:border-white/10">
                                 <div class="flex items-center gap-4 flex-1 min-w-0">
-                                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-2xl shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-lg shadow-[#7C45F5]/20">
+                                        <svg class="w-6 h-6 border-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                                         </svg>
                                     </span>
-                                    <div class="flex flex-col min-w-0">
-                                        <span class="nav-label">Добавить устройство</span>
-                                        <span class="text-[12px] text-zinc-500 font-medium">Вход через TouchID или FaceID</span>
+                                    <div class="flex flex-col text-left">
+                                        <span class="text-white font-black text-sm uppercase tracking-tight">Добавить устройство</span>
+                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Вход через TouchID или FaceID</span>
                                     </div>
                                 </div>
-                                <span class="nav-arrow">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                                    </svg>
-                                </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-600 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/>
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -154,28 +157,28 @@
             @endif
         {{-- === QR Code Modal === --}}
         <div id="qr-modal" class="fixed inset-0 z-[9999] hidden">
-            <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" id="qr-modal-overlay"></div>
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-md" id="qr-modal-overlay"></div>
             <div class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
-                <div class="bg-white rounded-[2rem] shadow-2xl border border-[#e2d9ff] w-full max-w-sm p-8 flex flex-col items-center text-center pointer-events-auto transition-transform duration-300 scale-95 opacity-0" id="qr-modal-content">
+                <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] shadow-2xl w-full max-w-sm p-8 flex flex-col items-center text-center pointer-events-auto transition-all duration-300 scale-95 opacity-0" id="qr-modal-content">
                     <div class="mb-6">
                         <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#7C45F5]/10 text-[#7C45F5] mb-4">
-                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <h3 class="text-[#1a0050] text-xl font-black tracking-tight mb-2">Привязка устройства</h3>
-                        <p class="text-zinc-500 text-sm">Отсканируйте этот QR-код камерой телефона, чтобы привязать другое устройство, или нажмите на кнопку, чтобы привязать текущее устройство.</p>
+                        <h3 class="text-white text-xl font-black uppercase tracking-tight mb-2">Привязка</h3>
+                        <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">Отсканируйте QR камерой телефона или используйте текущее устройство</p>
                     </div>
 
-                    <div id="qrcode-container" class="bg-white p-4 border border-[#e2d9ff] rounded-2xl shadow-sm mb-8 flex items-center justify-center w-48 h-48 overflow-hidden">
-                        <div class="animate-pulse text-[#7C45F5] font-bold text-xs uppercase tracking-widest">Создание...</div>
+                    <div id="qrcode-container" class="bg-white p-4 border border-white/10 rounded-3xl shadow-xl mb-8 flex items-center justify-center w-48 h-48 overflow-hidden grayscale contrast-125">
+                        <div class="animate-pulse text-zinc-900 font-black text-[10px] uppercase tracking-widest">Создание...</div>
                     </div>
 
-                    <div class="w-full space-y-3">
-                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl shadow-lg shadow-[#7C45F5]/30 hover:bg-[#6b34d4] transition-all active:scale-[0.98] uppercase tracking-wider text-sm">
+                    <div class="w-full space-y-4">
+                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="w-full h-16 bg-[#7C45F5] text-white font-black rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98] uppercase tracking-[0.2em] text-xs">
                             Привязать это устройство
                         </button>
-                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-400 hover:text-zinc-600 font-bold transition-colors text-sm uppercase tracking-widest">Закрыть</button>
+                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-500 hover:text-white font-bold transition-colors text-[10px] uppercase tracking-widest">Закрыть</button>
                     </div>
                 </div>
             </div>

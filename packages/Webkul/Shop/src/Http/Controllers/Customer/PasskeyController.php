@@ -253,7 +253,9 @@ class PasskeyController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
-            $redirectUrl = redirect()->intended(route('shop.customers.account.onboarding.security'))->getTargetUrl();
+            $redirectUrl = $isNewRegistration 
+                ? route('shop.customers.account.onboarding.security')
+                : redirect()->intended(route('shop.customers.account.onboarding.security'))->getTargetUrl();
 
             return response()->json([
                 'message'      => 'Passkey registered successfully.',

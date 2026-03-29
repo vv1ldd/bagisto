@@ -16,7 +16,7 @@
         @include('shop::customers.account.security-content', ['isOnboarding' => true])
         
         <div class="mt-6 flex justify-center">
-            <a href="{{ route('shop.customers.account.index') }}" 
+            <a href="{{ session('registration_intended_url', route('shop.customers.account.index')) }}" 
                class="inline-flex items-center gap-3 text-zinc-500 hover:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all group">
                 <span>Настроить позже</span>
                 <svg class="w-3 h-3 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">

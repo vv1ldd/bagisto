@@ -298,12 +298,6 @@ class RegistrationController extends Controller
         session()->save();
 
         // If the user came specifically to redeem a voucher, skip onboarding and go straight there
-        if ($intended = session()->get('registration_intended_url')) {
-            if (str_contains($intended, 'redeem')) {
-                return redirect()->to($intended);
-            }
-        }
-
-        return redirect()->route('shop.customers.account.profile.recovery_key');
+        return redirect()->route('shop.customers.account.onboarding.security');
     }
 }
