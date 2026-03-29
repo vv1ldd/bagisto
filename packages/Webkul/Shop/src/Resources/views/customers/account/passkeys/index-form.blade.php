@@ -131,7 +131,7 @@
                                 @endforeach
                             @endif
 
-                            <button type="button" id="add-device-btn" onclick="window.showQrModal()" 
+                            <button type="button" id="add-device-btn" onclick="window.startPasskeyRegistration(this)" 
                                     class="group flex items-center justify-between w-full p-5 bg-white border-3 border-zinc-900 rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
                                 <div class="flex items-center gap-5 flex-1 min-w-0">
                                     <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] border-2 border-zinc-900 text-white rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
@@ -140,7 +140,7 @@
                                         </svg>
                                     </span>
                                     <div class="flex flex-col text-left">
-                                        <span class="text-zinc-900 font-black text-sm uppercase tracking-tight">Добавить устройство</span>
+                                        <span id="add-device-text" class="text-zinc-900 font-black text-sm uppercase tracking-tight">Добавить устройство</span>
                                         <span class="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Вход через TouchID или FaceID</span>
                                     </div>
                                 </div>
@@ -155,37 +155,8 @@
                     {!! view_render_event('bagisto.shop.customers.account.profile.delete.after') !!}
                 </div>
             @endif
-        {{-- === QR Code Modal === --}}
-        <div id="qr-modal" class="fixed inset-0 z-[9999] hidden">
-            <div class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" id="qr-modal-overlay"></div>
-            <div class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
-                <div class="bg-white border-4 border-zinc-900 rounded-[2rem] shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] w-full max-w-sm p-8 md:p-10 flex flex-col items-center text-center pointer-events-auto transition-all duration-300 scale-95 opacity-0" id="qr-modal-content">
-                    <div class="mb-8">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#7C45F5]/10 text-[#7C45F5] border-2 border-[#7C45F5]/20 mb-6">
-                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-zinc-900 text-2xl font-black uppercase tracking-tighter mb-4">Привязка</h3>
-                        <p class="text-zinc-600 text-[11px] font-black uppercase tracking-widest leading-relaxed">Отсканируйте QR камерой телефона или используйте текущее устройство</p>
-                    </div>
-
-                    <div id="qrcode-container" class="bg-zinc-50 p-6 border-3 border-zinc-900 rounded-3xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] mb-10 flex items-center justify-center w-52 h-52 overflow-hidden grayscale">
-                        <div class="animate-pulse text-zinc-900 font-black text-[12px] uppercase tracking-widest">Создание...</div>
-                    </div>
-
-                    <div class="w-full space-y-6">
-                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="group w-full h-16 bg-[#7C45F5] border-2 border-zinc-900 text-white font-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:bg-[#8A5CF7] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none uppercase tracking-[0.2em] text-xs">
-                            Привязать это устройство
-                        </button>
-                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-400 hover:text-zinc-900 font-black transition-colors text-[10px] uppercase tracking-[0.3em] underline decoration-zinc-100 decoration-2 underline-offset-8">Закрыть</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         @push('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
             <script>
                 (function() {
                     // Global alert handler for Meanly style
@@ -212,54 +183,6 @@
                         }
                     };
 
-                    // Show Modal
-                    window.showQrModal = async function() {
-                        const qrModal = document.getElementById('qr-modal');
-                        const qrModalContent = document.getElementById('qr-modal-content');
-                        const qrCodeContainer = document.getElementById('qrcode-container');
-                        
-                        if (!qrModal || !qrModalContent || !qrCodeContainer) return;
-
-                        qrModal.classList.remove('hidden');
-                        setTimeout(() => {
-                            qrModalContent.classList.remove('scale-95', 'opacity-0');
-                        }, 10);
-
-                        try {
-                            const res = await fetch('{{ route('shop.customers.account.passkeys.generate-link') }}');
-                            const data = await res.json();
-                            
-                            qrCodeContainer.innerHTML = '';
-                            new QRCode(qrCodeContainer, {
-                                text: data.url,
-                                width: 160,
-                                height: 160,
-                                colorDark : "#1a0050",
-                                colorLight : "#ffffff",
-                                correctLevel : QRCode.CorrectLevel.M
-                            });
-                        } catch (err) {
-                            qrCodeContainer.innerHTML = '<span class="text-red-500 font-bold text-xs text-center">Ошибка<br>загрузки</span>';
-                        }
-                    };
-
-                    // Close Modal
-                    window.hideQrModal = function() {
-                        const qrModal = document.getElementById('qr-modal');
-                        const qrModalContent = document.getElementById('qr-modal-content');
-                        if (!qrModal || !qrModalContent) return;
-                        
-                        qrModalContent.classList.add('scale-95', 'opacity-0');
-                        setTimeout(() => { qrModal.classList.add('hidden'); }, 300);
-                    };
-
-                    // Close on overlay click
-                    document.addEventListener('click', function(e) {
-                        if (e.target.id === 'qr-modal-overlay') {
-                            window.hideQrModal();
-                        }
-                    });
-
                     window.startPasskeyRegistration = async function (btnElement) {
                         const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
 
@@ -273,11 +196,15 @@
                             return;
                         }
 
-                        // Determine which button triggered it (Add new vs QR modal button)
+                        // Determine which button triggered it
                         const isMainButton = !(btnElement && btnElement instanceof HTMLElement);
                         const button = isMainButton ? document.getElementById('add-passkey-button') : btnElement;
-                        const buttonText = isMainButton ? document.getElementById('add-passkey-button-text') : button;
-                        const originalText = buttonText?.innerText || 'Привязать новое устройство';
+                        
+                        // Try to find a text span inside
+                        let buttonText = isMainButton ? document.getElementById('add-passkey-button-text') : button.querySelector('#add-device-text');
+                        if (!buttonText) buttonText = button;
+
+                        const originalText = buttonText?.innerText || 'Добавить устройство';
 
                         if (button) button.disabled = true;
                         if (buttonText) buttonText.innerText = 'Подготовка...';
