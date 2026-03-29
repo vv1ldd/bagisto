@@ -9,7 +9,7 @@ COPY packages/Webkul/Admin/package.json packages/Webkul/Admin/package.json
 RUN --mount=type=cache,target=/root/.npm \
     npm --prefix packages/Webkul/Admin i --legacy-peer-deps
 COPY packages/Webkul/Admin/ packages/Webkul/Admin/
-COPY vite.config.js tailwind.config.js postcss.config.js ./
+COPY vite.config.js ./
 # Vite plugin needs public dir to exist
 RUN mkdir -p public
 RUN npm --prefix packages/Webkul/Admin run build
@@ -20,7 +20,7 @@ COPY packages/Webkul/Shop/package.json packages/Webkul/Shop/package.json
 RUN --mount=type=cache,target=/root/.npm \
     npm --prefix packages/Webkul/Shop i --legacy-peer-deps
 COPY packages/Webkul/Shop/ packages/Webkul/Shop/
-COPY vite.config.js tailwind.config.js postcss.config.js ./
+COPY vite.config.js ./
 RUN mkdir -p public
 RUN npm --prefix packages/Webkul/Shop run build
 
