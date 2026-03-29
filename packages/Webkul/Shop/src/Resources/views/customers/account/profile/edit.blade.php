@@ -18,13 +18,27 @@
     </x-shop::layouts.split-screen>
 @else
     <x-shop::layouts.account :is-cardless="true" :title="$pageTitle" :back-link="route('shop.customers.account.index')">
-        <!-- Profile Edit Form -->
-        <v-profile-edit inline-template>
-            <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data"
-                class="w-full" id="profile-edit-form" v-slot="{ meta }">
-                @include('shop::customers.account.profile.edit-form', ['customer' => $customer])
-            </x-shop::form>
-        </v-profile-edit>
+        <div class="relative w-full max-w-[600px] mx-auto">
+            {{-- Header with Back Button --}}
+            <div class="flex items-center gap-3 mb-2 px-4 pt-2">
+                <button type="button" 
+                    onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-12 h-12 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
+                    <span class="icon-arrow-left text-2xl font-black"></span>
+                </button>
+                <h1 class="text-3xl font-black text-white uppercase tracking-tighter mix-blend-difference">{{ $pageTitle }}</h1>
+            </div>
+
+            <div class="p-0">
+                <!-- Profile Edit Form -->
+                <v-profile-edit inline-template>
+                    <x-shop::form :action="route('shop.customers.account.profile.update')" enctype="multipart/form-data"
+                        class="w-full" id="profile-edit-form" v-slot="{ meta }">
+                        @include('shop::customers.account.profile.edit-form', ['customer' => $customer])
+                    </x-shop::form>
+                </v-profile-edit>
+            </div>
+        </div>
     </x-shop::layouts.account>
 @endif
 
@@ -39,12 +53,14 @@
         app.component('v-profile-edit', {
             data() {
                 return {
+                    username: '{{ $customer->username }}',
                     usernameError: '',
                     debounceTimer: null
                 }
             },
             methods: {
                 debounceCheckUsername(value) {
+                    this.username = value;
                     clearTimeout(this.debounceTimer);
                     this.usernameError = '';
 

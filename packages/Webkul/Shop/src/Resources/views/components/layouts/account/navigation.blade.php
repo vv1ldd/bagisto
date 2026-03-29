@@ -19,13 +19,13 @@ $menuIcons = [
 {{-- CARDLESS MENU --}}
 <div class="relative w-full max-w-[600px] mx-auto">
     {{-- Header with Back Button --}}
-    <div class="flex items-center gap-3 mb-8 px-4 pt-4">
+    <div class="flex items-center gap-3 mb-2 px-4 pt-1">
         <button type="button" 
             onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
-            class="w-12 h-12 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
-            <span class="icon-arrow-left text-2xl font-black"></span>
+            class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
+            <span class="icon-arrow-left text-xl font-black"></span>
         </button>
-        <h1 class="text-3xl font-black text-white uppercase tracking-tighter mix-blend-difference">Личный кабинет</h1>
+        <h1 class="text-2xl font-black text-white uppercase tracking-tighter mix-blend-difference">Личный кабинет</h1>
     </div>
 
     <div class="p-0">
@@ -121,7 +121,7 @@ $menuIcons = [
  
                         @php $icon = $menuIcons[$subMenuItem->getKey()] ?? null; @endphp
  
-                        <a href="{{ $subMenuItem->getUrl() }}" class="nav-tile group mt-1">
+                <a href="{{ $subMenuItem->getUrl() }}" class="nav-tile group">
                             @if ($icon)
                                 <span class="w-12 h-12 flex items-center justify-center border-2 border-black transition-transform group-hover:scale-105 shadow-sm">
                                     @php
@@ -198,7 +198,7 @@ $menuIcons = [
             </a>
  
             {{-- Logout --}}
-            <a href="{{ route('shop.customer.session.destroy.get') }}" class="nav-tile group hover:!border-red-200 mt-1">
+            <a href="{{ route('shop.customer.session.destroy.get') }}" class="nav-tile group hover:!border-red-200">
                 <span class="w-12 h-12 flex items-center justify-center bg-red-500 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>

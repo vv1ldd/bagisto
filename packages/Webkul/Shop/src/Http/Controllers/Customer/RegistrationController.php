@@ -275,6 +275,8 @@ class RegistrationController extends Controller
         // log in immediately
         auth()->guard('customer')->login($customer);
 
+        session()->regenerate();
+
         $customerRepo = app(\Webkul\Customer\Repositories\CustomerRepository::class);
         $customerRepo->update([
             'first_login_ip' => $currentIp,

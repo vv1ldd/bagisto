@@ -174,6 +174,8 @@ class TmaController extends Controller
 
         session()->put('logged_in_via_tma', true);
 
+        session()->regenerate();
+
         Log::info('TMA: Login successful', [
             'customer_id' => $customer->id,
             'username' => $customer->username

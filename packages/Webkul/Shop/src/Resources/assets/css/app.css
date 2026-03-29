@@ -1042,8 +1042,8 @@ img.lazy {
 .nav-grid {
     display: grid;
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
-    padding: 4px 0 !important;
+    gap: 2px !important;
+    padding: 0 !important;
     background-color: transparent !important;
 }
 
@@ -1052,8 +1052,8 @@ img.lazy {
     flex-direction: row !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 14px !important;
-    padding: 14px 18px !important;
+    gap: 12px !important;
+    padding: 8px 16px !important;
     text-align: left !important;
     background-color: rgba(255, 255, 255, 0.82) !important;
     border: 1px solid rgba(0, 0, 0, 0.07) !important;
@@ -1180,7 +1180,7 @@ img.lazy {
     letter-spacing: 0.25em !important;
     color: #a1a1aa !important;
     opacity: 0.7 !important;
-    padding: 12px 8px 6px !important;
+    padding: 6px 8px 2px !important;
     background: transparent !important;
     border-bottom: none !important;
 }

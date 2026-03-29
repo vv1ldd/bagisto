@@ -245,11 +245,16 @@ class PasskeyController extends Controller
 
             if (!Auth::guard('customer')->check() && ($linkingFlow || $isNewRegistration)) {
                 Auth::guard('customer')->login($user);
+
+                session()->regenerate();
+
                 session()->forget('link_user_id');
                 
                 // Track login activity
                 app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($user);
             }
+
+            session()->save();
 
             \Illuminate\Support\Facades\DB::commit();
 
@@ -413,6 +418,8 @@ class PasskeyController extends Controller
             session()->put('passkey_unlocked_at', now()->timestamp);
             session()->put('current_session_passkey_id', $passkey->id); // Track current passkey
             Cookie::queue('current_device_passkey_id', $passkey->id, 60 * 24 * 365); // Track device via cookie
+
+            session()->save();
 
             session()->forget('passkey-authentication-options-json');
 
