@@ -31,7 +31,7 @@
                             <span class="bg-[#FF4D6D] border-2 border-zinc-900 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">критично</span>
                         @endif
                     </div>
-                    <p class="{{ $isOnboarding ? 'text-[11px]' : 'text-sm' }} text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">
+                    <p class="{{ $isOnboarding ? 'text-[11px]' : 'text-sm' }} text-zinc-600 font-black uppercase tracking-wider leading-relaxed">
                         {{ $needsUpgrade ? 'Нажмите, чтобы перевыпустить и активировать защиту' : 'Единственный способ вернуть доступ к данным и средствам' }}
                     </p>
                 </div>
@@ -62,7 +62,7 @@
                         </span>
                     @endif
                 </div>
-                <p class="{{ $isOnboarding ? 'text-[11px]' : 'text-sm' }} text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">Безопасный вход без пароля на этом и других устройствах</p>
+                <p class="{{ $isOnboarding ? 'text-[11px]' : 'text-sm' }} text-zinc-600 font-black uppercase tracking-wider leading-relaxed">Безопасный вход без пароля на этом и других устройствах</p>
             </div>
             <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
                 <svg class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -85,7 +85,7 @@
                 </div>
                 <div class="flex-1 min-w-0 pt-1">
                     <span class="text-zinc-900 text-xl font-black uppercase tracking-tight block mb-2">Активность входа</span>
-                    <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">Мониторинг активных сессий и истории доступа</p>
+                    <p class="text-sm text-zinc-600 font-black uppercase tracking-wider leading-relaxed">Мониторинг активных сессий и истории доступа</p>
                 </div>
                 <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -115,7 +115,7 @@
                             <span class="bg-green-500 border-2 border-zinc-900 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">подключено</span>
                         @endif
                     </div>
-                    <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider leading-relaxed">
+                    <p class="text-sm text-zinc-600 font-black uppercase tracking-wider leading-relaxed">
                         {{ $customer->telegram_chat_id ? 'Бот Meanly привязан и готов к работе' : 'Привяжите бота, чтобы получать мгновенные уведомления о событиях' }}
                     </p>
                     

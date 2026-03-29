@@ -10,21 +10,21 @@
         contentWidth="max-w-[500px]"
     >
         <x-slot:header>
-            <h1 class="text-white text-2xl md:text-3xl font-black uppercase tracking-tighter text-center">
+            <h1 class="text-zinc-900 text-3xl md:text-4xl font-black uppercase tracking-tighter text-center leading-none">
                 Устройства
             </h1>
-            <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-2 text-center">
+            <p class="text-zinc-600 text-[11px] font-black uppercase tracking-widest mt-4 text-center">
                 Вход через <span class="text-[#7C45F5]">TouchID или FaceID</span>
             </p>
         </x-slot>
 
-        <div class="space-y-4">
+        <div class="space-y-6">
             @include('shop::customers.account.passkeys.index-form', ['customer' => $customer, 'isOnboarding' => true])
             
-            <div class="mt-6 flex justify-center">
+            <div class="mt-8 flex justify-center">
                 <a href="{{ route('shop.customers.account.onboarding.security') }}" 
-                   class="inline-flex items-center gap-3 text-zinc-500 hover:text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all group">
-                    <svg class="w-3 h-3 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                   class="inline-flex items-center gap-3 text-zinc-900 hover:text-[#7C45F5] font-black text-[10px] uppercase tracking-[0.3em] transition-all group underline decoration-zinc-100 decoration-2 underline-offset-8">
+                    <svg class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"/>
                     </svg>
                     <span>Назад в настройки</span>

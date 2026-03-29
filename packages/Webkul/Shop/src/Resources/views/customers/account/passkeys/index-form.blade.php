@@ -81,39 +81,39 @@
                     <!-- Passkeys & Trusted Devices -->
                     <div class="mb-10">
                         @if (!$isOnboarding)
-                            <h3 class="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4 px-1">
+                            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-6 px-1">
                                 Passkeys & Безопасность
                             </h3>
                         @endif
 
-                        <div class="space-y-3">
+                        <div class="space-y-4">
                             @if ($customer->passkeys->count())
                                 @foreach ($customer->passkeys as $passkey)
-                                    <div class="relative group flex items-center p-4 bg-white/5 border border-white/5 rounded-2xl transition-all hover:bg-white/10">
-                                        <div class="flex items-center gap-4 flex-1 min-w-0">
-                                            <span class="w-12 h-12 flex items-center justify-center bg-white/10 text-white rounded-xl shrink-0">
+                                    <div class="relative group flex items-center p-5 bg-white border-2 border-zinc-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] transition-all">
+                                        <div class="flex items-center gap-5 flex-1 min-w-0">
+                                            <span class="w-12 h-12 flex items-center justify-center bg-zinc-50 border-2 border-zinc-900 text-zinc-900 rounded-xl shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                                                 @php
                                                     $isMobile = stripos($passkey->user_agent, 'phone') !== false || stripos($passkey->user_agent, 'android') !== false;
                                                 @endphp
                                                 @if ($isMobile)
-                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                                     </svg>
                                                 @else
-                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                                     </svg>
                                                 @endif
                                             </span>
                                             
                                             <div class="flex flex-col min-w-0">
-                                                <div class="flex items-center gap-2 mb-0.5">
-                                                    <span class="text-white font-black text-sm uppercase tracking-tight">{{ $passkey->name ?: 'Passkey устройство' }}</span>
+                                                <div class="flex items-center gap-3 mb-1">
+                                                    <span class="text-zinc-900 font-black text-sm uppercase tracking-tight">{{ $passkey->name ?: 'Passkey устройство' }}</span>
                                                     @if($passkey->id == session('current_session_passkey_id') || $passkey->id == request()->cookie('current_device_passkey_id'))
-                                                        <span class="bg-[#22c55e]/10 text-[#22c55e] text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest border border-[#22c55e]/20">это устройство</span>
+                                                        <span class="bg-emerald-50 text-emerald-600 text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest border border-emerald-200">это устройство</span>
                                                     @endif
                                                 </div>
-                                                <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Добавлено: {{ $passkey->created_at->format('d.m.Y') }}</span>
+                                                <span class="text-[10px] text-zinc-400 font-black uppercase tracking-widest">Добавлено: {{ $passkey->created_at->format('d.m.Y') }}</span>
                                             </div>
                                         </div>
 
@@ -121,8 +121,8 @@
                                             onsubmit="return confirm('Удалить это устройство?')" class="shrink-0 flex items-center">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-2 text-zinc-500 hover:text-red-400 transition-colors">
-                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <button type="submit" class="p-2 text-zinc-400 hover:text-red-500 transition-colors">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
                                             </button>
@@ -132,20 +132,20 @@
                             @endif
 
                             <button type="button" id="add-device-btn" onclick="window.showQrModal()" 
-                                    class="group flex items-center justify-between w-full p-4 bg-white/5 border border-white/5 rounded-2xl transition-all hover:bg-white/10 hover:border-white/10">
-                                <div class="flex items-center gap-4 flex-1 min-w-0">
-                                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] text-white rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-lg shadow-[#7C45F5]/20">
-                                        <svg class="w-6 h-6 border-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    class="group flex items-center justify-between w-full p-5 bg-white border-3 border-zinc-900 rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                                <div class="flex items-center gap-5 flex-1 min-w-0">
+                                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] border-2 border-zinc-900 text-white rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                                        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                                         </svg>
                                     </span>
                                     <div class="flex flex-col text-left">
-                                        <span class="text-white font-black text-sm uppercase tracking-tight">Добавить устройство</span>
-                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Вход через TouchID или FaceID</span>
+                                        <span class="text-zinc-900 font-black text-sm uppercase tracking-tight">Добавить устройство</span>
+                                        <span class="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Вход через TouchID или FaceID</span>
                                     </div>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-600 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-900 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </button>
                         </div>
@@ -157,28 +157,28 @@
             @endif
         {{-- === QR Code Modal === --}}
         <div id="qr-modal" class="fixed inset-0 z-[9999] hidden">
-            <div class="fixed inset-0 bg-black/80 backdrop-blur-md" id="qr-modal-overlay"></div>
+            <div class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" id="qr-modal-overlay"></div>
             <div class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
-                <div class="bg-zinc-900 border border-white/10 rounded-[2.5rem] shadow-2xl w-full max-w-sm p-8 flex flex-col items-center text-center pointer-events-auto transition-all duration-300 scale-95 opacity-0" id="qr-modal-content">
-                    <div class="mb-6">
-                        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#7C45F5]/10 text-[#7C45F5] mb-4">
-                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <div class="bg-white border-4 border-zinc-900 rounded-[2rem] shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] w-full max-w-sm p-8 md:p-10 flex flex-col items-center text-center pointer-events-auto transition-all duration-300 scale-95 opacity-0" id="qr-modal-content">
+                    <div class="mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#7C45F5]/10 text-[#7C45F5] border-2 border-[#7C45F5]/20 mb-6">
+                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <h3 class="text-white text-xl font-black uppercase tracking-tight mb-2">Привязка</h3>
-                        <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">Отсканируйте QR камерой телефона или используйте текущее устройство</p>
+                        <h3 class="text-zinc-900 text-2xl font-black uppercase tracking-tighter mb-4">Привязка</h3>
+                        <p class="text-zinc-600 text-[11px] font-black uppercase tracking-widest leading-relaxed">Отсканируйте QR камерой телефона или используйте текущее устройство</p>
                     </div>
 
-                    <div id="qrcode-container" class="bg-white p-4 border border-white/10 rounded-3xl shadow-xl mb-8 flex items-center justify-center w-48 h-48 overflow-hidden grayscale contrast-125">
-                        <div class="animate-pulse text-zinc-900 font-black text-[10px] uppercase tracking-widest">Создание...</div>
+                    <div id="qrcode-container" class="bg-zinc-50 p-6 border-3 border-zinc-900 rounded-3xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] mb-10 flex items-center justify-center w-52 h-52 overflow-hidden grayscale">
+                        <div class="animate-pulse text-zinc-900 font-black text-[12px] uppercase tracking-widest">Создание...</div>
                     </div>
 
-                    <div class="w-full space-y-4">
-                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="w-full h-16 bg-[#7C45F5] text-white font-black rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98] uppercase tracking-[0.2em] text-xs">
+                    <div class="w-full space-y-6">
+                        <button id="add-this-device-btn" onclick="window.startPasskeyRegistration(this)" class="group w-full h-16 bg-[#7C45F5] border-2 border-zinc-900 text-white font-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:bg-[#8A5CF7] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none uppercase tracking-[0.2em] text-xs">
                             Привязать это устройство
                         </button>
-                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-500 hover:text-white font-bold transition-colors text-[10px] uppercase tracking-widest">Закрыть</button>
+                        <button id="close-qr-modal" onclick="window.hideQrModal()" class="w-full py-2 text-zinc-400 hover:text-zinc-900 font-black transition-colors text-[10px] uppercase tracking-[0.3em] underline decoration-zinc-100 decoration-2 underline-offset-8">Закрыть</button>
                     </div>
                 </div>
             </div>
