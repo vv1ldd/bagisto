@@ -1,4 +1,4 @@
-<div id="shop-header" class="fixed top-0 left-0 right-0 z-[1000] bg-white border-b-4 border-zinc-900 transition-all duration-300" style="will-change: transform;">
+<div id="shop-header" class="fixed top-0 left-0 right-0 z-[1000] bg-white border-zinc-900 transition-all duration-300" style="will-change: transform;">
     {!! view_render_event('bagisto.shop.layout.header.before') !!}
 
     @if(core()->getCurrentChannel()->locales()->count() > 1 || core()->getCurrentChannel()->currencies()->count() > 1)
@@ -9,7 +9,7 @@
         </div>
     @endif
 
-    <header class="w-full h-[72px] bg-white">
+    <header class="w-full h-[88px] bg-white pt-3 border-b-4 border-zinc-900">
         <!-- Desktop Header -->
         <div class="max-lg:hidden h-full">
             <x-shop::layouts.header.desktop />
