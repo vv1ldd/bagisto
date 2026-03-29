@@ -46,6 +46,10 @@ test_ton_dest.js
 !composer.json
 !package.json
 !pint.json
+!blockchain/artifacts/
+!blockchain/cache/
+!blockchain/artifacts/**/*.json
+!blockchain/cache/**/*.json
 find_jetton.py
 find_txn.py
 get_jetton_details.py
