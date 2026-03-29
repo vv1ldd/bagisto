@@ -26,8 +26,8 @@
 
         <!-- Nickname Input -->
         <div class="w-full mb-4 group">
-            <div class="relative h-20 bg-white/5 border border-white/10 rounded-2xl group-focus-within:border-[#7C45F5]/50 group-focus-within:bg-[#7C45F5]/5 transition-all duration-300">
-                <div class="h-full flex items-end px-6 pb-4">
+            <div class="relative h-16 bg-white/5 border border-white/10 rounded-2xl group-focus-within:border-[#7C45F5]/50 group-focus-within:bg-[#7C45F5]/5 transition-all duration-300">
+                <div class="h-full flex items-center px-6">
                     <div class="flex-grow flex items-center justify-end relative">
                         <span class="text-white/20 mr-2 text-xl select-none font-black italic">@</span>
                         <input type="text" id="nickname-input" required
