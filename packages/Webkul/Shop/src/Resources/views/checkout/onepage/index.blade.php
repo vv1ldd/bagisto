@@ -11,7 +11,7 @@
         </v-checkout>
     </div>
 
-    @pushOnce('scripts')
+    @push('scripts')
         <script type="text/x-template" id="v-checkout-template">
             <template v-if="! cart">
                 <x-shop::shimmer.checkout.onepage />
@@ -249,6 +249,5 @@
                 },
             });
         </script>
-    @endPushOnce
-</x-shop::layouts>
+    @endpush
 </x-shop::layouts>
