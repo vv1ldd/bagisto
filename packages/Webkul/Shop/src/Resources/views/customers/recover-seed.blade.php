@@ -41,35 +41,35 @@
                 @endif
 
                 <!-- Progress Header -->
-                <div class="mb-8" v-if="currentStep > 0 && currentStep <= totalSteps">
+                <div class="mb-10" v-if="currentStep > 0 && currentStep <= totalSteps">
                     <div class="flex justify-between items-end mb-4">
                         <div>
-                            <p class="text-[8px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-1.5 leading-none">Security / Recovery</p>
-                            <h2 class="text-2xl font-black text-white uppercase tracking-tighter leading-none">Слово <span v-text="currentStep" class="text-[#7C45F5]"></span> <span class="text-white/20 px-1">/</span> <span v-text="totalSteps" class="text-white/40"></span></h2>
+                            <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-2 leading-none">Security / Recovery</p>
+                            <h2 class="text-2xl font-black text-zinc-900 uppercase tracking-tighter leading-none">Слово <span v-text="currentStep" class="text-[#7C45F5]"></span> <span class="text-zinc-200 px-1">/</span> <span v-text="totalSteps" class="text-zinc-400"></span></h2>
                         </div>
                     </div>
-                    <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div class="h-full bg-[#7C45F5] transition-all duration-700 ease-out shadow-[0_0_15px_rgba(124,69,245,0.5)]"
+                    <div class="h-2.5 w-full bg-zinc-100 border-2 border-zinc-900 rounded-full overflow-hidden">
+                        <div class="h-full bg-[#7C45F5] transition-all duration-700 ease-out"
                              :style="{ width: (currentStep / totalSteps * 100) + '%' }"></div>
                     </div>
                 </div>
 
                 <!-- Step 0: Length Selection Header -->
-                <div class="mb-8 text-center" v-if="currentStep === 0">
-                    <p class="text-[8px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-3">Mnemonic Setup</p>
-                    <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-3 leading-none text-center">Длина<br>Фразы</h2>
-                    <p class="text-zinc-500 font-bold text-[9px] uppercase tracking-widest">Выберите количество слов в вашей фразе</p>
+                <div class="mb-10 text-center" v-if="currentStep === 0">
+                    <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[#7C45F5] mb-4">Mnemonic Setup</p>
+                    <h2 class="text-4xl font-black text-zinc-900 uppercase tracking-tighter mb-4 leading-none text-center">Длина<br>Фразы</h2>
+                    <p class="text-zinc-600 font-bold text-[10px] uppercase tracking-widest">Выберите количество слов в вашей фразе</p>
                 </div>
 
                 <!-- Final Confirmation Header -->
-                <div class="mb-10 text-center" v-if="currentStep > totalSteps">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl mb-8 group">
-                        <svg class="w-10 h-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <div class="mb-12 text-center" v-if="currentStep > totalSteps">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-emerald-50 border-4 border-emerald-500 rounded-3xl mb-8 group shadow-[6px_6px_0px_0px_rgba(16,185,129,0.3)]">
+                        <svg class="w-12 h-12 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <h2 class="text-3xl font-black text-white uppercase tracking-tighter leading-none mb-3">Проверьте<br>Фразу</h2>
-                    <p class="text-zinc-500 font-bold text-[10px] uppercase tracking-widest">Убедитесь, что все слова введены верно</p>
+                    <h2 class="text-4xl font-black text-zinc-900 uppercase tracking-tighter leading-none mb-4">Проверьте<br>Фразу</h2>
+                    <p class="text-zinc-600 font-bold text-[11px] uppercase tracking-widest">Убедитесь, что все слова введены верно</p>
                 </div>
 
                 <!-- Wizard Form -->
@@ -81,14 +81,14 @@
                     </div>
 
                     <!-- Step 0: Length Selection -->
-                    <div v-if="currentStep === 0" class="flex flex-col gap-3 animate-in fade-in zoom-in-95 duration-500">
+                    <div v-if="currentStep === 0" class="flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-500">
                         <button v-for="len in [12, 15, 18, 21, 24]" :key="len"
                             @click="selectLength(len)"
                             type="button"
-                            class="group w-full bg-white/5 border border-white/10 h-16 rounded-2xl flex justify-between items-center px-8 hover:bg-[#7C45F5]/10 hover:border-[#7C45F5]/30 transition-all active:scale-[0.98]">
-                            <span class="text-sm font-black text-white uppercase tracking-widest" v-text="len + ' СЛОВ'"></span>
-                            <div class="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-[#7C45F5] group-hover:text-white transition-all text-white/20">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                            class="group w-full bg-white border-3 border-zinc-900 h-16 rounded-2xl flex justify-between items-center px-8 hover:bg-zinc-50 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none">
+                            <span class="text-[15px] font-black text-zinc-900 uppercase tracking-widest" v-text="len + ' СЛОВ'"></span>
+                            <div class="w-9 h-9 rounded-xl bg-zinc-100 border-2 border-zinc-900 flex items-center justify-center group-hover:bg-[#7C45F5] group-hover:text-white group-hover:border-[#7C45F5] transition-all text-zinc-900">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                     <path d="M5 12h14m-7-7l7 7-7 7"/>
                                 </svg>
                             </div>
@@ -96,7 +96,7 @@
                     </div>
 
                     <!-- Word Input Section -->
-                    <div v-if="currentStep > 0 && currentStep <= totalSteps" class="min-h-[220px] flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div v-if="currentStep > 0 && currentStep <= totalSteps" class="min-h-[260px] flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div class="relative w-full">
                             <input 
                                 type="text"
@@ -105,18 +105,18 @@
                                 @keydown="handleKeydown"
                                 ref="wordInput"
                                 placeholder="..."
-                                class="w-full bg-transparent border-b-2 border-white/10 py-4 text-3xl font-black text-center text-white placeholder:text-white/5 focus:border-[#7C45F5] outline-none transition-all code-input"
+                                class="w-full bg-transparent border-b-4 border-zinc-900 py-6 text-4xl font-black text-center text-zinc-900 placeholder:text-zinc-200 focus:border-[#7C45F5] outline-none transition-all code-input"
                                 autocomplete="off"
                                 autofocus
                             >
 
                             <!-- Autocomplete Suggestions -->
                             <div v-if="suggestions.length > 0" 
-                                 class="absolute left-0 right-0 top-full mt-10 flex flex-wrap justify-center gap-2 z-30">
+                                 class="absolute left-0 right-0 top-full mt-10 flex flex-wrap justify-center gap-3 z-30">
                                 <button v-for="sWord in suggestions" 
                                     @click="selectWord(sWord)"
                                     type="button"
-                                    class="bg-white/5 border border-white/10 px-4 py-2.5 rounded-xl text-[11px] font-black text-white hover:bg-[#7C45F5] hover:border-[#7C45F5] transition-all shadow-xl uppercase tracking-widest active:scale-[0.95]">
+                                    class="bg-white border-2 border-zinc-900 px-5 py-3 rounded-xl text-xs font-black text-zinc-900 hover:bg-[#7C45F5] hover:text-white hover:border-[#7C45F5] transition-all shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] uppercase tracking-widest active:translate-x-0.5 active:translate-y-0.5 active:shadow-none">
                                     <span v-text="sWord"></span>
                                 </button>
                             </div>
@@ -125,14 +125,14 @@
 
                     <!-- Final Confirmation Grid -->
                     <div v-if="currentStep > totalSteps" 
-                         class="grid gap-3 mb-12 animate-in zoom-in-95 duration-500"
+                         class="grid gap-4 mb-14 animate-in zoom-in-95 duration-500"
                          :class="totalSteps > 12 ? 'grid-cols-2' : 'grid-cols-2'">
                         <div v-for="(word, i) in words" :key="i" 
                              @click="jumpToStep(i+1)"
                              class="group cursor-pointer">
-                            <div class="flex items-center gap-3 bg-white/5 border border-white/10 p-3 rounded-xl hover:border-[#7C45F5]/50 hover:bg-[#7C45F5]/5 transition-all group-hover:scale-[1.02]">
-                                <span class="text-[9px] font-black text-white/20 w-4 pb-0.5" v-text="i+1"></span>
-                                <span class="text-xs font-black text-white uppercase tracking-widest truncate" v-text="word"></span>
+                            <div class="flex items-center gap-3 bg-white border-2 border-zinc-900 p-4 rounded-xl hover:bg-[#7C45F5]/5 transition-all shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none">
+                                <span class="text-[10px] font-black text-zinc-300 w-5 pb-0.5" v-text="i+1"></span>
+                                <span class="text-sm font-black text-zinc-900 uppercase tracking-widest truncate" v-text="word"></span>
                             </div>
                         </div>
                     </div>
@@ -140,18 +140,18 @@
                     <!-- Navigation -->
                     <div class="flex items-center gap-4" v-if="currentStep > 0">
                         <button @click="prevStep" type="button"
-                            class="h-14 flex-1 bg-white/5 border border-white/10 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-[0.98]">
+                            class="h-16 flex-1 bg-white border-2 border-zinc-900 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-900 hover:bg-zinc-50 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
                             Назад
                         </button>
                         
                         <button v-if="currentStep > 0 && currentStep <= totalSteps" @click="nextStep" type="button"
                             :disabled="!isWordValid"
-                            class="h-14 flex-[2] bg-white text-zinc-900 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all hover:bg-zinc-100 shadow-xl active:scale-[0.98] disabled:opacity-20 disabled:scale-[1]">
+                            class="h-16 flex-[2] bg-white border-2 border-zinc-900 rounded-2xl text-[11px] font-black uppercase tracking-widest text-zinc-900 transition-all hover:bg-zinc-50 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-20">
                             Далее
                         </button>
 
                         <button v-if="currentStep > totalSteps" type="submit"
-                            class="h-14 flex-[2] bg-[#7C45F5] text-white rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all hover:bg-[#8A5CF7] shadow-lg shadow-[#7C45F5]/20 active:scale-[0.98]">
+                            class="h-16 flex-[2] bg-[#7C45F5] border-2 border-zinc-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all hover:bg-[#8A5CF7] shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none">
                             Восстановить
                         </button>
                     </div>
@@ -159,7 +159,7 @@
 
                 <div class="mt-8 text-center" v-if="currentStep <= totalSteps">
                     <a href="{{ route('shop.customer.session.index') }}"
-                        class="text-[8px] font-black uppercase tracking-[0.4em] text-zinc-600 hover:text-white transition-colors">
+                        class="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400 hover:text-zinc-900 transition-colors underline decoration-zinc-100 decoration-2 underline-offset-8">
                         Отмена
                     </a>
                 </div>
