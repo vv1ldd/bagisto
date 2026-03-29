@@ -82,5 +82,3 @@
 
     {!! view_render_event('bagisto.shop.components.layouts.header.mobile.search.after') !!}
 </div>
-h.after') !!}
-</div>
