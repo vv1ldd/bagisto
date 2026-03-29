@@ -11,23 +11,56 @@
         </p>
     </x-slot>
 
-    <div class="space-y-8">
+    <div class="space-y-8" x-data="{ revealed: false }">
         <p class="text-zinc-600 font-bold text-[11px] uppercase tracking-widest text-center leading-relaxed px-4">
             Запишите эти слова в правильном порядке. <br>
             <span class="text-zinc-900 font-black">Это единственный доступ к вашему счету.</span>
         </p>
 
+        @php
+            $totalCount = count($words);
+            $splitIndex = (int) ceil($totalCount / 2);
+        @endphp
+
         <!-- Compact Word Grid -->
-        <div class="grid grid-cols-3 gap-3 w-full">
-            @foreach($words as $index => $word)
-                <div class="flex items-center gap-2 bg-white border-2 border-zinc-900 rounded-xl p-3 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group">
-                    <span class="text-[10px] font-black text-zinc-300 w-5 select-none transition-colors">{{ $index + 1 }}</span>
-                    <span class="text-zinc-900 font-black tracking-tight text-xs select-all truncate lowercase">{{ $word }}</span>
-                </div>
-            @endforeach
+        <div class="flex flex-col gap-6">
+            {{-- First Block (Always Visible) --}}
+            <div class="grid grid-cols-3 gap-3 w-full">
+                @foreach($words as $index => $word)
+                    @if($index < $splitIndex)
+                        <div class="flex items-center gap-2 bg-white border-2 border-zinc-900 rounded-xl p-3 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group">
+                            <span class="text-[10px] font-black text-zinc-300 w-5 select-none transition-colors">{{ $index + 1 }}</span>
+                            <span class="text-zinc-900 font-black tracking-tight text-xs select-all truncate lowercase">{{ $word }}</span>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+
+            {{-- Reveal Toggle Button --}}
+            <div x-show="!revealed" class="flex justify-center">
+                <button type="button" @click="revealed = true"
+                    class="group flex w-full items-center justify-center gap-4 bg-white border-3 border-zinc-900 px-8 py-6 text-center font-black text-zinc-900 transition-all active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-[13px]">
+                    <span>ПОКАЗАТЬ ОСТАЛЬНЫЕ СЛОВА</span>
+                    <svg class="w-5 h-5 transition-transform group-hover:rotate-180 duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Second Block (Hidden Initially) --}}
+            <div x-show="revealed" class="grid grid-cols-3 gap-3 w-full" x-transition.opacity.scale.95>
+                @foreach($words as $index => $word)
+                    @if($index >= $splitIndex)
+                        <div class="flex items-center gap-2 bg-zinc-50 border-2 border-dashed border-zinc-900 rounded-xl p-3 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group">
+                            <span class="text-[10px] font-black text-zinc-300 w-5 select-none transition-colors">{{ $index + 1 }}</span>
+                            <span class="text-zinc-900 font-black tracking-tight text-xs select-all truncate lowercase">{{ $word }}</span>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
         </div>
 
-        <div class="flex flex-col items-center gap-8 pt-4">
+        <div class="flex flex-col items-center gap-8 pt-4" x-show="revealed" x-transition.opacity.delay.300>
             <a id="finish-btn" href="{{ route('shop.customers.account.profile.verify_recovery_key') }}"
                 class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] border-2 border-zinc-900 px-8 py-6 text-center font-black text-white transition-all hover:bg-[#8A5CF7] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-[13px] overflow-hidden">
                 <div class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
