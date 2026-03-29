@@ -118,30 +118,14 @@
 
                 <!-- STEP 3: Activation -->
                 <div v-if="currentStep === 3">
-                    <h2 class="text-2xl font-black uppercase mb-2 tracking-tight dark:text-white">Данные активации</h2>
-                    <p class="text-zinc-500 dark:text-zinc-400 font-bold text-sm mb-6 uppercase tracking-wider">Заполните данные для завершения процесса</p>
-
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="block text-[10px] font-black uppercase text-zinc-400 mb-1">Имя</label>
-                            <input type="text" v-model="redeem_form.first_name" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-2 font-bold uppercase"/>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black uppercase text-zinc-400 mb-1">Фамилия</label>
-                            <input type="text" v-model="redeem_form.last_name" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-2 font-bold uppercase"/>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-[10px] font-black uppercase text-zinc-400 mb-1">Номер телефона</label>
-                        <input type="text" v-model="redeem_form.phone" @input="formatPhone" placeholder="+7 (___) ___-__-__" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-2 font-bold tracking-wider"/>
-                    </div>
+                    <h2 class="text-2xl font-black uppercase mb-2 tracking-tight dark:text-white">Готовы к активации</h2>
+                    <p class="text-zinc-500 dark:text-zinc-400 font-bold text-sm mb-8 uppercase tracking-wider leading-relaxed">Нажмите кнопку ниже, чтобы моментально зачислить средства на ваш баланс.</p>
 
                     <button @click="activate" 
-                        :disabled="loading"
-                        class="w-full bg-[#00FF94] border-3 border-zinc-900 dark:border-white/10 p-5 text-zinc-900 font-black uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all disabled:opacity-50">
-                        <span v-if="!loading">Активировать сейчас</span>
-                        <span v-if="loading">Активация...</span>
+                            :disabled="loading"
+                            class="w-full bg-[#00FF85] hover:bg-[#00E677] text-black font-black py-5 uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3">
+                        <span v-if="loading" class="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin"></span>
+                        <span v-else>Активировать сейчас</span>
                     </button>
                 </div>
 
@@ -190,17 +174,12 @@
                         code: '',
                         email: this.email || '',
                         verification_code: '',
-                        first_name: this.first_name || '',
-                        last_name: this.last_name || '',
-                        phone: this.phone || ''
+                        // Profile data no longer required for activation
                     }
                 }
             },
 
             computed: {
-                hasContactInfo() {
-                    return this.redeem_form.first_name && this.redeem_form.last_name && this.redeem_form.phone;
-                },
 
                 isValidCode() {
                     return /^W1C-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(this.redeem_form.code);
@@ -254,13 +233,7 @@
                             if (this.redeem_form.email) {
                                 // User already has a verified email in profile, skip PIN/Passkey
                                 this.redeem_form.verification_code = 'TRUSTED_USER';
-                                
-                                if (this.hasContactInfo) {
-                                    this.loadingText = 'Активация...';
-                                    await this.activate();
-                                } else {
-                                    this.currentStep = 3;
-                                }
+                                this.currentStep = 3;
                             } else {
                                 this.currentStep = 2;
                             }
@@ -298,29 +271,12 @@
 
                 verifyPin() {
                     if (this.redeem_form.verification_code.length === 6) {
-                        if (this.hasContactInfo) {
-                            this.activate();
-                        } else {
-                            this.currentStep = 3;
-                        }
+                        this.currentStep = 3;
                     } else {
                         this.error = 'Введите 6-значный код';
                     }
                 },
 
-                formatPhone() {
-                    let val = this.redeem_form.phone.replace(/\D/g, '');
-                    if (val.startsWith('7')) val = val.substring(1);
-                    if (val.length > 10) val = val.substring(0, 10);
-                    
-                    let res = '+7 ';
-                    if (val.length > 0) res += '(' + val.substring(0, 3);
-                    if (val.length > 3) res += ') ' + val.substring(3, 6);
-                    if (val.length > 6) res += '-' + val.substring(6, 8);
-                    if (val.length > 8) res += '-' + val.substring(8, 10);
-                    
-                    this.redeem_form.phone = res;
-                },
 
                 async authenticatePasskey() {
                     this.loading = true;
@@ -366,12 +322,7 @@
                         if (verifyRes.data.redirect_url) {
                             // Verification successful! Skip PIN and proceed.
                             this.redeem_form.verification_code = 'PASSKEY_AUTH';
-
-                            if (this.hasContactInfo) {
-                                this.activate();
-                            } else {
-                                this.currentStep = 3;
-                            }
+                            this.currentStep = 3;
                         }
                     } catch (e) {
                         console.error('Passkey authentication error:', e);
@@ -386,7 +337,11 @@
                     this.error = null;
                     
                     try {
-                        const res = await this.$axios.post('{{ route('shop.customers.account.redeem.activate') }}', this.redeem_form);
+                        const res = await this.$axios.post('{{ route('shop.customers.account.redeem.activate') }}', {
+                            code: this.redeem_form.code,
+                            email: this.redeem_form.email,
+                            verification_code: this.redeem_form.verification_code
+                        });
                         
                         if (res.data.status === 'success') {
                             this.currentStep = 4;

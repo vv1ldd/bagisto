@@ -94,10 +94,10 @@ class RedeemController extends Controller
         $request->validate([
             'code'              => 'required|string',
             'verification_code' => 'required|string',
-            'first_name'        => 'required|string|min:2',
-            'last_name'         => 'required|string|min:2',
             'email'             => 'required|email',
-            'phone'             => 'required|string',
+            'first_name'        => 'nullable|string',
+            'last_name'         => 'nullable|string',
+            'phone'             => 'nullable|string',
             'option'            => 'nullable|array',
         ]);
 
@@ -112,17 +112,8 @@ class RedeemController extends Controller
                 ->timeout(60)
                 ->post($servicesUrl . '/activate', $payload);
 
-            if ($response->ok() && $response->json()['status'] === 'success') {
-                $customer = auth()->guard('customer')->user();
-                
-                // Update customer profile with the data used for redemption
-                $customer->update([
-                    'first_name' => $request->first_name,
-                    'last_name'  => $request->last_name,
-                    'email'      => $request->email,
-                    'phone'      => $request->phone,
-                ]);
-            }
+                // Success - voucher activated on the side of the activation server
+                // Profile update removed as per latest requirements for frictionless activation
 
             return response()->json($response->json(), $response->status());
         } catch (\Exception $e) {
