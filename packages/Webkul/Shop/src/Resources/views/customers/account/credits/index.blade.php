@@ -125,7 +125,6 @@
                         {{-- Security Badge --}}
                         <div class="flex flex-col items-end gap-1 opacity-10 hidden md:flex">
                             <span class="icon-security text-6xl text-white"></span>
-                            <span class="text-[8px] font-black uppercase tracking-widest text-white">SSL Encrypted</span>
                         </div>
                     </div>
 
