@@ -192,6 +192,11 @@
                             </div>
 
                             {!! view_render_event('bagisto.shop.checkout.cart.item.listing.after') !!}
+
+                            <div class="flex justify-between items-center p-6 border-t-4 border-zinc-900 bg-zinc-50">
+                                {!! view_render_event('bagisto.shop.checkout.cart.continue_shopping.before') !!}
+                                <a
+                                    class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 hover:text-[#7C45F5] transition-colors"
                                     href="{{ route('shop.home.index') }}"
                                 >
                                     @lang('shop::app.checkout.cart.index.continue-shopping')
