@@ -161,24 +161,6 @@ $menuIcons = [
                 @endif
             @endforeach
  
-            {{-- Profile Edit --}}
-            <a href="{{ route('shop.customers.account.profile.edit') }}" class="nav-tile group mt-1">
-                <span class="w-12 h-12 flex items-center justify-center bg-zinc-200 text-zinc-600 border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                </span>
-                <div class="flex flex-col">
-                    <span class="nav-label">Личные данные</span>
-                    <span class="text-[12px] text-zinc-500 font-medium">Имя, почта и настройки</span>
-                </div>
-                <span class="nav-arrow">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </span>
-            </a>
-
             {{-- Security (Grouped) --}}
             <a href="{{ route('shop.customers.account.security.index') }}" class="nav-tile group mt-1">
                 <span class="w-12 h-12 flex items-center justify-center bg-violet-600 text-white border-2 border-black shrink-0 transition-transform group-hover:scale-105 shadow-sm">

@@ -63,23 +63,62 @@
                             
                             {{-- User Identifier Badge --}}
                             <div class="flex items-center gap-3 mt-6">
-                                <div class="px-3 py-1.5 bg-white/5 text-[#7C45F5] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full animate-pulse"></span>
+                                <v-nickname-edit inline-template>
                                     <div class="flex flex-col">
-                                        <div class="flex items-center gap-2">
-                                            <span>@ {{$user->credits_alias}}</span>
-                                            @if(str_starts_with($user->credits_id, '0x') && $user->encrypted_private_key)
-                                                <svg class="w-3 h-3 text-[#10b981]" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                                </svg>
-                                            @endif
+                                        <div class="px-3 py-1.5 bg-white/5 text-[#7C45F5] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300"
+                                            :class="{ 
+                                                'border-[#7C45F5]/50 shadow-[0_0_15px_rgba(124,69,245,0.2)]': isEditing,
+                                                '!border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]': usernameError,
+                                                '!border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]': !usernameError && isEditing && username.length >= 3 && isAvailable
+                                            }">
+                                            <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full animate-pulse"></span>
+                                            
+                                            <div class="flex flex-col min-w-[120px]">
+                                                <div class="flex items-center gap-2">
+                                                    <template v-if="!isEditing">
+                                                        <span>@ @{{ username }}</span>
+                                                        <button @click="startEditing" class="p-1 hover:text-white transition-colors opacity-60 hover:opacity-100">
+                                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                            </svg>
+                                                        </button>
+                                                    </template>
+                                                    <template v-else>
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-zinc-500">@</span>
+                                                            <input type="text" v-model="username" 
+                                                                @input="debounceCheckUsername"
+                                                                @keydown.enter="saveNickname"
+                                                                @keydown.esc="cancelEditing"
+                                                                class="bg-transparent border-0 p-0 text-[10px] font-black uppercase tracking-widest focus:ring-0 w-full text-white"
+                                                                placeholder="Nickname"
+                                                                ref="nicknameInput">
+                                                            <button @click="saveNickname" :disabled="!!usernameError || isChecking" class="p-1 text-green-500 hover:text-green-400 disabled:opacity-30">
+                                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                            </button>
+                                                            <button @click="cancelEditing" class="p-1 text-zinc-500 hover:text-zinc-400">
+                                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                                <template v-if="!isEditing">
+                                                    <span class="text-[9px] text-zinc-500 font-mono tracking-tighter mt-0.5 opacity-70">
+                                                        {{$user->credits_id}}
+                                                    </span>
+                                                </template>
+                                            </div>
                                         </div>
-                                        <span class="text-[9px] text-zinc-500 font-mono tracking-tighter mt-0.5 opacity-70">
-                                            {{$user->credits_id}}
-                                        </span>
+                                        <div v-if="usernameError" class="mt-1 px-1 text-[8px] text-red-500 font-bold uppercase tracking-wider">
+                                            @{{ usernameError }}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="px-3 py-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest">Инвестор</div>
+                                </v-nickname-edit>
+                                <div class="px-3 py-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest shrink-0 self-start">Инвестор</div>
                             </div>
                         </div>
 
@@ -2492,6 +2531,101 @@
                 updateHeader();
             });
 
+        </script>
+    @endpush
+
+    @push('scripts')
+        <script>
+            app.component('v-nickname-edit', {
+                data() {
+                    return {
+                        isEditing: false,
+                        originalUsername: '{{ $user->username }}',
+                        username: '{{ $user->username }}',
+                        usernameError: '',
+                        isChecking: false,
+                        isAvailable: false,
+                        debounceTimer: null
+                    }
+                },
+                methods: {
+                    startEditing() {
+                        this.isEditing = true;
+                        this.$nextTick(() => {
+                            this.$refs.nicknameInput.focus();
+                        });
+                    },
+                    cancelEditing() {
+                        this.isEditing = false;
+                        this.username = this.originalUsername;
+                        this.usernameError = '';
+                    },
+                    debounceCheckUsername() {
+                        this.isAvailable = false;
+                        this.usernameError = '';
+                        clearTimeout(this.debounceTimer);
+
+                        // Basic length check
+                        if (this.username.length < 3) {
+                             if (this.username.length > 0) {
+                                 this.usernameError = 'Минимум 3 символа';
+                             }
+                             return;
+                        }
+
+                        if (this.username === this.originalUsername) return;
+
+                        this.isChecking = true;
+                        this.debounceTimer = setTimeout(() => {
+                            this.checkUsername();
+                        }, 500);
+                    },
+                    checkUsername() {
+                        this.$axios.get("{{ route('shop.customers.account.profile.check_username') }}", {
+                            params: { username: this.username }
+                        })
+                        .then(response => {
+                            this.isChecking = false;
+                            if (!response.data.available) {
+                                this.usernameError = response.data.message || 'Этот псевдоним уже занят';
+                                this.isAvailable = false;
+                            } else {
+                                this.usernameError = '';
+                                this.isAvailable = true;
+                            }
+                        })
+                        .catch(error => {
+                            this.isChecking = false;
+                            console.error('Error checking username:', error);
+                        });
+                    },
+                    saveNickname() {
+                        if (this.username === this.originalUsername) {
+                            this.isEditing = false;
+                            return;
+                        }
+
+                        if (this.usernameError || this.username.length < 3) return;
+
+                        this.$axios.post("{{ route('shop.customers.account.profile.update') }}", {
+                            username: this.username,
+                            _token: '{{ csrf_token() }}'
+                        })
+                        .then(response => {
+                            this.originalUsername = this.username;
+                            this.isEditing = false;
+                            window.showToast('success', 'Псевдоним успешно изменен');
+                        })
+                        .catch(error => {
+                            if (error.response && error.response.data.errors) {
+                                this.usernameError = error.response.data.errors.username[0];
+                            } else {
+                                window.showToast('error', 'Ошибка при смене псевдонима');
+                            }
+                        });
+                    }
+                }
+            });
         </script>
     @endpush
 
