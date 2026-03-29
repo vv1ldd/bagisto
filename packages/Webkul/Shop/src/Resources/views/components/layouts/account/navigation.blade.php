@@ -19,29 +19,29 @@ $menuIcons = [
 {{-- CARDLESS MENU --}}
 <div class="relative w-full max-w-[600px] mx-auto">
     {{-- Header with Back Button --}}
-    <div class="flex items-center gap-3 mb-2 px-4 pt-1">
+    <div class="flex items-center gap-3 mb-1 px-4 pt-0">
         <button type="button" 
             onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
             class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
             <span class="icon-arrow-left text-xl font-black"></span>
         </button>
-        <h1 class="text-2xl font-black text-white uppercase tracking-tighter mix-blend-difference">Личный кабинет</h1>
+        <h1 class="text-xl font-black text-white uppercase tracking-tighter mix-blend-difference">Личный кабинет</h1>
     </div>
 
-    <div class="p-0 space-y-4 md:space-y-6 px-4">
+    <div class="p-0 space-y-2 md:space-y-3 px-4">
         {{-- Wallet --}}
         @if ($customer instanceof \Webkul\Customer\Models\Customer && !empty($customer->username))
             <a href="{{ route('shop.customers.account.credits.index') }}" 
-                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(124,69,245,1)]">
-                <div class="flex items-center gap-4 md:gap-6">
-                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-[#7C45F5] border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(124,69,245,1)]">
+                <div class="flex items-center gap-3 md:gap-5">
+                    <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#7C45F5] border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Wallet</span>
-                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Ваш баланс и транзакции</p>
+                        <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Wallet</span>
+                        <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Баланс и транзакции</p>
                     </div>
                     <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -53,16 +53,16 @@ $menuIcons = [
 
             {{-- Redeem / Voucher Activation --}}
             <a href="{{ route('shop.customers.account.redeem.index') }}" 
-                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(245,158,11,1)]">
-                <div class="flex items-center gap-4 md:gap-6">
-                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-amber-500 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(245,158,11,1)]">
+                <div class="flex items-center gap-3 md:gap-5">
+                    <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-amber-500 border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
                         </svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Активация ваучера</span>
-                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Активируйте бонусы и подарки</p>
+                        <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Активация ваучера</span>
+                        <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Бонусы и подарки</p>
                     </div>
                     <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -74,16 +74,16 @@ $menuIcons = [
 
             {{-- Messages / Matrix --}}
             <a href="{{ route('shop.customers.account.matrix.index') }}" 
-                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(0,209,255,1)]">
-                <div class="flex items-center gap-4 md:gap-6">
-                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-[#00D1FF] border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,209,255,1)]">
+                <div class="flex items-center gap-3 md:gap-5">
+                    <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#00D1FF] border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                         </svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Сообщения</span>
-                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Децентрализованный чат (Matrix)</p>
+                        <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Сообщения</span>
+                        <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Чат (Matrix)</p>
                     </div>
                     <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -96,12 +96,12 @@ $menuIcons = [
             {{-- Calls (Conditional) --}}
             @if ($customer->is_call_enabled)
                 <a href="{{ route('shop.customers.account.calls.index') }}" 
-                    class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(39,39,42,1)]">
-                    <div class="flex items-center gap-4 md:gap-6">
-                        <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-zinc-800 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-6 text-xl">📞</div>
+                    class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(39,39,42,1)]">
+                    <div class="flex items-center gap-3 md:gap-5">
+                        <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-zinc-800 border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-6 text-xl">📞</div>
                         <div class="flex-1 min-w-0">
-                            <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Видеовстреча</span>
-                            <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Создать встречу или позвонить</p>
+                            <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Видеовстреча</span>
+                            <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Создать встречу или позвонить</p>
                         </div>
                         <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                             <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -135,16 +135,16 @@ $menuIcons = [
                     @endphp
 
             <a href="{{ $subMenuItem->getUrl() }}" 
-                class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_{{ $shadowColor }}]">
-                <div class="flex items-center gap-4 md:gap-6">
-                    <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center {{ $bgColor }} border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_{{ $shadowColor }}]">
+                <div class="flex items-center gap-3 md:gap-5">
+                    <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center {{ $bgColor }} border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             {!! $iconData['svg'] !!}
                         </svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">{{ $subMenuItem->getName() }}</span>
-                        <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">
+                        <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">{{ $subMenuItem->getName() }}</span>
+                        <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">
                             @if($subMenuItem->getKey() === 'account.wishlist') Избранные товары
                             @elseif($subMenuItem->getKey() === 'account.reviews') Ваши отзывы
                             @else Управление разделом
@@ -164,16 +164,16 @@ $menuIcons = [
 
         {{-- Security (Grouped) --}}
         <a href="{{ route('shop.customers.account.security.index') }}" 
-            class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(124,69,245,1)]">
-            <div class="flex items-center gap-4 md:gap-6">
-                <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-violet-600 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-2">
-                    <svg class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(124,69,245,1)]">
+            <div class="flex items-center gap-3 md:gap-5">
+                <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-violet-600 border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-2">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <span class="text-zinc-900 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Безопасность</span>
-                    <p class="text-[10px] md:text-sm text-zinc-500 font-bold uppercase tracking-wider leading-tight">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</p>
+                    <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Безопасность</span>
+                    <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</p>
                 </div>
                 <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -185,16 +185,16 @@ $menuIcons = [
 
         {{-- Logout --}}
         <a href="{{ route('shop.customer.session.destroy.get') }}" 
-            class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-6 transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[8px_8px_0px_0px_rgba(239,68,68,1)]">
-            <div class="flex items-center gap-4 md:gap-6">
-                <div class="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center bg-red-500 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-12">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]">
+            <div class="flex items-center gap-3 md:gap-5">
+                <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-red-500 border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <span class="text-red-500 text-lg md:text-xl font-black uppercase tracking-tight block mb-1">Выйти</span>
-                    <p class="text-[10px] md:text-sm text-red-300 font-bold uppercase tracking-wider leading-tight">Завершить сеанс</p>
+                    <span class="text-red-500 text-base md:text-lg font-black uppercase tracking-tight block">Выйти</span>
+                    <p class="text-[9px] md:text-xs text-red-300 font-bold uppercase tracking-wider leading-none">Завершить сеанс</p>
                 </div>
                 <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5 md:w-6 md:h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
