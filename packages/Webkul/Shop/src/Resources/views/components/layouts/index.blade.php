@@ -208,8 +208,7 @@
 
         <!-- Built With Bagisto -->
         <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative text-zinc-900 dark:text-white transition-colors duration-500">
-            
-            <div id="main-content-wrapper" class="flex flex-col min-h-screen bg-transparent">
+            <div id="main-content-wrapper" class="flex-1 flex flex-col bg-transparent">
                 <!-- Flash Message Blade Component -->
                 <x-shop::flash-group />
 
@@ -236,7 +235,6 @@
                 </main>
 
                 {!! view_render_event('bagisto.shop.layout.content.after') !!}
-
 
                 <!-- Page Services Blade Component -->
                 @if ($hasFeature)
