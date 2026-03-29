@@ -119,7 +119,7 @@
                 <!-- STEP 3: Activation -->
                 <div v-if="currentStep === 3">
                     <h2 class="text-2xl font-black uppercase mb-2 tracking-tight dark:text-white">Готовы к активации</h2>
-                    <p class="text-zinc-500 dark:text-zinc-400 font-bold text-sm mb-8 uppercase tracking-wider leading-relaxed">Нажмите кнопку ниже, чтобы моментально зачислить средства на ваш баланс.</p>
+                    <p class="text-zinc-500 dark:text-zinc-400 font-bold text-sm mb-8 uppercase tracking-wider leading-relaxed">Ваш запрос будет принят в обработку. Ожидайте информацию на почту в ближайшее время.</p>
 
                     <button @click="activate" 
                             :disabled="loading"
