@@ -7,46 +7,45 @@
         Привязка устройства
     </x-slot>
 
-    <div class="h-[100dvh] w-full flex flex-col items-center justify-center bg-[#F0EFFF] px-4 text-[#1a0050] overflow-hidden">
+    <div class="h-[100dvh] w-full flex flex-col items-center justify-center bg-zinc-50 px-4 text-zinc-900 overflow-hidden font-space">
         
         {{-- Logo Section --}}
-        <div class="mb-8 flex flex-col items-center">
-            <div class="relative w-16 h-16 flex items-center justify-center">
+        <div class="mb-10 flex flex-col items-center">
+            <div class="relative w-20 h-20 flex items-center justify-center bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] rounded-2xl rotate-3">
                 <!-- Meanly Logo Replacement -->
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#7C45F5"/>
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#18181b"/>
                     <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18C15.31 18 18 15.31 18 12C18 8.69 15.31 6 12 6ZM12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12C16 14.21 14.21 16 12 16Z" fill="#7C45F5"/>
                 </svg>
             </div>
-            <div class="h-1 w-8 bg-[#7C45F5] mt-2"></div>
         </div>
 
-        <div class="w-full max-w-[440px] bg-white rounded-[32px] p-8 md:p-10 shadow-2xl shadow-purple-500/10 border border-[#e2d9ff] relative overflow-hidden">
-            {{-- Decoration --}}
-            <div class="absolute -top-12 -right-12 w-32 h-32 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>
-
-            <div class="mb-8 flex flex-col items-center relative z-10">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#F0EFFF] mb-6">
-                    <svg class="w-8 h-8 text-[#7C45F5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <div class="w-full max-w-[440px] bg-white border-4 border-zinc-900 p-8 md:p-12 shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] relative overflow-hidden">
+            <div class="mb-10 flex flex-col items-center relative z-10 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-zinc-100 border-2 border-zinc-900 mb-6 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
+                    <svg class="w-8 h-8 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                     </svg>
                 </div>
-                <h1 class="text-2xl font-black tracking-tight mb-2">Привязка устройства</h1>
-                <p class="text-zinc-500 text-sm text-center">Вы привязываете это устройство к аккаунту <span class="font-bold text-[#7C45F5] uppercase tracking-tighter">{{ $user->username }}</span></p>
+                <h1 class="text-3xl font-black uppercase tracking-tighter mb-4 leading-none">Привязка устройства</h1>
+                <p class="text-zinc-600 text-[11px] font-black uppercase tracking-widest leading-relaxed">
+                    Вы привязываете это устройство к аккаунту <br>
+                    <span class="text-[#7C45F5] font-black text-sm tracking-tight inline-block mt-1">{{ $user->username }}</span>
+                </p>
             </div>
 
-            <div class="w-full space-y-6 relative z-10">
+            <div class="w-full space-y-8 relative z-10">
                 <button id="register-device-btn"
-                    class="flex w-full items-center justify-center gap-3 rounded-2xl bg-[#7C45F5] px-8 py-5 text-center text-sm font-black text-white shadow-xl shadow-[#7C45F5]/30 transition-all hover:bg-[#6534d4] active:scale-[0.98] group uppercase tracking-wider">
+                    class="flex w-full items-center justify-center gap-4 bg-[#7C45F5] border-3 border-zinc-900 px-8 py-6 text-center text-xs font-black text-white shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all group uppercase tracking-[0.2em]">
                     <span id="btn-text">ПРИВЯЗАТЬ УСТРОЙСТВО</span>
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
                 </button>
                 
-                <div class="p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
-                    <p class="text-zinc-500 text-xs leading-relaxed text-center font-medium">
-                        После нажатия следуйте системным инструкциям для создания ключа доступа (FaceID, TouchID или PIN).
+                <div class="p-5 bg-zinc-50 border-3 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
+                    <p class="text-zinc-500 text-[10px] font-black uppercase tracking-widest leading-relaxed text-center">
+                        Следуйте системным инструкциям для создания ключа доступа (FaceID, TouchID или PIN).
                     </p>
                 </div>
             </div>
@@ -56,6 +55,25 @@
     @push('scripts')
     <script>
         (function() {
+            // Global alert helper
+            window.showAlert = function (type, title, message) {
+                const alertBox = document.createElement('div');
+                alertBox.className = `fixed bottom-10 left-1/2 -translate-x-1/2 z-[10001] p-5 font-bold text-white shadow-2xl transition-all border-3 border-zinc-900 min-w-[300px] animate-in slide-in-from-bottom-5 duration-300 ${type === 'success' ? 'bg-zinc-900' : 'bg-red-600'}`;
+                alertBox.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="flex-1">
+                            <div class="text-[10px] uppercase tracking-[0.2em] opacity-60 mb-1 font-black">${title}</div>
+                            <div class="text-[14px] leading-tight font-black">${message}</div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(alertBox);
+                setTimeout(() => {
+                    alertBox.classList.add('opacity-0', 'translate-y-5');
+                    setTimeout(() => alertBox.remove(), 300);
+                }, 5000);
+            };
+
             const btn = document.getElementById('register-device-btn');
             const btnText = document.getElementById('btn-text');
             if (!btn) return;
@@ -64,21 +82,20 @@
                 const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
 
                 if (!SimpleWebAuthn) {
-                    alert('Ошибка: Библиотека WebAuthn не загружена. Пожалуйста, обновите страницу.');
+                    window.showAlert('error', 'Ошибка', 'Библиотека WebAuthn не загружена. Пожалуйста, обновите страницу.');
                     return;
                 }
 
                 if (!window.PublicKeyCredential) {
-                    alert('Ваш браузер не поддерживает Passkey (требуется iOS 16+, Android 9+ или современный браузер Desktop).');
+                    window.showAlert('error', 'Ошибка', 'Ваш браузер или соединение не поддерживают Passkey.');
                     return;
                 }
 
-                const originalHTML = btn.innerHTML;
                 btn.disabled = true;
+                const originalText = btnText.innerText;
                 btnText.innerText = 'ПОДГОТОВКА...';
 
                 try {
-                    console.log('Fetching registration options...');
                     const res = await fetch('{{ route('passkeys.register-options') }}', {
                         method: 'POST',
                         headers: { 
@@ -91,9 +108,7 @@
                     if (!res.ok) throw new Error('Не удалось получить настройки с сервера.');
                     
                     const rawOptions = await res.json();
-                    // Pass raw server options directly — do NOT modify
-                    // SimpleWebAuthn v8+ handles all encoding/decoding internally
-                    const optionsJSON = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
 
                     // Robust base64url conversion for Safari
                     const toBase64Url = (str) => {
@@ -101,23 +116,18 @@
                         return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
                     };
 
-                    if (optionsJSON.challenge) optionsJSON.challenge = toBase64Url(optionsJSON.challenge);
-                    if (optionsJSON.user && optionsJSON.user.id) optionsJSON.user.id = toBase64Url(optionsJSON.user.id);
-                    if (optionsJSON.excludeCredentials) {
-                        optionsJSON.excludeCredentials.forEach(cred => {
+                    if (options.challenge) options.challenge = toBase64Url(options.challenge);
+                    if (options.user && options.user.id) options.user.id = toBase64Url(options.user.id);
+                    if (options.excludeCredentials) {
+                        options.excludeCredentials.forEach(cred => {
                             if (cred.id) cred.id = toBase64Url(cred.id);
                         });
                     }
 
-                    console.log('[Passkey] RP ID:', optionsJSON.rp ? optionsJSON.rp.id : 'N/A');
-                    console.log('[Passkey] User:', JSON.stringify(optionsJSON.user));
-
                     btnText.innerText = 'ОЖИДАНИЕ...';
 
-                    // Start WebAuthn registration (v8+ format)
-                    const attResp = await SimpleWebAuthn.startRegistration(optionsJSON);
-
-                    console.log('Registration response:', attResp);
+                    // Start WebAuthn registration
+                    const attResp = await SimpleWebAuthn.startRegistration(options);
 
                     btnText.innerText = 'СОХРАНЕНИЕ...';
 
@@ -135,7 +145,7 @@
                         throw new Error(errorData.message || 'Ошибка сохранения Passkey');
                     }
                     
-                    btn.classList.replace('bg-[#7C45F5]', 'bg-emerald-500');
+                    btn.classList.add('bg-emerald-500');
                     btnText.innerText = 'ГОТОВО!';
                     
                     setTimeout(() => { 
@@ -145,18 +155,12 @@
                 } catch (err) {
                     console.error('Passkey Registration Error:', err);
                     
-                    let errMsg = err.message;
-                    if (err.name === 'SecurityError') {
-                        errMsg = 'Ошибка домена (RP ID mismatch). Пожалуйста, свяжитесь с поддержкой или проверьте APP_URL.';
-                    }
-
-                    // Don't show alert for user cancellation
                     if (err.name !== 'NotAllowedError' && !err.message.includes('отмена') && err.name !== 'AbortError') {
-                        alert('Ошибка: ' + errMsg);
+                        window.showAlert('error', 'Ошибка', err.message);
                     }
                     
                     btn.disabled = false;
-                    btn.innerHTML = originalHTML;
+                    btnText.innerText = originalText;
                 }
             });
         })();
