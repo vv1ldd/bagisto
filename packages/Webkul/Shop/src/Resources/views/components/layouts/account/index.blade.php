@@ -66,13 +66,13 @@
 
         <!-- Page Content -->
         <div id="account-page-wrapper"
-            class="container !max-w-none px-[60px] max-lg:px-8 max-md:px-4 account-animate-in flex-grow flex flex-col items-center justify-center mt-0 py-6">
+            class="container !max-w-none px-[60px] max-lg:px-8 max-md:px-4 account-animate-in flex-grow flex flex-col items-center justify-center mt-0 py-2">
 
             @php
                 $customer = auth()->guard('customer')->user();
             @endphp
 
-            <div class="flex justify-center max-md:mt-5">
+            <div class="w-full max-w-[600px] flex flex-col justify-center max-md:mt-5">
 
                 @if (request()->routeIs('shop.customers.account.index'))
                     <!-- iOS Style Sidebar (Start Page Menu) -->

@@ -13,10 +13,10 @@
 
     @push('scripts')
     <script type="text/x-template" id="v-redeem-app-template">
-        <div class="w-full max-w-[600px] mx-auto px-4 py-6" v-cloak>
+        <div class="w-full max-w-[600px] mx-auto px-4 py-2" v-cloak>
             
             <!-- Step Indicator -->
-            <div class="flex items-center justify-between mb-8 px-2">
+            <div class="flex items-center justify-between mb-4 px-2">
                 <div v-for="step in [1, 2, 3]" :key="step" class="flex items-center flex-1 last:flex-none">
                     <div :class="{
                             'bg-[#7C45F5] text-white border-zinc-900 dark:border-white/40': currentStep >= step,
@@ -35,7 +35,7 @@
             </div>
 
             <!-- Main Card -->
-            <div class="bg-white dark:bg-zinc-900 border-4 border-zinc-900 dark:border-white/10 p-8 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] relative overflow-hidden group">
+            <div class="bg-white dark:bg-zinc-900 border-4 border-zinc-900 dark:border-white/10 p-6 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.6)] relative overflow-hidden group">
                 
                 <!-- STEP 1: Code Entry -->
                 <div v-if="currentStep === 1">
@@ -121,20 +121,20 @@
                     <h2 class="text-2xl font-black uppercase mb-2 tracking-tight dark:text-white">Данные активации</h2>
                     <p class="text-zinc-500 dark:text-zinc-400 font-bold text-sm mb-6 uppercase tracking-wider">Заполните данные для завершения процесса</p>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
                         <div>
-                            <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Имя</label>
-                            <input type="text" v-model="redeem_form.first_name" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-3 font-bold uppercase"/>
+                            <label class="block text-[10px] font-black uppercase text-zinc-400 mb-1">Имя</label>
+                            <input type="text" v-model="redeem_form.first_name" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-2 font-bold uppercase"/>
                         </div>
                         <div>
-                            <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Фамилия</label>
-                            <input type="text" v-model="redeem_form.last_name" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-3 font-bold uppercase"/>
+                            <label class="block text-[10px] font-black uppercase text-zinc-400 mb-1">Фамилия</label>
+                            <input type="text" v-model="redeem_form.last_name" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-2 font-bold uppercase"/>
                         </div>
                     </div>
 
-                    <div class="mb-6">
-                        <label class="block text-xs font-black uppercase text-zinc-400 mb-2">Номер телефона</label>
-                        <input type="text" v-model="redeem_form.phone" @input="formatPhone" placeholder="+7 (___) ___-__-__" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-3 font-bold tracking-wider"/>
+                    <div class="mb-4">
+                        <label class="block text-[10px] font-black uppercase text-zinc-400 mb-1">Номер телефона</label>
+                        <input type="text" v-model="redeem_form.phone" @input="formatPhone" placeholder="+7 (___) ___-__-__" class="w-full bg-zinc-50 dark:bg-zinc-950 border-2 border-zinc-900 dark:border-white/20 dark:text-white p-2 font-bold tracking-wider"/>
                     </div>
 
                     <button @click="activate" 
