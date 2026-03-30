@@ -80,6 +80,7 @@
 
         @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
         <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
+        <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
         <script>
@@ -231,6 +232,7 @@
             </div>
 
             <v-shortcut-help></v-shortcut-help>
+            <v-qr-scanner></v-qr-scanner>
         </div>
 
         {!! view_render_event('bagisto.shop.layout.body.after') !!}
@@ -613,6 +615,100 @@
                 </div>
             </div>
         </div>
+        <script type="text/x-template" id="v-qr-scanner-template">
+            <div v-if="isVisible" class="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300" @click.self="closeScanner">
+                <div class="bg-white border-4 border-zinc-900 shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] w-full max-w-md p-6 relative animate-in zoom-in-95 duration-300 overflow-hidden">
+                    <button @click="closeScanner" class="absolute top-4 right-4 z-10 text-zinc-400 hover:text-zinc-900 transition-colors bg-white/80 p-1 rounded-full">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                    
+                    <div class="text-center mb-6">
+                        <h3 class="text-xl font-black uppercase tracking-tighter mb-1">Сканирование</h3>
+                        <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Наведите камеру на QR-код на ПК</p>
+                    </div>
+
+                    <div class="relative bg-black aspect-square border-4 border-zinc-900 overflow-hidden mb-6">
+                        <div id="qr-reader" class="w-full h-full"></div>
+                        <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none">
+                             <div class="w-full h-full border-2 border-[#D6FF00] shadow-[0_0_15px_rgba(214,255,0,0.5)] flex items-center justify-center">
+                                 <div class="w-full h-0.5 bg-[#D6FF00]/50 animate-scanner-line"></div>
+                             </div>
+                        </div>
+                    </div>
+
+                    <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border-2 border-red-200 text-red-600 text-[10px] font-bold uppercase tracking-widest text-center">
+                        @{{ errorMessage }}
+                    </div>
+
+                    <button @click="closeScanner" class="w-full py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-xs hover:bg-zinc-800 transition-colors">
+                        ОТМЕНА
+                    </button>
+                </div>
+            </div>
+        </script>
+
+        <style>
+            @keyframes scanner-line {
+                0%, 100% { transform: translateY(-100%); }
+                50% { transform: translateY(100%); }
+            }
+            .animate-scanner-line {
+                animation: scanner-line 2s ease-in-out infinite;
+            }
+        </style>
+
+        <script type="module">
+            app.component('v-qr-scanner', {
+                template: '#v-qr-scanner-template',
+                data() {
+                    return {
+                        isVisible: false,
+                        html5QrCode: null,
+                        errorMessage: null
+                    }
+                },
+                mounted() {
+                    this.$emitter.on('open-qr-scanner', () => {
+                        this.isVisible = true;
+                        this.errorMessage = null;
+                        this.$nextTick(() => {
+                            this.startScanner();
+                        });
+                    });
+                },
+                methods: {
+                    async startScanner() {
+                        try {
+                            this.html5QrCode = new Html5Qrcode("qr-reader");
+                            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                            
+                            await this.html5QrCode.start(
+                                { facingMode: "environment" }, 
+                                config, 
+                                (decodedText) => {
+                                    if (decodedText.includes('/login/qr/')) {
+                                        this.html5QrCode.stop().then(() => {
+                                            window.location.href = decodedText;
+                                        });
+                                    } else {
+                                        console.log('Detected non-login QR:', decodedText);
+                                    }
+                                }
+                            );
+                        } catch (err) {
+                            console.error('QR Scanner error:', err);
+                            this.errorMessage = "Камера недоступна или заблокирована";
+                        }
+                    },
+                    async closeScanner() {
+                        if (this.html5QrCode && this.html5QrCode.isScanning) {
+                            await this.html5QrCode.stop();
+                        }
+                        this.isVisible = false;
+                    }
+                }
+            });
+        </script>
         {{-- <v-messenger></v-messenger> --}}
     </body>
 </html>
