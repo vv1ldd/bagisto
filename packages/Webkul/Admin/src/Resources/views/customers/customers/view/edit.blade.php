@@ -221,6 +221,18 @@
                                 <x-admin::form.control-group.control type="switch" name="is_crypto_enabled" :value="1"
                                     label="Крипто пополнения" ::checked="customer.is_crypto_enabled" />
                             </x-admin::form.control-group>
+
+                            <!-- Chat Matrix Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    💬 Чат Matrix
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_matrix_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_matrix_enabled" :value="1"
+                                    label="Чат Matrix" ::checked="customer.is_matrix_enabled" />
+                            </x-admin::form.control-group>
                         </div>
 
                         {!! view_render_event('bagisto.admin.customers.customers.view.edit.after', ['customer' => $customer]) !!}

@@ -73,25 +73,27 @@ $menuIcons = [
             </a>
 
             {{-- Messages / Matrix --}}
-            <a href="{{ route('shop.customers.account.matrix.index') }}" 
-                class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,209,255,1)]">
-                <div class="flex items-center gap-3 md:gap-5">
-                    <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#00D1FF] border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
+            @if ($customer->is_matrix_enabled)
+                <a href="{{ route('shop.customers.account.matrix.index') }}" 
+                    class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,209,255,1)]">
+                    <div class="flex items-center gap-3 md:gap-5">
+                        <div class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-[#00D1FF] border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Сообщения</span>
+                            <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Чат (Matrix)</p>
+                        </div>
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Сообщения</span>
-                        <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Чат (Matrix)</p>
-                    </div>
-                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                        </svg>
-                    </div>
-                </div>
-            </a>
+                </a>
+            @endif
 
             {{-- Calls (Conditional) --}}
             @if ($customer->is_call_enabled)
