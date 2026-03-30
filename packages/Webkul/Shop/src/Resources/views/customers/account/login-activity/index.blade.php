@@ -4,42 +4,37 @@
         {{-- Active Sessions Section --}}
         @if (count($activeSessions))
             <div class="mb-10">
-                <h3 class="text-[17px] font-bold text-[#1a0050] mb-4 px-1">
+                <h3 class="text-[17px] font-black text-zinc-900 uppercase tracking-tight mb-4 px-1">
                     Активные сессии
                 </h3>
                 
-                <div class="nav-grid">
-                    @foreach ($activeSessions as $session)
-                        @php
-                            $isCurrent = ($session->id == session('customer_login_log_id')) || ($session->session_id === session()->getId());
-                        @endphp
-                        
-                        <div class="nav-tile !cursor-default group items-start">
-                            <span class="w-12 h-12 flex items-center justify-center bg-zinc-100 text-zinc-500 rounded-2xl shrink-0">
+                <div class="space-y-4">
+                        <div class="relative bg-white border-4 border-zinc-900 p-4 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] flex items-start gap-4 transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none">
+                            <div class="w-12 h-12 flex items-center justify-center bg-zinc-100 border-3 border-zinc-900 text-zinc-600 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
                                 @if (stripos($session->user_agent, 'phone') !== false || stripos($session->user_agent, 'android') !== false)
-                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                     </svg>
                                 @else
-                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                     </svg>
                                 @endif
-                            </span>
+                            </div>
 
-                            <div class="flex flex-col min-w-0 flex-1 pr-4">
-                                <div class="flex items-center gap-2 mb-0.5">
-                                    <span class="nav-label">{{ $session->ip_address }}</span>
+                            <div class="flex flex-col min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-2 mb-1">
+                                    <span class="text-zinc-900 text-base font-black tracking-tight">{{ $session->ip_address }}</span>
                                     @if ($isCurrent)
-                                        <span class="bg-[#e9e4ff] text-[#7C45F5] text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">текущая</span>
+                                        <span class="bg-[#7C45F5] border-2 border-zinc-900 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">текущая</span>
                                     @endif
                                 </div>
-                                <span class="text-[12px] text-zinc-500 font-medium truncate">
-                                    {{ $session->location ?: 'Неизвестная локация' }} • 
-                                    @if($session->device_name) {{ $session->device_name }} • @endif 
-                                    {{ $session->browser }}
-                                </span>
-                                <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wide mt-1">
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-zinc-500 font-bold uppercase tracking-wider leading-none">
+                                    <span>{{ $session->location ?: 'Неизвестная локация' }}</span>
+                                    @if($session->device_name) <span class="text-zinc-300">•</span> <span>{{ $session->device_name }}</span> @endif 
+                                    <span class="text-zinc-300">•</span> <span>{{ $session->browser }}</span>
+                                </div>
+                                <span class="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-2 block">
                                     {{ core()->formatDate($session->last_active_at ?: $session->created_at, 'd M Y H:i') }}
                                 </span>
                             </div>
@@ -48,8 +43,8 @@
                                 <form action="{{ route('shop.customers.account.login_activity.destroy', $session->id) }}" method="POST" class="shrink-0 flex items-center h-12">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors" title="Завершить">
-                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <button type="submit" class="w-10 h-10 flex items-center justify-center bg-white border-3 border-zinc-900 text-red-500 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all" title="Завершить">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
                                     </button>
@@ -63,14 +58,14 @@
 
         {{-- History Section --}}
         <div>
-            <h3 class="text-[17px] font-bold text-[#1a0050] mb-4 px-1">
+            <h3 class="text-[17px] font-black text-zinc-900 uppercase tracking-tight mb-4 px-1">
                 История событий
             </h3>
 
             @if ($loginHistory->count())
-                <div class="nav-grid">
+                <div class="space-y-4">
                     @foreach ($loginHistory as $log)
-                        <div class="nav-tile !cursor-default items-start">
+                        <div class="relative bg-white border-4 border-zinc-900 p-4 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] flex items-start gap-4 transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none">
                             @php
                                 $iconBg = 'bg-zinc-100';
                                 $iconColor = 'text-zinc-500';
@@ -79,50 +74,52 @@
                                 $badgeText = '';
 
                                 if ($log->event_type === 'passkey_registered') {
-                                    $iconBg = 'bg-emerald-100';
-                                    $iconColor = 'text-emerald-600';
+                                    $iconBg = 'bg-[#00FF94]';
+                                    $iconColor = 'text-white';
                                     $eventLabel = 'Добавление Passkey';
-                                    $badgeClass = 'bg-emerald-50 text-emerald-600';
+                                    $badgeClass = 'bg-[#00FF94] text-white';
                                     $badgeText = 'новый ключ';
                                 } elseif ($log->event_type === 'passkey_deleted') {
-                                    $iconBg = 'bg-orange-100';
-                                    $iconColor = 'text-orange-600';
+                                    $iconBg = 'bg-[#FF4D6D]';
+                                    $iconColor = 'text-white';
                                     $eventLabel = 'Удаление Passkey';
-                                    $badgeClass = 'bg-orange-50 text-orange-600';
+                                    $badgeClass = 'bg-[#FF4D6D] text-white';
                                     $badgeText = 'удален';
                                 }
                             @endphp
 
-                            <span class="w-12 h-12 flex items-center justify-center {{ $iconBg }} {{ $iconColor }} rounded-2xl shrink-0">
+                            <div class="w-12 h-12 flex items-center justify-center {{ $iconBg }} {{ $iconColor }} border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform hover:rotate-6">
                                 @if ($log->event_type === 'passkey_registered')
-                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <svg class="w-6 h-6 font-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                                     </svg>
                                 @elseif ($log->event_type === 'passkey_deleted')
-                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
                                 @else
-                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                                     </svg>
                                 @endif
-                            </span>
+                            </div>
 
-                            <div class="flex flex-col min-w-0 flex-1 pr-4">
-                                <div class="flex items-center gap-2 mb-0.5">
-                                    <span class="nav-label">{{ $eventLabel }}</span>
+                            <div class="flex flex-col min-w-0 flex-1">
+                                <div class="flex flex-wrap items-center gap-2 mb-1">
+                                    <span class="text-zinc-900 text-lg font-black tracking-tight">{{ $eventLabel }}</span>
                                     @if ($badgeText)
-                                        <span class="{{ $badgeClass }} text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider">{{ $badgeText }}</span>
+                                        <span class="{{ $badgeClass }} border-2 border-zinc-900 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">{{ $badgeText }}</span>
                                     @endif
                                 </div>
-                                <span class="text-[12px] text-zinc-500 font-medium truncate">
-                                    {{ $log->ip_address }} • {{ $log->location ?: 'Неизвестная локация' }}
-                                </span>
-                                <span class="text-[12px] text-zinc-400 font-medium truncate mt-0.5">
-                                    {{ $log->device_name ?: 'Устройство' }} • {{ $log->browser ?: 'Браузер' }}
-                                </span>
-                                <span class="text-[11px] text-zinc-400 font-bold uppercase tracking-wide mt-1.5">
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-zinc-500 font-bold uppercase tracking-wider leading-none">
+                                    <span>{{ $log->ip_address }}</span>
+                                    <span class="text-zinc-300">•</span>
+                                    <span>{{ $log->location ?: 'Неизвестная локация' }}</span>
+                                </div>
+                                <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider leading-none mt-1">
+                                    {{ $log->device_name ?: 'Устройство' }} <span class="text-zinc-300">•</span> {{ $log->browser ?: 'Браузер' }}
+                                </div>
+                                <span class="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-2 block">
                                     {{ core()->formatDate($log->created_at, 'd M Y H:i') }}
                                 </span>
                             </div>
@@ -133,9 +130,9 @@
                 <div class="mt-8 px-1">
                     @if (!request()->has('all') && $loginHistory->total() > 3)
                         <a href="{{ route('shop.customers.account.login_activity.index', ['all' => 1]) }}"
-                            class="inline-flex items-center gap-2 px-6 py-3 bg-white border border-[#e2d9ff] rounded-2xl text-[14px] font-bold text-[#7C45F5] shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+                            class="group inline-flex items-center justify-center gap-4 bg-white border-2 border-zinc-900 px-6 py-4 text-center font-black text-zinc-900 transition-all active:translate-x-1 active:translate-y-1 active:shadow-none rounded-xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-[11px]">
                             <span>Посмотреть всю историю ({{ $loginHistory->total() }})</span>
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                             </svg>
                         </a>
@@ -148,13 +145,13 @@
                     @endif
                 </div>
             @else
-                <div class="bg-white p-12 text-center border border-[#e2d9ff] rounded-[2rem] shadow-sm">
-                    <div class="w-16 h-16 bg-zinc-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <div class="bg-white p-12 text-center border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                    <div class="w-16 h-16 bg-zinc-50 border-3 border-zinc-900 flex items-center justify-center mx-auto mb-4 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                        <svg class="w-8 h-8 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <p class="text-[15px] text-zinc-500 font-medium">
+                    <p class="text-[12px] text-zinc-900 font-black uppercase tracking-widest">
                         История событий пока пуста.
                     </p>
                 </div>
