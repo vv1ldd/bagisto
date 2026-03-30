@@ -57,34 +57,46 @@
                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                         
-                        <div class="text-center mb-6">
-                            <h3 class="text-xl font-black uppercase tracking-tighter mb-2">Вход по QR-коду</h3>
-                            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
-                                Отсканируйте код смартфоном, <br> на котором вы уже вошли в Meanly
-                            </p>
+                        <div class="text-center mb-8 relative">
+                            <h3 class="text-2xl font-black uppercase tracking-tighter mb-2 italic">ВХОД ПО QR</h3>
+                            <div class="h-1 w-12 bg-[#D6FF00] mx-auto border border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"></div>
                         </div>
 
-                        <div class="flex justify-center bg-zinc-50 p-6 border-2 border-zinc-900 mb-6 relative">
-                            <div id="login-qrcode" class="bg-white p-2 border-2 border-zinc-900"></div>
-                            <div v-if="qrStatus === 'success'" class="absolute inset-0 bg-[#7C45F5]/90 flex flex-col items-center justify-center text-white p-4 text-center">
-                                <svg class="w-16 h-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                        <div class="flex justify-center p-8 bg-zinc-50 border-4 border-zinc-900 mb-8 relative group">
+                            <!-- Scanner Decor -->
+                            <div class="absolute -top-2 -left-2 w-10 h-10 border-t-8 border-l-8 border-[#D6FF00] z-20"></div>
+                            <div class="absolute -top-2 -right-2 w-10 h-10 border-t-8 border-r-8 border-[#D6FF00] z-20"></div>
+                            <div class="absolute -bottom-2 -left-2 w-10 h-10 border-b-8 border-l-8 border-[#D6FF00] z-20"></div>
+                            <div class="absolute -bottom-2 -right-2 w-10 h-10 border-b-8 border-r-8 border-[#D6FF00] z-20"></div>
+
+                            <div id="login-qrcode" class="bg-white p-4 border-2 border-zinc-900 shadow-[10px_10px_0px_0px_rgba(24,24,27,1)] transition-transform group-hover:scale-[1.02] duration-500"></div>
+                            
+                            <div v-if="qrStatus === 'success'" class="absolute inset-0 bg-[#7C45F5]/95 flex flex-col items-center justify-center text-white p-4 text-center z-30">
+                                <svg class="w-20 h-20 mb-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span class="font-black uppercase tracking-widest text-sm">ВХОД ВЫПОЛНЕН!</span>
+                                <span class="font-black uppercase tracking-widest text-xl italic">DONE!</span>
                             </div>
-                            <div v-if="qrStatus === 'expired'" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center p-4 text-center">
-                                <span class="text-zinc-400 font-black uppercase tracking-widest text-xs mb-4">КОД ИСТЕК</span>
-                                <button @click="handleQrLogin" class="text-[10px] font-black uppercase tracking-widest bg-zinc-900 text-white px-4 py-2 hover:bg-zinc-800 transition-colors">ОБНОВИТЬ</button>
+                            
+                            <div v-if="qrStatus === 'expired'" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center p-4 text-center z-30">
+                                <span class="text-zinc-900 font-black uppercase tracking-widest text-sm mb-6 bg-[#D6FF00] px-3 py-1 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(39,39,42,1)]">КОД ИСТЕК</span>
+                                <button @click="handleQrLogin" class="text-xs font-black uppercase tracking-widest bg-zinc-900 text-white px-8 py-4 border-2 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(39,39,42,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all hover:bg-zinc-800">ОБНОВИТЬ</button>
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3">
-                            <div :class="['w-2 h-2 rounded-full animate-pulse', qrStatus === 'error' ? 'bg-red-500' : 'bg-emerald-500']"></div>
-                            <p class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
-                                <span v-if="qrStatus === 'authorized'">Ожидание подтверждения...</span>
-                                <span v-else-if="qrStatus === 'pending'">Ожидание сканирования...</span>
-                                <span v-else-if="qrStatus === 'error'" class="text-red-500">Ошибка связи. Проверьте интернет.</span>
-                                <span v-else>@{{ qrStatus }}</span>
+                        <div class="flex flex-col items-center gap-6">
+                            <div class="flex items-center gap-4">
+                                <div :class="['w-4 h-4 rounded-full animate-pulse border-2 border-zinc-900', qrStatus === 'error' ? 'bg-red-500' : 'bg-[#D6FF00]']"></div>
+                                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900 italic">
+                                    <span v-if="qrStatus === 'authorized'">ПОДТВЕРДИТЕ НА ТЕЛЕФОНЕ</span>
+                                    <span v-else-if="qrStatus === 'pending'">ОЖИДАНИЕ СКАНЕРА...</span>
+                                    <span v-else-if="qrStatus === 'error'" class="text-red-500">ОШИБКА СВЯЗИ</span>
+                                    <span v-else>@{{ qrStatus }}</span>
+                                </p>
+                            </div>
+                            
+                            <p class="text-[10px] text-zinc-400 font-bold uppercase text-center leading-relaxed tracking-wider">
+                                Отсканируйте код смартфоном, <br> на котором вы уже вошли в Meanly
                             </p>
                         </div>
                     </div>
@@ -163,11 +175,11 @@
                                         container.innerHTML = '';
                                         new QRCode(container, {
                                             text: data.url,
-                                            width: 200,
-                                            height: 200,
+                                            width: 320,
+                                            height: 320,
                                             colorDark : "#18181b",
-                                            colorLight : "#f9fafb",
-                                            correctLevel : QRCode.CorrectLevel.H
+                                            colorLight : "#ffffff",
+                                            correctLevel : QRCode.CorrectLevel.M
                                         });
                                     }
                                 });

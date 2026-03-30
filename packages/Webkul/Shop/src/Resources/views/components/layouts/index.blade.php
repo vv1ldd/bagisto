@@ -622,35 +622,64 @@
                 </div>
             </div>
         </div>
+        <!-- QR Scanner Template (Telegram Style) -->
         <script type="text/x-template" id="v-qr-scanner-template">
-            <div v-if="isVisible" class="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300" @click.self="closeScanner">
-                <div class="bg-white border-4 border-zinc-900 shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] w-full max-w-md p-6 relative animate-in zoom-in-95 duration-300 overflow-hidden">
-                    <button @click="closeScanner" class="absolute top-4 right-4 z-10 text-zinc-400 hover:text-zinc-900 transition-colors bg-white/80 p-1 rounded-full">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                    
-                    <div class="text-center mb-6">
-                        <h3 class="text-xl font-black uppercase tracking-tighter mb-1">Сканирование</h3>
-                        <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Наведите камеру на QR-код на ПК</p>
+            <div v-if="isVisible" class="fixed inset-0 z-[10001] flex flex-col bg-black overflow-hidden animate-in fade-in duration-500">
+                <!-- Immersive Header -->
+                <div class="relative z-30 flex items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
+                    <div class="flex flex-col">
+                        <h3 class="text-white font-black uppercase tracking-widest text-lg italic">MEANLY SCAN</h3>
+                        <div class="h-1 w-8 bg-[#D6FF00] mx-auto border border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]"></div>
                     </div>
-
-                    <div class="relative bg-black aspect-square border-4 border-zinc-900 overflow-hidden mb-6">
-                        <div id="qr-reader" class="w-full h-full"></div>
-                        <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none">
-                             <div class="w-full h-full border-2 border-[#D6FF00] shadow-[0_0_15px_rgba(214,255,0,0.5)] flex items-center justify-center">
-                                 <div class="w-full h-0.5 bg-[#D6FF00]/50 animate-scanner-line"></div>
-                             </div>
-                        </div>
-                    </div>
-
-                    <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border-2 border-red-200 text-red-600 text-[10px] font-bold uppercase tracking-widest text-center">
-                        @{{ errorMessage }}
-                    </div>
-
-                    <button @click="closeScanner" class="w-full py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-xs hover:bg-zinc-800 transition-colors">
-                        ОТМЕНА
+                    <button @click="closeScanner" class="w-12 h-12 flex items-center justify-center bg-[#D6FF00] border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                        <svg class="w-6 h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
+
+                <!-- Viewfinder Area -->
+                <div class="flex-1 relative flex items-center justify-center bg-black/20">
+                    <!-- Laser Line -->
+                    <div class="absolute left-1/2 -translate-x-1/2 w-[80vw] max-w-[400px] h-1 bg-[#D6FF00] shadow-[0_0_20px_#D6FF00] z-30 animate-laser-scan opacity-80"></div>
+                    
+                    <!-- Scanner Box Overlays -->
+                    <div class="relative w-[85vw] h-[85vw] max-w-[450px] max-h-[450px]">
+                        <!-- Meanly Corners (Pulsing) -->
+                        <div class="absolute -top-4 -left-4 w-16 h-16 border-t-8 border-l-8 border-[#D6FF00] z-40 pointer-events-none animate-pulse"></div>
+                        <div class="absolute -top-4 -right-4 w-16 h-16 border-t-8 border-r-8 border-[#D6FF00] z-40 pointer-events-none animate-pulse"></div>
+                        <div class="absolute -bottom-4 -left-4 w-16 h-16 border-b-8 border-l-8 border-[#D6FF00] z-40 pointer-events-none animate-pulse"></div>
+                        <div class="absolute -bottom-4 -right-4 w-16 h-16 border-b-8 border-r-8 border-[#D6FF00] z-40 pointer-events-none animate-pulse"></div>
+
+                        <!-- Real-time Video Stream Container -->
+                        <div id="qr-reader" class="w-full h-full border-4 border-zinc-900/50 bg-black overflow-hidden z-20"></div>
+                    </div>
+                    
+                    <div v-if="errorMessage" class="absolute bottom-16 left-1/2 -translate-x-1/2 bg-red-500 text-white px-8 py-4 border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] font-black uppercase tracking-widest text-xs z-50">
+                        @{{ errorMessage }}
+                    </div>
+                </div>
+
+                <!-- Footer Hint -->
+                <div class="p-10 text-center bg-gradient-to-t from-black/80 to-transparent relative z-30">
+                    <p class="text-white/80 font-black uppercase tracking-[0.4em] text-[10px] animate-pulse italic">
+                        Наведите камеру на QR-код
+                    </p>
+                </div>
+
+                <style>
+                    @keyframes laser-scan {
+                        0%, 100% { top: 10%; opacity: 0; }
+                        15%, 85% { opacity: 0.9; }
+                        50% { top: 90%; }
+                    }
+                    .animate-laser-scan {
+                        animation: laser-scan 2.5s ease-in-out infinite;
+                    }
+                    #qr-reader video {
+                        object-fit: cover !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                    }
+                </style>
             </div>
         </script>
 
@@ -696,22 +725,29 @@
                                 });
 
                                 const config = { 
-                                    fps: 20, // Faster scanning
-                                    // removing fixed qrbox width/height allows scanning the whole frame
+                                    fps: 30, // Pro-level smooth scanning
                                     qrbox: (viewfinderWidth, viewfinderHeight) => {
-                                        return {
-                                            width: viewfinderWidth * 0.8,
-                                            height: viewfinderHeight * 0.8
-                                        };
-                                    },
-                                    aspectRatio: 1.0
+                                        // Large viewfinder for easy capture
+                                        const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.85;
+                                        return { width: size, height: size };
+                                    }
                                 };
                                 
                                 await this.html5QrCode.start(
-                                    { facingMode: "environment" }, 
+                                    { 
+                                        facingMode: "environment",
+                                        // Request high resolution for distance scanning
+                                        aspectRatio: 1.0,
+                                        width: { min: 640, ideal: 1920, max: 1920 },
+                                        height: { min: 480, ideal: 1080, max: 1080 }
+                                    }, 
                                     config, 
                                     (decodedText) => {
                                         if (decodedText.includes('/login/qr/')) {
+                                            // Provide immediate feedback before redirect
+                                            const reader = document.getElementById('qr-reader');
+                                            if (reader) reader.style.border = '4px solid #D6FF00';
+                                            
                                             this.html5QrCode.stop().then(() => {
                                                 window.location.href = decodedText;
                                             });
