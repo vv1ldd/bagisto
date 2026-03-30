@@ -1,151 +1,96 @@
 <!-- Header -->
-<h1 class="text-2xl font-black uppercase tracking-[0.2em] text-zinc-900 max-md:hidden border-b-4 border-zinc-900 pb-4">
-    @lang('shop::app.checkout.onepage.summary.cart-summary')
-</h1>
+<div class="mb-10 pb-6 border-b-4 border-zinc-900 flex items-center justify-between">
+    <h3 class="text-2xl font-black uppercase tracking-[0.2em] text-zinc-900">
+        @lang('shop::app.checkout.onepage.summary.cart-summary')
+    </h3>
+    <div class="px-4 py-2 bg-zinc-900 border-2 border-zinc-900 text-white text-[10px] font-black uppercase tracking-widest shadow-[3px_3px_0px_0px_rgba(124,69,245,1)]">
+        @{{ cart.items.length }} поз.
+    </div>
+</div>
 
 <!-- Cart Items -->
-<div class="mt-8 grid gap-8 border-b-4 border-zinc-900 pb-10">
-    <div class="flex gap-x-6" v-for="item in cart.items">
-        {!! view_render_event('bagisto.shop.checkout.onepage.summary.item_image.before') !!}
-
+<div class="space-y-8 pb-10 border-b-4 border-zinc-900">
+    <div class="flex gap-x-6 group animate-in slide-in-from-right duration-300" v-for="item in cart.items" :key="item.id">
         <div class="relative shrink-0">
-            <img class="h-20 w-20 border-4 border-zinc-900 object-cover shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]"
-                :src="item.base_image.small_image_url" :alt="item.name" width="80" height="80" />
+            <img class="h-24 w-24 border-4 border-zinc-900 object-cover shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all duration-300"
+                :src="item.base_image.small_image_url" :alt="item.name" />
         </div>
 
-        {!! view_render_event('bagisto.shop.checkout.onepage.summary.item_image.after') !!}
-
-        <div class="flex flex-1 flex-col justify-center">
-            {!! view_render_event('bagisto.shop.checkout.onepage.summary.item_name.before') !!}
-
-            <p class="text-[13px] font-black uppercase tracking-widest text-zinc-900 leading-tight mb-2">
+        <div class="flex flex-1 flex-col justify-center min-w-0">
+            <p class="text-[14px] font-black uppercase tracking-widest text-zinc-900 leading-tight mb-3 truncate">
                 @{{ item.name }}
             </p>
 
-            {!! view_render_event('bagisto.shop.checkout.onepage.summary.item_name.after') !!}
-
             <div class="flex items-center justify-between">
-                <p class="text-[10px] font-black uppercase opacity-60 tracking-widest">
-                    <span class="text-[#7C45F5] opacity-100">@{{ item.quantity }} x</span>
-                    <template v-if="displayTax.prices == 'including_tax'">
-                        @{{ item.formatted_price_incl_tax }}
-                    </template>
+                <div class="flex items-center gap-3">
+                    <span class="px-2 py-1 bg-zinc-100 border-2 border-zinc-900 text-[10px] font-black uppercase tracking-widest text-zinc-900">
+                        @{{ item.quantity }} шт.
+                    </span>
+                    <p class="text-[11px] font-black uppercase tracking-widest opacity-60">
+                        @{{ displayTax.prices == 'including_tax' ? item.formatted_price_incl_tax : item.formatted_price }}
+                    </p>
+                </div>
 
-                    <template v-else>
-                        @{{ item.formatted_price }}
-                    </template>
-                </p>
-
-                <p class="text-sm font-black text-zinc-900 tabular-nums">
-                    <template v-if="displayTax.prices == 'including_tax'">
-                        @{{ item.formatted_total_incl_tax }}
-                    </template>
-
-                    <template v-else>
-                        @{{ item.formatted_total }}
-                    </template>
+                <p class="text-[14px] font-black text-zinc-900 tabular-nums">
+                    @{{ displayTax.prices == 'including_tax' ? item.formatted_total_incl_tax : item.formatted_total }}
                 </p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Cart Totals -->
-<div class="mt-10 space-y-5">
+<!-- Pricing Detail -->
+<div class="mt-10 space-y-6">
     <!-- Sub Total -->
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.sub_total.before') !!}
-
-    <div class="flex justify-between text-[11px] font-black uppercase tracking-widest">
+    <div class="flex justify-between text-[12px] font-black uppercase tracking-widest px-4 py-3 bg-zinc-50 border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
         <p class="text-zinc-500">@lang('shop::app.checkout.onepage.summary.sub-total')</p>
-
         <p class="text-zinc-900 tabular-nums">
-            <template v-if="displayTax.subtotal == 'including_tax'">
-                @{{ cart.formatted_sub_total_incl_tax }}
-            </template>
-            <template v-else>
-                @{{ cart.formatted_sub_total }}
-            </template>
+            @{{ displayTax.subtotal == 'including_tax' ? cart.formatted_sub_total_incl_tax : cart.formatted_sub_total }}
         </p>
     </div>
-
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.sub_total.after') !!}
 
     <!-- Discount -->
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.discount_amount.before') !!}
-
-    <div class="flex justify-between text-[11px] font-black uppercase tracking-widest" v-if="cart.discount_amount && parseFloat(cart.discount_amount) > 0">
-        <p class="text-zinc-500">@lang('shop::app.checkout.onepage.summary.discount-amount')</p>
-        <p class="text-green-600">- @{{ cart.formatted_discount_amount }}</p>
+    <div class="flex justify-between text-[12px] font-black uppercase tracking-widest px-4 py-3 bg-green-50 border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(72,187,120,1)]" v-if="cart.discount_amount && parseFloat(cart.discount_amount) > 0">
+        <p class="text-green-700">@lang('shop::app.checkout.onepage.summary.discount-amount')</p>
+        <p class="text-green-700 tabular-nums">- @{{ cart.formatted_discount_amount }}</p>
     </div>
 
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.discount_amount.after') !!}
-
-    <!-- Apply Coupon -->
-    <div class="py-4 border-y-2 border-zinc-100 my-4">
-        {!! view_render_event('bagisto.shop.checkout.onepage.summary.coupon.before') !!}
-        @include('shop::checkout.coupon')
-        {!! view_render_event('bagisto.shop.checkout.onepage.summary.coupon.after') !!}
+    <!-- Coupons Section -->
+    <div class="py-6 border-y-2 border-zinc-100 my-8">
+        <v-coupon @processed="getCart()"></v-coupon>
     </div>
 
-    <!-- Shipping Rates -->
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.delivery_charges.before') !!}
-
-    <div class="flex justify-between text-[11px] font-black uppercase tracking-widest">
+    <!-- Shipping Charges -->
+    <div class="flex justify-between text-[12px] font-black uppercase tracking-widest px-4 py-3 bg-zinc-50 border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
         <p class="text-zinc-500">@lang('shop::app.checkout.onepage.summary.delivery-charges')</p>
-
         <p class="text-zinc-900 tabular-nums">
-            <template v-if="displayTax.shipping == 'including_tax'">
-                @{{ cart.formatted_shipping_amount_incl_tax }}
-            </template>
-            <template v-else>
-                @{{ cart.formatted_shipping_amount }}
-            </template>
+            @{{ displayTax.shipping == 'including_tax' ? cart.formatted_shipping_amount_incl_tax : cart.formatted_shipping_amount }}
         </p>
     </div>
 
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.delivery_charges.after') !!}
-
-    <!-- Taxes -->
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.tax.before') !!}
-
-    <div class="flex justify-between text-[11px] font-black uppercase tracking-widest" v-if="parseFloat(cart.tax_total) > 0">
-        <p class="text-zinc-500">@lang('shop::app.checkout.onepage.summary.tax')</p>
-        <p class="text-zinc-900 tabular-nums">@{{ cart.formatted_tax_total }}</p>
+    <!-- Grand Total -->
+    <div class="mt-12 pt-10 border-t-4 border-zinc-900 bg-white">
+        <div class="flex flex-col gap-2">
+            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400">Total payable</p>
+            <div class="flex items-center justify-between">
+                <p class="text-lg font-black uppercase tracking-widest text-zinc-900">@lang('shop::app.checkout.onepage.summary.grand-total')</p>
+                <p class="text-4xl font-black text-[#7C45F5] tabular-nums tracking-tighter">
+                    @{{ cart.formatted_grand_total }}
+                </p>
+            </div>
+        </div>
     </div>
-
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.tax.after') !!}
-
-    <!-- Cart Grand Total -->
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.grand_total.before') !!}
-
-    <div class="mt-6 pt-8 border-t-4 border-zinc-900 flex items-center justify-between">
-        <p class="text-lg font-black uppercase tracking-widest text-zinc-900">
-            @lang('shop::app.checkout.onepage.summary.grand-total')
-        </p>
-        <p class="text-3xl font-black text-[#7C45F5] tabular-nums">
-            @{{ cart.formatted_grand_total }}
-        </p>
-    </div>
-
-    {!! view_render_event('bagisto.shop.checkout.onepage.summary.grand_total.after') !!}
 </div>
 
-<!-- Accepted Payment Methods -->
-<div class="mt-10 pt-8 border-t-2 border-zinc-100">
-    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-5">Accepted secure methods:</p>
-    <div class="flex items-center gap-3 flex-wrap">
-        <div class="h-8 px-3 bg-white border-2 border-zinc-900 flex items-center shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
-            <span class="text-[11px] font-black text-[#1A1F71] uppercase tracking-tighter">VISA</span>
-        </div>
-        <div class="h-8 px-3 bg-white border-2 border-zinc-900 flex items-center gap-1 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
-            <div class="w-4 h-4 rounded-full bg-[#EB001B]"></div>
-            <div class="w-4 h-4 rounded-full bg-[#F79E1B] -ml-2.5 opacity-80"></div>
-        </div>
-        <div class="h-8 px-3 bg-white border-2 border-zinc-900 flex items-center shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
-            <span class="text-[10px] font-black text-[#26A17B] uppercase">USDT</span>
-        </div>
-        <div class="h-8 px-3 bg-white border-2 border-zinc-900 flex items-center shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
-            <span class="text-[10px] font-black text-[#2775CA] uppercase">USDC</span>
+<!-- Accepted Methods Banner -->
+<div class="mt-12 p-8 bg-[#18181b] border-4 border-zinc-900 flex flex-col gap-6 shadow-[8px_8px_0px_0px_rgba(124,69,245,0.4)]">
+    <div class="flex items-center gap-3">
+        <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white">Payment methods available</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
+        <div v-for="tag in ['Visa', 'MC', 'USDT', 'USDC', 'Wallet']" class="px-2 py-1 bg-white/10 border border-white/20 text-[9px] font-black text-white uppercase tracking-widest">
+            @{{ tag }}
         </div>
     </div>
 </div>
