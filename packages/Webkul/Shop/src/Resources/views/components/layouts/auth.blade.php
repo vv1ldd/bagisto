@@ -42,8 +42,8 @@
 
             <!-- Card Footer -->
             <div class="py-3 px-8 bg-zinc-50 border-t-4 border-zinc-900 text-center shrink-0">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900">
-                    &copy; {{ date('Y') }} {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }} &bull; PAY SECURE
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-900 border-2 border-zinc-900 px-3 py-1 bg-white shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                    &copy; {{ date('Y') }} {{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}
                 </p>
             </div>
         </div>

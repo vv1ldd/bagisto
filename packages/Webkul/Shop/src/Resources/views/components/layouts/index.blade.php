@@ -1,7 +1,7 @@
 @props([
     'hasHeader'  => true,
     'hasFeature' => true,
-    'hasFooter'  => true, // Can be true, false, or 'mini'
+    'hasFooter'  => 'mini', // Defaults to minimalist, can be true (full) or false (none)
 ])
 
 <!DOCTYPE html>

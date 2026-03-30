@@ -64,7 +64,7 @@
     @endif
 @endpush
 
-<x-shop::layouts>
+<x-shop::layouts :has-footer="true">
     <!-- Page Title -->
     <x-slot:title>
         {{  $channel->home_seo['meta_title'] ?? '' }}

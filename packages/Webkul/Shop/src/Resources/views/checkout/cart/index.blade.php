@@ -4,7 +4,7 @@
 <meta name="keywords" content="@lang('shop::app.checkout.cart.index.cart')" />
 @endPush
 
-<x-shop::layouts :has-feature="false" :has-footer="false">
+<x-shop::layouts :has-feature="false">
     <!-- Page Title -->
     <x-slot:title>
         @lang('shop::app.checkout.cart.index.cart')
