@@ -10,14 +10,14 @@
 
     <div class="fixed inset-0 z-[-30] bg-[#FAFAFA]"></div>
 
-    <div class="relative h-screen w-full flex flex-col items-center justify-center p-2 md:p-4 overflow-hidden">
+    <div class="relative h-[100dvh] w-full flex flex-col items-center justify-center p-2 md:p-4 overflow-hidden">
         
         <!-- Background Decorative Elements (Subtle) -->
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#7C45F5]/5 blur-[120px] rounded-full"></div>
         <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#7C45F5]/2 blur-[120px] rounded-full"></div>
 
         <!-- Main Auth Card -->
-        <div class="relative w-full {{ $contentWidth }} bg-white border-4 border-zinc-900 shadow-[10px_10px_0px_0px_rgba(24,24,27,1)] rounded-[2rem] overflow-hidden animate-in fade-in zoom-in duration-700 flex flex-col max-h-[96vh] md:translate-y-[-10px]">
+        <div class="relative w-full {{ $contentWidth }} h-full md:h-auto md:max-h-[96vh] bg-white border-zinc-900 md:border-4 md:shadow-[10px_10px_0px_0px_rgba(24,24,27,1)] md:rounded-[3xl] overflow-hidden animate-in fade-in zoom-in duration-700 flex flex-col md:translate-y-[-10px]">
             
             <!-- Card Header: Logo/Branding -->
             <div class="pt-6 pb-2 px-8 md:px-10 flex flex-col items-center shrink-0">
@@ -36,7 +36,7 @@
             </div>
 
             <!-- Content Slot -->
-            <div class="px-8 pb-4 md:px-10 md:pb-6 flex flex-col items-stretch overflow-y-auto custom-scrollbar">
+            <div class="px-8 pb-4 md:px-10 md:pb-6 flex flex-col flex-1 justify-center items-stretch overflow-y-auto custom-scrollbar">
                 {{ $slot }}
             </div>
 

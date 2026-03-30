@@ -188,7 +188,7 @@
         <div class="fixed inset-0 -z-30 bg-white dark:bg-[#09090b] transition-colors duration-700"></div>
 
         <!-- Built With Bagisto -->
-        <div id="app" class="flex flex-col min-h-screen overflow-x-hidden relative text-zinc-900 dark:text-white transition-colors duration-500">
+        <div id="app" class="flex flex-col min-h-[100dvh] overflow-x-hidden relative text-zinc-900 dark:text-white transition-colors duration-500">
             <div id="main-content-wrapper" class="flex-1 flex flex-col bg-transparent">
                 <!-- Flash Message Blade Component -->
                 <x-shop::flash-group />
