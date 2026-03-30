@@ -17,7 +17,7 @@ $menuIcons = [
 ?>
 
 {{-- CARDLESS MENU --}}
-<div class="relative w-full max-w-[600px] mx-auto">
+<div class="relative w-full max-w-[1100px] mx-auto">
     {{-- Header with Back Button --}}
     <div class="flex items-center gap-3 mb-1 px-4 pt-0">
         <button type="button" 

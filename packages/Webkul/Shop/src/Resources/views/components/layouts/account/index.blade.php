@@ -71,16 +71,16 @@
                 $customer = auth()->guard('customer')->user();
             @endphp
 
-            <div class="w-full max-w-[600px] flex flex-col justify-center max-md:mt-5">
+            <div class="w-full max-w-[1100px] flex flex-col justify-center max-md:mt-5">
 
                 @if (request()->routeIs('shop.customers.account.index'))
                     <!-- iOS Style Sidebar (Start Page Menu) -->
-                    <div class="w-full shrink-0" style="max-width: 600px;">
+                    <div class="w-full shrink-0" style="max-width: 1100px;">
                         <x-shop::layouts.account.navigation />
                     </div>
                 @else
                     <!-- Main Content Pane (Drill-Down View) -->
-                    <div class="flex flex-col w-full relative" style="max-width: 600px;">
+                    <div class="flex flex-col w-full relative" style="max-width: 1100px;">
                         
                         @if (isset($title) && !empty((string)$title))
                             <!-- Drill-Down Header: Matches Navigation style -->

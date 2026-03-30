@@ -9,6 +9,11 @@
                 </h3>
                 
                 <div class="space-y-4">
+                    @foreach ($activeSessions as $session)
+                        @php
+                            $isCurrent = $session->id == session('customer_login_log_id') || $session->session_id === session()->getId();
+                        @endphp
+
                         <div class="relative bg-white border-4 border-zinc-900 p-4 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] flex items-start gap-4 transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none">
                             <div class="w-12 h-12 flex items-center justify-center bg-zinc-100 border-3 border-zinc-900 text-zinc-600 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
                                 @if (stripos($session->user_agent, 'phone') !== false || stripos($session->user_agent, 'android') !== false)
