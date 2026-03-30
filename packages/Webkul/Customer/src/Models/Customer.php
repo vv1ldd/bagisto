@@ -56,6 +56,12 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
      */
     protected $table = 'customers';
 
+    /** @phpstan-ignore-next-line */
+    public function getIsMatrixEnabledAttribute(): bool
+    {
+        return (bool) ($this->attributes['is_matrix_enabled'] ?? false);
+    }
+
     /**
      * The attributes that should be cast.
      *
@@ -68,7 +74,6 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
         'is_call_enabled' => 'boolean',
         'is_b2b_enabled' => 'boolean',
         'is_crypto_enabled' => 'boolean',
-        'is_matrix_enabled' => 'boolean',
         'mnemonic_verified_at' => 'datetime',
     ];
 

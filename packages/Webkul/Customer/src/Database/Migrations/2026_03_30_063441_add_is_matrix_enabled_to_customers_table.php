@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->boolean('is_matrix_enabled')->default(1)->after('is_crypto_enabled');
+            $table->boolean('is_matrix_enabled')->default(0)->after('is_crypto_enabled');
         });
     }
 
