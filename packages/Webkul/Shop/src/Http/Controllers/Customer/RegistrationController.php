@@ -348,9 +348,15 @@ class RegistrationController extends Controller
             'token' => $token,
         ]);
 
+        // Create the signed URL for marking continuation (for desktop to call)
+        $markContinuingUrl = URL::signedRoute('shop.customers.register.phone.mark_continuing', [
+            'token' => $token,
+        ]);
+
         return response()->json([
-            'url'   => $url,
-            'token' => $token
+            'url'                 => $url,
+            'token'               => $token,
+            'mark_continuing_url' => $markContinuingUrl
         ]);
     }
 
@@ -387,7 +393,9 @@ class RegistrationController extends Controller
             'token' => $token,
         ]);
 
-        return view('shop::customers.registration-phone-landing', compact('username', 'token', 'markContinuingUrl'));
+        $checkStatusUrl = route('shop.customers.register.check_status');
+
+        return view('shop::customers.registration-phone-landing', compact('username', 'token', 'markContinuingUrl', 'checkStatusUrl'));
     }
 
     /**
@@ -413,7 +421,8 @@ class RegistrationController extends Controller
             return response()->json([
                 'complete'                => true,
                 'redirect_url'            => route('shop.customers.account.onboarding.security'),
-                'is_continuing_elsewhere' => Cache::get('reg_continuing:' . $request->input('token')) === 'phone',
+                'continuing_device'       => Cache::get('reg_continuing:' . $request->input('token')),
+                'is_continuing_elsewhere' => Cache::get('reg_continuing:' . $request->input('token')) && Cache::get('reg_continuing:' . $request->input('token')) !== $request->input('device'),
             ]);
         }
 
@@ -421,11 +430,11 @@ class RegistrationController extends Controller
     }
 
     /**
-     * Mark the registration as being continued on the current device (phone).
+     * Mark the registration as being continued on the current device (phone or pc).
      */
     public function markAsContinuing(Request $request, $token)
     {
-        Cache::put('reg_continuing:' . $token, 'phone', now()->addMinutes(10));
+        Cache::put('reg_continuing:' . $token, $request->input('device', 'phone'), now()->addMinutes(10));
 
         return response()->json(['success' => true]);
     }

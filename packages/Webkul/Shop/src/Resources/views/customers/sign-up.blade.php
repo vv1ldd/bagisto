@@ -168,6 +168,7 @@
                             isContinuingElsewhere: false,
                             registrationRedirectUrl: '',
                             regToken: '',
+                            markContinuingUrl: '',
                             qrUrl: '',
                             registrationStatus: 'Подготовка...',
                             status: {
@@ -323,6 +324,7 @@
 
                                 this.qrUrl = data.url;
                                 this.regToken = data.token;
+                                this.markContinuingUrl = data.mark_continuing_url;
                                 
                                 // Render QR Code
                                 this.$nextTick(() => {
@@ -361,14 +363,15 @@
                                         },
                                         body: JSON.stringify({ 
                                             username: this.nickname.trim(),
-                                            token: this.regToken
+                                            token: this.regToken,
+                                            device: 'pc'
                                         })
                                     });
                                     
                                     const data = await res.json();
                                     if (data.complete) {
                                         this.isRegistrationComplete = true;
-                                        this.isContinuingElsewhere = !!data.is_continuing_elsewhere;
+                                        this.isContinuingElsewhere = data.is_continuing_elsewhere && data.continuing_device === 'phone';
                                         this.registrationRedirectUrl = data.redirect_url;
                                         clearInterval(this.pollInterval);
                                     }
@@ -378,7 +381,14 @@
                             }, 2000);
                         },
 
-                        proceedToOnboarding() {
+                        async proceedToOnboarding() {
+                            if (this.markContinuingUrl) {
+                                try {
+                                    await fetch(this.markContinuingUrl + (this.markContinuingUrl.includes('?') ? '&' : '?') + 'device=pc');
+                                } catch (e) {
+                                    console.warn('Silent failure marking pc continuation', e);
+                                }
+                            }
                             window.location.href = this.registrationRedirectUrl || this.onboardingUrl;
                         },
 

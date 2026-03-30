@@ -140,11 +140,34 @@
                     btn.classList.replace('border-zinc-900', 'border-emerald-500');
                     document.getElementById('indicator-icon').classList.replace('bg-[#7C45F5]', 'bg-emerald-500');
                     
+                    // Polling for Desktop Continuation
+                    const startPhonePolling = () => {
+                        const interval = setInterval(async () => {
+                             try {
+                                 const pres = await fetch('{{ $checkStatusUrl }}', {
+                                     method: 'POST',
+                                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                     body: JSON.stringify({ username: '{{ $username }}', token: '{{ $token }}', device: 'phone' })
+                                 });
+                                 const pdata = await pres.json();
+                                 if (pdata.is_continuing_elsewhere && pdata.continuing_device === 'pc') {
+                                     btnStatus.innerText = 'ВЫ ОТКРЫЛИ НА ПК';
+                                     btnLabel.innerText = 'ПРОДОЛЖИТЬ ЗДЕСЬ';
+                                 }
+                             } catch (e) {
+                                 console.warn('Phone polling error', e);
+                             }
+                        }, 2500);
+                        return interval;
+                    };
+                    const phonePollInterval = startPhonePolling();
+
                     // Allow clicking to continue
                     btn.disabled = false;
                     btn.onclick = async () => {
+                        clearInterval(phonePollInterval);
                         try {
-                            await fetch('{{ $markContinuingUrl }}');
+                            await fetch('{{ $markContinuingUrl }}?device=phone');
                         } catch (e) {
                             console.warn('Silent failure marking continuation', e);
                         }
