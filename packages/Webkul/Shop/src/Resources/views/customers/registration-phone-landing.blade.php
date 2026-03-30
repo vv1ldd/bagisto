@@ -135,13 +135,17 @@
                     }
                     
                     // Success State
-                    btnLabel.innerText = 'ГОТОВО!';
-                    btnStatus.innerText = 'ПОСМОТРИТЕ НА ДЕСКТОП';
+                    btnLabel.innerText = 'ПРОДОЛЖИТЬ';
+                    btnStatus.innerText = 'ВСЕ ГОТОВО!';
                     btn.classList.replace('border-zinc-900', 'border-emerald-500');
                     document.getElementById('indicator-icon').classList.replace('bg-[#7C45F5]', 'bg-emerald-500');
                     
-                    // No need to redirect here - the desktop is polling
-                    btn.onclick = null;
+                    // Allow clicking to continue
+                    btn.disabled = false;
+                    btn.onclick = () => window.location.href = '{{ route('shop.customers.account.onboarding.security') }}';
+                    plusSvg.classList.remove('hidden');
+                    plusSvg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />';
+                    spinnerSvg.classList.add('hidden');
 
                 } catch (err) {
                     console.error(err);

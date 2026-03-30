@@ -111,16 +111,34 @@
                             <p class="text-zinc-400 text-[10px] font-black uppercase tracking-widest leading-relaxed">Отсканируйте камерой телефона для входа и создания ключа</p>
                         </div>
 
-                        <div id="reg-qrcode" class="mx-auto bg-zinc-50 p-6 border-3 border-zinc-900 rounded-3xl shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-10 flex items-center justify-center w-56 h-56 overflow-hidden">
+                        <div id="reg-qrcode" v-show="!isRegistrationComplete" class="mx-auto bg-zinc-50 p-6 border-3 border-zinc-900 rounded-3xl shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-10 flex items-center justify-center w-56 h-56 overflow-hidden">
                             <div v-if="!qrUrl" class="animate-pulse text-zinc-900 font-black text-[11px] uppercase tracking-widest italic">Генерация...</div>
                         </div>
 
+                        <!-- Success Message in Modal -->
+                        <div v-if="isRegistrationComplete" class="text-center mb-10 animate-in zoom-in-50 duration-500">
+                             <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-500 text-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-6">
+                                <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                             </div>
+                             <div class="text-emerald-500 font-black text-xl uppercase tracking-tighter italic">Успешно!</div>
+                        </div>
+
                         <div class="space-y-4">
-                            <div class="flex items-center justify-center gap-3 py-2 bg-zinc-50 border-2 border-dashed border-zinc-200 rounded-xl">
+                            <div v-if="!isRegistrationComplete" class="flex items-center justify-center gap-3 py-2 bg-zinc-50 border-2 border-dashed border-zinc-200 rounded-xl">
                                 <div class="w-2 h-2 bg-[#7C45F5] rounded-full animate-ping"></div>
                                 <span class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Ожидание регистрации...</span>
                             </div>
-                            <button @click="closeModal" class="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors underline decoration-2 underline-offset-8">Отмена</button>
+
+                            <button v-if="isRegistrationComplete" @click="proceedToOnboarding" class="group relative flex w-full items-center justify-center gap-4 bg-zinc-900 text-white h-14 font-black uppercase tracking-[0.2em] text-[13px] transition-all hover:bg-black border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl overflow-hidden">
+                                <span>Продолжить</span>
+                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                    <path d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+
+                            <button v-else @click="closeModal" class="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors underline decoration-2 underline-offset-8">Отмена</button>
                         </div>
                     </div>
                 </div>
@@ -140,6 +158,8 @@
                             isValid: false,
                             isRegistering: false,
                             isModalOpen: false,
+                            isRegistrationComplete: false,
+                            registrationRedirectUrl: '',
                             qrUrl: '',
                             registrationStatus: 'Подготовка...',
                             status: {
@@ -335,8 +355,9 @@
                                     
                                     const data = await res.json();
                                     if (data.complete) {
+                                        this.isRegistrationComplete = true;
+                                        this.registrationRedirectUrl = data.redirect_url;
                                         clearInterval(this.pollInterval);
-                                        window.location.href = data.redirect_url || this.onboardingUrl;
                                     }
                                 } catch (e) {
                                     console.warn('Polling error', e);
@@ -344,8 +365,13 @@
                             }, 2000);
                         },
 
+                        proceedToOnboarding() {
+                            window.location.href = this.registrationRedirectUrl || this.onboardingUrl;
+                        },
+
                         closeModal() {
                             this.isModalOpen = false;
+                            this.isRegistrationComplete = false;
                             this.isRegistering = false;
                             this.qrUrl = '';
                             clearInterval(this.pollInterval);
