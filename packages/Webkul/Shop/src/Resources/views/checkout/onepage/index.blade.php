@@ -140,7 +140,7 @@
                         },
 
                         isPlacingOrder: false,
-                        currentStep: 'payment',
+                        currentStep: 'address',
                         shippingMethods: null,
                         paymentMethods: null,
                         selectedPaymentMethod: null,

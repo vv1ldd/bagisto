@@ -214,13 +214,10 @@
                     </form>
                 </x-shop::form>
             </template>
-        </template>
-    </script>
-        </template>
-                                                                                                                    </script>
+        </script>
 
-    <script type="module">
-        app.component('v-checkout-address-customer', {
+        <script type="module">
+            app.component('v-checkout-address-customer', {
             template: '#v-checkout-address-customer-template',
 
             props: ['cart'],
