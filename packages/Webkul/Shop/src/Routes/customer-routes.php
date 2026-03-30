@@ -39,7 +39,7 @@ Route::group([], function () {
         Route::post('prepare', 'prepare')->name('shop.customer.login.qr.prepare');
         Route::post('check', 'checkStatus')->name('shop.customer.login.qr.check');
         Route::get('{token}', 'landing')->name('shop.customer.login.qr.landing')->middleware('signed');
-        Route::post('{token}/authorize', 'authorizeLogin')->name('shop.customer.login.qr.authorize')->middleware(['signed', 'auth:customer']);
+        Route::post('{token}/authorize', 'authorizeLogin')->name('shop.customer.login.qr.authorize')->middleware(['auth:customer']);
     });
 
     /**

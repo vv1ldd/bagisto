@@ -34,7 +34,7 @@
             </div>
 
             <v-qr-authorize 
-                authorize-url="{{ route('shop.customer.login.qr.authorize', ['token' => $token, 'signature' => request('signature')]) }}"
+                authorize-url="{{ route('shop.customer.login.qr.authorize', ['token' => $token]) }}"
                 home-url="{{ route('shop.home.index') }}"
             ></v-qr-authorize>
         @endif
