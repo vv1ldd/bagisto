@@ -7,7 +7,7 @@
     'title'      => null,
 ])
 
-<x-shop::layouts :has-header="$hasHeader" :has-feature="false" :has-footer="$hasFooter">
+<x-shop::layouts :has-header="$hasHeader" :has-feature="false">
     <!-- Page Title -->
     <x-slot:title>
         {{ $title ?? '' }}
