@@ -123,6 +123,12 @@
                                 </svg>
                              </div>
                              <div class="text-emerald-500 font-black text-xl uppercase tracking-tighter italic">Успешно!</div>
+
+                             <!-- Cross-Device Info Message -->
+                             <p v-if="isContinuingElsewhere" class="mt-6 px-4 text-zinc-500 text-[10px] font-black uppercase tracking-[0.1em] leading-relaxed animate-in slide-in-from-top-2 duration-700">
+                                 Вы начали настройку на телефоне.<br>
+                                 Вы можете завершить её там или продолжить здесь ниже.
+                             </p>
                         </div>
 
                         <div class="space-y-4">
@@ -159,7 +165,9 @@
                             isRegistering: false,
                             isModalOpen: false,
                             isRegistrationComplete: false,
+                            isContinuingElsewhere: false,
                             registrationRedirectUrl: '',
+                            regToken: '',
                             qrUrl: '',
                             registrationStatus: 'Подготовка...',
                             status: {
@@ -314,6 +322,7 @@
                                 if (!res.ok) throw new Error(data.message || 'Ошибка при генерации QR');
 
                                 this.qrUrl = data.url;
+                                this.regToken = data.token;
                                 
                                 // Render QR Code
                                 this.$nextTick(() => {
@@ -350,12 +359,16 @@
                                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                             'Accept': 'application/json'
                                         },
-                                        body: JSON.stringify({ username: this.nickname.trim() })
+                                        body: JSON.stringify({ 
+                                            username: this.nickname.trim(),
+                                            token: this.regToken
+                                        })
                                     });
                                     
                                     const data = await res.json();
                                     if (data.complete) {
                                         this.isRegistrationComplete = true;
+                                        this.isContinuingElsewhere = !!data.is_continuing_elsewhere;
                                         this.registrationRedirectUrl = data.redirect_url;
                                         clearInterval(this.pollInterval);
                                     }

@@ -93,10 +93,6 @@ Route::group([], function () {
 
             Route::post('passkey/prepare-other', 'passkeyPrepareOtherDevice')->name('shop.customers.register.passkey.prepare_other');
 
-            Route::get('phone/{token}', 'registrationPhoneLanding')
-                ->name('shop.customers.register.phone.landing')
-                ->middleware('signed');
-
             Route::post('check-status', 'checkRegistrationStatus')->name('shop.customers.register.check_status');
 
             Route::post('', 'store')->name('shop.customers.register.store');
@@ -143,6 +139,17 @@ Route::group([], function () {
     Route::get('passkeys/link', [PasskeyController::class, 'linkLanding'])
         ->name('shop.customers.account.passkeys.link')
         ->middleware('signed');
+
+    /**
+     * Phone landing route for registration flow (must be outside guest group to avoid RedirectIfAuthenticated)
+     */
+    Route::get('register/phone/{token}', [RegistrationController::class, 'registrationPhoneLanding'])
+        ->name('shop.customers.register.phone.landing')
+        ->middleware(['signed', NoCacheMiddleware::class]);
+
+    Route::get('register/phone/{token}/mark-continuing', [RegistrationController::class, 'markAsContinuing'])
+        ->name('shop.customers.register.phone.mark_continuing')
+        ->middleware(['signed', NoCacheMiddleware::class]);
 
     // Passkey registration routes — accessible WITHOUT being logged in
     // (user may be pre-created but not yet authenticated; controller uses link_user_id session)

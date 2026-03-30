@@ -365,17 +365,29 @@ class RegistrationController extends Controller
             abort(404, 'Сессия регистрации истекла или недействительна.');
         }
 
+        // IMPORTANT: If a user is already logged in on this phone (stale session), 
+        // we must logout before starting a NEW registration.
+        if (auth()->guard('customer')->check()) {
+            auth()->guard('customer')->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+        }
+
         // Transfer cache data to the phone's session
         session([
             'pending_registration_data' => $cached['data'],
             'pending_recovery_key'      => $cached['recovery_key'],
             'pending_registration_id'   => $cached['data']['credits_id'],
-            'registration_token'        => $token, // To signal PasskeyController to update cache status if needed
+            'registration_token'        => $token,
         ]);
         
         $username = $cached['data']['username'];
 
-        return view('shop::customers.registration-phone-landing', compact('username', 'token'));
+        $markContinuingUrl = URL::signedRoute('shop.customers.register.phone.mark_continuing', [
+            'token' => $token,
+        ]);
+
+        return view('shop::customers.registration-phone-landing', compact('username', 'token', 'markContinuingUrl'));
     }
 
     /**
@@ -399,11 +411,22 @@ class RegistrationController extends Controller
             }
 
             return response()->json([
-                'complete'     => true,
-                'redirect_url' => route('shop.customers.account.onboarding.security')
+                'complete'                => true,
+                'redirect_url'            => route('shop.customers.account.onboarding.security'),
+                'is_continuing_elsewhere' => Cache::get('reg_continuing:' . $request->input('token')) === 'phone',
             ]);
         }
 
         return response()->json(['complete' => false]);
+    }
+
+    /**
+     * Mark the registration as being continued on the current device (phone).
+     */
+    public function markAsContinuing(Request $request, $token)
+    {
+        Cache::put('reg_continuing:' . $token, 'phone', now()->addMinutes(10));
+
+        return response()->json(['success' => true]);
     }
 }
