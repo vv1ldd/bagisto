@@ -16,10 +16,11 @@
     </div>
 
     @pushOnce('scripts')
-                <div class="space-y-5">
+        <script type="text/x-template" id="seed-phrase-reveal-template">
+            <div class="space-y-4">
                 <!-- Step 1 Instructions -->
                 <div v-if="step === 1" class="animate-in fade-in duration-500">
-                    <p class="text-zinc-600 font-bold text-[10px] uppercase tracking-widest text-center leading-relaxed px-4">
+                    <p class="text-zinc-600 font-bold text-[9px] uppercase tracking-widest text-center leading-relaxed px-4">
                         ЭТАП 1: ЗАПИШИТЕ ПЕРВУЮ ПОЛОВИНУ <br>
                         <span class="text-zinc-900 font-black">СЛОВА С 1 ПО @{{ splitIndex }}</span>
                     </p>
@@ -27,7 +28,7 @@
 
                 <!-- Step 2 Instructions -->
                 <div v-if="step === 2" class="animate-in fade-in duration-500">
-                    <p class="text-zinc-600 font-bold text-[10px] uppercase tracking-widest text-center leading-relaxed px-4 text-purple-600">
+                    <p class="text-zinc-600 font-bold text-[9px] uppercase tracking-widest text-center leading-relaxed px-4 text-purple-600">
                         ЭТАП 2: ТЕПЕРЬ ЗАПИШИТЕ ВТОРУЮ ПОЛОВИНУ <br>
                         <span class="text-zinc-900 font-black">СЛОВА С @{{ splitIndex + 1 }} ПО @{{ words.length }}</span>
                     </p>
@@ -44,9 +45,9 @@
                     </div>
 
                     <!-- Transition Button Step 1 -> 2 -->
-                    <div v-if="step === 1" class="flex justify-center pt-2">
+                    <div v-if="step === 1" class="flex justify-center pt-1">
                         <button type="button" @click="goToStepTwo"
-                            class="group flex w-full items-center justify-center gap-4 bg-white border-2 border-zinc-900 px-6 py-5 text-center font-black text-zinc-900 transition-all active:translate-x-1 active:translate-y-1 active:shadow-none rounded-xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-[12px]">
+                            class="group flex w-full items-center justify-center gap-4 bg-white border-2 border-zinc-900 px-6 py-4 text-center font-black text-zinc-900 transition-all active:translate-x-1 active:translate-y-1 active:shadow-none rounded-xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-[11px]">
                             <span>Я ЗАПИСАЛ(А) ЭТУ ЧАСТЬ</span>
                             <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
@@ -65,9 +66,9 @@
                 </div>
 
                 <!-- Final Action Section -->
-                <div v-if="step === 2" class="flex flex-col items-center gap-4 pt-2 animate-in fade-in slide-in-from-top-4 duration-700 delay-200">
+                <div v-if="step === 2" class="flex flex-col items-center gap-4 pt-1 animate-in fade-in slide-in-from-top-4 duration-700 delay-200">
                     <a id="finish-btn" :href="verifyUrl"
-                        class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] border-2 border-zinc-900 px-6 py-5 text-center font-black text-white transition-all hover:bg-[#8A5CF7] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-[12px] overflow-hidden">
+                        class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] border-2 border-zinc-900 px-6 py-4 text-center font-black text-white transition-all hover:bg-[#8A5CF7] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] uppercase tracking-[0.2em] text-[11px] overflow-hidden">
                         <div class="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
                         <span>Я ЗАПИСАЛ(А) ВСЕ СЛОВА</span>
                         <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
