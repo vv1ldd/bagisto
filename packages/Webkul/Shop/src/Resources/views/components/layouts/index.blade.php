@@ -76,6 +76,7 @@
                 turnUsername: '{{ config('services.turn.username') }}',
                 turnPassword: '{{ config('services.turn.password') }}',
             };
+            window.meanlyComponents = [];
         </script>
 
         @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
@@ -278,6 +279,12 @@
                     } catch (e) {
                         console.error('TMA Auto-login failed:', e);
                     }
+                }
+
+                if (window.meanlyComponents) {
+                    window.meanlyComponents.forEach(config => {
+                        app.component(config.name, config.definition);
+                    });
                 }
 
                 app.mount("#app");
@@ -657,54 +664,57 @@
             }
         </style>
 
-        <script type="module">
-            app.component('v-qr-scanner', {
-                template: '#v-qr-scanner-template',
-                data() {
-                    return {
-                        isVisible: false,
-                        html5QrCode: null,
-                        errorMessage: null
-                    }
-                },
-                mounted() {
-                    this.$emitter.on('open-qr-scanner', () => {
-                        this.isVisible = true;
-                        this.errorMessage = null;
-                        this.$nextTick(() => {
-                            this.startScanner();
-                        });
-                    });
-                },
-                methods: {
-                    async startScanner() {
-                        try {
-                            this.html5QrCode = new Html5Qrcode("qr-reader");
-                            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-                            
-                            await this.html5QrCode.start(
-                                { facingMode: "environment" }, 
-                                config, 
-                                (decodedText) => {
-                                    if (decodedText.includes('/login/qr/')) {
-                                        this.html5QrCode.stop().then(() => {
-                                            window.location.href = decodedText;
-                                        });
-                                    } else {
-                                        console.log('Detected non-login QR:', decodedText);
-                                    }
-                                }
-                            );
-                        } catch (err) {
-                            console.error('QR Scanner error:', err);
-                            this.errorMessage = "Камера недоступна или заблокирована";
+        <script>
+            window.meanlyComponents.push({
+                name: 'v-qr-scanner',
+                definition: {
+                    template: '#v-qr-scanner-template',
+                    data() {
+                        return {
+                            isVisible: false,
+                            html5QrCode: null,
+                            errorMessage: null
                         }
                     },
-                    async closeScanner() {
-                        if (this.html5QrCode && this.html5QrCode.isScanning) {
-                            await this.html5QrCode.stop();
+                    mounted() {
+                        this.$emitter.on('open-qr-scanner', () => {
+                            this.isVisible = true;
+                            this.errorMessage = null;
+                            this.$nextTick(() => {
+                                this.startScanner();
+                            });
+                        });
+                    },
+                    methods: {
+                        async startScanner() {
+                            try {
+                                this.html5QrCode = new Html5Qrcode("qr-reader");
+                                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                                
+                                await this.html5QrCode.start(
+                                    { facingMode: "environment" }, 
+                                    config, 
+                                    (decodedText) => {
+                                        if (decodedText.includes('/login/qr/')) {
+                                            this.html5QrCode.stop().then(() => {
+                                                window.location.href = decodedText;
+                                            });
+                                        } else {
+                                            console.log('Detected non-login QR:', decodedText);
+                                        }
+                                    }
+                                );
+                            } catch (err) {
+                                console.error('QR Scanner error:', err);
+                                this.errorMessage = "Камера недоступна или заблокирована";
+                            }
+                        },
+                        async closeScanner() {
+                            if (this.html5QrCode && this.html5QrCode.isScanning) {
+                                await this.html5QrCode.stop();
+                            }
+                            this.isVisible = false;
                         }
-                        this.isVisible = false;
                     }
                 }
             });

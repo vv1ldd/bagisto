@@ -114,187 +114,178 @@
         </script>
 
         <script>
-            /**
-             * Wait for Vue app instance to be ready.
-             * Prevents conflict with <div id="app">
-             */
-            function registerLoginWizard() {
-                if (window.app && typeof window.app.component === 'function') {
-                    window.app.component('v-login-wizard', {
-                        template: '#v-login-wizard-template',
-                        props: ['loginOptionsUrl', 'loginUrl', 'homeUrl', 'registerUrl', 'recoveryUrl'],
-                        data() {
-                            return {
-                                isLoading: false,
-                                loadingStatus: 'Подготовка...',
-                                // QR Login State
-                                showQrModal: false,
-                                isQrLoading: false,
-                                qrToken: null,
-                                qrUrl: null,
-                                qrStatus: 'pending',
-                                pollInterval: null
+            window.meanlyComponents.push({
+                name: 'v-login-wizard',
+                definition: {
+                    template: '#v-login-wizard-template',
+                    props: ['loginOptionsUrl', 'loginUrl', 'homeUrl', 'registerUrl', 'recoveryUrl'],
+                    data() {
+                        return {
+                            isLoading: false,
+                            loadingStatus: 'Подготовка...',
+                            // QR Login State
+                            showQrModal: false,
+                            isQrLoading: false,
+                            qrToken: null,
+                            qrUrl: null,
+                            qrStatus: 'pending',
+                            pollInterval: null
+                        }
+                    },
+                    methods: {
+                        async handleQrLogin() {
+                            this.isQrLoading = true;
+                            this.qrStatus = 'pending';
+                            
+                            try {
+                                const res = await fetch('{{ route('shop.customer.login.qr.prepare') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    }
+                                });
+
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.message || 'Ошибка генерации кода');
+
+                                this.qrToken = data.token;
+                                this.qrUrl = data.url;
+                                this.showQrModal = true;
+
+                                this.$nextTick(() => {
+                                    const container = document.getElementById('login-qrcode');
+                                    if (container && window.QRCode) {
+                                        container.innerHTML = '';
+                                        new QRCode(container, {
+                                            text: data.url,
+                                            width: 200,
+                                            height: 200,
+                                            colorDark : "#18181b",
+                                            colorLight : "#f9fafb",
+                                            correctLevel : QRCode.CorrectLevel.H
+                                        });
+                                    }
+                                });
+
+                                this.startQrPolling();
+                            } catch (err) {
+                                alert(err.message);
+                            } finally {
+                                this.isQrLoading = false;
                             }
                         },
-                        methods: {
-                            async handleQrLogin() {
-                                this.isQrLoading = true;
-                                this.qrStatus = 'pending';
-                                
+
+                        startQrPolling() {
+                            if (this.pollInterval) clearInterval(this.pollInterval);
+
+                            this.pollInterval = setInterval(async () => {
                                 try {
-                                    const res = await fetch('{{ route('shop.customer.login.qr.prepare') }}', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                            'Accept': 'application/json'
-                                        }
-                                    });
-
-                                    const data = await res.json();
-                                    if (!res.ok) throw new Error(data.message || 'Ошибка генерации кода');
-
-                                    this.qrToken = data.token;
-                                    this.qrUrl = data.url;
-                                    this.showQrModal = true;
-
-                                    this.$nextTick(() => {
-                                        const container = document.getElementById('login-qrcode');
-                                        if (container && window.QRCode) {
-                                            container.innerHTML = '';
-                                            new QRCode(container, {
-                                                text: data.url,
-                                                width: 200,
-                                                height: 200,
-                                                colorDark : "#18181b",
-                                                colorLight : "#f9fafb",
-                                                correctLevel : QRCode.CorrectLevel.H
-                                            });
-                                        }
-                                    });
-
-                                    this.startQrPolling();
-                                } catch (err) {
-                                    alert(err.message);
-                                } finally {
-                                    this.isQrLoading = false;
-                                }
-                            },
-
-                            startQrPolling() {
-                                if (this.pollInterval) clearInterval(this.pollInterval);
-
-                                this.pollInterval = setInterval(async () => {
-                                    try {
-                                        const res = await fetch('{{ route('shop.customer.login.qr.check') }}', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                'Accept': 'application/json'
-                                            },
-                                            body: JSON.stringify({ token: this.qrToken })
-                                        });
-
-                                        const data = await res.json();
-                                        this.qrStatus = data.status;
-
-                                        if (data.status === 'success') {
-                                            clearInterval(this.pollInterval);
-                                            setTimeout(() => {
-                                                window.location.href = data.redirect_url;
-                                            }, 1000);
-                                        } else if (data.status === 'expired') {
-                                            clearInterval(this.pollInterval);
-                                        }
-                                    } catch (e) {
-                                        console.warn('QR Polling error', e);
-                                    }
-                                }, 2000);
-                            },
-
-                            closeQrModal() {
-                                this.showQrModal = false;
-                                if (this.pollInterval) clearInterval(this.pollInterval);
-                            },
-                            async handleLogin() {
-                                const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
-                                if (!window.PublicKeyCredential) {
-                                    alert('Ваш браузер не поддерживает Passkey.');
-                                    return;
-                                }
-
-                                this.isLoading = true;
-                                this.loadingStatus = 'Подготовка...';
-
-                                try {
-                                    const response = await fetch(this.loginOptionsUrl, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                            'Accept': 'application/json'
-                                        }
-                                    });
-
-                                    if (!response.ok) throw new Error('Ошибка связи с сервером (' + response.status + ')');
-
-                                    const rawOptions = await response.json();
-                                    const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
-
-                                    // Robust base64url conversion for Safari
-                                    const toBase64Url = (str) => {
-                                        if (!str || typeof str !== 'string') return str;
-                                        return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-                                    };
-
-                                    if (options.challenge) options.challenge = toBase64Url(options.challenge);
-                                    if (options.allowCredentials) {
-                                        options.allowCredentials.forEach(cred => {
-                                            if (cred.id) cred.id = toBase64Url(cred.id);
-                                        });
-                                    }
-
-                                    this.loadingStatus = 'Подтвердите личность...';
-                                    const asseResp = await SimpleWebAuthn.startAuthentication(options);
-                                    
-                                    this.loadingStatus = 'Проверка...';
-                                    const loginResponse = await fetch(this.loginUrl, {
+                                    const res = await fetch('{{ route('shop.customer.login.qr.check') }}', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
                                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                             'Accept': 'application/json'
                                         },
-                                        body: JSON.stringify({
-                                            start_authentication_response: JSON.stringify(asseResp),
-                                            remember: true
-                                        })
+                                        body: JSON.stringify({ token: this.qrToken })
                                     });
 
-                                    if (loginResponse.ok) {
-                                        const data = await loginResponse.json();
-                                        window.location.href = data.redirect_url || this.homeUrl;
-                                    } else {
-                                        const result = await loginResponse.json();
-                                        throw new Error(result.message || 'Ошибка входа.');
+                                    const data = await res.json();
+                                    this.qrStatus = data.status;
+
+                                    if (data.status === 'success') {
+                                        clearInterval(this.pollInterval);
+                                        setTimeout(() => {
+                                            window.location.href = data.redirect_url;
+                                        }, 1000);
+                                    } else if (data.status === 'expired') {
+                                        clearInterval(this.pollInterval);
                                     }
-                                } catch (err) {
-                                    if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
-                                        console.error('[Passkey Error]', err);
-                                        alert(err.message);
-                                    }
-                                    this.isLoading = false;
+                                } catch (e) {
+                                    console.warn('QR Polling error', e);
                                 }
+                            }, 2000);
+                        },
+
+                        closeQrModal() {
+                            this.showQrModal = false;
+                            if (this.pollInterval) clearInterval(this.pollInterval);
+                        },
+                        async handleLogin() {
+                            const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
+                            if (!window.PublicKeyCredential) {
+                                alert('Ваш браузер не поддерживает Passkey.');
+                                return;
+                            }
+
+                            this.isLoading = true;
+                            this.loadingStatus = 'Подготовка...';
+
+                            try {
+                                const response = await fetch(this.loginOptionsUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    }
+                                });
+
+                                if (!response.ok) throw new Error('Ошибка связи с сервером (' + response.status + ')');
+
+                                const rawOptions = await response.json();
+                                const options = rawOptions.publicKey ? rawOptions.publicKey : rawOptions;
+
+                                // Robust base64url conversion for Safari
+                                const toBase64Url = (str) => {
+                                    if (!str || typeof str !== 'string') return str;
+                                    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                                };
+
+                                if (options.challenge) options.challenge = toBase64Url(options.challenge);
+                                if (options.allowCredentials) {
+                                    options.allowCredentials.forEach(cred => {
+                                        if (cred.id) cred.id = toBase64Url(cred.id);
+                                    });
+                                }
+
+                                this.loadingStatus = 'Подтвердите личность...';
+                                const asseResp = await SimpleWebAuthn.startAuthentication(options);
+                                
+                                this.loadingStatus = 'Проверка...';
+                                const loginResponse = await fetch(this.loginUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        start_authentication_response: JSON.stringify(asseResp),
+                                        remember: true
+                                    })
+                                });
+
+                                if (loginResponse.ok) {
+                                    const data = await loginResponse.json();
+                                    window.location.href = data.redirect_url || this.homeUrl;
+                                } else {
+                                    const result = await loginResponse.json();
+                                    throw new Error(result.message || 'Ошибка входа.');
+                                }
+                            } catch (err) {
+                                if (err.name !== 'NotAllowedError' && !err.message.includes('отмена')) {
+                                    console.error('[Passkey Error]', err);
+                                    alert(err.message);
+                                }
+                                this.isLoading = false;
                             }
                         }
-                    });
-                } else {
-                    setTimeout(registerLoginWizard, 50);
+                    }
                 }
-            }
-
-            registerLoginWizard();
+            });
         </script>
         </script>
         <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>

@@ -63,55 +63,50 @@
         </script>
 
         <script>
-            function registerQrAuthorize() {
-                if (window.app && typeof window.app.component === 'function') {
-                    window.app.component('v-qr-authorize', {
-                        template: '#v-qr-authorize-template',
-                        props: ['authorizeUrl', 'homeUrl'],
-                        data() {
-                            return {
-                                isLoading: false,
-                                isSuccess: false
+            window.meanlyComponents.push({
+                name: 'v-qr-authorize',
+                definition: {
+                    template: '#v-qr-authorize-template',
+                    props: ['authorizeUrl', 'homeUrl'],
+                    data() {
+                        return {
+                            isLoading: false,
+                            isSuccess: false
+                        }
+                    },
+                    methods: {
+                        async authorize() {
+                            this.isLoading = true;
+                            try {
+                                const res = await fetch(this.authorizeUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    }
+                                });
+
+                                if (res.ok) {
+                                    this.isSuccess = true;
+                                    setTimeout(() => {
+                                        window.location.href = this.homeUrl;
+                                    }, 1500);
+                                } else {
+                                    const data = await res.json();
+                                    throw new Error(data.error || 'Ошибка авторизации');
+                                }
+                            } catch (err) {
+                                alert(err.message);
+                                this.isLoading = false;
                             }
                         },
-                        methods: {
-                            async authorize() {
-                                this.isLoading = true;
-                                try {
-                                    const res = await fetch(this.authorizeUrl, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                            'Accept': 'application/json'
-                                        }
-                                    });
-
-                                    if (res.ok) {
-                                        this.isSuccess = true;
-                                        setTimeout(() => {
-                                            window.location.href = this.homeUrl;
-                                        }, 1500);
-                                    } else {
-                                        const data = await res.json();
-                                        throw new Error(data.error || 'Ошибка авторизации');
-                                    }
-                                } catch (err) {
-                                    alert(err.message);
-                                    this.isLoading = false;
-                                }
-                            },
-                            cancel() {
-                                window.location.href = this.homeUrl;
-                            }
+                        cancel() {
+                            window.location.href = this.homeUrl;
                         }
-                    });
-                } else {
-                    setTimeout(registerQrAuthorize, 50);
+                    }
                 }
-            }
-
-            registerQrAuthorize();
+            });
         </script>
     @endPushOnce
 </x-shop::layouts.auth>
