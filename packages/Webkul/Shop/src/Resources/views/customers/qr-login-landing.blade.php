@@ -63,9 +63,7 @@
         </script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                if (typeof app === 'undefined') return;
-
+            if (typeof app !== 'undefined') {
                 app.component('v-qr-authorize', {
                     template: '#v-qr-authorize-template',
                     props: ['authorizeUrl', 'homeUrl'],
@@ -107,7 +105,7 @@
                         }
                     }
                 });
-            });
+            }
         </script>
     @endPushOnce
 </x-shop::layouts.auth>

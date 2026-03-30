@@ -18,6 +18,8 @@ class QrLoginController extends Controller
     {
         $token = Str::random(32);
         
+        \Log::info('QR Login Prepare', ['token' => $token]);
+
         // Mark as pending in cache for 120 seconds
         Cache::put('qr_login:' . $token, ['status' => 'pending', 'ua' => request()->header('User-Agent')], 120);
 
@@ -38,6 +40,8 @@ class QrLoginController extends Controller
         if (!$token) return response()->json(['error' => 'No token'], 400);
 
         $data = Cache::get('qr_login:' . $token);
+        
+        \Log::debug('QR Login Poll', ['token' => $token, 'status' => $data['status'] ?? 'null']);
 
         if (!$data) {
             return response()->json(['status' => 'expired']);
@@ -97,15 +101,23 @@ class QrLoginController extends Controller
     public function authorizeLogin($token)
     {
         $customer = Auth::guard('customer')->user();
-        if (!$customer) return response()->json(['error' => 'Unauthenticated'], 401);
+        if (!$customer) {
+            \Log::warning('QR Login Auth Failed: Unauthenticated phone', ['token' => $token]);
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
 
         $data = Cache::get('qr_login:' . $token);
-        if (!$data) return response()->json(['error' => 'Expired'], 400);
+        if (!$data) {
+            \Log::warning('QR Login Auth Failed: Expired/Missing token in cache', ['token' => $token]);
+            return response()->json(['error' => 'Expired'], 400);
+        }
 
         $data['status'] = 'authorized';
         $data['customer_id'] = $customer->id;
 
         Cache::put('qr_login:' . $token, $data, 60);
+        
+        \Log::info('QR Login Authorized Successfully', ['token' => $token, 'customer_id' => $customer->id]);
 
         return response()->json(['status' => 'success']);
     }

@@ -114,9 +114,7 @@
         </script>
 
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                if (typeof app === 'undefined') return;
-
+            if (typeof app !== 'undefined') {
                 app.component('v-login-wizard', {
                     template: '#v-login-wizard-template',
                     props: ['loginOptionsUrl', 'loginUrl', 'homeUrl', 'registerUrl', 'recoveryUrl'],
@@ -286,7 +284,7 @@
                         }
                     }
                 });
-            });
+            }
         </script>
         <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     @endPushOnce
