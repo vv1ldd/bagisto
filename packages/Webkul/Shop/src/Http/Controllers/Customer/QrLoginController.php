@@ -1,0 +1,112 @@
+<?php
+
+namespace Webkul\Shop\Http\Controllers\Customer;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
+use Webkul\Shop\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+
+class QrLoginController extends Controller
+{
+    /**
+     * Prepare QR Login token and URL.
+     */
+    public function prepare()
+    {
+        $token = Str::random(32);
+        
+        // Mark as pending in cache for 120 seconds
+        Cache::put('qr_login:' . $token, ['status' => 'pending', 'ua' => request()->header('User-Agent')], 120);
+
+        $url = URL::signedRoute('shop.customer.login.qr.landing', ['token' => $token]);
+
+        return response()->json([
+            'token' => $token,
+            'url'   => $url
+        ]);
+    }
+
+    /**
+     * Check status of the QR login session (Polling).
+     */
+    public function checkStatus(Request $request)
+    {
+        $token = $request->input('token');
+        if (!$token) return response()->json(['error' => 'No token'], 400);
+
+        $data = Cache::get('qr_login:' . $token);
+
+        if (!$data) {
+            return response()->json(['status' => 'expired']);
+        }
+
+        if ($data['status'] === 'authorized' && isset($data['customer_id'])) {
+            $customer = app(\Webkul\Customer\Repositories\CustomerRepository::class)->find($data['customer_id']);
+            
+            if ($customer) {
+                // Perform Login
+                Auth::guard('customer')->login($customer, true);
+
+                // Log login activity
+                try {
+                    app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($customer);
+                } catch (\Exception $e) {}
+
+                session()->regenerate();
+                
+                // Clear cache
+                Cache::forget('qr_login:' . $token);
+
+                return response()->json([
+                    'status'       => 'success',
+                    'redirect_url' => route('shop.customers.account.index')
+                ]);
+            }
+        }
+
+        return response()->json(['status' => $data['status']]);
+    }
+
+    /**
+     * Mobile landing page for QR Scan.
+     */
+    public function landing($token)
+    {
+        if (!Cache::has('qr_login:' . $token)) {
+             return view('shop::customers.qr-login-landing', ['token' => $token, 'error' => 'Срок действия QR-кода истек. Пожалуйста, обновите страницу на компьютере.']);
+        }
+
+        $customer = Auth::guard('customer')->user();
+        
+        // If not logged in, redirect to login page and save this URL as intended
+        if (!$customer) {
+            session()->put('url.intended', URL::full());
+
+            return redirect()->route('shop.customer.session.index');
+        }
+
+        return view('shop::customers.qr-login-landing', compact('token', 'customer'));
+    }
+
+    /**
+     * Authorize the login from the smartphone.
+     */
+    public function authorizeLogin($token)
+    {
+        $customer = Auth::guard('customer')->user();
+        if (!$customer) return response()->json(['error' => 'Unauthenticated'], 401);
+
+        $data = Cache::get('qr_login:' . $token);
+        if (!$data) return response()->json(['error' => 'Expired'], 400);
+
+        $data['status'] = 'authorized';
+        $data['customer_id'] = $customer->id;
+
+        Cache::put('qr_login:' . $token, $data, 60);
+
+        return response()->json(['status' => 'success']);
+    }
+}

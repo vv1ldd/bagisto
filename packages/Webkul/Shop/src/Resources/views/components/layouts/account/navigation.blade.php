@@ -28,7 +28,7 @@ $menuIcons = [
         <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">Личный кабинет</h1>
     </div>
 
-    <div class="p-0 space-y-2 md:space-y-3 px-4">
+    <div class="p-0 grid grid-cols-1 md:grid-cols-2 gap-4 px-4">
         {{-- Wallet --}}
         @if ($customer instanceof \Webkul\Customer\Models\Customer && !empty($customer->username))
             <a href="{{ route('shop.customers.account.credits.index') }}" 
