@@ -688,8 +688,24 @@
                     methods: {
                         async startScanner() {
                             try {
-                                this.html5QrCode = new Html5Qrcode("qr-reader");
-                                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                                this.html5QrCode = new Html5Qrcode("qr-reader", {
+                                    // Enable native barcode detection for maximum speed and robustness
+                                    experimentalFeatures: {
+                                        useBarCodeDetectorIfSupported: true
+                                    }
+                                });
+
+                                const config = { 
+                                    fps: 20, // Faster scanning
+                                    // removing fixed qrbox width/height allows scanning the whole frame
+                                    qrbox: (viewfinderWidth, viewfinderHeight) => {
+                                        return {
+                                            width: viewfinderWidth * 0.8,
+                                            height: viewfinderHeight * 0.8
+                                        };
+                                    },
+                                    aspectRatio: 1.0
+                                };
                                 
                                 await this.html5QrCode.start(
                                     { facingMode: "environment" }, 
@@ -699,8 +715,6 @@
                                             this.html5QrCode.stop().then(() => {
                                                 window.location.href = decodedText;
                                             });
-                                        } else {
-                                            console.log('Detected non-login QR:', decodedText);
                                         }
                                     }
                                 );
