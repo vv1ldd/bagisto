@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 use Webkul\Core\Repositories\SubscribersListRepository;
 use Webkul\Customer\Repositories\CustomerGroupRepository;
 use Webkul\Customer\Repositories\CustomerRepository;
@@ -313,5 +314,97 @@ class RegistrationController extends Controller
 
         // If the user came specifically to redeem a voucher, skip onboarding and go straight there
         return redirect()->route('shop.customers.account.onboarding.security');
+    }
+
+    /**
+     * Prepare for "Other Device" registration (QR code).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function passkeyPrepareOtherDevice(Request $request)
+    {
+        $username = $request->input('username');
+        
+        // This actually re-uses the preparation logic but instead of returning options, 
+        // it returns a signed URL for the phone.
+        $prepareResponse = $this->passkeyPrepare($request);
+        
+        if ($prepareResponse->getStatusCode() !== 200) {
+            return $prepareResponse;
+        }
+
+        $token = Str::random(64);
+        $pendingData = session('pending_registration_data');
+        $recoveryKey = session('pending_recovery_key');
+
+        // Store registration state in cache for 10 minutes (to be picked up by the phone)
+        Cache::put('reg_token:' . $token, [
+            'data'         => $pendingData,
+            'recovery_key' => $recoveryKey,
+        ], now()->addMinutes(10));
+
+        // Create the signed URL for the QR code
+        $url = URL::signedRoute('shop.customers.register.phone.landing', [
+            'token' => $token,
+        ]);
+
+        return response()->json([
+            'url'   => $url,
+            'token' => $token
+        ]);
+    }
+
+    /**
+     * Landing page for the phone to finish registration.
+     */
+    public function registrationPhoneLanding(Request $request)
+    {
+        $token = $request->input('token');
+        $cached = Cache::get('reg_token:' . $token);
+
+        if (!$cached) {
+            abort(404, 'Сессия регистрации истекла или недействительна.');
+        }
+
+        // Transfer cache data to the phone's session
+        session([
+            'pending_registration_data' => $cached['data'],
+            'pending_recovery_key'      => $cached['recovery_key'],
+            'pending_registration_id'   => $cached['data']['credits_id'],
+            'registration_token'        => $token, // To signal PasskeyController to update cache status if needed
+        ]);
+        
+        $username = $cached['data']['username'];
+
+        return view('shop::customers.registration-phone-landing', compact('username', 'token'));
+    }
+
+    /**
+     * Poll endpoint for desktop to check if registration is complete.
+     */
+    public function checkRegistrationStatus(Request $request)
+    {
+        $username = $request->input('username');
+        
+        if (!$username) {
+            return response()->json(['complete' => false]);
+        }
+
+        $user = $this->customerRepository->findOneByField('username', $username);
+
+        if ($user) {
+            // Log in the user on the desktop session if not already logged in
+            if (!auth()->guard('customer')->check()) {
+                auth()->guard('customer')->login($user);
+                session()->regenerate();
+            }
+
+            return response()->json([
+                'complete'     => true,
+                'redirect_url' => route('shop.customers.account.onboarding.security')
+            ]);
+        }
+
+        return response()->json(['complete' => false]);
     }
 }

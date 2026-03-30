@@ -39,10 +39,17 @@ class PasskeyController extends Controller
         $user = Auth::guard('customer')->user() ?? $mockUser;
         
         $linkingFlow = false;
-        // Handle linking flow where user is found via session or manual auth during landing
+        // Case 1: Linking a second device to an existing account
         if (!$user && session()->has('link_user_id')) {
             $user = app(\Webkul\Customer\Repositories\CustomerRepository::class)->find(session('link_user_id'));
             $linkingFlow = true;
+        }
+
+        // Case 2: New registration (e.g. from Phone landing page)
+        if (!$user && session()->has('pending_registration_data')) {
+            $data = session('pending_registration_data');
+            $user = new \Webkul\Customer\Models\Customer($data);
+            $user->transient_passkey_id = $data['credits_id']; 
         }
 
         if (!$user) {
@@ -66,6 +73,14 @@ class PasskeyController extends Controller
                     ['type' => 'public-key', 'alg' => -257], // RS256
                 ];
             }
+
+            // Modern Passkey requirements for cross-platform (Hybrid/QR) flow
+            $optionsArr['authenticatorSelection'] = [
+                'residentKey' => 'required',
+                'userVerification' => 'preferred',
+                'requireResidentKey' => true, // Backward compatibility for WebAuthn L1/L2
+            ];
+
             $optionsArr['attestation'] = 'none';
             $optionsArr['timeout'] = 60000;
 

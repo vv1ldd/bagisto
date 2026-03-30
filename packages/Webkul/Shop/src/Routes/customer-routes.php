@@ -91,6 +91,12 @@ Route::group([], function () {
 
             Route::post('passkey/prepare', 'passkeyPrepare')->name('shop.customers.register.passkey.prepare');
 
+            Route::post('passkey/prepare-other', 'passkeyPrepareOtherDevice')->name('shop.customers.register.passkey.prepare_other');
+
+            Route::get('phone/{token}', 'registrationPhoneLanding')->name('shop.customers.register.phone.landing');
+
+            Route::post('check-status', 'checkRegistrationStatus')->name('shop.customers.register.check_status');
+
             Route::post('', 'store')->name('shop.customers.register.store');
         });
 

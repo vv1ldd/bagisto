@@ -8,6 +8,8 @@
     <v-registration-wizard
         check-username-url="{{ route('shop.customers.register.check_username') }}"
         prepare-passkey-url="{{ route('shop.customers.register.passkey.prepare') }}"
+        prepare-other-url="{{ route('shop.customers.register.passkey.prepare_other') }}"
+        check-status-url="{{ route('shop.customers.register.check_status') }}"
         register-passkey-url="{{ route('passkeys.register') }}"
         onboarding-url="{{ route('shop.customers.account.onboarding.security') }}"
         session-index-url="{{ route('shop.customer.session.index') }}"
@@ -63,21 +65,65 @@
                     </p>
                 </div>
 
-                <!-- Create Button -->
-                <button type="button" @click="handleRegistration" :disabled="!isValid || status.checking || isRegistering"
-                    class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] text-white h-16 font-black uppercase tracking-[0.2em] text-[15px] transition-all hover:bg-[#8A5CF7] border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl overflow-hidden disabled:opacity-30 disabled:cursor-not-allowed mb-8">
-                    <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
-                    <svg v-if="!isRegistering" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        <circle cx="12" cy="11" r="3"></circle>
-                    </svg>
-                    <span v-if="isRegistering" class="animate-pulse">@{{ registrationStatus }}</span>
-                    <span v-else>Создать через Passkey</span>
-                </button>
+                <!-- Action Buttons: Split into This/Other Device -->
+                <div class="flex flex-col gap-4 mb-8">
+                    <!-- Option 1: Local Device -->
+                    <button type="button" @click="handleRegistration" :disabled="!isValid || status.checking || isRegistering"
+                        class="group relative flex w-full items-center justify-center gap-4 bg-[#7C45F5] text-white h-16 font-black uppercase tracking-[0.2em] text-[13px] transition-all hover:bg-[#8A5CF7] border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl overflow-hidden disabled:opacity-30 disabled:cursor-not-allowed">
+                        <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                        <svg v-if="!isRegistering" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <circle cx="12" cy="11" r="3"></circle>
+                        </svg>
+                        <span v-if="isRegistering && !isModalOpen" class="animate-pulse">@{{ registrationStatus }}</span>
+                        <span v-else>На этом устройстве</span>
+                    </button>
+
+                    <!-- Option 2: Other Device (QR) -->
+                    <button type="button" @click="handleRegistrationOther" :disabled="!isValid || status.checking || isRegistering"
+                        class="group relative flex w-full items-center justify-center gap-4 bg-white text-zinc-900 h-16 font-black uppercase tracking-[0.2em] text-[13px] transition-all hover:bg-zinc-50 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl overflow-hidden disabled:opacity-30 disabled:cursor-not-allowed">
+                        <svg class="h-5 w-5 text-[#7C45F5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                             <rect x="7" y="7" width="3" height="3"></rect>
+                             <rect x="14" y="7" width="3" height="3"></rect>
+                             <rect x="7" y="14" width="3" height="3"></rect>
+                             <rect x="14" y="14" width="3" height="3"></rect>
+                        </svg>
+                        <span>На другом (QR код)</span>
+                    </button>
+                </div>
 
                 <p class="text-center text-[9px] text-zinc-600 font-black uppercase tracking-[0.1em] leading-relaxed max-w-[280px] mx-auto opacity-100">
                     Нажимая кнопку, вы подтверждаете согласие с <a href="#" class="text-zinc-900 underline underline-offset-4 decoration-zinc-900 hover:text-[#7C45F5] transition-colors decoration-2">правилами сервиса</a>.
                 </p>
+
+                <!-- QR Modal -->
+                <div v-if="isModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+                    <div class="absolute inset-0 bg-zinc-900/80 backdrop-blur-sm" @click="closeModal"></div>
+                    <div class="relative w-full max-w-sm bg-white border-4 border-zinc-900 rounded-[2.5rem] p-10 shadow-[20px_20px_0px_0px_rgba(24,24,27,1)] overflow-hidden scale-100 animate-in zoom-in-95 duration-300">
+                        <div class="text-center mb-8">
+                             <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#7C45F5]/10 text-[#7C45F5] border-2 border-[#7C45F5]/20 mb-6">
+                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-black uppercase tracking-tighter mb-2 italic">@{{ nickname }}</h3>
+                            <p class="text-zinc-400 text-[10px] font-black uppercase tracking-widest leading-relaxed">Отсканируйте камерой телефона для входа и создания ключа</p>
+                        </div>
+
+                        <div id="reg-qrcode" class="mx-auto bg-zinc-50 p-6 border-3 border-zinc-900 rounded-3xl shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-10 flex items-center justify-center w-56 h-56 overflow-hidden">
+                            <div v-if="!qrUrl" class="animate-pulse text-zinc-900 font-black text-[11px] uppercase tracking-widest italic">Генерация...</div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-center gap-3 py-2 bg-zinc-50 border-2 border-dashed border-zinc-200 rounded-xl">
+                                <div class="w-2 h-2 bg-[#7C45F5] rounded-full animate-ping"></div>
+                                <span class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Ожидание регистрации...</span>
+                            </div>
+                            <button @click="closeModal" class="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors underline decoration-2 underline-offset-8">Отмена</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </script>
 
@@ -87,12 +133,14 @@
 
                 app.component('v-registration-wizard', {
                     template: '#v-registration-wizard-template',
-                    props: ['checkUsernameUrl', 'preparePasskeyUrl', 'registerPasskeyUrl', 'onboardingUrl', 'sessionIndexUrl'],
+                    props: ['checkUsernameUrl', 'preparePasskeyUrl', 'prepareOtherUrl', 'checkStatusUrl', 'registerPasskeyUrl', 'onboardingUrl', 'sessionIndexUrl'],
                     data() {
                         return {
                             nickname: '',
                             isValid: false,
                             isRegistering: false,
+                            isModalOpen: false,
+                            qrUrl: '',
                             registrationStatus: 'Подготовка...',
                             status: {
                                 checking: false,
@@ -102,7 +150,8 @@
                                 textVisible: false,
                                 type: ''
                             },
-                            timeout: null
+                            timeout: null,
+                            pollInterval: null
                         }
                     },
                     methods: {
@@ -222,10 +271,89 @@
                                 }
                                 this.isRegistering = false;
                             }
+                        },
+
+                        async handleRegistrationOther() {
+                            if (!this.isValid || this.isRegistering) return;
+
+                            this.isRegistering = true;
+                            this.isModalOpen = true;
+                            
+                            try {
+                                const res = await fetch(this.prepareOtherUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({ username: this.nickname.trim() })
+                                });
+
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.message || 'Ошибка при генерации QR');
+
+                                this.qrUrl = data.url;
+                                
+                                // Render QR Code
+                                this.$nextTick(() => {
+                                    const qrContainer = document.getElementById('reg-qrcode');
+                                    if (qrContainer && window.QRCode) {
+                                        qrContainer.innerHTML = '';
+                                        new QRCode(qrContainer, {
+                                            text: data.url,
+                                            width: 180,
+                                            height: 180,
+                                            colorDark : "#18181b",
+                                            colorLight : "#f9fafb",
+                                            correctLevel : QRCode.CorrectLevel.H
+                                        });
+                                    }
+                                });
+
+                                // Start Polling
+                                this.startPolling();
+
+                            } catch (err) {
+                                alert(err.message);
+                                this.closeModal();
+                            }
+                        },
+
+                        startPolling() {
+                            this.pollInterval = setInterval(async () => {
+                                try {
+                                    const res = await fetch(this.checkStatusUrl, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({ username: this.nickname.trim() })
+                                    });
+                                    
+                                    const data = await res.json();
+                                    if (data.complete) {
+                                        clearInterval(this.pollInterval);
+                                        window.location.href = data.redirect_url || this.onboardingUrl;
+                                    }
+                                } catch (e) {
+                                    console.warn('Polling error', e);
+                                }
+                            }, 2000);
+                        },
+
+                        closeModal() {
+                            this.isModalOpen = false;
+                            this.isRegistering = false;
+                            this.qrUrl = '';
+                            clearInterval(this.pollInterval);
                         }
                     }
                 });
             });
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     @endPushOnce
 </x-shop::layouts.auth>
