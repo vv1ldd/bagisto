@@ -79,19 +79,28 @@ class QrLoginController extends Controller
      */
     public function landing($token)
     {
+        $customer = Auth::guard('customer')->user();
+        
+        \Log::info('QR Login Landing Hit', [
+            'token'   => $token,
+            'is_auth' => (bool)$customer,
+            'url'     => request()->fullUrl()
+        ]);
+
         if (!Cache::has('qr_login:' . $token)) {
+             \Log::warning('QR Login Landing: Token not in cache', ['token' => $token]);
              return view('shop::customers.qr-login-landing', ['token' => $token, 'error' => 'Срок действия QR-кода истек. Пожалуйста, обновите страницу на компьютере.']);
         }
 
-        $customer = Auth::guard('customer')->user();
-        
         // If not logged in, redirect to login page and save this URL as intended
         if (!$customer) {
+            \Log::info('QR Login Landing: Redirecting to login (unauthenticated)');
             session()->put('url.intended', URL::full());
 
             return redirect()->route('shop.customer.session.index');
         }
 
+        \Log::info('QR Login Landing: Showing authorization view');
         return view('shop::customers.qr-login-landing', compact('token', 'customer'));
     }
 

@@ -33,6 +33,16 @@ Route::group([], function () {
     });
 
     /**
+     * QR Login routes (accessible to everyone)
+     */
+    Route::prefix('login/qr')->controller(QrLoginController::class)->group(function () {
+        Route::post('prepare', 'prepare')->name('shop.customer.login.qr.prepare');
+        Route::post('check', 'checkStatus')->name('shop.customer.login.qr.check');
+        Route::get('{token}', 'landing')->name('shop.customer.login.qr.landing')->middleware('signed');
+        Route::post('{token}/authorize', 'authorizeLogin')->name('shop.customer.login.qr.authorize')->middleware(['signed', 'auth:customer']);
+    });
+
+    /**
      * Guest routes (redirect logged-in users to account)
      */
     Route::group(['middleware' => [\Webkul\Shop\Http\Middleware\RedirectIfAuthenticated::class . ':customer']], function () {
@@ -70,12 +80,7 @@ Route::group([], function () {
         // Route::get('verify-identity', 'showVerifyIdentity')->name('shop.customer.login.verify_identity');
         // Route::post('verify-identity', 'verifyIdentity')->name('shop.customer.login.verify_identity.post');
 
-        Route::prefix('qr')->controller(QrLoginController::class)->group(function () {
-            Route::post('prepare', 'prepare')->name('shop.customer.login.qr.prepare');
-            Route::post('check', 'checkStatus')->name('shop.customer.login.qr.check');
-            Route::get('{token}', 'landing')->name('shop.customer.login.qr.landing')->middleware('signed');
-            Route::post('{token}/authorize', 'authorizeLogin')->name('shop.customer.login.qr.authorize')->middleware(['signed', 'auth:customer']);
-        });
+
     });
 
     /**

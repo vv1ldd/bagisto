@@ -79,9 +79,12 @@
                         </div>
 
                         <div class="flex items-center gap-3">
-                            <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <div :class="['w-2 h-2 rounded-full animate-pulse', qrStatus === 'error' ? 'bg-red-500' : 'bg-emerald-500']"></div>
                             <p class="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
-                                @{{ qrStatus === 'authorized' ? 'Ожидание подтверждения...' : 'Ожидание сканирования...' }}
+                                <span v-if="qrStatus === 'authorized'">Ожидание подтверждения...</span>
+                                <span v-else-if="qrStatus === 'pending'">Ожидание сканирования...</span>
+                                <span v-else-if="qrStatus === 'error'" class="text-red-500">Ошибка связи. Проверьте интернет.</span>
+                                <span v-else>@{{ qrStatus }}</span>
                             </p>
                         </div>
                     </div>
@@ -193,6 +196,11 @@
                                     });
 
                                     const data = await res.json();
+
+                                    if (!res.ok) {
+                                        throw new Error(data.error || 'Server error');
+                                    }
+
                                     this.qrStatus = data.status;
 
                                     if (data.status === 'success') {
@@ -205,6 +213,8 @@
                                     }
                                 } catch (e) {
                                     console.warn('QR Polling error', e);
+                                    // If multiple errors occur, show a status to user
+                                    this.qrStatus = 'ошибка...';
                                 }
                             }, 2000);
                         },
