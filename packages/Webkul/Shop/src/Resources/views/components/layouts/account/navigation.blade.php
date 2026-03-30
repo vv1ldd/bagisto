@@ -25,7 +25,7 @@ $menuIcons = [
             class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
             <span class="icon-arrow-left text-xl font-black"></span>
         </button>
-        <h1 class="text-xl font-black text-white uppercase tracking-tighter mix-blend-difference">Личный кабинет</h1>
+        <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">Личный кабинет</h1>
     </div>
 
     <div class="p-0 space-y-2 md:space-y-3 px-4">
