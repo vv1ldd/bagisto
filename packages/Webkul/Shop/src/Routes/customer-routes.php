@@ -93,7 +93,9 @@ Route::group([], function () {
 
             Route::post('passkey/prepare-other', 'passkeyPrepareOtherDevice')->name('shop.customers.register.passkey.prepare_other');
 
-            Route::get('phone/{token}', 'registrationPhoneLanding')->name('shop.customers.register.phone.landing');
+            Route::get('phone/{token}', 'registrationPhoneLanding')
+                ->name('shop.customers.register.phone.landing')
+                ->middleware('signed');
 
             Route::post('check-status', 'checkRegistrationStatus')->name('shop.customers.register.check_status');
 

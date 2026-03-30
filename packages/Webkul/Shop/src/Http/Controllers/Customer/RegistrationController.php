@@ -357,9 +357,8 @@ class RegistrationController extends Controller
     /**
      * Landing page for the phone to finish registration.
      */
-    public function registrationPhoneLanding(Request $request)
+    public function registrationPhoneLanding(Request $request, $token)
     {
-        $token = $request->input('token');
         $cached = Cache::get('reg_token:' . $token);
 
         if (!$cached) {
