@@ -17,47 +17,43 @@
 
         {{-- Wallet Upgrade Banner (For users with old M- format IDs) --}}
         @if($user->credits_id && !str_starts_with($user->credits_id, '0x'))
-            <div class="bg-amber-50 border border-amber-100 rounded-3xl p-6 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm group">
+            <div class="bg-white border-4 border-zinc-900 p-6 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group">
                 <div class="flex items-start md:items-center gap-4">
-                    <div class="w-12 h-12 bg-white text-amber-500 rounded-2xl flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-110 transition-transform">
+                    <div class="w-12 h-12 bg-[#7C45F5] border-3 border-zinc-900 text-white flex items-center justify-center text-2xl shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 group-hover:scale-110 transition-transform">
                         ⚡
                     </div>
                     <div>
-                        <h4 class="text-[14px] font-black text-[#1a0050] uppercase tracking-tighter italic mt-1 md:mt-0">Активируйте функции NFT</h4>
+                        <h4 class="text-[14px] font-black text-zinc-900 uppercase tracking-tighter mt-1 md:mt-0">Активируйте функции NFT</h4>
                         <p class="text-[11px] font-bold text-amber-700/70 mt-1 uppercase tracking-wide max-w-sm">
                             Ваш кошелек нужно обновить, чтобы мы могли начислять вам подарочные NFT.
                         </p>
                     </div>
                 </div>
                 <a href="{{ route('shop.customers.account.crypto.show_upgrade_wallet') }}"
-                   class="shrink-0 w-full md:w-auto text-center bg-[#1a0050] text-white px-5 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest hover:bg-[#2a0080] transition-colors active:scale-95 shadow-lg shadow-[#1a0050]/20">
+                   class="shrink-0 w-full md:w-auto text-center bg-zinc-900 text-white px-5 py-3 border-3 border-zinc-900 text-[12px] font-black uppercase tracking-widest hover:translate-x-0.5 hover:translate-y-0.5 transition-all shadow-[4px_4px_0px_0px_rgba(124,113,255,1)]">
                     Активировать
                 </a>
             </div>
         @endif
 
-        {{-- Global Tabs for Overview/History --}}
-        <div id="wallet-tabs" class="flex items-center gap-6 mb-8 border-b border-white/10">
-            <button id="tab-dashboard" onclick="switchStep('dashboard')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-[#7C45F5] text-white">Обзор</button>
-            <button id="tab-transactions" onclick="switchStep('transactions')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-500 hover:text-white">История</button>
-            <button id="tab-nfts" onclick="switchStep('nfts')" class="text-[14px] font-black pb-3 uppercase tracking-tight transition-all border-b-2 border-transparent text-zinc-500 hover:text-white">Библиотека</button>
+        {{-- Global Tabs --}}
+        <div id="wallet-tabs" class="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-none">
+            <button id="tab-dashboard" onclick="switchStep('dashboard')" class="px-6 py-2 bg-zinc-900 text-white border-2 border-zinc-900 font-black text-[11px] uppercase tracking-widest transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none whitespace-nowrap">Обзор</button>
+            <button id="tab-transactions" onclick="switchStep('transactions')" class="px-6 py-2 bg-white text-zinc-900 border-2 border-zinc-900 font-black text-[11px] uppercase tracking-widest transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] whitespace-nowrap">История</button>
+            <button id="tab-nfts" onclick="switchStep('nfts')" class="px-6 py-2 bg-white text-zinc-900 border-2 border-zinc-900 font-black text-[11px] uppercase tracking-widest transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[2px_2px_0_0_rgba(24,24,27,1)] whitespace-nowrap">Библиотека</button>
         </div>
 
         {{-- Step 1: Dashboard --}}
         <div id="step-dashboard" class="space-y-6">
             {{-- Main Unified Wallet Card --}}
-            <div class="relative overflow-hidden rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-2xl p-8 shadow-2xl group">
-                {{-- Decorative gradient background --}}
-                <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5] opacity-[0.05] rounded-full blur-3xl group-hover:opacity-[0.1] transition-opacity duration-1000"></div>
-                <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#7C45F5] opacity-[0.03] rounded-full blur-3xl group-hover:opacity-[0.06] transition-opacity duration-1000"></div>
-                
+            <div class="relative bg-white border-4 border-zinc-900 p-8 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] group">
                 <div class="relative z-10">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
-                            <div class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-3 opacity-80 italic">Баланс Meanly Coin (MC)</div>
+                            <div class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 italic">Баланс Meanly Coin (MC)</div>
                             <div class="flex items-baseline gap-2">
-                                <span class="text-[56px] font-black text-white tracking-tighter leading-none">
-                                    {{ number_format($user->balance ?? 0, 2, '.', '') }} MC
+                                <span class="text-[48px] md:text-[56px] font-black text-zinc-900 tracking-tighter leading-none">
+                                    {{ number_format($user->balance ?? 0, 2, '.', '') }} <span class="text-[#7C45F5]">MC</span>
                                 </span>
                             </div>
                             
@@ -65,13 +61,13 @@
                             <div class="flex items-center gap-3 mt-6">
                                 <v-nickname-edit inline-template>
                                     <div class="flex flex-col">
-                                        <div class="px-3 py-1.5 bg-white/5 text-[#7C45F5] border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300"
+                                        <div class="px-3 py-2 bg-zinc-50 text-[#7C45F5] border-2 border-zinc-900 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300"
                                             :class="{ 
-                                                'border-[#7C45F5]/50 shadow-[0_0_15px_rgba(124,69,245,0.2)]': isEditing,
-                                                '!border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]': usernameError,
-                                                '!border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]': !usernameError && isEditing && username.length >= 3 && isAvailable
+                                                'shadow-[4px_4px_0_0_rgba(124,69,245,0.2)]': isEditing,
+                                                '!border-red-500': usernameError,
+                                                '!border-green-500': !usernameError && isEditing && username.length >= 3 && isAvailable
                                             }">
-                                            <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full animate-pulse"></span>
+                                            <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full"></span>
                                             
                                             <div class="flex flex-col min-w-[120px]">
                                                 <div class="flex items-center gap-2">
@@ -113,12 +109,9 @@
                                                 </template>
                                             </div>
                                         </div>
-                                        <div v-if="usernameError" class="mt-1 px-1 text-[8px] text-red-500 font-bold uppercase tracking-wider">
-                                            @{{ usernameError }}
-                                        </div>
                                     </div>
                                 </v-nickname-edit>
-                                <div class="px-3 py-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest shrink-0 self-start">Инвестор</div>
+                                <div class="px-3 py-2 bg-[#D6FF00] text-zinc-900 border-2 border-zinc-900 text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">Инвестор</div>
                             </div>
                         </div>
 
@@ -129,7 +122,7 @@
                     </div>
 
                     {{-- Assets Divider --}}
-                    <div class="h-px bg-white/5 my-8"></div>
+                    <div class="h-1 bg-zinc-100 my-8"></div>
 
                     {{-- Unified Assets Grid --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -140,18 +133,18 @@
                                 $fiat = $balance->amount * $rate;
                                 $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
                             @endphp
-                            <div class="flex items-center justify-between p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-[#7C45F5]/30 hover:bg-white/[0.05] transition-all group/asset">
+                            <div class="flex items-center justify-between p-4 bg-zinc-50 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 group/asset">
                                 <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl shadow-inner group-hover/asset:scale-110 group-hover/asset:border-[#7C45F5]/50 transition-all duration-500">
+                                    <div class="w-12 h-12 bg-white border-2 border-zinc-900 flex items-center justify-center text-xl shadow-[1px_1px_0px_0px_rgba(24,24,27,1)] group-hover/asset:rotate-3 transition-all duration-500">
                                         {{ $m['icon'] }}
                                     </div>
                                     <div class="flex flex-col">
-                                        <span class="text-[13px] font-black text-white uppercase tracking-tight">{{ $m['label'] }}</span>
-                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{{ $amount }}</span>
+                                        <span class="text-[13px] font-black text-zinc-900 uppercase tracking-tight">{{ $m['label'] }}</span>
+                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider leading-none">{{ $amount }}</span>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <span class="text-[15px] font-black text-white tracking-tight">{{ core()->formatPrice($fiat) }}</span>
+                                    <span class="text-[15px] font-black text-zinc-900 tracking-tight">{{ core()->formatPrice($fiat) }}</span>
                                 </div>
                             </div>
                         @endforeach
@@ -163,7 +156,7 @@
         {{-- Step 2: Transactions --}}
         {{-- Step 2: History --}}
         <div id="step-transactions" class="hidden">
-            <div class="bg-white/5 border border-white/10 shadow-2xl rounded-[2.5rem] overflow-hidden backdrop-blur-xl">
+            <div class="space-y-4">
                 @if ($transactions->count() > 0)
                     <div class="flex flex-col">
                         @foreach ($transactions as $transaction)
@@ -213,40 +206,40 @@
                                 }
                             @endphp
 
-                            <div class="px-6 py-5 border-b border-zinc-50 last:border-0 hover:bg-[#fcfbff] transition-all group {{ $clickUrl ? 'cursor-pointer' : '' }}" 
+                            <div class="bg-white border-4 border-zinc-900 p-5 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none mb-4 {{ $clickUrl ? 'cursor-pointer' : '' }}" 
                                  @if($clickUrl) onclick="window.location.href='{{ $clickUrl }}'" @endif>
                                 <div class="flex items-center gap-5">
                                     {{-- Icon --}}
-                                    <div class="w-12 h-12 rounded-2xl bg-white border border-[#f0ebff] flex items-center justify-center text-2xl shadow-sm shrink-0 group-hover:scale-110 transition-transform">
+                                    <div class="w-12 h-12 bg-white border-3 border-zinc-900 flex items-center justify-center text-2xl shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6">
                                         {{ $icon }}
                                     </div>
 
                                     {{-- Details --}}
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-3">
-                                            <span class="text-[15px] font-black text-[#1a0050] uppercase tracking-tight italic truncate">
+                                            <span class="text-[15px] font-black text-zinc-900 uppercase tracking-tight truncate">
                                                 {{ $title }}
                                             </span>
-                                            <span class="text-[8px] px-2 py-0.5 rounded-full border font-black uppercase tracking-widest {{ $statusClass }}">
+                                            <span class="text-[8px] px-2 py-0.5 border-2 border-zinc-900 font-black uppercase tracking-widest {{ $statusClass }} shadow-[1px_1px_0px_0px_rgba(24,24,27,1)]">
                                                 {{ $status }}
                                             </span>
                                         </div>
-                                        <div class="text-[11px] text-zinc-400 font-bold uppercase tracking-widest mt-0.5 truncate opacity-70">
+                                        <div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1 truncate">
                                             {{ $subtitle }}
                                         </div>
-                                        <div class="text-[9px] text-zinc-500 font-bold uppercase tracking-tighter mt-1.5 flex items-center gap-2">
-                                            <span class="w-1 h-1 bg-zinc-600 rounded-full"></span>
+                                        <div class="text-[8px] text-zinc-500 font-black uppercase tracking-widest mt-2 flex items-center gap-2">
+                                            <span class="w-1.5 h-1.5 bg-zinc-900 rounded-full"></span>
                                             {{ $transaction->created_at->format('d.m.Y — H:i') }}
                                         </div>
                                     </div>
 
                                     {{-- Amount --}}
                                     <div class="text-right shrink-0">
-                                        <div class="text-[17px] font-black font-mono {{ $amountColor }} tracking-tighter whitespace-nowrap">
+                                        <div class="text-[17px] font-black {{ $amountColor }} tracking-tighter whitespace-nowrap">
                                             {{ $amountStr }}
                                         </div>
-                                        <div class="text-[9px] text-zinc-300 font-bold uppercase tracking-[0.2em] mt-1">
-                                            {{ $isOrder ? 'Shop Order' : 'Wallet' }}
+                                        <div class="text-[9px] text-zinc-300 font-black uppercase tracking-widest mt-1">
+                                            {{ $isOrder ? 'Marketplace' : 'Wallet' }}
                                         </div>
                                     </div>
                                 </div>
@@ -281,203 +274,67 @@
         {{-- Step 2.5: NFTs (Digital Receipts) --}}
         <div id="step-nfts" class="hidden">
             @if(isset($nftOrders) && $nftOrders->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     @foreach($nftOrders as $order)
-                        <div class="relative group rounded-[2rem] overflow-hidden bg-white/5 shadow-2xl hover:shadow-[#7C45F5]/20 transition-all duration-500 border border-white/10 backdrop-blur-xl">
-                            <img src="{{ route('api.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-[#1a0050]/80 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 backdrop-blur-sm px-6 text-center">
-                                <span class="text-white font-black text-[14px] uppercase tracking-widest mb-4">On-Chain Asset</span>
-                                <a href="{{ route('api.nft.metadata', ['id' => $order->id]) }}" target="_blank" class="px-5 py-2.5 bg-[#7C45F5] text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#6b36e0] transition-colors shadow-lg active:scale-95 text-center block w-full max-w-[150px]">
-                                    JSON Данные
+                        <div class="relative group bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] overflow-hidden transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none">
+                            <img src="{{ route('api.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
+                            <div class="absolute inset-0 bg-zinc-900/90 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 px-4 text-center">
+                                <span class="text-white font-black text-[10px] uppercase tracking-[0.2em] mb-4">Receipt Asset</span>
+                                <a href="{{ route('api.nft.metadata', ['id' => $order->id]) }}" target="_blank" class="px-4 py-2 bg-[#7C45F5] border-2 border-white text-white rounded-none text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-zinc-900 transition-colors shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                    JSON Data
                                 </a>
-                                <p class="text-zinc-400 text-[10px] mt-4 max-w-xs font-mono">ID: {{ $order->id }} / B: {{ $order->base_grand_total }}</p>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
-                <div class="flex flex-col items-center justify-center py-32 text-zinc-500 px-10 text-center relative overflow-hidden bg-white/5 border border-white/10 shadow-2xl rounded-[2.5rem] backdrop-blur-xl">
-                    <div class="absolute inset-0 bg-white/5 opacity-10"></div>
-                    <div class="relative z-10">
-                        <div class="w-24 h-24 bg-white/5 border border-white/10 flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-all duration-500 mx-auto backdrop-blur-md">
-                            🏆
-                        </div>
-                        <h3 class="text-[18px] font-black text-white uppercase tracking-tighter italic mb-2">Библиотека пуста</h3>
-                        <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-widest max-w-[280px] leading-relaxed mx-auto">
-                            У вас пока нет NFT-подарков. Совершите первую покупку, чтобы получить цифровой бейдж!
-                        </p>
+                <div class="bg-white p-12 text-center border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                    <div class="w-16 h-16 bg-zinc-50 border-3 border-zinc-900 flex items-center justify-center mx-auto mb-6 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                        <span class="text-3xl">🏆</span>
                     </div>
+                    <h3 class="text-[14px] font-black text-zinc-900 uppercase tracking-tighter italic">Нет активов</h3>
                 </div>
             @endif
         </div>
 
-        {{-- Step2.6: Organizations --}}
+        {{-- Step 2.6: Organizations --}}
         <div id="step-organizations" class="hidden">
-            <div class="bg-white border border-[#e2d9ff] shadow-sm overflow-hidden">
-            @if ($organizations->count() > 0)
-                <div class="flex flex-col divide-y divide-zinc-50">
-                    @foreach ($organizations as $organization)
-                        <div
-                            class="org-row flex items-start justify-between p-5 hover:bg-zinc-50/50 transition-colors group relative">
-                            <!-- Clickable Area -->
-                            <a href="javascript:void(0);"
-                                onclick="openOrganizationDetails({{ $organization->id }}, '{{ addslashes($organization->name) }}', '{{ $organization->inn }}', '{{ $organization->kpp ?? '' }}', '{{ $organization->ogrn ?? '' }}', '{{ addslashes($organization->address) }}')"
-                                class="flex-grow pr-4 block">
-                                <div class="mb-1">
-                                    <p class="text-[17px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-all">
-                                        {{ $organization->name }}
-                                    </p>
-                                </div>
-
-                                <div class="space-y-0.5">
-                                    <p class="text-[13px] text-zinc-500 font-medium" v-pre>
-                                        <span class="text-zinc-400">ИНН:</span>
-                                        <span class="text-zinc-700 font-mono">{{ $organization->inn }}</span>
-                                        <button type="button" onclick="copyValue('{{ $organization->inn }}', this, event)"
-                                            class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
-                                            title="Копировать ИНН">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                            </svg>
-                                        </button>
-
-                                        @if($organization->kpp)
-                                            <span class="text-zinc-400 ml-2">КПП:</span>
-                                            <span class="text-zinc-700 font-mono">{{ $organization->kpp }}</span>
-                                            <button type="button" onclick="copyValue('{{ $organization->kpp }}', this, event)"
-                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
-                                                title="Копировать КПП">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                </svg>
-                                            </button>
-                                        @endif
-                                    </p>
-
-                                    @if($organization->bank_name)
-                                        <p class="text-[13px] text-zinc-500" v-pre>
-                                            <span class="text-zinc-400">Банк:</span>
-                                            <span>{{ $organization->bank_name }}</span>
-                                            <button type="button" onclick="copyValue('{{ $organization->bank_name }}', this, event)"
-                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
-                                                title="Копировать название банка">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                </svg>
-                                            </button>
-
-                                            <span class="text-zinc-400 ml-2">БИК:</span>
-                                            <span class="font-mono">{{ $organization->bic }}</span>
-                                            <button type="button" onclick="copyValue('{{ $organization->bic }}', this, event)"
-                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
-                                                title="Копировать БИК">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                </svg>
-                                            </button>
+            <div class="bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] overflow-hidden">
+                @if ($organizations->count() > 0)
+                    <div class="divide-y-4 divide-zinc-900">
+                        @foreach ($organizations as $organization)
+                            <div class="flex items-start justify-between p-6 hover:bg-zinc-50 transition-colors group relative">
+                                <a href="javascript:void(0);"
+                                    onclick="openOrganizationDetails({{ $organization->id }}, '{{ addslashes($organization->name) }}', '{{ $organization->inn }}', '{{ $organization->kpp ?? '' }}', '{{ $organization->ogrn ?? '' }}', '{{ addslashes($organization->address) }}')"
+                                    class="flex-grow pr-4 block">
+                                    <div class="mb-2">
+                                        <p class="text-lg font-black text-zinc-900 uppercase tracking-tight group-hover:text-[#7C45F5] transition-all">
+                                            {{ $organization->name }}
                                         </p>
+                                    </div>
 
-                                        @if($organization->settlement_account)
-                                            <p class="text-[13px] text-zinc-500 mt-0.5" v-pre>
-                                                <span class="text-zinc-400">Расч. счет:</span>
-                                                <span
-                                                    class="font-medium font-mono text-zinc-800">{{ $organization->settlement_account }}</span>
-                                                <button type="button"
-                                                    onclick="copyValue('{{ $organization->settlement_account }}', this, event)"
-                                                    class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
-                                                    title="Копировать расчетный счет">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                    </svg>
-                                                </button>
-                                            </p>
-                                        @endif
-                                    @endif
-
-                                    <p class="text-[13px] text-zinc-500 flex items-start gap-1.5 mt-1" v-pre>
-                                        <span class="icon-location text-[16px] text-zinc-300 mt-0.5"></span>
-                                        <span>
+                                    <div class="space-y-1">
+                                        <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-wider">
+                                            <span class="text-zinc-400">ИНН:</span>
+                                            <span class="text-zinc-900 font-black">{{ $organization->inn }}</span>
+                                            @if($organization->kpp)
+                                                <span class="text-zinc-400 ml-4">КПП:</span>
+                                                <span class="text-zinc-900 font-black">{{ $organization->kpp }}</span>
+                                            @endif
+                                        </p>
+                                        <p class="text-[11px] text-zinc-400 uppercase tracking-widest leading-relaxed">
                                             {{ $organization->address }}
-                                            <button type="button"
-                                                onclick="copyValue('{{ $organization->address }}', this, event)"
-                                                class="copy-btn ml-1 p-1 text-zinc-300 hover:text-[#7C45F5] transition-colors inline-flex items-center align-middle"
-                                                title="Копировать адрес">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-                                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                                    stroke-linejoin="round">
-                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </p>
-                                </div>
-                            </a>
-
-                            <!-- Dropdown Actions -->
-                            <div class="shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity z-10 relative">
-                                <x-shop::dropdown
-                                    position="bottom-{{ (optional(core()->getCurrentLocale())->direction ?? 'ltr') === 'ltr' ? 'right' : 'left' }}">
-                                    <x-slot:toggle>
-                                        <button
-                                            class="p-2 hover:bg-white rounded shadow-sm border border-zinc-200 transition text-zinc-500 hover:text-zinc-900"
-                                            aria-label="More Options">
-                                            <span class="icon-more text-2xl"></span>
-                                        </button>
-                                    </x-slot:toggle>
-
-                                    <x-slot:menu class="!py-1 min-w-[140px] shadow-xl border-zinc-100">
-                                        <x-shop::dropdown.menu.item>
-                                            <a href="javascript:void(0);"
-                                                onclick="openAddBankAccount({{ $organization->id }}, '{{ addslashes($organization->name) }}', '{{ $organization->inn }}')"
-                                                class="flex items-center gap-2 w-full text-[14px]">
-                                                <span class="icon-plus text-xl"></span>
-                                                Добавить счет
-                                            </a>
-                                        </x-shop::dropdown.menu.item>
-
-                                        <x-shop::dropdown.menu.item class="text-red-500">
-                                            <form method="POST" id="delete-org-{{ $organization->id }}"
-                                                action="{{ route('shop.customers.account.organizations.delete', $organization->id) }}">
-                                                @method('DELETE')
-                                                @csrf
-                                            </form>
-                                            <a href="javascript:void(0);" class="flex items-center gap-2 w-full text-[14px]"
-                                                onclick="
-                                                                                                                                                                                    event.preventDefault(); 
-                                                                                                                                                                                    const innPrompt = prompt('Для удаления организации введите её ИНН ({{ $organization->inn }}):'); 
-                                                                                                                                                                                    if(innPrompt === '{{ $organization->inn }}') { 
-                                                                                                                                                                                        document.getElementById('delete-org-{{ $organization->id }}').submit(); 
-                                                                                                                                                                                    } else if(innPrompt !== null) {
-                                                                                                                                                                                        alert('ИНН введен неверно. Удаление отменено.');
-                                                                                                                                                                                    }
-                                                                                                                                                                                ">
-                                                <span class="icon-bin text-xl"></span>
-                                                @lang('shop::app.customers.account.organizations.index.delete')
-                                            </a>
-                                        </x-shop::dropdown.menu.item>
-                                    </x-slot:menu>
-                                </x-shop::dropdown>
+                                        </p>
+                                    </div>
+                                </a>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
+                        @endforeach
+                    </div>
+                @endif
 
                 <button onclick="goToAddOrganization()"
-                    class="flex items-center justify-center w-full p-6 border-t border-[#f0ebff] hover:bg-[#f8f6ff] transition-all text-[14px] font-bold text-[#7C45F5] group bg-white">
-                    <span
-                        class="w-10 h-10 bg-[#f0ebff] text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all shadow-sm">
+                    class="flex items-center justify-center w-full p-8 border-t-4 border-zinc-900 hover:bg-[#D6FF00] transition-all text-[12px] font-black text-zinc-900 uppercase tracking-widest group bg-white">
+                    <span class="w-10 h-10 bg-zinc-900 text-white flex items-center justify-center mr-3 shadow-[2px_2px_0px_0px_rgba(214,255,0,1)] transition-all">
                         <span class="icon-plus text-base"></span>
                     </span>
                     Добавить организацию
@@ -486,9 +343,9 @@
         </div>
 
         {{-- Step 2.7: Add Organization --}}
-        <div id="step-add-organization" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
-            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
-                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+        <div id="step-add-organization" class="hidden bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] p-8">
+            <div class="mb-10">
+                <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tight italic">
                     Добавление организации
                 </h1>
             </div>
@@ -499,327 +356,184 @@
 
                 <!-- Step 1: Organization Details -->
                 <div id="add-org-step-1">
-                    <div class="text-left mb-5">
-                        <h3
-                            class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
-                            <span class="text-zinc-400 text-base">1</span>
-                            Поиск организации
-                        </h3>
-
-                        <div class="space-y-4">
+                    <div class="text-left mb-8">
+                        <div class="space-y-6">
                             {{-- Row 1: Search --}}
                             <div class="relative">
-                                <label for="org-name"
-                                    class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
-                                    Поиск по названию или ИНН
+                                <label for="org-name" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                                    Поиск по названию или ИНН *
                                 </label>
                                 <input type="text" name="name" id="org-name" value="{{ old('name') }}"
-                                    class="w-full py-2.5 px-4 border border-zinc-200 rounded-none focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] text-[13px] text-zinc-900 font-medium transition-colors"
-                                    placeholder="Начните вводить данные для автозаполнения..." autocomplete="off"
-                                    required>
-
-                                <div id="org-suggestions"
-                                    class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
-                                </div>
+                                    class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-50 focus:bg-white focus:ring-0 text-[13px] text-zinc-900 font-black transition-all"
+                                    placeholder="Введите данные..." autocomplete="off" required>
+                                <div id="org-suggestions" class="absolute z-[60] w-full mt-2 bg-white border-3 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hidden max-h-72 overflow-y-auto"></div>
                             </div>
 
                             {{-- Row 2: INN | KPP --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="org-inn"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
-                                        ИНН
-                                    </label>
-                                    <input type="text" name="inn" id="org-inn" value="{{ old('inn') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
-                                        placeholder="10 или 12 цифр" required>
+                                    <label for="org-inn" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">ИНН *</label>
+                                    <input type="text" name="inn" id="org-inn" required class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-50 text-[13px] font-black">
                                 </div>
-
                                 <div>
-                                    <label for="org-kpp"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                        КПП
-                                    </label>
-                                    <input type="text" name="kpp" id="org-kpp" value="{{ old('kpp') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
-                                        placeholder="9 цифр">
-                                </div>
-                            </div>
-
-                            {{-- Row 3: OGRN | Address --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="org-ogrn"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                        ОГРН
-                                    </label>
-                                    <input type="text" name="ogrn" id="org-ogrn" value="{{ old('ogrn') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
-                                        placeholder="ОГРН">
-                                </div>
-
-                                <div>
-                                    <label for="org-address"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                        Юридический адрес
-                                    </label>
-                                    <input type="text" name="address" id="org-address" value="{{ old('address') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] truncate transition-colors"
-                                        placeholder="Полный адрес">
+                                    <label for="org-kpp" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">КПП</label>
+                                    <input type="text" name="kpp" id="org-kpp" class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-50 text-[13px] font-black">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
-                        <button type="button" onclick="switchStep('organizations')"
-                            class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
-                            Отмена
-                        </button>
-                        <button type="button" onclick="goToAddOrgStep2()"
-                            class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
-                            Далее к банку <span class="icon-arrow-right ml-1 text-[10px]"></span>
-                        </button>
+                    <div class="mt-10 flex items-center justify-end gap-4">
+                        <button type="button" onclick="switchStep('organizations')" class="text-[11px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors">Отмена</button>
+                        <button type="button" onclick="goToAddOrgStep2()" class="bg-[#D6FF00] border-3 border-zinc-900 px-10 py-4 text-[12px] font-black text-zinc-900 uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">Далее</button>
                     </div>
                 </div>
 
                 <!-- Step 2: Bank Details (Initially Hidden) -->
                 <div id="add-org-step-2" class="hidden">
-                    <div class="text-left mb-6">
-                        <h3
-                            class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-2 border-b border-zinc-50 pb-1.5">
-                            <span class="text-zinc-400 text-base">2</span>
-                            Банковские реквизиты
-                        </h3>
-
-                        <!-- Minimalistic Org Card -->
-                        <div class="mb-5 p-4 border border-zinc-200 bg-zinc-50 flex justify-between items-start">
-                            <div class="overflow-hidden">
-                                <div id="selected-org-name" class="font-bold text-[14px] text-zinc-900 truncate">
-                                    Название организации</div>
-                                <div id="selected-org-inn" class="text-[11px] font-mono text-zinc-500 mt-1">ИНН:
-                                    0000000000
-                                </div>
+                    <div class="space-y-6">
+                        <div class="bg-zinc-900 p-4 border-2 border-zinc-900 flex justify-between items-center shadow-[4px_4px_0_0_rgba(214,255,0,1)]">
+                            <div>
+                                <div id="selected-org-name" class="font-black text-[12px] text-white uppercase tracking-tight truncate">Название организации</div>
+                                <div id="selected-org-inn" class="text-[10px] font-black text-[#D6FF00] uppercase tracking-widest mt-1">ИНН: 0000000000</div>
                             </div>
-                            <button type="button" onclick="goToAddOrgStep1()"
-                                class="text-xs text-zinc-400 hover:text-[#7C45F5] underline underline-offset-2 transition-colors shrink-0 ml-4">
-                                Изменить
-                            </button>
+                            <button type="button" onclick="goToAddOrgStep1()" class="text-[9px] font-black text-white hover:text-[#D6FF00] uppercase tracking-widest underline transition-colors">Изменить</button>
                         </div>
 
-                        <div class="space-y-4">
-                            {{-- Row 1: BIC | Settlement Account --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="relative">
-                                    <label for="bank-bic"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                        БИК или Название Банка
-                                    </label>
-                                    <input type="text" name="bic" id="bank-bic" value="{{ old('bic') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
-                                        placeholder="БИК или название" autocomplete="off">
-
-                                    <div id="bank-suggestions"
-                                        class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="bank-account"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
-                                        Расчетный счет
-                                    </label>
-                                    <input type="text" name="settlement_account" id="bank-account"
-                                        value="{{ old('settlement_account') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
-                                        placeholder="20 цифр">
-                                </div>
+                        <div class="space-y-6">
+                            <div class="relative">
+                                <label for="bank-bic" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">БИК или Название Банка</label>
+                                <input type="text" name="bic" id="bank-bic" class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-50 text-[13px] font-black" autocomplete="off">
+                                <div id="bank-suggestions" class="absolute z-[60] w-full mt-2 bg-white border-3 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hidden max-h-72 overflow-y-auto"></div>
                             </div>
-
-                            {{-- Row 2: Bank name | Correspondent Account --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label for="bank-name"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                        Название Банка
-                                    </label>
-                                    <input type="text" name="bank_name" id="bank-name" value="{{ old('bank_name') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 bg-zinc-50 font-medium cursor-not-allowed"
-                                        placeholder="Подтянется по БИК" readonly tabindex="-1">
-                                </div>
-
-                                <div>
-                                    <label for="bank-corr"
-                                        class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                        Корр. счет
-                                    </label>
-                                    <input type="text" name="correspondent_account" id="bank-corr"
-                                        value="{{ old('correspondent_account') }}"
-                                        class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 bg-zinc-50 cursor-not-allowed"
-                                        placeholder="Подтянется по БИК" readonly tabindex="-1">
-                                </div>
+                            <div>
+                                <label for="bank-account" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Расчетный счет *</label>
+                                <input type="text" name="settlement_account" id="bank-account" class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-50 text-[13px] font-black">
                             </div>
                         </div>
                     </div>
 
-                    <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
-                        <button type="button" onclick="goToAddOrgStep1()"
-                            class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
-                            Назад
-                        </button>
-                        <button type="submit"
-                            class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
-                            Сохранить организацию
-                        </button>
+                    <div class="mt-10 flex items-center justify-end gap-4">
+                        <button type="button" onclick="goToAddOrgStep1()" class="text-[11px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors">Назад</button>
+                        <button type="submit" class="bg-[#D6FF00] border-3 border-zinc-900 px-10 py-4 text-[12px] font-black text-zinc-900 uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">Сохранить</button>
                     </div>
                 </div>
             </form>
         </div>
+        </div>
 
         {{-- Step: Add Bank Account (SPA replacement for Edit Organization) --}}
-        <div id="step-add-bank-account" class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
-            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
-                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+        <div id="step-add-bank-account" class="hidden bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] p-8">
+            <div class="mb-10">
+                <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tight italic">
                     Добавление расчетного счета
                 </h1>
             </div>
 
-            <div class="mb-5 p-4 border border-zinc-200 bg-zinc-50 flex justify-between items-start">
-                <div class="overflow-hidden">
-                    <div id="add-bank-org-name" class="font-bold text-[14px] text-zinc-900 truncate">
-                        Название организации</div>
-                    <div id="add-bank-org-inn" class="text-[11px] font-mono text-zinc-500 mt-1">ИНН: 0000000000</div>
+            <div class="mb-8 p-6 bg-zinc-900 border-2 border-zinc-900 shadow-[4px_4px_0_0_rgba(214,255,0,1)] flex justify-between items-center">
+                <div>
+                    <div id="add-bank-org-name" class="font-black text-[12px] text-white uppercase tracking-tight truncate">Название организации</div>
+                    <div id="add-bank-org-inn" class="text-[10px] font-black text-[#D6FF00] uppercase tracking-widest mt-1">ИНН: 0000000000</div>
                 </div>
-                <button type="button" onclick="switchStep('organizations')"
-                    class="text-xs text-zinc-400 hover:text-[#7C45F5] underline underline-offset-2 transition-colors shrink-0 ml-4">
-                    Изменить
-                </button>
+                <button type="button" onclick="switchStep('organizations')" class="text-[9px] font-black text-white hover:text-[#D6FF00] uppercase tracking-widest underline transition-colors">Изменить</button>
             </div>
 
             <form id="add-bank-account-form" onsubmit="submitAddBankAccount(event)">
                 <input type="hidden" id="add-bank-org-id" value="">
 
-                <div class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="relative">
-                            <label for="new-bank-bic"
-                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                БИК или Название Банка
-                            </label>
-                            <input type="text" id="new-bank-bic" required
-                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
-                                placeholder="БИК или название" autocomplete="off">
-                            <div id="new-bank-suggestions"
-                                class="absolute z-[60] w-full mt-1 bg-white border border-zinc-200 shadow-2xl hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="new-bank-account"
-                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest after:content-['*'] after:ml-1 after:text-red-500">
-                                Расчетный счет
-                            </label>
-                            <input type="text" id="new-bank-account" required
-                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 focus:border-[#7C45F5] focus:ring-1 focus:ring-[#7C45F5] transition-colors"
-                                placeholder="20 цифр">
-                        </div>
+                <div class="space-y-6">
+                    <div class="relative">
+                        <label for="new-bank-bic" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">БИК или Название Банка</label>
+                        <input type="text" id="new-bank-bic" required
+                            class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-50 text-[13px] font-black transition-all"
+                            placeholder="БИК или название" autocomplete="off">
+                        <div id="new-bank-suggestions" class="absolute z-[60] w-full mt-2 bg-white border-3 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hidden max-h-72 overflow-y-auto ltr:left-0 rtl:right-0"></div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="new-bank-name"
-                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                Название Банка
-                            </label>
-                            <input type="text" id="new-bank-name"
-                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none text-[13px] text-zinc-900 bg-zinc-50 font-medium cursor-not-allowed"
-                                placeholder="Подтянется по БИК" readonly tabindex="-1">
-                        </div>
+                    <div>
+                        <label for="new-bank-account" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Расчетный счет *</label>
+                        <input type="text" id="new-bank-account" required
+                            class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-50 text-[13px] font-black transition-all"
+                            placeholder="20 цифр">
+                    </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="new-bank-corr"
-                                class="block mb-1.5 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
-                                Корр. счет
-                            </label>
-                            <input type="text" id="new-bank-corr"
-                                class="w-full py-2.5 px-4 border border-zinc-200 rounded-none font-mono text-[13px] text-zinc-900 bg-zinc-50 cursor-not-allowed"
-                                placeholder="Подтянется по БИК" readonly tabindex="-1">
+                            <label for="new-bank-name" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Название Банка</label>
+                            <input type="text" id="new-bank-name" readonly tabindex="-1"
+                                class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-100/50 text-[13px] font-black text-zinc-400 cursor-not-allowed"
+                                placeholder="Подтянется по БИК">
+                        </div>
+                        <div>
+                            <label for="new-bank-corr" class="block mb-2 text-[10px] font-black text-zinc-400 uppercase tracking-widest">Корр. счет</label>
+                            <input type="text" id="new-bank-corr" readonly tabindex="-1"
+                                class="w-full py-4 px-5 border-3 border-zinc-900 bg-zinc-100/50 text-[13px] font-black text-zinc-400 cursor-not-allowed"
+                                placeholder="Подтянется по БИК">
                         </div>
                     </div>
                 </div>
 
-                <div class="border-t border-zinc-50 mt-5 py-3 flex items-center justify-end gap-3">
-                    <button type="button" onclick="switchStep('organizations')"
-                        class="px-5 py-2 text-[13px] font-medium text-zinc-500 hover:text-zinc-800 transition-colors">
-                        Отмена
-                    </button>
-                    <button type="submit" id="add-bank-submit-btn"
-                        class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200 flex items-center gap-2">
+                <div class="mt-10 flex items-center justify-end gap-4">
+                    <button type="button" onclick="switchStep('organizations')" class="text-[11px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors">Отмена</button>
+                    <button type="submit" id="add-bank-submit-btn" class="bg-[#D6FF00] border-3 border-zinc-900 px-10 py-4 text-[12px] font-black text-zinc-900 uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2">
                         <span id="add-bank-btn-text">Добавить счет</span>
-                        <div id="add-bank-btn-spinner"
-                            class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin">
-                        </div>
+                        <div id="add-bank-btn-spinner" class="hidden w-4 h-4 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
                     </button>
                 </div>
             </form>
         </div>
 
         {{-- Step: Organization Details --}}
-        <div id="step-organization-details"
-            class="hidden bg-white overflow-hidden border border-zinc-100 shadow-sm p-5">
-            <div class="pt-1 pb-3 flex border-b border-zinc-50 mb-5 relative">
-                <h1 class="text-[17px] font-bold text-zinc-900 leading-tight">
+        <div id="step-organization-details" class="hidden bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] p-8">
+            <div class="mb-10">
+                <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tight italic">
                     Детали организации
                 </h1>
             </div>
 
-            <div class="space-y-6">
-                <!-- Org Info -->
-                <div class="bg-zinc-50 p-5 border border-zinc-200">
-                    <h2 id="org-details-name" class="text-[16px] font-bold text-zinc-900 mb-3 uppercase tracking-tight">
-                        Название</h2>
+            <div class="space-y-10">
+                <!-- Org Info Block -->
+                <div class="bg-zinc-900 p-8 border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(214,255,0,1)]">
+                    <h2 id="org-details-name" class="text-2xl font-black text-[#D6FF00] uppercase tracking-tighter italic mb-6">
+                        Название
+                    </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
-                            <span
-                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">ИНН</span>
-                            <span id="org-details-inn" class="text-[14px] font-mono text-zinc-800">0000000000</span>
+                            <span class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2">ИНН</span>
+                            <span id="org-details-inn" class="text-lg font-black text-white font-mono tracking-tight">0000000000</span>
                         </div>
                         <div>
-                            <span
-                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">КПП</span>
-                            <span id="org-details-kpp" class="text-[14px] font-mono text-zinc-800">-</span>
+                            <span class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2">КПП</span>
+                            <span id="org-details-kpp" class="text-lg font-black text-white font-mono tracking-tight">-</span>
                         </div>
                         <div>
-                            <span
-                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">ОГРН</span>
-                            <span id="org-details-ogrn" class="text-[14px] font-mono text-zinc-800">-</span>
+                            <span class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2">ОГРН</span>
+                            <span id="org-details-ogrn" class="text-lg font-black text-white font-mono tracking-tight">-</span>
                         </div>
                         <div class="md:col-span-2">
-                            <span
-                                class="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">Юридический
-                                адрес</span>
-                            <span id="org-details-address" class="text-[13px] text-zinc-800">-</span>
+                            <span class="block text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-2">Юридический адрес</span>
+                            <span id="org-details-address" class="text-[13px] font-black text-zinc-300 uppercase tracking-wider leading-relaxed">-</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Bank Accounts List Placeholder -->
+                <!-- Bank Accounts Section -->
                 <div>
-                    <div class="flex items-center justify-between mb-3 border-b border-zinc-50 pb-2">
-                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-400">
+                    <div class="mb-4 border-b-4 border-zinc-900 pb-2">
+                        <h3 class="text-[12px] font-black uppercase tracking-widest text-zinc-900 italic">
                             Расчетные счета
                         </h3>
                     </div>
-                    <div id="org-details-bank-accounts" class="space-y-3">
+                    <div id="org-details-bank-accounts" class="space-y-4">
                         <!-- Loaded via JS -->
                     </div>
                 </div>
 
-                <!-- Invoice History List -->
-                <div class="mt-8">
-                    <div class="flex items-center justify-between mb-3 border-b border-zinc-50 pb-2">
-                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-zinc-400">
+                <!-- Invoice History Section -->
+                <div>
+                    <div class="mb-4 border-b-4 border-zinc-900 pb-2">
+                        <h3 class="text-[12px] font-black uppercase tracking-widest text-zinc-900 italic">
                             История счетов
                         </h3>
                     </div>
@@ -830,52 +544,50 @@
                         });
                     @endphp
 
-                    <div id="org-details-invoices" class="flex flex-col divide-y divide-zinc-50 border border-zinc-100">
+                    <div id="org-details-invoices" class="space-y-4">
                         @forelse($b2bInvoices as $inv)
-                            <div class="invoice-row p-4 hover:bg-zinc-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4 group" 
+                            <div class="invoice-row p-6 bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] flex flex-col md:flex-row md:items-center justify-between gap-6 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all group" 
                                  data-org-id="{{ $inv->metadata['organization_id'] }}">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-violet-50 text-[#7C45F5] flex items-center justify-center text-lg font-bold shrink-0">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-[#D6FF00] border-3 border-zinc-900 flex items-center justify-center text-xl shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
                                         📄
                                     </div>
-                                    <div class="flex flex-col">
-                                        <div class="text-[14px] font-bold text-zinc-900 group-hover:text-[#7C45F5] transition-colors">
+                                    <div>
+                                        <div class="text-[16px] font-black text-zinc-900 uppercase tracking-tight group-hover:text-[#7C45F5] transition-colors">
                                             Счет #{{ $inv->id }}
                                         </div>
-                                        <div class="text-[11px] text-zinc-500 font-mono">
+                                        <div class="text-[11px] text-zinc-500 font-black uppercase tracking-widest">
                                             {{ core()->formatBasePrice($inv->amount) }} • {{ $inv->created_at->format('d.m.Y') }}
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-2 max-md:w-full">
+                                <div class="flex items-center gap-3">
                                     <a href="{{ route('shop.customers.account.credits.invoice.print', $inv->id) }}" target="_blank"
-                                        class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-zinc-50 hover:bg-violet-50 text-zinc-600 hover:text-[#7C45F5] font-bold text-[11px] uppercase tracking-wider transition-all">
-                                        <span class="icon-download text-lg"></span>
-                                        <span>Скачать</span>
+                                        class="px-6 py-3 bg-white border-3 border-zinc-900 hover:bg-[#D6FF00] text-zinc-900 font-black text-[11px] uppercase tracking-widest transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:scale-95">
+                                        Скачать
                                     </a>
                                     <button type="button" onclick="sendInvoiceEmail({{ $inv->id }}, this)"
-                                        class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-zinc-50 border border-zinc-100 hover:bg-zinc-900 hover:border-zinc-900 text-zinc-600 hover:text-white font-bold text-[11px] uppercase tracking-wider transition-all">
-                                        <span class="icon-mail text-lg pr-1"></span>
-                                        <span>Email</span>
+                                        class="px-6 py-3 bg-zinc-900 border-3 border-zinc-900 hover:bg-zinc-800 text-white font-black text-[11px] uppercase tracking-widest transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:scale-95">
+                                        Email
                                     </button>
                                 </div>
                             </div>
                         @empty
-                            <div id="no-invoices-msg" class="p-8 text-center text-zinc-400 text-[13px]">
+                            <div id="no-invoices-msg" class="p-12 text-center text-zinc-400 font-black uppercase tracking-widest italic border-4 border-dashed border-zinc-200">
                                 Счетов пока нет
                             </div>
                         @endforelse
                         
-                        <div id="no-filtered-invoices-msg" class="hidden p-8 text-center text-zinc-400 text-[13px]">
+                        <div id="no-filtered-invoices-msg" class="hidden p-12 text-center text-zinc-400 font-black uppercase tracking-widest italic border-4 border-dashed border-zinc-200">
                             Для этой организации счетов нет
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="border-t border-zinc-50 mt-6 pt-4 flex items-center justify-end gap-3">
+            <div class="mt-12 flex justify-end">
                 <button type="button" onclick="switchStep('organizations')"
-                    class="px-8 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-[14px] text-zinc-700 font-bold transition-all active:scale-95">
+                    class="bg-[#D6FF00] border-3 border-zinc-900 px-10 py-4 text-[12px] font-black text-zinc-900 uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">
                     Назад к списку
                 </button>
             </div>
@@ -884,28 +596,33 @@
 
 
         {{-- Step: Empty (Crypto) --}}
-        <div id="step-empty"
-            class="hidden bg-white border border-zinc-100 shadow-sm p-10 flex flex-col items-center text-center gap-6">
-            <div
-                class="w-20 h-20 bg-violet-50 flex items-center justify-center text-4xl shadow-inner group transition-all">
-                🔐</div>
-            <div class="space-y-2">
-                <p class="text-[17px] font-black text-zinc-900 tracking-tight">Нет верифицированных кошельков</p>
-                <p class="text-[13px] text-zinc-400 max-w-[280px] leading-relaxed">Для пополнения необходимо сначала
-                    добавить и верифицировать свой кошелёк.</p>
+        <div id="step-empty" class="hidden bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] p-12 text-center">
+            <div class="flex flex-col items-center gap-8">
+                <div class="w-24 h-24 bg-zinc-900 border-4 border-zinc-900 flex items-center justify-center text-5xl shadow-[6px_6px_0px_0px_rgba(214,255,0,1)]">
+                    🔐
+                </div>
+                <div class="space-y-4">
+                    <h2 class="text-2xl font-black text-zinc-900 uppercase tracking-tighter italic">Нет верифицированных кошельков</h2>
+                    <p class="text-[13px] text-zinc-500 max-w-[320px] font-black uppercase tracking-widest leading-relaxed mx-auto">
+                        Для пополнения необходимо сначала добавить и верифицировать свой кошелёк.
+                    </p>
+                </div>
+                <button onclick="goToAddWallet()"
+                    class="w-full max-w-[280px] bg-[#D6FF00] border-3 border-zinc-900 px-10 py-5 text-[14px] font-black text-zinc-900 uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">
+                    Добавить кошелёк
+                </button>
             </div>
-            <button onclick="goToAddWallet()"
-                class="w-full max-w-[240px] text-white font-black px-8 py-3.5 text-[14px] bg-[#7C45F5] hover:bg-[#6534d4] transition-all active:scale-95 shadow-xl shadow-violet-100">
-                Добавить кошелёк
-            </button>
         </div>
 
         {{-- Step: Management (Combined Deposit & Management) --}}
         <div id="step-management" class="hidden">
-            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 opacity-70">
-                Кошельки для пополнения
-            </p>
-            <div class="grid grid-cols-1 gap-3">
+            <div class="mb-6 px-4">
+                <p class="text-[10px] text-zinc-900 uppercase font-black tracking-[0.3em] italic">
+                    Кошельки для пополнения
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-4">
             @foreach($allAddresses as $address)
                 @php
                     $nm = [
@@ -944,90 +661,73 @@
                     $coinColor = $m[3];
                 @endphp
 
-                <div class="bg-white  shadow-sm hover:shadow-md transition-all group/card relative flex items-center">
+                <div class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] flex hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all group overflow-hidden">
                     {{-- Clickable Area for Deposit --}}
                     <div onclick="selectAsset('{{ $address->network }}', '{{ $address->id }}')" role="button" tabindex="0"
-                        class="flex-1 flex gap-4 p-5 min-w-0 text-left cursor-pointer items-center">
+                        class="flex-1 flex gap-6 p-6 min-w-0 text-left items-center cursor-pointer">
                         {{-- Icon Column --}}
-                        <div class="relative shrink-0">
-                            <div class="w-[52px] h-[52px]  flex items-center justify-center text-white text-[22px] font-black shadow-sm"
+                        <div class="shrink-0">
+                            <div class="w-14 h-14 border-3 border-zinc-900 flex items-center justify-center text-white text-2xl font-black shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]"
                                 style="background: {{ $coinColor }}">
                                 {{ $m[2] }}
                             </div>
                         </div>
 
                         {{-- Main Content Column --}}
-                        <div class="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                        <div class="flex-1 min-w-0">
                             {{-- Header: Verified Icon + Alias --}}
-                            <div class="flex items-center gap-1.5 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
                                 @if($address->isVerified())
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[18px] h-[18px] text-black shrink-0"
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-900 shrink-0"
                                         viewBox="0 0 24 24" fill="currentColor">
-                                        <path
-                                            d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
+                                        <path d="M22.5 12.5c0-1.58-.88-2.95-2.18-3.65.15-.44.23-.91.23-1.4 0-2.48-2.02-4.5-4.5-4.5-.49 0-.96.08-1.4.22C13.95 1.88 12.58 1 11 1s-2.95.88-3.65 2.17c-.44-.14-.91-.22-1.4-.22-2.48 0-4.5 2.02-4.5 4.5 0 .49.08.96.22 1.4C.38 9.55-.5 10.92-.5 12.5s.88 2.95 2.17 3.65c-.14.44-.22.91-.22 1.4 0 2.48 2.02 4.5 4.5 4.5.49 0 .96-.08 1.4-.22 1.1 2.09 3.26 3.5 5.75 3.5 2.49 0 4.65-1.41 5.75-3.5.44.14.91.22 1.4.22 2.48 0 4.5-2.02 4.5-4.5 0-.49-.08-.96-.22-1.4 1.3-1.2 2.18-2.57 2.18-4.15zm-12.23 4.81L6.04 13l1.41-1.41 2.82 2.82 7.07-7.07 1.41 1.41-8.48 8.48z" />
                                     </svg>
                                 @endif
-                                <span
-                                    class="text-[18px] font-black text-black truncate tracking-tight">{{ $fullAlias }}</span>
+                                <span class="text-xl font-black text-zinc-900 uppercase tracking-tighter italic truncate">
+                                    {{ $fullAlias }}
+                                </span>
                             </div>
 
-                            {{-- Network Breadcrumbs + Address (Premium View) --}}
-                            <div
-                                class="flex items-center gap-2 text-[11px] font-black text-zinc-400 uppercase tracking-widest opacity-80">
-                                <span class="shrink-0">{{ $m[5] }}</span>
-                                <span class="shrink-0 text-zinc-200">›</span>
-                                <span class="shrink-0">{{ $m[1] }}</span>
-                                <span class="shrink-0 text-zinc-200">›</span>
-                                <div class="flex items-center gap-1.5 min-w-0 pr-2">
-                                    <code
-                                        class="font-mono text-[12px] text-zinc-400 truncate tracking-tighter opacity-70">{{ $address->address }}</code>
-                                </div>
+                            {{-- Network Info --}}
+                            <div class="flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+                                <span>{{ $m[5] }}</span>
+                                <span class="text-zinc-200">/</span>
+                                <span>{{ $m[1] }}</span>
+                                <span class="text-zinc-200">/</span>
+                                <code class="font-mono text-[11px] opacity-70">{{ substr($address->address, 0, 8) }}...{{ substr($address->address, -8) }}</code>
                             </div>
 
-                            {{-- Balance + Sync Status + Send Shortcut --}}
-                            <div class="flex items-center justify-between mt-0.5 pr-2">
+                            {{-- Balance --}}
+                            <div class="mt-3 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
-                                    <span class="text-[16px] font-black font-mono text-black">
+                                    <span class="text-lg font-black font-mono text-zinc-900 bg-zinc-50 px-3 py-1 border-2 border-zinc-100">
                                         {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                        <span class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.1em] ml-1">{{ $m[1] }}</span>
+                                        <span class="text-[10px] text-zinc-400 font-black ml-1">{{ $m[1] }}</span>
                                     </span>
-                                    <div class="flex items-center gap-1 text-[11px] font-bold text-zinc-400 opacity-60">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        @if($address->updated_at)
-                                            {{ $address->updated_at->diffForHumans(['short' => true]) }}
-                                        @endif
-                                    </div>
                                 </div>
 
                                 @if(str_contains($address->network, 'arbitrum'))
                                     <button type="button" 
                                         onclick="event.stopPropagation(); openSendModal('{{ $address->id }}', '{{ $address->network }}', '{{ $m[1] }}', '{{ $address->balance ?? 0 }}')"
-                                        class="flex items-center gap-1.5 px-3 py-1.5 bg-[#7C45F5] text-white text-[10px] font-black uppercase tracking-wider hover:bg-[#6534d4] transition-all active:scale-95 shadow-lg shadow-violet-100">
-                                        <span class="icon-arrow-right -rotate-45 text-[10px]"></span>
+                                        class="px-4 py-2 bg-[#D6FF00] border-3 border-zinc-900 text-zinc-900 text-[10px] font-black uppercase tracking-widest shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:scale-95">
                                         Отправить
                                     </button>
                                 @endif
                             </div>
                         </div>
-
-                        {{-- Removal of redundant chevron --}}
                     </div>
 
                     {{-- Action Column (Delete) --}}
-                    <div class="shrink-0 flex items-center pr-8 pl-2 border-l border-zinc-50 ml-2">
+                    <div class="shrink-0 flex items-center px-4 border-l-4 border-zinc-900 bg-zinc-50">
                         <form id="delete-wallet-form-{{ $address->id }}"
                             action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
                             class="inline">
                             @csrf @method('DELETE')
                             <button type="button"
                                 onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
-                                class="w-[42px] h-[42px]  flex items-center justify-center bg-zinc-50 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                class="w-12 h-12 bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:border-red-600 hover:text-white hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                             </button>
                         </form>
@@ -1036,45 +736,47 @@
             @endforeach
 
             <button onclick="goToAddWallet()"
-                class="w-full py-[22px] mt-4 border border-dashed border-zinc-200 bg-transparent text-zinc-400 font-bold hover:text-zinc-600 transition-all flex items-center justify-center gap-3">
-                <span class="w-7 h-7  bg-zinc-100 flex items-center justify-center text-[18px] text-zinc-400">+</span>
-                <span class="text-[15px]">Добавить новый кошелек</span>
+                class="w-full mt-8 p-8 border-4 border-dashed border-zinc-200 bg-white hover:border-[#D6FF00] hover:bg-zinc-50 transition-all flex flex-col items-center justify-center gap-4 group">
+                <div class="w-12 h-12 bg-zinc-100 border-2 border-zinc-200 flex items-center justify-center text-2xl text-zinc-400 group-hover:bg-[#D6FF00] group-hover:border-zinc-900 group-hover:text-zinc-900 transition-all">
+                    +
+                </div>
+                <span class="text-[13px] font-black uppercase tracking-[0.2em] text-zinc-400 group-hover:text-zinc-900">Добавить новый кошелек</span>
             </button>
         </div>
 
         {{-- Step: B2B Management --}}
-        <div id="step-b2b-management" class="hidden space-y-4">
-            <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] mb-4 px-2 opacity-70">
-                Выберите организацию-плательщика
-            </p>
+        <div id="step-b2b-management" class="hidden space-y-6">
+            <div class="px-4">
+                <p class="text-[10px] text-zinc-900 uppercase font-black tracking-[0.3em] italic">
+                    Выберите организацию-плательщика
+                </p>
+            </div>
 
+            <div class="grid grid-cols-1 gap-4">
             @forelse($organizations as $org)
-                <div class="bg-white border border-zinc-100 hover:border-violet-200 hover:shadow-xl hover:shadow-violet-100/50 transition-all group/card relative flex flex-col p-5 cursor-pointer"
+                <div class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all group cursor-pointer overflow-hidden flex flex-col p-8"
                     onclick="selectTopupOrg('{{ $org->id }}', '{{ $org->name }}')">
-                    <div class="flex items-start gap-5">
+                    <div class="flex items-start gap-8">
                         {{-- Icon Column --}}
                         <div class="shrink-0 pt-1">
-                            <div
-                                class="w-12 h-12 bg-violet-50 border border-violet-100 flex items-center justify-center text-xl shadow-inner group-hover/card:bg-violet-100 transition-colors">
+                            <div class="w-14 h-14 bg-zinc-900 border-4 border-zinc-900 flex items-center justify-center text-2xl shadow-[4px_4px_0px_0px_rgba(214,255,0,1)] group-hover:bg-[#D6FF00] transition-colors">
                                 🏢
                             </div>
                         </div>
 
                         {{-- Main Content Column --}}
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-4 mb-2">
-                                <h4
-                                    class="text-[17px] font-black text-zinc-900 leading-tight group-hover/card:text-[#7C45F5] transition-colors truncate">
+                            <div class="flex items-center justify-between gap-6 mb-4">
+                                <h4 class="text-xl font-black text-zinc-900 uppercase tracking-tighter italic group-hover:text-[#7C45F5] transition-colors truncate">
                                     {{ $org->name }}
                                 </h4>
-                                <div
-                                    class="px-2 py-1 bg-zinc-50 text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] shrink-0">
+                                <div class="px-3 py-1 bg-zinc-900 text-[10px] font-black text-[#D6FF00] uppercase tracking-[0.2em] shrink-0">
                                     ИНН {{ $org->inn }}
                                 </div>
                             </div>
 
                             {{-- Grid Details --}}
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 mt-4 pt-4 border-t border-zinc-50">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4 pt-6 border-t-2 border-zinc-100">
                                 @php
                                     $details = [
                                         'КПП' => $org->kpp,
@@ -1085,67 +787,66 @@
                                 @endphp
                                 @foreach($details as $label => $value)
                                     @if($value)
-                                        <div class="flex flex-col gap-0.5">
-                                            <span
-                                                class="text-[9px] font-black text-zinc-400 uppercase tracking-[0.15em]">{{ $label }}</span>
-                                            <span
-                                                class="text-[13px] text-zinc-600 font-mono font-black truncate tracking-tight">{{ $value }}</span>
+                                        <div class="flex flex-col gap-1">
+                                            <span class="text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em]">{{ $label }}</span>
+                                            <span class="text-[13px] text-zinc-900 font-mono font-black truncate tracking-tight">{{ $value }}</span>
                                         </div>
                                     @endif
                                 @endforeach
                             </div>
 
-                            <div class="mt-4 flex items-center gap-2 text-[11px] text-zinc-400 italic truncate">
-                                <span>📍</span>
-                                <span>{{ $org->address }}</span>
+                            <div class="mt-6 flex items-center gap-2 text-[11px] text-zinc-400 italic bg-zinc-50 p-3 border border-zinc-100">
+                                <span class="shrink-0">📍</span>
+                                <span class="truncate">{{ $org->address }}</span>
                             </div>
                         </div>
                     </div>
 
                     {{-- Hover Indicator --}}
-                    <div
-                        class="absolute bottom-4 right-6 opacity-0 group-hover/card:opacity-100 transition-all translate-x-2 group-hover/card:translate-x-0">
-                        <span
-                            class="text-[#7C45F5] font-black text-[12px] uppercase tracking-[0.2em] flex items-center gap-1">
-                            Выбрать <span class="text-lg">→</span>
+                    <div class="absolute bottom-6 right-8 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
+                        <span class="text-[#7C45F5] font-black text-[12px] uppercase tracking-[0.2em] flex items-center gap-2">
+                            Выбрать <span class="text-xl">→</span>
                         </span>
                     </div>
                 </div>
             @empty
+                <div class="p-12 text-center text-zinc-400 font-black uppercase tracking-widest italic border-4 border-dashed border-zinc-200">
+                    У вас пока нет добавленных организаций
+                </div>
             @endforelse
+            </div>
         </div>
 
         {{-- Step: Top-up Details --}}
         <div id="step-topup-details" class="hidden">
-            <div class="bg-white/5 border border-white/10 shadow-2xl rounded-[2.5rem] overflow-hidden backdrop-blur-xl p-8">
-                <div class="flex items-center gap-4 mb-10 border-b border-zinc-50 pb-8">
-                    <div class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">
-                        🏢</div>
+            <div class="bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] overflow-hidden p-8">
+                <div class="flex items-center gap-6 mb-10 border-b-4 border-zinc-900 pb-8">
+                    <div class="w-16 h-16 bg-zinc-900 border-4 border-zinc-900 flex items-center justify-center text-3xl shadow-[4px_4px_0px_0px_rgba(214,255,0,1)]">
+                        🏢
+                    </div>
                     <div>
-                        <h3 class="text-[20px] font-black text-zinc-900 leading-tight tracking-tight"
-                            id="selected-org-name">
+                        <h3 class="text-2xl font-black text-zinc-900 uppercase tracking-tighter italic" id="selected-org-name">
                             Название организации
                         </h3>
-                        <p class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] mt-1.5 opacity-80">
+                        <p class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.3em] mt-2 italic">
                             Банковский перевод (B2B)
                         </p>
                     </div>
                 </div>
 
-                <div class="space-y-8">
+                <div class="space-y-10">
                     <div id="topup-amount-container" class="max-w-md">
                         <x-shop::form.control-group class="!mb-0">
                             <x-shop::form.control-group.label
-                                class="required !text-[10px] !font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">
-                                Сумма пополнения
+                                class="!text-[10px] !font-black text-zinc-400 uppercase tracking-[0.2em] mb-4">
+                                Сумма пополнения (₽)
                             </x-shop::form.control-group.label>
 
                             <div class="relative group">
                                 <x-shop::form.control-group.control type="text" name="amount" id="topup-amount"
-                                    class="!py-5 !px-8 !border-zinc-100 focus:!border-[#7C45F5] focus:!ring-0 transition-all text-[32px] font-mono font-black text-zinc-900 placeholder:text-zinc-100"
+                                    class="!py-6 !px-8 !border-3 !border-zinc-900 !bg-zinc-50 focus:!bg-white focus:!ring-0 transition-all text-4xl font-black text-zinc-900 placeholder:text-zinc-200"
                                     placeholder="0.00" />
-                                <div
-                                    class="absolute right-8 top-1/2 -translate-y-1/2 text-zinc-300 font-black text-2xl group-focus-within:text-[#7C45F5] transition-colors">
+                                <div class="absolute right-8 top-1/2 -translate-y-1/2 text-zinc-300 font-black text-3xl group-focus-within:text-[#7C45F5] transition-colors">
                                     ₽
                                 </div>
                             </div>
@@ -1153,40 +854,36 @@
                     </div>
 
                     <div id="topup-success-msg"
-                        class="hidden p-8 bg-zinc-50 border-l-4 border-l-[#7C45F5] shadow-inner space-y-6">
-                        <div class="flex items-center gap-4 text-zinc-900">
-                            <span class="text-3xl">📄</span>
+                        class="hidden p-8 bg-zinc-900 border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(214,255,0,1)] space-y-8">
+                        <div class="flex items-center gap-6 text-white">
+                            <span class="text-4xl">📄</span>
                             <div>
-                                <p class="font-bold text-[18px]">Счет на оплату сформирован</p>
-                                <p class="text-zinc-500 text-[13px]">Ожидайте зачисления средств после оплаты</p>
+                                <p class="font-black text-xl uppercase tracking-tight italic">Счет сформирован</p>
+                                <p class="text-zinc-400 text-[11px] font-black uppercase tracking-widest mt-1">Ожидайте зачисления средств после оплаты</p>
                             </div>
                         </div>
 
-                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <div class="flex flex-col sm:flex-row gap-4">
                             <a id="topup-invoice-link" href="#" target="_blank"
-                                class="flex-1 flex items-center justify-center gap-3 px-8 py-4 bg-[#7C45F5] text-white font-bold text-[14px] uppercase tracking-wider hover:bg-[#6534d4] transition-all active:scale-[0.98] shadow-lg shadow-violet-200">
+                                class="flex-1 flex items-center justify-center gap-3 px-8 py-5 bg-[#D6FF00] border-3 border-zinc-900 text-zinc-900 font-black text-[13px] uppercase tracking-widest hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
                                 <span>⬇️</span>
-                                <span>@lang('shop::app.customers.account.invoice.download-invoice')</span>
+                                <span>Скачать счет</span>
                             </a>
 
                             <button type="button" id="email-invoice-btn" onclick="sendTopupInvoiceEmail()"
-                                class="flex-1 flex items-center justify-center gap-3 px-8 py-4 border-2 border-zinc-900 text-zinc-900 font-bold text-[14px] uppercase tracking-wider hover:bg-zinc-900 hover:text-white transition-all active:scale-[0.98]">
+                                class="flex-1 flex items-center justify-center gap-3 px-8 py-5 bg-zinc-800 border-3 border-zinc-900 text-white font-black text-[13px] uppercase tracking-widest hover:bg-zinc-700 transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
                                 <span id="email-btn-icon">📧</span>
-                                <span id="email-btn-text">Отправить на Email</span>
-                                <div id="email-btn-loader"
-                                    class="hidden w-4 h-4 border-2 border-current border-t-transparent animate-spin">
-                                </div>
+                                <span id="email-btn-text">На Email</span>
+                                <div id="email-btn-loader" class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin"></div>
                             </button>
                         </div>
                     </div>
 
                     <div class="pt-6">
                         <button type="button" id="generate-topup-btn" onclick="generateTopupInvoice()"
-                            class="w-full bg-zinc-900 hover:bg-[#7C45F5] text-white font-black py-5 px-10 shadow-xl transition-all active:scale-95 flex items-center justify-center gap-4 text-[14px] uppercase tracking-[0.2em]">
+                            class="w-full bg-[#D6FF00] border-4 border-zinc-900 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none text-zinc-900 font-black py-6 px-10 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] transition-all flex items-center justify-center gap-4 text-[15px] uppercase tracking-[0.2em] italic">
                             <span id="btn-text">Выставить счет</span>
-                            <div id="btn-loader"
-                                class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin">
-                            </div>
+                            <div id="btn-loader" class="hidden w-6 h-6 border-3 border-zinc-900 border-t-transparent animate-spin"></div>
                         </button>
                     </div>
                 </div>
