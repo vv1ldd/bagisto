@@ -10,7 +10,7 @@
 <x-shop::layouts 
     :has-header="$hasHeader" 
     :has-feature="false"
-    :has-footer="request()->routeIs('shop.customers.account.index') ? false : 'mini'"
+    :has-footer="'mini'"
 >
     <!-- Page Title -->
     <x-slot:title>
