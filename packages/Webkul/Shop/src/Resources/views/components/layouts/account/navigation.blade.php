@@ -17,7 +17,7 @@ $menuIcons = [
 ?>
 
 {{-- CARDLESS MENU --}}
-<div class="relative w-full max-w-[1100px] mx-auto">
+<div class="relative w-full max-w-[700px] mx-auto">
     {{-- Header with Back Button --}}
     <div class="flex items-center gap-3 mb-1 px-4 pt-0">
         <button type="button" 
@@ -28,7 +28,7 @@ $menuIcons = [
         <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">Личный кабинет</h1>
     </div>
 
-    <div class="p-0 grid grid-cols-1 md:grid-cols-2 gap-4 px-4">
+    <div class="p-0 grid grid-cols-1 gap-4 px-4">
         {{-- Wallet --}}
         @if ($customer instanceof \Webkul\Customer\Models\Customer && !empty($customer->username))
             <a href="{{ route('shop.customers.account.credits.index') }}" 
