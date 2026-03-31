@@ -23,7 +23,9 @@
 
             {{-- Right Side: Branding --}}
             <div class="flex items-center gap-6">
-                <span class="text-[10px] font-black uppercase tracking-widest text-[#7C45F5]">Built on Handshake</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-[#7C45F5]">
+                    {{ core()->getConfigData('general.design.footer_content.footer_note') ?? 'Built on Handshake' }}
+                </span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Powered by Bagisto</span>
             </div>
         </div>
