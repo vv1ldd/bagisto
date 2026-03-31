@@ -61,6 +61,7 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-category-template">
+                <div>
                     <template v-if="!isEmptyInitial">
                         @include('shop::categories.toolbar')
                     </template>
@@ -346,5 +347,6 @@
                     },
                 });
             </script>
+            @include('shop::categories.toolbar.scripts')
         @endPushOnce
 </x-shop::layouts>

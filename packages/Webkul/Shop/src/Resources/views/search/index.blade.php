@@ -141,6 +141,8 @@ $searchInstead = $suggestion ? $query : null;
                                                     </div>
                                             </script>
 
+            @include('shop::categories.toolbar.scripts')
+
             <script type="module">
                 app.component('v-search', {
                     template: '#v-search-template',
