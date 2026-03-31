@@ -44,7 +44,7 @@ class ProcessWelcomeMintingJob implements ShouldQueue
 
         // 1. Double check if already received welcome bonus
         $exists = CustomerTransaction::where('customer_id', $customer->id)
-            ->where('type', 'welcome_bonus')
+            ->whereIn('type', ['registration_minting', 'welcome_bonus'])
             ->exists();
             
         if ($exists) {
@@ -52,42 +52,58 @@ class ProcessWelcomeMintingJob implements ShouldQueue
             return;
         }
 
-        Log::info("ProcessWelcomeMintingJob: Starting Welcome Minting for Customer [{$customer->id}].");
+        // 2. Ensure customer has a blockchain address (credits_id)
+        if (empty($customer->credits_id) || !str_starts_with($customer->credits_id, '0x')) {
+            Log::error("ProcessWelcomeMintingJob: Customer [{$customer->id}] has no valid Arbitrum address in 'credits_id'.");
+            return;
+        }
 
-        // 2. Mint Registration Meanly Coin (ERC20)
+        Log::info("ProcessWelcomeMintingJob: Starting Welcome Minting for Customer [{$customer->id}] (Address: {$customer->credits_id}).");
+
+        // 3. Mint Meanly Coin (ERC20)
         $reason = "Registration Bonus";
-        $txHash = $hotWalletService->mintCoin($customer, $this->amount, $reason);
+        
+        try {
+            $txHash = $hotWalletService->mintCoin($customer, $this->amount, $reason);
+        } catch (\Exception $e) {
+            Log::error("ProcessWelcomeMintingJob: Exception during minting for Customer [{$customer->id}]: " . $e->getMessage());
+            throw $e;
+        }
 
         if ($txHash) {
-            // 3. Record transaction
+            // 4. Record transaction
             CustomerTransaction::create([
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'customer_id' => $customer->id,
                 'amount' => $this->amount,
                 'type' => 'registration_minting',
-                'status' => 'completed',
-                'notes' => 'Минтинг Meanly Coins (Регистрация)',
+                'status' => 'pending', // Mark as pending until sync confirms it
+                'notes' => "Минтинг Meanly Coins (Регистрация +{$this->amount})",
                 'metadata' => [
                     'tx_hash' => $txHash,
                     'network' => 'arbitrum_one',
-                    'reason'  => $reason
+                    'reason'  => $reason,
+                    'triggered_by' => 'ProcessWelcomeMintingJob'
                 ],
             ]);
             
-            // 4. Update internal balance immediately
+            // 5. Update internal balance immediately (optimistic update)
             $customer->increment('balance', $this->amount);
             
-            // 5. Sync crypto address record
-            $address = $customer->crypto_addresses()->where('network', 'arbitrum_one')->first();
-            if ($address) {
-                // We don't wait for on-chain confirmation here, but we sync what we can
-                $syncService->syncBalance($address);
+            // 6. Sync crypto address record
+            try {
+                $address = $customer->crypto_addresses()->where('network', 'arbitrum_one')->first();
+                if ($address) {
+                    $syncService->syncBalance($address);
+                }
+            } catch (\Exception $e) {
+                Log::warning("ProcessWelcomeMintingJob: Sync balance failed for Customer [{$customer->id}], but minting was sent: " . $e->getMessage());
             }
 
-            Log::info("ProcessWelcomeMintingJob: Completed. Tx: {$txHash}");
+            Log::info("ProcessWelcomeMintingJob: Transaction sent successfully. Tx: {$txHash}");
         } else {
-            Log::error("ProcessWelcomeMintingJob: Failed minting for Customer [{$customer->id}].");
-            throw new \Exception("Welcome Minting Failed.");
+            Log::error("ProcessWelcomeMintingJob: Failed minting for Customer [{$customer->id}] - check HotWalletService logs.");
+            throw new \Exception("Welcome Minting submission failed.");
         }
     }
 }
