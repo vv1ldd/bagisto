@@ -151,8 +151,12 @@
                                  });
                                  const pdata = await pres.json();
                                  if (pdata.is_continuing_elsewhere && pdata.continuing_device === 'pc') {
-                                     btnStatus.innerText = 'ВЫ ОТКРЫЛИ НА ПК';
-                                     btnLabel.innerText = 'ПРОДОЛЖИТЬ ЗДЕСЬ';
+                                     btnStatus.innerText = 'ГОТОВО! ВЫ ПЕРЕШЛИ НА ПК';
+                                     btnLabel.innerText = 'ПРОДОЛЖАЙТЕ ТАМ';
+                                     btn.classList.replace('bg-white', 'bg-zinc-50');
+                                     btn.classList.add('opacity-50', 'pointer-events-none');
+                                     btn.onclick = null;
+                                     clearInterval(interval);
                                  }
                              } catch (e) {
                                  console.warn('Phone polling error', e);

@@ -137,14 +137,25 @@
                                 <span class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Ожидание регистрации...</span>
                             </div>
 
-                            <button v-if="isRegistrationComplete" @click="proceedToOnboarding" class="group relative flex w-full items-center justify-center gap-4 bg-zinc-900 text-white h-14 font-black uppercase tracking-[0.2em] text-[13px] transition-all hover:bg-black border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl overflow-hidden">
-                                <span>Продолжить</span>
-                                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
-                                    <path d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
+                            <template v-if="isRegistrationComplete">
+                                <template v-if="isContinuingElsewhere">
+                                    <div class="p-6 bg-zinc-50 border-3 border-zinc-900 rounded-2xl animate-in fade-in zoom-in-95 duration-500">
+                                        <p class="text-[11px] font-black uppercase tracking-widest text-zinc-900 leading-relaxed text-center italic">
+                                            Отлично! Продолжайте выполнение инструкций на вашем <span class="text-[#7C45F5]">смартфоне</span>.
+                                        </p>
+                                    </div>
+                                    <button @click="closeModal" class="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors underline decoration-2 underline-offset-8">Закрыть окно</button>
+                                </template>
 
-                            <button v-else @click="closeModal" class="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors underline decoration-2 underline-offset-8">Отмена</button>
+                                <button v-else @click="proceedToOnboarding" class="group relative flex w-full items-center justify-center gap-4 bg-zinc-900 text-white h-14 font-black uppercase tracking-[0.2em] text-[13px] transition-all hover:bg-black border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none rounded-2xl overflow-hidden">
+                                    <span>Продолжить</span>
+                                    <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                        <path d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </template>
+
+                            <button v-if="!isRegistrationComplete" @click="closeModal" class="w-full py-4 text-zinc-400 hover:text-zinc-900 font-black uppercase tracking-[0.2em] text-[10px] transition-colors underline decoration-2 underline-offset-8">Отмена</button>
                         </div>
                     </div>
                 </div>
