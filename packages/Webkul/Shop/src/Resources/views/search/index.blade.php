@@ -16,12 +16,10 @@ $searchInstead = $suggestion ? $query : null;
         {{ $title }}
         </x-slot>
 
-        <div class="container px-[60px] max-lg:px-8 max-sm:px-0">
+        <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-0">
             @if (request()->has('image-search'))
                 @include('shop::search.images.results')
             @endif
-
-            {{-- Removed the on-page heading "Search results" / "Результаты поиска" --}}
 
             @if ($searchInstead)
                 <form action="{{ route('shop.search.index', ['suggest' => false]) }}"
@@ -51,13 +49,13 @@ $searchInstead = $suggestion ? $query : null;
             <script type="text/x-template" id="v-search-template">
                 <div class="container mt-8 px-[60px] pb-24 max-lg:px-8 max-md:px-0">
                     <div>
-                                                            <template v-if="products.length || isLoading">
-                                                                @include('shop::categories.toolbar')
-                                                            </template>
+                        <template v-if="products.length || isLoading">
+                            @include('shop::categories.toolbar')
+                        </template>
 
-                                                            <!-- Product List Card Container -->
-                                                            <div
-                                                                class="mt-8 grid grid-cols-1 gap-6"
+                        <!-- Product List Card Container -->
+                        <div
+                            class="mt-8 grid grid-cols-1 gap-6"
                                                                 v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
                                                             >
                                                                 <!-- Product Card Shimmer Effect -->
@@ -90,27 +88,26 @@ $searchInstead = $suggestion ? $query : null;
                                                                         </div>
                                                                     </template>
                                                                 </template>
-                                                            </div>
+                                                                            <!-- Product Grid Card Container -->
+                        <div v-else class="mt-8 max-md:mt-5">
+                            <!-- Product Card Shimmer Effect -->
+                            <template v-if="isLoading">
+                                <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2">
+                                    <x-shop::shimmer.products.cards.grid count="12" />
+                                </div>
+                            </template>
 
-                                                            <!-- Product Grid Card Container -->
-                                                            <div v-else>
-                                                                <!-- Product Card Shimmer Effect -->
-                                                                <template v-if="isLoading">
-                                                                    <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:gap-x-3 max-sm:mt-5 max-sm:justify-items-center max-sm:gap-y-4">
-                                                                        <x-shop::shimmer.products.cards.grid count="12" />
-                                                                    </div>
-                                                                </template>
-
-                                                                <!-- Product Card Listing -->
-                                                                        <template v-else>
-                                                                            <template v-if="products.length">
-                                                                                <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 isolate" style="isolation: isolate;">
-                                                                                    <x-shop::products.card
-                                                                                        ::mode="'grid'"
-                                                                                        v-for="product in products"
-                                                                                    />
-                                                                                </div>
-                                                                            </template>
+                            <!-- Product Card Listing -->
+                            <template v-else>
+                                <template v-if="products.length">
+                                    <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 isolate" style="isolation: isolate;">
+                                        <x-shop::products.card
+                                            ::mode="'grid'"
+                                            v-for="product in products"
+                                        />
+                                    </div>
+                                </template>
+    </template>
 
                                                                     <!-- Empty Products Container -->
                                                                     <template v-else>
@@ -132,7 +129,7 @@ $searchInstead = $suggestion ? $query : null;
 
                                                             <!-- Infinite Scroll Sentinel -->
                                                             <div id="infinite-scroll-sentinel" ref="infiniteScrollSentinel" class="flex justify-center py-10" v-if="links.next">
-                                                                <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:gap-x-3 max-sm:mt-5 max-sm:justify-items-center max-sm:gap-y-4 w-full" v-if="loader">
+                                                                <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 w-full" v-if="loader">
                                                                     <x-shop::shimmer.products.cards.grid count="5" />
                                                                 </div>
                                                             </div>
