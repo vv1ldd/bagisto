@@ -1,38 +1,42 @@
 @component('shop::emails.layout')
 <div style="margin-bottom: 34px;">
-    <p style="font-weight: bold;font-size: 20px;color: #121A26;line-height: 24px;margin-bottom: 24px">
+    <div style="font-weight: 900; font-size: 24px; color: #18181B; margin-bottom: 24px; text-transform: uppercase;">
         @lang('shop::app.emails.customers.login-notification.greeting'), 👋
-    </p>
+    </div>
 
-    <p style="font-size: 16px;color: #384860;line-height: 24px;">
+    <p style="font-size: 16px; color: #18181B; line-height: 24px;">
         @lang('shop::app.emails.customers.login-notification.description', ['customer_name' => $customer->name])
     </p>
 </div>
 
-<div style="background: #F5F7F9; padding: 20px; border: 1px solid #E2E8F0; margin-bottom: 34px;">
-    <p style="font-weight: bold; font-size: 16px; color: #121A26; margin-bottom: 10px;">
+<div style="background: #FFFFFF; padding: 24px; border: 3px solid #18181B; box-shadow: 8px 8px 0px 0px #F0EFFF; margin-bottom: 34px;">
+    <div style="font-weight: 900; font-size: 18px; color: #18181B; margin-bottom: 16px; text-transform: uppercase; border-bottom: 2px solid #18181B; padding-bottom: 8px;">
         @lang('shop::app.emails.customers.login-notification.details')
-    </p>
-    <p style="font-size: 14px; color: #384860; margin: 5px 0;">
-        <strong>@lang('shop::app.emails.customers.login-notification.ip-address'):</strong> {{ $loginLog->ip_address }}
-    </p>
-    <p style="font-size: 14px; color: #384860; margin: 5px 0;">
-        <strong>@lang('shop::app.emails.customers.login-notification.device'):</strong> {{ $loginLog->platform }}
-        ({{ $loginLog->browser }})
-    </p>
-    <p style="font-size: 14px; color: #384860; margin: 5px 0;">
-        <strong>@lang('shop::app.emails.customers.login-notification.time'):</strong>
-        {{ core()->formatDate($loginLog->created_at, 'd M Y H:i:s') }}
-    </p>
+    </div>
+    
+    <div style="font-size: 14px; color: #18181B; margin: 10px 0;">
+        <span style="font-weight: 900; text-transform: uppercase; background: #F0EFFF; padding: 2px 4px;">@lang('shop::app.emails.customers.login-notification.ip-address'):</span> 
+        <span style="font-weight: 700;">{{ $loginLog->ip_address }}</span>
+    </div>
+    
+    <div style="font-size: 14px; color: #18181B; margin: 10px 0;">
+        <span style="font-weight: 900; text-transform: uppercase; background: #F0EFFF; padding: 2px 4px;">@lang('shop::app.emails.customers.login-notification.device'):</span> 
+        <span style="font-weight: 700;">{{ $loginLog->platform }} ({{ $loginLog->browser }})</span>
+    </div>
+    
+    <div style="font-size: 14px; color: #18181B; margin: 10px 0;">
+        <span style="font-weight: 900; text-transform: uppercase; background: #F0EFFF; padding: 2px 4px;">@lang('shop::app.emails.customers.login-notification.time'):</span> 
+        <span style="font-weight: 700;">{{ core()->formatDate($loginLog->created_at, 'd M Y H:i:s') }}</span>
+    </div>
 </div>
 
-<p style="font-size: 14px; color: #384860; line-height: 20px;">
+<p style="font-size: 14px; color: #B91C1C; line-height: 20px; font-weight: 700; text-transform: uppercase; background: #FEF2F2; border: 2px solid #EF4444; padding: 12px; display: inline-block;">
     @lang('shop::app.emails.customers.login-notification.warning')
 </p>
 
 <div style="margin-top: 40px; margin-bottom: 40px;">
     <a href="{{ route('shop.customer.session.index') }}"
-        style="padding: 12px 30px; justify-content: center; align-items: center; background: #060C3B; color: #FFFFFF; text-decoration: none; font-weight: 700; display: inline-block;">
+        style="display: inline-block; padding: 18px 45px; background-color: #7C45F5; border: 3px solid #18181B; color: #FFFFFF; font-weight: 900; text-decoration: none; text-transform: uppercase; box-shadow: 6px 6px 0px 0px #18181B;">
         @lang('shop::app.layouts.my-account')
     </a>
 </div>

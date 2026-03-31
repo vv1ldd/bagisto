@@ -1,294 +1,207 @@
 @component('admin::emails.layout')
-    <div style="margin-bottom: 34px;">
-        <span style="font-size: 22px;font-weight: 600;color: #121A26">
+    <div style="margin-bottom: 40px;">
+        <div style="font-weight: 900; font-size: 28px; color: #18181B; margin-bottom: 12px; text-transform: uppercase;">
             @lang('admin::app.emails.orders.canceled.title')
-        </span> <br>
+        </div>
 
-        <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-            @lang('admin::app.emails.dear', ['admin_name' => core()->getAdminEmailDetails()['name']]),👋
+        <p style="font-size: 18px; color: #18181B; font-weight: 700; margin-bottom: 24px;">
+            @lang('admin::app.emails.dear', ['admin_name' => core()->getAdminEmailDetails()['name']]), 👋
         </p>
 
-        <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-            {!! trans('admin::app.emails.orders.canceled.greeting', [
-                'order_id' => '<a href="' . route('admin.sales.orders.view', $order->id) . '" style="color: #2969FF;">#' . $order->increment_id . '</a>',
-                'created_at' => core()->formatDate($order->created_at, 'Y-m-d H:i:s')
-                ])
-            !!}
-        </p>
+        <div style="padding: 20px; background-color: #F0EFFF; border: 3px solid #18181B; margin-bottom: 34px;">
+            <p style="font-size: 16px; color: #18181B; line-height: 24px; margin: 0;">
+                {!! trans('admin::app.emails.orders.canceled.greeting', [
+                    'order_id' => '<a href="' . route('admin.sales.orders.view', $order->id) . '" style="color: #7C45F5; font-weight: 900; text-underline-offset: 4px;">#' . $order->increment_id . '</a>',
+                    'created_at' => core()->formatDate($order->created_at, 'Y-m-d H:i:s')
+                    ])
+                !!}
+            </p>
+        </div>
     </div>
 
-    <div style="font-size: 20px;font-weight: 600;color: #121A26">
+    <div style="font-weight: 900; font-size: 20px; color: #18181B; text-transform: uppercase; margin-bottom: 24px;">
         @lang('admin::app.emails.orders.canceled.summary')
     </div>
 
-    <div style="display: flex;flex-direction: row;margin-top: 20px;justify-content: space-between;margin-bottom: 40px;">
-        @if ($order->shipping_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('admin::app.emails.orders.shipping-address')
-                </div>
+    <div style="margin-bottom: 40px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                @if ($order->shipping_address)
+                    <td style="vertical-align: top; width: 50%; padding-right: 20px;">
+                        <div style="padding: 24px; background-color: #FFFFFF; border: 3px solid #18181B; box-shadow: 8px 8px 0px 0px #F0EFFF; min-height: 350px;">
+                            <div style="font-weight: 900; font-size: 16px; color: #18181B; text-transform: uppercase; margin-bottom: 16px; border-bottom: 2px solid #18181B; padding-bottom: 8px;">
+                                @lang('admin::app.emails.orders.shipping-address')
+                            </div>
 
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $order->shipping_address->company_name ?? '' }}<br/>
+                            <div style="font-size: 15px; color: #18181B; line-height: 25px;">
+                                <span style="font-weight: 700;">{{ $order->shipping_address->company_name ?? '' }}</span><br/>
+                                {{ $order->shipping_address->name }}<br/>
+                                {{ $order->shipping_address->address }}<br/>
+                                {{ $order->shipping_address->postcode . " " . $order->shipping_address->city }}<br/>
+                                {{ $order->shipping_address->state }}<br/>
+                                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #CBD5E1;">
+                                    <span style="font-weight: 900; text-transform: uppercase; font-size: 12px;">@lang('admin::app.emails.orders.contact'):</span><br>
+                                    {{ $order->billing_address->phone }}
+                                </div>
+                            </div>
 
-                    {{ $order->shipping_address->name }}<br/>
-
-                    {{ $order->shipping_address->address }}<br/>
-
-                    {{ $order->shipping_address->postcode . " " . $order->shipping_address->city }}<br/>
-
-                    {{ $order->shipping_address->state }}<br/>
-
-                    ---<br/>
-
-                    @lang('admin::app.emails.orders.contact') : {{ $order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('admin::app.emails.orders.shipping')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ $order->shipping_title }}
-                </div>
-            </div>
-        @endif
-
-        @if ($order->billing_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('admin::app.emails.orders.billing-address')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $order->billing_address->company_name ?? '' }}<br/>
-
-                    {{ $order->billing_address->name }}<br/>
-
-                    {{ $order->billing_address->address }}<br/>
-
-                    {{ $order->billing_address->postcode . " " . $order->billing_address->city }}<br/>
-
-                    {{ $order->billing_address->state }}<br/>
-
-                    ---<br/>
-
-                    @lang('admin::app.emails.orders.contact') : {{ $order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('admin::app.emails.orders.payment')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ core()->getConfigData('sales.payment_methods.' . $order->payment->method . '.title') }}
-                </div>
-
-                @php $additionalDetails = \Webkul\Payment\Payment::getAdditionalDetails($order->payment->method); @endphp
-
-                @if (! empty($additionalDetails))
-                    <div style="font-size: 16px; color: #384860;">
-                        <div>{{ $additionalDetails['title'] }}</div>
-                        <div>{{ $additionalDetails['value'] }}</div>
-                    </div>
+                            <div style="margin-top: 24px;">
+                                <div style="font-weight: 900; font-size: 14px; color: #18181B; text-transform: uppercase; margin-bottom: 8px;">
+                                    @lang('admin::app.emails.orders.shipping')
+                                </div>
+                                <div style="font-size: 14px; background: #F0EFFF; padding: 12px; border: 2px solid #18181B; font-weight: 700;">
+                                    {{ $order->shipping_title }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 @endif
-            </div>
-        @endif
+
+                @if ($order->billing_address)
+                    <td style="vertical-align: top; width: 50%;">
+                        <div style="padding: 24px; background-color: #FFFFFF; border: 3px solid #18181B; box-shadow: 8px 8px 0px 0px #F0EFFF; min-height: 350px;">
+                            <div style="font-weight: 900; font-size: 16px; color: #18181B; text-transform: uppercase; margin-bottom: 16px; border-bottom: 2px solid #18181B; padding-bottom: 8px;">
+                                @lang('admin::app.emails.orders.billing-address')
+                            </div>
+
+                            <div style="font-size: 15px; color: #18181B; line-height: 25px;">
+                                <span style="font-weight: 700;">{{ $order->billing_address->company_name ?? '' }}</span><br/>
+                                {{ $order->billing_address->name }}<br/>
+                                {{ $order->billing_address->address }}<br/>
+                                {{ $order->billing_address->postcode . " " . $order->billing_address->city }}<br/>
+                                {{ $order->billing_address->state }}<br/>
+                                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #CBD5E1;">
+                                    <span style="font-weight: 900; text-transform: uppercase; font-size: 12px;">@lang('admin::app.emails.orders.contact'):</span><br>
+                                    {{ $order->billing_address->phone }}
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 24px;">
+                                <div style="font-weight: 900; font-size: 14px; color: #18181B; text-transform: uppercase; margin-bottom: 8px;">
+                                    @lang('admin::app.emails.orders.payment')
+                                </div>
+                                <div style="font-size: 14px; background: #F0EFFF; padding: 12px; border: 2px solid #18181B; font-weight: 700;">
+                                    {{ core()->getConfigData('sales.payment_methods.' . $order->payment->method . '.title') }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                @endif
+            </tr>
+        </table>
     </div>
 
-    <div style="padding-bottom: 40px;border-bottom: 1px solid #CBD5E1;">
-        <table style="overflow-x: auto; border-collapse: collapse;
-        border-spacing: 0;width: 100%">
+    <div style="border: 3px solid #18181B; background-color: #FFFFFF; overflow: hidden; margin-bottom: 40px;">
+        <table style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr style="color: #121A26;border-top: 1px solid #CBD5E1;border-bottom: 1px solid #CBD5E1;">
+                <tr style="background-color: #F0EFFF; border-bottom: 3px solid #18181B;">
                     @foreach (['sku', 'name', 'price', 'qty'] as $item)
-                        <th style="text-align: left;padding: 15px">
+                        <th style="text-align: left; padding: 16px; font-weight: 900; text-transform: uppercase; font-size: 13px; color: #18181B;">
                             @lang('admin::app.emails.orders.' . $item)
                         </th>
                     @endforeach
                 </tr>
             </thead>
 
-            <tbody style="font-size: 16px;font-weight: 400;color: #384860;">
+            <tbody>
                 @foreach ($order->items as $item)
-                    <tr style="vertical-align: text-top;">
-                        <td style="text-align: left;padding: 15px">
-                            {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
-                        </td>
-
-                        <td style="text-align: left;padding: 15px">
-                            {{ $item->name }}
-
-                            @if (isset($item->additional['attributes']))
-                                <div>
-                                    @foreach ($item->additional['attributes'] as $attribute)
-                                        @if (
-                                            ! isset($attribute['attribute_type'])
-                                            || $attribute['attribute_type'] !== 'file'
-                                        )
-                                            <b>{{ $attribute['attribute_name'] }} : </b>{{ $attribute['option_label'] }}<br>
-                                        @else
-                                            <b>{{ $attribute['attribute_name'] }} : </b>
-
-                                            <a
-                                                href="{{ Storage::url($attribute['option_label']) }}"
-                                                class="text-blue-600 hover:underline"
-                                                download="{{ File::basename($attribute['option_label']) }}"
-                                            >
-                                                {{ File::basename($attribute['option_label']) }}
-                                            </a>
-
-                                            <br>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            @endif
-                        </td>
-
-                        <td style="display: flex;flex-direction: column;text-align: left;padding: 15px">
+                    <tr style="border-bottom: 1px solid #18181B;">
+                        <td style="padding: 16px; font-size: 14px; color: #18181B;">{{ $item->getTypeInstance()->getOrderedItem($item)->sku }}</td>
+                        <td style="padding: 16px; font-size: 14px; color: #18181B; font-weight: 700;">{{ $item->name }}</td>
+                        <td style="padding: 16px; font-size: 14px; color: #18181B;">
                             @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
                                 {{ core()->formatBasePrice($item->base_price_incl_tax) }}
                             @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
                                 {{ core()->formatBasePrice($item->base_price_incl_tax) }}
-
-                                <span style="font-size: 12px; white-space: nowrap">
-                                    @lang('admin::app.emails.orders.excl-tax')
-
-                                    <span style="font-weight: 600">
-                                        {{ core()->formatBasePrice($item->base_price) }}
-                                    </span>
-                                </span>
+                                <br><span style="font-size: 11px; opacity: 0.7;">@lang('admin::app.emails.orders.excl-tax'): {{ core()->formatBasePrice($item->base_price) }}</span>
                             @else
                                 {{ core()->formatBasePrice($item->base_price) }}
                             @endif
                         </td>
-
-                        <td style="text-align: left;padding: 15px">
-                            {{ $item->qty_canceled }}
-                        </td>
+                        <td style="padding: 16px; font-size: 14px; color: #18181B; font-weight: 900;">{{ $item->qty_canceled }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-    </div>
 
-    <div style="display: grid;justify-content: end;font-size: 16px;color: #384860;line-height: 30px;padding-top: 20px;padding-bottom: 20px;">
-        @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
-            <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
-                    @lang('admin::app.emails.orders.subtotal')
-                </span>
+        <div style="background-color: #FFFFFF; padding: 24px; border-top: 3px solid #18181B;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 50%;"></td>
+                    <td style="width: 50%;">
+                        <table style="width: 100%; font-size: 15px; color: #18181B; line-height: 30px;">
+                            @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
+                                <tr>
+                                    <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.subtotal')</td>
+                                    <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">{{ core()->formatBasePrice($order->base_sub_total_incl_tax) }}</td>
+                                </tr>
+                            @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
+                                <tr>
+                                    <td>@lang('admin::app.emails.orders.subtotal-excl-tax')</td>
+                                    <td style="text-align: right; font-weight: 700;">{{ core()->formatBasePrice($order->base_sub_total) }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.subtotal-incl-tax')</td>
+                                    <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">{{ core()->formatBasePrice($order->base_sub_total_incl_tax) }}</td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.subtotal')</td>
+                                    <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">{{ core()->formatBasePrice($order->base_sub_total) }}</td>
+                                </tr>
+                            @endif
 
-                <span style="text-align: right;">
-                    {{ core()->formatBasePrice($order->base_sub_total_incl_tax) }}
-                </span>
-            </div>
-        @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
-            <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
-                    @lang('admin::app.emails.orders.subtotal-excl-tax')
-                </span>
+                            @if ($order->shipping_address)
+                                @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
+                                    <tr>
+                                        <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.shipping-handling')</td>
+                                        <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">{{ core()->formatBasePrice($order->base_shipping_amount_incl_tax) }}</td>
+                                    </tr>
+                                @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
+                                    <tr>
+                                        <td>@lang('admin::app.emails.orders.shipping-handling-excl-tax')</td>
+                                        <td style="text-align: right; font-weight: 700;">{{ core()->formatBasePrice($order->base_shipping_amount) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.shipping-handling-incl-tax')</td>
+                                        <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">{{ core()->formatBasePrice($order->base_shipping_amount_incl_tax) }}</td>
+                                    </tr>
+                                @else
+                                    <tr>
+                                        <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.shipping-handling')</td>
+                                        <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">{{ core()->formatBasePrice($order->base_shipping_amount) }}</td>
+                                    </tr>
+                                @endif
+                            @endif
 
-                <span style="text-align: right;">
-                    {{ core()->formatBasePrice($order->base_sub_total) }}
-                </span>
-            </div>
+                            <tr>
+                                <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.tax')</td>
+                                <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">{{ core()->formatBasePrice($order->base_tax_amount) }}</td>
+                            </tr>
 
-            <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
-                    @lang('admin::app.emails.orders.subtotal-incl-tax')
-                </span>
+                            @if ($order->discount_amount > 0)
+                                <tr>
+                                    <td style="padding-bottom: 8px;">@lang('admin::app.emails.orders.discount')</td>
+                                    <td style="text-align: right; padding-bottom: 8px; font-weight: 700;">-{{ core()->formatBasePrice($order->base_discount_amount) }}</td>
+                                </tr>
+                            @endif
 
-                <span style="text-align: right;">
-                    {{ core()->formatBasePrice($order->base_sub_total_incl_tax) }}
-                </span>
-            </div>
-        @else
-            <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
-                    @lang('admin::app.emails.orders.subtotal')
-                </span>
-
-                <span style="text-align: right;">
-                    {{ core()->formatBasePrice($order->base_sub_total) }}
-                </span>
-            </div>
-        @endif
-
-        @if ($order->shipping_address)
-            @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
-                <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
-                        @lang('admin::app.emails.orders.shipping-handling')
-                    </span>
-
-                    <span style="text-align: right;">
-                        {{ core()->formatBasePrice($order->base_shipping_amount_incl_tax) }}
-                    </span>
-                </div>
-            @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
-                <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
-                        @lang('admin::app.emails.orders.shipping-handling-excl-tax')
-                    </span>
-
-                    <span style="text-align: right;">
-                        {{ core()->formatBasePrice($order->base_shipping_amount) }}
-                    </span>
-                </div>
-
-                <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
-                        @lang('admin::app.emails.orders.shipping-handling-incl-tax')
-                    </span>
-
-                    <span style="text-align: right;">
-                        {{ core()->formatBasePrice($order->base_shipping_amount_incl_tax) }}
-                    </span>
-                </div>
-            @else
-                <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
-                        @lang('admin::app.emails.orders.shipping-handling')
-                    </span>
-
-                    <span style="text-align: right;">
-                        {{ core()->formatBasePrice($order->base_shipping_amount) }}
-                    </span>
-                </div>
-            @endif
-        @endif
-
-        <div style="display: grid;gap: 100px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-            <span>
-                @lang('admin::app.emails.orders.tax')
-            </span>
-
-            <span style="text-align: right;">
-                {{ core()->formatBasePrice($order->base_tax_amount) }}
-            </span>
-        </div>
-
-        @if ($order->discount_amount > 0)
-            <div style="display: grid;gap: 100px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
-                    @lang('admin::app.emails.orders.discount')
-                </span>
-
-                <span style="text-align: right;">
-                    {{ core()->formatBasePrice($order->base_discount_amount) }}
-                </span>
-            </div>
-        @endif
-
-        <div style="display: grid; gap: 100px; grid-template-columns: repeat(2, minmax(0, 1fr)); font-weight: bold;">
-            <span>
-                @lang('admin::app.emails.orders.grand-total')
-            </span>
-
-            <span style="text-align: right;">
-                {{ core()->formatBasePrice($order->base_grand_total) }}
-            </span>
+                            <tr>
+                                <td colspan="2" style="padding-top: 16px; border-top: 2px solid #18181B;">
+                                    <div style="background-color: #7C45F5; color: #FFFFFF; padding: 16px; border: 3px solid #18181B; box-shadow: 4px 4px 0px 0px #18181B;">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <tr>
+                                                <td style="font-weight: 900; text-transform: uppercase;">@lang('admin::app.emails.orders.grand-total')</td>
+                                                <td style="text-align: right; font-weight: 900; font-size: 20px;">{{ core()->formatBasePrice($order->base_grand_total) }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 @endcomponent
