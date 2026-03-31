@@ -163,7 +163,9 @@ class ElasticSearchRepository
                  * If the search synonym repository returns an array of synonyms,
                  * we will wrap them in quotes and join them with the OR operator.
                  */
-                $synonyms = array_map(fn ($synonym) => '"'.$synonym.'"', $synonyms);
+                $synonyms = array_map(function ($synonym) {
+                    return '"'.$synonym.'"';
+                }, $synonyms);
 
                 $queryString = [
                     'query'            => implode(' OR ', $synonyms),
