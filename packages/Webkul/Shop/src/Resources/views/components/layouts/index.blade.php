@@ -717,33 +717,27 @@
                     methods: {
                         async startScanner() {
                             try {
-                                this.html5QrCode = new Html5Qrcode("qr-reader", {
-                                    // Enable native barcode detection for maximum speed and robustness
-                                    experimentalFeatures: {
-                                        useBarCodeDetectorIfSupported: true
-                                    }
-                                });
+                                // Clear any previous instance
+                                if (this.html5QrCode) {
+                                    try { await this.html5QrCode.stop(); } catch(e) {}
+                                }
+
+                                this.html5QrCode = new Html5Qrcode("qr-reader");
 
                                 const config = { 
-                                    fps: 30, // Pro-level smooth scanning
+                                    fps: 20,
                                     qrbox: (viewfinderWidth, viewfinderHeight) => {
-                                        // Large viewfinder for easy capture
-                                        const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.85;
+                                        const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.8;
                                         return { width: size, height: size };
-                                    }
+                                    },
+                                    aspectRatio: 1.0
                                 };
                                 
                                 await this.html5QrCode.start(
-                                    { 
-                                        facingMode: "environment",
-                                        // Request HD resolution for better distance scanning without being too strict
-                                        width: { ideal: 1280 },
-                                        height: { ideal: 720 }
-                                    }, 
+                                    { facingMode: "environment" }, 
                                     config, 
                                     (decodedText) => {
                                         if (decodedText.includes('/login/qr/')) {
-                                            // Provide immediate feedback before redirect
                                             const reader = document.getElementById('qr-reader');
                                             if (reader) reader.style.border = '4px solid #D6FF00';
                                             
