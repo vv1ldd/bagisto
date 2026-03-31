@@ -62,10 +62,9 @@
         @pushOnce('scripts')
             <script type="text/x-template" id="v-category-template">
                 <div class="container px-[60px] pb-24 max-lg:px-8 max-md:px-0">
+                    <x-shop::products.toolbar v-if="!isEmptyInitial" />
 
-
-
-                                                                        <!-- Product List (list mode) -->
+                    <!-- Product List (list mode) -->
                                                                         <div
                                                                             class="mt-8 grid grid-cols-1 gap-6"
                                                                             v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
