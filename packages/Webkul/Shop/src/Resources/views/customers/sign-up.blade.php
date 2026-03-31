@@ -401,10 +401,10 @@
                                 }
                             }
                             
-                            // Small delay to ensure cookies are processed by the browser
+                            // Increase delay to ensure cookies are processed by the browser
                             setTimeout(() => {
                                 window.location.href = this.registrationRedirectUrl || this.onboardingUrl;
-                            }, 500);
+                            }, 1000);
                         },
 
                         closeModal() {
