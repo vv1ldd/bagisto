@@ -159,15 +159,29 @@ class ElasticSearchRepository
             case AttributeTypeEnum::TEXT->value:
                 $synonyms = $this->searchSynonymRepository->getSynonymsByQuery($params[$attribute->code]);
 
-                $synonyms = array_map(function ($synonym) {
-                    return '"'.$synonym.'"';
-                }, $synonyms);
+                /**
+                 * If the search synonym repository returns an array of synonyms,
+                 * we will wrap them in quotes and join them with the OR operator.
+                 */
+                $synonyms = array_map(fn ($synonym) => '"'.$synonym.'"', $synonyms);
+
+                $queryString = [
+                    'query'            => implode(' OR ', $synonyms),
+                    'default_field'    => $attribute->code,
+                    'default_operator' => 'and',
+                    'fuzziness'        => 'auto',
+                ];
+
+                /**
+                 * If the attribute is 'name', we should boost it to give it higher
+                 * priority in search results.
+                 */
+                if ($attribute->code === 'name') {
+                    $queryString['boost'] = 10;
+                }
 
                 return [
-                    'query_string' => [
-                        'query' => implode(' OR ', $synonyms),
-                        'default_field' => $attribute->code,
-                    ],
+                    'query_string' => $queryString,
                 ];
 
             case AttributeTypeEnum::SELECT->value:
