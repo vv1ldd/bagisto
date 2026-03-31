@@ -157,33 +157,72 @@ class ElasticSearchRepository
                 ];
 
             case AttributeTypeEnum::TEXT->value:
-                $synonyms = $this->searchSynonymRepository->getSynonymsByQuery($params[$attribute->code]);
+                $rawQuery  = $params[$attribute->code];
+                $boost     = $attribute->code === 'name' ? 10 : 1;
+                $field     = $attribute->code;
 
-                /**
-                 * If the search synonym repository returns an array of synonyms,
-                 * we will wrap them in quotes and join them with the OR operator.
-                 */
-                $synonyms = array_map(function ($synonym) {
-                    return '"'.$synonym.'"';
-                }, $synonyms);
+                // Synonym expansion (keep existing behaviour)
+                $synonyms = $this->searchSynonymRepository->getSynonymsByQuery($rawQuery);
 
-                $queryString = [
-                    'query'            => implode(' OR ', $synonyms),
-                    'default_field'    => $attribute->code,
-                    'default_operator' => 'and',
-                    'fuzziness'        => 'auto',
+                // Build wildcard query: each word gets * suffix for prefix matching
+                // e.g. "игр" → "игр*" matches "игра", "игры", "игровой"
+                $terms        = array_filter(array_map('trim', explode(' ', $rawQuery)));
+                $wildcardParts = array_map(fn ($t) => $t . '*', $terms);
+                $wildcardQuery = implode(' OR ', $wildcardParts);
+
+                $shouldClauses = [];
+
+                // 1. Exact phrase match — highest relevance
+                $shouldClauses[] = [
+                    'match_phrase' => [
+                        $field => ['query' => $rawQuery, 'boost' => $boost * 2],
+                    ],
                 ];
 
-                /**
-                 * If the attribute is 'name', we should boost it to give it higher
-                 * priority in search results.
-                 */
-                if ($attribute->code === 'name') {
-                    $queryString['boost'] = 10;
+                // 2. Fuzzy per-word match (OR) — tolerates typos
+                $shouldClauses[] = [
+                    'match' => [
+                        $field => [
+                            'query'                => $rawQuery,
+                            'operator'             => 'or',
+                            'fuzziness'            => 'AUTO',
+                            'prefix_length'        => 1,
+                            'minimum_should_match' => '60%',
+                            'boost'                => $boost,
+                        ],
+                    ],
+                ];
+
+                // 3. Wildcard prefix — catches partial words mid-typing
+                $shouldClauses[] = [
+                    'query_string' => [
+                        'query'            => $wildcardQuery,
+                        'default_field'    => $field,
+                        'default_operator' => 'or',
+                        'analyze_wildcard' => true,
+                        'boost'            => $boost * 0.5,
+                    ],
+                ];
+
+                // 4. Synonyms (if any) — keep original behaviour
+                if (! empty($synonyms)) {
+                    $synonymQuoted = array_map(fn ($s) => '"' . $s . '"', $synonyms);
+
+                    $shouldClauses[] = [
+                        'query_string' => [
+                            'query'            => implode(' OR ', $synonymQuoted),
+                            'default_field'    => $field,
+                            'default_operator' => 'or',
+                            'boost'            => $boost * 0.8,
+                        ],
+                    ];
                 }
 
                 return [
-                    'query_string' => $queryString,
+                    'bool' => [
+                        'should'               => $shouldClauses,
+                        'minimum_should_match' => 1,
+                    ],
                 ];
 
             case AttributeTypeEnum::SELECT->value:
