@@ -1,8 +1,8 @@
 <footer class="mt-auto py-8 bg-white border-t-2 border-zinc-100">
     <div class="container px-4 md:px-[60px]">
-        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             {{-- Left Side: Copyright and Legal --}}
-            <div class="flex flex-col gap-1 max-md:text-center">
+            <div class="flex flex-col gap-1 max-md:text-left">
                 <p class="text-[10px] font-black uppercase tracking-[0.15em] text-zinc-900 leading-tight">
                     @php
                         $copyright = core()->getConfigData('general.design.copyright.copyright_text') 
