@@ -167,7 +167,16 @@ $searchInstead = $suggestion ? $query : null;
 
                 computed: {
                     queryParams() {
-                        let queryParams = Object.assign({}, this.filters.filter, this.filters.toolbar.applied);
+                        // Preserve the search query from URL at all times
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const searchQuery = urlParams.get('query') || '';
+
+                        let queryParams = Object.assign(
+                            { query: searchQuery },
+                            this.filters.filter,
+                            this.filters.toolbar.applied
+                        );
+
                         return this.removeJsonEmptyValues(queryParams);
                     },
 
@@ -216,10 +225,14 @@ $searchInstead = $suggestion ? $query : null;
                     },
 
                     getProducts() {
+                        if (this.loader) return;
+
                         this.isDrawerActive = {
                             toolbar: false,
                             filter: false,
                         };
+
+                        document.body.style.overflow = 'auto';
 
                         this.isLoading = true;
 
