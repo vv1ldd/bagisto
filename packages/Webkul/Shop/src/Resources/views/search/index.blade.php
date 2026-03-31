@@ -49,8 +49,8 @@ $searchInstead = $suggestion ? $query : null;
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-search-template">
-                                                            <div class="container px-[60px] max-lg:px-8 max-sm:px-0">
-                                                        <div class="md:mt-10">
+                <div class="container mt-8 px-[60px] pb-24 max-lg:px-8 max-md:px-0">
+                    <div>
                                                             <template v-if="products.length || isLoading">
                                                                 @include('shop::categories.toolbar')
                                                             </template>
@@ -102,16 +102,15 @@ $searchInstead = $suggestion ? $query : null;
                                                                 </template>
 
                                                                 <!-- Product Card Listing -->
-                                                                <template v-else>
-                                                                    <template v-if="products.length">
-                                                                        <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:mt-5 max-md:justify-items-center max-md:gap-x-3 max-md:gap-y-4">
-                                                                            <x-shop::products.card
-                                                                                ::mode="'grid'"
-                                                                                v-for="product in products"
-                                                                                :navigation-link="route('shop.search.index')"
-                                                                            />
-                                                                        </div>
-                                                                    </template>
+                                                                        <template v-else>
+                                                                            <template v-if="products.length">
+                                                                                <div class="mt-8 grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 isolate" style="isolation: isolate;">
+                                                                                    <x-shop::products.card
+                                                                                        ::mode="'grid'"
+                                                                                        v-for="product in products"
+                                                                                    />
+                                                                                </div>
+                                                                            </template>
 
                                                                     <!-- Empty Products Container -->
                                                                     <template v-else>
