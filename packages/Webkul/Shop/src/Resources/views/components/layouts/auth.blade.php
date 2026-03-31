@@ -20,7 +20,7 @@
         <div class="relative w-full {{ $contentWidth }} h-full md:h-auto md:max-h-[96vh] bg-white border-zinc-900 md:border-4 md:shadow-[10px_10px_0px_0px_rgba(24,24,27,1)] md:rounded-[3xl] overflow-hidden animate-in fade-in zoom-in duration-700 flex flex-col md:translate-y-[-10px]">
             
             <!-- Card Header: Logo/Branding -->
-            <div class="pt-12 md:pt-6 pb-2 px-8 md:px-10 flex flex-col items-center shrink-0" style="padding-top: calc(3rem + env(safe-area-inset-top));">
+            <div class="pt-24 md:pt-6 pb-2 px-8 md:px-10 flex flex-col items-center shrink-0" style="padding-top: calc(6rem + env(safe-area-inset-top));">
                 <a href="{{ route('shop.home.index') }}" class="group mb-4">
                     <div class="relative w-12 h-12">
                         <div class="absolute inset-0 bg-zinc-900 border-2 border-zinc-900 rounded-2xl rotate-6 group-hover:rotate-12 transition-transform duration-500 shadow-[3px_3px_0px_0px_rgba(124,69,245,1)]"></div>
