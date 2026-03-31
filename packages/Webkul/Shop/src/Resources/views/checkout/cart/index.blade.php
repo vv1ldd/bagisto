@@ -12,7 +12,7 @@
 
     {!! view_render_event('bagisto.shop.checkout.cart.header.after') !!}
 
-    <div class="flex-auto">
+    <div class="flex-auto pb-10">
         <div class="container px-[60px] max-lg:px-8 max-md:px-4 py-8">
 
             {!! view_render_event('bagisto.shop.checkout.cart.breadcrumbs.before') !!}
@@ -57,7 +57,7 @@
 
     @pushOnce('scripts')
     <script type="text/x-template" id="v-cart-template">
-        <div class="pb-20">
+        <div class="pb-32">
             <!-- Shimmer -->
             <template v-if="isLoading">
                 <x-shop::shimmer.checkout.cart :count="3" />
