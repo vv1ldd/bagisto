@@ -629,6 +629,10 @@ return [
                 'whats-new' => 'What’s New',
             ],
 
+            'categories' => [
+                'empty' => 'There are no products in this category yet',
+            ],
+
             'cookie' => [
                 'index' => [
                     'privacy-policy' => 'Privacy Policy',

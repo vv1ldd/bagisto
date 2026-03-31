@@ -63,109 +63,118 @@
             <script type="text/x-template" id="v-category-template">
                 <div class="container mt-8 px-[60px] pb-24 max-lg:px-8 max-md:px-0">
                     <div>
-                        <template v-if="!isEmptyInitial">
+                        <template v-if="products.length || isLoading">
+                            <div class="mb-10 flex items-center justify-between border-b-4 border-zinc-900 pb-8 max-md:mb-5 max-md:pb-5">
+                                <h2 class="text-4xl font-black uppercase tracking-widest max-md:text-2xl">
+                                    {{ trans('shop::app.layouts.footer.categories') }}: <span class="text-[#7C45F5] italic underline decoration-4 underline-offset-8">{{ $category->name }}</span>
+                                </h2>
+                            </div>
+
                             @include('shop::categories.toolbar')
                         </template>
 
-                    <!-- Product List (list mode) -->
-                                                                        <div
-                                                                            class="mt-8 grid grid-cols-1 gap-6"
-                                                                            v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
-                                                                        >
-                                                                            <!-- Shimmer -->
-                                                                            <template v-if="isLoading">
-                                                                                <x-shop::shimmer.categories.no-products v-if="isEmptyInitial" />
-                                                                                <template v-else>
-                                                                                    <x-shop::shimmer.products.cards.list count="12" />
-                                                                                </template>
-                                                                            </template>
+                        <!-- Product List (list mode) -->
+                        <div
+                            class="mt-8 grid grid-cols-1 gap-6"
+                            v-if="filters.toolbar.applied.mode === 'list' || (!filters.toolbar.applied.mode && filters.toolbar.default.mode === 'list')"
+                        >
+                            <!-- Shimmer -->
+                            <template v-if="isLoading">
+                                <x-shop::shimmer.categories.no-products v-if="isEmptyInitial" />
+                                <template v-else>
+                                    <x-shop::shimmer.products.cards.list count="12" />
+                                </template>
+                            </template>
 
-                                                                            <!-- List card listing -->
-                                                                            {!! view_render_event('bagisto.shop.categories.view.list.product_card.before') !!}
+                            <!-- List card listing -->
+                            {!! view_render_event('bagisto.shop.categories.view.list.product_card.before') !!}
 
-                                                                            <template v-else>
-                                                                                <template v-if="products.length">
-                                                                                    <x-shop::products.card
-                                                                                        ::mode="'list'"
-                                                                                        v-for="product in products"
-                                                                                    />
-                                                                                </template>
+                            <template v-else>
+                                <template v-if="products.length">
+                                    <x-shop::products.card
+                                        ::mode="'list'"
+                                        v-for="product in products"
+                                    />
+                                </template>
 
-                                                                                <!-- Empty -->
-                                                                                <template v-else>
-                                                                                    <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                                                    <div class="mb-4 flex h-24 w-24 items-center justify-center  bg-zinc-100 text-zinc-300">
-                                                                                        <span class="icon-cart text-[54px]"></span>
-                                                                                    </div>
+                                <!-- Empty -->
+                                <template v-else>
+                                    <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
+                                        <div class="mb-8 flex h-40 w-40 items-center justify-center bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                                            <span class="icon-cart text-[80px] text-zinc-200"></span>
+                                        </div>
 
-                                                                                        <p
-                                                                                            class="text-xl max-md:text-sm"
-                                                                                            role="heading"
-                                                                                        >
-                                                                                            @lang('shop::app.categories.view.empty')
-                                                                                        </p>
-                                                                                    </div>
-                                                                                </template>
-                                                                            </template>
+                                        <h2 class="text-3xl font-black uppercase tracking-widest text-zinc-900 mb-4 max-md:text-xl">
+                                            @lang('shop::app.categories.empty')
+                                        </h2>
+                                        
+                                        <p class="text-zinc-500 text-lg max-md:text-sm max-w-[400px]">
+                                            {{ $category->name }}
+                                        </p>
+                                    </div>
+                                </template>
+                            </template>
 
-                                                                            {!! view_render_event('bagisto.shop.categories.view.list.product_card.after') !!}
-                                                                        </div>
+                            {!! view_render_event('bagisto.shop.categories.view.list.product_card.after') !!}
+                        </div>
 
-                                                                        <!-- Product Grid (grid mode) -->
-                                                                        <div v-else class="mt-8 max-md:mt-5">
-                                                                            <!-- Shimmer -->
-                                                                            <template v-if="isLoading">
-                                                                                <x-shop::shimmer.categories.no-products v-if="isEmptyInitial" />
-                                                                                <div v-else class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2">
-                                                                                    <x-shop::shimmer.products.cards.grid count="12" />
-                                                                                </div>
-                                                                            </template>
+                        <!-- Product Grid (grid mode) -->
+                        <div v-else class="mt-8 max-md:mt-5">
+                            <!-- Shimmer -->
+                            <template v-if="isLoading">
+                                <x-shop::shimmer.categories.no-products v-if="isEmptyInitial" />
+                                <div v-else class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2">
+                                    <x-shop::shimmer.products.cards.grid count="12" />
+                                </div>
+                            </template>
 
-                                                                            {!! view_render_event('bagisto.shop.categories.view.grid.product_card.before') !!}
+                            {!! view_render_event('bagisto.shop.categories.view.grid.product_card.before') !!}
 
-                                                                            <!-- Grid card listing -->
-                                                                            <template v-else>
-                                                                                <template v-if="products.length">
-                                                                                    <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 isolate" style="isolation: isolate;">
-                                                                                        <x-shop::products.card
-                                                                                            ::mode="'grid'"
-                                                                                            v-for="product in products"
-                                                                                        />
-                                                                                    </div>
-                                                                                </template>
+                            <!-- Grid card listing -->
+                            <template v-else>
+                                <template v-if="products.length">
+                                    <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 isolate" style="isolation: isolate;">
+                                        <x-shop::products.card
+                                            ::mode="'grid'"
+                                            v-for="product in products"
+                                        />
+                                    </div>
+                                </template>
 
-                                                                                <!-- Empty -->
-                                                                                <template v-else>
-                                                                                    <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                                                                        <div class="mb-6 flex h-24 w-24 items-center justify-center bg-white/5 border border-white/10 text-zinc-500 rounded-3xl backdrop-blur-xl">
-                                                                                            <span class="icon-cart text-[54px] opacity-20"></span>
-                                                                                        </div>
+                                <!-- Empty -->
+                                <template v-else>
+                                    <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
+                                        <div class="mb-8 flex h-40 w-40 items-center justify-center bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                                            <span class="icon-cart text-[80px] text-zinc-200"></span>
+                                        </div>
 
-                                                                                        <p
-                                                                                            class="text-xl max-md:text-sm"
-                                                                                            role="heading"
-                                                                                        >
-                                                                                            @lang('shop::app.categories.view.empty')
-                                                                                        </p>
-                                                                                    </div>
-                                                                                </template>
-                                                                            </template>
+                                        <h2 class="text-3xl font-black uppercase tracking-widest text-zinc-900 mb-4 max-md:text-xl">
+                                            @lang('shop::app.categories.empty')
+                                        </h2>
+                                        
+                                        <p class="text-zinc-500 text-lg max-md:text-sm max-w-[400px]">
+                                            {{ $category->name }}
+                                        </p>
+                                    </div>
+                                </template>
+                            </template>
 
-                                                                            {!! view_render_event('bagisto.shop.categories.view.grid.product_card.after') !!}
-                                                                        </div>
+                            {!! view_render_event('bagisto.shop.categories.view.grid.product_card.after') !!}
+                        </div>
 
-                                                                        {!! view_render_event('bagisto.shop.categories.view.load_more_button.before') !!}
+                        {!! view_render_event('bagisto.shop.categories.view.load_more_button.before') !!}
 
-                                                                        <!-- Infinite Scroll Sentinel -->
-                                                                        <div id="infinite-scroll-sentinel" ref="infiniteScrollSentinel" class="flex justify-center py-10" v-if="links.next">
-                                                                            <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 w-full" v-if="loader">
-                                                                                <x-shop::shimmer.products.cards.grid count="5" />
-                                                                            </div>
-                                                                        </div>
+                        <!-- Infinite Scroll Sentinel -->
+                        <div id="infinite-scroll-sentinel" ref="infiniteScrollSentinel" class="flex justify-center py-10" v-if="links.next">
+                            <div class="grid grid-cols-5 gap-4 max-1060:grid-cols-3 max-md:grid-cols-2 max-md:justify-items-center max-md:gap-2 w-full" v-if="loader">
+                                <x-shop::shimmer.products.cards.grid count="5" />
+                            </div>
+                        </div>
 
-                                                                        {!! view_render_event('bagisto.shop.categories.view.grid.load_more_button.after') !!}
-                                                                    </div>
-                                                                        </script>
+                        {!! view_render_event('bagisto.shop.categories.view.grid.load_more_button.after') !!}
+                    </div>
+                </div>
+            </script>
 
             <script type="module">
                 app.component('v-category', {
