@@ -61,10 +61,11 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-category-template">
-                <div>
-                    <template v-if="!isEmptyInitial">
-                        @include('shop::categories.toolbar')
-                    </template>
+                <div class="container mt-8 px-[60px] pb-24 max-lg:px-8 max-md:px-0">
+                    <div>
+                        <template v-if="!isEmptyInitial">
+                            @include('shop::categories.toolbar')
+                        </template>
 
                     <!-- Product List (list mode) -->
                                                                         <div

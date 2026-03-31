@@ -16,31 +16,6 @@ $searchInstead = $suggestion ? $query : null;
         {{ $title }}
     </x-slot>
 
-    <div class="container mt-8 px-[60px] max-lg:px-8 max-md:mt-4 max-md:px-0">
-        @if (request()->has('image-search'))
-            @include('shop::search.images.results')
-        @endif
-
-        @if ($searchInstead)
-            <form action="{{ route('shop.search.index', ['suggest' => false]) }}"
-                class="flex max-w-[445px] items-center" role="search">
-                <input type="text" name="query" class="hidden" value="{{ $searchInstead }}">
-
-                <input type="text" name="suggest" class="hidden" value="0">
-
-                <p class="mt-1 text-sm text-gray-600" v-pre>
-                    {{ trans('shop::app.search.suggest') }}
-
-                    <button type="submit" class="text-[#7C45F5] hover:text-[#6c39e0] hover:underline"
-                        aria-label="{{ trans('shop::app.components.layouts.header.desktop.bottom.submit') }}">
-                        {{ $searchInstead }}
-                    </button>
-                </p>
-            </form>
-        @endif
-    </div>
-
-    <!-- Product Listing -->
     <v-search>
         <x-shop::shimmer.categories.view />
     </v-search>
@@ -48,8 +23,36 @@ $searchInstead = $suggestion ? $query : null;
     @pushOnce('scripts')
         <script type="text/x-template" id="v-search-template">
             <div class="container mt-8 px-[60px] pb-24 max-lg:px-8 max-md:px-0">
+                @if (request()->has('image-search'))
+                    @include('shop::search.images.results')
+                @endif
+
+                @if ($searchInstead)
+                    <form action="{{ route('shop.search.index', ['suggest' => false]) }}"
+                        class="mb-8 flex max-w-[445px] items-center" role="search">
+                        <input type="text" name="query" class="hidden" value="{{ $searchInstead }}">
+
+                        <input type="text" name="suggest" class="hidden" value="0">
+
+                        <p class="mt-1 text-sm text-gray-600" v-pre>
+                            {{ trans('shop::app.search.suggest') }}
+
+                            <button type="submit" class="text-[#7C45F5] hover:text-[#6c39e0] hover:underline"
+                                aria-label="{{ trans('shop::app.components.layouts.header.desktop.bottom.submit') }}">
+                                {{ $searchInstead }}
+                            </button>
+                        </p>
+                    </form>
+                @endif
+
                 <div>
                     <template v-if="products.length || isLoading">
+                        <div class="mb-10 flex items-center justify-between border-b-4 border-zinc-900 pb-8 max-md:mb-5 max-md:pb-5">
+                            <h2 class="text-4xl font-black uppercase tracking-widest max-md:text-2xl">
+                                {{ trans('shop::app.search.results') }}: <span class="text-[#7C45F5] italic underline decoration-4 underline-offset-8">{{ $query }}</span>
+                            </h2>
+                        </div>
+
                         @include('shop::categories.toolbar')
                     </template>
 
@@ -76,12 +79,16 @@ $searchInstead = $suggestion ? $query : null;
 
                             <template v-else>
                                 <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                    <div class="mb-4 flex h-24 w-24 items-center justify-center bg-zinc-100 text-zinc-300">
-                                        <span class="icon-cart text-[54px]"></span>
+                                    <div class="mb-8 flex h-40 w-40 items-center justify-center bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                                        <span class="icon-cart text-[80px] text-zinc-200"></span>
                                     </div>
 
-                                    <p class="text-xl max-sm:text-sm" role="heading">
+                                    <h2 class="text-3xl font-black uppercase tracking-widest text-zinc-900 mb-4 max-md:text-xl">
                                         @lang('shop::app.search.empty')
+                                    </h2>
+                                    
+                                    <p class="text-zinc-500 text-lg max-md:text-sm max-w-[400px]">
+                                        {{ trans('shop::app.search.results') }}: <span class="font-bold underline decoration-2">{{ $query }}</span>
                                     </p>
                                 </div>
                             </template>
@@ -112,12 +119,16 @@ $searchInstead = $suggestion ? $query : null;
 
                             <template v-else>
                                 <div class="m-auto grid w-full place-content-center items-center justify-items-center py-32 text-center">
-                                    <div class="mb-4 flex h-24 w-24 items-center justify-center bg-zinc-100 text-zinc-300">
-                                        <span class="icon-cart text-[54px]"></span>
+                                    <div class="mb-8 flex h-40 w-40 items-center justify-center bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                                        <span class="icon-cart text-[80px] text-zinc-200"></span>
                                     </div>
 
-                                    <p class="text-xl max-sm:text-sm" role="heading">
+                                    <h2 class="text-3xl font-black uppercase tracking-widest text-zinc-900 mb-4 max-md:text-xl">
                                         @lang('shop::app.search.empty')
+                                    </h2>
+                                    
+                                    <p class="text-zinc-500 text-lg max-md:text-sm max-w-[400px]">
+                                        {{ trans('shop::app.search.results') }}: <span class="font-bold underline decoration-2">{{ $query }}</span>
                                     </p>
                                 </div>
                             </template>
