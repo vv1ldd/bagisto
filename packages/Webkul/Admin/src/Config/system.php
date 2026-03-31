@@ -317,6 +317,38 @@ return [
         ],
     ],
     [
+        'key' => 'general.design.footer_content',
+        'name' => 'Контент футера',
+        'info' => 'Управление текстовыми блоками в футере сайта',
+        'sort' => 5,
+        'fields' => [
+            [
+                'name'          => 'footer_description',
+                'title'         => 'Описание бренда',
+                'type'          => 'textarea',
+                'default'       => 'The premium marketplace for gamers and crypto enthusiasts. Built on Trust.',
+                'channel_based' => true,
+                'locale_based'  => true,
+            ],
+            [
+                'name'          => 'footer_menu_title',
+                'title'         => 'Заголовок навигации',
+                'type'          => 'text',
+                'default'       => 'Navigation',
+                'channel_based' => true,
+                'locale_based'  => true,
+            ],
+            [
+                'name'          => 'footer_note',
+                'title'         => 'Дополнительная подпись (Handshake)',
+                'type'          => 'text',
+                'default'       => 'Built on Handshake',
+                'channel_based' => true,
+                'locale_based'  => true,
+            ],
+        ],
+    ],
+    [
         'key' => 'general.design.categories',
         'name' => 'admin::app.configuration.index.general.design.menu-category.title',
         'info' => 'admin::app.configuration.index.general.design.menu-category.info',

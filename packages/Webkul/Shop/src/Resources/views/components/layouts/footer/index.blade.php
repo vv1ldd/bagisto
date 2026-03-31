@@ -68,7 +68,7 @@
                     </a>
                     
                     <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500 leading-relaxed mb-8">
-                        The premium marketplace for gamers and crypto enthusiasts. Built on Trust.
+                        {{ core()->getConfigData('general.design.footer_content.footer_description') ?? 'The premium marketplace for gamers and crypto enthusiasts. Built on Trust.' }}
                     </p>
 
                     <!-- Social Icons Section -->
@@ -96,7 +96,7 @@
                         @foreach ($footerLinks->options as $linkSection)
                             <div class="flex flex-col gap-4">
                                 <h4 class="text-xs font-black uppercase tracking-[0.2em] text-zinc-900 pb-2 border-b-2 border-zinc-100">
-                                    Navigation
+                                    {{ core()->getConfigData('general.design.footer_content.footer_menu_title') ?? 'Navigation' }}
                                 </h4>
                                 
                                 <ul class="flex flex-col gap-3">
@@ -135,7 +135,9 @@
                 </div>
 
                 <div class="flex items-center gap-6">
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-[#7C45F5]">Built on Handshake</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-[#7C45F5]">
+                        {{ core()->getConfigData('general.design.footer_content.footer_note') ?? 'Built on Handshake' }}
+                    </span>
                     <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Powered by Bagisto</span>
                 </div>
             </div>
