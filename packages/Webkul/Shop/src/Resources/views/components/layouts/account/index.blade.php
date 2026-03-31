@@ -7,7 +7,11 @@
     'title'      => null,
 ])
 
-<x-shop::layouts :has-header="$hasHeader" :has-feature="false">
+<x-shop::layouts 
+    :has-header="$hasHeader" 
+    :has-feature="false"
+    :has-footer="request()->routeIs('shop.customers.account.index') ? false : 'mini'"
+>
     <!-- Page Title -->
     <x-slot:title>
         {{ $title ?? '' }}
