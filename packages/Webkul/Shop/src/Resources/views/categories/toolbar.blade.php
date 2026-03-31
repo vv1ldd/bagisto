@@ -37,15 +37,17 @@
                     </x-slot>
 
                     <!-- Dropdown Content -->
-                    <x-slot name="menu" class="!p-0 !border-2 !border-zinc-900 !rounded-none !shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
-                        <x-shop::dropdown.menu.item
-                            v-for="(sort, key) in filters.available.sort"
-                            ::class="{'!bg-zinc-900 !text-white': sort.value == filters.applied.sort, 'hover:bg-zinc-100': sort.value != filters.applied.sort}"
-                            class="!px-5 !py-3 !text-[11px] !font-black !uppercase !tracking-widest !border-b-2 !border-zinc-900 last:!border-b-0"
-                            @click="apply('sort', sort.value)"
-                        >
-                            @{{ sort.title }}
-                        </x-shop::dropdown.menu.item>
+                    <x-slot name="menu">
+                        <div class="!p-0 !border-2 !border-zinc-900 !rounded-none !shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                            <x-shop::dropdown.menu.item
+                                v-for="(sort, key) in filters.available.sort"
+                                ::class="{'!bg-zinc-900 !text-white': sort.value == filters.applied.sort, 'hover:bg-zinc-100': sort.value != filters.applied.sort}"
+                                class="!px-5 !py-3 !text-[11px] !font-black !uppercase !tracking-widest !border-b-2 !border-zinc-900 last:!border-b-0"
+                                @click="apply('sort', sort.value)"
+                            >
+                                @{{ sort.title }}
+                            </x-shop::dropdown.menu.item>
+                        </div>
                     </x-slot>
                 </x-shop::dropdown>
 
@@ -73,15 +75,17 @@
                         </x-slot>
 
                         <!-- Dropdown Content -->
-                        <x-slot name="menu" class="!p-0 !border-2 !border-zinc-900 !rounded-none !shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
-                            <x-shop::dropdown.menu.item
-                                v-for="(limit, key) in filters.available.limit"
-                                ::class="{'!bg-zinc-900 !text-white': limit == filters.applied.limit, 'hover:bg-zinc-100': limit != filters.applied.limit}"
-                                class="!px-5 !py-3 !text-[11px] !font-black !uppercase !tracking-widest !border-b-2 !border-zinc-900 last:!border-b-0"
-                                @click="apply('limit', limit)"
-                            >
-                                @{{ limit }}
-                            </x-shop::dropdown.menu.item>
+                        <x-slot name="menu">
+                            <div class="!p-0 !border-2 !border-zinc-900 !rounded-none !shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
+                                <x-shop::dropdown.menu.item
+                                    v-for="(limit, key) in filters.available.limit"
+                                    ::class="{'!bg-zinc-900 !text-white': limit == filters.applied.limit, 'hover:bg-zinc-100': limit != filters.applied.limit}"
+                                    class="!px-5 !py-3 !text-[11px] !font-black !uppercase !tracking-widest !border-b-2 !border-zinc-900 last:!border-b-0"
+                                    @click="apply('limit', limit)"
+                                >
+                                    @{{ limit }}
+                                </x-shop::dropdown.menu.item>
+                            </div>
                         </x-slot>
                     </x-shop::dropdown>
 
