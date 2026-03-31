@@ -414,8 +414,11 @@ class RegistrationController extends Controller
         if ($user) {
             // Log in the user on the desktop session if not already logged in
             if (!auth()->guard('customer')->check()) {
-                auth()->guard('customer')->login($user);
-                session()->regenerate();
+                \Log::info('Registration Polling: Logging in user on PC', ['username' => $username, 'id' => $user->id]);
+                auth()->guard('customer')->login($user, true); // Use remember=true for extra persistence
+                
+                // Important: Persist session immediately for AJAX response
+                session()->save();
             }
 
             return response()->json([

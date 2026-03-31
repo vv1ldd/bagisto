@@ -389,7 +389,11 @@
                                     console.warn('Silent failure marking pc continuation', e);
                                 }
                             }
-                            window.location.href = this.registrationRedirectUrl || this.onboardingUrl;
+                            
+                            // Small delay to ensure cookies are processed by the browser
+                            setTimeout(() => {
+                                window.location.href = this.registrationRedirectUrl || this.onboardingUrl;
+                            }, 200);
                         },
 
                         closeModal() {
