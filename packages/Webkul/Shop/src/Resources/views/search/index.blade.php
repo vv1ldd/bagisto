@@ -81,7 +81,7 @@ $searchInstead = $suggestion ? $query : null;
                                     </div>
 
                                     <p class="text-xl max-sm:text-sm" role="heading">
-                                        @lang('shop::app.categories.view.empty')
+                                        @lang('shop::app.search.empty')
                                     </p>
                                 </div>
                             </template>
@@ -117,7 +117,7 @@ $searchInstead = $suggestion ? $query : null;
                                     </div>
 
                                     <p class="text-xl max-sm:text-sm" role="heading">
-                                        @lang('shop::app.categories.view.empty')
+                                        @lang('shop::app.search.empty')
                                     </p>
                                 </div>
                             </template>

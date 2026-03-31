@@ -962,6 +962,7 @@ return [
         'title' => 'These are results for : :query',
         'suggest' => 'Search instead for',
         'results' => 'Search results',
+        'empty' => 'No products found for your search query',
 
         'images' => [
             'index' => [
