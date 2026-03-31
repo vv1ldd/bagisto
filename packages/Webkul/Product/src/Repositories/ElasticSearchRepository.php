@@ -100,16 +100,82 @@ class ElasticSearchRepository
      */
     public function getFilters(array $params): array
     {
+        $filters = [];
+
+        // Full-text search across multiple fields (name, description, short_description, sku)
         if (! empty($params['query'])) {
-            $params['name'] = $params['query'];
+            $rawQuery = $params['query'];
+
+            // Wildcard prefix for each word: "игр" → "игр*"
+            $terms         = array_filter(array_map('trim', explode(' ', $rawQuery)));
+            $wildcardParts = array_map(fn ($t) => $t . '*', $terms);
+            $wildcardQuery = implode(' OR ', $wildcardParts);
+
+            $filters['must'][] = [
+                'bool' => [
+                    'should' => [
+                        // Exact phrase — highest boost
+                        [
+                            'multi_match' => [
+                                'query'  => $rawQuery,
+                                'type'   => 'phrase',
+                                'fields' => [
+                                    'name^10',
+                                    'short_description^3',
+                                    'description',
+                                    'sku^5',
+                                ],
+                            ],
+                        ],
+                        // Fuzzy word match (tolerates typos, OR operator)
+                        [
+                            'multi_match' => [
+                                'query'                => $rawQuery,
+                                'type'                 => 'best_fields',
+                                'fields'               => [
+                                    'name^10',
+                                    'short_description^3',
+                                    'description',
+                                    'sku^5',
+                                ],
+                                'operator'             => 'or',
+                                'fuzziness'            => 'AUTO',
+                                'prefix_length'        => 1,
+                                'minimum_should_match' => '60%',
+                            ],
+                        ],
+                        // Wildcard prefix for partial word matching
+                        [
+                            'query_string' => [
+                                'query'            => $wildcardQuery,
+                                'fields'           => [
+                                    'name^5',
+                                    'short_description^2',
+                                    'description',
+                                    'sku^3',
+                                ],
+                                'default_operator' => 'or',
+                                'analyze_wildcard' => true,
+                            ],
+                        ],
+                    ],
+                    'minimum_should_match' => 1,
+                ],
+            ];
+
+            // Also pass to name attribute for synonym expansion
+            $params['name'] = $rawQuery;
         }
 
         $filterableAttributes = $this->attributeRepository
             ->getProductDefaultAttributes(array_keys($params));
 
-        $filters = [];
-
         foreach ($filterableAttributes as $attribute) {
+            // Skip 'name' here — already handled by multi_match above
+            if (! empty($params['query']) && $attribute->code === 'name') {
+                continue;
+            }
+
             $filter = $this->getFilterValue($attribute, $params);
 
             if (
