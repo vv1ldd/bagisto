@@ -624,7 +624,7 @@
         </div>
         <!-- QR Scanner Template (Telegram Style) -->
         <script type="text/x-template" id="v-qr-scanner-template">
-            <div v-if="isVisible" class="fixed inset-0 z-[10001] flex flex-col bg-black overflow-hidden animate-in fade-in duration-500">
+            <div v-if="isVisible" class="fixed inset-0 z-[10001] flex flex-col bg-black overflow-hidden animate-in fade-in duration-500" style="height: 100dvh;">
                 <!-- Immersive Header -->
                 <div class="relative z-30 flex items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
                     <div class="flex flex-col">
@@ -678,6 +678,7 @@
                         object-fit: cover !important;
                         width: 100% !important;
                         height: 100% !important;
+                        transform: scale(1.3) !important;
                     }
                 </style>
             </div>
@@ -703,6 +704,15 @@
                             isVisible: false,
                             html5QrCode: null,
                             errorMessage: null
+                        }
+                    },
+                    watch: {
+                        isVisible(val) {
+                            if (val) {
+                                document.body.style.overflow = 'hidden';
+                            } else {
+                                document.body.style.overflow = '';
+                            }
                         }
                     },
                     mounted() {
