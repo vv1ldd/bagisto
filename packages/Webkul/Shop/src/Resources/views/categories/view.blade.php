@@ -61,7 +61,7 @@
 
         @pushOnce('scripts')
             <script type="text/x-template" id="v-category-template">
-                                                                            <div class="container px-[60px] max-lg:px-8 max-md:px-0">
+                <div class="container px-[60px] pb-24 max-lg:px-8 max-md:px-0">
 
 
 
