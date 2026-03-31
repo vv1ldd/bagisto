@@ -52,6 +52,7 @@ $searchInstead = $suggestion ? $query : null;
                                                             <div class="container px-[60px] max-lg:px-8 max-sm:px-0">
                                                         <div class="md:mt-10">
                                                             <!-- Filter bar (all screens) -->
+                                                            <x-shop::categories.toolbar v-if="products.length || isLoading" />
 
                                                             <!-- Product List Card Container -->
                                                             <div
