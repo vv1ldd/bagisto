@@ -678,7 +678,7 @@
                         object-fit: cover !important;
                         width: 100% !important;
                         height: 100% !important;
-                        transform: scale(1.6) !important;
+                        transform: scale(2.0) !important;
                     }
                 </style>
             </div>
@@ -735,11 +735,8 @@
                                 this.html5QrCode = new Html5Qrcode("qr-reader");
 
                                 const config = { 
-                                    fps: 30,
-                                    qrbox: (viewfinderWidth, viewfinderHeight) => {
-                                        const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.8;
-                                        return { width: size, height: size };
-                                    },
+                                    fps: 20,
+                                    // Remove qrbox to scan full frame for maximum distance and flexibility
                                     aspectRatio: 1.0
                                 };
                                 

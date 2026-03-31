@@ -52,7 +52,7 @@
 
                 <!-- QR Modal -->
                 <div v-if="showQrModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" @click.self="closeQrModal">
-                    <div class="bg-white border-4 border-zinc-900 shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] w-full max-w-sm p-8 relative animate-in zoom-in-95 duration-300">
+                    <div class="bg-white border-4 border-zinc-900 shadow-[12px_12px_0px_0px_rgba(24,24,27,1)] w-full max-w-lg p-10 relative animate-in zoom-in-95 duration-300">
                         <button @click="closeQrModal" class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-900 transition-colors">
                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
@@ -175,8 +175,8 @@
                                         container.innerHTML = '';
                                         new QRCode(container, {
                                             text: data.url,
-                                            width: 400,
-                                            height: 400,
+                                            width: 480,
+                                            height: 480,
                                             colorDark : "#18181b",
                                             colorLight : "#ffffff",
                                             correctLevel : QRCode.CorrectLevel.L
