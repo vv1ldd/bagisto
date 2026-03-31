@@ -50,6 +50,10 @@ Route::get('contact-us', [HomeController::class, 'contactUs'])
     ->name('shop.home.contact_us')
     ->middleware('cache.response');
 
+Route::get('support', [HomeController::class, 'support'])
+    ->name('shop.support.index')
+    ->middleware('cache.response');
+
 Route::post('contact-us/send-mail', [HomeController::class, 'sendContactUsMail'])
     ->name('shop.home.contact_us.send_mail')
     ->middleware('cache.response');

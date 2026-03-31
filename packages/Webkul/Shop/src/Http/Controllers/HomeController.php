@@ -68,6 +68,16 @@ class HomeController extends Controller
     }
 
     /**
+     * Loads the support page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function support()
+    {
+        return view('shop::support.index');
+    }
+
+    /**
      * Summary of store.
      *
      * @return \Illuminate\Http\RedirectResponse
