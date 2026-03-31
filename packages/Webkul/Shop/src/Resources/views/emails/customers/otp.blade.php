@@ -1,31 +1,27 @@
 @component('shop::emails.layout')
-<div style="text-align: center; font-family: 'Inter', sans-serif;">
+    <div style="text-align: left;">
+        <h1 style="font-size: 32px; font-weight: 900; color: #18181B; margin: 0 0 24px 0; text-transform: uppercase; letter-spacing: -1px; line-height: 1.1;">
+            Ваш проверочный код
+        </h1>
 
-    <p style="font-weight: 700; font-size: 24px; color: #1E1B4B; margin-bottom: 16px;">
-        Ваш проверочный код
-    </p>
-
-    <p
-        style="font-size: 16px; color: #4B5563; margin-bottom: 32px; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6;">
-        Используйте этот код, чтобы подтвердить вашу электронную почту и продолжить оформление заказа.
-    </p>
-
-    <!-- OTP Code Box -->
-    <div style="margin: 32px 0;">
-        <span
-            style="display: inline-block; padding: 20px 40px; background: #F3F4F6; color: #1E1B4B; font-size: 36px; font-weight: 800; letter-spacing: 0.25em; border: 1px solid #E5E7EB;">
-            {{ $otp }}
-        </span>
-    </div>
-
-    <p style="font-size: 14px; color: #9CA3AF; margin-top: 32px;">
-        Если вы не запрашивали этот код, просто проигнорируйте это письмо.
-    </p>
-
-    <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid #F3F4F6;">
-        <p style="font-size: 12px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em;">
-            © {{ date('Y') }} MEANLY. Все права защищены.
+        <p style="font-size: 18px; color: #18181B; margin-bottom: 32px; font-weight: 500;">
+            Используйте этот код, чтобы подтвердить вашу электронную почту и продолжить оформление заказа.
         </p>
+
+        <!-- OTP Code Box -->
+        <div style="margin: 40px 0; padding: 32px; background-color: #F0EFFF; border: 3px dashed #7C45F5; display: inline-block; box-shadow: 8px 8px 0px 0px #18181B;">
+            <p style="font-size: 12px; color: #7C45F5; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 900;">
+                Код подтверждения
+            </p>
+            <span style="font-size: 48px; font-weight: 950; color: #18181B; letter-spacing: 0.2em; font-family: monospace;">
+                {{ $otp }}
+            </span>
+        </div>
+
+        <div style="margin-top: 48px; padding-top: 32px; border-top: 2px solid #F1F5F9;">
+            <p style="font-size: 13px; color: #94A3B8; margin: 0; line-height: 1.6;">
+                Если вы не запрашивали этот код, просто проигнорируйте это письмо.
+            </p>
+        </div>
     </div>
-</div>
 @endcomponent

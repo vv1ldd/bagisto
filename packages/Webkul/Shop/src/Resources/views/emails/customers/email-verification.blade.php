@@ -1,41 +1,41 @@
 @component('shop::emails.layout')
-<div style="text-align: center;">
+    <div style="text-align: left;">
+        <h1 style="font-size: 32px; font-weight: 900; color: #18181B; margin: 0 0 24px 0; text-transform: uppercase; letter-spacing: -1px; line-height: 1.1;">
+            @lang('shop::app.emails.dear', ['customer_name' => $customer->name]), 👋
+        </h1>
 
-    <p style="font-weight: 600; font-size: 18px; color: #7E22CE; margin-bottom: 24px;">
-        @lang('shop::app.emails.dear', ['customer_name' => $customer->name]), 👋
-    </p>
+        <p style="font-size: 18px; color: #18181B; margin-bottom: 32px; font-weight: 500;">
+            @lang('shop::app.emails.customers.verification.greeting')
+            <br><br>
+            @lang('shop::app.emails.customers.verification.description')
+        </p>
 
-    <p
-        style="font-size: 16px; color: #475569; margin-bottom: 32px; max-width: 460px; margin-left: auto; margin-right: auto;">
-        @lang('shop::app.emails.customers.verification.greeting')
-        <br><br>
-        @lang('shop::app.emails.customers.verification.description')
-    </p>
-
-    <!-- CTA Button -->
-    <div style="margin: 40px 0 24px;">
-        <a href="{{ route('shop.customers.verify', $customer->token) }}"
-            style="display: inline-block; padding: 18px 48px; background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%); color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);">
-            @lang('shop::app.emails.customers.verification.verify-email')
-        </a>
-    </div>
-
-    <!-- Code block for manual entry -->
-    @if ($customer->verification_code)
-        <div style="margin: 24px 0; padding: 20px; background-color: #F8FAFC; border: 2px dashed #E2E8F0; display: inline-block;">
-            <p style="font-size: 14px; color: #64748B; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">
-                @lang('shop::app.emails.customers.verification.verification-code')
-            </p>
-            <span style="font-size: 36px; font-weight: 800; color: #1a0050; letter-spacing: 0.3em; font-family: monospace;">
-                {{ $customer->verification_code }}
-            </span>
+        <!-- CTA Button -->
+        <div style="margin: 48px 0 32px;">
+            <a href="{{ route('shop.customers.verify', $customer->token) }}"
+                style="display: inline-block; padding: 20px 40px; background: #7C45F5; color: #FFFFFF; font-size: 16px; font-weight: 900; text-decoration: none; text-transform: uppercase; letter-spacing: 0.15em; border: 3px solid #18181B; box-shadow: 6px 6px 0px 0px #18181B;">
+                @lang('shop::app.emails.customers.verification.verify-email')
+            </a>
         </div>
-    @endif
 
-    <p style="font-size: 14px; color: #64748B; margin-top: 16px;">
-        Если кнопка не работает, скопируйте эту ссылку в браузер:<br>
-        <a href="{{ route('shop.customers.verify', $customer->token) }}"
-            style="color: #7E22CE; text-decoration: none; font-weight: 600;">{{ route('shop.customers.verify', $customer->token) }}</a>
-    </p>
-</div>
+        <!-- Code block for manual entry -->
+        @if ($customer->verification_code)
+            <div style="margin: 40px 0; padding: 32px; background-color: #F0EFFF; border: 3px dashed #7C45F5; display: inline-block; box-shadow: 8px 8px 0px 0px #18181B;">
+                <p style="font-size: 12px; color: #7C45F5; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 900;">
+                    @lang('shop::app.emails.customers.verification.verification-code')
+                </p>
+                <span style="font-size: 48px; font-weight: 950; color: #18181B; letter-spacing: 0.2em; font-family: monospace;">
+                    {{ $customer->verification_code }}
+                </span>
+            </div>
+        @endif
+
+        <div style="margin-top: 48px; padding-top: 32px; border-top: 2px solid #F1F5F9;">
+            <p style="font-size: 13px; color: #64748B; margin: 0; line-height: 1.6;">
+                Если кнопка не работает, скопируйте эту ссылку в браузер:<br>
+                <a href="{{ route('shop.customers.verify', $customer->token) }}"
+                    style="color: #7C45F5; text-decoration: underline; font-weight: 700;">{{ route('shop.customers.verify', $customer->token) }}</a>
+            </p>
+        </div>
+    </div>
 @endcomponent

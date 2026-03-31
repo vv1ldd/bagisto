@@ -7,49 +7,67 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
+
+    <style>
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                margin: 0 !important;
+                border-left: 0 !important;
+                border-right: 0 !important;
+                box-shadow: none !important;
+            }
+
+            .content-padding {
+                padding: 30px 20px !important;
+            }
+        }
+    </style>
 </head>
 
 <body
-    style="font-family: 'Inter', sans-serif; background-color: #F8FAFC; margin: 0; padding: 20px 0; -webkit-text-size-adjust: none; text-size-adjust: none; color: #1E293B;">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F8FAFC;">
+    style="font-family: 'Outfit', 'Inter', sans-serif; background-color: #F0EFFF; margin: 0; padding: 40px 0; -webkit-text-size-adjust: none; text-size-adjust: none; color: #18181B;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F0EFFF;">
         <tr>
             <td align="center">
-                <div
-                    style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E2E8F0; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
-                    <div style="padding: 40px;">
+                <!-- Main Email Container -->
+                <div class="email-container"
+                    style="max-width: 600px; margin: 0 auto; background-color: #FFFFFF; border: 3px solid #18181B; overflow: hidden; box-shadow: 8px 8px 0px 0px #18181B;">
+                    <div class="content-padding" style="padding: 50px 40px;">
+                        
                         <!-- Email Header -->
-                        <div style="margin-bottom: 40px; text-align: left;">
-                            <a href="{{ route('shop.home.index') }}" style="text-decoration: none;">
+                        <div style="margin-bottom: 50px; text-align: left;">
+                            <a href="{{ route('shop.home.index') }}" style="text-decoration: none; display: inline-block;">
                                 <span
-                                    style="font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: -1.5px; color: #7C45F5; text-decoration: none; text-transform: uppercase;">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
+                                    style="font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 900; letter-spacing: -2px; color: #7C45F5; text-decoration: none; text-transform: uppercase;">{{ core()->getConfigData('general.design.shop_logo.logo_text') ?: 'MEANLY' }}</span>
                             </a>
                         </div>
 
-                        <!-- Email Content -->
-                        <div style="font-size: 16px; line-height: 1.6; color: #475569;">
+                        <!-- Email Content Area -->
+                        <div style="font-size: 16px; line-height: 1.6; color: #141417;">
                             {{ $slot }}
                         </div>
 
-                        <!-- Email Divider -->
-                        <div style="margin: 40px 0; border-top: 1px solid #E2E8F0;"></div>
+                        <!-- Email Divider (Neo-brutalist) -->
+                        <div style="margin: 50px 0; border-top: 3px solid #18181B; height: 1px;"></div>
 
                         <!-- Email Footer -->
-                        <div style="text-align: center;">
-                            <p style="font-size: 14px; color: #64748B; line-height: 1.5;">
-                                @php $contactEmail = core()->getContactEmailDetails()['email'] ?: 'support@meanly.ru'; @endphp
-                                @lang('shop::app.emails.thanks', [
-                                    'link' => 'mailto:' . $contactEmail,
-                                    'email' => $contactEmail,
-                                    'style' => 'color: #7E22CE; text-decoration: none; font-weight: 600;'
-                                ])
-                            </p>
-                            <p style="font-size: 12px; color: #94A3B8; margin-top: 20px;">
+                        <div style="text-align: left;">
+                            <div style="margin-bottom: 24px;">
+                                <p style="font-size: 15px; font-weight: 800; color: #18181B; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 8px 0;">
+                                    Нужна помощь?
+                                </p>
+                                <p style="font-size: 14px; color: #475569; line-height: 1.5; margin: 0;">
+                                    @php $contactEmail = core()->getContactEmailDetails()['email'] ?: 'support@meanly.ru'; @endphp
+                                    <a href="mailto:{{ $contactEmail }}" style="color: #7C45F5; text-decoration: underline; font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 4px;">{{ $contactEmail }}</a>
+                                </p>
+                            </div>
+
+                            <p style="font-size: 11px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600;">
                                 &copy; {{ date('Y') }} {{ config('app.name') }}. Все права защищены.
                             </p>
                         </div>
