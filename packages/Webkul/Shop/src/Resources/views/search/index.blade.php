@@ -51,8 +51,9 @@ $searchInstead = $suggestion ? $query : null;
             <script type="text/x-template" id="v-search-template">
                                                             <div class="container px-[60px] max-lg:px-8 max-sm:px-0">
                                                         <div class="md:mt-10">
-                                                            <!-- Filter bar (all screens) -->
-                                                            <x-shop::categories.toolbar v-if="products.length || isLoading" />
+                                                            <template v-if="products.length || isLoading">
+                                                                @include('shop::categories.toolbar')
+                                                            </template>
 
                                                             <!-- Product List Card Container -->
                                                             <div
