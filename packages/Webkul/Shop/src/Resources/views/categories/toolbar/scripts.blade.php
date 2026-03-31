@@ -1,3 +1,5 @@
+@inject('toolbar', 'Webkul\Product\Helpers\Toolbar')
+
 @pushOnce('scripts')
     <script
         type="text/x-template"
