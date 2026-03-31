@@ -213,7 +213,12 @@ services:
         soft: 65536
         hard: 65536
     volumes:
-      - 'bagisto-elasticsearch-data:/var/lib/elasticsearch/data'
+      - 'bagisto-elasticsearch-data:/usr/share/elasticsearch/data'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 24 # 24 * 10s = 4 minutes max boot time
     networks:
       - bagisto-network
 
