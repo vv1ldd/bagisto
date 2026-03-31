@@ -744,12 +744,7 @@
                                 };
                                 
                                 await this.html5QrCode.start(
-                                    { 
-                                        facingMode: "environment",
-                                        // Request high resolution for maximum detail at distance
-                                        width: { ideal: 1920 },
-                                        height: { ideal: 1080 }
-                                    }, 
+                                    { facingMode: "environment" }, 
                                     config, 
                                     (decodedText) => {
                                         if (decodedText.includes('/login/qr/')) {
