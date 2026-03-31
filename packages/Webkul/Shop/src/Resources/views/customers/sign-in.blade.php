@@ -175,11 +175,11 @@
                                         container.innerHTML = '';
                                         new QRCode(container, {
                                             text: data.url,
-                                            width: 320,
-                                            height: 320,
+                                            width: 400,
+                                            height: 400,
                                             colorDark : "#18181b",
                                             colorLight : "#ffffff",
-                                            correctLevel : QRCode.CorrectLevel.M
+                                            correctLevel : QRCode.CorrectLevel.L
                                         });
                                     }
                                 });

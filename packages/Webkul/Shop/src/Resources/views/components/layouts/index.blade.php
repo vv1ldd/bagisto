@@ -678,7 +678,7 @@
                         object-fit: cover !important;
                         width: 100% !important;
                         height: 100% !important;
-                        transform: scale(1.3) !important;
+                        transform: scale(1.6) !important;
                     }
                 </style>
             </div>
@@ -735,7 +735,7 @@
                                 this.html5QrCode = new Html5Qrcode("qr-reader");
 
                                 const config = { 
-                                    fps: 20,
+                                    fps: 30,
                                     qrbox: (viewfinderWidth, viewfinderHeight) => {
                                         const size = Math.min(viewfinderWidth, viewfinderHeight) * 0.8;
                                         return { width: size, height: size };
@@ -744,7 +744,12 @@
                                 };
                                 
                                 await this.html5QrCode.start(
-                                    { facingMode: "environment" }, 
+                                    { 
+                                        facingMode: "environment",
+                                        // Request high resolution for maximum detail at distance
+                                        width: { ideal: 1920 },
+                                        height: { ideal: 1080 }
+                                    }, 
                                     config, 
                                     (decodedText) => {
                                         if (decodedText.includes('/login/qr/')) {
