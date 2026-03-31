@@ -16,6 +16,12 @@ $searchInstead = $suggestion ? $query : null;
         {{ $title }}
     </x-slot>
 
+    @if (request()->has('image-search'))
+        <div class="container mt-8 px-[60px] max-lg:px-8 max-md:px-0">
+            @include('shop::search.images.results')
+        </div>
+    @endif
+
     <v-search>
         <x-shop::shimmer.categories.view />
     </v-search>
@@ -23,10 +29,6 @@ $searchInstead = $suggestion ? $query : null;
     @pushOnce('scripts')
         <script type="text/x-template" id="v-search-template">
             <div class="container mt-8 px-[60px] pb-24 max-lg:px-8 max-md:px-0">
-                @if (request()->has('image-search'))
-                    @include('shop::search.images.results')
-                @endif
-
                 @if ($searchInstead)
                     <form action="{{ route('shop.search.index', ['suggest' => false]) }}"
                         class="mb-8 flex max-w-[445px] items-center" role="search">
