@@ -736,10 +736,9 @@
                                 await this.html5QrCode.start(
                                     { 
                                         facingMode: "environment",
-                                        // Request high resolution for distance scanning
-                                        aspectRatio: 1.0,
-                                        width: { min: 640, ideal: 1920, max: 1920 },
-                                        height: { min: 480, ideal: 1080, max: 1080 }
+                                        // Request HD resolution for better distance scanning without being too strict
+                                        width: { ideal: 1280 },
+                                        height: { ideal: 720 }
                                     }, 
                                     config, 
                                     (decodedText) => {
