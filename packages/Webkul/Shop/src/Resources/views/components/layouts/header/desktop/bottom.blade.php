@@ -74,10 +74,13 @@
                     ></v-cart-badge>
                 </div>
 
-                <a href="{{ route('shop.customers.account.index') }}"
-                    class="text-[12px] font-black uppercase tracking-widest text-zinc-900 hover:text-[#7C45F5] transition-colors truncate max-w-[140px]">
-                    {{ '@' . $userName }}@if($authUser->is_investor)<span title="Инвестор" class="ml-1">💎</span>@endif
-                </a>
+                <div class="flex flex-col">
+                    <a href="{{ route('shop.customers.account.index') }}"
+                        class="text-[12px] font-black uppercase tracking-widest text-zinc-900 hover:text-[#7C45F5] transition-colors truncate max-w-[140px]">
+                        {{ '@' . $userName }}@if($authUser->is_investor)<span title="Инвестор" class="ml-1">💎</span>@endif
+                    </a>
+                    <x-shop::live-balance :user="$authUser" class="text-[10px] h-3" />
+                </div>
             </div>
         @else
             <a href="{{ route('shop.customer.session.index') }}"

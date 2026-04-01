@@ -55,7 +55,7 @@
                                     @if(auth()->guard('customer')->check())
                                         <div class="flex flex-col items-end">
                                             <span class="text-xl font-black tabular-nums">
-                                                {{ number_format(auth()->guard('customer')->user()->balance, 2, '.', '') }} MC
+                                                <x-shop::live-balance :user="auth()->guard('customer')->user()" class="flex" />
                                             </span>
                                             <span class="text-[10px] font-bold opacity-60 uppercase tracking-widest mt-0.5">
                                                 1 MC = 1.00 ₽

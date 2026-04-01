@@ -124,6 +124,8 @@ class BlockchainSyncService
                         $this->syncMeanlyCoin($cryptoAddress);
                     }
 
+                    // [DECENTRALIZATION] Stop updating internal DB balances
+                    /* 
                     $customerBalance = $customer->balances()->firstOrCreate(
                         ['currency_code' => $currencyCode]
                     );
@@ -133,6 +135,7 @@ class BlockchainSyncService
                     // Recalculate and update the main customer balance field (fiat equivalent)
                     $customer->balance = $customer->getTotalFiatBalance();
                     $customer->save();
+                    */
                 });
 
                 return true;
@@ -439,6 +442,9 @@ class BlockchainSyncService
 
             // Top up customer's specific crypto balance
             $customer = $cryptoAddress->customer;
+
+            // [DECENTRALIZATION] Stop topping up internal DB balances
+            /* 
             $cryptoBalance = $customer->balances()->firstOrCreate(
                 ['currency_code' => $cryptoAddress->network]
             );
@@ -448,6 +454,7 @@ class BlockchainSyncService
             // Update main balance field with fiat equivalent for compatibility
             $customer->balance += $fiatAmount;
             $customer->save();
+            */
 
             // Create customer transaction log (recording the fiat equivalent)
             \Webkul\Customer\Models\CustomerTransaction::create([

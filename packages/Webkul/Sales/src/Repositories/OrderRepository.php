@@ -65,34 +65,32 @@ class OrderRepository extends Repository
                 $customer = $order->customer;
                 $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
 
-                // Get all balances with their RUB equivalent, sorted descending
-                $balances = $customer->balances()->where('amount', '>', 0)->get()->map(function ($b) use ($exchangeRateService) {
-                    $rate = $exchangeRateService->getRate($b->currency_code);
-                    
-                    \Illuminate\Support\Facades\Log::info("Checkout Balance Check: Code [{$b->currency_code}], Amount [{$b->amount}], Rate [{$rate}]");
-                    
-                    return [
-                        'model' => $b,
-                        'rate' => $rate,
-                        'rub_value' => $rate > 0 ? $b->amount * $rate : 0,
-                    ];
-                })->filter(fn($b) => $b['rub_value'] > 0)
+                // [DECENTRALIZATION] Fetch live Meanly Coin balance from Arbitrum
+                $liveMcBalance = $this->fetchMeanlyCoinBalance($customer);
+                $mcRate = 1.0; // 1 MC = 1 RUB
+                
+                \Illuminate\Support\Facades\Log::info("Checkout Live Balance Check: MC [{$liveMcBalance}]");
+
+                // Get other balances with their RUB equivalent, sorted descending
+                $balances = $customer->balances()
+                    ->where('currency_code', '!=', 'meanly_coin') // MC is handled live
+                    ->where('amount', '>', 0)
+                    ->get()
+                    ->map(function ($b) use ($exchangeRateService) {
+                        $rate = $exchangeRateService->getRate($b->currency_code);
+                        return [
+                            'model' => $b,
+                            'rate' => $rate,
+                            'rub_value' => $rate > 0 ? $b->amount * $rate : 0,
+                        ];
+                    })->filter(fn($b) => $b['rub_value'] > 0)
                     ->sortByDesc('rub_value')
                     ->values();
 
-                // Check total is sufficient (using round for float precision safety)
-                $totalRub = round($balances->sum('rub_value'), 4);
-
-                // Definitive Fallback: If detailed balances are empty/out of sync
-                // but the primary customer->balance field populated, use it.
-                // This captures the 10 MC minted at registration.
-                if ($totalRub <= 0 && $customer->balance > 0) {
-                    $totalRub = (float) $customer->balance;
-                    
-                    \Illuminate\Support\Facades\Log::info("Checkout: Using customer->balance fallback [{$totalRub}]");
-                }
+                // Check total is sufficient
+                $totalRub = round($balances->sum('rub_value') + $liveMcBalance, 4);
                 
-                \Illuminate\Support\Facades\Log::info("Checkout Total RUB: [{$totalRub}] for Order Grand Total [{$order->base_grand_total}]");
+                \Illuminate\Support\Facades\Log::info("Checkout Total RUB (Live): [{$totalRub}] for Order Grand Total [{$order->base_grand_total}]");
                 $requiredRub = round($order->base_grand_total, 4);
 
                 if ($totalRub < $requiredRub) {
@@ -105,6 +103,16 @@ class OrderRepository extends Repository
                 $remaining = (float) $order->base_grand_total;
                 $deductionLog = [];
 
+                // 1. Try to use MC first (since it's our primary coin)
+                if ($liveMcBalance > 0) {
+                    $usedMc = min($liveMcBalance, $remaining);
+                    $remaining -= $usedMc;
+                    $deductionLog[] = number_format($usedMc, 2) . ' MC (Live Blockchain)';
+                    
+                    // Note: We don't deduct from DB for MC anymore!
+                }
+
+                // 2. Fallback to other coins in DB
                 foreach ($balances as $entry) {
                     if ($remaining <= 0)
                         break;
@@ -587,5 +595,56 @@ class OrderRepository extends Repository
             'reference_id' => $order->id,
             'notes' => 'Refund for cancelled Order #' . $order->increment_id . ' | ' . implode(', ', $refundLog),
         ]);
+    }
+
+    /**
+     * Fetch Meanly Coin balance directly from Arbitrum blockchain.
+     *
+     * @param  \Webkul\Customer\Contracts\Customer  $customer
+     * @return float
+     */
+    protected function fetchMeanlyCoinBalance($customer): float
+    {
+        $userAddress = $customer->credits_id;
+        $rpcUrl = config('crypto.rpc_url_arbitrum');
+        $tokenAddress = config('crypto.meanly_coin_address');
+
+        if (empty($userAddress) || !str_starts_with($userAddress, '0x') || empty($tokenAddress)) {
+            return 0.0;
+        }
+
+        try {
+            // ERC20 balanceOf(address) selector is 0x70a08231
+            // Address must be padded to 32 bytes (64 hex chars)
+            $cleanAddress = substr($userAddress, 2);
+            $data = '0x70a08231' . str_pad(strtolower($cleanAddress), 64, '0', STR_PAD_LEFT);
+
+            $response = \Illuminate\Support\Facades\Http::post($rpcUrl, [
+                'jsonrpc' => '2.0',
+                'method'  => 'eth_call',
+                'params'  => [
+                    [
+                        'to'   => $tokenAddress,
+                        'data' => $data,
+                    ],
+                    'latest',
+                ],
+                'id'      => 1,
+            ]);
+
+            if ($response->successful()) {
+                $result = $response->json('result');
+                
+                if (!empty($result) && $result !== '0x') {
+                    // Result is hex wei (18 decimals)
+                    $wei = hexdec($result);
+                    return (float) ($wei / 10**18);
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("OrderRepository: Failed to fetch live MC balance: " . $e->getMessage());
+        }
+
+        return 0.0;
     }
 }
