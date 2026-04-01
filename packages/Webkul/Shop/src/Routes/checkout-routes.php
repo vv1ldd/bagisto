@@ -16,3 +16,11 @@ Route::controller(OnepageController::class)->prefix('checkout/onepage')->middlew
 
     Route::get('success', 'success')->name('shop.checkout.onepage.success');
 });
+
+Route::prefix('checkout/sbp')->group(function () {
+    Route::get('confirm', [Webkul\Shop\Http\Controllers\SbpController::class, 'confirm'])->name('shop.checkout.sbp.confirm');
+
+    Route::get('callback/{order_id}', [Webkul\Shop\Http\Controllers\SbpController::class, 'callback'])->name('shop.checkout.sbp.callback');
+
+    Route::post('finish/{order_id}', [Webkul\Shop\Http\Controllers\SbpController::class, 'finish'])->name('shop.checkout.sbp.finish');
+});

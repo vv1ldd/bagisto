@@ -12,13 +12,13 @@ class Sbp extends Payment
     protected $code = 'sbp';
 
     /**
-     * No external redirect for now.
+     * Redirect to the SBP confirmation bridge.
      *
      * @return string
      */
     public function getRedirectUrl(): string
     {
-        return '';
+        return route('shop.checkout.sbp.confirm');
     }
 
     /**
