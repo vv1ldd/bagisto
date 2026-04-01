@@ -151,7 +151,7 @@
                     </div>
                 </div>
 
-                @endpush
+
                     </div>
                 </div>
             </div>
