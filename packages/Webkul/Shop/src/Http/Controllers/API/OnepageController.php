@@ -292,18 +292,17 @@ class OnepageController extends APIController
                     $cart->base_grand_total
                 );
 
-                \Illuminate\Support\Facades\Log::info("Web3 Order Paid Successfully", ['tx' => $txHash, 'amount' => $cart->base_grand_total]);
+                \Illuminate\Support\Facades\Log::info("Web3 Order Broadcasted Successfully", ['tx' => $txHash, 'amount' => $cart->base_grand_total]);
 
-                // 1. Decrement local balance (Sync with on-chain)
+                // 1. Decrement local balance optimistically (Sync with on-chain broadcast)
                 $customer = auth()->guard('customer')->user();
                 $customer->decrement('balance', $cart->base_grand_total);
 
-                // 2. Clear cached totals just in case
+                // 2. Clear cached totals and store the hash for transaction recording
                 session(['last_web3_tx_hash' => $txHash]);
 
-                // Order is fully paid on-chain!
-                // We'll create the transaction record in the wallet history later when order is created
-                // to have the reference_id.
+                // Order is fully broadcasted!
+                // Final confirmation will be handled in the background.
                 
             } catch (\Exception $e) {
                 return response()->json([
@@ -328,14 +327,14 @@ class OnepageController extends APIController
 
         session()->flash('order_id', $order->id);
 
-        // 3. Create Wallet History Record (linking to the newly created order)
+        // 3. Create Wallet History Record for the SPENDING (if paid via Web3)
         if ($cart->payment->method === 'credits' && $txHash = session('last_web3_tx_hash')) {
-            \Webkul\Customer\Models\CustomerTransaction::create([
+            $spendingTransaction = \Webkul\Customer\Models\CustomerTransaction::create([
                 'uuid'           => \Illuminate\Support\Str::uuid(),
                 'customer_id'    => auth()->guard('customer')->id(),
                 'amount'         => $order->base_grand_total,
                 'type'           => 'order_payment',
-                'status'         => 'completed',
+                'status'         => 'pending', // Will be confirmed by background job
                 'reference_type' => get_class($order),
                 'reference_id'   => $order->id,
                 'notes'          => "Оплата заказа #{$order->increment_id} (Web3 Tx: " . substr($txHash, 0, 10) . "...)",
@@ -345,8 +344,16 @@ class OnepageController extends APIController
                     'order_id' => $order->id,
                 ]
             ]);
+
+            // Start background verification for the spending
+            \App\Jobs\VerifyWeb3TransactionJob::dispatch($spendingTransaction->id, $txHash);
             
             session()->forget('last_web3_tx_hash');
+        }
+
+        // 4. Trigger Dual-Minting (100% Body + 5% Bonus) for EVERY successful order
+        if (auth()->guard('customer')->check()) {
+            \App\Jobs\ProcessOrderCashbackJob::dispatch($order->id);
         }
 
         return new JsonResource([

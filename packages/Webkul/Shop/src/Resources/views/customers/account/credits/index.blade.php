@@ -233,7 +233,8 @@
                                         'refund'          => ['icon' => '💸', 'label' => 'Возврат'],
                                         'transfer_debit'  => ['icon' => '↔️', 'label' => 'Перевод от вас'],
                                         'transfer_credit' => ['icon' => '↔️', 'label' => 'Перевод вам'],
-                                        'cashback'        => ['icon' => '💰', 'label' => 'Кэшбек'],
+                                        'cashback'             => ['icon' => '💰', 'label' => 'Кэшбек (Бонус 5%)'],
+                                        'order_refund'         => ['icon' => '🔄', 'label' => 'Возврат тела платежа'],
                                         'registration_minting' => ['icon' => '✨', 'label' => 'Минтинг (Регистрация)'],
                                     ];
                                     $config = $typeLabels[$transaction->type] ?? ['icon' => '📄', 'label' => $transaction->type];

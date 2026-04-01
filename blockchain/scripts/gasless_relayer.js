@@ -113,13 +113,12 @@ async function main() {
                 sig.s
             );
 
-            // Wait for 1 confirmation
-            const receipt = await tx.wait(1);
-
+            // Return immediately after broadcast for speed & resilience
+            // Confirmation will be handled by a background job
             console.log(JSON.stringify({
                 success: true,
-                tx_hash: receipt.hash,
-                message: "Gasless transaction relayed successfully."
+                tx_hash: tx.hash,
+                message: "Gasless transaction broadcasted successfully."
             }));
         } catch (txError) {
              // Handle Revert Data directly if possible
