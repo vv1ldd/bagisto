@@ -103,9 +103,9 @@
                                                     </template>
                                                 </div>
                                                 <template v-if="!isEditing">
-                                                    <span class="text-[9px] text-zinc-500 font-mono tracking-tighter mt-0.5 opacity-70">
+                                                    <a href="https://arbiscan.io/address/{{$user->credits_id}}" target="_blank" class="text-[9px] text-zinc-500 font-mono tracking-tighter mt-0.5 opacity-70 normal-case hover:text-[#7C45F5] transition-colors block" title="Посмотреть в блокчейне">
                                                         {{$user->credits_id}}
-                                                    </span>
+                                                    </a>
                                                 </template>
                                             </div>
                                         </div>

@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
@@ -10,7 +11,7 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
  * @title MeanlyCoin
  * @dev ERC20 Token for Cashback system with production safety and burn features.
  */
-contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
+contract MeanlyCoin is ERC20, ERC20Burnable, ERC20Permit, AccessControl, Pausable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     
     // Safety limit to prevent accidental or malicious mass emission
@@ -36,7 +37,7 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
      * @param defaultAdmin Address of the Cold Wallet (Owner)
      * @param minter Address of the Backend Hot Wallet (Minter)
      */
-    constructor(address defaultAdmin, address minter) ERC20("MEANLY", "MNLY") {
+    constructor(address defaultAdmin, address minter) ERC20("MEANLY", "MNLY") ERC20Permit("MEANLY") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
         
@@ -171,5 +172,27 @@ contract MeanlyCoin is ERC20, ERC20Burnable, AccessControl, Pausable {
      */
     function _update(address from, address to, uint256 value) internal override whenNotPaused {
         super._update(from, to, value);
+    }
+
+    /**
+     * @dev Executes a permit and a transferFrom in a single transaction.
+     * This is the core of the Gasless Web3 Checkout flow.
+     */
+    function permitAndTransfer(
+        address owner,
+        address to,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external whenNotPaused {
+        // 1. Execute the EIP-2612 permit (approves `msg.sender` to spend `value`)
+        permit(owner, msg.sender, value, deadline, v, r, s);
+        
+        // 2. Execute the transfer from the owner to the destination
+        transferFrom(owner, to, value);
+        
+        // Note: The relayer (msg.sender) must be the Hot Wallet paying the gas.
     }
 }
