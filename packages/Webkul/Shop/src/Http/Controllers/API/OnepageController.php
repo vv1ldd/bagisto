@@ -272,6 +272,40 @@ class OnepageController extends APIController
 
         $cart = Cart::getCart();
 
+        // ----------------------------------------------------
+        // HOT WALLET GASLESS RELAY: Meanly Wallet Interception
+        // ----------------------------------------------------
+        if ($cart->payment->method === 'credits') {
+            $passkeyAssertion = request()->input('passkey_assertion');
+            
+            if (!$passkeyAssertion) {
+                return response()->json([
+                    'message' => 'Биометрическая подпись (Passkey) обязательна.',
+                ], 422);
+            }
+
+            try {
+                $signer = app(\Webkul\Customer\Services\PasskeyWeb3Signer::class);
+                $txHash = $signer->processGaslessCheckout(
+                    auth()->guard('customer')->user(),
+                    is_array($passkeyAssertion) ? $passkeyAssertion : json_decode($passkeyAssertion, true),
+                    $cart->base_grand_total
+                );
+
+                \Illuminate\Support\Facades\Log::info("Web3 Order Paid Successfully", ['tx' => $txHash, 'amount' => $cart->base_grand_total]);
+
+                // Order is fully paid on-chain!
+                // Bagisto will now proceed to create the internal Order record.
+                session(['last_web3_tx_hash' => $txHash]);
+                
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], 400);
+            }
+        }
+        // ----------------------------------------------------
+
         if ($redirectUrl = Payment::getRedirectUrl($cart)) {
             return new JsonResource([
                 'redirect' => true,

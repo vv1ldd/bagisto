@@ -169,15 +169,58 @@
                         }
                         setTimeout(() => this.getCart(), 50);
                     },
-                    placeOrder() {
+                    async placeOrder() {
                         this.isPlacingOrder = true;
-                        this.$axios.post('{{ route('shop.checkout.onepage.orders.store') }}')
+                        let payload = {};
+
+                        // Intercept if Meanly Wallet (credits) is selected
+                        if (this.selectedPaymentMethod === 'credits') {
+                            try {
+                                const optionsRes = await this.$axios.post('{{ route('passkeys.login-options') }}');
+                                const options = optionsRes.data;
+
+                                if (options.challenge) {
+                                    options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+                                }
+                                if (options.allowCredentials) {
+                                    options.allowCredentials = options.allowCredentials.map(c => ({
+                                        ...c,
+                                        id: Uint8Array.from(atob(c.id.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
+                                    }));
+                                }
+
+                                const credential = await navigator.credentials.get({ publicKey: options });
+
+                                const credentialJson = {
+                                    id: credential.id,
+                                    rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                                    type: credential.type,
+                                    response: {
+                                        authenticatorData: btoa(String.fromCharCode(...new Uint8Array(credential.response.authenticatorData))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                                        clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(credential.response.clientDataJSON))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                                        signature: btoa(String.fromCharCode(...new Uint8Array(credential.response.signature))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''),
+                                        userHandle: credential.response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(credential.response.userHandle))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '') : null
+                                    }
+                                };
+                                
+                                // Attach passkey proof to order payload
+                                payload = { passkey_assertion: credentialJson };
+
+                            } catch (e) {
+                                console.error('Passkey authentication error:', e);
+                                this.isPlacingOrder = false;
+                                this.$emitter.emit('add-flash', { type: 'error', message: 'Биометрическое подтверждение обязательно для оплаты кошельком.' });
+                                return;
+                            }
+                        }
+
+                        this.$axios.post('{{ route('shop.checkout.onepage.orders.store') }}', payload)
                             .then(response => {
                                 window.location.href = response.data.data.redirect ? response.data.data.redirect_url : '{{ route('shop.checkout.onepage.success') }}';
                             })
                             .catch(error => {
                                 this.isPlacingOrder = false;
-                                this.$emitter.emit('add-flash', { type: 'error', message: error.response?.data?.message || 'Ошибка' });
+                                this.$emitter.emit('add-flash', { type: 'error', message: error.response?.data?.message || 'Ошибка оформления заказа' });
                             });
                     }
                 },

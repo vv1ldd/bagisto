@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/contracts/MeanlyCoin.sol": {
-      "lastModificationDate": 1774310568832,
-      "contentHash": "070a05c6f3f56f858e3ba4a68d6d304a",
+      "lastModificationDate": 1775004229203,
+      "contentHash": "f4461c48e0c3a4abddc107cc004b7f33",
       "sourceName": "contracts/MeanlyCoin.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -32,6 +32,7 @@
       "imports": [
         "@openzeppelin/contracts/token/ERC20/ERC20.sol",
         "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol",
+        "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
         "@openzeppelin/contracts/access/AccessControl.sol",
         "@openzeppelin/contracts/utils/Pausable.sol"
       ],
@@ -1112,6 +1113,344 @@
       ],
       "artifacts": [
         "ERC721Burnable"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol": {
+      "lastModificationDate": 1774297614154,
+      "contentHash": "a5e78bb1708ef493e3f0a03c633d3911",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC20Permit.sol",
+        "../ERC20.sol",
+        "../../../utils/cryptography/ECDSA.sol",
+        "../../../utils/cryptography/EIP712.sol",
+        "../../../utils/Nonces.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "ERC20Permit"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/utils/Nonces.sol": {
+      "lastModificationDate": 1774297614203,
+      "contentHash": "c32d108058718efb9061b88e83a83f79",
+      "sourceName": "@openzeppelin/contracts/utils/Nonces.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Nonces"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/utils/cryptography/ECDSA.sol": {
+      "lastModificationDate": 1774297614135,
+      "contentHash": "b038f3665d2262af34fe6009e3cd78dd",
+      "sourceName": "@openzeppelin/contracts/utils/cryptography/ECDSA.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ECDSA"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/utils/cryptography/EIP712.sol": {
+      "lastModificationDate": 1774297614135,
+      "contentHash": "1351802e3aa364e90aacf03f65b78176",
+      "sourceName": "@openzeppelin/contracts/utils/cryptography/EIP712.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./MessageHashUtils.sol",
+        "../ShortStrings.sol",
+        "../../interfaces/IERC5267.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "EIP712"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol": {
+      "lastModificationDate": 1774297614189,
+      "contentHash": "274b0eacbd66ff78b8f749cd8105bab0",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.16"
+      ],
+      "artifacts": [
+        "IERC20Permit"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/interfaces/IERC5267.sol": {
+      "lastModificationDate": 1774297614189,
+      "contentHash": "6e00d2fe4bc0d5f1add753824498bb35",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC5267.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.16"
+      ],
+      "artifacts": [
+        "IERC5267"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol": {
+      "lastModificationDate": 1774297614203,
+      "contentHash": "fab97298382d4c32182a66ec35255b71",
+      "sourceName": "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../Strings.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "MessageHashUtils"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/utils/ShortStrings.sol": {
+      "lastModificationDate": 1774297614220,
+      "contentHash": "193937821a0ace7308133b4c68f6b9be",
+      "sourceName": "@openzeppelin/contracts/utils/ShortStrings.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./StorageSlot.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ShortStrings"
+      ]
+    },
+    "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/node_modules/@openzeppelin/contracts/utils/StorageSlot.sol": {
+      "lastModificationDate": 1774297614221,
+      "contentHash": "e656d64c4ce918f3d13030b91c935134",
+      "sourceName": "@openzeppelin/contracts/utils/StorageSlot.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "StorageSlot"
       ]
     }
   }

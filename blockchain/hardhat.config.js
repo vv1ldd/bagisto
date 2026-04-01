@@ -20,8 +20,6 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: {
-      arbitrumOne: process.env.ARBISCAN_API_KEY
-    }
+    apiKey: process.env.ARBISCAN_API_KEY
   }
 };
