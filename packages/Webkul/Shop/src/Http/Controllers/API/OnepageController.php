@@ -15,6 +15,9 @@ use Webkul\Shop\Http\Resources\CartResource;
 use Illuminate\Support\Facades\Mail;
 use Webkul\Shop\Mail\Customer\OtpNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\VerifyWeb3TransactionJob;
+use App\Jobs\ProcessOrderCashbackJob;
 
 class OnepageController extends APIController
 {
@@ -42,7 +45,7 @@ class OnepageController extends APIController
     /**
      * Send OTP to customer email.
      */
-    public function sendOtp(Request $request): JsonResource
+    public function sendOtp(Request $request): object
     {
         $request->validate([
             'email' => 'required|email',
@@ -65,17 +68,18 @@ class OnepageController extends APIController
                 'message' => 'Код отправлен на вашу почту.',
             ]);
         } catch (\Exception $e) {
-            return new JsonResource([
+            \Illuminate\Support\Facades\Log::error("OTP Send Error: " . $e->getMessage());
+            return (new JsonResource([
                 'success' => false,
                 'message' => 'Не удалось отправить код. Пожалуйста, попробуйте позже.',
-            ], 500);
+            ]))->response()->setStatusCode(500);
         }
     }
 
     /**
      * Verify OTP code.
      */
-    public function verifyOtp(Request $request): JsonResource
+    public function verifyOtp(Request $request): object
     {
         $request->validate([
             'code' => 'required|string|size:6',
@@ -93,10 +97,10 @@ class OnepageController extends APIController
             ]);
         }
 
-        return new JsonResource([
+        return (new JsonResource([
             'success' => false,
             'message' => 'Неверный код. Пожалуйста, проверьте и попробуйте снова.',
-        ], 422);
+        ]))->response()->setStatusCode(422);
     }
 
     /**
@@ -305,8 +309,9 @@ class OnepageController extends APIController
                 // Final confirmation will be handled in the background.
                 
             } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Web3 Checkout Broadcast Error: " . $e->getMessage());
                 return response()->json([
-                    'message' => $e->getMessage(),
+                    'message' => "Ошибка Web3: " . $e->getMessage(),
                 ], 400);
             }
         }
@@ -329,31 +334,39 @@ class OnepageController extends APIController
 
         // 3. Create Wallet History Record for the SPENDING (if paid via Web3)
         if ($cart->payment->method === 'credits' && $txHash = session('last_web3_tx_hash')) {
-            $spendingTransaction = \Webkul\Customer\Models\CustomerTransaction::create([
-                'uuid'           => \Illuminate\Support\Str::uuid(),
-                'customer_id'    => auth()->guard('customer')->id(),
-                'amount'         => $order->base_grand_total,
-                'type'           => 'order_payment',
-                'status'         => 'pending', // Will be confirmed by background job
-                'reference_type' => get_class($order),
-                'reference_id'   => $order->id,
-                'notes'          => "Оплата заказа #{$order->increment_id} (Web3 Tx: " . substr($txHash, 0, 10) . "...)",
-                'metadata'       => [
-                    'tx_hash'  => $txHash,
-                    'network'  => 'arbitrum_one',
-                    'order_id' => $order->id,
-                ]
-            ]);
+            try {
+                $spendingTransaction = \Webkul\Customer\Models\CustomerTransaction::create([
+                    'uuid'           => \Illuminate\Support\Str::uuid(),
+                    'customer_id'    => auth()->guard('customer')->id(),
+                    'amount'         => $order->base_grand_total,
+                    'type'           => 'order_payment',
+                    'status'         => 'pending', // Will be confirmed by background job
+                    'reference_type' => get_class($order),
+                    'reference_id'   => $order->id,
+                    'notes'          => "Оплата заказа #{$order->increment_id} (Web3 Tx: " . substr($txHash, 0, 10) . "...)",
+                    'metadata'       => [
+                        'tx_hash'  => $txHash,
+                        'network'  => 'arbitrum_one',
+                        'order_id' => $order->id,
+                    ]
+                ]);
 
-            // Start background verification for the spending
-            \App\Jobs\VerifyWeb3TransactionJob::dispatch($spendingTransaction->id, $txHash);
+                // Start background verification for the spending
+                VerifyWeb3TransactionJob::dispatch($spendingTransaction->id, $txHash);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Spending Transaction Log Failed: " . $e->getMessage());
+            }
             
             session()->forget('last_web3_tx_hash');
         }
 
         // 4. Trigger Dual-Minting (100% Body + 5% Bonus) for EVERY successful order
-        if (auth()->guard('customer')->check()) {
-            \App\Jobs\ProcessOrderCashbackJob::dispatch($order->id);
+        try {
+            if (auth()->guard('customer')->check() && ! empty($order->id)) {
+                ProcessOrderCashbackJob::dispatch($order->id);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Cashback Queue Failed: " . $e->getMessage());
         }
 
         return new JsonResource([
