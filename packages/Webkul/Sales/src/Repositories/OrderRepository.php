@@ -62,6 +62,9 @@ class OrderRepository extends Repository
                 // Get all balances with their RUB equivalent, sorted descending
                 $balances = $customer->balances()->where('amount', '>', 0)->get()->map(function ($b) use ($exchangeRateService) {
                     $rate = $exchangeRateService->getRate($b->currency_code);
+                    
+                    \Illuminate\Support\Facades\Log::info("Checkout Balance Check: Code [{$b->currency_code}], Amount [{$b->amount}], Rate [{$rate}]");
+                    
                     return [
                         'model' => $b,
                         'rate' => $rate,
@@ -73,6 +76,8 @@ class OrderRepository extends Repository
 
                 // Check total is sufficient (using round for float precision safety)
                 $totalRub = round($balances->sum('rub_value'), 4);
+                
+                \Illuminate\Support\Facades\Log::info("Checkout Total RUB: [{$totalRub}] for Order Grand Total [{$order->base_grand_total}]");
                 $requiredRub = round($order->base_grand_total, 4);
 
                 if ($totalRub < $requiredRub) {
