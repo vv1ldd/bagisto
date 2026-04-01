@@ -18,4 +18,5 @@ return [
     'meanly_gift_address' => env('MEANLY_GIFT_ADDRESS', ''),
     'rpc_url_arbitrum' => env('ARBITRUM_RPC_URL', 'https://arb1.arbitrum.io/rpc'),
     'arbitrum_chain_id' => env('ARBITRUM_CHAIN_ID', 42161),
+    'node_binary' => env('NODE_BINARY', 'node'),
 ];

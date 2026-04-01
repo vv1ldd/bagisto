@@ -106,7 +106,8 @@ class PasskeyWeb3Signer
 
         // Execute the Ethers JS Script securely via standard input (no params injection)
         $scriptPath = base_path('blockchain/scripts/gasless_relayer.js');
-        $process = new Process(['node', $scriptPath]);
+        $nodeBinary = config('crypto.node_binary', 'node');
+        $process = new Process([$nodeBinary, $scriptPath]);
         
         // Pass payload securely via STDIN, not arguments
         $process->setInput(json_encode($payload));
