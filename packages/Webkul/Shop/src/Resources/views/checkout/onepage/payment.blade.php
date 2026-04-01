@@ -80,6 +80,11 @@
                 handleSelection(payment) {
                     this.$emit('change-payment-method', payment.method);
                     this.store(payment);
+
+                    // Trigger balance refresh after Vue updates the DOM
+                    setTimeout(() => {
+                        document.dispatchEvent(new CustomEvent('mc-balance-refresh'));
+                    }, 50);
                 },
                 store(selectedMethod) {
                     this.$emit('processing', 'review');
