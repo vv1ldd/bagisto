@@ -1,7 +1,7 @@
 <!-- Compact Header -->
 <div class="mb-6 pb-4 border-b-[3px] border-zinc-900 flex items-center justify-between">
     <h3 class="text-lg font-black uppercase tracking-[0.15em] text-zinc-900">
-        @lang('shop::app.checkout.onepage.summary.cart-summary')
+        ЛИСТ ПОКУПОК
     </h3>
     <div class="px-3 py-1 bg-zinc-900 border-2 border-zinc-900 text-white text-[9px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(124,69,245,1)]">
         @{{ cart.items.length }} поз.
@@ -22,10 +22,25 @@
             </p>
 
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="px-1.5 py-0.5 bg-zinc-100 border border-zinc-900 text-[8px] font-black uppercase tracking-widest text-zinc-900">
-                        @{{ item.quantity }} шт.
-                    </span>
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-1">
+                        <button type="button" @click="setItemQuantity(item.id, item.quantity - 1)" class="w-5 h-5 flex items-center justify-center bg-zinc-100 border border-zinc-900 hover:bg-zinc-900 hover:text-white transition-colors" :disabled="isPlacingOrder || item.quantity <= 1">
+                            -
+                        </button>
+                        <span class="min-w-[20px] text-center px-1.5 py-0.5 bg-zinc-100 border border-zinc-900 border-x-0 text-[8px] font-black uppercase tracking-widest text-zinc-900">
+                            @{{ item.quantity }}
+                        </span>
+                        <button type="button" @click="setItemQuantity(item.id, item.quantity + 1)" class="w-5 h-5 flex items-center justify-center bg-zinc-100 border border-zinc-900 hover:bg-zinc-900 hover:text-white transition-colors" :disabled="isPlacingOrder">
+                            +
+                        </button>
+                        
+                        <button type="button" @click="removeItem(item.id)" title="Удалить" class="ml-2 w-5 h-5 flex items-center justify-center bg-red-50 border border-red-200 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors" :disabled="isPlacingOrder">
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+
                     <p class="text-[10px] font-black uppercase tracking-widest opacity-60">
                         @{{ displayTax.prices == 'including_tax' ? item.formatted_price_incl_tax : item.formatted_price }}
                     </p>

@@ -198,6 +198,39 @@
                                 this.isPlacingOrder = false;
                                 this.$emitter.emit('add-flash', { type: 'error', message: error.response?.data?.message || 'Ошибка оформления заказа' });
                             });
+                    },
+                    
+                    // Cart Editing Methods directly in Checkout
+                    setItemQuantity(itemId, quantity) {
+                        if (quantity < 1) return;
+                        this.isPlacingOrder = true; // Temporary lock UI
+                        this.$axios.put('{{ route('shop.api.checkout.cart.update') }}', { qty: { [itemId]: quantity } })
+                            .then(response => {
+                                this.cart = response.data.data;
+                                this.$emitter.emit('update-mini-cart', response.data.data);
+                                this.getCart(); // refresh summary prices
+                            })
+                            .catch(error => {})
+                            .finally(() => this.isPlacingOrder = false);
+                    },
+
+                    removeItem(itemId) {
+                        this.isPlacingOrder = true;
+                        this.$axios.post('{{ route('shop.api.checkout.cart.destroy') }}', {
+                            '_method': 'DELETE',
+                            'cart_item_id': itemId,
+                        })
+                        .then(response => {
+                            if (response.data.data && response.data.data.items && response.data.data.items.length === 0) {
+                                window.location.href = '{{ route('shop.home.index') }}';
+                            } else {
+                                this.cart = response.data.data;
+                                this.$emitter.emit('update-mini-cart', response.data.data);
+                                this.getCart();
+                            }
+                        })
+                        .catch(error => {})
+                        .finally(() => this.isPlacingOrder = false);
                     }
                 },
             });

@@ -69,7 +69,7 @@
                         </svg>
                     </button>
                     <div class="relative shrink-0">
-                        <a href="{{ $cartItemsCount > 0 ? route('shop.checkout.cart.index') : route('shop.customers.account.index') }}" 
+                        <a href="{{ $cartItemsCount > 0 ? route('shop.checkout.onepage.index') : route('shop.customers.account.index') }}" 
                            class="relative block h-9 w-9 bg-white border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-200"
                            id="header-mobile-avatar-link">
                             <div class="flex h-full w-full items-center justify-center font-black text-zinc-900 uppercase">
@@ -84,7 +84,7 @@
                             </div>
                         </a>
                         <v-cart-badge
-                            cart-url="{{ route('shop.checkout.cart.index') }}"
+                            cart-url="{{ route('shop.checkout.onepage.index') }}"
                             avatar-url="{{ route('shop.customers.account.index') }}"
                             :initial-count="{{ $cartItemsCount }}"
                             user-initial="{{ $userInitial }}"

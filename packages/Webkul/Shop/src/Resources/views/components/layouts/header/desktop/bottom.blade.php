@@ -51,7 +51,7 @@
             <div class="flex items-center gap-4">
                 {{-- Account/Cart Tile --}}
                 <div class="relative">
-                    <a href="{{ $cartCount > 0 ? route('shop.checkout.cart.index') : route('shop.customers.account.index') }}" 
+                    <a href="{{ $cartCount > 0 ? route('shop.checkout.onepage.index') : route('shop.customers.account.index') }}" 
                        class="relative block h-10 w-10 bg-white border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-200 group" 
                        id="header-avatar-link">
                         <div class="flex h-full w-full items-center justify-center font-black text-zinc-900 uppercase">
@@ -67,7 +67,7 @@
                     </a>
 
                     <v-cart-badge
-                        cart-url="{{ route('shop.checkout.cart.index') }}"
+                        cart-url="{{ route('shop.checkout.onepage.index') }}"
                         avatar-url="{{ route('shop.customers.account.index') }}"
                         :initial-count="{{ $cartCount }}"
                         user-initial="{{ $userInitial }}"

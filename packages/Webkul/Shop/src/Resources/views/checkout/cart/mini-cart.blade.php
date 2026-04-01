@@ -48,8 +48,8 @@
                     {!! view_render_event('bagisto.shop.checkout.mini-cart.drawer.header.before') !!}
 
                     <div class="flex items-center justify-between">
-                        <p class="text-2xl font-bold max-md:text-xl max-sm:text-xl dark:text-white">
-                            @lang('shop::app.checkout.cart.mini-cart.shopping-cart')
+                        <p class="text-2xl font-black uppercase tracking-tighter text-zinc-900 border-l-[6px] border-[#7C45F5] pl-3">
+                            ЛИСТ ПОКУПОК
                         </p>
                     </div>
 
@@ -235,10 +235,10 @@
                             >
 
                             <p
-                                class="text-xl max-md:text-sm"
+                                class="text-[14px] font-black uppercase tracking-widest text-zinc-400"
                                 role="heading"
                             >
-                                @lang('shop::app.checkout.cart.mini-cart.empty-cart')
+                                Лист пуст
                             </p>
                         </div>
                     </div>
@@ -325,18 +325,12 @@
 
                         <a
                             href="{{ route('shop.checkout.onepage.index') }}"
-                            class="primary-button !py-4 rounded-2xl mx-auto block w-full text-center"
+                            class="bg-[#7C45F5] border-[3px] border-zinc-900 px-6 py-4 text-[13px] font-black uppercase tracking-widest text-white shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:bg-[#8A5CF7] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all block w-full text-center"
                         >
-                            @lang('shop::app.checkout.cart.mini-cart.continue-to-checkout')
+                            ОФОРМИТЬ ПОКУПКУ
                         </a>
 
                             {!! view_render_event('bagisto.shop.checkout.mini-cart.continue_to_checkout.after') !!}
-
-                            <div class="block cursor-pointer text-center text-base font-medium max-md:py-1.5">
-                                <a href="{{ route('shop.checkout.cart.index') }}" class="text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-widest text-xs hover:text-[#7C45F5] transition-colors">
-                                    @lang('shop::app.checkout.cart.mini-cart.view-cart')
-                                </a>
-                            </div>
                         </div>
 
                         {!! view_render_event('bagisto.shop.checkout.mini-cart.action.after') !!}
