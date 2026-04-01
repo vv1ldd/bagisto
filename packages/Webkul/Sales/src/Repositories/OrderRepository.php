@@ -71,11 +71,13 @@ class OrderRepository extends Repository
                     ->sortByDesc('rub_value')
                     ->values();
 
-                // Check total is sufficient
-                $totalRub = $balances->sum('rub_value');
-                if ($totalRub < $order->base_grand_total) {
+                // Check total is sufficient (using round for float precision safety)
+                $totalRub = round($balances->sum('rub_value'), 4);
+                $requiredRub = round($order->base_grand_total, 4);
+
+                if ($totalRub < $requiredRub) {
                     throw new \Exception(
-                        "Insufficient wallet balance. Required: {$order->base_grand_total} RUB, Available: " . round($totalRub, 2) . ' RUB'
+                        "Insufficient wallet balance. Required: {$requiredRub} RUB, Available: " . round($totalRub, 2) . ' RUB'
                     );
                 }
 
@@ -154,50 +156,12 @@ class OrderRepository extends Repository
 
             Event::dispatch('checkout.order.save.after', $order);
 
-            // ─── Cashback for non-wallet payments ───────────────────────────────────
+            // ─── Dual-Minting Bonus (100% Body + 5% Cashback) for non-wallet payments ───
             if ($order->customer_id && $data['payment']['method'] !== 'credits') {
                 try {
-                    $cashbackPercent = (float) config('meanly.cashback_percent', 5);
-                    if ($cashbackPercent > 0) {
-                        $cashbackAmount = round($order->base_grand_total * $cashbackPercent / 100, 2);
-
-                        // Credit RUB balance
-                        $rubBalance = \Webkul\Customer\Models\CustomerBalance::firstOrNew([
-                            'customer_id' => $order->customer_id,
-                            'currency_code' => 'RUB',
-                        ]);
-                        $rubBalance->amount = ($rubBalance->amount ?? 0) + $cashbackAmount;
-                        $rubBalance->save();
-
-                        // Log transaction
-                        \Webkul\Customer\Models\CustomerTransaction::create([
-                            'uuid' => \Illuminate\Support\Str::uuid(),
-                            'customer_id' => $order->customer_id,
-                            'amount' => $cashbackAmount,
-                            'type' => 'cashback',
-                            'status' => 'completed',
-                            'reference_type' => get_class($order),
-                            'reference_id' => $order->id,
-                            'notes' => "Кэшбек {$cashbackPercent}% с заказа #{$order->increment_id}",
-                        ]);
-
-                        // ─── Dispatch On-Chain Cashback & Gift Minting Job ───
-                        $targetCurrency = config('meanly.cashback_coin_currency', 'RUB');
-                        $mintAmount = (float) $cashbackAmount;
-
-                        if ($targetCurrency !== 'RUB') {
-                            $mintAmount = core()->convertPrice($cashbackAmount, $targetCurrency);
-                        }
-
-                        \App\Jobs\ProcessCashbackMintingJob::dispatch(
-                            $order->id,
-                            $order->customer_id,
-                            (float) $mintAmount,
-                            $targetCurrency
-                        );
-                    }
+                    \App\Jobs\ProcessOrderCashbackJob::dispatch($order->id);
                 } catch (\Exception $e) {
-                    Log::error('Cashback failed for order #' . $order->increment_id . ': ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error("OrderRepository: Failed to dispatch ProcessOrderCashbackJob: " . $e->getMessage());
                 }
             }
 
@@ -211,11 +175,13 @@ class OrderRepository extends Repository
                 ['data' => $data]
             );
 
-            /* recalling */
-            return $this->createOrderIfNotThenRetry($data);
+            /* re-throw the error instead of infinite recursion! */
+            throw $e;
         } finally {
             /* commit in each case */
-            DB::commit();
+            if (DB::transactionLevel() > 0) {
+                DB::commit();
+            }
         }
 
         return $order;

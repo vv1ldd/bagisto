@@ -360,14 +360,6 @@ class OnepageController extends APIController
             session()->forget('last_web3_tx_hash');
         }
 
-        // 4. Trigger Dual-Minting (100% Body + 5% Bonus) for EVERY successful order
-        try {
-            if (auth()->guard('customer')->check() && ! empty($order->id)) {
-                ProcessOrderCashbackJob::dispatch($order->id);
-            }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Cashback Queue Failed: " . $e->getMessage());
-        }
 
         return new JsonResource([
             'redirect' => true,
