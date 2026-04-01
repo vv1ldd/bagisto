@@ -56,6 +56,12 @@ class OrderRepository extends Repository
 
             // Handle Credits Balance Deduction — auto-deduct from all coins, largest RUB value first
             if ($data['payment']['method'] === 'credits') {
+                // If a Web3 transaction hash is present, the payment was already broadcasted
+                // to the blockchain. We trust the hash and bypass internal balance checks.
+                if (!empty($data['web3_tx_hash'])) {
+                    return $order;
+                }
+
                 $customer = $order->customer;
                 $exchangeRateService = app(\Webkul\Customer\Services\ExchangeRateService::class);
 
