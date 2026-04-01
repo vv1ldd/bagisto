@@ -50,9 +50,14 @@
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="text-[9px] font-black uppercase tracking-widest opacity-80">Баланс</span>
                                     @if(auth()->guard('customer')->check())
-                                        <span class="text-xl font-black tabular-nums">
-                                            {{ number_format(auth()->guard('customer')->user()->balance, 2, '.', '') }} MC
-                                        </span>
+                                        <div class="flex flex-col items-end">
+                                            <span class="text-xl font-black tabular-nums">
+                                                {{ number_format(auth()->guard('customer')->user()->balance, 2, '.', '') }} MC
+                                            </span>
+                                            <span class="text-[10px] font-bold opacity-60 uppercase tracking-widest mt-0.5">
+                                                1 MC = 1.00 ₽
+                                            </span>
+                                        </div>
                                     @endif
                                 </div>
                             </div>

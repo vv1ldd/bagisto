@@ -51,10 +51,11 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
                             <div class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 italic">Баланс Meanly Coin (MC)</div>
-                            <div class="flex items-baseline gap-2">
+                            <div class="flex items-baseline gap-4">
                                 <span class="text-[48px] md:text-[56px] font-black text-zinc-900 tracking-tighter leading-none" id="live-mc-balance-container">
                                     <span id="live-mc-balance" class="animate-pulse text-zinc-300">...</span> <span class="text-[#7C45F5]">MC</span>
                                 </span>
+                                <span class="text-[12px] font-black text-zinc-400 uppercase tracking-widest italic">1 MC = 1.00 ₽</span>
                             </div>
                             
                             {{-- User Identifier Badge --}}
