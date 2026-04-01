@@ -51,7 +51,7 @@
                                     <span class="text-[9px] font-black uppercase tracking-widest opacity-80">Баланс</span>
                                     @if(auth()->guard('customer')->check())
                                         <span class="text-xl font-black tabular-nums">
-                                            {{ core()->currency(auth()->guard('customer')->user()->getTotalFiatBalance()) }}
+                                            {{ number_format(auth()->guard('customer')->user()->balance, 2, '.', '') }} MC
                                         </span>
                                     @endif
                                 </div>
