@@ -82,6 +82,15 @@ class OrderRepository extends Repository
 
                 // Check total is sufficient (using round for float precision safety)
                 $totalRub = round($balances->sum('rub_value'), 4);
+
+                // Definitive Fallback: If detailed balances are empty/out of sync
+                // but the primary customer->balance field populated, use it.
+                // This captures the 10 MC minted at registration.
+                if ($totalRub <= 0 && $customer->balance > 0) {
+                    $totalRub = (float) $customer->balance;
+                    
+                    \Illuminate\Support\Facades\Log::info("Checkout: Using customer->balance fallback [{$totalRub}]");
+                }
                 
                 \Illuminate\Support\Facades\Log::info("Checkout Total RUB: [{$totalRub}] for Order Grand Total [{$order->base_grand_total}]");
                 $requiredRub = round($order->base_grand_total, 4);
