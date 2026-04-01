@@ -26,11 +26,11 @@
                     <div class="bg-zinc-50 border-4 border-zinc-900 p-6 mb-10 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)]">
                         <div class="flex justify-between items-center mb-4 pb-4 border-b-2 border-zinc-200">
                             <span class="font-black uppercase text-sm text-zinc-400">Сумма к оплате</span>
-                            <span class="text-2xl font-black">@{{ order.base_grand_total }} ₽</span>
+                            <span class="text-2xl font-black">@{{ parseFloat(order.grand_total).toFixed(2) }} ₽</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="font-black uppercase text-sm text-zinc-400">Начислим бонусов</span>
-                            <span class="text-xl font-black text-[#7C45F5]">+@{{ (order.base_grand_total * 0.05).toFixed(2) }} MC</span>
+                            <span class="text-xl font-black text-[#7C45F5]">+@{{ (order.grand_total * 0.05).toFixed(2) }} MC</span>
                         </div>
                     </div>
 
