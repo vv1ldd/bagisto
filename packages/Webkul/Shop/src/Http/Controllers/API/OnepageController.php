@@ -294,9 +294,16 @@ class OnepageController extends APIController
 
                 \Illuminate\Support\Facades\Log::info("Web3 Order Paid Successfully", ['tx' => $txHash, 'amount' => $cart->base_grand_total]);
 
-                // Order is fully paid on-chain!
-                // Bagisto will now proceed to create the internal Order record.
+                // 1. Decrement local balance (Sync with on-chain)
+                $customer = auth()->guard('customer')->user();
+                $customer->decrement('balance', $cart->base_grand_total);
+
+                // 2. Clear cached totals just in case
                 session(['last_web3_tx_hash' => $txHash]);
+
+                // Order is fully paid on-chain!
+                // We'll create the transaction record in the wallet history later when order is created
+                // to have the reference_id.
                 
             } catch (\Exception $e) {
                 return response()->json([
@@ -320,6 +327,27 @@ class OnepageController extends APIController
         Cart::deActivateCart();
 
         session()->flash('order_id', $order->id);
+
+        // 3. Create Wallet History Record (linking to the newly created order)
+        if ($cart->payment->method === 'credits' && $txHash = session('last_web3_tx_hash')) {
+            \Webkul\Customer\Models\CustomerTransaction::create([
+                'uuid'           => \Illuminate\Support\Str::uuid(),
+                'customer_id'    => auth()->guard('customer')->id(),
+                'amount'         => $order->base_grand_total,
+                'type'           => 'order_payment',
+                'status'         => 'completed',
+                'reference_type' => get_class($order),
+                'reference_id'   => $order->id,
+                'notes'          => "Оплата заказа #{$order->increment_id} (Web3 Tx: " . substr($txHash, 0, 10) . "...)",
+                'metadata'       => [
+                    'tx_hash'  => $txHash,
+                    'network'  => 'arbitrum_one',
+                    'order_id' => $order->id,
+                ]
+            ]);
+            
+            session()->forget('last_web3_tx_hash');
+        }
 
         return new JsonResource([
             'redirect' => true,
