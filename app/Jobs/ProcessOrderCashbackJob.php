@@ -36,6 +36,13 @@ class ProcessOrderCashbackJob implements ShouldQueue
             return;
         }
 
+        // IMPORTANT: Only mint tokens if payment method is NOT Meanly Wallet (credits)
+        // This prevents infinite token generation loops.
+        if ($order->payment->method === 'credits') {
+            Log::info("ProcessOrderCashbackJob: Skipping minting for Order #{$order->increment_id} because it was paid via Meanly Wallet.");
+            return;
+        }
+
         $customer = $order->customer;
         $orderTotal = $order->base_grand_total; // Sum of order body
         $bonusAmount = $orderTotal * 0.05;      // 5% Cashback bonus
