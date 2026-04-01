@@ -164,9 +164,6 @@ class RegistrationController extends Controller
 
         // Ensure we don't accidentally reuse an existing placeholder (we want passkeys to correspond 1-to-1)
         
-        // Generate credits_id and username early for stable Passkey ID
-        $data['credits_id'] = \Webkul\Customer\Models\Customer::generateUniqueCreditsId();
-        
         // Abstract a Mock Customer for options generation
         $mockCustomer = new \Webkul\Customer\Models\Customer($data);
         $mockCustomer->transient_passkey_id = $data['credits_id']; 

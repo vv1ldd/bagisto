@@ -57,7 +57,12 @@ async function main() {
             network: { chainId, name: network.name },
             contract: { address: tokenAddress, name: tokenName, paused: isPaused },
             hotWallet: { address: hotWallet.address, eth: ethers.formatEther(hotWalletEth) },
-            customer: { address: customerWallet.address, tokens: ethers.formatEther(customerTokens), nonce: nonce.toString() },
+            customer: { 
+                db_address: targetAddress, // Address where we expect tokens (stored in DB as credits_id)
+                derived_address: customerWallet.address, // Address derived from the private key in DB
+                tokens: ethers.formatEther(customerTokens), 
+                nonce: nonce.toString() 
+            },
             transaction: { target: targetAddress, amount: amountStr, amountWei: value.toString() }
         }));
 
