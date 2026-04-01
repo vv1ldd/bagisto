@@ -297,10 +297,10 @@
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     @foreach($nftOrders as $order)
                         <div class="relative group bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] overflow-hidden transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none">
-                            <img src="{{ route('api.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
+                            <img src="{{ route('shop.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
                             <div class="absolute inset-0 bg-zinc-900/90 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 px-4 text-center">
                                 <span class="text-white font-black text-[10px] uppercase tracking-[0.2em] mb-4">Receipt Asset</span>
-                                <a href="{{ route('api.nft.metadata', ['id' => $order->id]) }}" target="_blank" class="px-4 py-2 bg-[#7C45F5] border-2 border-white text-white rounded-none text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-zinc-900 transition-colors shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                <a href="{{ route('shop.nft.metadata', ['id' => $order->id]) }}" target="_blank" class="px-4 py-2 bg-[#7C45F5] border-2 border-white text-white rounded-none text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-zinc-900 transition-colors shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                                     JSON Data
                                 </a>
                             </div>
