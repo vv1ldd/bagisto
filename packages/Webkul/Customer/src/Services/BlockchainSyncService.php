@@ -994,5 +994,14 @@ class BlockchainSyncService
         );
         $customerBalance->amount = $balance;
         $customerBalance->save();
+
+        // Strict verification: Mark pending minting drops as completed 
+        // ONLY when the blockchain API physically confirms tokens are in the wallet.
+        if ($balance > 0) {
+            \Webkul\Customer\Models\CustomerTransaction::where('customer_id', $customer->id)
+                ->where('type', 'registration_minting')
+                ->where('status', 'pending')
+                ->update(['status' => 'completed']);
+        }
     }
 }

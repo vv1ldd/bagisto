@@ -76,7 +76,7 @@ class ProcessWelcomeMintingJob implements ShouldQueue
                 'customer_id' => $customer->id,
                 'amount' => $this->amount,
                 'type' => 'registration_minting',
-                'status' => 'completed', // Arbitrum confirms instantly
+                'status' => 'pending', // Will be confirmed 'completed' by BlockchainSyncService when balance appears
                 'notes' => "Минтинг Meanly Coins (Регистрация +{$this->amount})",
                 'metadata' => [
                     'tx_hash' => $txHash,
