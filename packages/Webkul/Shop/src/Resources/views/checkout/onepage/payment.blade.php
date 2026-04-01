@@ -35,8 +35,11 @@
                                         <img :src="payment.image" class="max-h-full max-w-full p-1.5 grayscale" />
                                     </div>
 
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 flex flex-col">
                                         <p class="text-[14px] font-black uppercase tracking-widest truncate">@{{ payment.method_title }}</p>
+                                        <div v-if="payment.method === 'sbp'" class="mt-1">
+                                            <span class="bg-zinc-900 text-white text-[8px] font-black px-1.5 py-0.5 uppercase tracking-tighter">Появится позже</span>
+                                        </div>
                                     </div>
                                 </div>
 

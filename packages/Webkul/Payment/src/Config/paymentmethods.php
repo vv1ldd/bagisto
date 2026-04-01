@@ -27,4 +27,13 @@ return [
         'active' => true,
         'sort' => 1,
     ],
+
+    'sbp' => [
+        'code' => 'sbp',
+        'title' => 'СБП (Система быстрых платежей)',
+        'description' => 'Оплата через СБП',
+        'class' => 'Webkul\Payment\Payment\Sbp',
+        'active' => true,
+        'sort' => 2,
+    ],
 ];
