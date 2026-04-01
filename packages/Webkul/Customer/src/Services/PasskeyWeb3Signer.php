@@ -13,10 +13,14 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class PasskeyWeb3Signer
 {
     protected FindPasskeyToAuthenticateAction $findPasskeyAction;
+    protected HotWalletService $hotWalletService;
 
-    public function __construct(FindPasskeyToAuthenticateAction $findPasskeyAction)
-    {
+    public function __construct(
+        FindPasskeyToAuthenticateAction $findPasskeyAction,
+        HotWalletService $hotWalletService
+    ) {
         $this->findPasskeyAction = $findPasskeyAction;
+        $this->hotWalletService = $hotWalletService;
     }
 
     /**
@@ -81,6 +85,16 @@ class PasskeyWeb3Signer
             throw new Exception("Окружение смарт-контракта не настроено.");
         }
 
+        // Pre-flight check: Does the hot wallet have enough GAS for Arbitrum?
+        $hotWalletAddress = config('crypto.hot_wallet_address');
+        if ($hotWalletAddress) {
+            $balance = $this->hotWalletService->getBalance($hotWalletAddress);
+            if ($balance < 0.0001) { // Arbitrum L2 gas is usually < 0.0001 ETH
+                Log::error("Web3 Checkout: Hot Wallet [{$hotWalletAddress}] has insufficient gas balance ({$balance} ETH).");
+                throw new Exception("Ошибка сервиса оплаты: Недостаточно средств для оплаты комиссии сети. Обратитесь в поддержку.");
+            }
+        }
+
         $payload = [
             'customerPrivateKey' => $customerPrivateKey,
             'targetAddress' => $merchantTargetAddress,
@@ -99,20 +113,34 @@ class PasskeyWeb3Signer
         
         try {
             $process->mustRun();
-            $output = json_decode($process->getOutput(), true);
+            $outputStr = $process->getOutput();
+            $output = json_decode($outputStr, true);
             
             if (!empty($output['success']) && $output['success'] === true) {
                 return $output['tx_hash'];
             }
             
-            throw new Exception($output['error'] ?? "Неизвестная ошибка блокчейна.");
+            throw new Exception($output['error'] ?? "Неизвестная ошибка блокчейна: " . $outputStr);
             
         } catch (ProcessFailedException $exception) {
+            $stdout = $exception->getProcess()->getOutput();
+            $stderr = $exception->getProcess()->getErrorOutput();
+
             Log::error("Node.js Gasless Execution Failed", [
-                'output' => $exception->getProcess()->getOutput(),
-                'error' => $exception->getProcess()->getErrorOutput()
+                'stdout' => $stdout,
+                'stderr' => $stderr
             ]);
-            throw new Exception("Блокчейн отклонил транзакцию. Возможна сетевая задержка.");
+
+            // Attempt to extract error message from JSON in stdout if possible
+            $errorMsg = "Блокчейн отклонил транзакцию. ";
+            $jsonOutput = json_decode($stdout, true);
+            if (!empty($jsonOutput['error'])) {
+                $errorMsg .= $jsonOutput['error'];
+            } else {
+                $errorMsg .= "Проверьте баланс комиссии или лимиты. (Details: " . substr($stderr ?: $stdout, 0, 100) . ")";
+            }
+
+            throw new Exception($errorMsg);
         }
     }
 }

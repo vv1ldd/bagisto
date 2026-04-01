@@ -208,6 +208,23 @@ class HotWalletService
         }
     }
     /**
+     * Get the ETH balance of an address.
+     */
+    public function getBalance(string $address): float
+    {
+        try {
+            $balanceHex = $this->rpcCall('eth_getBalance', [$address, 'latest']);
+            
+            // Convert wei (hex) to float ETH/MC
+            $balanceWei = hexdec($balanceHex ?: '0x0');
+            return (float) ($balanceWei / pow(10, 18));
+        } catch (\Exception $e) {
+            Log::error("HotWalletService: Failed to get balance for {$address}: " . $e->getMessage());
+            return 0.0;
+        }
+    }
+
+    /**
      * RPC Helper block
      */
     protected function rpcCall(string $method, array $params)
