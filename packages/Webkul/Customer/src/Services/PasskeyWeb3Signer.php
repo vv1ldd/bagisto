@@ -132,13 +132,24 @@ class PasskeyWeb3Signer
                 'stderr' => $stderr
             ]);
 
-            // Attempt to extract error message from JSON in stdout if possible
+            // Attempt to extract error message from JSON in stdout/stderr if possible
             $errorMsg = "Блокчейн отклонил транзакцию. ";
-            $jsonOutput = json_decode($stdout, true);
-            if (!empty($jsonOutput['error'])) {
-                $errorMsg .= $jsonOutput['error'];
+            
+            // Try to find the last JSON object in the combined output (which is usually the error object)
+            $combined = $stdout . $stderr;
+            if (preg_match_all('/\{.*?\}/s', $combined, $matches)) {
+                $lastJson = end($matches[0]);
+                $jsonOutput = json_decode($lastJson, true);
+                if (!empty($jsonOutput['error'])) {
+                    $errorMsg .= $jsonOutput['error'];
+                } else if (!empty($jsonOutput['debug'])) {
+                     // If it's a debug object, we show it as details
+                     $errorMsg .= "Ошибка данных. (Details: " . substr($lastJson, 0, 500) . ")";
+                } else {
+                     $errorMsg .= "Проверьте баланс комиссии или лимиты. (Details: " . substr($combined, -1000) . ")";
+                }
             } else {
-                $errorMsg .= "Проверьте баланс комиссии или лимиты. (Details: " . substr($stderr ?: $stdout, 0, 100) . ")";
+                $errorMsg .= "Проверьте баланс комиссии или лимиты. (Details: " . substr($combined, -1000) . ")";
             }
 
             throw new Exception($errorMsg);
