@@ -71,13 +71,12 @@ class ProcessWelcomeMintingJob implements ShouldQueue
         }
 
         if ($txHash) {
-            // 4. Record transaction
             CustomerTransaction::create([
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'customer_id' => $customer->id,
                 'amount' => $this->amount,
                 'type' => 'registration_minting',
-                'status' => 'pending', // Mark as pending until sync confirms it
+                'status' => 'completed', // Arbitrum confirms instantly
                 'notes' => "Минтинг Meanly Coins (Регистрация +{$this->amount})",
                 'metadata' => [
                     'tx_hash' => $txHash,
