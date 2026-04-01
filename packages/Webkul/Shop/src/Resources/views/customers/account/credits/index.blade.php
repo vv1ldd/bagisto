@@ -52,8 +52,8 @@
                         <div>
                             <div class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 italic">Баланс Meanly Coin (MC)</div>
                             <div class="flex items-baseline gap-2">
-                                <span class="text-[48px] md:text-[56px] font-black text-zinc-900 tracking-tighter leading-none">
-                                    {{ number_format($user->balance ?? 0, 2, '.', '') }} <span class="text-[#7C45F5]">MC</span>
+                                <span class="text-[48px] md:text-[56px] font-black text-zinc-900 tracking-tighter leading-none" id="live-mc-balance-container">
+                                    <span id="live-mc-balance" class="animate-pulse text-zinc-300">...</span> <span class="text-[#7C45F5]">MC</span>
                                 </span>
                             </div>
                             
@@ -143,11 +143,53 @@
                                         <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider leading-none">{{ $amount }}</span>
                                     </div>
                                 </div>
-                                <div class="text-right">
-                                    <span class="text-[15px] font-black text-zinc-900 tracking-tight">{{ core()->formatPrice($fiat) }}</span>
+                                    <div class="text-right">
+                                        <span class="text-[15px] font-black text-zinc-900 tracking-tight">{{ core()->formatPrice($fiat) }}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                @push('scripts')
+                    <script type="module">
+                        import { ethers } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js";
+
+                        async function fetchLiveBalance() {
+                            const userAddress = '{{ $user->credits_id }}';
+                            const rpcUrl = '{{ config('crypto.rpc_url_arbitrum', 'https://arb1.arbitrum.io/rpc') }}';
+                            const tokenAddress = '{{ config('crypto.meanly_coin_address') }}';
+
+                            if (!userAddress || !userAddress.startsWith('0x') || !tokenAddress) {
+                                document.getElementById('live-mc-balance').innerText = '0.00';
+                                document.getElementById('live-mc-balance').classList.remove('animate-pulse', 'text-zinc-300');
+                                return;
+                            }
+
+                            try {
+                                const provider = new ethers.JsonRpcProvider(rpcUrl);
+                                const abi = ["function balanceOf(address owner) view returns (uint256)"];
+                                const contract = new ethers.Contract(tokenAddress, abi, provider);
+                                
+                                const balanceWei = await contract.balanceOf(userAddress);
+                                const balanceDec = parseFloat(ethers.formatEther(balanceWei));
+                                
+                                const balanceEl = document.getElementById('live-mc-balance');
+                                balanceEl.innerText = balanceDec.toFixed(2);
+                                balanceEl.classList.remove('animate-pulse', 'text-zinc-300');
+                            } catch (e) {
+                                console.error("Error fetching live Web3 balance:", e);
+                                const balanceEl = document.getElementById('live-mc-balance');
+                                balanceEl.innerText = '?';
+                                balanceEl.classList.remove('animate-pulse', 'text-zinc-300');
+                                balanceEl.classList.add('text-red-500');
+                            }
+                        }
+
+                        document.addEventListener('DOMContentLoaded', fetchLiveBalance);
+                    </script>
+                @endpush
                     </div>
                 </div>
             </div>
