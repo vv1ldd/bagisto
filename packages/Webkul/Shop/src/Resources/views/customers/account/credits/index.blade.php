@@ -274,6 +274,21 @@
                                             <span class="w-1.5 h-1.5 bg-zinc-900 rounded-full"></span>
                                             {{ $transaction->created_at->format('d.m.Y — H:i') }}
                                         </div>
+
+                                        @if(!$isOrder && !empty($transaction->metadata['tx_hash']))
+                                            <div class="mt-3">
+                                                <a href="https://arbiscan.io/tx/{{ $transaction->metadata['tx_hash'] }}" 
+                                                   target="_blank" 
+                                                   onclick="event.stopPropagation()"
+                                                   class="inline-flex items-center gap-1.5 px-2 py-1 bg-zinc-900 border-2 border-zinc-900 text-[#D6FF00] text-[8px] font-black uppercase tracking-widest hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all shadow-[2px_2px_0px_0px_rgba(214,255,0,1)] active:scale-95">
+                                                    <span class="w-1 h-1 bg-[#D6FF00] rounded-full animate-pulse"></span>
+                                                    Blockchain: {{ substr($transaction->metadata['tx_hash'], 0, 6) }}...{{ substr($transaction->metadata['tx_hash'], -4) }}
+                                                    <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     {{-- Amount --}}
