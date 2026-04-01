@@ -22,7 +22,7 @@ class ExchangeRateService
         $fiatCurrency = strtoupper($fiatCurrency ?? core()->getBaseCurrencyCode());
 
         // Custom internal coins or base currency — always 1:1
-        if (in_array($cryptoSymbol, ['rub', 'meanly_coin'])) {
+        if (in_array($cryptoSymbol, ['rub', 'meanly_coin', 'meanly', 'mc'])) {
             return 1.0;
         }
 
