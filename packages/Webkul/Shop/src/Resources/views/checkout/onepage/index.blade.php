@@ -24,33 +24,7 @@
                 </template>
 
                 <template v-else>
-                    <!-- Compact Progress Breadcrumb -->
-                    <div class="flex flex-wrap items-center gap-3 mb-6 md:mb-8">
-                        <div 
-                            class="flex items-center gap-2 px-5 py-2 border-[3px] border-zinc-900 transition-all duration-300"
-                            :class="['address', 'shipping', 'payment', 'review'].includes(currentStep) ? 'bg-[#7C45F5] text-white shadow-none translate-x-0.5 translate-y-0.5' : 'bg-white text-zinc-400 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]'"
-                        >
-                            <span class="text-[11px] font-black uppercase tracking-[0.15em]">01. @lang('shop::app.checkout.onepage.address.title')</span>
-                        </div>
-
-                        <div class="hidden md:block w-8 h-0.5 bg-zinc-900 opacity-20"></div>
-
-                        <div 
-                            class="flex items-center gap-2 px-5 py-2 border-[3px] border-zinc-900 transition-all duration-300"
-                            :class="['shipping', 'payment', 'review'].includes(currentStep) ? 'bg-[#7C45F5] text-white shadow-none translate-x-0.5 translate-y-0.5' : 'bg-white text-zinc-400 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]'"
-                        >
-                            <span class="text-[11px] font-black uppercase tracking-[0.15em]">02. @lang('shop::app.checkout.onepage.shipping.shipping-method')</span>
-                        </div>
-
-                        <div class="hidden md:block w-8 h-0.5 bg-zinc-900 opacity-20"></div>
-
-                        <div 
-                            class="flex items-center gap-2 px-5 py-2 border-[3px] border-zinc-900 transition-all duration-300"
-                            :class="['payment', 'review'].includes(currentStep) ? 'bg-[#7C45F5] text-white shadow-none translate-x-0.5 translate-y-0.5' : 'bg-white text-zinc-400 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]'"
-                        >
-                            <span class="text-[11px] font-black uppercase tracking-[0.15em]">03. @lang('shop::app.checkout.onepage.payment.payment-method')</span>
-                        </div>
-                    </div>
+                    <!-- Breadcrumbs removed for minimal digital checkout -->
 
                     <div class="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
                         <!-- Left Column: Steps -->
@@ -119,7 +93,7 @@
                             shipping: "{{ core()->getConfigData('sales.taxes.shopping_cart.display_shipping_amount') }}",
                         },
                         isPlacingOrder: false,
-                        currentStep: 'address',
+                        currentStep: 'payment',
                         shippingMethods: null,
                         paymentMethods: null,
                         selectedPaymentMethod: null,
@@ -143,7 +117,9 @@
                                     this.selectedPaymentMethod = this.cart.payment_method;
                                 }
                                 
-                                if (this.cart && !this.cart.have_stockable_items && !this.paymentMethods) {
+                                
+                                // Fetch payment methods immediately for digital checkout
+                                if (!this.paymentMethods) {
                                     this.$axios.get("{{ route('shop.checkout.onepage.payment_methods.index') }}")
                                         .then(r => {
                                             this.paymentMethods = r.data.payment_methods || r.data;
