@@ -30,20 +30,40 @@ async function main() {
             "function permitAndTransfer(address owner, address to, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external",
             "function nonces(address owner) view external returns (uint256)",
             "function name() view external returns (string)",
-            "function version() view external returns (string)"
+            "function version() view external returns (string)",
+            "function paused() view external returns (bool)",
+            "function balanceOf(address owner) view external returns (uint256)"
         ];
         
         const tokenContract = new ethers.Contract(tokenAddress, abi, hotWallet);
-        const tokenName = await tokenContract.name();
+        
+        // 3. Pre-flight Checks & Data Gathering
+        const [tokenName, isPaused, hotWalletEth, customerTokens, nonce] = await Promise.all([
+            tokenContract.name(),
+            tokenContract.paused(),
+            provider.getBalance(hotWallet.address),
+            tokenContract.balanceOf(customerWallet.address),
+            tokenContract.nonces(customerWallet.address)
+        ]);
+
         const value = ethers.parseEther(amountStr.toString());
-
-        // 3. EIP-2612 Permit Prerequisites
-        const nonce = await tokenContract.nonces(customerWallet.address);
-        const deadline = BigInt(Math.floor(Date.now() / 1000) + 3600); // 1 hour from now
-
-        // Get network config dynamically if not provided
+        const deadline = BigInt(Math.floor(Date.now() / 1000) + 3600);
         const network = await provider.getNetwork();
         const chainId = Number(network.chainId);
+
+        // Debug Log (will be captured in stderr/stdout by PHP)
+        console.warn(JSON.stringify({
+            debug: "Pre-flight State",
+            network: { chainId, name: network.name },
+            contract: { address: tokenAddress, name: tokenName, paused: isPaused },
+            hotWallet: { address: hotWallet.address, eth: ethers.formatEther(hotWalletEth) },
+            customer: { address: customerWallet.address, tokens: ethers.formatEther(customerTokens), nonce: nonce.toString() },
+            transaction: { target: targetAddress, amount: amountStr, amountWei: value.toString() }
+        }));
+
+        if (isPaused) throw new Error("Contract is currently Paused (Security Lock).");
+        if (customerTokens < value) throw new Error(`Insufficient tokens on-chain. Have ${ethers.formatEther(customerTokens)}, need ${amountStr}`);
+        if (hotWalletEth < ethers.parseEther("0.00001")) throw new Error("Hot Wallet has insufficient ETH for gas.");
 
         // 4. EIP-712 Typed Data Specification
         const domain = {
@@ -63,7 +83,6 @@ async function main() {
             ]
         };
 
-        // Note: The spender is the hotWallet who will be executing the permitAndTransfer
         const message = {
             owner: customerWallet.address,
             spender: hotWallet.address,
@@ -77,30 +96,38 @@ async function main() {
         const sig = ethers.Signature.from(signature);
 
         // 6. Execute Gasless Relay (Hot Wallet pays gas)
-        // permitAndTransfer(address owner, address to, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
-        const tx = await tokenContract.permitAndTransfer(
-            customerWallet.address,
-            targetAddress,
-            value,
-            deadline,
-            sig.v,
-            sig.r,
-            sig.s
-        );
+        // We use populateTransaction and estimateGas to get better error messages if it fails
+        try {
+            const tx = await tokenContract.permitAndTransfer(
+                customerWallet.address,
+                targetAddress,
+                value,
+                deadline,
+                sig.v,
+                sig.r,
+                sig.s
+            );
 
-        // Wait for 1 confirmation
-        const receipt = await tx.wait(1);
+            // Wait for 1 confirmation
+            const receipt = await tx.wait(1);
 
-        console.log(JSON.stringify({
-            success: true,
-            tx_hash: receipt.hash,
-            message: "Gasless transaction relayed successfully."
-        }));
+            console.log(JSON.stringify({
+                success: true,
+                tx_hash: receipt.hash,
+                message: "Gasless transaction relayed successfully."
+            }));
+        } catch (txError) {
+             // Handle Revert Data directly if possible
+             let reason = txError.message;
+             if (txError.data) reason += ` (Data: ${txError.data})`;
+             throw new Error(reason);
+        }
 
     } catch (error) {
         console.error(JSON.stringify({
             success: false,
-            error: error.message
+            error: error.message,
+            stack: error.stack
         }));
         process.exit(1);
     }
