@@ -57,6 +57,11 @@
         body {
             background-color: var(--gray-bg);
             color: var(--black-accent);
+            overscroll-behavior: none !important;
+        }
+
+        html {
+            overscroll-behavior: none !important;
         }
 
         /* Global Table/Card Styling */
