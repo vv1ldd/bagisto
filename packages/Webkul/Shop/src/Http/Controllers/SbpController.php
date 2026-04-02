@@ -190,11 +190,21 @@ class SbpController extends Controller
             $additional = $payment?->additional ?? [];
             if (is_string($additional)) $additional = json_decode($additional, true) ?? [];
 
+            // Refresh passkey options in session if they are missing or if we want to be sure
+            if (! session()->has('passkey-authentication-options-json')) {
+                config(['passkeys.relying_party.id' => request()->getHost()]);
+                $optionsJson = $this->generatePasskeyOptionsAction->execute();
+                session()->put('passkey-authentication-options-json', $optionsJson);
+                Log::info("SBP Status: Refreshed passkey options in session", ['order' => $order->id]);
+            }
+
             return response()->json([
                 'success'  => true,
                 'received' => $additional['sbp_payment_received'] ?? false,
                 'is_ready' => $additional['is_ready_for_passkey'] ?? false,
                 'tx_base'  => $additional['mint_tx_base'] ?? null,
+                // Provide refreshed options if needed by frontend to sync
+                'passkeyOptions' => json_decode(session()->get('passkey-authentication-options-json'), true)
             ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false], 500);
@@ -289,15 +299,25 @@ class SbpController extends Controller
             $additional = $payment?->additional ?? [];
             if (is_string($additional)) $additional = json_decode($additional, true) ?? [];
 
+            Log::debug("SBP Finish Trace: Request checked", [
+                'order' => $order->id,
+                'sbp_payment_received' => $additional['sbp_payment_received'] ?? false,
+                'has_assertion' => $request->has('passkey_assertion'),
+                'session_has_options' => session()->has('passkey-authentication-options-json')
+            ]);
+
             if (! ($additional['sbp_payment_received'] ?? false)) {
+                Log::warning("SBP Finish Rejected: Payment not received in DB", ['order' => $order->id]);
                 return response()->json(['success' => false, 'message' => 'NOT_PAID'], 400);
             }
 
             if (! $request->has('passkey_assertion')) {
+                Log::warning("SBP Finish Rejected: passkey_assertion missing in request", ['order' => $order->id]);
                 return response()->json(['success' => false, 'message' => 'SIGNATURE_MISSING'], 400);
             }
 
-            $passkeyAssertion = request()->all();
+            $passkeyAssertion = $request->input('passkey_assertion');
+            Log::debug("SBP Finish: Assertion payload received", ['data' => $passkeyAssertion]);
             
             // 1. Process On-Chain Deduction using Passkey
             $customer = $order->customer;

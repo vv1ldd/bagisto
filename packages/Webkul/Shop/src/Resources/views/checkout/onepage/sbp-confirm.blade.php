@@ -214,10 +214,16 @@
                             this.isReady = response.data.is_ready;
                             this.txBase = response.data.tx_base;
                             
+                            // Sync passkey options if the server refreshed them in session
+                            if (response.data.passkeyOptions) {
+                                this.passkeyOptions = response.data.passkeyOptions;
+                            }
+
                             console.log('Status update:', {
                                 paid: this.paymentReceived,
                                 ready: this.isReady,
-                                tx: this.txBase
+                                tx: this.txBase,
+                                hasPasskeyOptions: !!this.passkeyOptions
                             });
 
                             if (this.paymentReceived && !this.isReady && !this.isMinting && !this.txBase) {
@@ -254,11 +260,16 @@
                             return bytes.buffer;
                         };
 
-                        console.log('Passkey: Raw options from server:', this.passkeyOptions);
+                        console.log('Passkey: Raw options from server:', JSON.parse(JSON.stringify(this.passkeyOptions)));
                         
                         // Spatie's loginOptions usually returns the options directly at the root,
                         // while some registrations wrap them in a 'publicKey' property.
                         const rawOptions = this.passkeyOptions.publicKey ? this.passkeyOptions.publicKey : this.passkeyOptions;
+
+                        if (!rawOptions.allowCredentials || rawOptions.allowCredentials.length === 0) {
+                            console.error('CRITICAL: allowCredentials is EMPTY. Passkey prompt will not show.');
+                            throw new Error('У вас нет зарегистрированных Passkey для этого сайта. Пожалуйста, добавьте его в настройках профиля.');
+                        }
 
                         // Prepare WebAuthn options for navigator.credentials.get()
                         const options = {
@@ -271,6 +282,8 @@
                                 }))
                             }
                         };
+
+                        console.log('Requesting Passkey signature with options:', JSON.parse(JSON.stringify(options)));
 
                         console.log('Requesting Passkey signature...', options);
                         const assertion = await navigator.credentials.get(options);
