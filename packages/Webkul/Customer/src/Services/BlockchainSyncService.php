@@ -5,9 +5,72 @@ namespace Webkul\Customer\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Webkul\Customer\Models\CryptoAddress;
+use Webkul\Customer\Models\CustomerTransaction;
+use Webkul\Customer\Services\HotWalletService;
 
 class BlockchainSyncService
 {
+    /**
+     * Create a new service instance.
+     *
+     * @param  \Webkul\Customer\Services\HotWalletService  $hotWalletService
+     * @return void
+     */
+    public function __construct(
+        protected HotWalletService $hotWalletService
+    ) {
+    }
+
+    /**
+     * Sync pending Web3 transactions for a customer by checking their on-chain status.
+     * This ensures 'pending' records (especially from legacy or failed jobs) are updated.
+     */
+    public function syncPendingWeb3Transactions($customer): void
+    {
+        $pendingTransactions = CustomerTransaction::where('customer_id', $customer->id)
+            ->where('status', 'pending')
+            ->whereNotNull('web3_tx_hash')
+            ->get();
+
+        foreach ($pendingTransactions as $transaction) {
+            $this->verifyAndStatusUpdate($transaction);
+        }
+    }
+
+    /**
+     * Verify a specific transaction hash and update the record status.
+     * Reusable by both on-demand sync and background jobs.
+     */
+    public function verifyAndStatusUpdate(CustomerTransaction $transaction): bool
+    {
+        $txHash = $transaction->web3_tx_hash;
+
+        if (!$txHash) {
+            return false;
+        }
+
+        try {
+            $receipt = $this->hotWalletService->getTransactionReceipt($txHash);
+
+            if (!$receipt) {
+                return false; // Still pending on-chain
+            }
+
+            if ($receipt['status'] === 'success') {
+                $transaction->update(['status' => 'completed']);
+                Log::info("BlockchainSyncService: Transaction [{$txHash}] confirmed and marked as COMPLETED.");
+                return true;
+            } else {
+                $transaction->update(['status' => 'failed']);
+                Log::warning("BlockchainSyncService: Transaction [{$txHash}] failed on-chain.");
+                return true;
+            }
+        } catch (\Exception $e) {
+            Log::error("BlockchainSyncService: Failed to verify transaction [{$txHash}]: " . $e->getMessage());
+            return false;
+        }
+    }
+
     /**
      * Sync deposits for ALL verified addresses of a customer.
      * Implements a 5-minute cooldown per address to protect API rate limits.

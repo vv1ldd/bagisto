@@ -37,6 +37,9 @@ class CreditController extends Controller
         // Trigger on-demand deposit sync (rate-limited internally)
         $this->syncService->syncCustomerDeposits($customer);
 
+        // Trigger on-demand Web3 transaction sync (checks hashes like registration/cashback)
+        $this->syncService->syncPendingWeb3Transactions($customer);
+
         $verifiedAddresses = $customer
             ->crypto_addresses()
             ->whereNotNull('verified_at')

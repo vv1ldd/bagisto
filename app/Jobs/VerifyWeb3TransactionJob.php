@@ -28,7 +28,7 @@ class VerifyWeb3TransactionJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(HotWalletService $hotWalletService)
+    public function handle(\Webkul\Customer\Services\BlockchainSyncService $syncService)
     {
         $transaction = CustomerTransaction::find($this->transactionId);
 
@@ -37,26 +37,16 @@ class VerifyWeb3TransactionJob implements ShouldQueue
             return;
         }
 
-        if ($transaction->status === 'completed') {
+        // If already processed (especially by on-demand UI sync), just finish
+        if ($transaction->status === 'completed' || $transaction->status === 'failed') {
             return;
         }
 
-        // Get receipt from HotWalletService (uses eth_getTransactionReceipt)
-        $receipt = $hotWalletService->getTransactionReceipt($this->txHash);
+        // Use centralized logic to verify and update
+        $processed = $syncService->verifyAndStatusUpdate($transaction);
 
-        if ($receipt) {
-            if ($receipt['status'] === 'success') {
-                $transaction->update(['status' => 'completed']);
-                Log::info("VerifyWeb3TransactionJob: Transaction [{$this->txHash}] confirmed and marked as COMPLETED.");
-            } else {
-                $transaction->update(['status' => 'failed']);
-                Log::error("VerifyWeb3TransactionJob: Transaction [{$this->txHash}] FAILED on-chain.");
-                
-                // Since we did an optimistic increment on balance, we should technically decrement it back
-                // but for now we'll just log it for manual review to avoid balance oscillations.
-            }
-        } else {
-            // Still pending, release back to queue with delay (30 seconds)
+        if (!$processed) {
+            // Still pending on-chain, release back to queue with delay (30 seconds)
             $this->release(30);
         }
     }

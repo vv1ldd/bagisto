@@ -56,10 +56,11 @@ class ProcessOrderCashbackJob implements ShouldQueue
                         'customer_id'    => $customer->id,
                         'amount'         => $orderTotal,
                         'type'           => 'order_refund',
-                        'status'         => 'pending',
+                        'status'         => 'completed',
                         'reference_type' => get_class($order),
                         'reference_id'   => $order->id,
                         'notes'          => "Возврат тела платежа (Заказ #{$order->increment_id})",
+                        'web3_tx_hash'   => $txBody,
                         'metadata'       => [
                             'tx_hash' => $txBody,
                             'network' => 'arbitrum_one'
@@ -87,10 +88,11 @@ class ProcessOrderCashbackJob implements ShouldQueue
                         'customer_id'    => $customer->id,
                         'amount'         => $bonusAmount,
                         'type'           => 'cashback',
-                        'status'         => 'pending',
+                        'status'         => 'completed',
                         'reference_type' => get_class($order),
                         'reference_id'   => $order->id,
                         'notes'          => "Бонус 5% за покупку (Заказ #{$order->increment_id})",
+                        'web3_tx_hash'   => $txBonus,
                         'metadata'       => [
                             'tx_hash' => $txBonus,
                             'network' => 'arbitrum_one'
