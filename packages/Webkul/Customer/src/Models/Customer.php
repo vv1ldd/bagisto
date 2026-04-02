@@ -31,19 +31,28 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     use HasApiTokens, HasFactory, Notifiable, Visitor, InteractsWithPasskeys;
 
     /**
-     * Get the name for the passkey.
-     * Overriding default implementation from InteractsWithPasskeys to support null emails.
+     * Get the name for the passkey (the machine-readable unique identifier for the user).
+     * Using the Arbitrum One address as the unique system identifier.
      */
-    public function getPasskeyName(): string
+    public function getPassKeyName(): string
     {
-        return $this->email ?? $this->username;
+        return $this->credits_id ?? $this->transient_passkey_id ?? $this->username ?? 'Unknown';
+    }
+
+    /**
+     * Get the display name for the passkey (what the user sees in the browser/OS prompt).
+     * Using the nickname as the human-readable identifier.
+     */
+    public function getPassKeyDisplayName(): string
+    {
+        return $this->username ?? 'Пользователь';
     }
 
     /**
      * Get the ID for the passkey.
      * Overriding to support transient/unsaved users during registration flow.
      */
-    public function getPasskeyId(): string
+    public function getPassKeyId(): string
     {
         return (string) ($this->credits_id ?? $this->id ?? $this->transient_passkey_id ?? '');
     }
