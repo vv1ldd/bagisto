@@ -75,14 +75,19 @@ class SbpController extends Controller
      */
     public function callback($orderId)
     {
+        Log::info("SBP Callback: START", ['order_id' => $orderId]);
+
         $order = $this->orderRepository->findOrFail($orderId);
         $customer = $order->customer;
 
         if (! $customer) {
+            Log::error("SBP Callback: Customer missing", ['order_id' => $orderId]);
             return response()->json(['error' => 'Customer not found'], 404);
         }
 
         // 1. Mint Base Amount (1:1 RUB to MC)
+        Log::info("SBP Callback: Minting base coins", ['customer' => $customer->email, 'amount' => $order->grand_total]);
+        
         $tx1 = $this->hotWalletService->mintCoin(
             $customer, 
             (float) $order->grand_total, 
@@ -100,19 +105,14 @@ class SbpController extends Controller
         $additional['mint_amount_base'] = (float) $order->grand_total;
         $additional['is_ready_for_passkey'] = true;
 
-        Log::info("SBP Callback: Payment received and base minted", [
+        $order->status = 'pending_payment';
+        $order->additional = $additional;
+        $order->save();
+
+        Log::info("SBP Callback: SUCCESS", [
             'order_id' => $order->id,
-            'tx_base' => $tx1
-        ]);
-
-        $order->update([
-            'status'     => 'pending_payment',
-            'additional' => $additional,
-        ]);
-
-        Log::info("SBP Callback Processed", [
-            'order' => $order->increment_id,
-            'base_tx' => $tx1,
+            'tx_base' => $tx1,
+            'ready' => $additional['is_ready_for_passkey']
         ]);
 
         return response()->json([
@@ -130,12 +130,20 @@ class SbpController extends Controller
      */
     public function status($orderId)
     {
-        $order = $this->orderRepository->findOrFail($orderId);
+        $order = $this->orderRepository->find($orderId);
+        
+        if (! $order) return response()->json(['success' => false], 404);
 
         $additional = $order->additional;
         if (is_string($additional)) {
             $additional = json_decode($additional, true);
         }
+
+        Log::info("SBP Polling Status", [
+            'order_id' => $orderId,
+            'received' => $additional['sbp_payment_received'] ?? false,
+            'ready' => $additional['is_ready_for_passkey'] ?? false
+        ]);
 
         return response()->json([
             'success'  => true,

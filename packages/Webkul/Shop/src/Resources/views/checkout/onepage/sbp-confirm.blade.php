@@ -33,13 +33,14 @@
                     <!-- Unified Status Section -->
                     <div v-if="!isReady" class="bg-zinc-100 border-4 border-black p-6 relative overflow-hidden group">
                         <div class="flex items-center gap-4 relative z-10">
-                            <div class="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent"></div>
+                            <div class="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent transition-colors" :class="{ 'border-[#7C45F5]': paymentReceived }"></div>
                             <div>
                                 <p class="text-xs font-black uppercase text-zinc-400">Статус</p>
-                                <p class="text-xl font-black uppercase tracking-tight italic">Обработка платежа...</p>
+                                <p v-if="paymentReceived" class="text-xl font-black uppercase tracking-tight italic text-[#7C45F5] animate-pulse">Минтинг монет... ⛓️</p>
+                                <p v-else class="text-xl font-black uppercase tracking-tight italic">Ожидание оплаты...</p>
                             </div>
                         </div>
-                        <div class="absolute bottom-0 left-0 h-1 bg-[#7C45F5] transition-all duration-500" :style="{ width: paymentReceived ? '100%' : '30%' }"></div>
+                        <div class="absolute bottom-0 left-0 h-1 bg-[#7C45F5] transition-all duration-700" :style="{ width: paymentReceived ? '70%' : '20%' }"></div>
                     </div>
 
                     <!-- Ready Status -->
@@ -75,6 +76,12 @@
                     <p class="text-center text-[10px] font-black uppercase text-zinc-400 tracking-widest italic">
                         Безопасная транзакция через Web3 Passkey
                     </p>
+                </div>
+
+                <!-- Debug Overlay (Mini) -->
+                <div class="mt-4 flex justify-center gap-4 border-t border-zinc-100 pt-2 text-[8px] font-black uppercase tracking-tighter text-zinc-300">
+                    <span>Paid: @{{ paymentReceived ? 'YES' : 'NO' }}</span>
+                    <span>Ready: @{{ isReady ? 'YES' : 'NO' }}</span>
                 </div>
 
                 <!-- Simulation Tool (Temporary for Testing) -->
