@@ -31,8 +31,8 @@ class CustomerDataGrid extends DataGrid
             ->leftJoin('customer_groups', 'customers.customer_group_id', '=', 'customer_groups.id')
             ->select(
                 'customers.id as customer_id',
-                'customers.username as nickname',
-                'customers.credits_id as wallet_address',
+                'customers.username as full_name', // Renamed for UI compatibility
+                'customers.credits_id as email',     // Renamed for UI compatibility
                 'customers.status',
                 'customers.is_call_enabled',
                 'customers.is_matrix_enabled',
@@ -48,8 +48,8 @@ class CustomerDataGrid extends DataGrid
             );
 
         $this->addFilter('customer_id', 'customers.id');
-        $this->addFilter('nickname', 'customers.username');
-        $this->addFilter('wallet_address', 'customers.credits_id');
+        $this->addFilter('full_name', 'customers.username');
+        $this->addFilter('email', 'customers.credits_id');
         $this->addFilter('group', 'customer_groups.name');
         $this->addFilter('status', 'customers.status');
 
@@ -72,26 +72,26 @@ class CustomerDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
-            'index'      => 'nickname',
+            'index'      => 'full_name',
             'label'      => 'Никнейм',
             'type'       => 'string',
             'searchable' => true,
             'filterable' => true,
             'sortable'   => true,
             'closure'    => function ($row) {
-                return $row->nickname ?: '<span style="color:#aaa;font-style:italic">GUEST</span>';
+                return $row->full_name ?: '<span style="color:#aaa;font-style:italic">GUEST</span>';
             },
         ]);
 
         $this->addColumn([
-            'index'      => 'wallet_address',
+            'index'      => 'email',
             'label'      => 'Arbitrum Адрес',
             'type'       => 'string',
             'searchable' => true,
             'filterable' => true,
             'closure'    => function ($row) {
-                if (!$row->wallet_address) return '—';
-                $addr = $row->wallet_address;
+                if (!$row->email) return '—';
+                $addr = $row->email;
                 return '<code style="background:#f4f4f4;padding:2px 4px;border-radius:4px;font-size:11px;">' . substr($addr, 0, 8) . '...' . substr($addr, -6) . '</code>';
             },
         ]);
