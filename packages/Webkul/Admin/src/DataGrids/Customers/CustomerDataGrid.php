@@ -31,27 +31,8 @@ class CustomerDataGrid extends DataGrid
      */
     public function prepareQueryBuilder()
     {
-        /**
-         * Stats subquery for performance.
-         * Calculates order count and revenue in one pass.
-         */
-        $statsSubquery = DB::table('orders')
-            ->select('customer_id', 
-                DB::raw('COUNT(id) as order_count'),
-                DB::raw('SUM(base_grand_total_invoiced) as revenue')
-            )
-            ->whereNotIn('status', ['canceled', 'closed'])
-            ->groupBy('customer_id');
-
         $queryBuilder = DB::table('customers')
-            ->leftJoin('addresses', function ($join) {
-                $join->on('customers.id', '=', 'addresses.customer_id')
-                    ->where('addresses.address_type', '=', 'customer');
-            })
             ->leftJoin('customer_groups', 'customers.customer_group_id', '=', 'customer_groups.id')
-            ->leftJoinSub($statsSubquery, 'order_stats', function ($join) {
-                $join->on('customers.id', '=', 'order_stats.customer_id');
-            })
             ->select(
                 'customers.id as customer_id',
                 'customers.email',
@@ -61,24 +42,7 @@ class CustomerDataGrid extends DataGrid
                 'customers.is_suspended',
                 'customer_groups.name as group',
                 'customers.channel_id',
-                'order_stats.revenue as revenue',
-                'order_stats.order_count as order_count',
                 DB::raw("CONCAT(customers.first_name, ' ', customers.last_name) as full_name")
-            )
-            ->addSelect(DB::raw('COUNT(DISTINCT addresses.id) as address_count'))
-            ->groupBy(
-                'customers.id',
-                'customers.email',
-                'customers.phone',
-                'customers.gender',
-                'customers.status',
-                'customers.is_suspended',
-                'customer_groups.name',
-                'customers.channel_id',
-                'order_stats.revenue',
-                'order_stats.order_count',
-                'customers.first_name',
-                'customers.last_name'
             );
 
         $this->addFilter('channel_id', 'customers.channel_id');
