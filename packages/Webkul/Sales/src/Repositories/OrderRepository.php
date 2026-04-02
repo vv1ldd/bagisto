@@ -43,6 +43,12 @@ class OrderRepository extends Repository
      */
     public function createOrderIfNotThenRetry(array $data)
     {
+        Log::debug("OrderRepository: Starting createOrderIfNotThenRetry", [
+            'payment_method' => $data['payment']['method'] ?? 'not_set',
+            'has_web3_hash' => isset($data['web3_tx_hash']),
+            'data_keys' => array_keys($data)
+        ]);
+
         DB::beginTransaction();
 
         try {

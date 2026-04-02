@@ -333,11 +333,34 @@ class OnepageController extends APIController
 
         $order = $this->orderRepository->create($data);
 
+        // ----------------------------------------------------
+        // WEB3/CREDITS POST-ORDER PROCESSING
+        // ----------------------------------------------------
+        if ($cart->payment->method === 'credits') {
+            $txHash = session('last_web3_tx_hash');
+            $customer = auth()->guard('customer')->user();
+            
+            // Create "purchase" log in CustomerTransaction
+            \Webkul\Customer\Models\CustomerTransaction::create([
+                'uuid' => \Illuminate\Support\Str::uuid(),
+                'customer_id' => $customer->id,
+                'amount' => -$order->base_grand_total,
+                'type' => 'purchase',
+                'status' => 'completed',
+                'notes' => "Оплата заказа #{$order->increment_id}",
+                'web3_tx_hash' => $txHash,
+            ]);
+
+            // Dispatch NFT/Cashback service
+            \App\Jobs\ProcessOrderCashbackJob::dispatch($order);
+            
+            Log::info("Web3 Order Finalized", ['order' => $order->id, 'tx' => $txHash]);
+        }
+        // ----------------------------------------------------
+
         Cart::deActivateCart();
 
         session()->flash('order_id', $order->id);
-
-
 
         return new JsonResource([
             'redirect' => true,
