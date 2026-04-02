@@ -363,13 +363,54 @@ class PasskeyController extends Controller
         $currentHost = request()->getHost();
         config(['passkeys.relying_party.id' => $currentHost]);
 
-        $optionsJson = $generateOptionsAction->execute();
+        $user = Auth::guard('customer')->user();
+        
+        // If user is already authenticated (e.g. in checkout), use targeted options
+        if ($user) {
+            $optionsJson = $this->generateTargetedPasskeyOptions($user, $generateOptionsAction);
+        } else {
+            $optionsJson = $generateOptionsAction->execute();
+        }
 
-        Log::info('Passkey login options generated', ['options' => $optionsJson]);
+        Log::info('Passkey login options generated', [
+            'is_targeted' => !empty($user),
+            'user_id'     => $user->id ?? 'guest'
+        ]);
 
         session()->put('passkey-authentication-options-json', $optionsJson);
 
         return response($optionsJson)->header('Content-Type', 'application/json');
+    }
+
+    /**
+     * Generate "Targeted" Passkey Authentication Options.
+     * Restricts the browser prompt to only show the user's registered keys.
+     */
+    private function generateTargetedPasskeyOptions($customer, $generateOptionsAction)
+    {
+        // 1. Get base options (challenge, rpId) from Spatie
+        $optionsJson = $generateOptionsAction->execute();
+        $options = json_decode($optionsJson, true);
+        
+        if (! $customer) return $optionsJson;
+
+        // 2. Populate allowCredentials with the user's specific keys
+        $allowCredentials = [];
+        foreach ($customer->passkeys as $passkey) {
+            // Navigator.credentials.get expects the ID as a buffer.
+            // Our frontend helper (sbp-confirm / onepage) handles base64-to-buffer.
+            $allowCredentials[] = [
+                'id'         => base64_encode($passkey->credential_id),
+                'type'       => 'public-key',
+                'transports' => $passkey->data->trustPath->transports ?? ['internal', 'usb', 'nfc', 'ble'],
+            ];
+        }
+
+        if (! empty($allowCredentials)) {
+            $options['allowCredentials'] = $allowCredentials;
+        }
+
+        return json_encode($options);
     }
 
     /**

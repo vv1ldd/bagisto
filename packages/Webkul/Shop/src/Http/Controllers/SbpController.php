@@ -61,10 +61,8 @@ class SbpController extends Controller
             return redirect()->route('shop.checkout.onepage.index');
         }
 
-        // Generate Passkey Authentication Options for the finish step
-        $currentHost = request()->getHost();
-        config(['passkeys.relying_party.id' => $currentHost]);
-        $optionsJson = $this->generatePasskeyOptionsAction->execute();
+        // Generate Targeted Passkey Authentication Options for the finish step
+        $optionsJson = $this->generateTargetedPasskeyOptions(auth()->guard('customer')->user());
         session()->put('passkey-authentication-options-json', $optionsJson);
 
         return view('shop::checkout.onepage.sbp-confirm', [
@@ -190,12 +188,11 @@ class SbpController extends Controller
             $additional = $payment?->additional ?? [];
             if (is_string($additional)) $additional = json_decode($additional, true) ?? [];
 
-            // Refresh passkey options in session if they are missing or if we want to be sure
+            // Refresh targeted passkey options in session
             if (! session()->has('passkey-authentication-options-json')) {
-                config(['passkeys.relying_party.id' => request()->getHost()]);
-                $optionsJson = $this->generatePasskeyOptionsAction->execute();
+                $optionsJson = $this->generateTargetedPasskeyOptions(auth()->guard('customer')->user());
                 session()->put('passkey-authentication-options-json', $optionsJson);
-                Log::info("SBP Status: Refreshed passkey options in session", ['order' => $order->id]);
+                Log::info("SBP Status: Refreshed targeted passkey options in session", ['order' => $order->id]);
             }
 
             return response()->json([
@@ -371,5 +368,40 @@ class SbpController extends Controller
             Log::error("SBP Finish System Error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
+    }
+    /**
+     * Generate "Targeted" Passkey Authentication Options.
+     * Restricts the browser prompt to only show the user's registered keys.
+     *
+     * @param  \Webkul\Customer\Models\Customer  $customer
+     * @return string (JSON)
+     */
+    private function generateTargetedPasskeyOptions($customer)
+    {
+        // 1. Get base options (challenge, rpId) from Spatie
+        config(['passkeys.relying_party.id' => request()->getHost()]);
+        $optionsJson = $this->generatePasskeyOptionsAction->execute();
+        $options = json_decode($optionsJson, true);
+        
+        if (! $customer) return $optionsJson;
+
+        // 2. Populate allowCredentials with the user's specific keys
+        $allowCredentials = [];
+        foreach ($customer->passkeys as $passkey) {
+            // Spatie maps credential_id in the DB.
+            // Browser navigator.credentials.get expects base64url encoded IDs.
+            // We use standard base64 for now as our JS helper will handle it.
+            $allowCredentials[] = [
+                'id'         => base64_encode($passkey->credential_id),
+                'type'       => 'public-key',
+                'transports' => $passkey->data->trustPath->transports ?? ['internal', 'usb', 'nfc', 'ble'],
+            ];
+        }
+
+        if (! empty($allowCredentials)) {
+            $options['allowCredentials'] = $allowCredentials;
+        }
+
+        return json_encode($options);
     }
 }
