@@ -5,22 +5,18 @@ namespace Webkul\Admin\DataGrids\Customers;
 use Illuminate\Support\Facades\DB;
 use Webkul\Customer\Repositories\CustomerGroupRepository;
 use Webkul\DataGrid\DataGrid;
-use Webkul\Sales\Models\Order;
-use Webkul\Sales\Repositories\OrderRepository;
 
 class CustomerDataGrid extends DataGrid
 {
     /**
-     * Index.
+     * Primary column.
      *
      * @var string
      */
     protected $primaryColumn = 'customer_id';
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * Constructor.
      */
     public function __construct(protected CustomerGroupRepository $customerGroupRepository) {}
 
@@ -38,11 +34,10 @@ class CustomerDataGrid extends DataGrid
                 'customers.username as nickname',
                 'customers.credits_id as wallet_address',
                 'customers.status',
-                'customers.is_suspended',
                 'customer_groups.name as group',
-                DB::raw('(SELECT COUNT(*) FROM customer_transactions ct WHERE ct.customer_id = customers.id AND ct.type = \'nft_gift\') as nft_count'),
-                DB::raw('(SELECT COUNT(*) FROM customer_crypto_transactions cct WHERE cct.customer_id = customers.id) as tx_count'),
-                DB::raw('(SELECT COALESCE(SUM(cb.amount), 0) FROM customer_transactions cb WHERE cb.customer_id = customers.id AND cb.type = \'credit\') as volume')
+                DB::raw('0 as nft_count'),
+                DB::raw('0 as tx_count'),
+                DB::raw('0 as volume')
             );
 
         $this->addFilter('customer_id', 'customers.id');
@@ -62,24 +57,11 @@ class CustomerDataGrid extends DataGrid
     public function prepareColumns()
     {
         $this->addColumn([
-            'index' => 'channel_id',
-            'label' => trans('admin::app.customers.customers.index.datagrid.channel'),
-            'type' => 'string',
-            'filterable' => true,
-            'filterable_type' => 'dropdown',
-            'filterable_options' => collect(core()->getAllChannels())
-                ->map(fn ($channel) => ['label' => $channel->name, 'value' => $channel->id])
-                ->values()
-                ->toArray(),
-            'sortable' => true,
-            'visibility' => false,
-        ]);
-
-        $this->addColumn([
             'index'      => 'customer_id',
-            'label'      => trans('admin::app.customers.customers.index.datagrid.id'),
+            'label'      => '#ID',
             'type'       => 'integer',
             'filterable' => true,
+            'sortable'   => true,
         ]);
 
         $this->addColumn([
@@ -90,7 +72,7 @@ class CustomerDataGrid extends DataGrid
             'filterable' => true,
             'sortable'   => true,
             'closure'    => function ($row) {
-                return $row->nickname ?: '<span class="text-gray-400 italic">No Nickname</span>';
+                return $row->nickname ?: '<span style="color:#aaa;font-style:italic">—</span>';
             },
         ]);
 
@@ -100,59 +82,44 @@ class CustomerDataGrid extends DataGrid
             'type'       => 'string',
             'searchable' => true,
             'filterable' => true,
-            'sortable'   => true,
             'closure'    => function ($row) {
-                if (!$row->wallet_address) return '---';
-                return '<code class="bg-gray-100 px-2 py-1 rounded text-xs">' . substr($row->wallet_address, 0, 10) . '...' . substr($row->wallet_address, -6) . '</code>';
+                if (!$row->wallet_address) return '—';
+                $addr = $row->wallet_address;
+                return substr($addr, 0, 8) . '...' . substr($addr, -6);
             },
         ]);
 
         $this->addColumn([
             'index'      => 'status',
-            'label'      => trans('admin::app.customers.customers.index.datagrid.status'),
+            'label'      => 'Статус',
             'type'       => 'boolean',
             'filterable' => true,
             'filterable_options' => [
-                [
-                    'label' => trans('admin::app.customers.customers.index.datagrid.active'),
-                    'value' => 1,
-                ],
-                [
-                    'label' => trans('admin::app.customers.customers.index.datagrid.inactive'),
-                    'value' => 0,
-                ],
+                ['label' => 'Активен', 'value' => 1],
+                ['label' => 'Неактивен', 'value' => 0],
             ],
             'sortable'   => true,
         ]);
 
         $this->addColumn([
-            'index'      => 'nft_count',
-            'label'      => 'NFT',
-            'type'       => 'integer',
-            'sortable'   => true,
-            'closure'    => function ($row) {
-                if ($row->nft_count > 0) {
-                    return '<span class="bg-lime-400 text-black px-2 py-0.5 rounded font-bold text-xs">' . $row->nft_count . ' NFT</span>';
-                }
-                return '0';
-            },
+            'index'   => 'nft_count',
+            'label'   => 'NFT',
+            'type'    => 'integer',
+            'sortable' => true,
         ]);
 
         $this->addColumn([
-            'index'      => 'tx_count',
-            'label'      => 'Транзакции',
-            'type'       => 'integer',
-            'sortable'   => true,
+            'index'   => 'tx_count',
+            'label'   => 'Транзакции',
+            'type'    => 'integer',
+            'sortable' => true,
         ]);
 
         $this->addColumn([
-            'index'      => 'volume',
-            'label'      => 'Баланс (MGF)',
-            'type'       => 'integer',
-            'sortable'   => true,
-            'closure'    => function ($row) {
-                return number_format($row->volume, 2) . ' MGF';
-            },
+            'index'   => 'volume',
+            'label'   => 'Баланс',
+            'type'    => 'integer',
+            'sortable' => true,
         ]);
     }
 
@@ -164,20 +131,20 @@ class CustomerDataGrid extends DataGrid
     public function prepareActions()
     {
         $this->addAction([
-            'icon' => 'icon-view',
-            'title' => trans('admin::app.customers.customers.index.datagrid.view'),
+            'icon'   => 'icon-view',
+            'title'  => trans('admin::app.customers.customers.index.datagrid.view'),
             'method' => 'GET',
-            'url' => function ($row) {
+            'url'    => function ($row) {
                 return route('admin.customers.customers.view', $row->customer_id);
             },
         ]);
 
         $this->addAction([
-            'icon' => 'icon-exit',
-            'title' => trans('admin::app.customers.customers.index.datagrid.login-as-customer'),
+            'icon'   => 'icon-exit',
+            'title'  => trans('admin::app.customers.customers.index.datagrid.login-as-customer'),
             'method' => 'GET',
             'target' => 'blank',
-            'url' => function ($row) {
+            'url'    => function ($row) {
                 return route('admin.customers.customers.login_as_customer', $row->customer_id);
             },
         ]);
@@ -192,26 +159,20 @@ class CustomerDataGrid extends DataGrid
     {
         if (bouncer()->hasPermission('customers.customers.delete')) {
             $this->addMassAction([
-                'title' => trans('admin::app.customers.customers.index.datagrid.delete'),
+                'title'  => trans('admin::app.customers.customers.index.datagrid.delete'),
                 'method' => 'POST',
-                'url' => route('admin.customers.customers.mass_delete'),
+                'url'    => route('admin.customers.customers.mass_delete'),
             ]);
         }
 
         if (bouncer()->hasPermission('customers.customers.edit')) {
             $this->addMassAction([
-                'title' => trans('admin::app.customers.customers.index.datagrid.update-status'),
-                'method' => 'POST',
-                'url' => route('admin.customers.customers.mass_update'),
+                'title'   => trans('admin::app.customers.customers.index.datagrid.update-status'),
+                'method'  => 'POST',
+                'url'     => route('admin.customers.customers.mass_update'),
                 'options' => [
-                    [
-                        'label' => trans('admin::app.customers.customers.index.datagrid.active'),
-                        'value' => 1,
-                    ],
-                    [
-                        'label' => trans('admin::app.customers.customers.index.datagrid.inactive'),
-                        'value' => 0,
-                    ],
+                    ['label' => 'Активен',   'value' => 1],
+                    ['label' => 'Неактивен', 'value' => 0],
                 ],
             ]);
         }
