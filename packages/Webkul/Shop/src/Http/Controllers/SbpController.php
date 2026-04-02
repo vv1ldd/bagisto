@@ -3,12 +3,14 @@
 namespace Webkul\Shop\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Webkul\Customer\Services\PasskeyWeb3Signer;
+use Spatie\LaravelPasskeys\Actions\GeneratePasskeyAuthenticationOptionsAction;
 use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Customer\Services\HotWalletService;
 use Webkul\Customer\Repositories\CustomerRepository;
 use Webkul\Customer\Repositories\CustomerTransactionRepository;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class SbpController extends Controller
 {
@@ -24,7 +26,9 @@ class SbpController extends Controller
         protected OrderRepository $orderRepository,
         protected HotWalletService $hotWalletService,
         protected CustomerRepository $customerRepository,
-        protected CustomerTransactionRepository $customerTransactionRepository
+        protected CustomerTransactionRepository $customerTransactionRepository,
+        protected PasskeyWeb3Signer $passkeyWeb3Signer,
+        protected GeneratePasskeyAuthenticationOptionsAction $generatePasskeyOptionsAction
     ) {}
 
     /**
@@ -57,9 +61,16 @@ class SbpController extends Controller
             return redirect()->route('shop.checkout.onepage.index');
         }
 
+        // Generate Passkey Authentication Options for the finish step
+        $currentHost = request()->getHost();
+        config(['passkeys.relying_party.id' => $currentHost]);
+        $optionsJson = $this->generatePasskeyOptionsAction->execute();
+        session()->put('passkey-authentication-options-json', $optionsJson);
+
         return view('shop::checkout.onepage.sbp-confirm', [
             'order'        => $order,
             'is_test_mode' => core()->getConfigData('sales.payment_methods.sbp.test_mode'),
+            'passkeyOptions' => json_decode($optionsJson, true)
         ]);
     }
 
@@ -286,18 +297,57 @@ class SbpController extends Controller
                 return response()->json(['success' => false, 'message' => 'SIGNATURE_MISSING'], 400);
             }
 
-            $txHash = $request->input('passkey_assertion.id');
-            $additional['web3_tx_hash'] = $txHash;
-            $additional['finalized_at'] = now()->toDateTimeString();
-            $additional['is_paid'] = true;
+            $passkeyAssertion = request()->all();
+            
+            // 1. Process On-Chain Deduction using Passkey
+            $customer = $order->customer;
+            $amount = (float) $order->grand_total;
 
-            $order->update(['status' => 'processing']);
-            $payment->update(['method' => 'credits', 'additional' => $additional]);
+            try {
+                Log::info("SBP 2.0 Web3 Finalization Started", ['order' => $order->id, 'amount' => $amount]);
+                
+                $txHash = $this->passkeyWeb3Signer->processGaslessCheckout(
+                    $customer,
+                    $passkeyAssertion['passkey_assertion'] ?? $passkeyAssertion,
+                    $amount
+                );
 
-            // Ensure order_id is in session for the success page
-            session()->put('order_id', $order->id);
+                Log::info("SBP 2.0 Web3 Transaction Broadcasted", ['tx' => $txHash]);
 
-            return response()->json(['success' => true, 'message' => 'SUCCESS']);
+                // 2. Sync with internal transaction history (Deduction/Purchase)
+                $this->customerTransactionRepository->create([
+                    'uuid'           => (string) Str::uuid(),
+                    'customer_id'    => $customer->id,
+                    'amount'         => -1 * $amount,
+                    'type'           => 'purchase',
+                    'status'         => 'completed',
+                    'reference_type' => get_class($order),
+                    'reference_id'   => $order->id,
+                    'notes'          => "Оплата заказа по СБП (Списание MC #{$order->increment_id})",
+                    'metadata'       => ['tx_hash' => $txHash],
+                ]);
+
+                // Update metadata
+                $additional['finish_tx_hash'] = $txHash;
+                $additional['web3_tx_hash'] = $txHash;
+                $additional['finalized_at'] = now()->toDateTimeString();
+                $additional['is_paid'] = true;
+
+                $order->update(['status' => 'processing']);
+                $payment->update(['method' => 'credits', 'additional' => $additional]);
+
+                // Ensure order_id is in session for the success page
+                session()->put('order_id', $order->id);
+
+                return response()->json(['success' => true, 'message' => 'SUCCESS']);
+
+            } catch (\Exception $e) {
+                Log::error("SBP 2.0 Web3 Finalization Error: " . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => "Ошибка блокчейна: " . $e->getMessage(),
+                ], 400);
+            }
         } catch (\Exception $e) {
             Log::error("SBP Finish Error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);

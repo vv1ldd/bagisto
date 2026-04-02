@@ -6,6 +6,7 @@
     <v-sbp-confirm 
         :order="{{ json_encode($order) }}"
         :is-test-mode="{{ $is_test_mode ? 'true' : 'false' }}"
+        :passkey-options="{{ json_encode($passkeyOptions ?? null) }}"
     ></v-sbp-confirm>
 
     @pushOnce('scripts')
@@ -130,14 +131,6 @@
     @endphp
 
     <script type="module">
-        app.component('v-sbp-confirm', {
-            template: '#v-sbp-confirm-template',
-            props: ['order', 'isTestMode'],
-            data() {
-                return {
-                    paymentReceived: @json($additional['sbp_payment_received'] ?? false),
-                    isReady: @json($additional['is_ready_for_passkey'] ?? false),
-                    isFinishing: false,
                     isSimulating: false,
                     isMinting: false,
                     mintingError: false,
@@ -148,6 +141,7 @@
                     qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('{{ route('shop.checkout.sbp.callback', $order->id) }}')}`
                 }
             },
+            props: ['order', 'isTestMode', 'passkeyOptions'],
             mounted() {
                 console.log('SBP Component Mounted. Order:', this.order.id);
                 this.fetchStatus();
@@ -244,22 +238,48 @@
                     this.isFinishing = true;
 
                     try {
-                        // 1. Get Passkey signature (Biometrics)
+                        if (!this.passkeyOptions) {
+                            throw new Error('Опции Passkey не загружены. Обновите страницу.');
+                        }
+
+                        // Helper to convert base64 (Spatie format) to Uint8Array for navigator.credentials
+                        const base64ToUint8Array = (base64) => {
+                            const binaryString = window.atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+                            const len = binaryString.length;
+                            const bytes = new Uint8Array(len);
+                            for (let i = 0; i < len; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                            }
+                            return bytes.buffer;
+                        };
+
+                        // Prepare WebAuthn options
                         const options = {
                             publicKey: {
-                                challenge: new TextEncoder().encode("finalize-order-" + this.order.id),
-                                allowCredentials: [], 
-                                timeout: 60000,
-                                userVerification: "required"
+                                ...this.passkeyOptions.publicKey,
+                                challenge: base64ToUint8Array(this.passkeyOptions.publicKey.challenge),
+                                allowCredentials: this.passkeyOptions.publicKey.allowCredentials.map(cred => ({
+                                    ...cred,
+                                    id: base64ToUint8Array(cred.id)
+                                }))
                             }
                         };
 
+                        console.log('Requesting Passkey signature...', options);
                         const assertion = await navigator.credentials.get(options);
                         
-                        // 2. Send to server
+                        // 2. Send the full assertion to server for Web3 relay
                         const finishResponse = await axios.post(`${window.location.origin}/checkout/sbp/finish/${this.order.id}`, {
                             passkey_assertion: {
-                                id: assertion.id
+                                id: assertion.id,
+                                rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.rawId))),
+                                response: {
+                                    authenticatorData: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.authenticatorData))),
+                                    clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.clientDataJSON))),
+                                    signature: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.signature))),
+                                    userHandle: assertion.response.userHandle ? btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.userHandle))) : null
+                                },
+                                type: assertion.type
                             }
                         }, {
                             headers: { 'X-CSRF-TOKEN': this.csrfToken }
@@ -273,10 +293,15 @@
                     } catch (err) {
                         console.error('Passkey Error:', err);
                         this.isFinishing = false;
-                        this.$emitter.emit('add-flash', { 
-                            type: 'error', 
-                            message: `Ошибка: ${err.message || 'Верификация не удалась'}` 
-                        });
+                        
+                        let displayMsg = err.message || 'Верификация не удалась';
+                        if (err.name === 'NotAllowedError') displayMsg = 'Операция отменена пользователем.';
+                        
+                        if (window.addFlash) {
+                            window.addFlash({ type: 'error', message: `Ошибка: ${displayMsg}` });
+                        } else {
+                             alert(`Ошибка: ${displayMsg}`);
+                        }
                     }
                 }
             }
