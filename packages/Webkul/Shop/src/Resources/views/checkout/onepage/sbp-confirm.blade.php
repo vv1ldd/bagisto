@@ -266,10 +266,7 @@
                         // while some registrations wrap them in a 'publicKey' property.
                         const rawOptions = this.passkeyOptions.publicKey ? this.passkeyOptions.publicKey : this.passkeyOptions;
 
-                        if (!rawOptions.allowCredentials || rawOptions.allowCredentials.length === 0) {
-                            console.error('CRITICAL: allowCredentials is EMPTY. Passkey prompt will not show.');
-                            throw new Error('У вас нет зарегистрированных Passkey для этого сайта. Пожалуйста, добавьте его в настройках профиля.');
-                        }
+                        // Allow discovery mode (empty allowCredentials) - browser will look for available keys
 
                         // Prepare WebAuthn options for navigator.credentials.get()
                         const options = {
