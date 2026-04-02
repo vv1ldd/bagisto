@@ -27,7 +27,7 @@ class HotWalletService
         $this->chainId = (int) config('crypto.arbitrum_chain_id', 42161);
     }
 
-    public const MAX_MINT_PER_TX = 5000;
+    public const MAX_MINT_PER_TX = 300000;
 
     /**
      * Mints Meanly Coin (ERC20) to a user's verified crypto address.
@@ -79,8 +79,8 @@ class HotWalletService
             $hashes[] = $txHash;
             $remaining = (float) bcsub((string)$remaining, (string)$chunk, 4);
 
-            // Small delay to ensure nonce updates correctly in rpc pool
-            if ($remaining > 0) {
+            // Small delay ONLY if more chunks are remaining
+            if ($remaining > 0.0001) {
                 usleep(500000); // 0.5s
             }
         }
