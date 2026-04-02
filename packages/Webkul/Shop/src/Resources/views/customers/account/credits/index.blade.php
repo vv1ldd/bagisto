@@ -195,7 +195,7 @@
                                     $icon = '📦';
                                     $title = "Заказ #" . $transaction->increment_id;
                                     $subtitle = "Покупка в магазине";
-                                    $amount = "-" . core()->formatPrice($transaction->grand_total);
+                                    $amountStr = "-" . core()->formatPrice($transaction->grand_total);
                                     $amountColor = "text-[#1a0050]";
                                     $clickUrl = route('shop.customers.account.orders.view', $transaction->id);
                                 } else {
