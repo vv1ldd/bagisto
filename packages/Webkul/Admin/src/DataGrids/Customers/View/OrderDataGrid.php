@@ -157,11 +157,14 @@ class OrderDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
-            'index' => 'full_name',
-            'label' => trans('admin::app.customers.customers.view.datagrid.orders.customer-name'),
-            'type' => 'string',
+            'index'      => 'full_name',
+            'label'      => trans('admin::app.customers.customers.view.datagrid.orders.customer-name'),
+            'type'       => 'string',
             'searchable' => true,
-            'sortable' => true,
+            'sortable'   => true,
+            'closure'    => function ($row) {
+                return $row->full_name ? '<span class="font-black uppercase">@' . $row->full_name . '</span>' : '<span style="color:#aaa;font-style:italic">GUEST</span>';
+            },
         ]);
 
         /**

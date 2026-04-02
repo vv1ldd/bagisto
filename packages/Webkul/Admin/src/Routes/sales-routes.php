@@ -49,6 +49,8 @@ Route::prefix('sales')->group(function () {
         Route::post('comment/{order_id}', 'comment')->name('admin.sales.orders.comment');
 
         Route::get('search', 'search')->name('admin.sales.orders.search');
+
+        Route::post('mass-update', 'massUpdate')->name('admin.sales.orders.mass_update');
     });
 
     /**

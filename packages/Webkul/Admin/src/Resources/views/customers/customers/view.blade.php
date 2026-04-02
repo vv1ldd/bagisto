@@ -29,8 +29,8 @@
                         <template v-else>
                             <h1
                                 v-if="customer"
-                                class="text-xl font-bold leading-6 text-gray-800 dark:text-white"
-                                v-text="`${customer.first_name} ${customer.last_name}`"
+                                class="text-xl font-black leading-6 text-gray-800 dark:text-white uppercase"
+                                v-text="`@${customer.username || customer.first_name}`"
                             ></h1>
 
                             <span
@@ -185,10 +185,15 @@
                             <x-slot:content>
                                 <div class="grid gap-y-2.5">
                                     <p
-                                        class="break-all font-semibold text-gray-800 dark:text-white"
-                                        v-text="`${customer.first_name} ${customer.last_name}`"
+                                        class="break-all font-black text-gray-800 dark:text-white uppercase"
+                                        v-text="`@${customer.username || customer.first_name}`"
                                     >
                                     </p>
+
+                                    <div v-if="customer.credits_id" class="my-3">
+                                        <p class="text-[10px] font-black uppercase text-gray-500 mb-1">Arbitrum Wallet</p>
+                                        <span class="font-mono text-[13px] bg-[#D6FF00] border-2 border-black px-2 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] inline-block">@{{ customer.credits_id }}</span>
+                                    </div>
 
                                     <p class="text-gray-600 dark:text-gray-300">
                                         @{{ "@lang('admin::app.customers.customers.view.email')".replace(':email', customer.email ?? 'N/A') }}

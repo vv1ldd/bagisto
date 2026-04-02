@@ -71,7 +71,7 @@
                 </div>
             @else
                 <!-- Redesigned Profile Settings View -->
-                <div class="mt-4 w-full">
+                <div class="w-full">
                     {!! view_render_event('bagisto.shop.customers.account.profile.email.after') !!}
                     
                     @php
@@ -81,48 +81,48 @@
                     <!-- Passkeys & Trusted Devices -->
                     <div class="mb-10">
                         @if (!$isOnboarding)
-                            <h3 class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-6 px-1">
-                                Passkeys & Безопасность
+                            <h3 class="text-[17px] font-black text-zinc-900 uppercase tracking-tight mb-4 px-1">
+                                Ключи доступа
                             </h3>
                         @endif
 
                         <div class="space-y-4">
                             @if ($customer->passkeys->count())
                                 @foreach ($customer->passkeys as $passkey)
-                                    <div class="relative group flex items-center p-5 bg-white border-2 border-zinc-900 rounded-2xl shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] transition-all">
-                                        <div class="flex items-center gap-5 flex-1 min-w-0">
-                                            <span class="w-12 h-12 flex items-center justify-center bg-zinc-50 border-2 border-zinc-900 text-zinc-900 rounded-xl shrink-0 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                                    <div class="relative group flex items-start p-4 bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none">
+                                        <div class="flex items-start gap-4 flex-1 min-w-0">
+                                            <div class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] border-3 border-zinc-900 text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
                                                 @php
                                                     $isMobile = stripos($passkey->user_agent, 'phone') !== false || stripos($passkey->user_agent, 'android') !== false;
                                                 @endphp
                                                 @if ($isMobile)
-                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                                     </svg>
                                                 @else
-                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                                     </svg>
                                                 @endif
-                                            </span>
+                                            </div>
                                             
-                                            <div class="flex flex-col min-w-0">
-                                                <div class="flex items-center gap-3 mb-1">
-                                                    <span class="text-zinc-900 font-black text-sm uppercase tracking-tight">{{ $passkey->name ?: 'Passkey устройство' }}</span>
+                                            <div class="flex flex-col min-w-0 pt-0.5">
+                                                <div class="flex flex-wrap items-center gap-2 mb-1">
+                                                    <span class="text-zinc-900 text-base font-black uppercase tracking-tight">{{ $passkey->name ?: 'Passkey устройство' }}</span>
                                                     @if($passkey->id == session('current_session_passkey_id') || $passkey->id == request()->cookie('current_device_passkey_id'))
-                                                        <span class="bg-emerald-50 text-emerald-600 text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest border border-emerald-200">это устройство</span>
+                                                        <span class="bg-[#00FF94] border-2 border-zinc-900 px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">это устройство</span>
                                                     @endif
                                                 </div>
-                                                <span class="text-[10px] text-zinc-400 font-black uppercase tracking-widest">Добавлено: {{ $passkey->created_at->format('d.m.Y') }}</span>
+                                                <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest leading-none">Добавлено: {{ $passkey->created_at->format('d.m.Y') }}</p>
                                             </div>
                                         </div>
 
                                         <form action="{{ route('passkeys.destroy', $passkey->id) }}" method="POST"
-                                            onsubmit="return confirm('Удалить это устройство?')" class="shrink-0 flex items-center">
+                                            onsubmit="return confirm('Удалить это устройство?')" class="shrink-0 flex items-center h-12 pt-0.5">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-2 text-zinc-400 hover:text-red-500 transition-colors">
-                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                            <button type="submit" class="w-10 h-10 flex items-center justify-center bg-white border-3 border-zinc-900 text-red-500 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all active:scale-90" title="Удалить">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                 </svg>
                                             </button>
@@ -133,40 +133,44 @@
 
                             {{-- This Device --}}
                             <button type="button" id="add-device-btn" onclick="window.startPasskeyRegistration(this)" 
-                                    class="group flex items-center justify-between w-full p-5 bg-white border-3 border-zinc-900 rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                                <div class="flex items-center gap-5 flex-1 min-w-0">
-                                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] border-2 border-zinc-900 text-white rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                                    class="group flex items-center justify-between w-full p-4 bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all">
+                                <div class="flex items-start gap-4 flex-1 min-w-0">
+                                    <span class="w-12 h-12 flex items-center justify-center bg-[#7C45F5] border-3 border-zinc-900 text-white shrink-0 transition-transform group-hover:-rotate-3 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                                         </svg>
                                     </span>
-                                    <div class="flex flex-col text-left">
-                                        <span id="add-device-text" class="text-zinc-900 font-black text-sm uppercase tracking-tight">Это устройство</span>
-                                        <span class="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Привязать текущий телефон/ПК</span>
+                                    <div class="flex flex-col text-left pt-0.5">
+                                        <span id="add-device-text" class="text-zinc-900 font-black text-base uppercase tracking-tight">Это устройство</span>
+                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-none">Привязать текущий телефон/ПК</span>
                                     </div>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-900 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M9 5l7 7-7 7"/>
-                                </svg>
+                                <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                </div>
                             </button>
 
                             {{-- Other Device --}}
                             <button type="button" id="link-other-btn" onclick="window.showQrModal()" 
-                                    class="group flex items-center justify-between w-full p-5 bg-white border-3 border-zinc-900 rounded-2xl shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                                <div class="flex items-center gap-5 flex-1 min-w-0">
-                                    <span class="w-12 h-12 flex items-center justify-center bg-zinc-50 border-2 border-zinc-900 text-zinc-900 rounded-xl shrink-0 transition-transform group-hover:scale-105 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                                    class="group flex items-center justify-between w-full p-4 bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all">
+                                <div class="flex items-start gap-4 flex-1 min-w-0">
+                                    <span class="w-12 h-12 flex items-center justify-center bg-zinc-100 border-3 border-zinc-900 text-zinc-900 shrink-0 transition-transform group-hover:rotate-6 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                                         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                         </svg>
                                     </span>
-                                    <div class="flex flex-col text-left">
-                                        <span class="text-zinc-900 font-black text-sm uppercase tracking-tight">Другое устройство</span>
-                                        <span class="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Перенос аккаунта через QR</span>
+                                    <div class="flex flex-col text-left pt-0.5">
+                                        <span class="text-zinc-900 font-black text-base uppercase tracking-tight">Другое устройство</span>
+                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-none">Перенос аккаунта через QR</span>
                                     </div>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-900 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M9 5l7 7-7 7"/>
-                                </svg>
+                                <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                </div>
                             </button>
                         </div>
                     </div>

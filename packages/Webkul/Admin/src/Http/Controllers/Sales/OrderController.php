@@ -223,6 +223,32 @@ class OrderController extends Controller
     }
 
     /**
+     * Mass update the orders.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function massUpdate()
+    {
+        $data = request()->only(['indices', 'value']);
+
+        foreach ($data['indices'] as $orderId) {
+            $order = $this->orderRepository->find($orderId);
+
+            if ($order) {
+                Event::dispatch('sales.order.update.before', $orderId);
+
+                $order->update(['status' => $data['value']]);
+
+                Event::dispatch('sales.order.update.after', $order);
+            }
+        }
+
+        return response()->json([
+            'message' => trans('admin::app.sales.orders.index.datagrid.mass-update-success'),
+        ]);
+    }
+
+    /**
      * Validate order before creation.
      *
      * @return void|\Exception

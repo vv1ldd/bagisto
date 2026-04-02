@@ -37,10 +37,10 @@ class CustomerDataGrid extends DataGrid
                 'customers.is_call_enabled',
                 'customers.is_matrix_enabled',
                 'customer_groups.name as group',
-                // Placeholder to fix "undefined" labels in UI templates
-                DB::raw('0 as order_count'),
-                DB::raw('0 as address_count'),
-                DB::raw('0 as revenue'),
+                // Real counters for traditional e-commerce metrics
+                DB::raw('(SELECT COUNT(*) FROM orders WHERE orders.customer_id = customers.id) as order_count'),
+                DB::raw('(SELECT COUNT(*) FROM customer_addresses WHERE customer_addresses.customer_id = customers.id) as address_count'),
+                DB::raw('(SELECT COALESCE(SUM(base_grand_total), 0) FROM orders WHERE orders.customer_id = customers.id) as revenue'),
                 // Real counters using DB::raw subqueries for maximum compatibility
                 DB::raw('(SELECT COUNT(*) FROM customer_transactions ct WHERE ct.customer_id = customers.id AND ct.type = \'nft_gift\') as nft_count'),
                 DB::raw('(SELECT COUNT(*) FROM customer_crypto_transactions cct WHERE cct.customer_id = customers.id) as tx_count'),
@@ -79,7 +79,7 @@ class CustomerDataGrid extends DataGrid
             'filterable' => true,
             'sortable'   => true,
             'closure'    => function ($row) {
-                return $row->full_name ?: '<span style="color:#aaa;font-style:italic">GUEST</span>';
+                return $row->full_name ? '<span class="font-black">@' . $row->full_name . '</span>' : '<span style="color:#aaa;font-style:italic">GUEST</span>';
             },
         ]);
 
@@ -92,7 +92,7 @@ class CustomerDataGrid extends DataGrid
             'closure'    => function ($row) {
                 if (!$row->email) return '—';
                 $addr = $row->email;
-                return '<code style="background:#f4f4f4;padding:2px 4px;border-radius:4px;font-size:11px;">' . substr($addr, 0, 8) . '...' . substr($addr, -6) . '</code>';
+                return '<span style="background:#D6FF00;color:black;padding:2px 8px;border:2px solid #000;box-shadow:3px 3px 0px #000;font-size:11px;font-weight:900;font-family:monospace;display:inline-block;margin-top:4px;">' . substr($addr, 0, 8) . '...' . substr($addr, -6) . '</span>';
             },
         ]);
 
@@ -131,7 +131,7 @@ class CustomerDataGrid extends DataGrid
             'sortable'   => true,
             'closure'    => function ($row) {
                 if ($row->nft_count > 0) {
-                    return '<span style="background:#D6FF00;color:black;padding:2px 6px;border-radius:4px;font-weight:bold;font-size:11px;">' . $row->nft_count . ' NFT</span>';
+                    return '<span style="background:#7C45F5;color:white;padding:2px 8px;border:2px solid #000;box-shadow:2px 2px 0px #000;font-weight:900;font-size:11px;text-transform:uppercase;display:inline-block;">' . $row->nft_count . ' NFT</span>';
                 }
                 return '0';
             },

@@ -159,12 +159,16 @@
                         @endif
 
                         <div class="flex flex-col gap-1.5">
-                            <p class="text-base font-semibold text-gray-800 dark:text-white">
-                                @{{ record.full_name }}
+                            <p 
+                                class="text-base font-black uppercase text-gray-800 dark:text-white"
+                                v-html="record.full_name"
+                            >
                             </p>
 
-                            <p class="text-gray-600 dark:text-gray-300">
-                                @{{ record.email }}
+                            <p 
+                                class="text-gray-600 dark:text-gray-300"
+                                v-html="record.email"
+                            >
                             </p>
 
                             <p class="text-gray-600 dark:text-gray-300">
@@ -202,22 +206,23 @@
                         </p>
 
                         <p class="text-gray-600 dark:text-gray-300">
-                            @{{ "@lang('admin::app.customers.customers.index.datagrid.id-value')".replace(':id', record.customer_id) }}
+                            ID: @{{ record.customer_id }}
                         </p>
+
+                        <div class="flex gap-2 mt-1">
+                            <span v-if="record.nft_count > 0" v-html="record.nft_count"></span>
+                            <span v-if="record.tx_count > 0" class="text-[10px] font-bold border border-black px-1">@{{ record.tx_count }} TX</span>
+                        </div>
                     </div>
 
                     <div class="flex items-center justify-between gap-x-4 ps-8 md:ps-0">
                         <div class="flex flex-col gap-1.5">
-                            <p class="text-base font-semibold text-gray-800 dark:text-white">
-                                @{{ $admin.formatPrice(record.revenue) }}
+                            <p class="text-base font-black text-[#7C45F5] dark:text-white">
+                                @{{ record.volume }}
                             </p>
 
                             <p class="text-gray-600 dark:text-gray-300">
                                 @{{ "@lang('admin::app.customers.customers.index.datagrid.order')".replace(':order', record.order_count) }}
-                            </p>
-
-                            <p class="text-gray-600 dark:text-gray-300">
-                                @{{ "@lang('admin::app.customers.customers.index.datagrid.address')".replace(':address', record.address_count) }}
                             </p>
                         </div>
 
