@@ -108,11 +108,12 @@
             props: ['order', 'isTestMode'],
             data() {
                 return {
-                    paymentReceived: false,
-                    isReady: false,
+                    paymentReceived: @json($order->additional['sbp_payment_received'] ?? false),
+                    isReady: @json($order->additional['is_ready_for_passkey'] ?? false),
                     isFinishing: false,
                     isSimulating: false,
-                    txBase: null,
+                    isMinting: false,
+                    txBase: @json($order->additional['mint_tx_base'] ?? null),
                     pollInterval: null
                 }
             },
@@ -120,7 +121,7 @@
                 this.fetchStatus();
                 this.pollInterval = setInterval(this.fetchStatus, 3000);
 
-                if (this.isTestMode) {
+                if (this.isTestMode && !this.paymentReceived) {
                     setTimeout(() => {
                         this.simulatePayment();
                     }, 1000);
@@ -138,12 +139,29 @@
                         await axios.get(`${window.location.origin}/checkout/sbp/callback/${this.order.id}`);
                         this.$emitter.emit('add-flash', { 
                             type: 'success', 
-                            message: 'Сигнал об оплате отправлен!' 
+                            message: 'Платеж принят! Подготовка монет...' 
                         });
+                        await this.fetchStatus();
                     } catch (err) {
                         console.error('Simulation error:', err);
                     } finally {
                         this.isSimulating = false;
+                    }
+                },
+                async performMintBase() {
+                    if (this.isMinting) return;
+                    this.isMinting = true;
+
+                    try {
+                        const response = await axios.post(`${window.location.origin}/checkout/sbp/mint-base/${this.order.id}`);
+                        if (response.data.success) {
+                            this.txBase = response.data.tx;
+                            await this.fetchStatus();
+                        }
+                    } catch (err) {
+                        console.error('Minting error:', err);
+                    } finally {
+                        this.isMinting = false;
                     }
                 },
                 async fetchStatus() {
@@ -154,6 +172,11 @@
                             this.isReady = response.data.is_ready;
                             this.txBase = response.data.tx_base;
                             
+                            // Automate base minting if payment received but not ready
+                            if (this.paymentReceived && !this.isReady && !this.isMinting) {
+                                this.performMintBase();
+                            }
+
                             if (this.isReady) {
                                 clearInterval(this.pollInterval);
                             }

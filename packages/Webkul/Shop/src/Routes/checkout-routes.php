@@ -25,6 +25,6 @@ Route::prefix('checkout/sbp')->group(function () {
     Route::get('status/{order_id}', [Webkul\Shop\Http\Controllers\SbpController::class, 'status'])->name('shop.checkout.sbp.status');
 
     Route::post('finish/{order_id}', [Webkul\Shop\Http\Controllers\SbpController::class, 'finish'])->name('shop.checkout.sbp.finish');
-
+    Route::post('mint-base/{order_id}', [Webkul\Shop\Http\Controllers\SbpController::class, 'mintBase'])->name('shop.checkout.sbp.mint-base');
     Route::post('mint-bonus/{order_id}', [Webkul\Shop\Http\Controllers\SbpController::class, 'mintBonus'])->name('shop.checkout.sbp.mint-bonus');
 });

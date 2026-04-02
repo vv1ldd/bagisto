@@ -75,18 +75,44 @@ class SbpController extends Controller
      */
     public function callback($orderId)
     {
-        Log::info("SBP Callback: START", ['order_id' => $orderId]);
+        Log::info("SBP Callback: Payment Received Signal", ['order_id' => $orderId]);
+
+        $order = $this->orderRepository->findOrFail($orderId);
+        
+        $additional = $order->additional ?? [];
+        if (is_string($additional)) {
+            $additional = json_decode($additional, true) ?? [];
+        }
+
+        $additional['sbp_payment_received'] = true;
+        
+        $order->status = 'pending_payment';
+        $order->additional = $additional;
+        $order->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Mint the base amount (1:1) after payment is received.
+     *
+     * @param  int  $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function mintBase($orderId)
+    {
+        Log::info("SBP Mint Base: START", ['order_id' => $orderId]);
 
         $order = $this->orderRepository->findOrFail($orderId);
         $customer = $order->customer;
 
-        if (! $customer) {
-            Log::error("SBP Callback: Customer missing", ['order_id' => $orderId]);
-            return response()->json(['error' => 'Customer not found'], 404);
+        $additional = $order->additional ?? [];
+        if (is_string($additional)) {
+            $additional = json_decode($additional, true) ?? [];
         }
 
         // 1. Mint Base Amount (1:1 RUB to MC)
-        Log::info("SBP Callback: Minting base coins", ['customer' => $customer->email, 'amount' => $order->grand_total]);
+        Log::info("SBP Mint Base: Minting base coins", ['customer' => $customer->email, 'amount' => $order->grand_total]);
         
         $tx1 = $this->hotWalletService->mintCoin(
             $customer, 
@@ -94,31 +120,21 @@ class SbpController extends Controller
             "Оплата заказа #{$order->increment_id} (СБП 1:1)"
         );
 
-        // Update order status and save transaction proofs
-        $additional = $order->additional ?? [];
-        if (is_string($additional)) {
-            $additional = json_decode($additional, true) ?? [];
-        }
-
-        $additional['sbp_payment_received'] = true;
         $additional['mint_tx_base'] = $tx1;
         $additional['mint_amount_base'] = (float) $order->grand_total;
         $additional['is_ready_for_passkey'] = true;
 
-        $order->status = 'pending_payment';
         $order->additional = $additional;
         $order->save();
 
-        Log::info("SBP Callback: SUCCESS", [
+        Log::info("SBP Mint Base: SUCCESS", [
             'order_id' => $order->id,
-            'tx_base' => $tx1,
-            'ready' => $additional['is_ready_for_passkey']
+            'tx_base' => $tx1
         ]);
 
         return response()->json([
             'success' => true,
             'tx'      => $tx1,
-            'amount'  => (float) $order->grand_total,
         ]);
     }
 
@@ -138,12 +154,6 @@ class SbpController extends Controller
         if (is_string($additional)) {
             $additional = json_decode($additional, true);
         }
-
-        Log::info("SBP Polling Status", [
-            'order_id' => $orderId,
-            'received' => $additional['sbp_payment_received'] ?? false,
-            'ready' => $additional['is_ready_for_passkey'] ?? false
-        ]);
 
         return response()->json([
             'success'  => true,
