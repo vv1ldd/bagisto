@@ -171,6 +171,68 @@
                             </x-admin::form.control-group>
                         </div>
 
+                        <div class="flex flex-wrap gap-6 max-sm:flex-wrap mt-4">
+                            <!-- Investor Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    💎 Инвестор
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_investor" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_investor" :value="1"
+                                    label="Инвестор" />
+                            </x-admin::form.control-group>
+
+                            <!-- B2B possibilities Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    🏢 B2B возможности
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_b2b_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_b2b_enabled" :value="1"
+                                    label="B2B возможности" />
+                            </x-admin::form.control-group>
+
+                            <!-- P2P Call Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    📞 Звонки P2P
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_call_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_call_enabled" :value="1"
+                                    label="Звонки P2P" />
+                            </x-admin::form.control-group>
+
+                            <!-- Crypto Top-up Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    🪙 Крипто пополнения
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_crypto_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_crypto_enabled" :value="1"
+                                    label="Крипто пополнения" />
+                            </x-admin::form.control-group>
+
+                            <!-- Chat Matrix Status -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    💬 Чат Matrix
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control type="hidden" name="is_matrix_enabled" value="0" />
+
+                                <x-admin::form.control-group.control type="switch" name="is_matrix_enabled" :value="1"
+                                    label="Чат Matrix" />
+                            </x-admin::form.control-group>
+                        </div>
+
                         {!! view_render_event('bagisto.admin.customers.create.after') !!}
                     </x-slot>
 
