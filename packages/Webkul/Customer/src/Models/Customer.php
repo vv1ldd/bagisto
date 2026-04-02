@@ -32,20 +32,20 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
 
     /**
      * Get the name for the passkey (the machine-readable unique identifier for the user).
-     * Using the Arbitrum One address as the unique system identifier.
+     * Set to nickname to ensure it's displayed prominently in OS/Browser prompts.
      */
     public function getPassKeyName(): string
     {
-        return $this->credits_id ?? $this->transient_passkey_id ?? $this->username ?? 'Unknown';
+        return $this->username ?? $this->credits_id ?? $this->transient_passkey_id ?? 'Unknown';
     }
 
     /**
      * Get the display name for the passkey (what the user sees in the browser/OS prompt).
-     * Using the nickname as the human-readable identifier.
+     * Using the Arbitrum address as supplementary info.
      */
     public function getPassKeyDisplayName(): string
     {
-        return $this->username ?? 'Пользователь';
+        return $this->credits_id ?? $this->username ?? 'Пользователь';
     }
 
     /**
