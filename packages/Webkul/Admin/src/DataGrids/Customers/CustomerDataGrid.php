@@ -33,8 +33,15 @@ class CustomerDataGrid extends DataGrid
     {
         $tablePrefix = DB::getTablePrefix();
 
-        $revenueSubquery = DB::table('orders')
-            ->select('customer_id', DB::raw('SUM(base_grand_total_invoiced) as revenue'))
+        /**
+         * Consolidated stats subquery for performance.
+         * Calculates both order count and total revenue in one pass.
+         */
+        $statsSubquery = DB::table('orders')
+            ->select('customer_id', 
+                DB::raw('COUNT(id) as order_count'),
+                DB::raw('SUM(base_grand_total_invoiced) as revenue')
+            )
             ->whereNotIn('status', ['canceled', 'closed'])
             ->groupBy('customer_id');
 
@@ -43,10 +50,9 @@ class CustomerDataGrid extends DataGrid
                 $join->on('customers.id', '=', 'addresses.customer_id')
                     ->where('addresses.address_type', '=', 'customer');
             })
-            ->leftJoin('orders', 'customers.id', '=', 'orders.customer_id')
             ->leftJoin('customer_groups', 'customers.customer_group_id', '=', 'customer_groups.id')
-            ->leftJoinSub($revenueSubquery, 'order_revenue', function ($join) {
-                $join->on('customers.id', '=', 'order_revenue.customer_id');
+            ->leftJoinSub($statsSubquery, 'order_stats', function ($join) {
+                $join->on('customers.id', '=', 'order_stats.customer_id');
             })
             ->addSelect(
                 'customers.id as customer_id',
@@ -57,17 +63,17 @@ class CustomerDataGrid extends DataGrid
                 'customers.is_suspended',
                 'customer_groups.name as group',
                 'customers.channel_id',
-                'order_revenue.revenue as revenue'
+                'order_stats.revenue as revenue',
+                'order_stats.order_count as order_count'
             )
             ->addSelect(DB::raw('COUNT(DISTINCT '.$tablePrefix.'addresses.id) as address_count'))
-            ->addSelect(DB::raw('COUNT(DISTINCT '.$tablePrefix.'orders.id) as order_count'))
-            ->addSelect(DB::raw('CONCAT('.$tablePrefix.'customers.first_name, " ", '.$tablePrefix.'customers.last_name) as full_name'))
-            ->groupBy('customers.id');
+            ->addSelect(DB::raw("CONCAT({$tablePrefix}customers.first_name, ' ', {$tablePrefix}customers.last_name) as full_name"))
+            ->groupBy('customers.id', 'customer_groups.name', 'order_stats.revenue', 'order_stats.order_count');
 
         $this->addFilter('channel_id', 'customers.channel_id');
         $this->addFilter('customer_id', 'customers.id');
         $this->addFilter('email', 'customers.email');
-        $this->addFilter('full_name', DB::raw('CONCAT('.$tablePrefix.'customers.first_name, " ", '.$tablePrefix.'customers.last_name)'));
+        $this->addFilter('full_name', DB::raw("CONCAT({$tablePrefix}customers.first_name, ' ', {$tablePrefix}customers.last_name)"));
         $this->addFilter('group', 'customer_groups.name');
         $this->addFilter('phone', 'customers.phone');
         $this->addFilter('status', 'customers.status');
