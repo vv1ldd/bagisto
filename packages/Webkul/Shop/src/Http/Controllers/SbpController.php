@@ -206,12 +206,22 @@ class SbpController extends Controller
             $bonusAmount = (float) $order->grand_total * 0.05;
             $txBonus = $this->hotWalletService->mintCoin($order->customer, $bonusAmount, "Order #{$order->increment_id} Bonus");
 
+            // Also mint a gift NFT for SBP orders
+            $nftMetadata = "https://example.com/nft/order/" . $order->increment_id; // Placeholder
+            $txNft = $this->hotWalletService->mintGift($order->customer, $nftMetadata, "Order #{$order->increment_id} SBP Reward");
+
             $additional['mint_tx_bonus'] = $txBonus;
+            $additional['mint_tx_nft'] = $txNft;
             $additional['mint_amount_bonus'] = $bonusAmount;
 
             $payment->update(['additional' => $additional]);
 
-            return response()->json(['success' => true, 'tx' => $txBonus, 'amount' => $bonusAmount]);
+            return response()->json([
+                'success' => true, 
+                'tx' => $txBonus, 
+                'tx_nft' => $txNft,
+                'amount' => $bonusAmount
+            ]);
         } catch (\Exception $e) {
             Log::error("SBP Mint Bonus Error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);

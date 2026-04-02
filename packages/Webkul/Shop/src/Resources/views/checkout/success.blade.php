@@ -138,10 +138,10 @@
             },
             mounted() {
                 // Initial data from order object
-                if (this.order.additional) {
-                    const additional = typeof this.order.additional === 'string' 
-                        ? JSON.parse(this.order.additional) 
-                        : this.order.additional;
+                if (this.order.payment && this.order.payment.additional) {
+                    const additional = typeof this.order.payment.additional === 'string' 
+                        ? JSON.parse(this.order.payment.additional) 
+                        : this.order.payment.additional;
                     
                     this.txBase = additional.mint_tx_base;
                     

@@ -78,6 +78,8 @@ class OnepageController extends Controller
             return redirect()->route('shop.checkout.cart.index');
         }
 
+        $order->load(['payment', 'items']);
+
         if (
             config('magic_ai_settings.enabled')
             && core()->getConfigData('general.magic_ai.checkout_message.enabled')
