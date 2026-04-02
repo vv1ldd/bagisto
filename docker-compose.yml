@@ -139,7 +139,6 @@ services:
       REVERB_HOST: "${REVERB_HOST}"
       REVERB_PORT: "${REVERB_PORT:-8088}"
       REVERB_SCHEME: "${REVERB_SCHEME:-http}"
-    volumes: []
     ports:
       - "${REVERB_SERVER_PORT:-8088}:8088"
     networks:
