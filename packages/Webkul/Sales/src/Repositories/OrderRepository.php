@@ -91,10 +91,6 @@ class OrderRepository extends Repository
                 Event::dispatch('checkout.order.orderitem.save.after', $orderItem);
             }
 
-            // Handle Credits Balance Deduction
-            if ($data['payment']['method'] === 'credits') {
-                $this->deductCreditsForOrder($order, $data['web3_tx_hash'] ?? null);
-            }
 
         } catch (\Exception $e) {
             /* rolling back first */

@@ -71,13 +71,14 @@ class ProcessWelcomeMintingJob implements ShouldQueue
         }
 
         if ($txHash) {
-            CustomerTransaction::create([
+            $transaction = CustomerTransaction::create([
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'customer_id' => $customer->id,
                 'amount' => $this->amount,
                 'type' => 'registration_minting',
-                'status' => 'pending', // Will be confirmed 'completed' by BlockchainSyncService when balance appears
+                'status' => 'pending', 
                 'notes' => "Минтинг Meanly Coins (Регистрация +{$this->amount})",
+                'web3_tx_hash' => $txHash,
                 'metadata' => [
                     'tx_hash' => $txHash,
                     'network' => 'arbitrum_one',
@@ -85,6 +86,9 @@ class ProcessWelcomeMintingJob implements ShouldQueue
                     'triggered_by' => 'ProcessWelcomeMintingJob'
                 ],
             ]);
+
+            // Dispatch verification watcher to auto-complete status
+            \App\Jobs\VerifyWeb3TransactionJob::dispatch($transaction->id, $txHash);
             
             // 5. Update internal balance immediately (optimistic update)
             $customer->increment('balance', $this->amount);
