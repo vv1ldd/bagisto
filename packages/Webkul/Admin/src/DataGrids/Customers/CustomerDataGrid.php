@@ -37,29 +37,13 @@ class CustomerDataGrid extends DataGrid
                 'customers.id as customer_id',
                 'customers.username as nickname',
                 'customers.credits_id as wallet_address',
-                'customers.phone',
                 'customers.status',
                 'customers.is_suspended',
                 'customer_groups.name as group',
-                'customers.channel_id'
-            )
-            ->addSelect([
-                // Subquery for NFT count (Type 'nft_gift' in customer_transactions)
-                'nft_count' => DB::table('customer_transactions')
-                    ->selectRaw('count(*)')
-                    ->whereColumn('customer_id', 'customers.id')
-                    ->where('type', 'nft_gift'),
-
-                // Subquery for Crypto transactions count (from customer_crypto_transactions)
-                'tx_count' => DB::table('customer_crypto_transactions')
-                    ->selectRaw('count(*)')
-                    ->whereColumn('customer_id', 'customers.id'),
-
-                // Total Balance Volume
-                'volume' => DB::table('customer_balances')
-                    ->selectRaw('COALESCE(sum(balance), 0)')
-                    ->whereColumn('customer_id', 'customers.id')
-            ]);
+                DB::raw('(SELECT COUNT(*) FROM customer_transactions ct WHERE ct.customer_id = customers.id AND ct.type = \'nft_gift\') as nft_count'),
+                DB::raw('(SELECT COUNT(*) FROM customer_crypto_transactions cct WHERE cct.customer_id = customers.id) as tx_count'),
+                DB::raw('(SELECT COALESCE(SUM(cb.amount), 0) FROM customer_transactions cb WHERE cb.customer_id = customers.id AND cb.type = \'credit\') as volume')
+            );
 
         $this->addFilter('customer_id', 'customers.id');
         $this->addFilter('nickname', 'customers.username');
