@@ -124,6 +124,30 @@ class SbpController extends Controller
     }
 
     /**
+     * Get the current status of an order for state recovery.
+     *
+     * @param  int  $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function status($orderId)
+    {
+        $order = $this->orderRepository->findOrFail($orderId);
+        
+        return response()->json([
+            'success'  => true,
+            'received' => $order->additional['sbp_payment_received'] ?? false,
+            'tx'       => [
+                'base'  => $order->additional['mint_tx_base'] ?? null,
+                'bonus' => $order->additional['mint_tx_bonus'] ?? null,
+            ],
+            'amounts'  => [
+                'base'  => $order->additional['mint_amount_base'] ?? null,
+                'bonus' => $order->additional['mint_amount_bonus'] ?? null,
+            ]
+        ]);
+    }
+
+    /**
      * Finalize the order after Passkey confirmation.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -138,12 +162,19 @@ class SbpController extends Controller
         if (! ($order->additional['sbp_payment_received'] ?? false)) {
             return response()->json([
                 'success' => false, 
-                'message' => 'Платеж не подтвержден. Пожалуйста, завершите оплату.'
+                'message' => 'NOT_PAID'
             ], 400);
         }
 
-        // 2. Finalize payment method and record Web3 proof
-        $txHash = $request->input('passkey_assertion.id', 'sbp_final_' . Str::random(20));
+        // 2. Validate Passkey presence
+        if (! $request->has('passkey_assertion')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'SIGNATURE_MISSING'
+            ], 400);
+        }
+
+        $txHash = $request->input('passkey_assertion.id');
 
         $additional = $order->additional ?? [];
         $additional['web3_tx_hash'] = $txHash;
@@ -160,7 +191,7 @@ class SbpController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Заказ успешно подтвержден биометрией и оплачен.'
+            'message' => 'SUCCESS'
         ]);
     }
 }

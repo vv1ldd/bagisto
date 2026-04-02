@@ -1,5 +1,5 @@
 <x-shop::layouts :has-feature="false">
-    <x-slot:title>Подтверждение оплаты СБП</x-slot>
+    <x-slot:title>Подтверждение оплаты СБП</x-slot:title>
 
     <div class="bg-[#F8FAF9] min-h-screen py-12" id="v-sbp-confirm">
         <v-sbp-confirm :order='@json($order)'></v-sbp-confirm>
@@ -59,7 +59,7 @@
                         </div>
 
                         <!-- Stage 2: MC Minting (1:1) -->
-                        <div :class="['flex items-center gap-6 p-5 border-4 transition-all duration-300', status.mint === 'success' ? 'bg-green-50 border-green-500 shadow-[6px_6_0px_0px_rgba(34,197,94,1)]' : status.rub === 'success' ? 'bg-white border-zinc-900' : 'bg-zinc-50 border-zinc-200 opacity-50 text-zinc-400']">
+                        <div :class="['flex items-center gap-6 p-5 border-4 transition-all duration-300', status.mint === 'success' ? 'bg-green-50 border-green-500 shadow-[6px_6px_0px_0px_rgba(34,197,94,1)]' : status.rub === 'success' ? 'bg-white border-zinc-900' : 'bg-zinc-50 border-zinc-200 opacity-50 text-zinc-400']">
                             <div class="relative">
                                 <div v-if="status.mint === 'success'" class="w-12 h-12 bg-green-500 border-4 border-zinc-900 flex items-center justify-center text-white font-black">✓</div>
                                 <div v-else-if="status.rub === 'success'" class="w-12 h-12 bg-[#7C45F5] border-4 border-zinc-900 flex items-center justify-center text-white animate-spin">
@@ -115,7 +115,7 @@
                     <!-- Security Badge -->
                     <div class="mt-10 flex items-center justify-center gap-4 relative z-20">
                         <svg class="w-5 h-5 text-zinc-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                        <p class="text-[10px] font-black italic uppercase text-zinc-400 tracking-[0.3em]">Blockhain Secure Signature Required</p>
+                        <p class="text-[10px] font-black italic uppercase text-zinc-400 tracking-[0.3em]">Blockchain Secure Signature Required</p>
                     </div>
                 </div>
 
@@ -145,15 +145,24 @@
                     }
                 },
                 mounted() {
-                    if (this.order.additional && this.order.additional.sbp_payment_received) {
-                        this.status.rub = 'success';
-                        this.status.mint = 'success';
-                        this.status.bonus = 'success';
-                        this.tx.base = this.order.additional.mint_tx_base;
-                        this.tx.bonus = this.order.additional.mint_tx_bonus;
-                    }
+                    this.fetchStatus();
                 },
                 methods: {
+                    async fetchStatus() {
+                        try {
+                            const response = await this.$axios.get(`/checkout/sbp/status/${this.order.id}`);
+                            if (response.data.received) {
+                                this.status.rub = 'success';
+                                this.status.mint = 'success';
+                                this.status.bonus = 'success';
+                                this.tx.base = response.data.tx.base;
+                                this.tx.bonus = response.data.tx.bonus;
+                            }
+                        } catch (e) {
+                            console.error('Status fetch error:', e);
+                        }
+                    },
+
                     async triggerSimulation() {
                         this.status.rub = 'success';
                         
@@ -192,7 +201,7 @@
                     async confirmWithPasskey() {
                         this.isFinishing = true;
                         try {
-                            // 1. Get Passkey Signature
+                            // 1. Get Passkey Signature Options
                             const optionsRes = await this.$axios.post('{{ route('passkeys.login-options') }}');
                             const options = optionsRes.data;
 
@@ -206,7 +215,18 @@
                                 }));
                             }
 
-                            const credential = await navigator.credentials.get({ publicKey: options });
+                            let credential;
+                            try {
+                                credential = await navigator.credentials.get({ publicKey: options });
+                            } catch (err) {
+                                console.warn('Browser/Hardware Biometric Error:', err);
+                                this.isFinishing = false;
+                                this.$emitter.emit('add-flash', { 
+                                    type: 'error', 
+                                    message: 'Биометрия сорвалась или была отменена. Проверьте настройки устройства.' 
+                                });
+                                return;
+                            }
 
                             const credentialJson = {
                                 id: credential.id,
@@ -221,17 +241,26 @@
                             };
 
                             // 2. Finalize Order
-                            const finishRes = await this.$axios.post(`/checkout/sbp/finish/${this.order.id}`, {
-                                passkey_assertion: credentialJson
-                            });
+                            try {
+                                const finishRes = await this.$axios.post(`/checkout/sbp/finish/${this.order.id}`, {
+                                    passkey_assertion: credentialJson
+                                });
 
-                            if (finishRes.data.success) {
-                                window.location.href = '{{ route('shop.checkout.onepage.success') }}';
+                                if (finishRes.data.success) {
+                                    window.location.href = '{{ route('shop.checkout.onepage.success') }}';
+                                }
+                            } catch (serverErr) {
+                                console.error('Server Verification Error:', serverErr);
+                                this.isFinishing = false;
+                                this.$emitter.emit('add-flash', { 
+                                    type: 'error', 
+                                    message: 'Ошибка верификации подписи на сервере. Попробуйте еще раз.' 
+                                });
                             }
                         } catch (e) {
-                            console.error('Finalization error:', e);
+                            console.error('General Finalization error:', e);
                             this.isFinishing = false;
-                            this.$emitter.emit('add-flash', { type: 'error', message: 'Ошибка биометрии. Попробуйте еще раз.' });
+                            this.$emitter.emit('add-flash', { type: 'error', message: 'Системная ошибка. Попробуйте позже.' });
                         }
                     }
                 }
