@@ -23,7 +23,7 @@
 
             <div class="box-shadow flex flex-col rounded-2xl bg-white p-8 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full shadow-2xl">
                 <div class="mb-6 text-center">
-                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20">
+                    <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-none bg-[#7C45F5]/10 text-[#7C45F5] dark:bg-blue-900/20">
                         <span class="icon-security text-3xl"></span>
                     </div>
                     <h1 class="text-xl font-bold text-gray-800 dark:text-white">Восстановление доступа</h1>
@@ -52,7 +52,7 @@
 
                     <div class="mt-4 flex flex-col gap-3">
                         <button
-                            class="primary-button w-full py-3 text-base font-bold shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                            class="primary-button w-full py-3 text-base font-bold box-shadow shadow-[#7C45F5]/100/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
                             Восстановить доступ
                         </button>

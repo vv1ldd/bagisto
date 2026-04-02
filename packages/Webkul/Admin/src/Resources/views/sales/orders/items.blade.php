@@ -12,7 +12,7 @@
                         src="{{ $item->product->base_image_url }}"
                     >
 
-                    <span class="absolute bottom-px rounded-full bg-darkPink px-1.5 text-xs font-bold leading-normal text-white ltr:left-px rtl:right-px">
+                    <span class="absolute bottom-px rounded-none bg-darkPink px-1.5 text-xs font-bold leading-normal text-white ltr:left-px rtl:right-px">
                         {{ $item->qty_ordered }}
                     </span>
                 @else

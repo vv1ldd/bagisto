@@ -29,7 +29,7 @@
                     <div class="relative w-full">
                         <input
                             type="text"
-                            class="block w-full rounded-lg border bg-white py-1.5 leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 ltr:pl-3 ltr:pr-10 rtl:pl-10 rtl:pr-3"
+                            class="block w-full rounded-none border bg-white py-1.5 leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 ltr:pl-3 ltr:pr-10 rtl:pl-10 rtl:pr-3"
                             placeholder="Search by name"
                             v-model.lazy="searchTerm"
                             v-debounce="500"
@@ -71,7 +71,7 @@
                                 />
 
                                 <label
-                                    class="icon-uncheckbox peer-checked:icon-checked cursor-pointer text-2xl peer-checked:text-blue-600"
+                                    class="icon-uncheckbox peer-checked:icon-checked cursor-pointer text-2xl peer-checked:text-[#7C45F5]"
                                     :for="'searched-product' + product.id"
                                 >
                                 </label>

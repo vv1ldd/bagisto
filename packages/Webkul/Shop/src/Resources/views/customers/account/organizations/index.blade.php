@@ -120,7 +120,7 @@
                                 position="bottom-{{ core()->getCurrentLocale()->direction === 'ltr' ? 'right' : 'left' }}">
                                 <x-slot:toggle>
                                     <button
-                                        class="p-2 hover:bg-white rounded shadow-sm border border-zinc-200 transition text-zinc-500 hover:text-zinc-900"
+                                        class="p-2 hover:bg-white rounded box-shadow-sm border border-zinc-200 transition text-zinc-500 hover:text-zinc-900"
                                         aria-label="More Options">
                                         <span class="icon-more text-2xl"></span>
                                     </button>
@@ -164,7 +164,7 @@
                 <a href="{{ route('shop.customers.account.organizations.create') }}"
                     class="flex items-center justify-center p-6 hover:bg-violet-50/30 transition-all text-[14px] font-bold text-[#7C45F5] group">
                     <span
-                        class="w-10 h-10 bg-violet-100/50 text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all shadow-sm">
+                        class="w-10 h-10 bg-violet-100/50 text-[#7C45F5] flex items-center justify-center mr-3 group-hover:bg-[#7C45F5] group-hover:text-white transition-all box-shadow-sm">
                         <span class="icon-plus text-base"></span>
                     </span>
                     Добавить еще одну организацию
@@ -172,14 +172,14 @@
             </div>
         @else
             <div class="flex flex-col items-center justify-center py-20 text-center">
-                <div class="w-16 h-16 bg-zinc-50 flex items-center justify-center mb-4 rounded-full">
+                <div class="w-16 h-16 bg-zinc-50 flex items-center justify-center mb-4 rounded-none">
                     <span class="icon-dashboard text-4xl text-zinc-300"></span>
                 </div>
                 <p class="text-[15px] font-medium text-zinc-500 max-w-[250px] mx-auto mb-6">
                     @lang('shop::app.customers.account.organizations.index.empty-organization')
                 </p>
                 <a href="{{ route('shop.customers.account.organizations.create') }}"
-                    class="inline-flex items-center justify-center px-8 py-3.5 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold rounded shadow hover:shadow-lg transition-all active:scale-95">
+                    class="inline-flex items-center justify-center px-8 py-3.5 bg-[#7C45F5] hover:bg-[#6534d4] text-white font-bold rounded shadow hover:box-shadow transition-all active:scale-95">
                     Добавить организацию
                 </a>
             </div>

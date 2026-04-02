@@ -106,7 +106,7 @@
                                             :href="'{{ config('app.url') }}/' + image.image"
                                             :ref="'image_' + index"
                                             target="_blank"
-                                            class="text-blue-600 transition-all hover:underline ltr:ml-2 rtl:mr-2"
+                                            class="text-[#7C45F5] transition-all hover:underline ltr:ml-2 rtl:mr-2"
                                         >
                                             <span :ref="'imageName_' + index">
                                                 @{{ image.image }}

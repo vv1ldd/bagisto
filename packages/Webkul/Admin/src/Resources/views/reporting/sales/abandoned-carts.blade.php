@@ -24,7 +24,7 @@
 
                     <a
                         href="{{ route('admin.reporting.sales.view', ['type' => 'abandoned-carts']) }}"
-                        class="cursor-pointer text-sm text-blue-600 transition-all hover:underline"
+                        class="cursor-pointer text-sm text-[#7C45F5] transition-all hover:underline"
                     >
                         @lang('admin::app.reporting.sales.index.view-details')
                     </a>
@@ -139,7 +139,7 @@
                                 <div class="flex items-center gap-5">
                                     <div class="relative h-2 w-full bg-slate-100">
                                         <div
-                                            class="absolute left-0 h-2 bg-blue-500"
+                                            class="absolute left-0 h-2 bg-[#7C45F5]/100"
                                             :style="{ 'width': product.progress + '%' }"
                                         ></div>
                                     </div>
@@ -160,7 +160,7 @@
                     <!-- Date Range -->
                     <div class="flex justify-end gap-5">
                         <div class="flex items-center gap-1">
-                            <span class="h-3.5 w-3.5 rounded-md bg-blue-500"></span>
+                            <span class="h-3.5 w-3.5 rounded-none bg-[#7C45F5]/100"></span>
 
                             <p class="text-xs dark:text-gray-300">
                                 @{{ report.date_range.current }}

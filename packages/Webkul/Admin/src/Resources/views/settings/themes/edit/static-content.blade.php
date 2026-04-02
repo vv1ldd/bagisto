@@ -57,7 +57,7 @@
                             <p @click="switchEditor('v-html-editor-theme', 1)">
                                 <div
                                     class="cursor-pointer px-2.5 pb-3.5 text-base font-medium text-gray-600 transition dark:text-gray-300"
-                                    :class="{'-mb-px border-b-2 border-blue-600': inittialEditor == 'v-html-editor-theme'}"
+                                    :class="{'-mb-px border-b-2 border-[#7C45F5]': inittialEditor == 'v-html-editor-theme'}"
                                 >
                                     @lang('admin::app.settings.themes.edit.html')
                                 </div>
@@ -67,7 +67,7 @@
                             <p @click="switchEditor('v-css-editor-theme', 0);">
                                 <div
                                     class="cursor-pointer px-2.5 pb-3.5 text-base font-medium text-gray-600 transition dark:text-gray-300"
-                                    :class="{'-mb-px border-b-2 border-blue-600': inittialEditor == 'v-css-editor-theme'}"
+                                    :class="{'-mb-px border-b-2 border-[#7C45F5]': inittialEditor == 'v-css-editor-theme'}"
                                 >
                                     @lang('admin::app.settings.themes.edit.css')
                                 </div>
@@ -77,7 +77,7 @@
                             <p @click="switchEditor('v-static-content-previewer', 0);">
                                 <div
                                     class="cursor-pointer px-2.5 pb-3.5 text-base font-medium text-gray-600 transition dark:text-gray-300"
-                                    :class="{'-mb-px border-b-2 border-blue-600': inittialEditor == 'v-static-content-previewer'}"
+                                    :class="{'-mb-px border-b-2 border-[#7C45F5]': inittialEditor == 'v-static-content-previewer'}"
                                 >
                                     @lang('admin::app.settings.themes.edit.preview')
                                 </div>

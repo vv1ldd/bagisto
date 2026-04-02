@@ -41,7 +41,7 @@
 
             <a
                 href="{{ route('admin.sales.invoices.print', $invoice->id) }}"
-                class="inline-flex w-full max-w-max cursor-pointer items-center justify-between gap-x-2 px-1 py-1.5 text-center font-semibold text-gray-600 transition-all hover:rounded-md hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800"
+                class="inline-flex w-full max-w-max cursor-pointer items-center justify-between gap-x-2 px-1 py-1.5 text-center font-semibold text-gray-600 transition-all hover:rounded-none hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800"
             >
                 <span class="text-2xl icon-printer"></span>
 
@@ -52,7 +52,7 @@
             <div>
                 <button
                     type="button"
-                    class="inline-flex w-full max-w-max cursor-pointer items-center justify-between gap-x-2 px-1 py-1.5 text-center font-semibold text-gray-600 transition-all hover:rounded-md hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800"
+                    class="inline-flex w-full max-w-max cursor-pointer items-center justify-between gap-x-2 px-1 py-1.5 text-center font-semibold text-gray-600 transition-all hover:rounded-none hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800"
                     @click="$refs.groupCreateModal.open()"
                 >
                     <span class="text-2xl icon-mail"></span>
@@ -173,7 +173,7 @@
 
                                                         <a
                                                             href="{{ Storage::url($attribute['option_label']) }}"
-                                                            class="text-blue-600 hover:underline"
+                                                            class="text-[#7C45F5] hover:underline"
                                                             download="{{ File::basename($attribute['option_label']) }}"
                                                         >
                                                             {{ File::basename($attribute['option_label']) }}
@@ -447,7 +447,7 @@
 
                         <div class="flex flex-col gap-y-1.5">
                             <!-- Order Id -->
-                            <p class="font-semibold text-blue-600 transition-all hover:underline">
+                            <p class="font-semibold text-[#7C45F5] transition-all hover:underline">
                                 <a href="{{ route('admin.sales.orders.view', $order->id) }}">#{{ $order->increment_id }}</a>
                             </p>
 

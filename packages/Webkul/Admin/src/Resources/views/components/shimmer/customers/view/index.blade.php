@@ -3,7 +3,7 @@
         <div class="flex items-center gap-2.5">
             <div class="shimmer h-6 w-24"></div>
 
-            <div class="shimmer mx-1 h-6 w-14 rounded-full"></div>
+            <div class="shimmer mx-1 h-6 w-14 rounded-none"></div>
         </div>
 
         <div class="shimmer h-6 w-12"></div>

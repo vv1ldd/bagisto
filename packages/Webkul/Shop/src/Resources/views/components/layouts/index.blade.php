@@ -409,13 +409,13 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Поиск по каталогу</span>
                                         <div class="flex gap-1">
-                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">⌘</kbd>
-                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">K</kbd>
+                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 box-shadow-sm">⌘</kbd>
+                                            <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 box-shadow-sm">K</kbd>
                                         </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-zinc-600">Помощь по клавишам</span>
-                                        <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 shadow-sm">?</kbd>
+                                        <kbd class="min-w-[2.5rem] flex items-center justify-center  border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs font-semibold text-zinc-500 box-shadow-sm">?</kbd>
                                     </div>
                                 </div>
                             </section>
@@ -595,7 +595,7 @@
                                 <p id="verify-dest" class="text-[11px] font-mono font-bold text-zinc-700 break-all leading-tight">—</p>
                             </div>
                             <button id="verify-dest-copy"
-                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-white border border-zinc-200 px-3 py-2  active:scale-95 transition-all shadow-sm">Копировать</button>
+                                class="shrink-0 text-[11px] text-violet-600 font-bold bg-white border border-zinc-200 px-3 py-2  active:scale-95 transition-all box-shadow-sm">Копировать</button>
                         </div>
                     </div>
 
@@ -613,7 +613,7 @@
 
                 <div class="px-6 pb-8 flex flex-col gap-3">
                     <a id="verify-link" href="#"
-                        class="w-full text-center text-white font-bold py-4  shadow-lg active:scale-[0.98] transition-all"
+                        class="w-full text-center text-white font-bold py-4  box-shadow active:scale-[0.98] transition-all"
                         style="background: linear-gradient(to right, #7c3aed, #4f46e5); box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);">
                         Проверить транзакцию
                     </a>

@@ -1,6 +1,6 @@
 <v-customer-edit :customer="customer" @update-customer="updateCustomer">
     <div
-        class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline">
+        class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-[#7C45F5] transition-all hover:underline">
     </div>
 </v-customer-edit>
 
@@ -8,7 +8,7 @@
     <script type="text/x-template" id="v-customer-edit-template">
                     <!-- Customer Edit Button -->
                     @if (bouncer()->hasPermission('customers.customers.edit'))
-                        <div class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline"
+                        <div class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-[#7C45F5] transition-all hover:underline"
                             @click="$refs.customerEditModal.toggle()">
                             @lang('admin::app.customers.customers.view.edit.edit-btn')
                         </div>

@@ -100,7 +100,7 @@
                             <x-slot:footer class="!px-6 pb-8">
                                 <div class="flex flex-wrap items-center gap-4">
                                     <x-shop::button
-                                        class="primary-button w-full  bg-[#7C45F5] py-4 text-base font-bold text-white shadow-lg transition-all hover:bg-[#6b35e4] hover:shadow-xl active:scale-95 disabled:opacity-50"
+                                        class="primary-button w-full  bg-[#7C45F5] py-4 text-base font-bold text-white box-shadow transition-all hover:bg-[#6b35e4] hover:shadow-xl active:scale-95 disabled:opacity-50"
                                         :title="trans('shop::app.checkout.login.title')"
                                         ::loading="isStoring"
                                         ::disabled="isStoring"

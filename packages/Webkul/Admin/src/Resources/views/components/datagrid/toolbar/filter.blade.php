@@ -42,8 +42,8 @@
                     <x-slot:toggle>
                         <div>
                             <div
-                                class="relative inline-flex w-full max-w-max cursor-pointer select-none appearance-none items-center justify-between gap-x-1 rounded-md border bg-white px-1 py-1.5 text-center text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:outline-none focus:ring-2 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3"
-                                :class="{'[&>*]:text-blue-600 border-blue-600 [&>*]:dark:text-white': hasAnyAppliedColumn() }"
+                                class="relative inline-flex w-full max-w-max cursor-pointer select-none appearance-none items-center justify-between gap-x-1 rounded-none border bg-white px-1 py-1.5 text-center text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:outline-none focus:ring-2 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 ltr:pl-3 ltr:pr-5 rtl:pl-5 rtl:pr-3"
+                                :class="{'[&>*]:text-[#7C45F5] border-[#7C45F5] [&>*]:dark:text-white': hasAnyAppliedColumn() }"
                             >
                                 <span class="icon-filter text-2xl"></span>
 
@@ -77,7 +77,7 @@
                         <!-- Save Filter Title -->
                         <div v-else class="flex items-center gap-x-2">
                             <span
-                                class="icon-arrow-right rtl:icon-arrow-left mt-0.5 cursor-pointer text-3xl hover:rounded-md hover:bg-gray-100 dark:hover:bg-gray-950"
+                                class="icon-arrow-right rtl:icon-arrow-left mt-0.5 cursor-pointer text-3xl hover:rounded-none hover:bg-gray-100 dark:hover:bg-gray-950"
                                 @click="backToFilters"
                             >
                             </span>
@@ -132,7 +132,7 @@
 
                                     <div
                                         v-if="hasAnyAppliedColumn() || isFilterDirty"
-                                        class="cursor-pointer text-xs font-medium leading-6 text-blue-600 transition-all hover:underline ltr:ml-20 rtl:mr-20"
+                                        class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5] transition-all hover:underline ltr:ml-20 rtl:mr-20"
                                         @click="removeAllAppliedFilters()"
                                     >
                                         @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -159,7 +159,7 @@
                                                             @click="removeAppliedColumnAllValues(column.index)"
                                                         >
                                                             <p
-                                                                class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                                class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                                             >
                                                                 @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -172,7 +172,7 @@
                                                             <x-slot:toggle>
                                                                 <button
                                                                     type="button"
-                                                                    class="inline-flex w-full cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-md border bg-white px-2.5 py-1.5 text-center leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                                                                    class="inline-flex w-full cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-none border bg-white px-2.5 py-1.5 text-center leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                                                                 >
                                                                     <!-- If Allow Multiple Values -->
                                                                     <span
@@ -245,7 +245,7 @@
                                                             @click="removeAppliedColumnAllValues(column.index)"
                                                         >
                                                             <p
-                                                                class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                                class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                                             >
                                                                 @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -255,7 +255,7 @@
 
                                                     <div class="mt-1.5 grid grid-cols-2 gap-1.5">
                                                         <p
-                                                            class="cursor-pointer rounded-md border px-3 py-2 text-center text-sm font-medium leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:text-gray-300 dark:hover:border-gray-400"
+                                                            class="cursor-pointer rounded-none border px-3 py-2 text-center text-sm font-medium leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:text-gray-300 dark:hover:border-gray-400"
                                                             v-for="option in column.filterable_options"
                                                             v-text="option.label"
                                                             @click="addFilter(
@@ -271,7 +271,7 @@
                                                                 type="date"
                                                                 :name="`${column.index}[from]`"
                                                                 value=""
-                                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                                                 :placeholder="column.label"
                                                                 :ref="`${column.index}[from]`"
                                                                 @change="addFilter(
@@ -287,7 +287,7 @@
                                                                 type="date"
                                                                 :name="`${column.index}[to]`"
                                                                 value=""
-                                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                                                 :placeholder="column.label"
                                                                 :ref="`${column.index}[from]`"
                                                                 @change="addFilter(
@@ -331,7 +331,7 @@
                                                             @click="removeAppliedColumnAllValues(column.index)"
                                                         >
                                                             <p
-                                                                class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                                class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                                             >
                                                                 @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -345,7 +345,7 @@
                                                                 type="date"
                                                                 :name="column.index"
                                                                 value=""
-                                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                                                 :placeholder="column.label"
                                                                 :ref="column.index"
                                                                 @change="addFilter($event, column)"
@@ -388,7 +388,7 @@
                                                             @click="removeAppliedColumnAllValues(column.index)"
                                                         >
                                                             <p
-                                                                class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                                class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                                             >
                                                                 @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -398,7 +398,7 @@
 
                                                     <div class="my-4 grid grid-cols-2 gap-1.5">
                                                         <p
-                                                            class="cursor-pointer rounded-md border px-3 py-2 text-center text-sm font-medium leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:text-gray-300 dark:hover:border-gray-400"
+                                                            class="cursor-pointer rounded-none border px-3 py-2 text-center text-sm font-medium leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:text-gray-300 dark:hover:border-gray-400"
                                                             v-for="option in column.filterable_options"
                                                             v-text="option.label"
                                                             @click="addFilter(
@@ -414,7 +414,7 @@
                                                                 type="datetime-local"
                                                                 :name="`${column.index}[from]`"
                                                                 value=""
-                                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                                                 :placeholder="column.label"
                                                                 :ref="`${column.index}[from]`"
                                                                 @change="addFilter(
@@ -430,7 +430,7 @@
                                                                 type="datetime-local"
                                                                 :name="`${column.index}[to]`"
                                                                 value=""
-                                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                                                 :placeholder="column.label"
                                                                 :ref="`${column.index}[from]`"
                                                                 @change="addFilter(
@@ -474,7 +474,7 @@
                                                             @click="removeAppliedColumnAllValues(column.index)"
                                                         >
                                                             <p
-                                                                class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                                class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                                             >
                                                                 @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -488,7 +488,7 @@
                                                                 type="datetime-local"
                                                                 :name="column.index"
                                                                 value=""
-                                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                                                 :placeholder="column.label"
                                                                 :ref="column.index"
                                                                 @change="addFilter($event, column)"
@@ -531,7 +531,7 @@
                                                             @click="removeAppliedColumnAllValues(column.index)"
                                                         >
                                                             <p
-                                                                class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                                class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                                             >
                                                                 @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -544,7 +544,7 @@
                                                             <x-slot:toggle>
                                                                 <button
                                                                     type="button"
-                                                                    class="inline-flex w-full cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-md border bg-white px-2.5 py-1.5 text-center leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                                                                    class="inline-flex w-full cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-none border bg-white px-2.5 py-1.5 text-center leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                                                                 >
                                                                     <!-- If Allow Multiple Values -->
                                                                     <span
@@ -611,7 +611,7 @@
                                                             @click="removeAppliedColumnAllValues(column.index)"
                                                         >
                                                             <p
-                                                                class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                                class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                                 v-if="hasAnyAppliedColumnValues(column.index)"
                                                             >
                                                                 @lang('admin::app.components.datagrid.filters.custom-filters.clear-all')
@@ -623,7 +623,7 @@
                                                     <div class="mb-2 mt-1.5 grid">
                                                         <input
                                                             type="text"
-                                                            class="block w-full rounded-md border bg-white px-2 py-1.5 text-sm leading-6 text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                                                            class="block w-full rounded-none border bg-white px-2 py-1.5 text-sm leading-6 text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                                                             :name="column.index"
                                                             :placeholder="column.label"
                                                             @change="addFilter($event, column)"

@@ -79,7 +79,7 @@
                         </div>
                     </div>
 
-                    <div class="shimmer h-9 w-9 rounded-md"></div>
+                    <div class="shimmer h-9 w-9 rounded-none"></div>
                 </div>
             </div>
         </div>

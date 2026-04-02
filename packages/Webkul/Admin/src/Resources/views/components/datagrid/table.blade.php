@@ -49,10 +49,10 @@
                                     >
 
                                     <span
-                                        class="icon-uncheckbox cursor-pointer rounded-md text-2xl"
+                                        class="icon-uncheckbox cursor-pointer rounded-none text-2xl"
                                         :class="[
-                                            applied.massActions.meta.mode === 'all' ? 'peer-checked:icon-checked peer-checked:text-blue-600 ' : (
-                                                applied.massActions.meta.mode === 'partial' ? 'peer-checked:icon-checkbox-partial peer-checked:text-blue-600' : ''
+                                            applied.massActions.meta.mode === 'all' ? 'peer-checked:icon-checked peer-checked:text-[#7C45F5] ' : (
+                                                applied.massActions.meta.mode === 'partial' ? 'peer-checked:icon-checkbox-partial peer-checked:text-[#7C45F5]' : ''
                                             ),
                                         ]"
                                     >
@@ -121,7 +121,7 @@
                                             v-model="applied.massActions.indices"
                                         >
 
-                                        <span class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-md text-2xl peer-checked:text-blue-600">
+                                        <span class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-none text-2xl peer-checked:text-[#7C45F5]">
                                         </span>
                                     </label>
                                 </p>
@@ -142,7 +142,7 @@
                                     v-if="available.actions.length"
                                 >
                                     <span
-                                        class="cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
+                                        class="cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
                                         :class="action.icon"
                                         v-text="! action.icon ? action.title : ''"
                                         v-for="action in record.actions"

@@ -1,8 +1,8 @@
 <x-shop::layouts.account :is-cardless="true" :title="__('Сообщения')">
-    <div class="relative w-full h-[600px] bg-white border-4 border-black box-shadow-sm overflow-hidden flex flex-col">
+    <div class="relative w-full h-[600px] bg-white border-4 border-black box-box-shadow-sm overflow-hidden flex flex-col">
         {{-- Syncing Overlay --}}
         <div id="syncOverlay" class="absolute inset-0 bg-white/90 z-20 flex flex-col items-center justify-center gap-4 transition-opacity duration-500">
-            <div class="w-16 h-16 border-8 border-zinc-200 border-t-[#00D1FF] rounded-full animate-spin"></div>
+            <div class="w-16 h-16 border-8 border-zinc-200 border-t-[#00D1FF] rounded-none animate-spin"></div>
             <p class="text-xl font-black uppercase tracking-tighter">Синхронизация чатов...</p>
             <p class="text-sm text-zinc-500 font-bold uppercase tracking-wider">Настраиваем децентрализованную сеть</p>
         </div>

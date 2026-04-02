@@ -12,7 +12,7 @@
         id="v-flash-item-template"
     >
         <div
-            class="flex w-max justify-between gap-12 rounded-full p-3"
+            class="flex w-max justify-between gap-12 rounded-none p-3"
             :style="typeStyles[flash.type]['container']"
         >
             <p
@@ -20,7 +20,7 @@
                 :style="typeStyles[flash.type]['message']"
             >
                 <span
-                    class="icon-toast-done rounded-full bg-white text-2xl dark:bg-gray-900 ltr:mr-2.5 rtl:ml-2.5"
+                    class="icon-toast-done rounded-none bg-white text-2xl dark:bg-gray-900 ltr:mr-2.5 rtl:ml-2.5"
                     :class="iconClasses[flash.type]"
                     :style="typeStyles[flash.type]['icon']"
                 ></span>

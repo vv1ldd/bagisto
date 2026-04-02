@@ -146,7 +146,7 @@
                                         <div class="flex gap-2">
                                             <!-- Edit Option -->
                                             <p
-                                                class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                                class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                                                 @click="selectedOption = element; $refs.updateCreateOptionModal.open()"
                                             >
                                                 @lang('admin::app.catalog.products.edit.types.simple.customizable-options.option.edit-btn')
@@ -393,7 +393,7 @@
                     <div class="flex items-center gap-x-5">
                         <!-- Open Add Option Item Modal -->
                         <p
-                            class="cursor-pointer text-blue-600 transition-all hover:underline"
+                            class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                             @click="$refs.updateCreateOptionItemModal.open()"
                         >
                             @lang('admin::app.catalog.products.edit.types.simple.customizable-options.option.add-btn')
@@ -401,7 +401,7 @@
 
                         <!-- Edit Option -->
                         <p
-                            class="cursor-pointer text-blue-600 transition-all hover:underline"
+                            class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                             @click="updateOption"
                         >
                             @lang('admin::app.catalog.products.edit.types.simple.customizable-options.option.edit-btn')
@@ -482,7 +482,7 @@
                                     <div class="flex gap-2">
                                         <!-- Edit Option Item -->
                                         <p
-                                            class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                            class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                                             @click="selectedOptionItem = element; $refs.updateCreateOptionItemModal.open()"
                                         >
                                             @lang('admin::app.catalog.products.edit.types.simple.customizable-options.option.edit-btn')

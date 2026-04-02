@@ -131,7 +131,7 @@
                             <p>
                                 <div class="flex items-center gap-2.5">
                                     <div
-                                        class="border-3 mr-2 inline-block h-9 w-9 overflow-hidden rounded-full border-gray-800 text-center align-middle"
+                                        class="border-3 mr-2 inline-block h-9 w-9 overflow-hidden rounded-none border-gray-800 text-center align-middle"
                                         v-if="record.user_img"
                                     >
                                         <img
@@ -145,7 +145,7 @@
                                         class="profile-info-icon"
                                         v-else
                                     >
-                                        <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-blue-400 text-sm font-semibold leading-6 text-white transition-all hover:bg-blue-500 focus:bg-blue-500">
+                                        <button class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-none bg-blue-400 text-sm font-semibold leading-6 text-white transition-all hover:bg-[#7C45F5]/100 focus:bg-[#7C45F5]/100">
                                             @{{ record.user_name[0].toUpperCase() }}
                                         </button>
                                     </div>
@@ -170,7 +170,7 @@
                                 <a @click="id=1; editModal(record.actions.find(action => action.index === 'edit')?.url)">
                                     <span
                                         :class="record.actions.find(action => action.index === 'edit')?.icon"
-                                        class="cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
+                                        class="cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
                                     >
                                     </span>
                                 </a>
@@ -178,7 +178,7 @@
                                 <a @click="performAction(record.actions.find(action => action.index === 'delete'))">
                                     <span
                                         :class="record.actions.find(action => action.index === 'delete')?.icon"
-                                        class="cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
+                                        class="cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
                                     >
                                     </span>
                                 </a>
@@ -320,7 +320,7 @@
                                     >
                                         <select
                                             name="role_id"
-                                            class="flex min-h-[39px] w-full rounded-md border bg-white px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                                            class="flex min-h-[39px] w-full rounded-none border bg-white px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                                             :class="[errors['options[sort]'] ? 'border border-red-600 hover:border-red-600' : '']"
                                             v-model="data.user.role_id"
                                         >

@@ -137,7 +137,7 @@
                         <!-- Actions -->
                         <div class="flex place-content-start gap-x-5 text-right">
                             <p
-                                class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                                 @click="ticketItem=element;toggle()"
                             >
                                 @lang('admin::app.catalog.products.edit.types.booking.event.edit')

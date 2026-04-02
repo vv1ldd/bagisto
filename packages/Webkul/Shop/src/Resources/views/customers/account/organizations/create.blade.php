@@ -190,7 +190,7 @@
                         Отмена
                     </a>
                     <button type="submit"
-                        class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 shadow-lg shadow-violet-200">
+                        class="px-10 py-2.5 bg-[#7C45F5] hover:bg-[#6534d4] text-[14px] text-white font-bold transition-all active:scale-95 box-shadow shadow-violet-200">
                         Сохранить организацию
                     </button>
                 </div>
@@ -360,7 +360,7 @@
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const div = document.createElement('div');
-                                        div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                                        div.className = 'p-2 hover:bg-[#7C45F5]/10 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
                                                                                             <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>

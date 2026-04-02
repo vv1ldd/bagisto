@@ -9,7 +9,7 @@
                 <div class="mb-4">
                     <div class="shimmer mb-1.5 h-4 w-24"></div>
 
-                    <div class="shimmer flex h-[42px] w-full rounded-md"></div>
+                    <div class="shimmer flex h-[42px] w-full rounded-none"></div>
                 </div>
             @endfor
         </div>
@@ -28,13 +28,13 @@
                 <div class="mb-4">
                     <div class="shimmer mb-2 h-4 w-24"></div>
 
-                    <div class="shimmer h-5 w-9 rounded-full"></div>
+                    <div class="shimmer h-5 w-9 rounded-none"></div>
                 </div>
 
                 <div class="mb-4">
                     <div class="shimmer mb-2 h-4 w-24"></div>
 
-                    <div class="shimmer h-[42px] w-full rounded-md"></div>
+                    <div class="shimmer h-[42px] w-full rounded-none"></div>
                 </div>
             </div> 
         </div>

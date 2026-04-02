@@ -248,14 +248,14 @@
                 <!-- Add Button -->
                 <div class="flex items-center gap-x-5">
                     <p
-                        class="cursor-pointer font-semibold text-blue-600 transition-all hover:underline"
+                        class="cursor-pointer font-semibold text-[#7C45F5] transition-all hover:underline"
                         @click="$refs['productSearch' + option.id].openDrawer()"
                     >
                         @lang('admin::app.catalog.products.edit.types.bundle.option.add-btn')
                     </p>
 
                     <p
-                        class="cursor-pointer font-semibold text-blue-600 transition-all hover:underline"
+                        class="cursor-pointer font-semibold text-[#7C45F5] transition-all hover:underline"
                         @click="edit"
                     >
                         @lang('admin::app.catalog.products.edit.types.bundle.option.edit-btn')
@@ -305,7 +305,7 @@
                                     />
 
                                     <label
-                                        class="cursor-pointer text-2xl peer-checked:text-blue-600"
+                                        class="cursor-pointer text-2xl peer-checked:text-[#7C45F5]"
                                         :class="[option.type == 'checkbox' || option.type == 'multiselect' ? 'icon-uncheckbox  peer-checked:icon-checked' : 'icon-radio-normal peer-checked:icon-radio-selected']"
                                         :for="'bundle_options[' + option.id + '][products][' + element.id + '][is_default]'"
                                     >
@@ -370,7 +370,7 @@
                                         type="text"
                                         :name="'bundle_options[' + option.id + '][products][' + element.id + '][qty]'"
                                         v-model="element.qty"
-                                        class="min-h-[39px] w-[86px] rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                                        class="min-h-[39px] w-[86px] rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                                         :class="[errors['bundle_options[' + option.id + '][products][' + element.id + '][qty]'] ? 'border border-red-600 hover:border-red-600' : '']"
                                         rules="required|numeric|min_value:1"
                                         label="@lang('admin::app.catalog.products.edit.types.bundle.option.default-qty')"

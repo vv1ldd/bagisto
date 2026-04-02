@@ -47,7 +47,7 @@
                                 </span>
                             </span>
 
-                            <span v-if="filters.columns.length > 0" class="flex items-center justify-center w-5 h-5 bg-[#7C45F5] text-white text-[10px] font-bold rounded-full">
+                            <span v-if="filters.columns.length > 0" class="flex items-center justify-center w-5 h-5 bg-[#7C45F5] text-white text-[10px] font-bold rounded-none">
                                 @{{ filters.columns.length }}
                             </span>
                         </div>
@@ -78,7 +78,7 @@
                                                 @click="removeAppliedColumnAllValues(column.index)"
                                             >
                                                 <p
-                                                    class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                    class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
                                                     @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
@@ -162,7 +162,7 @@
                                                 @click="removeAppliedColumnAllValues(column.index)"
                                             >
                                                 <p
-                                                    class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                    class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
                                                     @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
@@ -246,7 +246,7 @@
                                                 @click="removeAppliedColumnAllValues(column.index)"
                                             >
                                                 <p
-                                                    class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                    class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
                                                     @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
@@ -301,7 +301,7 @@
                                                 @click="removeAppliedColumnAllValues(column.index)"
                                             >
                                                 <p
-                                                    class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                    class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
                                                     @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
@@ -385,7 +385,7 @@
                                                 @click="removeAppliedColumnAllValues(column.index)"
                                             >
                                                 <p
-                                                    class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                    class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
                                                     @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
@@ -440,7 +440,7 @@
                                                 @click="removeAppliedColumnAllValues(column.index)"
                                             >
                                                 <p
-                                                    class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                    class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
                                                     @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
@@ -518,7 +518,7 @@
                                                 @click="removeAppliedColumnAllValues(column.index)"
                                             >
                                                 <p
-                                                    class="cursor-pointer text-xs font-medium leading-6 text-blue-600"
+                                                    class="cursor-pointer text-xs font-medium leading-6 text-[#7C45F5]"
                                                     v-if="hasAnyAppliedColumnValues(column.index)"
                                                 >
                                                     @lang('shop::app.components.datagrid.toolbar.filter.custom-filters.clear-all')
@@ -578,7 +578,7 @@
                             <!-- Apply Filter Button -->
                             <button
                                 type="button"
-                                class="w-full bg-[#7C45F5] text-white p-3 text-[14px] font-bold rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-violet-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:shadow-none disabled:active:scale-100"
+                                class="w-full bg-[#7C45F5] text-white p-3 text-[14px] font-bold rounded-2xl box-shadow shadow-[#7C45F5]/20 hover:bg-violet-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:shadow-none disabled:active:scale-100"
                                 @click="applyFilters"
                                 :disabled="! isFilterDirty"
                             >

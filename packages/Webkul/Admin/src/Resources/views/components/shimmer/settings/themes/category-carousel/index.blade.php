@@ -12,7 +12,7 @@
             <div class="mb-4">
                 <div class="shimmer mb-1.5 flex h-4 w-16 items-center"></div>
 
-                <div class="shimmer flex h-10 w-full rounded-md py-px"></div>
+                <div class="shimmer flex h-10 w-full rounded-none py-px"></div>
             </div>
         @endfor
 
@@ -24,7 +24,7 @@
             <div class="shimmer h-6 w-16"></div>
 
             <div class="flex gap-2.5">
-                <div class="shimmer h-10 w-[105px] rounded-md"></div>
+                <div class="shimmer h-10 w-[105px] rounded-none"></div>
             </div>
         </div>
 

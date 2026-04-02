@@ -127,7 +127,7 @@
                 <!-- Date Range Section -->
                 <div class="mt-6 flex justify-end gap-5">
                     <div class="flex items-center gap-1">
-                        <span class="h-3.5 w-3.5 rounded-md bg-emerald-400"></span>
+                        <span class="h-3.5 w-3.5 rounded-none bg-emerald-400"></span>
 
                         <p class="text-xs dark:text-gray-300">
                             @{{ report.date_range.current }}

@@ -36,7 +36,7 @@
                         <!-- Step 1 Word Grid -->
                         <div v-if="step === 1" class="grid grid-cols-3 gap-2 w-full animate-in fade-in zoom-in-95 duration-500">
                             <div v-for="(word, index) in firstHalf" :key="index" 
-                                class="flex items-center gap-2 bg-white border-2 border-zinc-900 rounded-lg p-2 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group">
+                                class="flex items-center gap-2 bg-white border-2 border-zinc-900 rounded-none p-2 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group">
                                 <span class="text-[9px] font-black text-zinc-300 w-4 select-none">@{{ index + 1 }}</span>
                                 <span class="text-zinc-900 font-black tracking-tight text-[11px] select-all truncate lowercase">@{{ word }}</span>
                             </div>
@@ -56,7 +56,7 @@
                         <!-- Step 2 Word Grid -->
                         <div v-if="step === 2" class="grid grid-cols-3 gap-2 w-full animate-in fade-in zoom-in-95 duration-500">
                             <div v-for="(word, index) in secondHalf" :key="index" 
-                                class="flex items-center gap-2 bg-zinc-100 border-2 border-dashed border-zinc-900 rounded-lg p-2 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group">
+                                class="flex items-center gap-2 bg-zinc-100 border-2 border-dashed border-zinc-900 rounded-none p-2 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none group">
                                 <span class="text-[9px] font-black text-zinc-300 w-4 select-none">@{{ splitIndex + index + 1 }}</span>
                                 <span class="text-zinc-900 font-black tracking-tight text-[11px] select-all truncate lowercase">@{{ word }}</span>
                             </div>

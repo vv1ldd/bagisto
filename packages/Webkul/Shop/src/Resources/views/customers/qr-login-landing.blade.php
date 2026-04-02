@@ -6,7 +6,7 @@
     <div class="text-center">
         @if (isset($error))
             <div class="mb-8">
-                <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
+                <div class="w-20 h-20 bg-red-100 text-red-600 rounded-none flex items-center justify-center mx-auto mb-4 border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
                     <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                         <path d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -23,7 +23,7 @@
             </div>
         @else
             <div class="mb-8 mt-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div class="w-24 h-24 bg-[#7C45F5] text-white rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)]">
+                <div class="w-24 h-24 bg-[#7C45F5] text-white rounded-none flex items-center justify-center mx-auto mb-6 border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)]">
                     <span class="text-3xl font-black uppercase">{{ substr($customer->name, 0, 1) }}</span>
                 </div>
                 

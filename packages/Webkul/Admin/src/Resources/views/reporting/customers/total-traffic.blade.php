@@ -91,7 +91,7 @@
                     <!-- Date Range -->
                     <div class="flex justify-center gap-5">
                         <div class="flex items-center gap-1">
-                            <span class="h-3.5 w-3.5 rounded-md bg-emerald-400"></span>
+                            <span class="h-3.5 w-3.5 rounded-none bg-emerald-400"></span>
 
                             <p class="text-xs dark:text-gray-300">
                                 @{{ report.date_range.previous }}
@@ -99,7 +99,7 @@
                         </div>
 
                         <div class="flex items-center gap-1">
-                            <span class="h-3.5 w-3.5 rounded-md bg-sky-400"></span>
+                            <span class="h-3.5 w-3.5 rounded-none bg-sky-400"></span>
 
                             <p class="text-xs dark:text-gray-300">
                                 @{{ report.date_range.current }}

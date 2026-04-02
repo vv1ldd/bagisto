@@ -31,15 +31,15 @@
                 <template v-if="allowMultiple || images.length == 0">
                     <!-- AI Image Generation Button -->
                     <label
-                        class="grid h-[120px] max-h-[120px] min-h-[110px] w-full min-w-[110px] max-w-[120px] cursor-pointer items-center justify-items-center rounded border border-dashed border-blue-300 transition-all hover:border-blue-600 dark:mix-blend-exclusion dark:invert"
+                        class="grid h-[120px] max-h-[120px] min-h-[110px] w-full min-w-[110px] max-w-[120px] cursor-pointer items-center justify-items-center rounded border border-dashed border-blue-300 transition-all hover:border-[#7C45F5] dark:mix-blend-exclusion dark:invert"
                         :style="{'max-width': this.width, 'max-height': this.height}"
                         v-if="ai.enabled"
                         @click="resetAIModal(); $refs.magicAIImageModal.open()"
                     >
                         <div class="flex flex-col items-center">
-                            <span class="icon-magic text-2xl text-blue-600"></span>
+                            <span class="icon-magic text-2xl text-[#7C45F5]"></span>
 
-                            <p class="grid text-center text-sm font-semibold text-blue-600">
+                            <p class="grid text-center text-sm font-semibold text-[#7C45F5]">
                                 @lang('admin::app.components.media.images.ai-add-image-btn')
                                 
                                 <span class="text-xs">
@@ -141,7 +141,7 @@
                                     <template v-else>
                                         <p class="truncate text-lg font-bold text-gray-800 dark:text-white">
                                             <span
-                                                class="icon-arrow-right mr-1 cursor-pointer align-middle text-2xl hover:rounded-md hover:bg-gray-100 dark:hover:bg-gray-950"
+                                                class="icon-arrow-right mr-1 cursor-pointer align-middle text-2xl hover:rounded-none hover:bg-gray-100 dark:hover:bg-gray-950"
                                                 @click="ai.images = []"
                                             ></span>
 
@@ -269,7 +269,7 @@
                                         <div class="grid grid-cols-4 gap-5">
                                             <div
                                                 class="relative grid max-h-[120px] min-w-[120px] cursor-pointer justify-items-center overflow-hidden rounded border-[3px] border-transparent transition-all hover:opacity-80"
-                                                :class="{'!border-blue-600': image.selected}"
+                                                :class="{'!border-[#7C45F5]': image.selected}"
                                                 v-for="image in ai.images"
                                                 @click="image.selected = ! image.selected"
                                             >
@@ -299,7 +299,7 @@
                                                 </template>
 
                                                 <template v-else>
-                                                    <span class="icon-magic text-blue-600"></span>
+                                                    <span class="icon-magic text-[#7C45F5]"></span>
                                                     
                                                     @lang('admin::app.components.media.images.ai-generation.generate')
                                                 </template>
@@ -319,7 +319,7 @@
                                                 </template>
 
                                                 <template v-else>
-                                                    <span class="icon-magic text-2xl text-blue-600"></span>
+                                                    <span class="icon-magic text-2xl text-[#7C45F5]"></span>
                                                     
                                                     @lang('admin::app.components.media.images.ai-generation.regenerate')
                                                 </template>
@@ -358,12 +358,12 @@
                 <!-- Actions -->
                 <div class="flex justify-between">
                     <span
-                        class="icon-delete cursor-pointer rounded-md p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
+                        class="icon-delete cursor-pointer rounded-none p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
                         @click="remove"
                     ></span>
 
                     <label
-                        class="icon-edit cursor-pointer rounded-md p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
+                        class="icon-edit cursor-pointer rounded-none p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
                         :for="$.uid + '_imageInput_' + index"
                     ></label>
 

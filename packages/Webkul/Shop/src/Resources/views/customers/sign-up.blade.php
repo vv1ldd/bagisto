@@ -53,7 +53,7 @@
                                     placeholder="Никнейм" autocomplete="off" @input="debounceCheck">
                                 
                                 <div class="ml-4 w-7 h-7 flex-shrink-0 flex items-center justify-center transition-opacity" :class="status.iconVisible ? 'opacity-100' : 'opacity-0'">
-                                    <div v-if="status.checking" class="w-4 h-4 border-2 border-[#7C45F5] border-r-transparent rounded-full animate-spin"></div>
+                                    <div v-if="status.checking" class="w-4 h-4 border-2 border-[#7C45F5] border-r-transparent rounded-none animate-spin"></div>
                                     <span v-else>@{{ status.icon }}</span>
                                 </div>
                             </div>
@@ -117,7 +117,7 @@
 
                         <!-- Success Message in Modal -->
                         <div v-if="isRegistrationComplete" class="text-center mb-10 animate-in zoom-in-50 duration-500">
-                             <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-500 text-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-6">
+                             <div class="inline-flex items-center justify-center w-24 h-24 rounded-none bg-emerald-500 text-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] mb-6">
                                 <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
@@ -133,7 +133,7 @@
 
                         <div class="space-y-4">
                             <div v-if="!isRegistrationComplete" class="flex items-center justify-center gap-3 py-2 bg-zinc-50 border-2 border-dashed border-zinc-200 rounded-xl">
-                                <div class="w-2 h-2 bg-[#7C45F5] rounded-full animate-ping"></div>
+                                <div class="w-2 h-2 bg-[#7C45F5] rounded-none animate-ping"></div>
                                 <span class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Ожидание регистрации...</span>
                             </div>
 

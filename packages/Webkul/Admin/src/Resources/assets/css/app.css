@@ -104,7 +104,8 @@
     }
 
     .box-shadow {
-        @apply border-[1px] dark:border-gray-800 shadow-[0px_0px_0px_0px_rgba(0,0,0,0.03),0px_1px_1px_0px_rgba(0,0,0,0.03),0px_3px_3px_0px_rgba(0,0,0,0.03),0px_6px_4px_0px_rgba(0,0,0,0.02),0px_11px_4px_0px_rgba(0,0,0,0.00),0px_17px_5px_0px_rgba(0,0,0,0.00)];
+        @apply border-2 border-black;
+        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
     }
 
     .icon-phone:before {
@@ -438,15 +439,30 @@
     }
 
     .primary-button {
-        @apply bg-blue-600 border border-blue-700 cursor-pointer flex focus:opacity-[0.9] font-semibold gap-x-1 hover:opacity-[0.9] items-center place-content-center px-3 py-1.5 rounded-md text-gray-50 transition-all;
+        @apply flex gap-x-1.5 items-center place-content-center font-black uppercase tracking-widest text-white px-4 py-2 max-w-max cursor-pointer transition-all border-2 border-black;
+        background-color: #7C45F5;
+        box-shadow: 2px 2px 0px #000;
+    }
+
+    .primary-button:hover {
+        background-color: #6b35e4;
+        box-shadow: none;
+        transform: translate(1px, 1px);
     }
 
     .secondary-button {
-        @apply flex cursor-pointer place-content-center items-center gap-x-1 whitespace-nowrap rounded-md border-2 border-blue-600 bg-white px-3 py-1.5 font-semibold text-blue-600 transition-all hover:bg-[#eff6ff61] focus:bg-[#eff6ff61] dark:border-gray-400 dark:bg-gray-800 dark:text-white dark:hover:opacity-80;
+        @apply flex gap-x-1.5 items-center place-content-center font-black uppercase tracking-widest px-4 py-2 max-w-max cursor-pointer transition-all border-2 border-black bg-white text-black;
+        box-shadow: 2px 2px 0px #000;
+    }
+
+    .secondary-button:hover {
+        @apply bg-zinc-100;
+        transform: translate(1px, 1px);
+        box-shadow: none;
     }
 
     .transparent-button {
-        @apply flex cursor-pointer appearance-none place-content-center items-center gap-x-1 whitespace-nowrap rounded-md border-2 border-transparent px-3 py-1.5 font-semibold text-gray-600 transition-all marker:shadow hover:bg-gray-100 focus:bg-gray-100 dark:hover:bg-gray-950;
+        @apply flex cursor-pointer appearance-none place-content-center items-center gap-x-1 whitespace-nowrap border-2 border-transparent px-3 py-1.5 font-bold text-gray-600 transition-all hover:bg-gray-100;
     }
 
     .journal-scroll::-webkit-scrollbar {
@@ -497,7 +513,8 @@
     .label-pending_payment,
     .label-completed,
     .label-active {
-        @apply text-[12px] text-white font-semibold py-px px-1.5 max-w-max rounded-[35px];
+        @apply text-[11px] text-white font-black uppercase py-0.5 px-1.5 max-w-max border-2 border-black;
+        box-shadow: 1px 1px 0px #000;
     }
 
     .label-pending,

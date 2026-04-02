@@ -127,7 +127,7 @@
                                          class="w-9 h-9 object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" 
                                          alt="{{ $category->name }}">
                                 @else
-                                    <div class="w-2.5 h-2.5 bg-zinc-400 rounded-full group-hover:bg-[#7C45F5] transition-colors"></div>
+                                    <div class="w-2.5 h-2.5 bg-zinc-400 rounded-none group-hover:bg-[#7C45F5] transition-colors"></div>
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0 pr-4">

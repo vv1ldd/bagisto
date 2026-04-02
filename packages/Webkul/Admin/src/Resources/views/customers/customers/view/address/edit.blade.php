@@ -13,7 +13,7 @@
             <!-- Address Edit Button -->
             @if (bouncer()->hasPermission('customers.addresses.edit'))
                 <p
-                    class="cursor-pointer text-blue-600 transition-all hover:underline"
+                    class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                     @click="$refs.customerAddressModal.toggle()"
                 >
                     @lang('admin::app.customers.customers.view.address.edit.edit-btn')

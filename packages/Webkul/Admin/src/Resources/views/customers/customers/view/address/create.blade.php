@@ -1,5 +1,5 @@
 <v-create-customer-address @address-created="addressCreated">
-    <div class="mr-1 inline-flex w-full max-w-max cursor-pointer items-center justify-between gap-x-2 px-1 py-1.5 text-center font-semibold text-gray-600 transition-all hover:rounded-md hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800">
+    <div class="mr-1 inline-flex w-full max-w-max cursor-pointer items-center justify-between gap-x-2 px-1 py-1.5 text-center font-semibold text-gray-600 transition-all hover:rounded-none hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800">
         <span class="icon-location text-2xl"></span>
 
         @lang('admin::app.customers.customers.view.address.create.create-address-btn')
@@ -16,7 +16,7 @@
         <!-- Address Create Button -->
         @if (bouncer()->hasPermission('customers.addresses.create'))
             <div
-                class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline"
+                class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-[#7C45F5] transition-all hover:underline"
                 @click="$refs.createAddress.toggle()"
             >
                 @lang('admin::app.customers.customers.view.address.create.create-btn')

@@ -204,7 +204,7 @@
                             @endif
 
                              <button type="button" id="add-passkey-button" onclick="startPasskeyRegistration()"
-                                class="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                                class="mt-4 flex w-full items-center justify-center gap-2 rounded-none border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
                                 <span class="icon-add-new text-lg"></span>
                                 Добавить ключ (Passkey)
                             </button>

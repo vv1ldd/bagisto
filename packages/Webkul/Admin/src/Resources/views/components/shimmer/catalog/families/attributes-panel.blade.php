@@ -11,10 +11,10 @@
         <!-- Panel Content -->
         <div class="flex items-center gap-x-1">
             <!-- Delete Group Button -->
-            <div class="shimmer h-10 w-[130px] rounded-md"></div>
+            <div class="shimmer h-10 w-[130px] rounded-none"></div>
 
             <!-- Add Group Button -->
-            <div class="shimmer h-10 w-[109px] rounded-md"></div>
+            <div class="shimmer h-10 w-[109px] rounded-none"></div>
         </div>
     </div>
 

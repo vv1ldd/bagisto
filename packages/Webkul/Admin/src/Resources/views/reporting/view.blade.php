@@ -117,7 +117,7 @@
                         ]))
                             <div class="relative inline-flex w-full max-w-max">
                                 <select
-                                    class="w-full cursor-pointer appearance-none rounded-md border bg-white px-2.5 py-1.5 pr-8 text-center leading-6 text-gray-600 transition hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                                    class="w-full cursor-pointer appearance-none rounded-none border bg-white px-2.5 py-1.5 pr-8 text-center leading-6 text-gray-600 transition hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                                     v-model="filters.period"
                                 >
                                     <option value="day">
@@ -142,7 +142,7 @@
                     <div class="flex items-center gap-1.5">
                         <x-admin::flat-picker.date class="!w-[140px]" ::allow-input="false">
                             <input
-                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                 v-model="filters.start"
                                 placeholder="@lang('admin::app.reporting.view.start-date')"
                             />
@@ -150,7 +150,7 @@
 
                         <x-admin::flat-picker.date class="!w-[140px]" ::allow-input="false">
                             <input
-                                class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                                class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                                 v-model="filters.end"
                                 placeholder="@lang('admin::app.reporting.view.end-date')"
                             />

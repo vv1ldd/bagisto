@@ -608,7 +608,8 @@ img.lazy {
     .label-info,
     .label-completed,
     .label-active {
-        @apply text-[12px] text-white font-semibold py-px px-1.5 max-w-max rounded-[35px];
+        @apply text-[12px] text-white font-black uppercase py-px px-2 max-w-max border-2 border-black;
+        box-shadow: 2px 2px 0px #000;
     }
 
     .label-pending {
@@ -637,28 +638,26 @@ img.lazy {
     }
 
     .primary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-bold rounded-2xl text-white px-8 py-4 max-w-max cursor-pointer transition-all active:scale-95;
+        @apply flex gap-x-1.5 items-center place-content-center font-black uppercase tracking-widest text-white px-8 py-4 max-w-max cursor-pointer transition-all border-4 border-black;
         background-color: #7C45F5;
-        box-shadow: 0 10px 30px rgba(124, 69, 245, 0.3);
+        box-shadow: var(--brutalist-shadow-sm);
     }
 
     .primary-button:hover {
         background-color: #6b35e4;
-        box-shadow: 0 15px 40px rgba(124, 69, 245, 0.45);
-        transform: translateY(-2px);
+        box-shadow: 8px 8px 0px #000;
+        transform: translate(-4px, -4px);
     }
 
     .secondary-button {
-        @apply flex gap-x-1.5 items-center place-content-center font-bold rounded-2xl px-8 py-4 max-w-max cursor-pointer transition-all;
-        background: rgba(255, 255, 255, 0.07);
-        color: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        @apply flex gap-x-1.5 items-center place-content-center font-black uppercase tracking-widest px-8 py-4 max-w-max cursor-pointer transition-all border-4 border-black bg-white text-black;
+        box-shadow: var(--brutalist-shadow-sm);
     }
 
     .secondary-button:hover {
-        background: rgba(124, 69, 245, 0.12);
-        border-color: rgba(124, 69, 245, 0.4);
-        color: #a78bfa;
+        @apply bg-zinc-100;
+        transform: translate(2px, 2px);
+        box-shadow: none;
     }
 
     .shimmer {

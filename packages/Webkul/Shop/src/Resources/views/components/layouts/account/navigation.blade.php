@@ -6,7 +6,7 @@ use Webkul\Customer\Models\CustomerTransactionProxy;
 $customer = auth()->guard('customer')->user();
 $menuIcons = [
     'account.profile'       => ['bg' => 'bg-zinc-100', 'color' => 'text-zinc-600', 'svg' => '<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>'],
-    'account.orders'        => ['bg' => 'bg-blue-50', 'color' => 'text-blue-600', 'svg' => '<path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>'],
+    'account.orders'        => ['bg' => 'bg-[#7C45F5]/10', 'color' => 'text-[#7C45F5]', 'svg' => '<path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>'],
     'account.downloadables' => ['bg' => 'bg-indigo-50', 'color' => 'text-indigo-600', 'svg' => '<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>'],
     'account.wishlist'      => ['bg' => 'bg-pink-50', 'color' => 'text-pink-600', 'svg' => '<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>'],
     'account.reviews'       => ['bg' => 'bg-amber-50', 'color' => 'text-amber-600', 'svg' => '<path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>'],
@@ -22,7 +22,7 @@ $menuIcons = [
     <div class="flex items-center gap-3 mb-1 px-4 pt-0">
         <button type="button" 
             onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
-            class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
+            class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
             <span class="icon-arrow-left text-xl font-black"></span>
         </button>
         <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">Личный кабинет</h1>
@@ -133,7 +133,7 @@ $menuIcons = [
                         $shadowColor = 'rgba(113,113,122,1)';
                         if ($subMenuItem->getKey() === 'account.wishlist') { $bgColor = 'bg-pink-500'; $shadowColor = 'rgba(236,72,153,1)'; }
                         elseif ($subMenuItem->getKey() === 'account.reviews') { $bgColor = 'bg-amber-500'; $shadowColor = 'rgba(245,158,11,1)'; }
-                        elseif ($subMenuItem->getKey() === 'account.orders') { $bgColor = 'bg-blue-500'; $shadowColor = 'rgba(59,130,246,1)'; }
+                        elseif ($subMenuItem->getKey() === 'account.orders') { $bgColor = 'bg-[#7C45F5]/100'; $shadowColor = 'rgba(59,130,246,1)'; }
                     @endphp
 
             <a href="{{ $subMenuItem->getUrl() }}" 

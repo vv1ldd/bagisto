@@ -332,7 +332,7 @@
                                 <!-- Spinner -->
                                 <template v-if="isLoading">
                                     <img
-                                        class="h-5 w-5 animate-spin text-blue-600"
+                                        class="h-5 w-5 animate-spin text-[#7C45F5]"
                                         src="{{ bagisto_asset('images/spinner.svg') }}"
                                     />
 
@@ -451,7 +451,7 @@
                                     <!-- Spinner -->
                                     <template v-if="isLoading">
                                         <img
-                                            class="h-5 w-5 animate-spin text-blue-600"
+                                            class="h-5 w-5 animate-spin text-[#7C45F5]"
                                             src="{{ bagisto_asset('images/spinner.svg') }}"
                                         />
 

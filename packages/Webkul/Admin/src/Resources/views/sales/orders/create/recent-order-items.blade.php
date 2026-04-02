@@ -111,7 +111,7 @@
                             <div class="mt-2 flex items-center gap-2.5">
                                 <a
                                     :href="'{{ route('admin.sales.orders.view', '') }}/' + item.order_id"
-                                    class="cursor-pointer text-sm text-blue-600 transition-all hover:underline"
+                                    class="cursor-pointer text-sm text-[#7C45F5] transition-all hover:underline"
                                     target="_blank"
                                 >
                                     @lang('admin::app.sales.orders.create.recent-order-items.view')

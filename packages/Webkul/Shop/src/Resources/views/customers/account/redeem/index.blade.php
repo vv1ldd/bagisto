@@ -22,11 +22,11 @@
                             'bg-[#7C45F5] text-white border-zinc-900 dark:border-white/40': currentStep >= step,
                             'bg-white dark:bg-zinc-950 text-zinc-400 dark:text-zinc-500 border-zinc-200 dark:border-white/10': currentStep < step
                         }" 
-                        class="w-10 h-10 rounded-2xl border-2 flex items-center justify-center font-black transition-all duration-300 shadow-sm text-lg">
+                        class="w-10 h-10 rounded-2xl border-2 flex items-center justify-center font-black transition-all duration-300 box-shadow-sm text-lg">
                         @{{ step }}
                     </div>
                     <div v-if="step < 3" 
-                        class="h-1 flex-1 mx-4 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                        class="h-1 flex-1 mx-4 rounded-none bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                         <div :style="'width: ' + (currentStep > step ? '100%' : '0%')" 
                              class="h-full bg-[#7C45F5] transition-all duration-500">
                         </div>
@@ -124,7 +124,7 @@
                     <button @click="activate" 
                             :disabled="loading"
                             class="w-full bg-[#00FF85] hover:bg-[#00E677] text-black font-black py-5 uppercase tracking-widest text-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3">
-                        <span v-if="loading" class="w-5 h-5 border-3 border-black border-t-transparent rounded-full animate-spin"></span>
+                        <span v-if="loading" class="w-5 h-5 border-3 border-black border-t-transparent rounded-none animate-spin"></span>
                         <span v-else>Активировать сейчас</span>
                     </button>
                 </div>
@@ -136,13 +136,13 @@
                 </div>
 
                 <!-- Patience Hint -->
-                <div v-if="loading && showPatienceHint" class="mt-4 p-4 bg-blue-50 dark:bg-blue-950/30 border-2 border-dashed border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest text-center animate-pulse">
+                <div v-if="loading && showPatienceHint" class="mt-4 p-4 bg-[#7C45F5]/10 dark:bg-blue-950/30 border-2 border-dashed border-blue-200 dark:border-[#7C45F5]/100/20 text-[#7C45F5] dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest text-center animate-pulse">
                     Активация может занять до минуты. Пожалуйста, не закрывайте страницу.
                 </div>
 
                 <!-- Success Screen -->
                 <div v-if="currentStep === 4" class="text-center py-8">
-                    <div class="w-20 h-20 bg-[#00FF94] border-4 border-zinc-900 dark:border-white/20 rounded-full mx-auto mb-6 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
+                    <div class="w-20 h-20 bg-[#00FF94] border-4 border-zinc-900 dark:border-white/20 rounded-none mx-auto mb-6 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(24,24,27,1)]">
                         <svg class="w-10 h-10 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                     </div>
                     <h2 class="text-3xl font-black uppercase mb-4 tracking-tighter dark:text-white">Успешно!</h2>

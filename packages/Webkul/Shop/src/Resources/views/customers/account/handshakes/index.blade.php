@@ -52,7 +52,7 @@
 
                                 <div class="flex items-center justify-between p-6 hover:bg-white/[0.02] transition-colors" id="handshake-{{ $handshake->id }}">
                                     <div class="flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-full bg-[#7C45F5]/20 flex items-center justify-center border border-[#7C45F5]/30">
+                                        <div class="w-12 h-12 rounded-none bg-[#7C45F5]/20 flex items-center justify-center border border-[#7C45F5]/30">
                                             <span class="text-xl">👤</span>
                                         </div>
                                         <div>
@@ -83,7 +83,7 @@
                                             @endif
                                         @elseif($handshake->status == 'processing')
                                             <div class="flex items-center gap-2">
-                                                <div class="w-3 h-3 border-2 border-[#7C45F5] border-t-transparent rounded-full animate-spin"></div>
+                                                <div class="w-3 h-3 border-2 border-[#7C45F5] border-t-transparent rounded-none animate-spin"></div>
                                                 <span class="text-xs font-bold uppercase tracking-widest text-[#7C45F5] animate-pulse">Блокчейн...</span>
                                             </div>
                                         @else

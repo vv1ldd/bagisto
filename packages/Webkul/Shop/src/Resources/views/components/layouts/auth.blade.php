@@ -13,8 +13,8 @@
     <div class="relative h-[100dvh] w-full flex flex-col items-center justify-center p-2 md:p-4 overflow-hidden">
         
         <!-- Background Decorative Elements (Subtle) -->
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#7C45F5]/5 blur-[120px] rounded-full"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#7C45F5]/2 blur-[120px] rounded-full"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#7C45F5]/5 blur-[120px] rounded-none"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#7C45F5]/2 blur-[120px] rounded-none"></div>
 
 <div class="relative w-full {{ $contentWidth }} h-full md:h-auto md:max-h-[96vh] bg-white border-zinc-900 md:border-4 md:shadow-[10px_10px_0px_0px_rgba(24,24,27,1)] md:rounded-[3xl] overflow-hidden animate-in fade-in zoom-in duration-300 flex flex-col md:translate-y-[-10px]">
             

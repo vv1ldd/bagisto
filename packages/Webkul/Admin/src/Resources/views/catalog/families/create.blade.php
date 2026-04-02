@@ -120,7 +120,7 @@
                     <div class="flex items-center gap-x-1">
                         <!-- Delete Group Button -->
                         <div
-                            class="cursor-pointer whitespace-nowrap rounded-md border-2 border-transparent px-3 py-1.5 font-semibold text-red-600 transition-all hover:bg-gray-100 dark:hover:bg-gray-950"
+                            class="cursor-pointer whitespace-nowrap rounded-none border-2 border-transparent px-3 py-1.5 font-semibold text-red-600 transition-all hover:bg-gray-100 dark:hover:bg-gray-950"
                             @click="deleteGroup"
                         >
                             @lang('admin::app.catalog.families.create.delete-group-btn')
@@ -171,7 +171,7 @@
                                     <div class="group flex items-center">
                                         <!-- Toggle -->
                                         <i
-                                            class="icon-sort-down cursor-pointer rounded-md text-xl transition-all hover:bg-gray-100 group-hover:text-gray-800 dark:hover:bg-gray-950 dark:group-hover:text-white"
+                                            class="icon-sort-down cursor-pointer rounded-none text-xl transition-all hover:bg-gray-100 group-hover:text-gray-800 dark:hover:bg-gray-950 dark:group-hover:text-white"
                                             @click="element.hide = ! element.hide"
                                         >
                                         </i>
@@ -179,7 +179,7 @@
                                         <!-- Group Name -->
                                         <div
                                             class="group_node group flex max-w-max cursor-pointer gap-1.5 rounded py-1.5 text-gray-600 transition-all group-hover:text-gray-800 dark:text-gray-300 dark:group-hover:text-white ltr:pr-1.5 rtl:pl-1.5"
-                                            :class="{'bg-blue-600 text-white group-hover:[&>*]:text-white': selectedGroup.id == element.id}"
+                                            :class="{'bg-[#7C45F5] text-white group-hover:[&>*]:text-white': selectedGroup.id == element.id}"
                                             @click.stop="groupSelected(element)"
                                         >
                                             <i class="icon-drag cursor-grab text-xl text-inherit transition-all group-hover:text-gray-800 dark:group-hover:text-white"></i>

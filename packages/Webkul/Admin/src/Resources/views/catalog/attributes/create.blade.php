@@ -176,7 +176,7 @@
 
                                         <label
                                             for="empty_option"
-                                            class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-md text-2xl peer-checked:text-blue-600"
+                                            class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-none text-2xl peer-checked:text-[#7C45F5]"
                                         >
                                         </label>
 
@@ -263,7 +263,7 @@
                                                     <!-- Swatch Color -->
                                                     <div v-if="swatchType == 'color'">
                                                         <div
-                                                            class="h-[25px] w-[25px] rounded-md border border-gray-200 dark:border-gray-800"
+                                                            class="h-[25px] w-[25px] rounded-none border border-gray-200 dark:border-gray-800"
                                                             :style="{ background: element.params.swatch_value }"
                                                         >
                                                         </div>
@@ -305,13 +305,13 @@
                                                 <!-- Action Buttons -->
                                                 <x-admin::table.td class="!px-0">
                                                     <span
-                                                        class="icon-edit cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
+                                                        class="icon-edit cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
                                                         @click="editModal(element)"
                                                     >
                                                     </span>
 
                                                     <span
-                                                        class="icon-delete cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
+                                                        class="icon-delete cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
                                                         @click="removeOption(element.id)"
                                                     >
                                                     </span>
@@ -380,7 +380,7 @@
                                     <input
                                         type="text"
                                         id="code"
-                                        class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                                        class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                                         name="code"
                                         v-bind="field"
                                         placeholder="{{ trans('admin::app.catalog.attributes.create.code') }}"

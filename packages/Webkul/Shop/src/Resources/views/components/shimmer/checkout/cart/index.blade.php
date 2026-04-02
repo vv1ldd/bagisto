@@ -74,7 +74,7 @@
             </div>
 
             {{-- CTA button --}}
-            <div class="shimmer h-12 w-full rounded-lg mt-2"></div>
+            <div class="shimmer h-12 w-full rounded-none mt-2"></div>
 
             {{-- Footnote --}}
             <div class="space-y-1.5">

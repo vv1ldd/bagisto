@@ -292,7 +292,7 @@
 
                         <p class="mb-6 w-full place-self-end text-left">
                             <a
-                                class="bg-white text-blue-600 underline"
+                                class="bg-white text-[#7C45F5] underline"
                                 href="https://bagisto.com/en/"
                             >
                                 @lang('installer::app.installer.index.bagisto')
@@ -301,7 +301,7 @@
                             <span>@lang('installer::app.installer.index.bagisto-info')</span>
 
                             <a
-                                class="bg-white text-blue-600 underline"
+                                class="bg-white text-[#7C45F5] underline"
                                 href="https://webkul.com/"
                             >
                                 @lang('installer::app.installer.index.webkul')
@@ -313,7 +313,7 @@
                 <!-- Right Side Components -->
                 <!-- Start -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'start'"
                 >
                     <x-installer::form
@@ -391,7 +391,7 @@
 
                 <!-- System Requirements -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'systemRequirements'"
                 >
                     <div class="flex items-center justify-between gap-2.5 border-b border-gray-300 px-4 py-3">
@@ -435,7 +435,7 @@
 
                     <div class="flex items-center justify-between px-4 py-2.5">
                         <div
-                            class="cursor-pointer text-base font-semibold text-blue-600"
+                            class="cursor-pointer text-base font-semibold text-[#7C45F5]"
                             role="button"
                             aria-label="@lang('installer::app.installer.index.back')"
                             tabindex="0"
@@ -445,7 +445,7 @@
                         </div>
 
                         <div
-                            class="{{ $hasRequirement ? 'opacity-50 cursor-not-allowed' : ''}} px-3 py-1.5 bg-blue-600 border border-blue-700 rounded-md text-gray-50 font-semibold cursor-pointer {{ $hasRequirement ?: 'hover:opacity-90' }}"
+                            class="{{ $hasRequirement ? 'opacity-50 cursor-not-allowed' : ''}} px-3 py-1.5 bg-[#7C45F5] border border-[#6b35e4] rounded-none text-gray-50 font-semibold cursor-pointer {{ $hasRequirement ?: 'hover:opacity-90' }}"
                             @click="nextForm"
                             tabindex="0"
                         >
@@ -456,7 +456,7 @@
 
                 <!-- Environment Configuration Database -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'envDatabase'"
                 >
                     <x-installer::form
@@ -617,7 +617,7 @@
 
                             <div class="flex items-center justify-between px-4 py-2.5">
                                 <div
-                                    class="cursor-pointer text-base font-semibold text-blue-600"
+                                    class="cursor-pointer text-base font-semibold text-[#7C45F5]"
                                     role="button"
                                     :aria-label="@lang('installer::app.installer.index.back')"
                                     tabindex="0"
@@ -640,7 +640,7 @@
 
                 <!-- Ready For Installation -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'readyForInstallation'"
                 >
                     <x-installer::form
@@ -688,7 +688,7 @@
 
                             <div class="flex items-center justify-between px-4 py-2.5">
                                 <div
-                                    class="cursor-pointer text-base font-semibold text-blue-600"
+                                    class="cursor-pointer text-base font-semibold text-[#7C45F5]"
                                     role="button"
                                     :aria-label="@lang('installer::app.installer.index.back')"
                                     tabindex="0"
@@ -699,7 +699,7 @@
 
                                 <button
                                     type="submit"
-                                    class="cursor-pointer rounded-md border border-blue-700 bg-blue-600 px-3 py-1.5 font-semibold text-gray-50 hover:opacity-90"
+                                    class="cursor-pointer rounded-none border border-[#6b35e4] bg-[#7C45F5] px-3 py-1.5 font-semibold text-gray-50 hover:opacity-90"
                                 >
                                     @lang('installer::app.installer.index.ready-for-installation.start-installation')
                                 </button>
@@ -710,7 +710,7 @@
 
                 <!-- Installation Processing -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'installProgress'"
                 >
                     <div class="flex items-center justify-between gap-2.5 border-b border-gray-300 px-4 py-3">
@@ -743,7 +743,7 @@
 
                 <!-- Environment Configuration .ENV -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border-[1px] border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'envConfiguration'"
                 >
                     <x-installer::form
@@ -998,7 +998,7 @@
 
                 <!-- Create Sample Products -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'createSampleProducts'"
                 >
                     <x-installer::form
@@ -1042,7 +1042,7 @@
                                     href="{{ Storage::disk('public')->url('data-transfer/samples/products.csv') }}"
                                     download="products.csv"
                                     id="source-sample-link"
-                                    class="mt-1 cursor-pointer text-right text-sm text-blue-600 transition-all hover:underline"
+                                    class="mt-1 cursor-pointer text-right text-sm text-[#7C45F5] transition-all hover:underline"
                                 >
                                     @lang('installer::app.installer.index.sample-products.download-sample')
                                 </a>
@@ -1064,7 +1064,7 @@
 
                 <!-- Create Administrator -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'createAdmin'"
                 >
                     <x-installer::form
@@ -1170,7 +1170,7 @@
 
                 <!-- Installation Completed -->
                 <div
-                    class="w-full max-w-[568px] rounded-lg border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
+                    class="w-full max-w-[568px] rounded-none border border-gray-300 bg-white shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)]"
                     v-if="currentStep == 'installationCompleted'"
                 >
                     <div class="flex items-center justify-between gap-2.5 border-b border-gray-300 px-4 py-3">
@@ -1181,7 +1181,7 @@
 
                     <div class="flex h-[484px] flex-col justify-center gap-4 overflow-y-auto border-b border-gray-300 px-7 py-4">
                         <div class="flex flex-col gap-4">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full border border-green-500">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-none border border-green-500">
                                 <span class="icon-tick text-xl font-semibold text-green-500"></span>
                             </div>
 
@@ -1198,14 +1198,14 @@
                                 <div class="flex items-center gap-4">
                                     <a
                                         href="{{ URL('/admin/login')}}"
-                                        class="cursor-pointer rounded-md border border-blue-700 bg-white px-3 py-1.5 font-semibold text-blue-600 hover:opacity-90"
+                                        class="cursor-pointer rounded-none border border-[#6b35e4] bg-white px-3 py-1.5 font-semibold text-[#7C45F5] hover:opacity-90"
                                     >
                                         @lang('installer::app.installer.index.installation-completed.admin-panel')
                                     </a>
 
                                     <a
                                         href="{{ URL('/')}}"
-                                        class="cursor-pointer rounded-md border border-blue-700 bg-blue-600 px-3 py-1.5 font-semibold text-gray-50 hover:opacity-90"
+                                        class="cursor-pointer rounded-none border border-[#6b35e4] bg-[#7C45F5] px-3 py-1.5 font-semibold text-gray-50 hover:opacity-90"
                                     >
                                         @lang('installer::app.installer.index.installation-completed.customer-panel')
                                     </a>
@@ -1217,14 +1217,14 @@
                     <div class="flex items-center justify-between px-4 py-2.5">
                         <a
                             href="https://forums.bagisto.com"
-                            class="cursor-pointer text-xs font-semibold text-blue-600"
+                            class="cursor-pointer text-xs font-semibold text-[#7C45F5]"
                         >
                             @lang('installer::app.installer.index.installation-completed.bagisto-forums')
                         </a>
 
                         <a
                             href="https://bagisto.com/en/extensions"
-                            class="cursor-pointer rounded-md border border-blue-700 bg-white px-3 py-1.5 font-semibold text-blue-600 hover:opacity-90"
+                            class="cursor-pointer rounded-none border border-[#6b35e4] bg-white px-3 py-1.5 font-semibold text-[#7C45F5] hover:opacity-90"
                         >
                             @lang('installer::app.installer.index.installation-completed.explore-bagisto-extensions')
                         </a>

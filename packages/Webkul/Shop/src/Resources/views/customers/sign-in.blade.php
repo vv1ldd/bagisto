@@ -86,7 +86,7 @@
 
                         <div class="flex flex-col items-center gap-6">
                             <div class="flex items-center gap-4">
-                                <div :class="['w-4 h-4 rounded-full animate-pulse border-2 border-zinc-900', qrStatus === 'error' ? 'bg-red-500' : 'bg-[#D6FF00]']"></div>
+                                <div :class="['w-4 h-4 rounded-none animate-pulse border-2 border-zinc-900', qrStatus === 'error' ? 'bg-red-500' : 'bg-[#D6FF00]']"></div>
                                 <p class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900 italic">
                                     <span v-if="qrStatus === 'authorized'">ПОДТВЕРДИТЕ НА ТЕЛЕФОНЕ</span>
                                     <span v-else-if="qrStatus === 'pending'">ОЖИДАНИЕ СКАНЕРА...</span>

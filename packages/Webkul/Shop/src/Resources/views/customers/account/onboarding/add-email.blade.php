@@ -38,7 +38,7 @@
                 <button 
                     type="submit"
                     id="submit-btn"
-                    class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl hover:bg-[#6b39d9] active:scale-[0.98] transition-all shadow-lg shadow-[#7C45F5]/20 flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
+                    class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl hover:bg-[#6b39d9] active:scale-[0.98] transition-all box-shadow shadow-[#7C45F5]/20 flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
                 >
                     <span id="btn-text">Отправить код подтверждения</span>
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -72,7 +72,7 @@
             errorMsg.classList.add('hidden');
             btn.disabled = true;
             const originalContent = btn.innerHTML;
-            btn.innerHTML = '<span class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></span>';
+            btn.innerHTML = '<span class="animate-spin rounded-none h-5 w-5 border-2 border-white border-t-transparent"></span>';
 
             fetch("{{ route('shop.customers.account.onboarding.add_email.post') }}", {
                 method: 'POST',

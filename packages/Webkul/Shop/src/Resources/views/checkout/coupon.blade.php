@@ -88,7 +88,7 @@
 
                                     <!-- Applied Coupon Information Container -->
                                     <div 
-                                        class="flex items-center gap-2 bg-[#7C45F5]/10 dark:bg-[#7C45F5]/20 px-3 py-1.5 text-[#7C45F5] border border-[#7C45F5]/10 dark:border-[#7C45F5]/30 rounded-full"
+                                        class="flex items-center gap-2 bg-[#7C45F5]/10 dark:bg-[#7C45F5]/20 px-3 py-1.5 text-[#7C45F5] border border-[#7C45F5]/10 dark:border-[#7C45F5]/30 rounded-none"
                                         v-if="cart.coupon_code"
                                     >
                                         <p 
@@ -99,7 +99,7 @@
                                         </p>
 
                                         <div 
-                                            class="flex h-5 w-5 cursor-pointer items-center justify-center bg-red-500 text-white transition-all hover:bg-red-600 active:scale-95 rounded-full"
+                                            class="flex h-5 w-5 cursor-pointer items-center justify-center bg-red-500 text-white transition-all hover:bg-red-600 active:scale-95 rounded-none"
                                             title="@lang('shop::app.checkout.coupon.remove')"
                                             @click="destroyCoupon"
                                         >

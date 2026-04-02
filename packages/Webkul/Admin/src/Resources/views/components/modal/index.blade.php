@@ -18,7 +18,7 @@
                 {{ $header }}
 
                 <span
-                    class="icon-cancel-1 cursor-pointer text-3xl hover:rounded-md hover:bg-gray-100 dark:hover:bg-gray-950"
+                    class="icon-cancel-1 cursor-pointer text-3xl hover:rounded-none hover:bg-gray-100 dark:hover:bg-gray-950"
                     @click="toggle"
                 >
                 </span>
@@ -85,7 +85,7 @@
                     v-if="isOpen"
                 >
                     <div class="flex min-h-screen items-end justify-center p-4 sm:items-center sm:p-0">
-                        <div class="box-shadow relative z-[999] w-screen max-w-[568px] rounded-lg bg-white dark:bg-gray-900 max-lg:mb-4 max-lg:mt-4 max-md:w-[90%]">
+                        <div class="box-shadow relative z-[999] w-screen max-w-[568px] rounded-none bg-white dark:bg-gray-900 max-lg:mb-4 max-lg:mt-4 max-md:w-[90%]">
                             <!-- Header Slot -->
                             <slot
                                 name="header"

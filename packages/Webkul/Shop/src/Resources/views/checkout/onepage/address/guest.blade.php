@@ -167,7 +167,7 @@
                                 type="submit"
                             >
                                 <span v-if="!isStoring">@lang('shop::app.checkout.onepage.address.proceed')</span>
-                                <span v-else class="animate-spin h-6 w-6 border-4 border-white border-t-transparent rounded-full mx-auto"></span>
+                                <span v-else class="animate-spin h-6 w-6 border-4 border-white border-t-transparent rounded-none mx-auto"></span>
                             </button>
                         </div>
                     </form>

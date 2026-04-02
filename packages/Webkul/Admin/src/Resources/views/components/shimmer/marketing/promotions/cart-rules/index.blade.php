@@ -9,21 +9,21 @@
             <div class="mb-4">
                 <div class="shimmer mb-1.5 h-3.5 w-16"></div>
 
-                <div class="h-[42px] w-full rounded-md border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
+                <div class="h-[42px] w-full rounded-none border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
             </div>
 
             <!-- Description -->
             <div class="mb-6">
                 <div class="shimmer mb-1.5 h-4 w-16"></div>
 
-                <div class="h-[61px] w-full rounded-md border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
+                <div class="h-[61px] w-full rounded-none border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
             </div>
 
             @for ($i = 1; $i < 3; $i++)
                 <div class="mb-5 last:!mb-8">
                     <div class="shimmer mb-1.5 h-3.5 w-16"></div>
 
-                    <div class="h-[42px] w-full rounded-md border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
+                    <div class="h-[42px] w-full rounded-none border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
                 </div>
             @endfor
         </div>

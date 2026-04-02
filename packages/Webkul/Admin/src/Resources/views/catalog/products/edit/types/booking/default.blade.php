@@ -229,7 +229,7 @@
                         </div>
 
                         <p
-                            class="text-right text-blue-600 transition-all cursor-pointer place-content-start hover:underline"
+                            class="text-right text-[#7C45F5] transition-all cursor-pointer place-content-start hover:underline"
                             v-if="! slots['many'][dayIndex]?.length"
                             @click="currentIndex=dayIndex;toggle()"
                         >

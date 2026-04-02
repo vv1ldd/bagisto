@@ -7,7 +7,7 @@
         <v-call-overlay></v-call-overlay>
         <div class="w-full max-w-[460px] bg-white border border-zinc-100 p-8 md:p-12 shadow-[0_24px_80px_rgba(124,69,245,0.08)] relative overflow-hidden">
             <!-- Background Decoration -->
-            <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>
+            <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#7C45F5]/5 blur-3xl rounded-none"></div>
             
             <div class="relative z-10">
                 <div class="mb-10 text-center">
@@ -47,7 +47,7 @@
 
                     <div class="pt-4">
                         <button type="submit"
-                            class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-sm shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98]">
+                            class="w-full h-16 bg-[#7C45F5] text-white font-black uppercase tracking-widest text-sm box-shadow shadow-[#7C45F5]/20 hover:bg-[#6b35e4] transition-all active:scale-[0.98]">
                             Пригласить в звонок
                         </button>
                     </div>

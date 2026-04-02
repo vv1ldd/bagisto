@@ -4,8 +4,8 @@
     <div class="mx-auto w-full px-4 py-8 max-sm:px-0 max-sm:py-0">
         <div class="bg-white p-10 flex flex-col items-center relative overflow-hidden w-full min-h-[calc(100vh-100px)] sm:min-h-0 sm:border-2 sm:border-zinc-100 shadow-[0_20px_50px_rgba(124,69,245,0.06)] !rounded-none">
             <!-- Design Accents -->
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5]/5 blur-3xl rounded-full"></div>
-            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#FF4D6D]/3 blur-3xl rounded-full"></div>
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5]/5 blur-3xl rounded-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-[#FF4D6D]/3 blur-3xl rounded-none"></div>
 
             <div class="w-full mx-auto z-10 relative flex flex-col items-center justify-center flex-1">
                 <!-- Icon/Brand Section -->

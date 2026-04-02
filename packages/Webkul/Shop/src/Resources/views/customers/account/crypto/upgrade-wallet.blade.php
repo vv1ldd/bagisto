@@ -7,11 +7,11 @@
             <span class="icon-arrow-left text-lg"></span> Назад
         </a>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-[#e2d9ff] overflow-hidden p-8 md:p-12 relative group hover:border-[#7C45F5] transition-all duration-500">
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5] opacity-[0.03] rounded-full blur-3xl group-hover:opacity-[0.06] transition-opacity pointer-events-none"></div>
+        <div class="bg-white rounded-3xl box-shadow-sm border border-[#e2d9ff] overflow-hidden p-8 md:p-12 relative group hover:border-[#7C45F5] transition-all duration-500">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-[#7C45F5] opacity-[0.03] rounded-none blur-3xl group-hover:opacity-[0.06] transition-opacity pointer-events-none"></div>
             
             <div class="relative z-10">
-                <div class="w-16 h-16 bg-[#f8f6ff] text-[#7C45F5] rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-sm">
+                <div class="w-16 h-16 bg-[#f8f6ff] text-[#7C45F5] rounded-2xl flex items-center justify-center text-3xl mb-6 box-shadow-sm">
                     🔐
                 </div>
 
@@ -39,7 +39,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-zinc-100">
-                        <button type="submit" class="w-full bg-[#1a0050] hover:bg-[#2a0080] text-white py-5 rounded-xl shadow-lg shadow-[#1a0050]/20 flex items-center justify-center gap-3 transition-all active:scale-[0.98] group/btn">
+                        <button type="submit" class="w-full bg-[#1a0050] hover:bg-[#2a0080] text-white py-5 rounded-xl box-shadow shadow-[#1a0050]/20 flex items-center justify-center gap-3 transition-all active:scale-[0.98] group/btn">
                             <span class="icon-security text-2xl group-hover/btn:scale-110 transition-transform"></span>
                             <span class="text-[14px] font-black uppercase tracking-[0.2em]">Подтвердить и зашифровать</span>
                         </button>
@@ -49,7 +49,7 @@
                 <div class="mt-8 pt-8 border-t border-zinc-100">
                     <div class="flex flex-col gap-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 bg-amber-50 text-amber-500 rounded-lg flex items-center justify-center text-sm shadow-sm">
+                            <div class="w-8 h-8 bg-amber-50 text-amber-500 rounded-none flex items-center justify-center text-sm box-shadow-sm">
                                 💡
                             </div>
                             <p class="text-[12px] text-zinc-500 font-bold uppercase tracking-tight">Потеряли секретную фразу?</p>

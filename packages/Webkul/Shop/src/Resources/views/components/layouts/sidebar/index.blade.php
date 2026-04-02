@@ -60,7 +60,7 @@
         <div class="px-5 py-4 relative z-10">
             @if ($customer)
                 <a href="{{ route('shop.customers.account.index') }}"
-                    class="flex items-center w-full bg-white/70 backdrop-blur-md  border border-white/40 p-4 shadow-sm transition-all active:scale-[0.98] group/card hover:bg-white/90">
+                    class="flex items-center w-full bg-white/70 backdrop-blur-md  border border-white/40 p-4 box-shadow-sm transition-all active:scale-[0.98] group/card hover:bg-white/90">
 
                     <div class="flex-grow overflow-hidden relative z-10">
                         <div class="flex items-center gap-2">
@@ -87,7 +87,7 @@
             @else
                 <div class="flex flex-col gap-3 py-2">
                     <a href="{{ route('shop.customer.session.index') }}"
-                        class="flex w-full items-center justify-center  bg-gradient-to-r from-[#7C45F5] to-[#7C45F5] px-6 py-4 text-center text-[15px] font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:shadow-purple-500/30 active:scale-[0.98]">
+                        class="flex w-full items-center justify-center  bg-gradient-to-r from-[#7C45F5] to-[#7C45F5] px-6 py-4 text-center text-[15px] font-bold text-white box-shadow shadow-purple-500/20 transition-all hover:shadow-purple-500/30 active:scale-[0.98]">
                         Войти / Регистрация
                     </a>
                 </div>

@@ -21,7 +21,7 @@
                 />
             @endif
 
-            <div class="box-shadow flex min-w-[300px] flex-col rounded-md bg-white dark:bg-gray-900">
+            <div class="box-shadow flex min-w-[300px] flex-col rounded-none bg-white dark:bg-gray-900">
                 <!-- Login Form -->
                 <x-admin::form :action="route('admin.reset_password.store')">
                     <div class="p-4">
@@ -100,7 +100,7 @@
                     <div class="flex items-center justify-between p-4">
                         <!-- Back Button-->
                         <a 
-                            class="cursor-pointer text-xs font-semibold leading-6 text-blue-600"
+                            class="cursor-pointer text-xs font-semibold leading-6 text-[#7C45F5]"
                             href="{{ route('admin.session.create') }}"
                         >
                             @lang('admin::app.users.reset-password.back-link-title')
@@ -108,7 +108,7 @@
 
                         <!-- Submit Button -->
                         <button 
-                            class="cursor-pointer rounded-md border border-blue-700 bg-blue-600 px-3.5 py-1.5 font-semibold text-gray-50">
+                            class="cursor-pointer rounded-none border border-[#6b35e4] bg-[#7C45F5] px-3.5 py-1.5 font-semibold text-gray-50">
                             @lang('admin::app.users.reset-password.submit-btn')
                         </button>
                     </div>
@@ -118,8 +118,8 @@
             <!-- Powered By -->
             <div class="text-sm font-normal">
                 @lang('admin::app.users.reset-password.powered-by-description', [
-                    'bagisto' => '<a class="text-blue-600 hover:underline" href="https://bagisto.com/en/">Bagisto</a>',
-                    'webkul' => '<a class="text-blue-600 hover:underline" href="https://webkul.com/">Webkul</a>',
+                    'bagisto' => '<a class="text-[#7C45F5] hover:underline" href="https://bagisto.com/en/">Bagisto</a>',
+                    'webkul' => '<a class="text-[#7C45F5] hover:underline" href="https://webkul.com/">Webkul</a>',
                 ])
             </div>
         </div>

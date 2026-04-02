@@ -153,7 +153,7 @@
                                                 <a
                                                     :href="element.file_url"
                                                     target="_blank"
-                                                    class="break-all text-blue-600 transition-all hover:underline"
+                                                    class="break-all text-[#7C45F5] transition-all hover:underline"
                                                 >
                                                     @{{ element.file_name }}
                                                 </a>
@@ -167,7 +167,7 @@
                                                 <a
                                                     :href="element.url"
                                                     target="_blank"
-                                                    class="break-all text-blue-600 transition-all hover:underline"
+                                                    class="break-all text-[#7C45F5] transition-all hover:underline"
                                                 >
                                                     @{{ element.url }}
                                                 </a>
@@ -183,7 +183,7 @@
                                                 <a
                                                     :href="element.sample_file_url"
                                                     target="_blank"
-                                                    class="break-all text-blue-600 transition-all hover:underline"
+                                                    class="break-all text-[#7C45F5] transition-all hover:underline"
                                                 >
                                                     @{{ element.sample_file_name }}
                                                 </a>
@@ -197,7 +197,7 @@
                                                 <a
                                                     :href="element.sample_url"
                                                     target="_blank"
-                                                    class="break-all text-blue-600 transition-all hover:underline"
+                                                    class="break-all text-[#7C45F5] transition-all hover:underline"
                                                 >
                                                     @{{ element.sample_url }}
                                                 </a>
@@ -222,7 +222,7 @@
                                     </p>
 
                                     <p
-                                        class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                        class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                                         @click="selectedLink = element; $refs.updateCreateLinkDrawer.open()"
                                     >
                                         @lang('admin::app.catalog.products.edit.types.downloadable.links.edit-btn')
@@ -397,7 +397,7 @@
 
                                             <input
                                                 type="file"
-                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-1 text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300"
+                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-1 text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300"
                                                 :class="[errors['file'] ? 'border border-red-600 hover:border-red-600' : '']"
                                                 name="file"
                                                 ref="file"
@@ -406,7 +406,7 @@
 
                                             <a
                                                 :href="selectedLink.sample_file_url"
-                                                class="break-all text-sm text-blue-600 transition-all hover:underline"
+                                                class="break-all text-sm text-[#7C45F5] transition-all hover:underline"
                                                 target="_blank"
                                                 v-if="selectedLink.file_url"
                                             >
@@ -486,7 +486,7 @@
                                             <input
                                                 type="file"
                                                 name="sample_file"
-                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-1 text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300"
+                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-1 text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300"
                                                 ref="sample_file"
                                                 @change="uploadFile('sample_file')"
                                             />
@@ -494,7 +494,7 @@
                                             <a
                                                 :href="selectedLink.sample_file_url"
                                                 target="_blank"
-                                                class="break-all text-sm text-blue-600 transition-all hover:underline"
+                                                class="break-all text-sm text-[#7C45F5] transition-all hover:underline"
                                                 v-if="selectedLink.sample_file_url"
                                             >
                                                 @{{ selectedLink.sample_file_name }}
@@ -632,7 +632,7 @@
                                                 <a
                                                     :href="element.file_url"
                                                     target="_blank"
-                                                    class="break-all text-blue-600 transition-all hover:underline"
+                                                    class="break-all text-[#7C45F5] transition-all hover:underline"
                                                 >
                                                     @{{ element.file_name }}
                                                 </a>
@@ -646,7 +646,7 @@
                                                 <a
                                                     :href="element.url"
                                                     target="_blank"
-                                                    class="break-all text-blue-600 transition-all hover:underline"
+                                                    class="break-all text-[#7C45F5] transition-all hover:underline"
                                                 >
                                                     @{{ element.url }}
                                                 </a>
@@ -667,7 +667,7 @@
                                     </p>
 
                                     <p
-                                        class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                        class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                                         @click="selectedSample = element; $refs.updateCreateSampleDrawer.open()"
                                     >
                                         @lang('admin::app.catalog.products.edit.types.downloadable.samples.edit-btn')
@@ -808,7 +808,7 @@
                                             <input
                                                 type="file"
                                                 name="file"
-                                                class="flex min-h-[39px] w-full rounded-md border px-3 py-1 text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300"
+                                                class="flex min-h-[39px] w-full rounded-none border px-3 py-1 text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300"
                                                 :class="[errors['file'] ? 'border border-red-600 hover:border-red-600' : '']"
                                                 ref="file"
                                                 @change="uploadFile('file')"
@@ -817,7 +817,7 @@
                                             <a
                                                 :href="selectedSample.sample_file_url"
                                                 target="_blank"
-                                                class="break-all text-sm text-blue-600 transition-all hover:underline"
+                                                class="break-all text-sm text-[#7C45F5] transition-all hover:underline"
                                                 v-if="selectedSample.file_url"
                                             >
                                                 @{{ selectedSample.file_name }}

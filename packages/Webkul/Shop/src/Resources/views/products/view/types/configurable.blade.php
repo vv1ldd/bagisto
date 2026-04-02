@@ -34,7 +34,7 @@
                         <v-field
                             as="select"
                             :name="'super_attribute[' + attribute.id + ']'"
-                            class="custom-select mb-3 block w-full cursor-pointer  border border-zinc-200 bg-white px-5 py-3 text-base text-zinc-500 focus:border-blue-500 focus:ring-blue-500"
+                            class="custom-select mb-3 block w-full cursor-pointer  border border-zinc-200 bg-white px-5 py-3 text-base text-zinc-500 focus:border-[#7C45F5]/100 focus:ring-[#7C45F5]/100"
                             :class="[errors['super_attribute[' + attribute.id + ']'] ? 'border border-red-500' : '']"
                             :id="'attribute_' + attribute.id"
                             v-model="attribute.selectedValue"

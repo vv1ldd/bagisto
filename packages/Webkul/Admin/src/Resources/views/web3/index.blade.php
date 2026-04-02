@@ -45,7 +45,7 @@
                     <div>
                         <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Адрес кошелька (Admin)</p>
                         @if($hotWalletAddress)
-                            <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-3">
+                            <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-none px-4 py-3">
                                 <code class="text-sm font-mono text-[#7C45F5] truncate flex-1" title="{{ $hotWalletAddress }}">{{ $hotWalletAddress }}</code>
                                 <button onclick="navigator.clipboard.writeText('{{ $hotWalletAddress }}'); this.textContent='Скопировано ✓'" class="text-xs font-bold text-gray-400 hover:text-[#7C45F5] transition-colors shrink-0">Скопировать</button>
                             </div>
@@ -54,7 +54,7 @@
                                 <span>Посмотреть на Arbiscan →</span>
                             </a>
                         @else
-                            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 rounded-lg px-5 py-4">
+                            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 rounded-none px-5 py-4">
                                 <p class="text-xs font-bold text-amber-700">⚠ Добавьте адрес в .env:</p>
                                 <code class="text-[11px] text-amber-600">ADMIN_ETH_PUBLIC_ADDRESS=0x...</code>
                             </div>
@@ -64,9 +64,9 @@
                     {{-- Balance Refresh Widget (AJAX via Alchemy) --}}
                     <div>
                         <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">ETH Баланс (Газ)</p>
-                        <div id="hw-balance-block" class="bg-gray-50 dark:bg-gray-800 rounded-lg px-5 py-4 flex items-center justify-between">
+                        <div id="hw-balance-block" class="bg-gray-50 dark:bg-gray-800 rounded-none px-5 py-4 flex items-center justify-between">
                             <span id="hw-balance" class="text-3xl font-black text-[#1a0050] dark:text-white">—</span>
-                            <button onclick="loadHotWalletBalance()" class="text-xs font-bold bg-[#7C45F5]/10 text-[#7C45F5] px-3 py-1.5 rounded-lg hover:bg-[#7C45F5]/20 transition-colors">Обновить</button>
+                            <button onclick="loadHotWalletBalance()" class="text-xs font-bold bg-[#7C45F5]/10 text-[#7C45F5] px-3 py-1.5 rounded-none hover:bg-[#7C45F5]/20 transition-colors">Обновить</button>
                         </div>
                     </div>
 
@@ -74,7 +74,7 @@
                     <div>
                         <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Смарт-Контракт NFT</p>
                         @if($contractAddress)
-                            <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-3">
+                            <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-none px-4 py-3">
                                 <code class="text-sm font-mono text-green-600 truncate flex-1" title="{{ $contractAddress }}">{{ $contractAddress }}</code>
                             </div>
                             <a href="https://arbiscan.io/address/{{ $contractAddress }}" target="_blank"
@@ -82,7 +82,7 @@
                                 <span>Посмотреть контракт на Arbiscan →</span>
                             </a>
                         @else
-                            <div class="bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-lg px-5 py-4">
+                            <div class="bg-red-50 dark:bg-red-900/20 border border-red-100 rounded-none px-5 py-4">
                                 <p class="text-xs font-bold text-red-600">✗ Не задан</p>
                                 <code class="text-[11px] text-red-500">MINT_CONTRACT_ADDRESS= в .env</code>
                             </div>
@@ -98,7 +98,7 @@
             <div class="bg-white rounded box-shadow dark:bg-gray-900 overflow-hidden h-full flex flex-col">
                 <div class="px-5 py-4 border-b dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                        <div class="w-8 h-8 rounded-none bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[#7C45F5] dark:text-blue-400">
                             <span class="icon-payment text-xl"></span>
                         </div>
                         <div>
@@ -121,7 +121,7 @@
                                 required 
                                 pattern="^0x[a-fA-F0-9]{40}$"
                                 placeholder="0x..." 
-                                class="w-full rounded-lg border bg-gray-50 px-4 py-2.5 text-sm text-gray-600 transition-all focus:border-blue-600 focus:ring-blue-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 font-mono"
+                                class="w-full rounded-none border bg-gray-50 px-4 py-2.5 text-sm text-gray-600 transition-all focus:border-[#7C45F5] focus:ring-[#7C45F5] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 font-mono"
                             >
                         </div>
 
@@ -137,7 +137,7 @@
                                     min="0.000001" 
                                     step="0.000001"
                                     placeholder="0.01" 
-                                    class="w-full rounded-lg border bg-gray-50 pl-4 pr-12 py-2.5 text-sm text-gray-600 transition-all focus:border-blue-600 focus:ring-blue-600 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                                    class="w-full rounded-none border bg-gray-50 pl-4 pr-12 py-2.5 text-sm text-gray-600 transition-all focus:border-[#7C45F5] focus:ring-[#7C45F5] dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                                 >
                                 <span class="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">ETH</span>
                             </div>
@@ -148,7 +148,7 @@
                             <button 
                                 type="submit" 
                                 id="sendTxBtn"
-                                class="w-full flex items-center justify-center gap-2 cursor-pointer rounded-lg border border-blue-700 bg-blue-600 px-4 py-3 font-semibold text-white transition-all hover:bg-blue-700 focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="w-full flex items-center justify-center gap-2 cursor-pointer rounded-none border border-[#6b35e4] bg-[#7C45F5] px-4 py-3 font-semibold text-white transition-all hover:bg-[#6b35e4] focus:ring-2 focus:ring-[#7C45F5] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span class="icon-payment text-lg gap-2"></span>
                                 <span>Подтвердить через Passkey</span>

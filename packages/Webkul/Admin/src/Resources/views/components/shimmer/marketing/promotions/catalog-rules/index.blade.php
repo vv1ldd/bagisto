@@ -8,13 +8,13 @@
             <div class="mb-4">
                 <div class="shimmer mb-1.5 h-3.5 w-16"></div>
                 
-                <div class="h-[42px] w-full rounded-md border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
+                <div class="h-[42px] w-full rounded-none border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
             </div>
 
             <div class="mb-1.5">
                 <div class="shimmer mb-1 h-4 w-16"></div>
                 
-                <div class="h-16 w-full rounded-md border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
+                <div class="h-16 w-full rounded-none border px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900"></div>
             </div>
         </div>
 
@@ -38,19 +38,19 @@
                 <div class="mb-5">
                     <div class="shimmer mb-1.5 h-4 w-20"></div>
 
-                    <div class="custom-select h-[39px] w-[321px] rounded-md border px-3 py-2.5 dark:border-gray-800"></div>
+                    <div class="custom-select h-[39px] w-[321px] rounded-none border px-3 py-2.5 dark:border-gray-800"></div>
                 </div>
 
                 <div class="mb-5">
                     <div class="shimmer mb-1.5 h-4 w-20"></div>
 
-                    <div class="h-[39px] w-[321px] rounded-md border px-3 py-2.5 dark:border-gray-800"></div>
+                    <div class="h-[39px] w-[321px] rounded-none border px-3 py-2.5 dark:border-gray-800"></div>
                 </div>
 
                 <div class="mb-5">
                     <div class="shimmer mb-1.5 h-4 w-20"></div>
 
-                    <div class="custom-select h-[39px] w-[321px] rounded-md border px-3 py-2.5 dark:border-gray-800"></div>
+                    <div class="custom-select h-[39px] w-[321px] rounded-none border px-3 py-2.5 dark:border-gray-800"></div>
                 </div>
             </div>
         </div>

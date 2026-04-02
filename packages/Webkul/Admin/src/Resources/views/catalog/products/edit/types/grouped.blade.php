@@ -111,7 +111,7 @@
                                         type="text"
                                         :name="'links[' + (element.id ? element.id : 'link_' + element.associated_product.id) + '][qty]'"
                                         v-model="element.qty"
-                                        class="min-h-[39px] w-[86px] rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                                        class="min-h-[39px] w-[86px] rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                                         :class="[errors['links[' + (element.id ? element.id : 'link_' + element.associated_product.id) + '][qty]'] ? 'border border-red-600 hover:border-red-600' : '']"
                                         rules="required|numeric|min_value:1"
                                         label="@lang('admin::app.catalog.products.edit.types.grouped.default-qty')"

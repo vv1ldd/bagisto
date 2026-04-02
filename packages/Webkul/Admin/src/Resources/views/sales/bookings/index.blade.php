@@ -28,14 +28,14 @@
                         <!-- Calendar Icon -->
                         <button
                             class="icon-calendar cursor-pointer p-1.5 text-xl"
-                            :class="{'bg-blue-700 text-white' : viewType === 'calendar'}"
+                            :class="{'bg-[#6b35e4] text-white' : viewType === 'calendar'}"
                             @click="viewType = 'calendar'"
                         ></button>
 
                         <!-- List Icon -->
                         <button
                             class="icon-list cursor-pointer p-1.5 text-xl"
-                            :class="{'bg-blue-700 text-white' : viewType === 'table'}"
+                            :class="{'bg-[#6b35e4] text-white' : viewType === 'table'}"
                             @click="viewType = 'table'"
                         ></button>
                     </div>

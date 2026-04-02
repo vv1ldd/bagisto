@@ -15,9 +15,9 @@
         <v-reporting-filters>
             <!-- Shimmer -->
             <div class="flex gap-1.5">
-                <div class="shimmer h-[39px] w-[132px] rounded-md"></div>
-                <div class="shimmer h-[39px] w-[140px] rounded-md"></div>
-                <div class="shimmer h-[39px] w-[140px] rounded-md"></div>
+                <div class="shimmer h-[39px] w-[132px] rounded-none"></div>
+                <div class="shimmer h-[39px] w-[140px] rounded-none"></div>
+                <div class="shimmer h-[39px] w-[140px] rounded-none"></div>
             </div>
         </v-reporting-filters>
     </div>
@@ -66,7 +66,7 @@
                         <x-slot:toggle>
                             <button
                                 type="button"
-                                class="inline-flex w-full cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-md border bg-white px-2.5 py-1.5 text-center text-sm leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                                class="inline-flex w-full cursor-pointer appearance-none items-center justify-between gap-x-2 rounded-none border bg-white px-2.5 py-1.5 text-center text-sm leading-6 text-gray-600 transition-all marker:shadow hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                             >
                                 @{{ channels.find(channel => channel.code == filters.channel).name }}
                                 
@@ -88,7 +88,7 @@
 
                 <x-admin::flat-picker.date class="!w-[140px]" ::allow-input="false">
                     <input
-                        class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                        class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                         v-model="filters.start"
                         placeholder="@lang('admin::app.reporting.customers.index.start-date')"
                     />
@@ -96,7 +96,7 @@
 
                 <x-admin::flat-picker.date class="!w-[140px]" ::allow-input="false">
                     <input
-                        class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                        class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                         v-model="filters.end"
                         placeholder="@lang('admin::app.reporting.customers.index.end-date')"
                     />

@@ -121,7 +121,7 @@
 
                                                                 <a
                                                                     href="{{ Storage::url($attribute['option_label']) }}"
-                                                                    class="text-blue-600 hover:underline"
+                                                                    class="text-[#7C45F5] hover:underline"
                                                                     download="{{ File::basename($attribute['option_label']) }}"
                                                                 >
                                                                     {{ File::basename($attribute['option_label']) }}
@@ -167,11 +167,11 @@
                                                         @endphp
 
                                                         @if ($review)
-                                                            <a href="{{ route('shop.customers.account.reviews.index') }}" class="text-blue-600 hover:underline">
+                                                            <a href="{{ route('shop.customers.account.reviews.index') }}" class="text-[#7C45F5] hover:underline">
                                                                 @lang('shop::app.customers.account.orders.view.information.view-review')
                                                             </a>
                                                         @else
-                                                            <a href="{{ route('shop.product_or_category.index', $product->url_key) }}#review-tab" class="text-blue-600 hover:underline">
+                                                            <a href="{{ route('shop.product_or_category.index', $product->url_key) }}#review-tab" class="text-[#7C45F5] hover:underline">
                                                                 @lang('shop::app.customers.account.orders.view.information.write-review')
                                                             </a>
                                                         @endif
@@ -575,11 +575,11 @@
                                                 @endphp
 
                                                 @if ($review)
-                                                    <a href="{{ route('shop.customers.account.reviews.index') }}" class="text-blue-600 hover:underline text-[13px] font-medium leading-none">
+                                                    <a href="{{ route('shop.customers.account.reviews.index') }}" class="text-[#7C45F5] hover:underline text-[13px] font-medium leading-none">
                                                         @lang('shop::app.customers.account.orders.view.information.view-review')
                                                     </a>
                                                 @else
-                                                    <a href="{{ route('shop.product_or_category.index', $product->url_key) }}#review-tab" class="text-blue-600 hover:underline text-[13px] font-medium leading-none">
+                                                    <a href="{{ route('shop.product_or_category.index', $product->url_key) }}#review-tab" class="text-[#7C45F5] hover:underline text-[13px] font-medium leading-none">
                                                         @lang('shop::app.customers.account.orders.view.information.write-review')
                                                     </a>
                                                 @endif

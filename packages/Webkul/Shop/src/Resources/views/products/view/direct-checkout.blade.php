@@ -8,7 +8,7 @@
 
                         <div v-else-if="cart" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <!-- Unified Checkout Block -->
-                            <div class="bg-white/50 backdrop-blur-sm border border-zinc-100  p-8 shadow-sm">
+                            <div class="bg-white/50 backdrop-blur-sm border border-zinc-100  p-8 box-shadow-sm">
                                 <h3 class="text-xl font-black text-zinc-900 uppercase tracking-tight mb-6">Данные и оплата</h3>
 
                                 <!-- Address Selection -->
@@ -35,7 +35,7 @@
                             </div>
 
                             <!-- Success State -->
-                            <div v-if="currentStep == 'success'" class="bg-white/50 backdrop-blur-sm border border-zinc-100  p-10 shadow-sm text-center">
+                            <div v-if="currentStep == 'success'" class="bg-white/50 backdrop-blur-sm border border-zinc-100  p-10 box-shadow-sm text-center">
                                 <div class="h-20 w-20 bg-green-100 text-green-600  flex items-center justify-center mx-auto mb-6">
                                     <span class="icon-done text-4xl"></span>
                                 </div>

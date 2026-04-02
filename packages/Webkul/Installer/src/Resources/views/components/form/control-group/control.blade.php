@@ -19,7 +19,7 @@
                 name="{{ $name }}"
                 v-bind="field"
                 :class="[errors['{{ $name }}'] ? 'border border-red-600 hover:border-red-600' : '']"
-                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'w-full appearance-none rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400']) }}
+                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'w-full appearance-none rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400']) }}
             >
         </v-field>
 
@@ -35,7 +35,7 @@
                 name="{{ $name }}"
                 v-bind="field"
                 :class="[errors['{{ $name }}'] ? 'border border-red-500' : '']"
-                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'custom-select w-full rounded-md border bg-white px-3 py-2.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400']) }}
+                {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label'])->merge(['class' => 'custom-select w-full rounded-none border bg-white px-3 py-2.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400']) }}
             >
                 {{ $slot }}
             </select>
@@ -67,7 +67,7 @@
         </v-field>
 
         <label
-            class="icon-checkbox-normal peer-checked:icon-checkbox-active cursor-pointer text-2xl peer-checked:text-blue-600"
+            class="icon-checkbox-normal peer-checked:icon-checkbox-active cursor-pointer text-2xl peer-checked:text-[#7C45F5]"
             {{ $attributes->except(['value', ':value', 'v-model', 'rules', ':rules', 'label', ':label']) }}
         >
         </label>

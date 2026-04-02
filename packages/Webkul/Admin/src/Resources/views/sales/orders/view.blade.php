@@ -180,7 +180,7 @@
 
                                                             <a
                                                                 href="{{ Storage::url($attribute['option_label']) }}"
-                                                                class="text-blue-600 hover:underline"
+                                                                class="text-[#7C45F5] hover:underline"
                                                                 download="{{ File::basename($attribute['option_label']) }}"
                                                             >
                                                                 {{ File::basename($attribute['option_label']) }}
@@ -511,7 +511,7 @@
                                     >
 
                                     <span
-                                        class="text-2xl rounded-md cursor-pointer icon-uncheckbox peer-checked:icon-checked peer-checked:text-blue-600"
+                                        class="text-2xl rounded-none cursor-pointer icon-uncheckbox peer-checked:icon-checked peer-checked:text-[#7C45F5]"
                                         role="button"
                                         tabindex="0"
                                     >
@@ -548,11 +548,11 @@
                             <!-- Notes List Title and Time -->
                             <p class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                                 @if ($comment->customer_notified)
-                                    <span class="text-2xl text-blue-600 bg-blue-100 rounded-full icon-done h-fit"></span>
+                                    <span class="text-2xl text-[#7C45F5] bg-blue-100 rounded-none icon-done h-fit"></span>
 
                                     @lang('admin::app.sales.orders.view.customer-notified', ['date' => core()->formatDate($comment->created_at, 'Y-m-d H:i:s a')])
                                 @else
-                                    <span class="text-2xl text-red-600 bg-red-100 rounded-full icon-cancel-1 h-fit"></span>
+                                    <span class="text-2xl text-red-600 bg-red-100 rounded-none icon-cancel-1 h-fit"></span>
 
                                     @lang('admin::app.sales.orders.view.customer-not-notified', ['date' => core()->formatDate($comment->created_at, 'Y-m-d H:i:s a')])
                                 @endif
@@ -804,14 +804,14 @@
                                 <div class="flex gap-2.5">
                                     <a
                                         href="{{ route('admin.sales.invoices.view', $invoice->id) }}"
-                                        class="text-sm text-blue-600 transition-all hover:underline"
+                                        class="text-sm text-[#7C45F5] transition-all hover:underline"
                                     >
                                         @lang('admin::app.sales.orders.view.view')
                                     </a>
 
                                     <a
                                         href="{{ route('admin.sales.invoices.print', $invoice->id) }}"
-                                        class="text-sm text-blue-600 transition-all hover:underline"
+                                        class="text-sm text-[#7C45F5] transition-all hover:underline"
                                     >
                                         @lang('admin::app.sales.orders.view.download-pdf')
                                     </a>
@@ -855,7 +855,7 @@
                                 <div class="flex gap-2.5">
                                     <a
                                         href="{{ route('admin.sales.shipments.view', $shipment->id) }}"
-                                        class="text-sm text-blue-600 transition-all hover:underline"
+                                        class="text-sm text-[#7C45F5] transition-all hover:underline"
                                     >
                                         @lang('admin::app.sales.orders.view.view')
                                     </a>
@@ -916,7 +916,7 @@
                                 <div class="flex gap-2.5">
                                     <a
                                         href="{{ route('admin.sales.refunds.view', $refund->id) }}"
-                                        class="text-sm text-blue-600 transition-all hover:underline"
+                                        class="text-sm text-[#7C45F5] transition-all hover:underline"
                                     >
                                         @lang('admin::app.sales.orders.view.view')
                                     </a>

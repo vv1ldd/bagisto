@@ -66,7 +66,7 @@
                                                 '!border-red-500': usernameError,
                                                 '!border-green-500': !usernameError && isEditing && username.length >= 3 && isAvailable
                                             }">
-                                            <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-full"></span>
+                                            <span class="w-1.5 h-1.5 bg-[#7C45F5] rounded-none"></span>
                                             
                                             <div class="flex flex-col min-w-[120px]">
                                                 <div class="flex items-center gap-2">
@@ -184,7 +184,7 @@
                                 $statusColors = [
                                     'completed'  => 'text-emerald-500 bg-emerald-50 border-emerald-100',
                                     'pending'    => 'text-amber-500 bg-amber-50 border-amber-100',
-                                    'processing' => 'text-blue-500 bg-blue-50 border-blue-100',
+                                    'processing' => 'text-[#7C45F5]/100 bg-[#7C45F5]/10 border-blue-100',
                                     'canceled'   => 'text-red-500 bg-red-50 border-red-100',
                                     'failed'     => 'text-red-500 bg-red-50 border-red-100',
                                 ];
@@ -245,7 +245,7 @@
                                             {{ $subtitle }}
                                         </div>
                                         <div class="text-[8px] text-zinc-500 font-black uppercase tracking-widest mt-2 flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 bg-zinc-900 rounded-full"></span>
+                                            <span class="w-1.5 h-1.5 bg-zinc-900 rounded-none"></span>
                                             {{ $transaction->created_at->format('d.m.Y — H:i') }}
                                         </div>
 
@@ -259,7 +259,7 @@
                                                     target="_blank" 
                                                     onclick="event.stopPropagation()"
                                                     class="inline-flex items-center gap-1.5 px-2 py-1 bg-zinc-900 border-2 border-zinc-900 text-[#D6FF00] text-[8px] font-black uppercase tracking-widest hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all shadow-[2px_2px_0px_0px_rgba(214,255,0,1)] active:scale-95">
-                                                    <span class="w-1 h-1 bg-[#D6FF00] rounded-full animate-pulse"></span>
+                                                    <span class="w-1 h-1 bg-[#D6FF00] rounded-none animate-pulse"></span>
                                                     Blockchain: {{ substr($txHash, 0, 6) }}...{{ substr($txHash, -4) }}
                                                     <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -292,7 +292,7 @@
                     <div class="flex flex-col items-center justify-center py-32 text-zinc-500 px-10 text-center relative overflow-hidden">
                         <div class="absolute inset-0 bg-white/5 opacity-10"></div>
                         <div class="relative z-10">
-                            <div class="w-24 h-24 bg-white/5 border border-white/10 flex items-center justify-center mb-8 shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-all duration-500 mx-auto backdrop-blur-md">
+                            <div class="w-24 h-24 bg-white/5 border border-white/10 flex items-center justify-center mb-8 box-shadow-sm text-4xl rounded-[2.5rem] rotate-3 hover:rotate-0 transition-all duration-500 mx-auto backdrop-blur-md">
                                 📭
                             </div>
                             <h3 class="text-[18px] font-black text-white uppercase tracking-tighter italic mb-2">История пуста</h3>
@@ -516,7 +516,7 @@
                     <button type="button" onclick="switchStep('organizations')" class="text-[11px] font-black text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors">Отмена</button>
                     <button type="submit" id="add-bank-submit-btn" class="bg-[#D6FF00] border-3 border-zinc-900 px-10 py-4 text-[12px] font-black text-zinc-900 uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all flex items-center gap-2">
                         <span id="add-bank-btn-text">Добавить счет</span>
-                        <div id="add-bank-btn-spinner" class="hidden w-4 h-4 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin"></div>
+                        <div id="add-bank-btn-spinner" class="hidden w-4 h-4 border-2 border-zinc-900 border-t-transparent rounded-none animate-spin"></div>
                     </button>
                 </div>
             </form>
@@ -931,8 +931,8 @@
 
         {{-- Step: B2C Details --}}
         <div id="step-b2c-details" class="hidden space-y-4">
-            <div class="bg-white shadow-sm border border-zinc-100 p-5 flex flex-col items-center text-center">
-                <div class="w-16 h-16 bg-blue-50 flex items-center justify-center mb-6 text-3xl shadow-inner">🏦</div>
+            <div class="bg-white box-shadow-sm border border-zinc-100 p-5 flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-[#7C45F5]/10 flex items-center justify-center mb-6 text-3xl shadow-inner">🏦</div>
                 <h3 class="text-[18px] font-black text-zinc-900 mb-2 tracking-tight">Реквизиты для перевода</h3>
                 <p class="text-[13px] text-zinc-400 mb-8 max-w-[280px] leading-relaxed">
                     Для пополнения баланса переведите средства по следующим реквизитам. Обязательно укажите ваш ID в
@@ -957,7 +957,7 @@
                             class="text-[14px] font-mono text-zinc-900 font-black mt-0.5 flex justify-between items-center group">
                             <span>40802810800000109919</span>
                             <button type="button" onclick="copyAddr('40802810800000109919', this)"
-                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
+                                class="text-xs text-[#7C45F5] font-bold px-2 py-1 bg-[#7C45F5]/10 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
                         </span>
                     </div>
                     <div class="flex flex-col gap-1">
@@ -966,7 +966,7 @@
                             class="text-[14px] font-mono text-zinc-900 font-black mt-0.5 flex justify-between items-center group">
                             <span>044525974</span>
                             <button type="button" onclick="copyAddr('044525974', this)"
-                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
+                                class="text-xs text-[#7C45F5] font-bold px-2 py-1 bg-[#7C45F5]/10 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100">Копировать</button>
                         </span>
                     </div>
                     <div class="flex flex-col gap-1">
@@ -982,7 +982,7 @@
                                 {{ now()->format('d.m.Y') }}. Без НДС.</span>
                             <button type="button"
                                 onclick="copyAddr('Оплата по договору № {{ auth()->guard('customer')->id() }} от {{ now()->format('d.m.Y') }}. Без НДС.', this)"
-                                class="text-xs text-blue-600 font-bold px-2 py-1 bg-blue-50 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100 shrink-0">Копировать</button>
+                                class="text-xs text-[#7C45F5] font-bold px-2 py-1 bg-[#7C45F5]/10 hover:bg-blue-100 rounded transition md:opacity-0 md:group-hover:opacity-100 shrink-0">Копировать</button>
                         </span>
                     </div>
                 </div>
@@ -1005,11 +1005,11 @@
                     $platformAddress = config("crypto.verification_addresses.{$address->network}");
                 @endphp
                 <div id="details-wallet-{{ $address->id }}" class="wallet-details-view hidden">
-                    <div class="bg-white  shadow-sm overflow-hidden p-5 flex flex-col items-center">
+                    <div class="bg-white  box-shadow-sm overflow-hidden p-5 flex flex-col items-center">
 
                         {{-- QR Code Section --}}
                         <div class="relative inline-block mt-4 mb-2">
-                            <div class="border border-zinc-100  p-6 pb-8 bg-white shadow-sm inline-block">
+                            <div class="border border-zinc-100  p-6 pb-8 bg-white box-shadow-sm inline-block">
                                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data={{ urlencode($platformAddress) }}"
                                     alt="QR Code" class="w-56 h-56 mx-auto" />
                             </div>
@@ -1067,7 +1067,7 @@
 
         {{-- Step: Send (New) --}}
         <div id="step-send" class="hidden">
-            <div class="bg-white border border-zinc-100 shadow-sm p-6 space-y-8">
+            <div class="bg-white border border-zinc-100 box-shadow-sm p-6 space-y-8">
                 <div class="flex items-center gap-4 border-b border-zinc-50 pb-8">
                     <div id="send-coin-icon" class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">📤</div>
                     <div>
@@ -1120,7 +1120,7 @@
 
         {{-- Step: Add Wallet --}}
         <div id="step-add-wallet" class="hidden space-y-8">
-            <div class="bg-white border border-zinc-100 shadow-sm p-5 md:p-6">
+            <div class="bg-white border border-zinc-100 box-shadow-sm p-5 md:p-6">
                 {{-- Coin Selection --}}
                 <div class="space-y-4">
                     <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Выберите актив
@@ -1164,7 +1164,7 @@
                             placeholder="Введите адрес кошелька..."
                             class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[14px] text-zinc-900 placeholder:text-zinc-200 focus:bg-white focus:border-[#7C45F5] focus:ring-1 focus:ring-violet-100 transition-all">
                         <div class="absolute right-5 top-1/2 -translate-y-1/2 flex gap-2">
-                            <div class="w-2 h-2 rounded-full bg-zinc-200" id="addr-valid-dot"></div>
+                            <div class="w-2 h-2 rounded-none bg-zinc-200" id="addr-valid-dot"></div>
                         </div>
                     </div>
 
@@ -2182,7 +2182,7 @@
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const div = document.createElement('div');
-                                        div.className = 'p-2 hover:bg-blue-50 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
+                                        div.className = 'p-2 hover:bg-[#7C45F5]/10 cursor-pointer border-b border-zinc-100 last:border-0 transition-colors';
 
                                         div.innerHTML = `
                                                                                             <div class="font-bold text-zinc-900 text-[13px]">${item.bank_name || item.name}</div>

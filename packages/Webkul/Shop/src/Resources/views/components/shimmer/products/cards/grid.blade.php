@@ -1,7 +1,7 @@
 @props(['count' => 0])
 
 @for ($i = 0;  $i < $count; $i++)
-    <div class="group w-full border border-white/40 bg-white/40 backdrop-blur-3xl shadow-sm relative flex flex-col overflow-hidden isolate {{ $attributes["class"] }}" style="isolation: isolate;">
+    <div class="group w-full border border-white/40 bg-white/40 backdrop-blur-3xl box-shadow-sm relative flex flex-col overflow-hidden isolate {{ $attributes["class"] }}" style="isolation: isolate;">
         <!-- Image Area Shimmer -->
         <div class="relative aspect-square w-full overflow-hidden bg-zinc-100 p-2 shimmer">
             <div class="after:content-[' '] relative after:block after:pb-[calc(100%+9px)]"></div>

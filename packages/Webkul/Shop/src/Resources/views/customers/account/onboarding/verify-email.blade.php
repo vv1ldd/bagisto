@@ -45,13 +45,13 @@
                                         charEl.textContent = val[i];
                                         charEl.classList.remove('text-zinc-300');
                                         charEl.classList.add('text-[#1a0050]');
-                                        cellEl.classList.add('border-[#7C45F5]', 'bg-white', 'shadow-sm');
+                                        cellEl.classList.add('border-[#7C45F5]', 'bg-white', 'box-shadow-sm');
                                         cellEl.classList.remove('border-zinc-100', 'bg-zinc-50');
                                     } else {
                                         charEl.textContent = '_';
                                         charEl.classList.add('text-zinc-300');
                                         charEl.classList.remove('text-[#1a0050]');
-                                        cellEl.classList.remove('border-[#7C45F5]', 'bg-white', 'shadow-sm');
+                                        cellEl.classList.remove('border-[#7C45F5]', 'bg-white', 'box-shadow-sm');
                                         cellEl.classList.add('border-zinc-100', 'bg-zinc-50');
                                     }
                                 }
@@ -68,7 +68,7 @@
                 <button 
                     type="submit"
                     id="submit-btn"
-                    class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl hover:bg-[#6b39d9] active:scale-[0.98] transition-all shadow-lg shadow-[#7C45F5]/20 flex items-center justify-center gap-2"
+                    class="w-full py-4 bg-[#7C45F5] text-white font-black rounded-2xl hover:bg-[#6b39d9] active:scale-[0.98] transition-all box-shadow shadow-[#7C45F5]/20 flex items-center justify-center gap-2"
                 >
                     <span>Подтвердить</span>
                 </button>
@@ -103,7 +103,7 @@
 
             errorMsg.classList.add('hidden');
             btn.disabled = true;
-            btn.innerHTML = '<span class="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></span>';
+            btn.innerHTML = '<span class="animate-spin rounded-none h-5 w-5 border-2 border-white border-t-transparent"></span>';
 
             fetch("{{ route('shop.customers.account.onboarding.verify_email.post') }}", {
                 method: 'POST',

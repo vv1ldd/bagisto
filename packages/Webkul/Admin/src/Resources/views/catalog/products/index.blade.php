@@ -75,10 +75,10 @@
                                 >
 
                                 <span
-                                    class="icon-uncheckbox cursor-pointer rounded-md text-2xl"
+                                    class="icon-uncheckbox cursor-pointer rounded-none text-2xl"
                                     :class="[
-                                        applied.massActions.meta.mode === 'all' ? 'peer-checked:icon-checked peer-checked:text-blue-600' : (
-                                            applied.massActions.meta.mode === 'partial' ? 'peer-checked:icon-checkbox-partial peer-checked:text-blue-600' : ''
+                                        applied.massActions.meta.mode === 'all' ? 'peer-checked:icon-checked peer-checked:text-[#7C45F5]' : (
+                                            applied.massActions.meta.mode === 'partial' ? 'peer-checked:icon-checkbox-partial peer-checked:text-[#7C45F5]' : ''
                                         ),
                                     ]"
                                 >
@@ -148,7 +148,7 @@
                                     >
 
                                     <label
-                                        class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-md text-2xl peer-checked:text-blue-600"
+                                        class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-none text-2xl peer-checked:text-[#7C45F5]"
                                         :for="`mass_action_select_record_${record.product_id}`"
                                     ></label>
                                 @endif
@@ -160,7 +160,7 @@
                                             :src='record.base_image'
                                         />
 
-                                        <span class="absolute -bottom-1 -right-1 rounded-full bg-darkPink px-1 text-xs font-bold leading-normal text-white">
+                                        <span class="absolute -bottom-1 -right-1 rounded-none bg-darkPink px-1 text-xs font-bold leading-normal text-white">
                                             @{{ record.images_count }}
                                         </span>
                                     </template>
@@ -241,7 +241,7 @@
 
                             <div class="flex items-center gap-1">
                                 <span
-                                    class="cursor-pointer rounded-md p-1.5 text-xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800"
+                                    class="cursor-pointer rounded-none p-1.5 text-xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800"
                                     :class="action.icon"
                                     v-text="! action.icon ? action.title : ''"
                                     v-for="action in record.actions"
@@ -267,7 +267,7 @@
                                 >
 
                                 <label
-                                    class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-md text-2xl peer-checked:text-blue-600"
+                                    class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-none text-2xl peer-checked:text-[#7C45F5]"
                                     :for="`mass_action_select_record_${record.product_id}`"
                                 ></label>
                             @endif
@@ -296,7 +296,7 @@
                                         :src='record.base_image'
                                     />
 
-                                    <span class="absolute bottom-px rounded-full bg-darkPink px-1.5 text-xs font-bold leading-normal text-white ltr:left-px rtl:right-px">
+                                    <span class="absolute bottom-px rounded-none bg-darkPink px-1.5 text-xs font-bold leading-normal text-white ltr:left-px rtl:right-px">
                                         @{{ record.images_count }}
                                     </span>
                                 </template>
@@ -371,7 +371,7 @@
                                 v-if="available.actions.length"
                             >
                                 <span
-                                    class="cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
+                                    class="cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 max-sm:place-self-center"
                                     :class="action.icon"
                                     v-text="! action.icon ? action.title : ''"
                                     v-for="action in record.actions"
@@ -513,7 +513,7 @@
                                         >
                                         </label>
 
-                                        <div class="flex min-h-[38px] flex-wrap gap-1 rounded-md border p-1.5 dark:border-gray-800">
+                                        <div class="flex min-h-[38px] flex-wrap gap-1 rounded-none border p-1.5 dark:border-gray-800">
                                             <p
                                                 class="flex items-center rounded bg-gray-600 px-2 py-1 font-semibold text-white"
                                                 v-for="option in attribute.options"

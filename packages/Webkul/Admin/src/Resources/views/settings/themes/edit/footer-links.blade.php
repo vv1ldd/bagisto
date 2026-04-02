@@ -84,7 +84,7 @@
                                         <a
                                             :href="link.url"
                                             target="_blank"
-                                            class="text-blue-600 transition-all hover:underline"
+                                            class="text-[#7C45F5] transition-all hover:underline"
                                         >
                                             @{{ link.url }}
                                         </a>
@@ -114,7 +114,7 @@
                             <div class="grid place-content-start gap-1 text-right">
                                 <div class="flex items-center gap-x-5">
                                     <p 
-                                        class="cursor-pointer text-blue-600 transition-all hover:underline"
+                                        class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                                         @click="edit(link, key)"
                                     > 
                                         @lang('admin::app.settings.themes.edit.edit')

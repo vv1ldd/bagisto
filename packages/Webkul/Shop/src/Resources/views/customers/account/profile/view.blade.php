@@ -191,7 +191,7 @@
                         <div class="wallet-item">
                             <div class="flex items-center gap-2">
                                 <span
-                                    class="network-tag {{ $address->network === 'bitcoin' ? 'text-orange-500' : 'text-blue-500' }}">
+                                    class="network-tag {{ $address->network === 'bitcoin' ? 'text-orange-500' : 'text-[#7C45F5]/100' }}">
                                     {{ $address->network }}
                                 </span>
                                 

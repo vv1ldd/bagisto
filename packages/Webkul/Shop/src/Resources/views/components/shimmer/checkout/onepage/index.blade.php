@@ -1,6 +1,6 @@
 <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 items-start">
     <div class="space-y-6">
-        <div class="bg-white p-6 sm:p-8 shadow-sm overflow-hidden flex flex-col gap-10">
+        <div class="bg-white p-6 sm:p-8 box-shadow-sm overflow-hidden flex flex-col gap-10">
             <!-- Billing Address Shimmer -->
             <div>
                 <!-- Header -->
@@ -20,7 +20,7 @@
 
     <!-- Sidebar Column (RIGHT) -->
     <div class="hidden lg:block sticky top-8 space-y-4">
-        <div class="bg-white p-6 sm:p-8 shadow-sm">
+        <div class="bg-white p-6 sm:p-8 box-shadow-sm">
             <x-shop::shimmer.checkout.onepage.cart-summary />
         </div>
     </div>

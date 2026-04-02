@@ -93,7 +93,7 @@
 <!-- Compact Accepted Methods -->
 <div class="mt-8 p-6 bg-[#18181b] border-[3px] border-zinc-900 flex flex-col gap-4 shadow-[4px_4px_0px_0px_rgba(124,69,245,0.4)]">
     <div class="flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+        <div class="w-2 h-2 rounded-none bg-green-500 animate-pulse"></div>
         <p class="text-[9px] font-black uppercase tracking-[0.15em] text-white">Secure payment</p>
     </div>
     <div class="flex flex-wrap gap-2">

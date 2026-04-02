@@ -16,17 +16,17 @@
                 flash.type === 'success' ? 'border-[#7C45F5]' : '',
                 flash.type === 'error' ? 'border-red-500' : '',
                 flash.type === 'warning' ? 'border-amber-500' : '',
-                flash.type === 'info' ? 'border-blue-500' : '',
+                flash.type === 'info' ? 'border-[#7C45F5]/100' : '',
             ]"
         >
             <div class="flex items-center gap-3">
                 <div 
-                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-none"
                     :class="[
                         flash.type === 'success' ? 'bg-[#7C45F5]/10 text-[#7C45F5]' : '',
                         flash.type === 'error' ? 'bg-red-50 text-red-500' : '',
                         flash.type === 'warning' ? 'bg-amber-50 text-amber-500' : '',
-                        flash.type === 'info' ? 'bg-blue-50 text-blue-500' : '',
+                        flash.type === 'info' ? 'bg-[#7C45F5]/10 text-[#7C45F5]/100' : '',
                     ]"
                 >
                     <span :class="iconClasses[flash.type]" class="text-lg"></span>

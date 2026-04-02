@@ -25,7 +25,7 @@
     >
         <div class="shimmer mb-1.5 h-4 w-24"></div>
 
-        <div class="shimmer flex h-[42px] w-full rounded-md"></div>
+        <div class="shimmer flex h-[42px] w-full rounded-none"></div>
     </v-configurable>
 </div>
 
@@ -110,7 +110,7 @@
                         type="color"
                         v-bind="field"
                         :class="[errors.length ? 'border border-red-500' : '']"
-                        class="w-full appearance-none rounded-md border text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300 dark:hover:border-gray-400"
+                        class="w-full appearance-none rounded-none border text-sm text-gray-600 transition-all hover:border-gray-400 dark:text-gray-300 dark:hover:border-gray-400"
                     />
                 </v-field>
             </template>
@@ -140,7 +140,7 @@
                         :value="value"
                         v-bind="{field, errors}"
                         :class="[errors.length ? 'border !border-red-600 hover:border-red-600' : '']"
-                        class="w-full rounded-md border px-3 py-2.5 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                        class="w-full rounded-none border px-3 py-2.5 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                     ></textarea>
 
                     <x-admin::tinymce
@@ -165,7 +165,7 @@
                         :name="name"
                         v-bind="data.field"
                         :class="[data.errors.length ? 'border border-red-500' : '']"
-                        class="custom-select w-full rounded-md border bg-white px-3 py-2.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                        class="custom-select w-full rounded-none border bg-white px-3 py-2.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                     >
                         <option
                             v-for="option in field.options"
@@ -191,7 +191,7 @@
                         :name="`${name}[]`"
                         v-bind="data.field"
                         v-model="data.value"
-                        :class="['custom-select', 'w-full', 'rounded-md', 'border', 'bg-white', 'px-3', 'py-2.5', 'text-sm', 'font-normal', 'text-gray-600', 'transition-all', 'hover:border-gray-400', 'dark:border-gray-800', 'dark:bg-gray-900', 'dark:text-gray-300', 'dark:hover:border-gray-400', data.errors.length && 'border-red-500']"
+                        :class="['custom-select', 'w-full', 'rounded-none', 'border', 'bg-white', 'px-3', 'py-2.5', 'text-sm', 'font-normal', 'text-gray-600', 'transition-all', 'hover:border-gray-400', 'dark:border-gray-800', 'dark:bg-gray-900', 'dark:text-gray-300', 'dark:hover:border-gray-400', data.errors.length && 'border-red-500']"
                         multiple
                     >
                         <option
@@ -223,7 +223,7 @@
                         :checked="parseInt(value || 0)"
                     >
 
-                    <div class="peer h-5 w-9 cursor-pointer rounded-full bg-gray-200 after:absolute after:top-0.5 after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-blue-300 dark:bg-gray-800 dark:after:border-white dark:after:bg-white dark:peer-checked:bg-gray-950 after:ltr:left-0.5 peer-checked:after:ltr:translate-x-full after:rtl:right-0.5 peer-checked:after:rtl:-translate-x-full"></div>
+                    <div class="peer h-5 w-9 cursor-pointer rounded-none bg-gray-200 after:absolute after:top-0.5 after:h-4 after:w-4 after:rounded-none after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#7C45F5] peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-blue-300 dark:bg-gray-800 dark:after:border-white dark:after:bg-white dark:peer-checked:bg-gray-950 after:ltr:left-0.5 peer-checked:after:ltr:translate-x-full after:rtl:right-0.5 peer-checked:after:rtl:-translate-x-full"></div>
                 </label>
             </template>
         
@@ -275,7 +275,7 @@
                     v-if="value"
                     :href="`{{ route('admin.configuration.download', [request()->route('slug'), request()->route('slug2'), '']) }}/${value.split('/')[1]}`"
                 >
-                    <div class="mb-1 inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-md border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 active:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-800">
+                    <div class="mb-1 inline-flex w-full max-w-max cursor-pointer appearance-none items-center justify-between gap-x-1 rounded-none border border-transparent p-1.5 text-center text-gray-600 transition-all marker:shadow hover:bg-gray-200 active:border-gray-300 dark:text-gray-300 dark:hover:bg-gray-800">
                         <i class="icon-down-stat text-2xl"></i>
                     </div>
                 </a>

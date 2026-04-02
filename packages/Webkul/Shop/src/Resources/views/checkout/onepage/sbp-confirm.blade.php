@@ -33,7 +33,7 @@
                     <!-- Unified Status Section -->
                     <div v-if="!isReady" class="bg-zinc-100 border-4 border-black p-6 relative overflow-hidden group">
                         <div class="flex items-center gap-4 relative z-10">
-                            <div class="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent transition-colors" :class="{ 'border-[#7C45F5]': paymentReceived }"></div>
+                            <div class="animate-spin rounded-none h-10 w-10 border-4 border-black border-t-transparent transition-colors" :class="{ 'border-[#7C45F5]': paymentReceived }"></div>
                             <div>
                                 <p class="text-xs font-black uppercase text-zinc-400">Статус</p>
                                 <p v-if="mintingError" class="text-xl font-black uppercase tracking-tight italic text-red-600">Ошибка минтинга! ❌</p>
@@ -73,7 +73,7 @@
                             class="group relative w-full overflow-hidden border-4 border-black bg-[#7C45F5] px-8 py-5 text-2xl font-black uppercase italic tracking-widest text-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-black hover:text-white active:translate-x-[4px] active:translate-y-[4px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale"
                         >
                             <span v-if="isFinishing" class="flex items-center justify-center gap-3">
-                                <div class="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                                <div class="animate-spin rounded-none h-6 w-6 border-2 border-white border-t-transparent"></div>
                                 Финализация...
                             </span>
                             <span v-else>Подтвердить 🤳</span>

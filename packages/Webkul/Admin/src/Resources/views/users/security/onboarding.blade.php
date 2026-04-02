@@ -7,7 +7,7 @@
         <div class="w-full max-w-[500px] px-4">
             <div class="rounded-2xl bg-white p-8 shadow-xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
                 <div class="mb-8 text-center">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/20">
+                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-none bg-[#7C45F5]/10 text-[#7C45F5] dark:bg-blue-900/20">
                         <span class="icon-security text-4xl"></span>
                     </div>
                     <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Безопасность учетной записи</h1>
@@ -38,7 +38,7 @@
                     <div class="flex flex-col gap-4">
                         <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800">
                             <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <span class="w-2 h-2 rounded-none bg-[#7C45F5]/100"></span>
                                 Шаг 1: Добавьте Passkey
                             </h3>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -55,7 +55,7 @@
                             <span>Добавить Passkey</span>
                         </button>
 
-                        <div v-if="passkeyError" class="mt-2 p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+                        <div v-if="passkeyError" class="mt-2 p-3 rounded-none bg-red-50 text-red-600 text-sm border border-red-100">
                             @{{ passkeyError }}
                         </div>
                     </div>
@@ -66,7 +66,7 @@
                     <div class="flex flex-col gap-4">
                         <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-800">
                             <h3 class="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <span class="w-2 h-2 rounded-none bg-[#7C45F5]/100"></span>
                                 Шаг 2: Seed-фраза
                             </h3>
                             <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -89,7 +89,7 @@
 
                         <!-- Verification -->
                         <div v-else class="flex flex-col gap-4">
-                            <div class="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 text-center font-mono text-lg tracking-wide text-blue-800 dark:text-blue-300 select-all">
+                            <div class="p-4 rounded-xl bg-[#7C45F5]/10 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 text-center font-mono text-lg tracking-wide text-blue-800 dark:text-blue-300 select-all">
                                 @{{ mnemonic }}
                             </div>
 
@@ -114,7 +114,7 @@
                                 Подтвердить и завершить
                             </button>
 
-                            <div v-if="verificationError" class="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+                            <div v-if="verificationError" class="p-3 rounded-none bg-red-50 text-red-600 text-sm border border-red-100">
                                 @{{ verificationError }}
                             </div>
                         </div>
@@ -123,7 +123,7 @@
 
                 <!-- Success -->
                 <div v-if="step === 'success'" class="text-center py-4">
-                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 text-green-600 dark:bg-green-900/20">
+                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-none bg-green-50 text-green-600 dark:bg-green-900/20">
                         <span class="icon-done text-4xl"></span>
                     </div>
                     <h2 class="text-xl font-bold text-gray-800 dark:text-white">Готово!</h2>

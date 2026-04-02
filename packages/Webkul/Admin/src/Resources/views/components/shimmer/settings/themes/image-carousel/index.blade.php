@@ -10,7 +10,7 @@
 
             <!-- Add Slider Button -->
             <div class="flex gap-2.5">
-                <div class="shimmer h-10 w-[105px] rounded-md"></div>
+                <div class="shimmer h-10 w-[105px] rounded-none"></div>
             </div>
         </div>
 

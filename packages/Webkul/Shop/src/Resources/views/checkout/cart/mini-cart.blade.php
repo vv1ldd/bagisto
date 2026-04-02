@@ -25,14 +25,14 @@
 
                         @if (core()->getConfigData('sales.checkout.my_cart.summary') == 'display_item_quantity')
                             <span
-                                class="absolute -top-4 bg-[#7C45F5] px-2 py-1.5 text-xs font-semibold leading-[9px] text-white ltr:left-5 rtl:right-5 max-md:ltr:left-4 max-md:rtl:right-4 rounded-full shadow-sm"
+                                class="absolute -top-4 bg-[#7C45F5] px-2 py-1.5 text-xs font-semibold leading-[9px] text-white ltr:left-5 rtl:right-5 max-md:ltr:left-4 max-md:rtl:right-4 rounded-none box-shadow-sm"
                                 v-if="cart?.items_qty"
                             >
                                 @{{ cart.items_qty }}
                             </span>
                         @else
                             <span
-                                class="absolute -top-4 bg-[#7C45F5] px-2 py-1.5 text-xs font-semibold leading-[9px] text-white ltr:left-5 rtl:right-5 max-md:px-2 max-md:py-1.5 max-md:ltr:left-4 max-md:rtl:right-4 rounded-full shadow-sm"
+                                class="absolute -top-4 bg-[#7C45F5] px-2 py-1.5 text-xs font-semibold leading-[9px] text-white ltr:left-5 rtl:right-5 max-md:px-2 max-md:py-1.5 max-md:ltr:left-4 max-md:rtl:right-4 rounded-none box-shadow-sm"
                                 v-if="cart?.items_count"
                             >
                                 @{{ cart.items_count }}
@@ -171,7 +171,7 @@
                                                     <template v-if="attribute?.attribute_type === 'file'">
                                                         <a
                                                             :href="attribute.file_url"
-                                                            class="text-blue-700"
+                                                            class="text-[#6b35e4]"
                                                             target="_blank"
                                                             :download="attribute.file_name"
                                                         >

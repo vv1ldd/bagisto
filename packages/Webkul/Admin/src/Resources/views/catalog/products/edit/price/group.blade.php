@@ -20,7 +20,7 @@
                 </p>
 
                 <p
-                    class="cursor-pointer text-blue-600 transition-all hover:underline"
+                    class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                     @click="resetForm(); $refs.groupPriceCreateModal.open()"
                 >
                     @lang('admin::app.catalog.products.edit.price.group.create-btn')
@@ -65,7 +65,7 @@
                         </p>
 
                         <p
-                            class="cursor-pointer text-blue-600 transition-all hover:underline"
+                            class="cursor-pointer text-[#7C45F5] transition-all hover:underline"
                             @click="selectedPrice = item; $refs.groupPriceCreateModal.open()"
                         >
                             @lang('admin::app.catalog.products.edit.price.group.edit-btn')
@@ -229,7 +229,7 @@
                                 <!-- Delete Button -->
                                 <x-admin::button
                                     button-type="button"
-                                    class="cursor-pointer whitespace-nowrap rounded-md border-2 border-transparent px-3 py-1.5 font-semibold text-red-600 transition-all hover:bg-gray-100 dark:hover:bg-gray-950"
+                                    class="cursor-pointer whitespace-nowrap rounded-none border-2 border-transparent px-3 py-1.5 font-semibold text-red-600 transition-all hover:bg-gray-100 dark:hover:bg-gray-950"
                                     :title="trans('admin::app.catalog.products.edit.price.group.create.delete-btn')"
                                     v-if="selectedPrice.id"
                                     @click="remove"

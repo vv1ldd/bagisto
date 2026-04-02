@@ -66,10 +66,10 @@
                                         >
 
                                         <span
-                                            class="icon-uncheckbox cursor-pointer rounded-md text-2xl"
+                                            class="icon-uncheckbox cursor-pointer rounded-none text-2xl"
                                             :class="[
-                                                applied.massActions.meta.mode === 'all' ? 'peer-checked:icon-checked peer-checked:text-blue-600' : (
-                                                    applied.massActions.meta.mode === 'partial' ? 'peer-checked:icon-checkbox-partial peer-checked:text-blue-600' : ''
+                                                applied.massActions.meta.mode === 'all' ? 'peer-checked:icon-checked peer-checked:text-[#7C45F5]' : (
+                                                    applied.massActions.meta.mode === 'partial' ? 'peer-checked:icon-checkbox-partial peer-checked:text-[#7C45F5]' : ''
                                                 ),
                                             ]"
                                         >
@@ -138,7 +138,7 @@
                                     >
 
                                     <label
-                                        class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-md text-2xl peer-checked:text-blue-600"
+                                        class="icon-uncheckbox peer-checked:icon-checked cursor-pointer rounded-none text-2xl peer-checked:text-[#7C45F5]"
                                         :for="`mass_action_select_record_${record.product_review_id}`"
                                     ></label>
                                 @endif
@@ -192,7 +192,7 @@
                                 <a @click="performAction(record.actions.find(action => action.index === 'delete'))">
                                     <span
                                         :class="record.actions.find(action => action.index === 'delete')?.icon"
-                                        class="cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 ltr:ml-1 rtl:mr-1"
+                                        class="cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 ltr:ml-1 rtl:mr-1"
                                     >
                                     </span>
                                 </a>
@@ -202,7 +202,7 @@
                                     v-if="record.actions.find(action => action.index === 'edit')"
                                     @click="edit(record.actions.find(action => action.index === 'edit')?.url)"
                                 >
-                                    <span class="icon-sort-right rtl:icon-sort-left cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 ltr:ml-1 rtl:mr-1"></span>
+                                    <span class="icon-sort-right rtl:icon-sort-left cursor-pointer rounded-none p-1.5 text-2xl transition-all hover:bg-gray-200 dark:hover:bg-gray-800 ltr:ml-1 rtl:mr-1"></span>
                                 </a>
                             </div>
                         </div>

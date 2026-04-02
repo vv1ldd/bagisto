@@ -47,7 +47,7 @@
                         type="text"
                         name="{{ $currentLocaleCode }}[options][title]"
                         value="{{ $theme->translate($currentLocaleCode)->options['title'] ?? '' }}"
-                        class="flex min-h-[39px] w-full rounded-md border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
+                        class="flex min-h-[39px] w-full rounded-none border px-3 py-2 text-sm text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                         :class="[errors['{{ $currentLocaleCode }}[options][title]'] ? 'border border-red-600 hover:border-red-600' : '']"
                         rules="required"
                         label="@lang('admin::app.settings.themes.edit.filter-title')"
@@ -74,7 +74,7 @@
                         <select
                             name="{{ $currentLocaleCode }}[options][filters][sort]"
                             v-bind="field"
-                            class="custom-select flex min-h-[39px] w-full rounded-md border bg-white px-3 py-1.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                            class="custom-select flex min-h-[39px] w-full rounded-none border bg-white px-3 py-1.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                             :class="[errors['{{ $currentLocaleCode }}[options][filters][sort]'] ? 'border border-red-600 hover:border-red-600' : '']"
                         >
                             <option value="" selected disabled>
@@ -110,7 +110,7 @@
                         <select
                             name="options[filters][limit]"
                             v-bind="field"
-                            class="custom-select flex min-h-[39px] w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
+                            class="custom-select flex min-h-[39px] w-full rounded-none border border-gray-300 bg-white px-3 py-1.5 text-sm font-normal text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400"
                             :class="[errors['options[filters][limit]'] ? 'border border-red-600 hover:border-red-600' : '']"
                         >
                             <option value="" selected disabled>@lang('admin::app.settings.themes.edit.select')</option>

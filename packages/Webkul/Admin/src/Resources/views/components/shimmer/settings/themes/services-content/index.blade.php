@@ -9,7 +9,7 @@
 
             <!-- Add Service Content Button -->
             <div class="flex gap-2.5">
-                <div class="shimmer h-10 w-[127px] rounded-md"></div>
+                <div class="shimmer h-10 w-[127px] rounded-none"></div>
             </div>
         </div>
 

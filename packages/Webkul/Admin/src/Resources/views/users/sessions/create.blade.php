@@ -71,10 +71,10 @@
 
                 <!-- RECOVERY -->
                 <div class="flex flex-col items-center gap-4 pt-4">
-                    <a href="{{ route('admin.forget_password.create') }}" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-blue-600 transition-colors">
+                    <a href="{{ route('admin.forget_password.create') }}" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#7C45F5] transition-colors">
                         @lang('admin::app.users.sessions.forget-password-link')
                     </a>
-                    <a href="{{ route('admin.session.recovery.create') }}" class="rounded-lg border-2 border-dashed border-orange-200 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-orange-600 hover:border-orange-600 transition-all">
+                    <a href="{{ route('admin.session.recovery.create') }}" class="rounded-none border-2 border-dashed border-orange-200 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-orange-600 hover:border-orange-600 transition-all">
                         Восстановить через Seed-фразу
                     </a>
                 </div>

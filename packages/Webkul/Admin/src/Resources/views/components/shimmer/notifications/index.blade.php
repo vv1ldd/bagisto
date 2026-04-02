@@ -9,7 +9,7 @@
     </div>
 
     <!-- Main Content Panel -->
-    <div class="box-shadow flex h-[calc(100vh-179px)] max-w-max flex-col justify-between rounded-md">
+    <div class="box-shadow flex h-[calc(100vh-179px)] max-w-max flex-col justify-between rounded-none">
         <div>
             <!-- Multiple Tabs -->
             <div class="flex border-b dark:border-gray-800">
@@ -28,7 +28,7 @@
             <div class="journal-scroll grid max-h-[calc(100vh-330px)] overflow-auto">
                 @for ($i = 1; $i < 10; $i++)
                     <div class="flex h-14 items-start gap-1.5 p-4">
-                        <div class="shimmer h-6 w-6 rounded-full"></div>
+                        <div class="shimmer h-6 w-6 rounded-none"></div>
 
                         <div class="grid gap-1">
                             <div class="shimmer h-4 w-32"></div>

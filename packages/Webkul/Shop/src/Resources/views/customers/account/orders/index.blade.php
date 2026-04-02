@@ -72,7 +72,7 @@
                 <template #body="{ isLoading, available, applied, sort, performAction }">
                     <template v-if="isLoading">
                         <div class="px-5 space-y-2 py-4">
-                            <div v-for="i in 5" :key="i" class="h-12 bg-zinc-100/60 animate-pulse rounded-lg">
+                            <div v-for="i in 5" :key="i" class="h-12 bg-zinc-100/60 animate-pulse rounded-none">
                             </div>
                         </div>
                     </template>
@@ -103,7 +103,7 @@
                                             <p class="text-[12px] text-zinc-400 font-medium">@{{ record.created_at }}</p>
                                             <span class="text-zinc-200 text-xs">•</span>
                                             <span v-if="record.reviews_count >= record.items_count"
-                                                class="text-[12px] text-blue-500 font-medium hover:text-blue-600 transition-colors">
+                                                class="text-[12px] text-[#7C45F5]/100 font-medium hover:text-[#7C45F5] transition-colors">
                                                 @lang('shop::app.customers.account.orders.view.information.view-review')
                                             </span>
                                             <span v-else class="text-[12px] text-[#7C45F5] font-semibold hover:text-violet-700 transition-colors">

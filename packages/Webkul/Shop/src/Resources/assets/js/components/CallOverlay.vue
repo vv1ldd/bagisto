@@ -149,7 +149,7 @@
                                class="w-full h-full"></video>
                         <!-- Shapik Badge (Grid Local) -->
                         <div class="absolute top-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
-                            <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm shadow-sm ring-1 ring-white/10">
+                            <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm box-shadow-sm ring-1 ring-white/10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>
@@ -177,7 +177,7 @@
 
                         <!-- Shapik Badge (Grid Peer) -->
                         <div class="absolute top-6 left-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-1 shadow-xl z-20 rounded-sm">
-                            <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm shadow-sm ring-1 ring-white/10">
+                            <div class="flex h-5 w-5 items-center justify-center bg-[#7C45F5] text-white rounded-sm box-shadow-sm ring-1 ring-white/10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                 </svg>

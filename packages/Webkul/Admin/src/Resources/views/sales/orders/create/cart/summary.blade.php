@@ -192,7 +192,7 @@
                         <template v-else>
                             <p class="text-base font-medium text-gray-600">
                                 <span
-                                    class="cursor-pointer text-blue-600"
+                                    class="cursor-pointer text-[#7C45F5]"
                                     @click="$refs.couponModel.open()"
                                 >
                                     @lang('admin::app.sales.orders.create.cart.summary.apply-coupon')

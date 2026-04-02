@@ -2,8 +2,8 @@
     <div class="flex flex-col items-center justify-center min-h-[50vh] py-12 px-6 animate-page-entry relative">
         
         {{-- Ambient background glows (Relative to container) --}}
-        <div class="absolute top-0 left-1/4 w-64 h-64 bg-indigo-500/5 rounded-full blur-[80px] animate-blob z-0"></div>
-        <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-[80px] animate-blob animation-delay-2000 z-0"></div>
+        <div class="absolute top-0 left-1/4 w-64 h-64 bg-indigo-500/5 rounded-none blur-[80px] animate-blob z-0"></div>
+        <div class="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-500/5 rounded-none blur-[80px] animate-blob animation-delay-2000 z-0"></div>
 
         <div class="flex flex-col items-center w-full max-w-[420px] relative z-10">
             <div id="auth-content" class="w-full bg-white border border-zinc-100/80 rounded-[2.5rem] p-10 shadow-[0_24px_80px_rgba(0,0,0,0.06)] flex flex-col items-center group transition-all duration-700">
@@ -11,7 +11,7 @@
                 @if($hasPasskey)
                     {{-- Automated Flow: Minimal UI --}}
                     <div id="auth-status-container" class="flex flex-col items-center w-full">
-                        <div class="mb-10 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-3xl flex items-center justify-center cursor-pointer hover:scale-105 transition-all duration-500 shadow-sm relative group/icon"
+                        <div class="mb-10 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-3xl flex items-center justify-center cursor-pointer hover:scale-105 transition-all duration-500 box-shadow-sm relative group/icon"
                             onclick="triggerPasskeyAuth()">
                             
                             {{-- Modern Lock Icon --}}
@@ -33,14 +33,14 @@
                         <div id="retry-container" class="hidden w-full flex flex-col items-center animate-slide-up">
                             <button 
                                 onclick="triggerPasskeyAuth()"
-                                class="w-full bg-[#7C45F5] text-white font-black py-4 rounded-2xl shadow-lg shadow-[#7C45F5]/20 hover:bg-[#6836d4] transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[13px] uppercase tracking-widest">
+                                class="w-full bg-[#7C45F5] text-white font-black py-4 rounded-2xl box-shadow shadow-[#7C45F5]/20 hover:bg-[#6836d4] transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[13px] uppercase tracking-widest">
                                 <span>Попробовать снова</span>
                             </button>
                         </div>
                     </div>
                 @else
                     {{-- No Passkey --}}
-                    <div class="mb-8 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-3xl flex items-center justify-center shadow-sm">
+                    <div class="mb-8 w-24 h-24 bg-zinc-50 border border-zinc-100 rounded-3xl flex items-center justify-center box-shadow-sm">
                          <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-zinc-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -53,7 +53,7 @@
                     </p>
 
                     <a href="{{ route('shop.customers.account.passkeys.index') }}"
-                        class="w-full bg-zinc-900 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-black transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[13px] uppercase tracking-widest">
+                        class="w-full bg-zinc-900 text-white font-black py-4 rounded-2xl box-shadow hover:bg-black transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-[13px] uppercase tracking-widest">
                         <span>Настроить Passkey</span>
                     </a>
                 @endif

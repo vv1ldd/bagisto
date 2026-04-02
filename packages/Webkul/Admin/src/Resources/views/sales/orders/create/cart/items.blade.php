@@ -228,7 +228,7 @@
                         <div class="relative w-full">
                             <input
                                 type="text"
-                                class="block w-full rounded-lg border bg-white py-1.5 leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 ltr:pl-3 ltr:pr-10 rtl:pl-10 rtl:pr-3"
+                                class="block w-full rounded-none border bg-white py-1.5 leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 ltr:pl-3 ltr:pr-10 rtl:pl-10 rtl:pr-3"
                                 placeholder="Search by name"
                                 v-model.lazy="searchTerm"
                                 v-debounce="500"
@@ -336,7 +336,7 @@
                                         </x-admin::form.control-group>
 
                                         <button
-                                            class="cursor-pointer text-sm text-blue-600 transition-all hover:underline"
+                                            class="cursor-pointer text-sm text-[#7C45F5] transition-all hover:underline"
                                             :disabled="! product.is_saleable"
                                         >
                                             @lang('admin::app.sales.orders.create.cart.items.search.add-to-cart')

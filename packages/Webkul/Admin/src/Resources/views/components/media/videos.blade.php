@@ -102,20 +102,20 @@
                 <div class="flex justify-between">
                     <!-- Remove Button -->
                     <span
-                        class="icon-delete cursor-pointer rounded-md p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
+                        class="icon-delete cursor-pointer rounded-none p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
                         @click="remove"
                     ></span>
 
                     <!-- Play Pause Button -->
                     <span
-                        class="cursor-pointer rounded-md p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
+                        class="cursor-pointer rounded-none p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
                         :class="[isPlaying ? 'icon-pause': 'icon-play']"
                         @click="playPause"
                     ></span>
 
                     <!-- Edit Button -->
                     <label
-                        class="icon-edit cursor-pointer rounded-md p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
+                        class="icon-edit cursor-pointer rounded-none p-1.5 text-2xl hover:bg-gray-200 dark:hover:bg-gray-800"
                         :for="$.uid + '_videoInput_' + index"
                     ></label>
 

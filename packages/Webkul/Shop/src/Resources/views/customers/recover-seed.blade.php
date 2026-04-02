@@ -48,7 +48,7 @@
                             <h2 class="text-2xl font-black text-zinc-900 uppercase tracking-tighter leading-none">Слово <span v-text="currentStep" class="text-[#7C45F5]"></span> <span class="text-zinc-200 px-1">/</span> <span v-text="totalSteps" class="text-zinc-400"></span></h2>
                         </div>
                     </div>
-                    <div class="h-2.5 w-full bg-zinc-100 border-2 border-zinc-900 rounded-full overflow-hidden">
+                    <div class="h-2.5 w-full bg-zinc-100 border-2 border-zinc-900 rounded-none overflow-hidden">
                         <div class="h-full bg-[#7C45F5] transition-all duration-700 ease-out"
                              :style="{ width: (currentStep / totalSteps * 100) + '%' }"></div>
                     </div>

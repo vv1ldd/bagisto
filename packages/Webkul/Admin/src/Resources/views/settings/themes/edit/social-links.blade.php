@@ -43,12 +43,12 @@
                                 <div class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded text-gray-500" v-html="link.icon_svg"></div>
                                 <div>
                                     <p class="font-bold text-gray-800 dark:text-white">@{{ link.title }}</p>
-                                    <p class="text-sm text-blue-600 truncate max-w-xs">@{{ link.url }}</p>
+                                    <p class="text-sm text-[#7C45F5] truncate max-w-xs">@{{ link.url }}</p>
                                 </div>
                             </div>
 
                             <div class="flex gap-4">
-                                <p class="cursor-pointer text-blue-600 hover:underline" @click="edit(link, index)">Edit</p>
+                                <p class="cursor-pointer text-[#7C45F5] hover:underline" @click="edit(link, index)">Edit</p>
                                 <p class="cursor-pointer text-red-600 hover:underline" @click="remove(index)">Delete</p>
                             </div>
                         </div>
