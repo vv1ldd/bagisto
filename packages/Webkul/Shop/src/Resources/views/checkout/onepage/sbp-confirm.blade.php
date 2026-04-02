@@ -116,7 +116,7 @@
     </script>
 
     @php
-        $additional = $order->additional;
+        $additional = $order->payment->additional ?? [];
         if (is_string($additional)) {
             $additional = json_decode($additional, true) ?? [];
         }
