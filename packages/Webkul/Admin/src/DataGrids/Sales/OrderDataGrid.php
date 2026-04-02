@@ -11,6 +11,13 @@ use Webkul\Sales\Repositories\OrderRepository;
 class OrderDataGrid extends DataGrid
 {
     /**
+     * Primary column.
+     *
+     * @var string
+     */
+    protected $primaryColumn = 'id';
+
+    /**
      * Prepare query builder.
      *
      * @return \Illuminate\Database\Query\Builder

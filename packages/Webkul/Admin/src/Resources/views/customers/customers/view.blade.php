@@ -252,126 +252,7 @@
                         </x-admin::accordion>
                     </template>
 
-                    {!! view_render_event('bagisto.admin.customers.customers.view.card.accordion.address.before') !!}
 
-                    <template v-if="! customer">
-                        <x-admin::shimmer.accordion class="h-[271px] w-[360px]"/>
-                    </template>
-
-                    <template v-else>
-                        <!-- Addresses listing-->
-                        <x-admin::accordion>
-                            <x-slot:header>
-                                <div class="flex w-full">
-                                    <!-- Address Title -->
-                                    <p class="w-full p-2.5 text-base font-semibold text-gray-800 dark:text-white">
-                                        @{{ "@lang('admin::app.customers.customers.view.address.count')".replace(':count', customer.addresses.length) }}
-                                    </p>
-
-                                    <!-- Address Create component -->
-                                    @include('admin::customers.customers.view.address.create')
-                                </div>
-                            </x-slot>
-
-                            <x-slot:content>
-                                <template v-if="customer.addresses.length">
-                                    <div
-                                        class="grid gap-y-2.5"
-                                        v-for="(address, index) in customer.addresses"
-                                    >
-                                        <p
-                                            class="label-pending"
-                                            v-if="address.default_address"
-                                        >
-                                            @lang('admin::app.customers.customers.view.default-address')
-                                        </p>
-
-                                        <p class="break-all font-semibold text-gray-800 dark:text-white">
-                                            @{{ `${address.first_name} ${address.last_name}` }}
-
-                                            <template v-if="address.company_name">
-                                                (@{{ address.company_name }})
-                                            </template>
-                                        </p>
-
-                                        <p class="text-gray-600 dark:text-gray-300">
-                                            <template v-if="address.address">
-                                                @{{ address.address.split('\n').join(', ') }},
-                                            </template>
-
-                                            @{{ address.city }},
-                                            @{{ address.state }},
-                                            @{{ address.country }},
-                                            @{{ address.postcode }}
-                                        </p>
-
-                                        <p class="text-gray-600 dark:text-gray-300">
-                                            @{{ '@lang('admin::app.customers.customers.view.phone')'.replace(':phone', address.phone ?? 'N/A') }}
-                                        </p>
-
-                                        <!-- E-mail -->
-                                        <p class="text-gray-600 dark:text-gray-300">
-                                            @{{ '@lang('admin::app.customers.customers.view.email')'.replace(':email', address.email ?? 'N/A') }}
-                                        </p>
-
-                                        <div class="flex items-center gap-2.5">
-                                            <!-- Edit Address -->
-                                            @include('admin::customers.customers.view.address.edit')
-
-                                            <!-- Delete Address -->
-                                            @if (bouncer()->hasPermission('customers.addresses.delete'))
-                                                <p
-                                                    class="cursor-pointer text-red-600 transition-all hover:underline"
-                                                    @click="deleteAddress(address.id)"
-                                                >
-                                                    @lang('admin::app.customers.customers.view.delete')
-                                                </p>
-                                            @endif
-
-                                            <!-- Set Default Address -->
-                                            <template v-if="! address.default_address">
-                                                <x-admin::button
-                                                    button-type="button"
-                                                    class="flex cursor-pointer justify-center text-sm text-[#7C45F5] transition-all hover:underline"
-                                                    :title="trans('admin::app.customers.customers.view.set-as-default')"
-                                                    ::loading="isUpdating[index]"
-                                                    ::disabled="isUpdating[index]"
-                                                    @click="setAsDefault(address, index)"
-                                                />
-                                            </template>
-                                        </div>
-
-                                        <span
-                                            v-if="index != customer?.addresses.length - 1"
-                                            class="mb-4 mt-4 block w-full border-b dark:border-gray-800"
-                                        ></span>
-                                    </div>
-                                </template>
-
-                                <template v-else>
-                                    <!-- Empty Address Container -->
-                                    <div class="flex items-center gap-5 py-2.5">
-                                        <img
-                                            src="{{ bagisto_asset('images/settings/address.svg') }}"
-                                            class="h-20 w-20 dark:mix-blend-exclusion dark:invert"
-                                        />
-
-                                        <div class="flex flex-col gap-1.5">
-                                            <p class="text-base font-semibold text-gray-400">
-                                                @lang('admin::app.customers.customers.view.empty-title')
-                                            </p>
-
-                                            <p class="text-gray-400">
-                                                @lang('admin::app.customers.customers.view.empty-description')
-                                            </p>
-                                        </div>
-                                    </div>
-                                </template>
-                            </x-slot>
-                        </x-admin::accordion>
-                    </template>
-
-                    {!! view_render_event('bagisto.admin.customers.customers.view.card.accordion.address.after') !!}
                 </div>
             </div>
         </script>
@@ -389,43 +270,6 @@
                 },
 
                 methods: {
-                    deleteAddress(id) {
-                        this.$emitter.emit('open-confirm-modal', {
-                            message: '@lang('admin::app.customers.customers.view.address-delete-confirmation')',
-
-                            agree: () => {
-                                this.$axios.post(`{{ route('admin.customers.customers.addresses.delete', '') }}/${id}`)
-                                    .then((response) => {
-                                        this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
-
-                                        this.customer.addresses = this.customer.addresses.filter(address => address.id !== id);
-                                    })
-                                    .catch((error) => {});
-                            },
-                        });
-                    },
-
-                    setAsDefault(address, index) {
-                        this.isUpdating[index] = true;
-
-                        this.$axios.post(`{{ route('admin.customers.customers.addresses.set_default', '') }}/${this.customer.id}`, {
-                            set_as_default: address.id,
-                        })
-                            .then((response) => {
-                                this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
-
-                                this.customer.addresses = this.customer.addresses.map(address => ({
-                                    ...address,
-                                    default_address: address.id === response.data.data.id
-                                        ? response.data.data.default_address
-                                        : false,
-                                }));
-
-                                this.isUpdating[index] = false;
-                            })
-                            .catch((error) => this.isUpdating[index] = false);
-                    },
-
                     updateCustomer(data) {
                         this.customer = {
                             ...this.customer,
@@ -434,34 +278,6 @@
                                 ...data.group
                             },
                         };
-                    },
-
-                    addressCreated(address) {
-                        if (address.default_address) {
-                            this.customer.addresses.forEach(address => address.default_address = false);
-                        }
-
-                        this.customer.addresses.push({
-                            ...address,
-                            address: address.address.join('\n'),
-                        });
-                    },
-
-                    addressUpdated(updatedAddress) {
-                        if (updatedAddress.default_address) {
-                            this.customer.addresses.forEach(address => address.default_address = false);
-                        }
-
-                        this.customer.addresses =this.customer.addresses.map(address => {
-                            if (address.id === updatedAddress.id) {
-                                return {
-                                    ...updatedAddress,
-                                    address: updatedAddress.address.join('\n'),
-                                };
-                            }
-
-                            return address;
-                        });
                     },
                 },
             });

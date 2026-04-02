@@ -40,7 +40,7 @@
     </x-shop::layouts.split-screen>
 @else
 <x-shop::layouts.account :is-cardless="true">
-    <div class="relative w-full max-w-[500px] mx-auto px-0 mt-2 mb-10">
+    <div class="relative w-full max-w-[500px] mx-auto px-4 mt-2 mb-10">
         {{-- Header with Back Button --}}
         <div class="flex items-center gap-3 mb-6 px-0 pt-0">
             <button type="button" 

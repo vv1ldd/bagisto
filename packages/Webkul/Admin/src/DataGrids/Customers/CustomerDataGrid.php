@@ -39,7 +39,6 @@ class CustomerDataGrid extends DataGrid
                 'customer_groups.name as group',
                 // Real counters for traditional e-commerce metrics
                 DB::raw('(SELECT COUNT(*) FROM orders WHERE orders.customer_id = customers.id) as order_count'),
-                DB::raw('(SELECT COUNT(*) FROM customer_addresses WHERE customer_addresses.customer_id = customers.id) as address_count'),
                 DB::raw('(SELECT COALESCE(SUM(base_grand_total), 0) FROM orders WHERE orders.customer_id = customers.id) as revenue'),
                 // Real counters using DB::raw subqueries for maximum compatibility
                 DB::raw('(SELECT COUNT(*) FROM customer_transactions ct WHERE ct.customer_id = customers.id AND ct.type = \'nft_gift\') as nft_count'),
@@ -162,12 +161,7 @@ class CustomerDataGrid extends DataGrid
             'visibility' => false,
         ]);
 
-        $this->addColumn([
-            'index'      => 'address_count',
-            'label'      => 'Адреса',
-            'type'       => 'integer',
-            'visibility' => false,
-        ]);
+
     }
 
     /**

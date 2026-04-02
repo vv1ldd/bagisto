@@ -1,5 +1,5 @@
 <x-shop::layouts.account :is-cardless="true">
-    <div class="relative w-full max-w-[500px] mx-auto px-0 mt-2 mb-10">
+    <div class="relative w-full max-w-[500px] mx-auto px-4 mt-2 mb-10">
         {{-- Header with Back Button --}}
         <div class="flex items-center gap-3 mb-6 px-0 pt-0">
             <button type="button" 
@@ -12,7 +12,7 @@
 
         {{-- Active Sessions Section --}}
         @if (count($activeSessions))
-            <div class="mb-10 px-4">
+            <div class="mb-10">
                 <h3 class="text-[17px] font-black text-zinc-900 uppercase tracking-tight mb-4 px-1">
                     Активные сессии
                 </h3>
@@ -71,7 +71,7 @@
         @endif
 
         {{-- History Section --}}
-        <div class="px-4">
+        <div>
             <h3 class="text-[17px] font-black text-zinc-900 uppercase tracking-tight mb-4 px-1">
                 История событий
             </h3>

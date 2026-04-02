@@ -80,13 +80,7 @@
 
                     <!-- Passkeys & Trusted Devices -->
                     <div class="mb-10">
-                        @if (!$isOnboarding)
-                            <h3 class="text-[17px] font-black text-zinc-900 uppercase tracking-tight mb-4 px-1">
-                                Ключи доступа
-                            </h3>
-                        @endif
-
-                        <div class="space-y-4">
+                        <div class="space-y-4 px-1">
                             @if ($customer->passkeys->count())
                                 @foreach ($customer->passkeys as $passkey)
                                     <div class="relative group flex items-start p-4 bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(124,69,245,1)] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none">
