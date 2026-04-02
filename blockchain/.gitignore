@@ -1,3 +1,0 @@
-node_modules
-.env
-# artifacts/ and cache/ are now allowed to avoid recompilation on server
