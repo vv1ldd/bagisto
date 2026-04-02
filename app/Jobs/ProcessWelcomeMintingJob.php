@@ -78,7 +78,7 @@ class ProcessWelcomeMintingJob implements ShouldQueue
                 'type' => 'registration_minting',
                 'status' => 'completed', 
                 'notes' => "Минтинг Meanly Coins (Регистрация +{$this->amount})",
-                'web3_tx_hash' => $txHash,
+                // 'web3_tx_hash' => $txHash, // Temporarily disabled until migration runs
                 'metadata' => [
                     'tx_hash' => $txHash,
                     'network' => 'arbitrum_one',

@@ -73,47 +73,82 @@ class NFTMetadataController extends Controller
         $id = "#" . $order->increment_id;
         $date = $order->created_at->format('M d, Y');
         $amount = core()->formatBasePrice($order->base_grand_total);
-
-        // Placeholder for the brand logo provided by the user
-        $logoPath = $this->getLogoPath();
+        $totalItems = $order->total_item_count;
 
         return <<<SVG
 <svg width="1000" height="1000" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#1a0b36;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+        <linearGradient id="mainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#7C45F5;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#1a0b36;stop-opacity:1" />
         </linearGradient>
-        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#8e44ad;stop-opacity:1" />
+        
+        <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#D6FF00;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1" />
         </linearGradient>
+
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.1"/>
+        </pattern>
+
         <filter id="glow">
-            <feGaussianBlur stdDeviation="15" result="blur" />
+            <feGaussianBlur stdDeviation="8" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
+        
+        <clipPath id="cardClip">
+            <rect x="50" y="50" width="900" height="900" rx="40" ry="40" />
+        </clipPath>
     </defs>
-    
+
     <!-- Background -->
-    <rect width="1000" height="1000" fill="url(#bgGradient)" />
-    
-    <!-- Decorative elements -->
-    <circle cx="200" cy="200" r="150" fill="#ffffff" opacity="0.05" />
-    <circle cx="850" cy="750" r="100" fill="#8e44ad" opacity="0.1" />
-    
-    <!-- Logo Container -->
-    <g transform="translate(120, 150) scale(1)">
-        $logoPath
+    <rect width="1000" height="1000" fill="#000000" />
+    <rect width="1000" height="1000" fill="url(#mainGrad)" opacity="0.4" />
+    <rect width="1000" height="1000" fill="url(#grid)" />
+
+    <!-- Card Body (Glassmorphism) -->
+    <g clip-path="url(#cardClip)">
+        <rect x="50" y="50" width="900" height="900" rx="40" ry="40" fill="#ffffff" opacity="0.03" />
+        <rect x="50" y="50" width="900" height="900" rx="40" ry="40" stroke="#ffffff" stroke-width="1.5" opacity="0.2" fill="none" />
+        
+        <!-- Top Noise/Glint -->
+        <path d="M 50 200 Q 500 150 950 200" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.1" />
     </g>
+
+    <!-- Branding -->
+    <text x="120" y="150" fill="#ffffff" font-family="'Orbitron', 'Arial Black', sans-serif" font-size="28" font-weight="900" letter-spacing="10" opacity="0.6">MEANLY ASSET</text>
     
-    <!-- Labels -->
-    <text x="50" y="880" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" opacity="0.6" font-weight="bold">MEANLY GIFT</text>
-    <text x="50" y="930" fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="bold">$id</text>
+    <!-- Central Visual Element -->
+    <circle cx="500" cy="480" r="220" fill="none" stroke="#D6FF00" stroke-width="2" opacity="0.3" filter="url(#glow)" />
+    <circle cx="500" cy="480" r="180" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.2" />
     
-    <text x="950" y="880" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" text-anchor="end" opacity="0.6">DATE</text>
-    <text x="950" y="930" fill="#ffffff" font-family="Arial, sans-serif" font-size="32" text-anchor="end" font-weight="bold">$date</text>
-    
-    <text x="500" y="930" fill="#ffffff" font-family="Arial, sans-serif" font-size="32" text-anchor="middle" font-weight="bold" opacity="0.8">$amount</text>
+    <g transform="translate(500, 480)">
+       <text x="0" y="20" fill="url(#neonGrad)" font-family="Arial, sans-serif" font-size="160" font-weight="900" text-anchor="middle" filter="url(#glow)">M</text>
+    </g>
+
+    <!-- Bottom Data Block -->
+    <rect x="50" y="750" width="900" height="200" fill="#000000" opacity="0.6" />
+    <rect x="50" y="750" width="900" height="4" fill="#D6FF00" filter="url(#glow)" />
+
+    <!-- Order Info Tags -->
+    <g transform="translate(100, 810)">
+        <text x="0" y="0" fill="#D6FF00" font-family="monospace" font-size="14" font-weight="bold" letter-spacing="2">RECEIPT_UNIQUE_ID</text>
+        <text x="0" y="45" fill="#ffffff" font-family="Arial, sans-serif" font-size="42" font-weight="900">$id</text>
+    </g>
+
+    <g transform="translate(420, 810)">
+        <text x="0" y="0" fill="#D6FF00" font-family="monospace" font-size="14" font-weight="bold" letter-spacing="2">VALUE_TOTAL</text>
+        <text x="0" y="45" fill="#ffffff" font-family="Arial, sans-serif" font-size="36" font-weight="900">$amount</text>
+    </g>
+
+    <g transform="translate(720, 810)">
+        <text x="0" y="0" fill="#D6FF00" font-family="monospace" font-size="14" font-weight="bold" letter-spacing="2">TIMESTAMP</text>
+        <text x="0" y="45" fill="#ffffff" font-family="Arial, sans-serif" font-size="28" font-weight="bold">$date</text>
+    </g>
+
+    <!-- Side Decoration (Vertical Text) -->
+    <text transform="translate(935, 700) rotate(-90)" fill="#ffffff" font-family="monospace" font-size="12" font-weight="bold" opacity="0.3" letter-spacing="4">BLOCKCHAIN VERIFIED • DIGITAL RECEIPT • ARBITRUM ONE NETWORK</text>
 </svg>
 SVG;
     }

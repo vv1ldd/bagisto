@@ -60,7 +60,7 @@ class ProcessOrderCashbackJob implements ShouldQueue
                         'reference_type' => get_class($order),
                         'reference_id'   => $order->id,
                         'notes'          => "Возврат тела платежа (Заказ #{$order->increment_id})",
-                        'web3_tx_hash'   => $txBody,
+                        // 'web3_tx_hash'   => $txBody, // Disabled until migration runs
                         'metadata'       => [
                             'tx_hash' => $txBody,
                             'network' => 'arbitrum_one'
@@ -92,7 +92,7 @@ class ProcessOrderCashbackJob implements ShouldQueue
                         'reference_type' => get_class($order),
                         'reference_id'   => $order->id,
                         'notes'          => "Бонус 5% за покупку (Заказ #{$order->increment_id})",
-                        'web3_tx_hash'   => $txBonus,
+                        // 'web3_tx_hash'   => $txBonus, // Disabled until migration runs
                         'metadata'       => [
                             'tx_hash' => $txBonus,
                             'network' => 'arbitrum_one'
@@ -132,7 +132,7 @@ class ProcessOrderCashbackJob implements ShouldQueue
                     'reference_type' => get_class($order),
                     'reference_id'   => $order->id,
                     'notes'          => "Минтинг NFT-чека (Заказ #{$order->increment_id})",
-                    'web3_tx_hash'   => $txNft,
+                    // 'web3_tx_hash'   => $txNft, // Disabled until migration runs
                     'metadata'       => [
                         'tx_hash' => $txNft,
                         'network' => 'arbitrum_one',

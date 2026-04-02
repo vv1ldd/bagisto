@@ -27,10 +27,13 @@ class BlockchainSyncService
      */
     public function syncPendingWeb3Transactions($customer): void
     {
+        // Filter in PHP to avoid 500 error while the DB column is missing
         $pendingTransactions = CustomerTransaction::where('customer_id', $customer->id)
             ->where('status', 'pending')
-            ->whereNotNull('web3_tx_hash')
-            ->get();
+            ->get()
+            ->filter(function($tx) {
+                return !empty($tx->web3_tx_hash) || !empty($tx->metadata['tx_hash'] ?? null);
+            });
 
         foreach ($pendingTransactions as $transaction) {
             $this->verifyAndStatusUpdate($transaction);

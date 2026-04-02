@@ -249,14 +249,18 @@
                                             {{ $transaction->created_at->format('d.m.Y — H:i') }}
                                         </div>
 
-                                        @if(!$isOrder && !empty($transaction->metadata['tx_hash']))
+                                        @php
+                                            $txHash = $transaction->web3_tx_hash ?: ($transaction->metadata['tx_hash'] ?? null);
+                                        @endphp
+
+                                        @if(!$isOrder && !empty($txHash))
                                             <div class="mt-3">
-                                                <a href="https://arbiscan.io/tx/{{ $transaction->metadata['tx_hash'] }}" 
-                                                   target="_blank" 
-                                                   onclick="event.stopPropagation()"
-                                                   class="inline-flex items-center gap-1.5 px-2 py-1 bg-zinc-900 border-2 border-zinc-900 text-[#D6FF00] text-[8px] font-black uppercase tracking-widest hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all shadow-[2px_2px_0px_0px_rgba(214,255,0,1)] active:scale-95">
+                                                <a href="https://arbiscan.io/tx/{{ $txHash }}" 
+                                                    target="_blank" 
+                                                    onclick="event.stopPropagation()"
+                                                    class="inline-flex items-center gap-1.5 px-2 py-1 bg-zinc-900 border-2 border-zinc-900 text-[#D6FF00] text-[8px] font-black uppercase tracking-widest hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all shadow-[2px_2px_0px_0px_rgba(214,255,0,1)] active:scale-95">
                                                     <span class="w-1 h-1 bg-[#D6FF00] rounded-full animate-pulse"></span>
-                                                    Blockchain: {{ substr($transaction->metadata['tx_hash'], 0, 6) }}...{{ substr($transaction->metadata['tx_hash'], -4) }}
+                                                    Blockchain: {{ substr($txHash, 0, 6) }}...{{ substr($txHash, -4) }}
                                                     <svg class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                     </svg>
@@ -306,15 +310,18 @@
         {{-- Step 2.5: NFTs (Digital Receipts) --}}
         <div id="step-nfts" class="hidden">
             @if(isset($nftOrders) && $nftOrders->count() > 0)
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
                     @foreach($nftOrders as $order)
-                        <div class="relative group bg-white border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] overflow-hidden transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none">
-                            <img src="{{ route('shop.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
-                            <div class="absolute inset-0 bg-zinc-900/90 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 px-4 text-center">
-                                <span class="text-white font-black text-[10px] uppercase tracking-[0.2em] mb-4">Receipt Asset</span>
-                                <a href="{{ route('shop.nft.metadata', ['id' => $order->id]) }}" target="_blank" class="px-4 py-2 bg-[#7C45F5] border-2 border-white text-white rounded-none text-[9px] font-black uppercase tracking-widest hover:bg-white hover:text-zinc-900 transition-colors shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                                    JSON Data
+                        <div class="relative group bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(124,69,245,1)] overflow-hidden transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none">
+                            <img src="{{ route('shop.nft.image', ['id' => $order->id]) }}" alt="NFT Receipt #{{ $order->id }}" class="w-full h-auto object-cover transition-all duration-700 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-zinc-900/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300 px-4 text-center backdrop-blur-[2px]">
+                                <a href="{{ route('shop.nft.metadata', ['id' => $order->id]) }}" target="_blank" class="px-5 py-3 bg-white border-3 border-zinc-900 text-zinc-900 rounded-none text-[10px] font-black uppercase tracking-widest hover:bg-[#D6FF00] transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:scale-95">
+                                    View Metadata
                                 </a>
+                            </div>
+                            <div class="absolute bottom-4 left-4 right-4 py-2 px-3 bg-zinc-900 border-2 border-[#D6FF00] flex justify-between items-center shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
+                                <span class="text-[#D6FF00] font-black text-[9px] uppercase tracking-widest">Asset #{{ $order->increment_id }}</span>
+                                <span class="text-white font-black text-[8px] uppercase tracking-[0.2em] opacity-60">Verified</span>
                             </div>
                         </div>
                     @endforeach
