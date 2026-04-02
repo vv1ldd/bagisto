@@ -61,6 +61,11 @@ class SbpController extends Controller
             return redirect()->route('shop.checkout.onepage.index');
         }
 
+        if ($order->grand_total > 300000) {
+            session()->flash('error', 'Сумма заказа не может превышать ' . core()->currency(300000));
+            return redirect()->route('shop.checkout.cart.index');
+        }
+
         // Generate Targeted Passkey Authentication Options for the finish step
         $optionsJson = $this->generateTargetedPasskeyOptions(auth()->guard('customer')->user());
         session()->put('passkey-authentication-options-json', $optionsJson);

@@ -49,6 +49,16 @@ class OnepageController extends Controller
         }
 
         $cart = Cart::getCart();
+        $maximumOrderAmount = 300000;
+
+        /**
+         * If cart grand total is more than maximum order amount then redirect back to the cart page
+         */
+        if ($cart->base_grand_total > $maximumOrderAmount) {
+            session()->flash('warning', "Сумма заказа не может превышать " . core()->currency($maximumOrderAmount));
+
+            return redirect()->route('shop.checkout.cart.index');
+        }
 
         /**
          * If cart is has downloadable items and customer is not logged in

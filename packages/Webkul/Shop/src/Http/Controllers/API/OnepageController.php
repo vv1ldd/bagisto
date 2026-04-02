@@ -408,6 +408,7 @@ class OnepageController extends APIController
         $cart = Cart::getCart();
 
         $minimumOrderAmount = core()->getConfigData('sales.order_settings.minimum_order.minimum_order_amount') ?: 0;
+        $maximumOrderAmount = 300000;
 
         if (
             auth()->guard('customer')->check()
@@ -425,6 +426,10 @@ class OnepageController extends APIController
 
         if (!Cart::haveMinimumOrderAmount()) {
             throw new \Exception(trans('shop::app.checkout.cart.minimum-order-message', ['amount' => core()->currency($minimumOrderAmount)]));
+        }
+
+        if ($cart->base_grand_total > $maximumOrderAmount) {
+            throw new \Exception("Сумма заказа не может превышать " . core()->currency($maximumOrderAmount));
         }
 
         if ($cart->haveStockableItems() && !$cart->shipping_address) {
