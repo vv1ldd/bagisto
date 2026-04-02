@@ -27,8 +27,11 @@ class HotWalletService
         $this->chainId = (int) config('crypto.arbitrum_chain_id', 42161);
     }
 
+    public const MAX_MINT_PER_TX = 5000;
+
     /**
      * Mints Meanly Coin (ERC20) to a user's verified crypto address.
+     * Handles splitting large amounts into multiple transactions to avoid 'maxMintPerTx' limits.
      */
     public function mintCoin(Customer $customer, float $amount, string $reason = 'Cashback'): ?string
     {
@@ -43,24 +46,46 @@ class HotWalletService
             return null;
         }
 
-        // Amount needs to be converted to wei (assuming 18 decimals)
-        $amountInWei = bcmul((string) $amount, bcpow('10', '18', 0), 0);
-        
-        // mint(address,uint256,string) signature is 0xd3fc9864
-        $functionSignature = 'd3fc9864';
-        
-        // Encode arguments: address (32), uint256 (32), string offset (32), string length (32), string data (...)
-        $data = $functionSignature;
-        $data .= str_pad(str_replace('0x', '', strtolower($cryptoAddress)), 64, '0', STR_PAD_LEFT);
-        $data .= str_pad($this->bcdechex($amountInWei), 64, '0', STR_PAD_LEFT);
-        
-        // Offset for string starts after the first 3 static slots (3 * 32 = 96 = 0x60)
-        $data .= str_pad(dechex(96), 64, '0', STR_PAD_LEFT);
-        
-        // String data (length + content padding)
-        $data .= $this->encodeString($reason);
+        $hashes = [];
+        $remaining = (float) $amount;
 
-        return $this->sendTransaction($this->coinAddress, $data);
+        while ($remaining > 0) {
+            $chunk = min($remaining, self::MAX_MINT_PER_TX);
+            
+            // Amount needs to be converted to wei (assuming 18 decimals)
+            $amountInWei = bcmul((string) $chunk, bcpow('10', '18', 0), 0);
+            
+            // mint(address,uint256,string) signature is 0xd3fc9864
+            $functionSignature = 'd3fc9864';
+            
+            // Encode arguments: address (32), uint256 (32), string offset (32), string length (32), string data (...)
+            $data = $functionSignature;
+            $data .= str_pad(str_replace('0x', '', strtolower($cryptoAddress)), 64, '0', STR_PAD_LEFT);
+            $data .= str_pad($this->bcdechex($amountInWei), 64, '0', STR_PAD_LEFT);
+            
+            // Offset for string starts after the first 3 static slots (3 * 32 = 96 = 0x60)
+            $data .= str_pad(dechex(96), 64, '0', STR_PAD_LEFT);
+            
+            // String data (length + content padding)
+            $data .= $this->encodeString($reason);
+
+            $txHash = $this->sendTransaction($this->coinAddress, $data);
+            
+            if (!$txHash) {
+                Log::error("HotWalletService: Minting chunk failed and the remaining amount is " . $remaining);
+                return !empty($hashes) ? implode(',', $hashes) : null;
+            }
+
+            $hashes[] = $txHash;
+            $remaining = (float) bcsub((string)$remaining, (string)$chunk, 4);
+
+            // Small delay to ensure nonce updates correctly in rpc pool
+            if ($remaining > 0) {
+                usleep(500000); // 0.5s
+            }
+        }
+
+        return implode(',', $hashes);
     }
 
     /**
