@@ -244,6 +244,7 @@
 
                         // Helper to convert base64 (Spatie format) to Uint8Array for navigator.credentials
                         const base64ToUint8Array = (base64) => {
+                            if (!base64) return new Uint8Array(0).buffer;
                             const binaryString = window.atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
                             const len = binaryString.length;
                             const bytes = new Uint8Array(len);
@@ -253,12 +254,18 @@
                             return bytes.buffer;
                         };
 
-                        // Prepare WebAuthn options
+                        console.log('Passkey: Raw options from server:', this.passkeyOptions);
+                        
+                        // Spatie's loginOptions usually returns the options directly at the root,
+                        // while some registrations wrap them in a 'publicKey' property.
+                        const rawOptions = this.passkeyOptions.publicKey ? this.passkeyOptions.publicKey : this.passkeyOptions;
+
+                        // Prepare WebAuthn options for navigator.credentials.get()
                         const options = {
                             publicKey: {
-                                ...this.passkeyOptions.publicKey,
-                                challenge: base64ToUint8Array(this.passkeyOptions.publicKey.challenge),
-                                allowCredentials: this.passkeyOptions.publicKey.allowCredentials.map(cred => ({
+                                ...rawOptions,
+                                challenge: base64ToUint8Array(rawOptions.challenge),
+                                allowCredentials: (rawOptions.allowCredentials || []).map(cred => ({
                                     ...cred,
                                     id: base64ToUint8Array(cred.id)
                                 }))
