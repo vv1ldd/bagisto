@@ -8,7 +8,9 @@
         :action="route('admin.account.update')"
         enctype="multipart/form-data"
         method="PUT"
+        id="account-edit-form"
     >
+        <input type="hidden" name="passkey_verification_response" id="passkey-verification-response">
         <div class="flex items-center justify-between gap-4 max-sm:flex-wrap">
             <p class="text-xl font-bold text-gray-800 dark:text-white">
                 @lang('admin::app.account.edit.title')
@@ -26,8 +28,10 @@
                 <!-- Save Button -->
                 <div class="flex items-center gap-x-2.5">
                     <button 
-                        type="submit"
+                        type="button"
                         class="primary-button"
+                        onclick="handleProfileSave(event)"
+                        id="save-profile-btn"
                     >
                         @lang('admin::app.account.edit.save-btn')
                     </button>
@@ -259,6 +263,66 @@
 
 @push('scripts')
     <script>
+        /**
+         * Handle Profile Save (with Passkey Step-up)
+         */
+        async function handleProfileSave(e) {
+            const form = document.getElementById('account-edit-form');
+            const passwordField = form.querySelector('input[name="current_password"]');
+            const hasPasskeys = {{ $user->passkeys->count() > 0 ? 'true' : 'false' }};
+            const saveBtn = document.getElementById('save-profile-btn');
+
+            // If user filled the password, or doesn't have passkeys, just submit
+            if ((passwordField && passwordField.value.trim() !== '') || !hasPasskeys) {
+                form.submit();
+                return;
+            }
+
+            // Otherwise, attempt Passkey Step-up
+            const SimpleWebAuthn = window.SimpleWebAuthnBrowser;
+            if (!SimpleWebAuthn || !window.PublicKeyCredential) {
+                // Fallback to normal submission (which will likely fail on server if password is required)
+                form.submit();
+                return;
+            }
+
+            const originalText = saveBtn.innerText;
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'Подтверждение (Passkey)...';
+
+            try {
+                // 1. Get Targeted Options
+                const response = await fetch('{{ route('admin.passkey.login_options') }}?targeted=true', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Ошибка получения параметров подтверждения.');
+
+                const options = await response.json();
+                
+                // 2. Start Authentication
+                const asseResp = await SimpleWebAuthn.startAuthentication(options);
+
+                // 3. Inject Response and Submit
+                document.getElementById('passkey-verification-response').value = JSON.stringify(asseResp);
+                form.submit();
+                
+            } catch (err) {
+                console.error('[Passkey Step-up] Error:', err);
+                saveBtn.disabled = false;
+                saveBtn.innerText = originalText;
+
+                if (err.name !== 'NotAllowedError' && !err.message.includes('cancel')) {
+                    alert('Для сохранения изменений необходимо подтвердить личность паролем или Passkey.');
+                }
+            }
+        }
+
         /**
          * Start Passkey Registration
          */

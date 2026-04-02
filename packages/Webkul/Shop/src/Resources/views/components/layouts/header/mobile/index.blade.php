@@ -92,7 +92,6 @@
                             ></v-cart-badge>
                         </div>
                     </div>
-                    <x-shop::live-balance :user="$authUser" class="text-[10px] h-3 mr-0.5" />
                 </div>
             @else
                 <v-header-cart></v-header-cart>

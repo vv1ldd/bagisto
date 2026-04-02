@@ -4,127 +4,85 @@
         @lang('admin::app.users.sessions.title')
     </x-slot>
 
-    <div class="flex h-[100vh] items-center justify-center">
-        <div class="flex flex-col items-center gap-5">
+    <div class="flex h-[100vh] items-center justify-center bg-[#F4F4F4] dark:bg-gray-900">
+        <div class="flex w-[400px] flex-col items-center gap-8 p-6">
             <!-- Logo -->            
-            @if ($logo = core()->getConfigData('general.design.admin_logo.logo_image'))
-                <img
-                    class="h-10 w-[110px]"
-                    src="{{ Storage::url($logo) }}"
-                    alt="{{ config('app.name') }}"
-                />
-            @else
-                <img
-                    class="w-max" 
-                    src="{{ bagisto_asset('images/logo.svg') }}"
-                    alt="{{ config('app.name') }}"
-                />
-            @endif
+            <div class="mb-2">
+                @if ($logo = core()->getConfigData('general.design.admin_logo.logo_image'))
+                    <img class="h-12 w-auto" src="{{ Storage::url($logo) }}" alt="{{ config('app.name') }}" />
+                @else
+                    <img class="w-48" src="{{ bagisto_asset('images/logo.svg') }}" alt="{{ config('app.name') }}" />
+                @endif
+            </div>
 
-            <div class="box-shadow flex min-w-[300px] flex-col rounded-md bg-white dark:bg-gray-900">
-                <!-- Login Form -->
-                <x-admin::form :action="route('admin.session.store')">
-                    <p class="p-4 text-xl font-bold text-gray-800 dark:text-white">
-                        @lang('admin::app.users.sessions.title')
-                    </p>
+            <div class="w-full space-y-6">
+                <!-- PRIMARY ACTION: PASSKEY -->
+                <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
+                    class="group relative flex h-16 w-full items-center justify-center gap-4 rounded-2xl border-4 border-black bg-[#7C45F5] text-sm font-black uppercase tracking-widest text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-[#8A5CF7] active:translate-x-1 active:translate-y-1 active:shadow-none dark:border-white dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                    </svg>
+                    Войти через Passkey
+                </button>
 
-                    <div class="border-y p-4 dark:border-gray-800">
-                        <!-- Email -->
-                        <x-admin::form.control-group>
-                            <x-admin::form.control-group.label class="required">
-                                @lang('admin::app.users.sessions.email')
-                            </x-admin::form.control-group.label>
+                <div class="relative flex items-center py-2">
+                    <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
+                    <span class="mx-4 flex-shrink text-[10px] font-bold uppercase tracking-widest text-gray-400">ИЛИ</span>
+                    <div class="flex-grow border-t border-gray-300 dark:border-gray-700"></div>
+                </div>
 
-                            <x-admin::form.control-group.control 
-                                type="email" 
-                                class="w-[254px] max-w-full" 
-                                id="email"
-                                name="email" 
-                                rules="required|email" 
-                                :label="trans('admin::app.users.sessions.email')"
-                                :placeholder="trans('admin::app.users.sessions.email')"
-                            />
+                <!-- SECONDARY ACTION: PASSWORD FORM (HIDDEN BY DEFAULT) -->
+                <div x-data="{ showLegacy: false }" class="w-full">
+                    <button type="button" @click="showLegacy = !showLegacy" 
+                        class="mx-auto flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors">
+                        <span :class="showLegacy ? 'rotate-180' : ''" class="icon-arrow-down text-lg transition-transform"></span>
+                        Вход по паролю
+                    </button>
 
-                            <x-admin::form.control-group.error control-name="email" />
-                        </x-admin::form.control-group>
+                    <div x-show="showLegacy" x-collapse x-cloak class="mt-6 overflow-hidden rounded-2xl border-4 border-black bg-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:border-white dark:bg-gray-800 dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)]">
+                        <x-admin::form :action="route('admin.session.store')">
+                            <div class="space-y-4">
+                                <!-- Email -->
+                                <x-admin::form.control-group>
+                                    <x-admin::form.control-group.label class="required !text-[10px] !font-black !uppercase !tracking-widest">
+                                        @lang('admin::app.users.sessions.email')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control type="email" name="email" rules="required|email" class="!rounded-xl !border-2 !border-black dark:!border-white" />
+                                    <x-admin::form.control-group.error control-name="email" />
+                                </x-admin::form.control-group>
 
-                        <!-- Password -->
-                        <x-admin::form.control-group class="relative w-full">
-                            <x-admin::form.control-group.label class="required">
-                                @lang('admin::app.users.sessions.password')
-                            </x-admin::form.control-group.label>
-                    
-                            <x-admin::form.control-group.control 
-                                type="password" 
-                                class="w-[254px] max-w-full ltr:pr-10 rtl:pl-10" 
-                                id="password"
-                                name="password" 
-                                rules="required|min:6" 
-                                :label="trans('admin::app.users.sessions.password')"
-                                :placeholder="trans('admin::app.users.sessions.password')"
-                            />
-                    
-                            <span 
-                                class="icon-view absolute top-[42px] -translate-y-2/4 cursor-pointer text-2xl ltr:right-2 rtl:left-2"
-                                onclick="switchVisibility()"
-                                id="visibilityIcon"
-                                role="presentation"
-                                tabindex="0"
-                            >
-                            </span>
-                    
-                            <x-admin::form.control-group.error control-name="password" />
-                        </x-admin::form.control-group>
+                                <!-- Password -->
+                                <x-admin::form.control-group>
+                                    <x-admin::form.control-group.label class="required !text-[10px] !font-black !uppercase !tracking-widest">
+                                        @lang('admin::app.users.sessions.password')
+                                    </x-admin::form.control-group.label>
+                                    <x-admin::form.control-group.control type="password" name="password" id="password" rules="required|min:6" class="!rounded-xl !border-2 !border-black dark:!border-white" />
+                                    <x-admin::form.control-group.error control-name="password" />
+                                </x-admin::form.control-group>
+
+                                <button class="flex h-12 w-full items-center justify-center rounded-xl border-2 border-black bg-black font-black uppercase tracking-widest text-white transition-all hover:bg-gray-800 active:scale-95 dark:border-white dark:bg-white dark:text-black">
+                                    @lang('admin::app.users.sessions.submit-btn')
+                                </button>
+                            </div>
+                        </x-admin::form>
                     </div>
+                </div>
 
-                    <div class="flex items-center justify-between p-4">
-                        <!-- Forgot Password Link -->
-                        <div class="flex flex-col gap-1">
-                            <a 
-                                class="cursor-pointer text-xs font-semibold leading-6 text-blue-600"
-                                href="{{ route('admin.forget_password.create') }}"
-                            >
-                                @lang('admin::app.users.sessions.forget-password-link')
-                            </a>
-
-                            <a 
-                                class="cursor-pointer text-xs font-semibold leading-6 text-orange-600"
-                                href="{{ route('admin.session.recovery.create') }}"
-                            >
-                                Восстановить через Seed-фразу
-                            </a>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button
-                            class="cursor-pointer rounded-md border border-blue-700 bg-blue-600 px-3.5 py-1.5 font-semibold text-gray-50"
-                            aria-label="{{ trans('admin::app.users.sessions.submit-btn')}}"
-                        >
-                            @lang('admin::app.users.sessions.submit-btn')
-                        </button>
-                    </div>
-
-                    <div class="flex flex-col gap-3 border-t p-4 dark:border-gray-800">
-                        <button type="button" id="passkey-login-button" onclick="handlePasskeyLogin(event)"
-                            class="flex w-full items-center justify-center gap-3 rounded-md border border-gray-200 bg-white px-3.5 py-1.5 font-semibold text-gray-600 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 uppercase tracking-wide text-xs">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                <circle cx="12" cy="16" r="1.5"></circle>
-                            </svg>
-                            Войти с помощью Passkey
-                        </button>
-                    </div>
-                </x-admin::form>
+                <!-- RECOVERY -->
+                <div class="flex flex-col items-center gap-4 pt-4">
+                    <a href="{{ route('admin.forget_password.create') }}" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-blue-600 transition-colors">
+                        @lang('admin::app.users.sessions.forget-password-link')
+                    </a>
+                    <a href="{{ route('admin.session.recovery.create') }}" class="rounded-lg border-2 border-dashed border-orange-200 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-orange-600 hover:border-orange-600 transition-all">
+                        Восстановить через Seed-фразу
+                    </a>
+                </div>
             </div>
 
             <!-- Powered By -->
-            <div class="text-sm font-normal">
-                @lang('admin::app.users.sessions.powered-by-description', [
-                    'bagisto' => '<a class="text-blue-600 hover:underline" href="https://bagisto.com/en/">Bagisto</a>',
-                    'webkul' => '<a class="text-blue-600 hover:underline" href="https://webkul.com/">Webkul</a>',
-                ])
+            <div class="mt-8 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                &copy; {{ date('Y') }} Meanly Admin • Powered by Bagisto
             </div>
         </div>
     </div>

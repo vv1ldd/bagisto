@@ -141,17 +141,61 @@ class PasskeyController extends Controller
     /**
      * Generate authentication options for passkey login.
      */
-    public function loginOptions(GeneratePasskeyAuthenticationOptionsAction $generateOptionsAction)
+    public function loginOptions(GeneratePasskeyAuthenticationOptionsAction $generateOptionsAction, Request $request)
     {
         // Always sync RP ID to current request host
-        $currentHost = request()->getHost();
+        $currentHost = $request->getHost();
         config(['passkeys.relying_party.id' => $currentHost]);
 
-        $optionsJson = $generateOptionsAction->execute();
+        $user = Auth::guard('admin')->user();
+        
+        // If targeted is requested (Step-up Auth), only show that user's keys
+        if ($user && ($request->boolean('targeted') || $request->input('targeted') === 'true')) {
+            $optionsJson = $this->generateTargetedPasskeyOptions($user, $generateOptionsAction);
+        } else {
+            $optionsJson = $generateOptionsAction->execute();
+        }
 
         session()->put('admin-passkey-authentication-options-json', $optionsJson);
 
         return response($optionsJson)->header('Content-Type', 'application/json');
+    }
+
+    /**
+     * Generate "Targeted" Passkey Authentication Options.
+     * Restricts the browser prompt to only show the user's registered keys.
+     */
+    private function generateTargetedPasskeyOptions($user, $generateOptionsAction)
+    {
+        // 1. Get base options from Spatie
+        $optionsJson = $generateOptionsAction->execute();
+        
+        if (! $user || $user->passkeys->isEmpty()) {
+            return $optionsJson;
+        }
+
+        try {
+            // 2. Use Spatie's Serializer
+            $serializer = \Spatie\LaravelPasskeys\Support\Serializer::make();
+            $options = $serializer->fromJson($optionsJson, \Webauthn\PublicKeyCredentialRequestOptions::class);
+
+            // 3. Populate allowCredentials
+            $allowCredentials = [];
+            foreach ($user->passkeys as $passkey) {
+                $allowCredentials[] = new \Webauthn\PublicKeyCredentialDescriptor(
+                    \Webauthn\PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    $passkey->data->publicKeyCredentialId,
+                    [] // Any transport
+                );
+            }
+
+            $options->allowCredentials = $allowCredentials;
+
+            return $serializer->toJson($options);
+        } catch (\Exception $e) {
+            Log::error("Passkey: Admin targeted options failed: " . $e->getMessage());
+            return $optionsJson; // Fallback
+        }
     }
 
     /**
@@ -190,6 +234,8 @@ class PasskeyController extends Controller
             Auth::guard('admin')->login($user, $request->boolean('remember'));
 
             session()->regenerate();
+            session()->put('logged_in_via_passkey', true);
+            session()->put('passkey_unlocked_at', now()->timestamp);
             session()->forget('admin-passkey-authentication-options-json');
 
             return response()->json([

@@ -34,7 +34,6 @@ class AccountController extends Controller
             'name' => 'required',
             'email' => 'email|unique:admins,email,'.$user->id,
             'password' => 'nullable|min:6|confirmed',
-            'current_password' => 'required|min:6',
             'image.*' => 'nullable|mimes:bmp,jpeg,jpg,png,webp',
         ]);
 
@@ -47,7 +46,30 @@ class AccountController extends Controller
             'image',
         ]);
 
-        if (! Hash::check($data['current_password'], $user->password)) {
+        $isPasskeyVerified = false;
+        $passkeyResponse = request()->input('passkey_verification_response');
+
+        if ($passkeyResponse) {
+            try {
+                $optionsJson = session()->get('admin-passkey-authentication-options-json');
+                
+                if ($optionsJson) {
+                    $findPasskeyAction = app(\Spatie\LaravelPasskeys\Actions\FindPasskeyToAuthenticateAction::class);
+                    $passkey = $findPasskeyAction->execute($passkeyResponse, $optionsJson);
+
+                    if ($passkey && $passkey->authenticatable_id == $user->id) {
+                        $isPasskeyVerified = true;
+                        
+                        // Update session trust
+                        session()->put('passkey_unlocked_at', now()->timestamp);
+                    }
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Admin Profile Update Passkey Verification Failed: ' . $e->getMessage());
+            }
+        }
+
+        if (! $isPasskeyVerified && ! Hash::check($data['current_password'] ?? '', $user->password)) {
             session()->flash('warning', trans('admin::app.account.edit.invalid-password'));
 
             return redirect()->back();
@@ -55,7 +77,7 @@ class AccountController extends Controller
 
         $isPasswordChanged = false;
 
-        if (! $data['password']) {
+        if (! isset($data['password']) || ! $data['password']) {
             unset($data['password']);
         } else {
             $isPasswordChanged = true;
@@ -67,7 +89,7 @@ class AccountController extends Controller
             $data['image'] = current(request()->file('image'))->store('admins/'.$user->id);
         } else {
             if (! isset($data['image'])) {
-                if (! empty($data['image'])) {
+                if (! empty($user->image)) {
                     Storage::delete($user->image);
                 }
 

@@ -33,8 +33,12 @@ class MatrixController extends Controller
     {
         $customer = auth()->guard('customer')->user();
 
+        if (! $customer->is_matrix_enabled) {
+            abort(403, 'Matrix chat is not enabled for your account.');
+        }
+
         // Ensure user is registered on Matrix
-        if (!$customer->matrix_access_token) {
+        if (! $customer->matrix_access_token) {
             $this->matrixService->registerCustomer($customer);
         }
 
@@ -50,8 +54,15 @@ class MatrixController extends Controller
     {
         $customer = auth()->guard('customer')->user();
 
+        if (! $customer->is_matrix_enabled) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Matrix chat is not enabled for your account.',
+            ], 403);
+        }
+
         // 1. Ensure current user is registered
-        if (!$customer->matrix_access_token) {
+        if (! $customer->matrix_access_token) {
             $this->matrixService->registerCustomer($customer);
         }
 
