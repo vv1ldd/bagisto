@@ -86,14 +86,6 @@ class SbpController extends Controller
             "Оплата заказа #{$order->increment_id} (СБП 1:1)"
         );
 
-        // 2. Mint Bonus (Fixed 5% Cashback for SBP)
-        $bonusAmount = round((float) $order->grand_total * 0.05, 2);
-        $tx2 = $this->hotWalletService->mintCoin(
-            $customer, 
-            $bonusAmount, 
-            "Бонус +5% СБП за заказ #{$order->increment_id}"
-        );
-
         // Update order status and save transaction proofs
         $additional = $order->additional ?? [];
         if (is_string($additional)) {
@@ -102,13 +94,12 @@ class SbpController extends Controller
 
         $additional['sbp_payment_received'] = true;
         $additional['mint_tx_base'] = $tx1;
-        $additional['mint_tx_bonus'] = $tx2;
         $additional['mint_amount_base'] = (float) $order->grand_total;
-        $additional['mint_amount_bonus'] = $bonusAmount;
+        $additional['is_ready_for_passkey'] = true;
 
-        Log::info("SBP Callback: Updating order with payment received", [
+        Log::info("SBP Callback: Payment received and base minted", [
             'order_id' => $order->id,
-            'additional' => $additional
+            'tx_base' => $tx1
         ]);
 
         $order->update([
@@ -116,20 +107,15 @@ class SbpController extends Controller
             'additional' => $additional,
         ]);
 
-        \Illuminate\Support\Facades\Log::info("SBP Callback Processed", [
+        Log::info("SBP Callback Processed", [
             'order' => $order->increment_id,
             'base_tx' => $tx1,
-            'bonus_tx' => $tx2
         ]);
 
         return response()->json([
             'success' => true,
-            'tx1'     => $tx1,
-            'tx2'     => $tx2,
-            'amounts' => [
-                'base'  => (float) $order->grand_total,
-                'bonus' => $bonusAmount
-            ]
+            'tx'      => $tx1,
+            'amount'  => (float) $order->grand_total,
         ]);
     }
 
@@ -151,14 +137,50 @@ class SbpController extends Controller
         return response()->json([
             'success'  => true,
             'received' => $additional['sbp_payment_received'] ?? false,
-            'tx'       => [
-                'base'  => $additional['mint_tx_base'] ?? null,
-                'bonus' => $additional['mint_tx_bonus'] ?? null,
-            ],
-            'amounts'  => [
-                'base'  => $additional['mint_amount_base'] ?? null,
-                'bonus' => $additional['mint_amount_bonus'] ?? null,
-            ]
+            'is_ready' => $additional['is_ready_for_passkey'] ?? false,
+            'tx_base'  => $additional['mint_tx_base'] ?? null,
+        ]);
+    }
+
+    /**
+     * Mint the 5% bonus for the order.
+     * Called from the success page for maximum "wow" factor.
+     *
+     * @param  int  $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function mintBonus($orderId)
+    {
+        $order = $this->orderRepository->findOrFail($orderId);
+        $additional = $order->additional;
+
+        if (!empty($additional['mint_tx_bonus'])) {
+            return response()->json([
+                'success' => true,
+                'message' => 'ALREADY_MINTED',
+                'tx' => $additional['mint_tx_bonus']
+            ]);
+        }
+
+        $bonusAmount = (float) $order->grand_total * 0.05;
+        
+        Log::info("SBP: Minting bonus for order", ['order_id' => $orderId, 'amount' => $bonusAmount]);
+
+        $txBonus = $this->hotWalletService->mintCoin(
+            $order->customer, 
+            $bonusAmount,
+            "Order #{$order->increment_id} Bonus"
+        );
+
+        $additional['mint_tx_bonus'] = $txBonus;
+        $additional['mint_amount_bonus'] = $bonusAmount;
+
+        $order->update(['additional' => $additional]);
+
+        return response()->json([
+            'success' => true,
+            'tx'      => $txBonus,
+            'amount'  => $bonusAmount
         ]);
     }
 
