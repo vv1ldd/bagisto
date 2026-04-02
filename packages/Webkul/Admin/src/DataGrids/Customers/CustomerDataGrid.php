@@ -138,16 +138,6 @@ class CustomerDataGrid extends DataGrid
                 return route('admin.customers.customers.view', $row->customer_id);
             },
         ]);
-
-        $this->addAction([
-            'icon'   => 'icon-exit',
-            'title'  => trans('admin::app.customers.customers.index.datagrid.login-as-customer'),
-            'method' => 'GET',
-            'target' => 'blank',
-            'url'    => function ($row) {
-                return route('admin.customers.customers.login_as_customer', $row->customer_id);
-            },
-        ]);
     }
 
     /**
