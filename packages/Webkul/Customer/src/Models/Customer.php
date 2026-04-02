@@ -491,7 +491,8 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
     {
         static::creating(function ($customer) {
             if (!$customer->credits_id) {
-                $customer->credits_id = static::generateUniqueCreditsId();
+                // Address is now mandatory - no silent mock fallbacks allowed.
+                \Illuminate\Support\Facades\Log::warning("Customer created without credits_id: " . ($customer->username ?? 'Unknown'));
             }
 
             if (!$customer->username) {
@@ -505,7 +506,8 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
 
         static::saving(function ($customer) {
             if (!$customer->credits_id) {
-                $customer->credits_id = static::generateUniqueCreditsId();
+                // Address is now mandatory - no silent mock fallbacks allowed.
+                \Illuminate\Support\Facades\Log::warning("Customer saving without credits_id: " . ($customer->username ?? 'Unknown'));
             }
 
             if (!$customer->username) {
@@ -542,18 +544,6 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
                 );
             }
         });
-    }
-
-    /**
-     * Generate a unique credits ID.
-     */
-    public static function generateUniqueCreditsId(): string
-    {
-        do {
-            $id = '0x' . bin2hex(random_bytes(20));
-        } while (static::where('credits_id', $id)->exists());
-
-        return $id;
     }
 
     /**
