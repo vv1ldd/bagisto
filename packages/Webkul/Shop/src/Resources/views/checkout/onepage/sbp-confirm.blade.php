@@ -131,6 +131,13 @@
     @endphp
 
     <script type="module">
+        app.component('v-sbp-confirm', {
+            template: '#v-sbp-confirm-template',
+            data() {
+                return {
+                    paymentReceived: @json($additional['sbp_payment_received'] ?? false),
+                    isReady: @json($additional['is_ready_for_passkey'] ?? false),
+                    isFinishing: false,
                     isSimulating: false,
                     isMinting: false,
                     mintingError: false,
@@ -146,13 +153,6 @@
                 console.log('SBP Component Mounted. Order:', this.order.id);
                 this.fetchStatus();
                 this.pollInterval = setInterval(this.fetchStatus, 3000);
-
-                if (this.isTestMode && !this.paymentReceived) {
-                    console.log('Test Mode: Simulating payment in 1s...');
-                    setTimeout(() => {
-                        this.simulatePayment();
-                    }, 1000);
-                }
             },
             beforeUnmount() {
                 clearInterval(this.pollInterval);
