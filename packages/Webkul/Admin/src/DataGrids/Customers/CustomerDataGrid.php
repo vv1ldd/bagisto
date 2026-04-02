@@ -42,6 +42,9 @@ class CustomerDataGrid extends DataGrid
                 'customers.is_suspended',
                 'customer_groups.name as group',
                 'customers.channel_id',
+                DB::raw('0 as revenue'),
+                DB::raw('0 as order_count'),
+                DB::raw('0 as address_count'),
                 DB::raw("CONCAT(customers.first_name, ' ', customers.last_name) as full_name")
             );
 
