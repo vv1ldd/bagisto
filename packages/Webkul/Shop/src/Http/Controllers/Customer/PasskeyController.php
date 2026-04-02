@@ -393,29 +393,45 @@ class PasskeyController extends Controller
      */
     private function generateTargetedPasskeyOptions($customer, $generateOptionsAction)
     {
-        // 1. Get base options (challenge, rpId) from Spatie
+        // 1. Get base options from Spatie
         $optionsJson = $generateOptionsAction->execute();
-        $options = json_decode($optionsJson, true);
         
-        if (! $customer) return $optionsJson;
-
-        // 2. Populate allowCredentials with the user's specific keys
-        $allowCredentials = [];
-        foreach ($customer->passkeys as $passkey) {
-            // Navigator.credentials.get expects the ID as a buffer.
-            // Our frontend helper (sbp-confirm / onepage) handles base64-to-buffer.
-            $allowCredentials[] = [
-                'id'         => base64_encode($passkey->credential_id),
-                'type'       => 'public-key',
-                'transports' => $passkey->data->trustPath->transports ?? ['internal', 'usb', 'nfc', 'ble'],
-            ];
+        if (! $customer || $customer->passkeys->isEmpty()) {
+            return $optionsJson;
         }
 
-        if (! empty($allowCredentials)) {
-            $options['allowCredentials'] = $allowCredentials;
-        }
+        try {
+            // 2. Use Spatie's Serializer to turn it into an object
+            $serializer = \Spatie\LaravelPasskeys\Support\Serializer::make();
+            $options = $serializer->fromJson($optionsJson, \Webauthn\PublicKeyCredentialRequestOptions::class);
 
-        return json_encode($options);
+            Log::debug("Passkey: Generating options for RP ID: " . $options->rpId);
+
+            // 3. Populate allowCredentials with objects from the DB
+            $allowCredentials = [];
+            foreach ($customer->passkeys as $passkey) {
+                // Loosen transports by passing empty array - allows any method to find the key
+                $allowCredentials[] = new \Webauthn\PublicKeyCredentialDescriptor(
+                    \Webauthn\PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                    $passkey->data->publicKeyCredentialId,
+                    [] // Empty transports = broad search
+                );
+            }
+
+            $options->allowCredentials = $allowCredentials;
+
+            $finalJson = $serializer->toJson($options);
+
+            Log::debug("Passkey: Targeted options generated in controller", [
+                'count' => count($allowCredentials),
+                'ids_lengths' => array_map('strlen', array_column($customer->passkeys->toArray(), 'credential_id'))
+            ]);
+
+            return $finalJson;
+        } catch (\Exception $e) {
+            Log::error("Passkey: Failed to generate targeted options in controller", ['error' => $e->getMessage()]);
+            return $optionsJson; // Fallback to discovery
+        }
     }
 
     /**
