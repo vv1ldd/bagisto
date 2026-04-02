@@ -286,11 +286,16 @@ class SbpController extends Controller
      */
     public function finish(Request $request, $orderId)
     {
+        Log::info("SBP Finish Attempt", ['order_id' => $orderId, 'customer' => auth()->guard('customer')->id()]);
+
         try {
             $order = $this->orderRepository->find($orderId);
             if (! $order) $order = $this->orderRepository->findOneByField('increment_id', $orderId);
 
-            if (! $order) return response()->json(['success' => false, 'message' => 'ORDER_NOT_FOUND'], 404);
+            if (! $order) {
+                Log::warning("SBP Finish Error: Order Not Found", ['order_id' => $orderId]);
+                return response()->json(['success' => false, 'message' => 'ORDER_NOT_FOUND'], 404);
+            }
 
             $payment = $order->payment;
             $additional = $payment?->additional ?? [];
@@ -313,11 +318,12 @@ class SbpController extends Controller
                 ], 422);
             }
 
-            $customer = $order->customer;
+            // Consistency Check: Use authenticated user if available, fallback to order customer
+            $customer = auth()->guard('customer')->user() ?? $order->customer;
             $amount = (float) $order->grand_total;
 
             try {
-                Log::info("SBP 2.0 Web3 Finalization: Processing signature", ['order' => $order->id, 'amount' => $amount]);
+                Log::info("SBP 2.0 Web3 Finalization: Processing signature", ['order' => $order->id, 'amount' => $amount, 'customer' => $customer->id]);
                 
                 // Mirroring OnepageController logic: robust decoding of the assertion
                 $txHash = $this->passkeyWeb3Signer->processGaslessCheckout(
@@ -334,7 +340,7 @@ class SbpController extends Controller
                 // 3. Sync with internal transaction history (Deduction/Purchase)
                 $this->customerTransactionRepository->create([
                     'uuid'           => (string) Str::uuid(),
-                    'customer_id'    => $customer->id,
+                    'customer_id'    => $customer->id, // Use consistent customer ID
                     'amount'         => -1 * $amount,
                     'type'           => 'purchase',
                     'status'         => 'completed',
@@ -358,14 +364,14 @@ class SbpController extends Controller
                 return response()->json(['success' => true, 'message' => 'SUCCESS']);
 
             } catch (\Exception $e) {
-                Log::error("SBP 2.0 Web3 Finalization Error: " . $e->getMessage(), ['order' => $order->id]);
+                Log::error("SBP 2.0 Web3 Finalization Error: " . $e->getMessage(), ['order' => $order->id, 'trace' => $e->getTraceAsString()]);
                 return response()->json([
                     'success' => false,
                     'message' => "Ошибка Web3: " . $e->getMessage(),
                 ], 400);
             }
         } catch (\Exception $e) {
-            Log::error("SBP Finish System Error: " . $e->getMessage());
+            Log::error("SBP Finish System Error: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }

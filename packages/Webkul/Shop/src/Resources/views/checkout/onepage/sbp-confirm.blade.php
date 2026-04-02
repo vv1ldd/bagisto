@@ -290,15 +290,22 @@
                         }
 
                         // 2. Prepare the assertion payload in the format expected by PasskeyWeb3Signer
-                        // This mirrors the standard checkout's encoding approach
+                        // This mirrors the standard checkout's encoding approach (Base64URL)
+                        const formatBase64Url = (bytes) => {
+                            return btoa(String.fromCharCode(...new Uint8Array(bytes)))
+                                .replace(/\+/g, '-')
+                                .replace(/\//g, '_')
+                                .replace(/=/g, '');
+                        };
+
                         const passkeyPayload = {
                             id: assertion.id,
-                            rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.rawId))),
+                            rawId: formatBase64Url(assertion.rawId),
                             response: {
-                                authenticatorData: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.authenticatorData))),
-                                clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.clientDataJSON))),
-                                signature: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.signature))),
-                                userHandle: assertion.response.userHandle ? btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.userHandle))) : null
+                                authenticatorData: formatBase64Url(assertion.response.authenticatorData),
+                                clientDataJSON: formatBase64Url(assertion.response.clientDataJSON),
+                                signature: formatBase64Url(assertion.response.signature),
+                                userHandle: assertion.response.userHandle ? formatBase64Url(assertion.response.userHandle) : null
                             },
                             type: assertion.type
                         };
@@ -320,7 +327,15 @@
                         console.error('Passkey Error:', err);
                         this.isFinishing = false;
                         
-                        let displayMsg = err.message || 'Верификация не удалась';
+                        // Extract error message from Axios response if available
+                        let displayMsg = 'Верификация не удалась';
+                        
+                        if (err.response && err.response.data && err.response.data.message) {
+                            displayMsg = err.response.data.message;
+                        } else if (err.message) {
+                            displayMsg = err.message;
+                        }
+                        
                         if (err.name === 'NotAllowedError') displayMsg = 'Операция отменена пользователем.';
                         
                         if (window.addFlash) {

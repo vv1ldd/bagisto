@@ -45,7 +45,7 @@ class Customer extends Authenticatable implements CustomerContract, HasPasskeys
      */
     public function getPassKeyDisplayName(): string
     {
-        return $this->credits_id ?? $this->username ?? 'Пользователь';
+        return $this->username ?? $this->credits_id ?? 'Пользователь';
     }
 
     /**
