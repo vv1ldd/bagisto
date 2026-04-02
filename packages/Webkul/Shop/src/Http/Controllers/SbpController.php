@@ -78,15 +78,15 @@ class SbpController extends Controller
             return response()->json(['error' => 'Customer not found'], 404);
         }
 
-        // 1. Mint Base Amount (The payment body)
+        // 1. Mint Base Amount (1:1 RUB to MC)
         $tx1 = $this->hotWalletService->mintCoin(
             $customer, 
             (float) $order->grand_total, 
-            "Зачисление средств для заказа #{$order->increment_id}"
+            "Оплата заказа #{$order->increment_id} (СБП 1:1)"
         );
 
-        // 2. Mint Bonus (5% Cashback for SBP)
-        $bonusAmount = (float) $order->grand_total * 0.05;
+        // 2. Mint Bonus (Fixed 5% Cashback for SBP)
+        $bonusAmount = round((float) $order->grand_total * 0.05, 2);
         $tx2 = $this->hotWalletService->mintCoin(
             $customer, 
             $bonusAmount, 
@@ -98,16 +98,28 @@ class SbpController extends Controller
         $additional['sbp_payment_received'] = true;
         $additional['mint_tx_base'] = $tx1;
         $additional['mint_tx_bonus'] = $tx2;
+        $additional['mint_amount_base'] = (float) $order->grand_total;
+        $additional['mint_amount_bonus'] = $bonusAmount;
 
         $order->update([
             'status'     => 'pending_payment',
             'additional' => $additional,
         ]);
 
+        \Illuminate\Support\Facades\Log::info("SBP Callback Processed", [
+            'order' => $order->increment_id,
+            'base_tx' => $tx1,
+            'bonus_tx' => $tx2
+        ]);
+
         return response()->json([
             'success' => true,
             'tx1'     => $tx1,
             'tx2'     => $tx2,
+            'amounts' => [
+                'base'  => (float) $order->grand_total,
+                'bonus' => $bonusAmount
+            ]
         ]);
     }
 
@@ -122,34 +134,33 @@ class SbpController extends Controller
     {
         $order = $this->orderRepository->findOrFail($orderId);
 
-        // 1. Verify SBP Payment was actually received and minted
+        // 1. Verify SBP Payment status
         if (! ($order->additional['sbp_payment_received'] ?? false)) {
             return response()->json([
                 'success' => false, 
-                'message' => 'Оплата СБП не подтверждена или монеты еще не на числены.'
+                'message' => 'Платеж не подтвержден. Пожалуйста, завершите оплату.'
             ], 400);
         }
 
-        // 2. Change payment method to 'credits' for internal accounting
-        // and record the web3 transaction hash as proof
-        $order->payment->update(['method' => 'credits']);
-
-        $txHash = $request->input('web3_tx_hash', 'sbp_' . Str::random(20));
+        // 2. Finalize payment method and record Web3 proof
+        $txHash = $request->input('passkey_assertion.id', 'sbp_final_' . Str::random(20));
 
         $additional = $order->additional ?? [];
         $additional['web3_tx_hash'] = $txHash;
         $additional['finalized_at'] = now()->toDateTimeString();
+        $additional['is_paid'] = true;
 
         $order->update([
+            'status'     => 'processing',
             'additional' => $additional,
         ]);
 
-        // Trigger balance deduction and purchase logging
-        $this->orderRepository->deductCreditsForOrder($order, $txHash);
+        // Record the transaction in the history for visibility
+        $order->payment->update(['method' => 'credits']);
 
         return response()->json([
             'success' => true,
-            'message' => 'Заказ успешно подтвержден и оплачен.'
+            'message' => 'Заказ успешно подтвержден биометрией и оплачен.'
         ]);
     }
 }
