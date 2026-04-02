@@ -48,6 +48,7 @@ class SbpController extends Controller
                 
                 // Preparing data and creating order
                 $data = (new \Webkul\Sales\Transformers\OrderResource($cart))->jsonSerialize();
+                /** @var \Webkul\Sales\Models\Order $order */
                 $order = $this->orderRepository->create($data);
                 
                 // Deactivate cart after order creation
