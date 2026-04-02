@@ -166,6 +166,18 @@
                         @foreach ($transactions as $transaction)
                             @php
                                 $isOrder = ($transaction->merged_type === 'order');
+
+                                // WEB3 FIX: If this is a marketplace order entry, check if we already have 
+                                // a corresponding wallet purchase transaction for the same order.
+                                // If so, skip this redundant entry.
+                                if ($isOrder) {
+                                    $hasWalletTx = $transactions->contains(function($t) use ($transaction) {
+                                        return $t->merged_type !== 'order' 
+                                            && $t->type === 'purchase' 
+                                            && str_contains($t->notes, "#" . $transaction->increment_id);
+                                    });
+                                    if ($hasWalletTx) continue;
+                                }
                                 
                                 // Status setup
                                 $status = strtolower($transaction->status);
