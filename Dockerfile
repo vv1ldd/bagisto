@@ -32,12 +32,6 @@ RUN --mount=type=cache,target=/root/.npm \
 COPY . .
 RUN npm run build
 
-# STAGE 5: Blockchain Dependencies
-FROM node-base AS blockchain-builder
-WORKDIR /app/blockchain
-COPY blockchain/package.json blockchain/package-lock.json* ./
-RUN --mount=type=cache,target=/root/.npm \
-    npm i --legacy-peer-deps
 
 # STAGE 5: Final PHP Application
 FROM mirror.gcr.io/library/php:8.3-fpm
@@ -80,8 +74,6 @@ COPY --from=admin-builder /app/public/themes/admin /var/www/html/public/themes/a
 COPY --from=shop-builder /app/public/themes/shop /var/www/html/public/themes/shop
 # Root assets (if any) built by root-builder
 COPY --from=root-builder /app/public/build /var/www/html/public/build
-# Blockchain node_modules
-COPY --from=blockchain-builder /app/blockchain/node_modules /var/www/html/blockchain/node_modules
 
 # Finalize PHP & Permissions
 RUN composer dump-autoload --optimize --no-dev \
@@ -96,7 +88,6 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY docker/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 COPY start-container.sh /usr/local/bin/start-container
-COPY fix-deployment.php /var/www/html/fix-deployment.php
 RUN chmod +x /usr/local/bin/start-container
 
 EXPOSE 80
