@@ -84,13 +84,26 @@
                     <span>Ready: @{{ isReady ? 'YES' : 'NO' }}</span>
                 </div>
 
-                <!-- Simulation Tool (Temporary for Testing) -->
-                <div v-if="isTestMode && !paymentReceived" class="mt-12 pt-6 border-t-2 border-dashed border-zinc-200">
+                <!-- Simulation Tool (QR Code) -->
+                <div v-if="isTestMode && !paymentReceived" class="mt-8 pt-6 border-t-2 border-dashed border-zinc-200 text-center">
+                    <p class="text-[10px] font-bold uppercase text-zinc-400 mb-4 tracking-widest">Dev Simulation / Scan to Pay</p>
+                    
+                    <div class="inline-block p-4 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-4">
+                        <img :src="qrImageUrl" alt="Scan to simulate" class="w-[160px] h-[160px]">
+                    </div>
+
+                    <p class="text-[11px] text-zinc-500 mb-4 px-4 leading-relaxed font-bold italic">
+                        Отсканируйте код телефоном,<br>
+                        чтобы имитировать сигнал банка.
+                    </p>
+
                     <button 
                         @click="simulatePayment"
-                        class="w-full py-2 border-2 border-black bg-yellow-200 text-[10px] font-black uppercase tracking-widest hover:bg-yellow-300 transition-colors"
+                        class="w-full py-2 bg-[#F6E05E] border-2 border-black font-black text-[10px] uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] transition-all hover:bg-[#ecc94b]"
+                        :disabled="isSimulating"
                     >
-                        [ DEV ] Симулировать оплату SBP
+                        <span v-if="!isSimulating">[ FORCE SIMULATION ]</span>
+                        <span v-else>PROCESSING...</span>
                     </button>
                 </div>
             </div>
@@ -122,7 +135,9 @@
                     isMinting: false,
                     txBase: @json($additional['mint_tx_base'] ?? null),
                     pollInterval: null,
-                    csrfToken: '{{ csrf_token() }}'
+                    csrfToken: '{{ csrf_token() }}',
+                    callbackUrl: '{{ route('shop.checkout.sbp.callback', $order->id) }}',
+                    qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('{{ route('shop.checkout.sbp.callback', $order->id) }}')}`
                 }
             },
             mounted() {
