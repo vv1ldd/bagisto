@@ -3,7 +3,10 @@
         Подтверждение SBP
     </x-slot>
 
-    <v-sbp-confirm :order="{{ json_encode($order) }}"></v-sbp-confirm>
+    <v-sbp-confirm 
+        :order="{{ json_encode($order) }}"
+        :is-test-mode="{{ $is_test_mode ? 'true' : 'false' }}"
+    ></v-sbp-confirm>
 
     @pushOnce('scripts')
     <script type="text/x-template" id="v-sbp-confirm-template">
@@ -73,6 +76,16 @@
                         Безопасная транзакция через Web3 Passkey
                     </p>
                 </div>
+
+                <!-- Simulation Tool (Temporary for Testing) -->
+                <div v-if="isTestMode && !paymentReceived" class="mt-12 pt-6 border-t-2 border-dashed border-zinc-200">
+                    <button 
+                        @click="simulatePayment"
+                        class="w-full py-2 border-2 border-black bg-yellow-200 text-[10px] font-black uppercase tracking-widest hover:bg-yellow-300 transition-colors"
+                    >
+                        [ DEV ] Симулировать оплату SBP
+                    </button>
+                </div>
             </div>
 
             <!-- Debug Hidden -->
@@ -85,12 +98,13 @@
     <script type="module">
         app.component('v-sbp-confirm', {
             template: '#v-sbp-confirm-template',
-            props: ['order'],
+            props: ['order', 'isTestMode'],
             data() {
                 return {
                     paymentReceived: false,
                     isReady: false,
                     isFinishing: false,
+                    isSimulating: false,
                     txBase: null,
                     pollInterval: null
                 }
@@ -103,6 +117,22 @@
                 clearInterval(this.pollInterval);
             },
             methods: {
+                async simulatePayment() {
+                    if (this.isSimulating) return;
+                    this.isSimulating = true;
+                    
+                    try {
+                        await axios.get(`${window.location.origin}/checkout/sbp/callback/${this.order.id}`);
+                        this.$emitter.emit('add-flash', { 
+                            type: 'success', 
+                            message: 'Сигнал об оплате отправлен!' 
+                        });
+                    } catch (err) {
+                        console.error('Simulation error:', err);
+                    } finally {
+                        this.isSimulating = false;
+                    }
+                },
                 async fetchStatus() {
                     try {
                         const response = await axios.get(`${window.location.origin}/checkout/sbp/status/${this.order.id}`);

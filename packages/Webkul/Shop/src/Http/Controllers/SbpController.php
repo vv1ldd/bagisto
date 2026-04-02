@@ -61,7 +61,10 @@ class SbpController extends Controller
             return redirect()->route('shop.checkout.onepage.index');
         }
 
-        return view('shop::checkout.onepage.sbp-confirm', compact('order'));
+        return view('shop::checkout.onepage.sbp-confirm', [
+            'order'        => $order,
+            'is_test_mode' => core()->getConfigData('sales.payment_methods.sbp.test_mode'),
+        ]);
     }
 
     /**
