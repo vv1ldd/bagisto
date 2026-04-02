@@ -114,14 +114,18 @@ class SbpController extends Controller
         // and record the web3 transaction hash as proof
         $order->payment->update(['method' => 'credits']);
 
+        $txHash = $request->input('web3_tx_hash', 'sbp_' . Str::random(20));
+
         $additional = $order->additional ?? [];
-        $additional['web3_tx_hash'] = $request->input('web3_tx_hash', 'sbp_' . Str::random(20));
+        $additional['web3_tx_hash'] = $txHash;
         $additional['finalized_at'] = now()->toDateTimeString();
 
         $order->update([
-            'status'     => 'processing',
             'additional' => $additional,
         ]);
+
+        // Trigger balance deduction and purchase logging
+        $this->orderRepository->deductCreditsForOrder($order, $txHash);
 
         return response()->json([
             'success' => true,

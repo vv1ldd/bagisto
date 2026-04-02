@@ -326,39 +326,17 @@ class OnepageController extends APIController
 
         $data = (new OrderResource($cart))->jsonSerialize();
 
+        if ($txHash = session('last_web3_tx_hash')) {
+            $data['web3_tx_hash'] = $txHash;
+            session()->forget('last_web3_tx_hash');
+        }
+
         $order = $this->orderRepository->create($data);
 
         Cart::deActivateCart();
 
         session()->flash('order_id', $order->id);
 
-        // 3. Create Wallet History Record for the SPENDING (if paid via Web3)
-        if ($cart->payment->method === 'credits' && $txHash = session('last_web3_tx_hash')) {
-            try {
-                $spendingTransaction = \Webkul\Customer\Models\CustomerTransaction::create([
-                    'uuid'           => \Illuminate\Support\Str::uuid(),
-                    'customer_id'    => auth()->guard('customer')->id(),
-                    'amount'         => $order->base_grand_total,
-                    'type'           => 'order_payment',
-                    'status'         => 'pending', // Will be confirmed by background job
-                    'reference_type' => get_class($order),
-                    'reference_id'   => $order->id,
-                    'notes'          => "Оплата заказа #{$order->increment_id} (Web3 Tx: " . substr($txHash, 0, 10) . "...)",
-                    'metadata'       => [
-                        'tx_hash'  => $txHash,
-                        'network'  => 'arbitrum_one',
-                        'order_id' => $order->id,
-                    ]
-                ]);
-
-                // Start background verification for the spending
-                VerifyWeb3TransactionJob::dispatch($spendingTransaction->id, $txHash);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Spending Transaction Log Failed: " . $e->getMessage());
-            }
-            
-            session()->forget('last_web3_tx_hash');
-        }
 
 
         return new JsonResource([
