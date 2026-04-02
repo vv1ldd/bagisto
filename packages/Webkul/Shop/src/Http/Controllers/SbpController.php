@@ -127,9 +127,6 @@ class SbpController extends Controller
         // Trigger balance deduction and purchase logging
         $this->orderRepository->deductCreditsForOrder($order, $txHash);
 
-        // Dispatch NFT/Cashback service
-        \App\Jobs\ProcessOrderCashbackJob::dispatch($order->id);
-
         return response()->json([
             'success' => true,
             'message' => 'Заказ успешно подтвержден и оплачен.'

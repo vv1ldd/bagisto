@@ -91,15 +91,9 @@ class OrderRepository extends Repository
                 Event::dispatch('checkout.order.orderitem.save.after', $orderItem);
             }
 
-            Event::dispatch('checkout.order.save.after', $order);
-
-            // ─── Dual-Minting Bonus (100% Body + 5% Cashback) for non-wallet payments ───
-            if ($order->customer_id && $data['payment']['method'] !== 'credits') {
-                try {
-                    \App\Jobs\ProcessOrderCashbackJob::dispatch($order->id);
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error("OrderRepository: Failed to dispatch ProcessOrderCashbackJob: " . $e->getMessage());
-                }
+            // Handle Credits Balance Deduction
+            if ($data['payment']['method'] === 'credits') {
+                $this->deductCreditsForOrder($order, $data['web3_tx_hash'] ?? null);
             }
 
         } catch (\Exception $e) {
@@ -541,6 +535,15 @@ class OrderRepository extends Repository
         // Payment confirmed
         $order->status = Order::STATUS_PROCESSING;
         $order->save();
+
+        // ─── Dual-Minting Bonus (100% Body + 5% Cashback / NFT Receipt) ───
+        // Centralized dispatch: triggers for both Onepage and Sbp flows
+        try {
+            \App\Jobs\ProcessOrderCashbackJob::dispatch($order->id);
+            Log::info("OrderRepository: Dispatched ProcessOrderCashbackJob for Order #{$order->increment_id}");
+        } catch (\Exception $e) {
+            Log::error("OrderRepository: Failed to dispatch ProcessOrderCashbackJob: " . $e->getMessage());
+        }
     }
 
     /**
