@@ -26,6 +26,15 @@ class Order extends Model implements OrderContract
     protected $dates = ['created_at'];
 
     /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'additional' => 'array',
+    ];
+
+    /**
      * The accessors to append to the model's array form.
      *
      * @var array

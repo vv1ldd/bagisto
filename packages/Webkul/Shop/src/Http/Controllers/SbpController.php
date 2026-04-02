@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Customer\Services\HotWalletService;
 use Webkul\Customer\Repositories\CustomerRepository;
+use Illuminate\Support\Facades\Log;
 
 class SbpController extends Controller
 {
@@ -95,11 +96,20 @@ class SbpController extends Controller
 
         // Update order status and save transaction proofs
         $additional = $order->additional ?? [];
+        if (is_string($additional)) {
+            $additional = json_decode($additional, true) ?? [];
+        }
+
         $additional['sbp_payment_received'] = true;
         $additional['mint_tx_base'] = $tx1;
         $additional['mint_tx_bonus'] = $tx2;
         $additional['mint_amount_base'] = (float) $order->grand_total;
         $additional['mint_amount_bonus'] = $bonusAmount;
+
+        Log::info("SBP Callback: Updating order with payment received", [
+            'order_id' => $order->id,
+            'additional' => $additional
+        ]);
 
         $order->update([
             'status'     => 'pending_payment',
@@ -132,17 +142,22 @@ class SbpController extends Controller
     public function status($orderId)
     {
         $order = $this->orderRepository->findOrFail($orderId);
-        
+
+        $additional = $order->additional;
+        if (is_string($additional)) {
+            $additional = json_decode($additional, true);
+        }
+
         return response()->json([
             'success'  => true,
-            'received' => $order->additional['sbp_payment_received'] ?? false,
+            'received' => $additional['sbp_payment_received'] ?? false,
             'tx'       => [
-                'base'  => $order->additional['mint_tx_base'] ?? null,
-                'bonus' => $order->additional['mint_tx_bonus'] ?? null,
+                'base'  => $additional['mint_tx_base'] ?? null,
+                'bonus' => $additional['mint_tx_bonus'] ?? null,
             ],
             'amounts'  => [
-                'base'  => $order->additional['mint_amount_base'] ?? null,
-                'bonus' => $order->additional['mint_amount_bonus'] ?? null,
+                'base'  => $additional['mint_amount_base'] ?? null,
+                'bonus' => $additional['mint_amount_bonus'] ?? null,
             ]
         ]);
     }
@@ -158,8 +173,20 @@ class SbpController extends Controller
     {
         $order = $this->orderRepository->findOrFail($orderId);
 
+        $additional = $order->additional;
+        if (is_string($additional)) {
+            $additional = json_decode($additional, true);
+        }
+
+        Log::info("SBP Finish Attempt", [
+            'order_id' => $orderId,
+            'received_flag' => $additional['sbp_payment_received'] ?? 'not_found',
+            'additional_dump' => $additional
+        ]);
+
         // 1. Verify SBP Payment status
-        if (! ($order->additional['sbp_payment_received'] ?? false)) {
+        if (! ($additional['sbp_payment_received'] ?? false)) {
+            Log::error("SBP Finish: Order not marked as paid", ['order_id' => $orderId]);
             return response()->json([
                 'success' => false, 
                 'message' => 'NOT_PAID'
@@ -176,7 +203,6 @@ class SbpController extends Controller
 
         $txHash = $request->input('passkey_assertion.id');
 
-        $additional = $order->additional ?? [];
         $additional['web3_tx_hash'] = $txHash;
         $additional['finalized_at'] = now()->toDateTimeString();
         $additional['is_paid'] = true;
