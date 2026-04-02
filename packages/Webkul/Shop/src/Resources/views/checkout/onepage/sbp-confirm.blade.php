@@ -112,6 +112,12 @@
             mounted() {
                 this.fetchStatus();
                 this.pollInterval = setInterval(this.fetchStatus, 3000);
+
+                if (this.isTestMode) {
+                    setTimeout(() => {
+                        this.simulatePayment();
+                    }, 1000);
+                }
             },
             beforeUnmount() {
                 clearInterval(this.pollInterval);
