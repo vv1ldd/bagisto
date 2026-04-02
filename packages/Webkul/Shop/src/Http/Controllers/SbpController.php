@@ -55,7 +55,7 @@ class SbpController extends Controller
                 $data = (new \Webkul\Sales\Transformers\OrderResource($cart))->jsonSerialize();
                 $order = $this->orderRepository->create($data);
                 \Webkul\Checkout\Facades\Cart::deActivateCart();
-                session()->flash('order_id', $order->id);
+                session()->put('order_id', $order->id);
             }
         }
 
@@ -252,6 +252,9 @@ class SbpController extends Controller
 
             $order->update(['status' => 'processing']);
             $payment->update(['method' => 'credits', 'additional' => $additional]);
+
+            // Ensure order_id is in session for the success page
+            session()->put('order_id', $order->id);
 
             return response()->json(['success' => true, 'message' => 'SUCCESS']);
         } catch (\Exception $e) {

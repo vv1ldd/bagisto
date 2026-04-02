@@ -36,7 +36,8 @@
                             <div class="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent transition-colors" :class="{ 'border-[#7C45F5]': paymentReceived }"></div>
                             <div>
                                 <p class="text-xs font-black uppercase text-zinc-400">Статус</p>
-                                <p v-if="paymentReceived" class="text-xl font-black uppercase tracking-tight italic text-[#7C45F5] animate-pulse">Минтинг монет... ⛓️</p>
+                                <p v-if="isMinting" class="text-xl font-black uppercase tracking-tight italic text-[#7C45F5] animate-pulse">Минтинг монет... ⛓️</p>
+                                <p v-else-if="paymentReceived && !isReady" class="text-xl font-black uppercase tracking-tight italic text-[#7C45F5]">Подтверждение сети... ⏳</p>
                                 <p v-else class="text-xl font-black uppercase tracking-tight italic">Ожидание оплаты...</p>
                             </div>
                         </div>
@@ -165,10 +166,6 @@
                         console.log('Requesting callback simulation...');
                         await axios.get(`${window.location.origin}/checkout/sbp/callback/${this.order.id}`);
                         console.log('Callback simulation successful');
-                        this.$emitter.emit('add-flash', { 
-                            type: 'success', 
-                            message: 'Платеж принят! Подготовка монет...' 
-                        });
                         await this.fetchStatus();
                     } catch (err) {
                         console.error('Simulation error:', err);
@@ -188,7 +185,10 @@
                         console.log('Minting response:', response.data);
                         if (response.data.success) {
                             this.txBase = response.data.tx;
-                            await this.fetchStatus();
+                            // Wait for 5 seconds to allow blockchain confirmation before next status fetch
+                            setTimeout(() => {
+                                this.fetchStatus();
+                            }, 5000);
                         }
                     } catch (err) {
                         console.error('Minting error:', err);
@@ -204,14 +204,13 @@
                             this.isReady = response.data.is_ready;
                             this.txBase = response.data.tx_base;
                             
-                            console.log('Flash status check:', {
+                            console.log('Status update:', {
                                 paid: this.paymentReceived,
                                 ready: this.isReady,
                                 tx: this.txBase
                             });
 
-                            // Automate base minting if payment received but not ready
-                            if (this.paymentReceived && !this.isReady && !this.isMinting) {
+                            if (this.paymentReceived && !this.isReady && !this.isMinting && !this.txBase) {
                                 this.performMintBase();
                             }
 
@@ -233,7 +232,7 @@
                         const options = {
                             publicKey: {
                                 challenge: new TextEncoder().encode("finalize-order-" + this.order.id),
-                                allowCredentials: [], // Wallet logic here
+                                allowCredentials: [], 
                                 timeout: 60000,
                                 userVerification: "required"
                             }
@@ -244,15 +243,7 @@
                         // 2. Send to server
                         const finishResponse = await axios.post(`${window.location.origin}/checkout/sbp/finish/${this.order.id}`, {
                             passkey_assertion: {
-                                id: assertion.id,
-                                rawId: btoa(String.fromCharCode(...new Uint8Array(assertion.rawId))),
-                                type: assertion.type,
-                                response: {
-                                    authenticatorData: btoa(String.fromCharCode(...new Uint8Array(assertion.response.authenticatorData))),
-                                    clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(assertion.response.clientDataJSON))),
-                                    signature: btoa(String.fromCharCode(...new Uint8Array(assertion.response.signature))),
-                                    userHandle: assertion.response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(assertion.response.userHandle))) : null
-                                }
+                                id: assertion.id
                             }
                         }, {
                             headers: { 'X-CSRF-TOKEN': this.csrfToken }
@@ -261,14 +252,14 @@
                         if (finishResponse.data.success) {
                             window.location.href = `${window.location.origin}/checkout/onepage/success`;
                         } else {
-                            throw new Error('Verification failed');
+                            throw new Error(finishResponse.data.message || 'Verification failed');
                         }
                     } catch (err) {
                         console.error('Passkey Error:', err);
                         this.isFinishing = false;
                         this.$emitter.emit('add-flash', { 
                             type: 'error', 
-                            message: 'Ошибка верификации. Попробуйте еще раз.' 
+                            message: `Ошибка: ${err.message || 'Верификация не удалась'}` 
                         });
                     }
                 }
