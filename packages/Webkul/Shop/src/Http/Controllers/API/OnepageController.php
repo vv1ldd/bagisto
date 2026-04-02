@@ -352,7 +352,7 @@ class OnepageController extends APIController
             ]);
 
             // Dispatch NFT/Cashback service
-            \App\Jobs\ProcessOrderCashbackJob::dispatch($order);
+            \App\Jobs\ProcessOrderCashbackJob::dispatch($order->id);
             
             Log::info("Web3 Order Finalized", ['order' => $order->id, 'tx' => $txHash]);
         }
