@@ -22,9 +22,19 @@ class AuthenticateCustomer
                 ], 401);
             }
 
+            \Illuminate\Support\Facades\Log::info('AuthenticateCustomer: Guest access denied.', [
+                'url' => $request->fullUrl(),
+                'ip'  => $request->ip(),
+            ]);
+
             return redirect()->guest(route('shop.customer.session.index'));
         } else {
             if (! auth()->guard($guard)->user()->status) {
+                \Illuminate\Support\Facades\Log::warning('AuthenticateCustomer: User deactivated.', [
+                    'customer_id' => auth()->guard($guard)->id(),
+                    'url'         => $request->fullUrl(),
+                ]);
+
                 auth()->guard($guard)->logout();
 
                 if ($request->expectsJson()) {

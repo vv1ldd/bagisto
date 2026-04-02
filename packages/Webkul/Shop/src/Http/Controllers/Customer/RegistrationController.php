@@ -413,6 +413,9 @@ class RegistrationController extends Controller
             if (!auth()->guard('customer')->check()) {
                 auth()->guard('customer')->login($user, true);
                 
+                // Track login activity
+                app(\Webkul\Customer\Repositories\CustomerLoginLogRepository::class)->log($user);
+
                 // Important: Persist session immediately for AJAX response
                 // We skip regenerate() here to avoid race conditions with AJAX headers
                 session()->save();

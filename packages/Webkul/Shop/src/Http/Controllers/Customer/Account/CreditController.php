@@ -32,6 +32,11 @@ class CreditController extends Controller
      */
     public function index()
     {
+        \Illuminate\Support\Facades\Log::debug('CreditController: Entering index.', [
+            'customer_id' => auth()->guard('customer')->id(),
+            'session_id' => session()->getId(),
+        ]);
+
         $customer = auth()->guard('customer')->user();
 
         // Trigger on-demand deposit sync (rate-limited internally)
