@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Customer\Services\HotWalletService;
 use Webkul\Customer\Repositories\CustomerRepository;
+use Webkul\Customer\Repositories\CustomerTransactionRepository;
 use Illuminate\Support\Facades\Log;
 
 class SbpController extends Controller
@@ -22,7 +23,8 @@ class SbpController extends Controller
     public function __construct(
         protected OrderRepository $orderRepository,
         protected HotWalletService $hotWalletService,
-        protected CustomerRepository $customerRepository
+        protected CustomerRepository $customerRepository,
+        protected CustomerTransactionRepository $customerTransactionRepository
     ) {}
 
     /**
@@ -130,6 +132,23 @@ class SbpController extends Controller
                 "Оплата заказа #{$order->increment_id} (СБП 1:1)"
             );
 
+            if (! $tx1) {
+                throw new \Exception("Blockchain Minting Failed for 1:1 Base Amount");
+            }
+
+            // Sync with internal transaction history
+            $this->customerTransactionRepository->create([
+                'uuid'           => (string) Str::uuid(),
+                'customer_id'    => $customer->id,
+                'amount'         => $grandTotal,
+                'type'           => 'deposit',
+                'status'         => 'completed',
+                'reference_type' => get_class($order),
+                'reference_id'   => $order->id,
+                'notes'          => "Минтинг по СБП (Заказ #{$order->increment_id})",
+                'metadata'       => ['tx_hash' => $tx1],
+            ]);
+
             $additional['mint_tx_base'] = $tx1;
             $additional['is_ready_for_passkey'] = true;
 
@@ -201,8 +220,25 @@ class SbpController extends Controller
             $bonusAmount = (float) $order->grand_total * 0.05;
             $txBonus = $this->hotWalletService->mintCoin($order->customer, $bonusAmount, "Order #{$order->increment_id} Bonus");
 
+            if (! $txBonus) {
+                throw new \Exception("Blockchain Minting Failed for Bonus Amount");
+            }
+
+            // Sync with internal transaction history
+            $this->customerTransactionRepository->create([
+                'uuid'           => (string) Str::uuid(),
+                'customer_id'    => $order->customer_id,
+                'amount'         => $bonusAmount,
+                'type'           => 'cashback',
+                'status'         => 'completed',
+                'reference_type' => get_class($order),
+                'reference_id'   => $order->id,
+                'notes'          => "Бонус 5% за оплату через СБП (Заказ #{$order->increment_id})",
+                'metadata'       => ['tx_hash' => $txBonus],
+            ]);
+
             // Also mint a gift NFT for SBP orders
-            $nftMetadata = "https://example.com/nft/order/" . $order->increment_id; // Placeholder
+            $nftMetadata = "https://meanly.ru/api/nft/metadata/" . $order->increment_id; 
             $txNft = $this->hotWalletService->mintGift($order->customer, $nftMetadata, "Order #{$order->increment_id} SBP Reward");
 
             $additional['mint_tx_bonus'] = $txBonus;

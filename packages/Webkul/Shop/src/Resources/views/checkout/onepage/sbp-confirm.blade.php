@@ -36,10 +36,16 @@
                             <div class="animate-spin rounded-full h-10 w-10 border-4 border-black border-t-transparent transition-colors" :class="{ 'border-[#7C45F5]': paymentReceived }"></div>
                             <div>
                                 <p class="text-xs font-black uppercase text-zinc-400">Статус</p>
-                                <p v-if="isMinting" class="text-xl font-black uppercase tracking-tight italic text-[#7C45F5] animate-pulse">Минтинг монет... ⛓️</p>
+                                <p v-if="mintingError" class="text-xl font-black uppercase tracking-tight italic text-red-600">Ошибка минтинга! ❌</p>
+                                <p v-else-if="isMinting" class="text-xl font-black uppercase tracking-tight italic text-[#7C45F5] animate-pulse">Минтинг монет... ⛓️</p>
                                 <p v-else-if="paymentReceived && !isReady" class="text-xl font-black uppercase tracking-tight italic text-[#7C45F5]">Подтверждение сети... ⏳</p>
                                 <p v-else class="text-xl font-black uppercase tracking-tight italic">Ожидание оплаты...</p>
                             </div>
+                        </div>
+                        <div v-if="mintingError" class="mt-4">
+                            <button @click="performMintBase" class="w-full py-2 bg-red-100 border-2 border-red-600 text-red-600 font-bold uppercase text-[10px] hover:bg-red-200 transition-colors">
+                                Повторить попытку минтинга
+                            </button>
                         </div>
                         <div class="absolute bottom-0 left-0 h-1 bg-[#7C45F5] transition-all duration-700" :style="{ width: paymentReceived ? '70%' : '20%' }"></div>
                     </div>
@@ -134,6 +140,7 @@
                     isFinishing: false,
                     isSimulating: false,
                     isMinting: false,
+                    mintingError: false,
                     txBase: @json($additional['mint_tx_base'] ?? null),
                     pollInterval: null,
                     csrfToken: '{{ csrf_token() }}',
@@ -177,6 +184,7 @@
                     if (this.isMinting) return;
                     console.log('Starting Minting 1:1 body...');
                     this.isMinting = true;
+                    this.mintingError = false;
 
                     try {
                         const response = await axios.post(`${window.location.origin}/checkout/sbp/mint-base/${this.order.id}`, {}, {
@@ -189,9 +197,17 @@
                             setTimeout(() => {
                                 this.fetchStatus();
                             }, 5000);
+                        } else {
+                            throw new Error(response.data.message || 'Minting failed');
                         }
                     } catch (err) {
                         console.error('Minting error:', err);
+                        this.mintingError = true;
+                        
+                        // Show error to user via flash if possible
+                        if (window.addFlash) {
+                            window.addFlash({ type: 'error', message: `Ошибка минтинга: ${err.message}` });
+                        }
                     } finally {
                         this.isMinting = false;
                     }
