@@ -31,13 +31,33 @@ class SbpController extends Controller
      */
     public function confirm()
     {
-        // Get the latest order for the current customer
+        // 1. Check if we already have an order (e.g. page refresh)
         $order = $this->orderRepository->where('customer_id', auth()->guard('customer')->id())
+            ->where('created_at', '>=', now()->subMinutes(5))
             ->latest()
             ->first();
 
+        // 2. If no recent order, try to create one from the current cart
         if (! $order) {
-            return redirect()->route('shop.checkout.cart.index');
+            $cart = \Webkul\Checkout\Facades\Cart::getCart();
+            
+            if ($cart) {
+                // Ensure totals are fresh
+                \Webkul\Checkout\Facades\Cart::collectTotals();
+                
+                // Preparing data and creating order
+                $data = (new \Webkul\Sales\Transformers\OrderResource($cart))->jsonSerialize();
+                $order = $this->orderRepository->create($data);
+                
+                // Deactivate cart after order creation
+                \Webkul\Checkout\Facades\Cart::deActivateCart();
+                session()->flash('order_id', $order->id);
+            }
+        }
+
+        if (! $order) {
+            // If still no order and no cart, redirect to checkout
+            return redirect()->route('shop.checkout.onepage.index');
         }
 
         return view('shop::checkout.onepage.sbp-confirm', compact('order'));

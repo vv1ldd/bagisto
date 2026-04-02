@@ -133,7 +133,7 @@ class OnepageController extends APIController
         if (Cart::hasError()) {
             return new JsonResource([
                 'redirect' => true,
-                'redirect_url' => route('shop.checkout.cart.index'),
+                'redirect_url' => route('shop.checkout.onepage.index'),
             ]);
         }
 
@@ -159,7 +159,7 @@ class OnepageController extends APIController
             if (!$rates = Shipping::collectRates()) {
                 return new JsonResource([
                     'redirect' => true,
-                    'redirect_url' => route('shop.checkout.cart.index'),
+                    'redirect_url' => route('shop.checkout.onepage.index'),
                 ]);
             }
 
@@ -205,7 +205,7 @@ class OnepageController extends APIController
             || !Cart::saveShippingMethod($validatedData['shipping_method'])
         ) {
             return response()->json([
-                'redirect_url' => route('shop.checkout.cart.index'),
+                'redirect_url' => route('shop.checkout.onepage.index'),
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -231,7 +231,7 @@ class OnepageController extends APIController
             || !Cart::savePaymentMethod($validatedData['payment'])
         ) {
             return response()->json([
-                'redirect_url' => route('shop.checkout.cart.index'),
+                'redirect_url' => route('shop.checkout.onepage.index'),
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -249,10 +249,13 @@ class OnepageController extends APIController
      */
     public function storeOrder()
     {
+        Log::info("OnepageController@storeOrder: Starting...");
+
         if (Cart::hasError()) {
+            Log::warning("OnepageController@storeOrder: Cart has errors. Redirecting to checkout.", ['errors' => Cart::hasError()]);
             return new JsonResource([
                 'redirect' => true,
-                'redirect_url' => route('shop.checkout.cart.index'),
+                'redirect_url' => route('shop.checkout.onepage.index'),
             ]);
         }
 
