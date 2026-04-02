@@ -35,25 +35,36 @@ class CustomerDataGrid extends DataGrid
             ->leftJoin('customer_groups', 'customers.customer_group_id', '=', 'customer_groups.id')
             ->select(
                 'customers.id as customer_id',
-                'customers.email',
+                'customers.username as nickname',
+                'customers.credits_id as wallet_address',
                 'customers.phone',
-                'customers.gender',
                 'customers.status',
                 'customers.is_suspended',
                 'customer_groups.name as group',
-                'customers.channel_id',
-                DB::raw('0 as revenue'),
-                DB::raw('0 as order_count'),
-                DB::raw('0 as address_count'),
-                DB::raw("CONCAT(customers.first_name, ' ', customers.last_name) as full_name")
-            );
+                'customers.channel_id'
+            )
+            ->addSelect([
+                // Subquery for NFT count (Type 'nft_gift' in customer_transactions)
+                'nft_count' => DB::table('customer_transactions')
+                    ->selectRaw('count(*)')
+                    ->whereColumn('customer_id', 'customers.id')
+                    ->where('type', 'nft_gift'),
 
-        $this->addFilter('channel_id', 'customers.channel_id');
+                // Subquery for Crypto transactions count (from customer_crypto_transactions)
+                'tx_count' => DB::table('customer_crypto_transactions')
+                    ->selectRaw('count(*)')
+                    ->whereColumn('customer_id', 'customers.id'),
+
+                // Total Balance Volume
+                'volume' => DB::table('customer_balances')
+                    ->selectRaw('COALESCE(sum(balance), 0)')
+                    ->whereColumn('customer_id', 'customers.id')
+            ]);
+
         $this->addFilter('customer_id', 'customers.id');
-        $this->addFilter('email', 'customers.email');
-        $this->addFilter('full_name', DB::raw("CONCAT(customers.first_name, ' ', customers.last_name)"));
+        $this->addFilter('nickname', 'customers.username');
+        $this->addFilter('wallet_address', 'customers.credits_id');
         $this->addFilter('group', 'customer_groups.name');
-        $this->addFilter('phone', 'customers.phone');
         $this->addFilter('status', 'customers.status');
 
         return $queryBuilder;
@@ -81,41 +92,41 @@ class CustomerDataGrid extends DataGrid
         ]);
 
         $this->addColumn([
-            'index' => 'customer_id',
-            'label' => trans('admin::app.customers.customers.index.datagrid.id'),
-            'type' => 'integer',
+            'index'      => 'customer_id',
+            'label'      => trans('admin::app.customers.customers.index.datagrid.id'),
+            'type'       => 'integer',
             'filterable' => true,
         ]);
 
         $this->addColumn([
-            'index' => 'full_name',
-            'label' => trans('admin::app.customers.customers.index.datagrid.name'),
-            'type' => 'string',
+            'index'      => 'nickname',
+            'label'      => 'Никнейм',
+            'type'       => 'string',
             'searchable' => true,
             'filterable' => true,
-            'sortable' => true,
+            'sortable'   => true,
+            'closure'    => function ($row) {
+                return $row->nickname ?: '<span class="text-gray-400 italic">No Nickname</span>';
+            },
         ]);
 
         $this->addColumn([
-            'index' => 'email',
-            'label' => trans('admin::app.customers.customers.index.datagrid.email'),
-            'type' => 'string',
+            'index'      => 'wallet_address',
+            'label'      => 'Arbitrum Адрес',
+            'type'       => 'string',
             'searchable' => true,
             'filterable' => true,
-            'sortable' => true,
+            'sortable'   => true,
+            'closure'    => function ($row) {
+                if (!$row->wallet_address) return '---';
+                return '<code class="bg-gray-100 px-2 py-1 rounded text-xs">' . substr($row->wallet_address, 0, 10) . '...' . substr($row->wallet_address, -6) . '</code>';
+            },
         ]);
 
         $this->addColumn([
-            'index' => 'phone',
-            'label' => trans('admin::app.customers.customers.index.datagrid.phone'),
-            'type' => 'integer',
-            'filterable' => true,
-        ]);
-
-        $this->addColumn([
-            'index' => 'status',
-            'label' => trans('admin::app.customers.customers.index.datagrid.status'),
-            'type' => 'boolean',
+            'index'      => 'status',
+            'label'      => trans('admin::app.customers.customers.index.datagrid.status'),
+            'type'       => 'boolean',
             'filterable' => true,
             'filterable_options' => [
                 [
@@ -127,50 +138,37 @@ class CustomerDataGrid extends DataGrid
                     'value' => 0,
                 ],
             ],
-            'sortable' => true,
+            'sortable'   => true,
         ]);
 
         $this->addColumn([
-            'index' => 'gender',
-            'label' => trans('admin::app.customers.customers.index.datagrid.gender'),
-            'type' => 'string',
-            'sortable' => true,
+            'index'      => 'nft_count',
+            'label'      => 'NFT',
+            'type'       => 'integer',
+            'sortable'   => true,
+            'closure'    => function ($row) {
+                if ($row->nft_count > 0) {
+                    return '<span class="bg-lime-400 text-black px-2 py-0.5 rounded font-bold text-xs">' . $row->nft_count . ' NFT</span>';
+                }
+                return '0';
+            },
         ]);
 
         $this->addColumn([
-            'index' => 'group',
-            'label' => trans('admin::app.customers.customers.index.datagrid.group'),
-            'type' => 'string',
-            'filterable' => true,
-            'filterable_type' => 'dropdown',
-            'filterable_options' => $this->customerGroupRepository->all(['name as label', 'name as value'])->toArray(),
+            'index'      => 'tx_count',
+            'label'      => 'Транзакции',
+            'type'       => 'integer',
+            'sortable'   => true,
         ]);
 
         $this->addColumn([
-            'index' => 'is_suspended',
-            'label' => trans('admin::app.customers.customers.index.datagrid.suspended'),
-            'type' => 'boolean',
-            'sortable' => true,
-        ]);
-
-        $this->addColumn([
-            'index' => 'revenue',
-            'label' => trans('admin::app.customers.customers.index.datagrid.revenue'),
-            'type' => 'integer',
-        ]);
-
-        $this->addColumn([
-            'index' => 'order_count',
-            'label' => trans('admin::app.customers.customers.index.datagrid.order-count'),
-            'type' => 'integer',
-            'sortable' => true,
-        ]);
-
-        $this->addColumn([
-            'index' => 'address_count',
-            'label' => trans('admin::app.customers.customers.index.datagrid.address-count'),
-            'type' => 'integer',
-            'sortable' => true,
+            'index'      => 'volume',
+            'label'      => 'Баланс (MGF)',
+            'type'       => 'integer',
+            'sortable'   => true,
+            'closure'    => function ($row) {
+                return number_format($row->volume, 2) . ' MGF';
+            },
         ]);
     }
 
