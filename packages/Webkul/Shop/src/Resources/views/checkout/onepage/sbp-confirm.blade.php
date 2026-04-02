@@ -102,26 +102,36 @@
         </div>
     </script>
 
+    @php
+        $additional = $order->additional;
+        if (is_string($additional)) {
+            $additional = json_decode($additional, true) ?? [];
+        }
+    @endphp
+
     <script type="module">
         app.component('v-sbp-confirm', {
             template: '#v-sbp-confirm-template',
             props: ['order', 'isTestMode'],
             data() {
                 return {
-                    paymentReceived: @json($order->additional['sbp_payment_received'] ?? false),
-                    isReady: @json($order->additional['is_ready_for_passkey'] ?? false),
+                    paymentReceived: @json($additional['sbp_payment_received'] ?? false),
+                    isReady: @json($additional['is_ready_for_passkey'] ?? false),
                     isFinishing: false,
                     isSimulating: false,
                     isMinting: false,
-                    txBase: @json($order->additional['mint_tx_base'] ?? null),
-                    pollInterval: null
+                    txBase: @json($additional['mint_tx_base'] ?? null),
+                    pollInterval: null,
+                    csrfToken: '{{ csrf_token() }}'
                 }
             },
             mounted() {
+                console.log('SBP Component Mounted. Order:', this.order.id);
                 this.fetchStatus();
                 this.pollInterval = setInterval(this.fetchStatus, 3000);
 
                 if (this.isTestMode && !this.paymentReceived) {
+                    console.log('Test Mode: Simulating payment in 1s...');
                     setTimeout(() => {
                         this.simulatePayment();
                     }, 1000);
@@ -132,11 +142,14 @@
             },
             methods: {
                 async simulatePayment() {
+                    console.log('simulatePayment called');
                     if (this.isSimulating) return;
                     this.isSimulating = true;
                     
                     try {
+                        console.log('Requesting callback simulation...');
                         await axios.get(`${window.location.origin}/checkout/sbp/callback/${this.order.id}`);
+                        console.log('Callback simulation successful');
                         this.$emitter.emit('add-flash', { 
                             type: 'success', 
                             message: 'Платеж принят! Подготовка монет...' 
@@ -150,10 +163,14 @@
                 },
                 async performMintBase() {
                     if (this.isMinting) return;
+                    console.log('Starting Minting 1:1 body...');
                     this.isMinting = true;
 
                     try {
-                        const response = await axios.post(`${window.location.origin}/checkout/sbp/mint-base/${this.order.id}`);
+                        const response = await axios.post(`${window.location.origin}/checkout/sbp/mint-base/${this.order.id}`, {}, {
+                            headers: { 'X-CSRF-TOKEN': this.csrfToken }
+                        });
+                        console.log('Minting response:', response.data);
                         if (response.data.success) {
                             this.txBase = response.data.tx;
                             await this.fetchStatus();
@@ -172,12 +189,19 @@
                             this.isReady = response.data.is_ready;
                             this.txBase = response.data.tx_base;
                             
+                            console.log('Flash status check:', {
+                                paid: this.paymentReceived,
+                                ready: this.isReady,
+                                tx: this.txBase
+                            });
+
                             // Automate base minting if payment received but not ready
                             if (this.paymentReceived && !this.isReady && !this.isMinting) {
                                 this.performMintBase();
                             }
 
                             if (this.isReady) {
+                                console.log('Ready for Passkey. Stopping poll.');
                                 clearInterval(this.pollInterval);
                             }
                         }
@@ -215,6 +239,8 @@
                                     userHandle: assertion.response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(assertion.response.userHandle))) : null
                                 }
                             }
+                        }, {
+                            headers: { 'X-CSRF-TOKEN': this.csrfToken }
                         });
 
                         if (finishResponse.data.success) {
