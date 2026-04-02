@@ -6,7 +6,6 @@
     <v-sbp-confirm 
         :order="{{ json_encode($order) }}"
         :is-test-mode="{{ $is_test_mode ? 'true' : 'false' }}"
-        :passkey-options="{{ json_encode($passkeyOptions ?? null) }}"
     ></v-sbp-confirm>
 
     @pushOnce('scripts')
@@ -145,10 +144,11 @@
                     pollInterval: null,
                     csrfToken: '{{ csrf_token() }}',
                     callbackUrl: '{{ route('shop.checkout.sbp.callback', $order->id) }}',
-                    qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('{{ route('shop.checkout.sbp.callback', $order->id) }}')}`
+                    qrImageUrl: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('{{ route('shop.checkout.sbp.callback', $order->id) }}')}`,
+                    passkeyOptions: @json($passkeyOptions ?? null)
                 }
             },
-            props: ['order', 'isTestMode', 'passkeyOptions'],
+            props: ['order', 'isTestMode'],
             mounted() {
                 console.log('SBP Component Mounted. Order:', this.order.id);
                 this.fetchStatus();
