@@ -285,22 +285,31 @@
 
                         console.log('Requesting Passkey signature with options:', JSON.parse(JSON.stringify(options)));
 
-                        console.log('Requesting Passkey signature...', options);
+                        console.log('Requesting Passkey signature...', JSON.parse(JSON.stringify(options)));
                         const assertion = await navigator.credentials.get(options);
                         
-                        // 2. Send the full assertion to server for Web3 relay
+                        if (!assertion) {
+                            throw new Error('Устройство не предоставило подпись.');
+                        }
+
+                        // 2. Prepare the assertion payload in the format expected by PasskeyWeb3Signer
+                        // This mirrors the standard checkout's encoding approach
+                        const passkeyPayload = {
+                            id: assertion.id,
+                            rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.rawId))),
+                            response: {
+                                authenticatorData: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.authenticatorData))),
+                                clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.clientDataJSON))),
+                                signature: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.signature))),
+                                userHandle: assertion.response.userHandle ? btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.userHandle))) : null
+                            },
+                            type: assertion.type
+                        };
+
+                        console.log('Passkey: Assertion generated, sending to server...', passkeyPayload);
+
                         const finishResponse = await axios.post(`${window.location.origin}/checkout/sbp/finish/${this.order.id}`, {
-                            passkey_assertion: {
-                                id: assertion.id,
-                                rawId: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.rawId))),
-                                response: {
-                                    authenticatorData: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.authenticatorData))),
-                                    clientDataJSON: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.clientDataJSON))),
-                                    signature: btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.signature))),
-                                    userHandle: assertion.response.userHandle ? btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.userHandle))) : null
-                                },
-                                type: assertion.type
-                            }
+                            passkey_assertion: passkeyPayload
                         }, {
                             headers: { 'X-CSRF-TOKEN': this.csrfToken }
                         });

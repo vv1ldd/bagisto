@@ -299,42 +299,42 @@ class SbpController extends Controller
             $additional = $payment?->additional ?? [];
             if (is_string($additional)) $additional = json_decode($additional, true) ?? [];
 
-            Log::debug("SBP Finish Trace: Request checked", [
-                'order' => $order->id,
-                'sbp_payment_received' => $additional['sbp_payment_received'] ?? false,
-                'has_assertion' => $request->has('passkey_assertion'),
-                'session_has_options' => session()->has('passkey-authentication-options-json')
-            ]);
-
+            // 0. Ensure Payment via SBP was indeed recorded
             if (! ($additional['sbp_payment_received'] ?? false)) {
                 Log::warning("SBP Finish Rejected: Payment not received in DB", ['order' => $order->id]);
                 return response()->json(['success' => false, 'message' => 'NOT_PAID'], 400);
             }
 
-            if (! $request->has('passkey_assertion')) {
-                Log::warning("SBP Finish Rejected: passkey_assertion missing in request", ['order' => $order->id]);
-                return response()->json(['success' => false, 'message' => 'SIGNATURE_MISSING'], 400);
+            // 1. Get the Passkey Assertion (Signature)
+            $passkeyAssertion = $request->input('passkey_assertion');
+            
+            if (! $passkeyAssertion) {
+                Log::warning("SBP Finish Rejected: passkey_assertion missing", ['order' => $order->id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Биометрическая подпись (Passkey) обязательна.'
+                ], 422);
             }
 
-            $passkeyAssertion = $request->input('passkey_assertion');
-            Log::debug("SBP Finish: Assertion payload received", ['data' => $passkeyAssertion]);
-            
-            // 1. Process On-Chain Deduction using Passkey
             $customer = $order->customer;
             $amount = (float) $order->grand_total;
 
             try {
-                Log::info("SBP 2.0 Web3 Finalization Started", ['order' => $order->id, 'amount' => $amount]);
+                Log::info("SBP 2.0 Web3 Finalization: Processing signature", ['order' => $order->id, 'amount' => $amount]);
                 
+                // Mirroring OnepageController logic: robust decoding of the assertion
                 $txHash = $this->passkeyWeb3Signer->processGaslessCheckout(
                     $customer,
-                    $passkeyAssertion['passkey_assertion'] ?? $passkeyAssertion,
+                    is_array($passkeyAssertion) ? $passkeyAssertion : json_decode($passkeyAssertion, true),
                     $amount
                 );
 
-                Log::info("SBP 2.0 Web3 Transaction Broadcasted", ['tx' => $txHash]);
+                Log::info("SBP 2.0 Web3 Finalization: Success", ['order' => $order->id, 'tx' => $txHash]);
 
-                // 2. Sync with internal transaction history (Deduction/Purchase)
+                // 2. Decrement local balance (Mirroring OnepageController)
+                $customer->decrement('balance', $amount);
+
+                // 3. Sync with internal transaction history (Deduction/Purchase)
                 $this->customerTransactionRepository->create([
                     'uuid'           => (string) Str::uuid(),
                     'customer_id'    => $customer->id,
@@ -347,29 +347,28 @@ class SbpController extends Controller
                     'metadata'       => ['tx_hash' => $txHash],
                 ]);
 
-                // Update metadata
+                // 4. Finalize order metadata
                 $additional['finish_tx_hash'] = $txHash;
-                $additional['web3_tx_hash'] = $txHash;
                 $additional['finalized_at'] = now()->toDateTimeString();
                 $additional['is_paid'] = true;
 
                 $order->update(['status' => 'processing']);
                 $payment->update(['method' => 'credits', 'additional' => $additional]);
 
-                // Ensure order_id is in session for the success page
+                // Clear session for redirects
                 session()->put('order_id', $order->id);
 
                 return response()->json(['success' => true, 'message' => 'SUCCESS']);
 
             } catch (\Exception $e) {
-                Log::error("SBP 2.0 Web3 Finalization Error: " . $e->getMessage());
+                Log::error("SBP 2.0 Web3 Finalization Error: " . $e->getMessage(), ['order' => $order->id]);
                 return response()->json([
                     'success' => false,
-                    'message' => "Ошибка блокчейна: " . $e->getMessage(),
+                    'message' => "Ошибка Web3: " . $e->getMessage(),
                 ], 400);
             }
         } catch (\Exception $e) {
-            Log::error("SBP Finish Error: " . $e->getMessage());
+            Log::error("SBP Finish System Error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
