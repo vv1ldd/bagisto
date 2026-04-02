@@ -2,7 +2,7 @@
     $admin = auth()->guard('admin')->user();
 @endphp
 
-<header class="sticky top-0 z-[10001] flex flex-col border-b bg-white dark:border-gray-800 dark:bg-gray-900">
+<header class="sticky top-0 z-[10001] flex flex-col border-b-4 border-zinc-900 bg-white dark:border-white dark:bg-zinc-900 shadow-[0_4px_0_0_rgba(24,24,27,1)]">
     @if (!$admin->mnemonic_verified_at)
         <div class="bg-orange-600 text-white text-center py-1.5 px-4 text-[10px] font-bold w-full uppercase tracking-[0.2em]">
             <a href="{{ route('admin.security.onboarding.index') }}" class="flex items-center justify-center gap-2 hover:opacity-80 transition-all">
@@ -47,7 +47,7 @@
 
                 <input 
                     type="text" 
-                    class="block w-full rounded-lg border bg-white px-8 py-1.5 text-sm leading-6 text-gray-600 transition-all hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 sm:px-10 sm:text-base"
+                    class="block w-full border-2 border-zinc-900 bg-white px-8 py-1.5 text-sm leading-6 text-gray-600 transition-all focus:shadow-[4px_4px_0_0_rgba(24,24,27,1)] focus:outline-none dark:border-white dark:bg-zinc-900 dark:text-gray-300 sm:px-10 sm:text-base"
                     placeholder="@lang('admin::app.components.layouts.header.mega-search.title')" 
                 >
             </div>
@@ -229,7 +229,7 @@
 
             <input 
                 type="text"
-                class="peer block w-full rounded-lg border bg-white px-8 py-1.5 text-sm leading-6 text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400 sm:px-10 sm:text-base"
+                class="peer block w-full border-2 border-zinc-900 bg-white px-8 py-1.5 text-sm leading-6 text-gray-600 transition-all focus:shadow-[4px_4px_0_0_rgba(24,24,27,1)] focus:outline-none dark:border-white dark:bg-zinc-900 dark:text-gray-300 sm:px-10 sm:text-base"
                 :class="{'border-gray-400': isDropdownOpen}"
                 placeholder="@lang('admin::app.components.layouts.header.mega-search.title')"
                 v-model.lazy="searchTerm"

@@ -1,4 +1,4 @@
-<div class="fixed top-14 z-[1000] h-full w-[270px] bg-white pt-4 shadow-[0px_8px_10px_0px_rgba(0,_0,_0,_0.2)] transition-all duration-300 group-[.sidebar-collapsed]/container:w-[70px] dark:bg-gray-900 max-lg:hidden">
+<div class="fixed top-14 z-[1000] h-full w-[270px] bg-white pt-4 border-r-4 border-zinc-900 transition-all duration-300 group-[.sidebar-collapsed]/container:w-[70px] dark:bg-gray-900 max-lg:hidden">
     <div class="journal-scroll h-[calc(100vh-100px)] overflow-auto group-[.sidebar-collapsed]/container:overflow-visible">
         <nav class="grid w-full gap-2">
             <!-- Navigation Menu -->
@@ -9,11 +9,11 @@
                 >
                     <a
                         href="{{ $menuItem->getUrl() }}"
-                        class="flex gap-2.5 p-1.5 items-center cursor-pointer hover:rounded-lg {{ $menuItem->isActive() == 'active' ? 'bg-blue-600 rounded-lg' : ' hover:bg-gray-100 hover:dark:bg-gray-950' }} peer"
+                        class="flex gap-2.5 p-2 items-center cursor-pointer transition-all border-2 border-transparent {{ $menuItem->isActive() == 'active' ? 'bg-[#7C45F5] text-white border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]' : ' hover:bg-gray-100 hover:border-zinc-900 hover:shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] hover:dark:bg-gray-950' }} peer"
                     >
                         <span class="{{ $menuItem->getIcon() }} text-2xl {{ $menuItem->isActive() ? 'text-white' : ''}}"></span>
                         
-                        <p class="text-gray-600 dark:text-gray-300 font-semibold whitespace-nowrap group-[.sidebar-collapsed]/container:hidden {{ $menuItem->isActive() ? 'text-white' : ''}}">
+                        <p class="font-bold uppercase tracking-tight whitespace-nowrap group-[.sidebar-collapsed]/container:hidden {{ $menuItem->isActive() ? 'text-white' : 'text-zinc-900 dark:text-zinc-300'}} text-sm">
                             {{ $menuItem->getName() }}
                         </p>
                     </a>

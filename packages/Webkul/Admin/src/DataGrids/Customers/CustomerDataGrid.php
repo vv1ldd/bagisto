@@ -33,6 +33,11 @@ class CustomerDataGrid extends DataGrid
     {
         $tablePrefix = DB::getTablePrefix();
 
+        $revenueSubquery = DB::table('orders')
+            ->select('customer_id', DB::raw('SUM(base_grand_total_invoiced) as revenue'))
+            ->whereNotIn('status', ['canceled', 'closed'])
+            ->groupBy('customer_id');
+
         $queryBuilder = DB::table('customers')
             ->leftJoin('addresses', function ($join) {
                 $join->on('customers.id', '=', 'addresses.customer_id')
@@ -40,6 +45,9 @@ class CustomerDataGrid extends DataGrid
             })
             ->leftJoin('orders', 'customers.id', '=', 'orders.customer_id')
             ->leftJoin('customer_groups', 'customers.customer_group_id', '=', 'customer_groups.id')
+            ->leftJoinSub($revenueSubquery, 'order_revenue', function ($join) {
+                $join->on('customers.id', '=', 'order_revenue.customer_id');
+            })
             ->addSelect(
                 'customers.id as customer_id',
                 'customers.email',
@@ -49,6 +57,7 @@ class CustomerDataGrid extends DataGrid
                 'customers.is_suspended',
                 'customer_groups.name as group',
                 'customers.channel_id',
+                'order_revenue.revenue as revenue'
             )
             ->addSelect(DB::raw('COUNT(DISTINCT '.$tablePrefix.'addresses.id) as address_count'))
             ->addSelect(DB::raw('COUNT(DISTINCT '.$tablePrefix.'orders.id) as order_count'))
@@ -164,12 +173,6 @@ class CustomerDataGrid extends DataGrid
             'index' => 'revenue',
             'label' => trans('admin::app.customers.customers.index.datagrid.revenue'),
             'type' => 'integer',
-            'closure' => function ($row) {
-                return app(OrderRepository::class)->scopeQuery(function ($q) use ($row) {
-                    return $q->whereNotIn('status', [Order::STATUS_CANCELED, Order::STATUS_CLOSED])
-                        ->where('customer_id', $row->customer_id);
-                })->sum('base_grand_total_invoiced');
-            },
         ]);
 
         $this->addColumn([

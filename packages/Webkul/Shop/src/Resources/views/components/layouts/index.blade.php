@@ -80,9 +80,9 @@
         </script>
 
         @bagistoVite(['src/Resources/assets/css/app.css', 'src/Resources/assets/js/app.js'])
-        <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js"></script>
-        <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+        <script src="https://unpkg.com/@simplewebauthn/browser/dist/bundle/index.umd.min.js" defer></script>
+        <script src="https://unpkg.com/html5-qrcode" type="text/javascript" defer></script>
+        <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
 
         <script>
             /**

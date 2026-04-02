@@ -26,7 +26,7 @@
 
     @pushOnce('scripts')
         <script type="text/x-template" id="v-login-wizard-template">
-            <div id="login-container" class="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div id="login-container" class="animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <slot name="header"></slot>
 
                 <!-- Passkey Login Button -->

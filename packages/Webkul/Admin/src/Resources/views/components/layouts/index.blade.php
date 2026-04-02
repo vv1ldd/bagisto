@@ -39,9 +39,67 @@
     @stack('styles')
 
     <style>
-        /* Force sharp corners globally (Meanly brutalist style) */
+        /* [MEANLY NEOBRUTALISM] Admin Redesign */
+        :root {
+            --primary-purple: #7C45F5;
+            --primary-lime: #D6FF00;
+            --black-accent: #18181B;
+            --white-pure: #FFFFFF;
+            --gray-bg: #F8F8F8;
+            --brutalist-border: 4px;
+        }
+
+        /* Force sharp corners and thick borders globally */
         * {
             border-radius: 0 !important;
+        }
+
+        body {
+            background-color: var(--gray-bg);
+            color: var(--black-accent);
+        }
+
+        /* Global Table/Card Styling */
+        .table, .datagrid-container, .card, .bg-white {
+            border: var(--brutalist-border) solid var(--black-accent) !important;
+            box-shadow: 4px 4px 0px 0px var(--black-accent) !important;
+        }
+
+        /* Button Styling Overrides */
+        .primary-button, .secondary-button, button[type="submit"], .btn-primary {
+            border: 2px solid var(--black-accent) !important;
+            box-shadow: 3px 3px 0px 0px var(--black-accent) !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+            transition: all 0.1s ease-in-out !important;
+        }
+
+        .primary-button:active, .secondary-button:active, button:active {
+            transform: translate(2px, 2px) !important;
+            box-shadow: 0px 0px 0px 0px var(--black-accent) !important;
+        }
+
+        /* Input Styling */
+        input[type="text"], input[type="password"], input[type="email"], select, textarea {
+            border: 2px solid var(--black-accent) !important;
+            background: var(--white-pure) !important;
+            box-shadow: none !important;
+        }
+
+        input:focus {
+            box-shadow: 3px 3px 0px 0px var(--black-accent) !important;
+            outline: none !important;
+        }
+
+        /* Dark Mode Adjustments */
+        .dark body {
+            background-color: #0c0c0e;
+        }
+        
+        .dark .bg-white, .dark .datagrid-container {
+            border-color: #FFFFFF !important;
+            box-shadow: 4px 4px 0px 0px #FFFFFF !important;
         }
 
         {!! core()->getConfigData('general.content.custom_scripts.custom_css') !!}
