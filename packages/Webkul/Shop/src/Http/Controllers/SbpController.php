@@ -48,15 +48,7 @@ class SbpController extends Controller
         }
 
         if (! $order) {
-            $cart = \Webkul\Checkout\Facades\Cart::getCart();
-            
-            if ($cart) {
-                \Webkul\Checkout\Facades\Cart::collectTotals();
-                $data = (new \Webkul\Sales\Transformers\OrderResource($cart))->jsonSerialize();
-                $order = $this->orderRepository->create($data);
-                \Webkul\Checkout\Facades\Cart::deActivateCart();
-                session()->put('order_id', $order->id);
-            }
+            return redirect()->route('shop.checkout.onepage.index');
         }
 
         if (! $order) {
@@ -129,9 +121,12 @@ class SbpController extends Controller
 
             $customer = $order->customer;
             
+            $grandTotal = (float) $order->grand_total;
+            Log::info("SBP Mint Base: MINTING amount {$grandTotal} for order #{$order->increment_id}");
+
             $tx1 = $this->hotWalletService->mintCoin(
                 $customer, 
-                (float) $order->grand_total, 
+                $grandTotal, 
                 "Оплата заказа #{$order->increment_id} (СБП 1:1)"
             );
 

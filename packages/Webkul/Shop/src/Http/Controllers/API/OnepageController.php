@@ -320,6 +320,20 @@ class OnepageController extends APIController
         }
         // ----------------------------------------------------
 
+        // If it's SBP, we want to create the order FIRST, then redirect.
+        // This ensures the cart is deactivated and the order is locked in the system.
+        if ($cart->payment->method === 'sbp') {
+            $data = (new OrderResource($cart))->jsonSerialize();
+            $order = $this->orderRepository->create($data);
+            Cart::deActivateCart();
+            session()->put('order_id', $order->id);
+
+            return new JsonResource([
+                'redirect' => true,
+                'redirect_url' => route('shop.checkout.sbp.confirm'),
+            ]);
+        }
+
         if ($redirectUrl = Payment::getRedirectUrl($cart)) {
             return new JsonResource([
                 'redirect' => true,
