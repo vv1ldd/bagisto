@@ -15,7 +15,7 @@
 
     @if (!$isVerified || $needsUpgrade)
         <a href="{{ route('shop.customers.account.profile.generate_recovery_key') }}" 
-            class="group relative block w-full bg-white border-4 border-zinc-900 {{ $isOnboarding ? 'p-3' : 'p-4 md:p-5' }} transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(255,77,109,1)]">
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(255,77,109,1)]">
             <div class="flex items-start {{ $isOnboarding ? 'gap-3' : 'gap-4' }}">
                 <div class="{{ $isOnboarding ? 'w-10 h-10' : 'w-12 h-12' }} flex items-center justify-center {{ $needsUpgrade ? 'bg-amber-400' : 'bg-[#FF4D6D]' }} border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-3">
                     <svg class="{{ $isOnboarding ? 'w-5 h-5' : 'w-6 h-6' }} text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -46,7 +46,7 @@
 
     {{-- Manage Passkeys --}}
     <a href="{{ route('shop.customers.account.passkeys.index', ['onboarding' => $isOnboarding]) }}" 
-        class="group relative block w-full bg-white border-4 border-zinc-900 {{ $isOnboarding ? 'p-3' : 'p-4 md:p-5' }} transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(124,69,245,1)]">
+        class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(124,69,245,1)]">
         <div class="flex items-start {{ $isOnboarding ? 'gap-3' : 'gap-4' }}">
             <div class="{{ $isOnboarding ? 'w-10 h-10' : 'w-12 h-12' }} flex items-center justify-center bg-[#7C45F5] border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-3 text-white">
                 <svg class="{{ $isOnboarding ? 'w-5 h-5' : 'w-6 h-6' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -76,7 +76,7 @@
     @if (!$isOnboarding)
         {{-- Activity Log --}}
         <a href="{{ route('shop.customers.account.login_activity.index') }}" 
-            class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-5 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,255,148,1)]">
+            class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,255,148,1)]">
             <div class="flex items-start gap-4">
                 <div class="w-12 h-12 flex items-center justify-center bg-[#00FF94] border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:rotate-6 text-zinc-900">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -95,7 +95,7 @@
             </div>
         </a>
     {{-- Telegram Notifications --}}
-        <div class="group relative block w-full bg-white border-4 border-zinc-900 p-4 md:p-5 transition-all {{ !$customer->telegram_chat_id ? 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none' : '' }} shadow-[4px_4px_0px_0px_rgba(34,197,94,1)]">
+        <div class="group relative block w-full bg-white border-4 border-zinc-900 p-3 md:p-4 transition-all {{ !$customer->telegram_chat_id ? 'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] active:translate-x-0 active:translate-y-0 active:shadow-none' : '' }} shadow-[4px_4px_0px_0px_rgba(34,197,94,1)]">
             <div class="flex items-start gap-4">
                 <div class="w-12 h-12 flex items-center justify-center {{ $customer->telegram_chat_id ? 'bg-green-500' : 'bg-[#0088cc]' }} border-3 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] shrink-0 transition-transform group-hover:-rotate-6 text-white">
                     @if ($customer->telegram_chat_id)
