@@ -122,8 +122,23 @@ class ProcessOrderCashbackJob implements ShouldQueue
             if ($txNft) {
                 Log::info("ProcessOrderCashbackJob: NFT Receipt minted for Order #{$order->increment_id}. Tx: {$txNft}");
                 
-                // Track NFT transaction in notes/metadata if needed
-                // For now, we rely on the route appearing in the wallet view.
+                // Record the NFT minting in History for real Web3 proof
+                CustomerTransaction::create([
+                    'uuid'           => Str::uuid(),
+                    'customer_id'    => $customer->id,
+                    'amount'         => 0.00, // NFT has no currency value, but it's an asset
+                    'type'           => 'nft_receipt',
+                    'status'         => 'completed', // Optimistic confirmed
+                    'reference_type' => get_class($order),
+                    'reference_id'   => $order->id,
+                    'notes'          => "Минтинг NFT-чека (Заказ #{$order->increment_id})",
+                    'web3_tx_hash'   => $txNft,
+                    'metadata'       => [
+                        'tx_hash' => $txNft,
+                        'network' => 'arbitrum_one',
+                        'asset'   => 'NFT GIFT'
+                    ],
+                ]);
             }
         } catch (\Exception $e) {
             Log::error("ProcessOrderCashbackJob [NFT]: Minting failed for Order [{$this->orderId}]: " . $e->getMessage());
