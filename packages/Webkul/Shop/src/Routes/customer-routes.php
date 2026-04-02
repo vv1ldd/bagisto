@@ -418,7 +418,6 @@ Route::group([], function () {
                     Route::get('verify/{id}', 'verify')->name('shop.customers.account.crypto.verify');
 
                     Route::post('update-alias/{id}', 'updateAlias')->name('shop.customers.account.crypto.update_alias');
-                    Route::post('upgrade-credits-id', 'upgradeCreditsId')->name('shop.customers.account.crypto.upgrade_credits_id');
                     Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
                 });
                 /**

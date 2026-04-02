@@ -38,7 +38,7 @@ class CryptoController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -79,7 +79,7 @@ class CryptoController extends Controller
      * Update alias for the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function updateAlias(Request $request, $id)
     {
@@ -102,7 +102,7 @@ class CryptoController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
@@ -119,7 +119,7 @@ class CryptoController extends Controller
      * Sync balance for the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function sync($id)
     {
@@ -138,7 +138,7 @@ class CryptoController extends Controller
      * Verify ownership for the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function verify($id)
     {
@@ -151,47 +151,6 @@ class CryptoController extends Controller
         }
 
         return redirect()->route('shop.customers.account.crypto.index');
-    }
-
-    /**
-     * Upgrade old M- format credits_id to a new 0x EVM address format.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function upgradeCreditsId()
-    {
-        $user = auth()->guard('customer')->user();
-
-        if (str_starts_with($user->credits_id, '0x')) {
-            session()->flash('error', 'Ваш ID уже в формате крипто-адреса.');
-            return redirect()->back();
-        }
-
-        // Generate a random 0x address
-        $newAddress = '0x' . bin2hex(random_bytes(20));
-
-        // Delete the old Arbitrum address if we created it previously with the M- format
-        $user->crypto_addresses()
-             ->where('network', 'arbitrum_one')
-             ->where('address', 'LIKE', 'M-%')
-             ->delete();
-
-        // Update customer credits_id
-        $user->credits_id = $newAddress;
-        $user->save();
-
-        // Update or create crypto address for the new 0x address
-        $user->crypto_addresses()->updateOrCreate(
-            ['network' => 'arbitrum_one', 'address' => $newAddress],
-            [
-                'is_active' => true,
-                'verified_at' => now(), // Trusted since we generated it
-            ]
-        );
-
-        session()->flash('success', 'Ваш ID успешно обновлен до крипто-адреса.');
-
-        return redirect()->route('shop.customers.account.credits.index');
     }
 
     /**
