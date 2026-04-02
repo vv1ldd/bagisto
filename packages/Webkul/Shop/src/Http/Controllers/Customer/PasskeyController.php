@@ -357,24 +357,29 @@ class PasskeyController extends Controller
     /**
      * Generate authentication options for passkey login.
      */
-    public function loginOptions(GeneratePasskeyAuthenticationOptionsAction $generateOptionsAction)
+    public function loginOptions(GeneratePasskeyAuthenticationOptionsAction $generateOptionsAction, Request $request)
     {
         // Always sync RP ID to current request host
-        $currentHost = request()->getHost();
+        $currentHost = $request->getHost();
         config(['passkeys.relying_party.id' => $currentHost]);
 
         $user = Auth::guard('customer')->user();
         
-        // If user is already authenticated (e.g. in checkout), use targeted options
-        if ($user) {
+        // Use targeted options ONLY if we are in a step-up/checkout context.
+        // If we are on the general login page, always allow discovery (all keys).
+        $isCheckoutFlow = str_contains($request->header('referer', ''), '/checkout');
+        $isTargetedRequested = $request->boolean('targeted');
+
+        if ($user && ($isCheckoutFlow || $isTargetedRequested)) {
             $optionsJson = $this->generateTargetedPasskeyOptions($user, $generateOptionsAction);
         } else {
             $optionsJson = $generateOptionsAction->execute();
         }
 
         Log::info('Passkey login options generated', [
-            'is_targeted' => !empty($user),
-            'user_id'     => $user->id ?? 'guest'
+            'is_targeted'   => str_contains($optionsJson, 'allowCredentials') && count(json_decode($optionsJson, true)['allowCredentials'] ?? []) > 0,
+            'user_id'       => $user->id ?? 'guest',
+            'checkout_flow' => $isCheckoutFlow
         ]);
 
         session()->put('passkey-authentication-options-json', $optionsJson);
