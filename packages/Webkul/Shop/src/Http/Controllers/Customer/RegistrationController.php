@@ -120,8 +120,10 @@ class RegistrationController extends Controller
             $recoveryKey = implode(' ', $mnemonicWords);
             $creditsId = $reservedData['credits_id'];
         } else {
-            // Generate new BIP39 mnemonic
-            $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
+            // Generate new BIP39 mnemonic with random length for better security
+            $counts = [12, 15, 18, 21, 24];
+            $wordCount = $counts[array_rand($counts)];
+            $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
             $recoveryKey = implode(' ', $mnemonicWords);
             
             $wData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
@@ -182,12 +184,20 @@ class RegistrationController extends Controller
             $currentIp = trim(explode(',', $currentIp)[0]);
         }
 
-        // Generate a random-length BIP39 mnemonic (12, 15, 18, 21, 24 words)
-        $counts = [12, 15, 18, 21, 24];
-        $wordCount = $counts[array_rand($counts)];
-        $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
-        $recoveryKey = implode(' ', $mnemonicWords);
-        $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+        // CRITICAL: Use the reserved/session mnemonic if available to ensure address consistency
+        $recoveryKey = session('pending_recovery_key');
+        if ($recoveryKey) {
+            $mnemonicWords = explode(' ', $recoveryKey);
+            $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+        } else {
+            // Fallback generation (standard BIP39)
+            $counts = [12, 15, 18, 21, 24];
+            $wordCount = $counts[array_rand($counts)];
+            $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
+            $recoveryKey = implode(' ', $mnemonicWords);
+            $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+            session(['pending_recovery_key' => $recoveryKey]);
+        }
         
         $walletData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
         $blockchainAddress = $walletData['address'];
