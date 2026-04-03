@@ -175,7 +175,13 @@ $menuIcons = [
                 </div>
                 <div class="flex-1 min-w-0">
                     <span class="text-zinc-900 text-base md:text-lg font-black uppercase tracking-tight block">Безопасность</span>
-                    <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства</p>
+                    <p class="text-[9px] md:text-xs text-zinc-500 font-bold uppercase tracking-wider leading-none">
+                        @if (($customer->credits_id && str_starts_with($customer->credits_id, 'M-')) || ($customer->credits_id && str_starts_with($customer->credits_id, '0x') && is_null($customer->encrypted_private_key)))
+                            Активировать NFT-функции 💎
+                        @else
+                            Пароль{{ $customer->mnemonic_verified_at ? '' : ', фраза' }} и устройства
+                        @endif
+                    </p>
                 </div>
                 <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                     <svg class="w-5 h-5 md:w-6 md:h-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
