@@ -91,7 +91,8 @@ class CreditController extends Controller
                 'username' => $user->username,
                 'is_investor' => $isInvestor,
                 'meanly_coin_balance' => (float)$user->total_credits,
-                'pending_activation' => ($user->credits_id && str_starts_with($user->credits_id, 'M-')) || ($user->credits_id && str_starts_with($user->credits_id, '0x') && is_null($user->encrypted_private_key)),
+                'pending_activation' => ($user->credits_id && str_starts_with($user->credits_id, 'M-')) || 
+                                       ($user->credits_id && str_starts_with($user->credits_id, '0x') && is_null($user->mnemonic_verified_at)),
             ],
             'balances' => $balances,
             'addresses' => $allAddresses,

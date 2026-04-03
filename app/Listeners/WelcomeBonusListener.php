@@ -16,8 +16,8 @@ class WelcomeBonusListener
             return;
         }
 
-        // Dispatch for verified customers or those with a generated wallet (mnemonic_hash exists)
-        if ($customer->is_verified || !empty($customer->mnemonic_hash)) {
+        // Dispatch if a wallet exists (mnemonic_hash is set), regardless of verification status
+        if (!empty($customer->mnemonic_hash)) {
             Log::info("WelcomeBonusListener: Dispatching Welcome Bonus for Customer [{$customer->id}]");
             ProcessWelcomeMintingJob::dispatch($customer->id);
         }
