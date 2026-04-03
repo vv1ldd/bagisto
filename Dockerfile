@@ -1,5 +1,5 @@
 # STAGE 1: Shared Node Base
-FROM mirror.gcr.io/library/node:18-bookworm-slim AS node-base
+FROM mirror.gcr.io/library/node:20-bookworm-slim AS node-base
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential git python3 && rm -rf /var/lib/apt/lists/*
 
