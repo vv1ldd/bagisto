@@ -134,12 +134,21 @@ class RegistrationController extends Controller
             ], now()->addHour());
         }
 
+        $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
+        $privateKeyHex = $wData['private_key'] ?? null;
+        $publicKeyData = $this->blockchainAddressService->derivePublicKeyData($mnemonicWords);
+
         // Store all necessary data in session for the final store() call
         session([
             'pending_registration_data' => [
-                'username'    => $username,
-                'device_name' => $deviceName,
-                'credits_id'  => $creditsId,
+                'username'              => $username,
+                'device_name'           => $deviceName,
+                'credits_id'            => $creditsId,
+                'mnemonic_hash'         => $mnemonicHash,
+                'encrypted_private_key' => $privateKeyHex ? \Illuminate\Support\Facades\Crypt::encryptString($privateKeyHex) : null,
+                'encrypted_mnemonic'    => \Illuminate\Support\Facades\Crypt::encryptString($recoveryKey),
+                'public_key'            => $publicKeyData['public_key'] ?? null,
+                'public_key_hash'       => $publicKeyData['public_key_hash'] ?? null,
             ],
             'pending_recovery_key' => $recoveryKey
         ]);
