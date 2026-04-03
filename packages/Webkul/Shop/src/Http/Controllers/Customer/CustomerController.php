@@ -76,7 +76,8 @@ class CustomerController extends Controller
         $isLegacy = str_starts_with($customer->credits_id, 'M-');
         $isMissingKey = str_starts_with($customer->credits_id, '0x') && is_null($customer->encrypted_private_key);
         
-        if (!empty($customer->credits_id) && !$isLegacy && !$isMissingKey) {
+        // Allow proceeding if the wallet is incomplete OR if the mnemonic hasn't been verified yet
+        if (!empty($customer->credits_id) && !$isLegacy && !$isMissingKey && !is_null($customer->mnemonic_verified_at)) {
              session()->flash('warning', 'У вас уже полностью настроен кошелек.');
              return redirect()->route('shop.customers.account.index');
         }
