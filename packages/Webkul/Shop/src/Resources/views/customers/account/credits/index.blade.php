@@ -176,9 +176,6 @@
                 </div>
 
 
-                    </div>
-                </div>
-
                 {{-- Step 2: History --}}
                 <div id="step-transactions" class="hidden">
                     <div class="space-y-4">
@@ -350,12 +347,14 @@
                 </div>
             @else
                 <div class="bg-white p-12 text-center border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)]">
-                    <div class="w-16 h-16 bg-zinc-50 border-3 border-zinc-900 flex items-center justify-center mx-auto mb-6 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
                         <span class="text-3xl">🏆</span>
                     </div>
+                    <h3 class="text-[14px] font-black text-zinc-900 uppercase tracking-tighter italic">Нет активов</h3>
                 </div>
-            </div>
-        </div> {{-- End Unified Tile --}}
+            @endif
+        </div>
+    </div>
+</div> {{-- End Unified Tile --}}
 
 
         {{-- Step 2.6: Organizations --}}
