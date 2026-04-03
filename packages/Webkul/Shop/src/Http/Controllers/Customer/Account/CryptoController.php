@@ -69,7 +69,6 @@ class CryptoController extends Controller
         // Trigger immediate sync
         $this->syncService->syncBalance($cryptoAddress);
 
-        session()->flash('show_verify_id', $cryptoAddress->id);
         session()->flash('success', 'Крипто-адрес успешно добавлен и синхронизирован.');
 
         return redirect()->route('shop.customers.account.crypto.index');
@@ -134,24 +133,6 @@ class CryptoController extends Controller
         return redirect()->route('shop.customers.account.crypto.index');
     }
 
-    /**
-     * Verify ownership for the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function verify($id)
-    {
-        $cryptoAddress = auth()->guard('customer')->user()->crypto_addresses()->findOrFail($id);
-
-        if ($this->syncService->verifyOwnership($cryptoAddress)) {
-            session()->flash('success', 'Адрес успешно верифицирован!');
-        } else {
-            session()->flash('error', 'Транзакция верификации не обнаружена. Пожалуйста, убедитесь, что вы отправили точную сумму.');
-        }
-
-        return redirect()->route('shop.customers.account.crypto.index');
-    }
 
     /**
      * Show the wallet upgrade form for existing users.

@@ -195,9 +195,6 @@
                                     {{ $address->network }}
                                 </span>
                                 
-                                @if($address->isVerified())
-                                    <span class="icon-checkmark text-[10px] text-emerald-500 bg-emerald-50 p-1  border border-emerald-100" title="Верифицированный адрес"></span>
-                                @endif
                             </div>
                             <div class="address-text" id="addr-{{ $address->id }}">
                                 {{ $address->address }}

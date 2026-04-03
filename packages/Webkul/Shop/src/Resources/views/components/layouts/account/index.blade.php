@@ -164,34 +164,6 @@
                     const syms = { bitcoin: 'BTC', ethereum: 'ETH', ton: 'TON', usdt_ton: 'USDT', dash: 'DASH' };
                     document.getElementById('verify-amount').innerText = amount + ' ' + (syms[network] || '');
                     
-                    // Fixed addresses from config
-                    const dest = {
-                        bitcoin: '{{ config('crypto.verification_addresses.bitcoin') }}',
-                        ethereum: '{{ config('crypto.verification_addresses.ethereum') }}',
-                        ton: '{{ config('crypto.verification_addresses.ton') }}',
-                        usdt_ton: '{{ config('crypto.verification_addresses.usdt_ton') }}',
-                        dash: '{{ config('crypto.verification_addresses.dash') }}',
-                    };
-                    
-                    document.getElementById('verify-dest').innerText = dest[network] || '';
-                    document.getElementById('verify-dest-copy').onclick = () => {
-                        navigator.clipboard.writeText(dest[network] || '');
-                        const b = document.getElementById('verify-dest-copy');
-                        const oldText = b.innerText;
-                        b.innerText = '✓'; 
-                        setTimeout(() => b.innerText = oldText, 2000);
-                    };
-                    
-                    document.getElementById('verify-link').href = 
-                        "{{ route('shop.customers.account.crypto.verify', ':id') }}".replace(':id', id);
-                }
-
-                function closeVerifyModal() {
-                    const modal = document.getElementById('verify-modal');
-                    if (!modal) return;
-                    modal.classList.add('hidden');
-                    modal.classList.remove('flex');
-                }
             </script>
         @endpush
 

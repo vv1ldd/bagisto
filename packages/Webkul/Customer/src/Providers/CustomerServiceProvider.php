@@ -30,16 +30,10 @@ class CustomerServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 \Webkul\Customer\Console\Commands\SyncCryptoBalances::class,
-                \Webkul\Customer\Console\Commands\ProcessRecharge::class,
-                \Webkul\Customer\Console\Commands\SyncBanks::class,
                 \Webkul\Customer\Console\Commands\UpdateHydrogenChat::class,
                 \Webkul\Customer\Console\Commands\MintWelcomeBonuses::class,
             ]);
 
-            $this->callAfterResolving(\Illuminate\Console\Scheduling\Schedule::class, function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-                // Scan verified addresses for new deposits every minute
-                $schedule->command('crypto:process-recharge')->everyMinute();
-            });
         }
     }
 

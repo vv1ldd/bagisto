@@ -235,10 +235,6 @@ Route::group([], function () {
                     Route::get('credits/transactions', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'transactions'])->name('shop.customers.account.credits.transactions');
                     Route::get('credits/deposit', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'deposit'])->name('shop.customers.account.credits.deposit');
 
-                    Route::post('credits/invoice', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'storeInvoice'])->name('shop.customers.account.credits.invoice.store');
-                    Route::get('credits/invoice/print/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'printInvoice'])->name('shop.customers.account.credits.invoice.print');
-                    Route::post('credits/invoice/email/{id}', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'emailInvoice'])->name('shop.customers.account.credits.invoice.email');
-                    Route::get('credits/organizations/{id}/bank-accounts', [\Webkul\Shop\Http\Controllers\Customer\Account\CreditController::class, 'getBankAccounts'])->name('shop.customers.account.credits.organizations.bank_accounts');
 
                     // Credits Transfer
                     Route::prefix('credits')->controller(TransferController::class)->group(function () {
@@ -366,42 +362,10 @@ Route::group([], function () {
                 /**
                  * Magic AI routes.
                  */
-                Route::prefix('magic-ai')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\MagicAIController::class)->group(function () {
-                    Route::post('parse-bank-details', 'parseBankDetails')->name('shop.customers.account.magic_ai.parse_bank_details');
-                });
 
                 /**
                  * Organizations.
                  */
-                Route::prefix('organizations')->controller(\Webkul\Shop\Http\Controllers\Customer\Account\OrganizationController::class)->group(function () {
-                    Route::get('', 'index')->name('shop.customers.account.organizations.index');
-
-                    Route::get('create', 'create')->name('shop.customers.account.organizations.create');
-
-                    Route::post('create', 'store')->name('shop.customers.account.organizations.store');
-
-                    Route::get('edit/{id}', 'edit')->name('shop.customers.account.organizations.edit');
-
-                    Route::put('edit/{id}', 'update')->name('shop.customers.account.organizations.update');
-
-                    Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.organizations.delete');
-
-                    Route::post('{id}/settlement-accounts', 'storeSettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.store');
-
-                    Route::put('{organizationId}/settlement-accounts/{accountId}/alias', 'updateSettlementAccountAlias')->name('shop.customers.account.organizations.settlement_accounts.update_alias');
-
-                    Route::delete('{organizationId}/settlement-accounts/{accountId}', 'destroySettlementAccount')->name('shop.customers.account.organizations.settlement_accounts.destroy');
-
-                    Route::get('lookup-inn/{inn}', 'lookupInn')->name('shop.customers.account.organizations.lookup_inn');
-
-                    Route::get('lookup-bic/{bic}', 'lookupBic')->name('shop.customers.account.organizations.lookup_bic');
-
-                    Route::get('suggest-bank', 'suggestBank')->name('shop.customers.account.organizations.suggest_bank');
-
-                    Route::get('suggest', 'suggestOrganization')->name('shop.customers.account.organizations.suggest');
-
-                    Route::get('suggest-organization', 'suggestOrganization')->name('shop.customers.account.organizations.suggest_organization');
-                });
 
                 /**
                  * Crypto Wallets.
@@ -415,7 +379,6 @@ Route::group([], function () {
 
                     Route::get('sync/{id}', 'sync')->name('shop.customers.account.crypto.sync');
 
-                    Route::get('verify/{id}', 'verify')->name('shop.customers.account.crypto.verify');
 
                     Route::post('update-alias/{id}', 'updateAlias')->name('shop.customers.account.crypto.update_alias');
                     Route::delete('delete/{id}', 'destroy')->name('shop.customers.account.crypto.delete');
