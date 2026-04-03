@@ -33,6 +33,16 @@ COPY . .
 RUN npm run build
 
 
+# STAGE 4.5: Blockchain Builder
+FROM node-base AS blockchain-builder
+WORKDIR /app
+COPY blockchain/package.json blockchain/package-lock.json* ./blockchain/
+RUN --mount=type=cache,target=/root/.npm \
+    npm --prefix blockchain i --legacy-peer-deps
+COPY blockchain/ blockchain/
+
+
+
 # STAGE 5: Final PHP Application
 FROM mirror.gcr.io/library/php:8.3-fpm
 
@@ -74,6 +84,8 @@ COPY --from=admin-builder /app/public/themes/admin /var/www/html/public/themes/a
 COPY --from=shop-builder /app/public/themes/shop /var/www/html/public/themes/shop
 # Root assets (if any) built by root-builder
 COPY --from=root-builder /app/public/build /var/www/html/public/build
+# Blockchain dependencies
+COPY --from=blockchain-builder /app/blockchain/node_modules /var/www/html/blockchain/node_modules
 
 # Finalize PHP & Permissions
 RUN composer dump-autoload --optimize --no-dev \
