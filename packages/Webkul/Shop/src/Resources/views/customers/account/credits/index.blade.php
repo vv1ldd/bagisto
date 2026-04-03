@@ -1,7 +1,8 @@
 <x-shop::layouts.account :is-cardless="true">
-    <x-slot:title>{{ __('Meanly Wallet') }}</x-slot:title>
+    {{-- Do NOT use title slot to hide the layout's duplicate header --}}
+    
     <div class="relative w-full max-w-[500px] mx-auto px-4 mt-2 mb-10">
-        {{-- Header with Back Button --}}
+        {{-- Header with Back Button - Aligned to Tile Start --}}
         <div class="flex items-center gap-3 mb-6 px-0 pt-0">
             <button type="button" 
                 id="account-back-button"
@@ -11,6 +12,7 @@
             </button>
             <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">Мой кошелек</h1>
         </div>
+
         @php
             $user = auth()->guard('customer')->user();
             $balances = $user->balances;
@@ -47,18 +49,29 @@
             </div>
         @endif
 
-        {{-- Global Tabs --}}
-        <div id="wallet-tabs" class="flex items-center gap-2 mb-8 overflow-x-auto pb-2 scrollbar-none">
-            <button id="tab-dashboard" onclick="switchStep('dashboard')" class="px-6 py-2 bg-zinc-900 text-white border-2 border-zinc-900 font-black text-[11px] uppercase tracking-widest transition-all shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none whitespace-nowrap">Обзор</button>
-            <button id="tab-transactions" onclick="switchStep('transactions')" class="px-6 py-2 bg-white text-zinc-900 border-2 border-zinc-900 font-black text-[11px] uppercase tracking-widest transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] whitespace-nowrap">История</button>
-            <button id="tab-nfts" onclick="switchStep('nfts')" class="px-6 py-2 bg-white text-zinc-900 border-2 border-zinc-900 font-black text-[11px] uppercase tracking-widest transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[2px_2px_0_0_rgba(24,24,27,1)] whitespace-nowrap">Библиотека</button>
-        </div>
+        {{-- UNIFIED WALLET TILE --}}
+        <div class="bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] overflow-hidden">
+            {{-- Tabs Inside Tile --}}
+            <div id="wallet-tabs" class="flex border-b-4 border-zinc-900">
+                <button id="tab-dashboard" onclick="switchStep('dashboard')" 
+                    class="flex-1 py-4 bg-zinc-900 text-white font-black text-[10px] uppercase tracking-widest transition-all">
+                    Обзор
+                </button>
+                <button id="tab-transactions" onclick="switchStep('transactions')" 
+                    class="flex-1 py-4 bg-white text-zinc-900 font-black text-[10px] uppercase tracking-widest transition-all hover:bg-zinc-50 border-l-4 border-zinc-900">
+                    История
+                </button>
+                <button id="tab-nfts" onclick="switchStep('nfts')" 
+                    class="flex-1 py-4 bg-white text-zinc-900 font-black text-[10px] uppercase tracking-widest transition-all hover:bg-zinc-50 border-l-4 border-zinc-900">
+                    Библиотека
+                </button>
+            </div>
 
-        {{-- Step 1: Dashboard --}}
-        <div id="step-dashboard" class="space-y-6">
-            {{-- Main Unified Wallet Card --}}
-            <div class="relative bg-white border-4 border-zinc-900 p-8 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] group">
-                <div class="relative z-10">
+            <div class="p-8">
+                {{-- Step 1: Dashboard --}}
+                <div id="step-dashboard" class="space-y-6">
+                    <div class="relative z-10">
+
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
                             <div class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2 italic">Баланс Meanly Coin (MC)</div>
@@ -165,13 +178,11 @@
 
                     </div>
                 </div>
-            </div>
-        </div>
 
-        {{-- Step 2: Transactions --}}
-        {{-- Step 2: History --}}
-        <div id="step-transactions" class="hidden">
-            <div class="space-y-4">
+                {{-- Step 2: History --}}
+                <div id="step-transactions" class="hidden">
+                    <div class="space-y-4">
+
                 @if ($transactions->count() > 0)
                     <div class="flex flex-col">
                         @foreach ($transactions as $transaction)
@@ -342,10 +353,10 @@
                     <div class="w-16 h-16 bg-zinc-50 border-3 border-zinc-900 flex items-center justify-center mx-auto mb-6 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
                         <span class="text-3xl">🏆</span>
                     </div>
-                    <h3 class="text-[14px] font-black text-zinc-900 uppercase tracking-tighter italic">Нет активов</h3>
                 </div>
-            @endif
-        </div>
+            </div>
+        </div> {{-- End Unified Tile --}}
+
 
         {{-- Step 2.6: Organizations --}}
         <div id="step-organizations" class="hidden">
