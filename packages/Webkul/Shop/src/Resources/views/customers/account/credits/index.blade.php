@@ -1,4 +1,5 @@
-<x-shop::layouts.account :is-cardless="true" :title="__('Meanly Wallet')">
+<x-shop::layouts.account :is-cardless="true">
+    <x-slot:title>{{ __('Meanly Wallet') }}</x-slot:title>
     <div class="relative w-full max-w-[500px] mx-auto px-4 mt-2 mb-10">
         {{-- Header with Back Button --}}
         <div class="flex items-center gap-3 mb-6 px-0 pt-0">
