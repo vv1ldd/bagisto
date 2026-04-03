@@ -26,26 +26,30 @@ class CreditController extends Controller
             'session_id' => session()->getId(),
         ]);
 
-        $customer = auth()->guard('customer')->user();
+        $user = auth()->guard('customer')->user();
+        $isInvestor = (bool) $user->is_investor;
 
-        // Trigger on-demand deposit sync (rate-limited internally)
-        $this->syncService->syncCustomerDeposits($customer);
+        // Trigger syncs only if relevant
+        if ($isInvestor) {
+            $this->syncService->syncCustomerDeposits($user);
+            $this->syncService->syncPendingWeb3Transactions($user);
+        }
 
-        // Trigger on-demand Web3 transaction sync (checks hashes like registration/cashback)
-        $this->syncService->syncPendingWeb3Transactions($customer);
+        $allAddresses = $isInvestor 
+            ? $user->crypto_addresses()->orderBy('network')->get() 
+            : collect([]);
 
-        $allAddresses = $customer
-            ->crypto_addresses()
-            ->orderBy('network')
-            ->get();
+        $balances = $isInvestor 
+            ? $user->balances 
+            : collect([]);
 
-        // Combine Credits (Transactions) and Orders
-        $credits = $customer->credits()->get()->map(function ($item) {
+        // Combine Credits (Transactions) and Orders for everyone
+        $credits = $user->credits()->get()->map(function ($item) {
             $item->merged_type = 'transaction';
             return $item;
         });
 
-        $orders = $customer->orders()->get()->map(function ($item) {
+        $orders = $user->orders()->get()->map(function ($item) {
             $item->merged_type = 'order';
             return $item;
         });
@@ -61,8 +65,6 @@ class CreditController extends Controller
             'path' => LengthAwarePaginator::resolveCurrentPath(),
         ]);
 
-
-
         $allAssets = [
             'bitcoin' => ['icon' => '₿'],
             'ethereum' => ['icon' => 'Ξ'],
@@ -72,12 +74,12 @@ class CreditController extends Controller
         ];
 
         // Fetch successful orders for NFT display
-        $nftOrders = $customer->orders()
+        $nftOrders = $user->orders()
             ->whereIn('status', ['processing', 'completed', 'closed'])
             ->orderBy('id', 'desc')
             ->get();
 
-        return view('shop::customers.account.credits.index', compact('allAddresses', 'transactions', 'allAssets', 'nftOrders'));
+        return view('shop::customers.account.credits.index', compact('allAddresses', 'transactions', 'allAssets', 'nftOrders', 'balances'));
     }
 
     /**

@@ -134,7 +134,9 @@
                                         </div>
                                     </div>
                                 </v-nickname-edit>
-                                <div class="px-3 py-2 bg-[#D6FF00] text-zinc-900 border-2 border-zinc-900 text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">Инвестор</div>
+                                @if($user->is_investor)
+                                    <div class="px-3 py-2 bg-[#D6FF00] text-zinc-900 border-2 border-zinc-900 text-[10px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">Инвестор</div>
+                                @endif
                             </div>
                         </div>
 
@@ -144,34 +146,36 @@
                         </div>
                     </div>
 
-                    {{-- Assets Divider --}}
-                    <div class="h-1 bg-zinc-100 my-8"></div>
+                    @if($user->is_investor)
+                        {{-- Assets Divider --}}
+                        <div class="h-1 bg-zinc-100 my-8"></div>
 
-                    {{-- Unified Assets Grid --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @foreach($balances as $balance)
-                            @php
-                                $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888', 'icon' => '💰'];
-                                $rate = $exchangeRateService->getRate($balance->currency_code);
-                                $fiat = $balance->amount * $rate;
-                                $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
-                            @endphp
-                            <div class="flex items-center justify-between p-4 bg-zinc-50 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 group/asset">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 bg-white border-2 border-zinc-900 flex items-center justify-center text-xl shadow-[1px_1px_0px_0px_rgba(24,24,27,1)] group-hover/asset:rotate-3 transition-all duration-500">
-                                        {{ $m['icon'] }}
+                        {{-- Unified Assets Grid --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach($balances as $balance)
+                                @php
+                                    $m = $netLabels[$balance->currency_code] ?? ['label' => strtoupper($balance->currency_code), 'symbol' => '?', 'color' => '#888', 'icon' => '💰'];
+                                    $rate = $exchangeRateService->getRate($balance->currency_code);
+                                    $fiat = $balance->amount * $rate;
+                                    $amount = rtrim(rtrim(number_format($balance->amount, 8, '.', ''), '0'), '.');
+                                @endphp
+                                <div class="flex items-center justify-between p-4 bg-zinc-50 border-2 border-zinc-900 shadow-[2px_2px_0px_0px_rgba(24,24,27,1)] transition-all hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 group/asset">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 bg-white border-2 border-zinc-900 flex items-center justify-center text-xl shadow-[1px_1px_0px_0px_rgba(24,24,27,1)] group-hover/asset:rotate-3 transition-all duration-500">
+                                            {{ $m['icon'] }}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[13px] font-black text-zinc-900 uppercase tracking-tight">{{ $m['label'] }}</span>
+                                            <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider leading-none">{{ $amount }}</span>
+                                        </div>
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span class="text-[13px] font-black text-zinc-900 uppercase tracking-tight">{{ $m['label'] }}</span>
-                                        <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider leading-none">{{ $amount }}</span>
+                                        <div class="text-right">
+                                            <span class="text-[15px] font-black text-zinc-900 tracking-tight">{{ core()->formatPrice($fiat) }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                    <div class="text-right">
-                                        <span class="text-[15px] font-black text-zinc-900 tracking-tight">{{ core()->formatPrice($fiat) }}</span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -219,7 +223,7 @@
                                     $clickUrl = route('shop.customers.account.orders.view', $transaction->id);
                                 } else {
                                     $typeLabels = [
-                                        'deposit'         => ['icon' => '📥', 'label' => 'Пополнение'],
+                                        'deposit'         => ['icon' => '📥', 'label' => 'Активы'],
                                         'withdrawal'      => ['icon' => '📤', 'label' => 'Списание'],
                                         'purchase'        => ['icon' => '🛍', 'label' => 'Оплата'],
                                         'refund'          => ['icon' => '💸', 'label' => 'Возврат'],
@@ -316,7 +320,7 @@
                             </div>
                             <h3 class="text-[18px] font-black text-white uppercase tracking-tighter italic mb-2">История пуста</h3>
                             <p class="text-[11px] text-zinc-500 font-bold uppercase tracking-widest max-w-[240px] leading-relaxed mx-auto">
-                                У вас пока нет транзакций. Пополните баланс, чтобы совершать покупки.
+                                У вас пока нет транзакций. История будет отображаться здесь.
                             </p>
                         </div>
                     </div>
@@ -364,275 +368,282 @@
 
 
 
-        {{-- Step: Empty (Crypto) --}}
-        <div id="step-empty" class="hidden bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] p-12 text-center">
-            <div class="flex flex-col items-center gap-8">
-                <div class="w-24 h-24 bg-zinc-900 border-4 border-zinc-900 flex items-center justify-center text-5xl shadow-[6px_6px_0px_0px_rgba(214,255,0,1)]">
-                    🔐
+        @if($user->is_investor)
+            {{-- Step: Empty (Crypto) --}}
+            <div id="step-empty" class="hidden bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] p-12 text-center">
+                <div class="flex flex-col items-center gap-8">
+                    <div class="w-24 h-24 bg-zinc-900 border-4 border-zinc-900 flex items-center justify-center text-5xl shadow-[6px_6px_0px_0px_rgba(214,255,0,1)]">
+                        🔐
+                    </div>
+                    <div class="space-y-4">
+                        <h2 class="text-2xl font-black text-zinc-900 uppercase tracking-tighter italic">Нет добавленных кошельков</h2>
+                        <p class="text-[13px] text-zinc-500 max-w-[320px] font-black uppercase tracking-widest leading-relaxed mx-auto">
+                            Для активации активов сначала добавьте свой кошелёк.
+                        </p>
+                    </div>
+                    <button onclick="goToAddWallet()"
+                        class="w-full max-w-[280px] bg-[#D6FF00] border-3 border-zinc-900 px-10 py-5 text-[14px] font-black text-zinc-900 uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">
+                        Добавить кошелёк
+                    </button>
                 </div>
-                <div class="space-y-4">
-                    <h2 class="text-2xl font-black text-zinc-900 uppercase tracking-tighter italic">Нет добавленных кошельков</h2>
-                    <p class="text-[13px] text-zinc-500 max-w-[320px] font-black uppercase tracking-widest leading-relaxed mx-auto">
-                        Для пополнения необходимо сначала добавить свой кошелёк.
+            </div>
+        @endif
+
+        @if($user->is_investor)
+            {{-- Step: Management (Combined Deposit & Management) --}}
+            <div id="step-management" class="hidden">
+                <div class="mb-6 px-4">
+                    <p class="text-[10px] text-zinc-900 uppercase font-black tracking-[0.3em] italic">
+                        Мои активы
                     </p>
                 </div>
-                <button onclick="goToAddWallet()"
-                    class="w-full max-w-[280px] bg-[#D6FF00] border-3 border-zinc-900 px-10 py-5 text-[14px] font-black text-zinc-900 uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all">
-                    Добавить кошелёк
-                </button>
-            </div>
-        </div>
+                
+                <div class="grid grid-cols-1 gap-4">
+                @foreach($allAddresses as $address)
+                    @php
+                        $nm = [
+                            'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
+                            'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
+                            'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
+                            'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
+                            'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/'],
+                            'arbitrum_one' => ['Arbitrum', 'ETH', 'Ξ', '#28A0F0', '#28A0F0', 'ARB', 'https://arbiscan.io/address/'],
+                            'usdt_arbitrum_one' => ['Arbitrum', 'USDT', '₮', '#26A17B', '#4DBFA0', 'ARB', 'https://arbiscan.io/address/'],
+                        ];
+                        $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
 
-        {{-- Step: Management (Combined Deposit & Management) --}}
-        <div id="step-management" class="hidden">
-            <div class="mb-6 px-4">
-                <p class="text-[10px] text-zinc-900 uppercase font-black tracking-[0.3em] italic">
-                    Мои активы
-                </p>
-            </div>
-            
-            <div class="grid grid-cols-1 gap-4">
-            @foreach($allAddresses as $address)
-                @php
-                    $nm = [
-                        'bitcoin' => ['Bitcoin', 'BTC', '₿', '#F7931A', '#F5A623', 'BTC', 'https://mempool.space/address/'],
-                        'ethereum' => ['Ethereum', 'ETH', 'Ξ', '#627EEA', '#8A9FEF', 'ETH', 'https://etherscan.io/address/'],
-                        'ton' => ['TON', 'TON', '◎', '#0098EA', '#33BFFF', 'TON', 'https://tonviewer.com/'],
-                        'usdt_ton' => ['TON', 'USDT', '₮', '#26A17B', '#4DBFA0', 'TON', 'https://tonviewer.com/'],
-                        'dash' => ['Dash', 'DASH', 'D', '#1c75bc', '#4DA3E0', 'DASH', 'https://blockchair.com/dash/address/'],
-                        'arbitrum_one' => ['Arbitrum', 'ETH', 'Ξ', '#28A0F0', '#28A0F0', 'ARB', 'https://arbiscan.io/address/'],
-                        'usdt_arbitrum_one' => ['Arbitrum', 'USDT', '₮', '#26A17B', '#4DBFA0', 'ARB', 'https://arbiscan.io/address/'],
-                    ];
-                    $m = $nm[$address->network] ?? ['Unknown', '?', '?', '#aaa', '#ccc', strtoupper($address->network), '#'];
+                        $netMap = [
+                            'ton' => ['chain' => 'ton'],
+                            'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
+                            'bitcoin' => ['chain' => 'btc'],
+                            'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
+                            'dash' => ['chain' => 'dash'],
+                            'arbitrum_one' => ['chain' => 'arb'],
+                            'usdt_arbitrum_one' => ['chain' => 'arb', 'token' => 'usdt'],
+                        ];
+                        $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
 
-                    $netMap = [
-                        'ton' => ['chain' => 'ton'],
-                        'usdt_ton' => ['chain' => 'ton', 'token' => 'usdt'],
-                        'bitcoin' => ['chain' => 'btc'],
-                        'ethereum' => ['chain' => 'erc20', 'token' => 'usdt'],
-                        'dash' => ['chain' => 'dash'],
-                        'arbitrum_one' => ['chain' => 'arb'],
-                        'usdt_arbitrum_one' => ['chain' => 'arb', 'token' => 'usdt'],
-                    ];
-                    $nmData = $netMap[$address->network] ?? ['chain' => $address->network];
+                        $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
+                        if (isset($nmData['token']))
+                            $parts[] = $nmData['token'];
+                        if ($address->alias)
+                            $parts[] = $address->alias;
+                        $fullAlias = implode('.', $parts);
 
-                    $parts = ["@" . $user->username, $nmData['chain'] ?? $address->network];
-                    if (isset($nmData['token']))
-                        $parts[] = $nmData['token'];
-                    if ($address->alias)
-                        $parts[] = $address->alias;
-                    $fullAlias = implode('.', $parts);
+                        $explorerUrl = $m[6] . $address->address;
+                        $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
 
-                    $explorerUrl = $m[6] . $address->address;
-                    $dAmt = rtrim(rtrim(number_format($address->verification_amount ?? 0, 8, '.', ''), '0'), '.');
+                        // Style attributes based on coin
+                        $coinColor = $m[3];
+                    @endphp
 
-                    // Style attributes based on coin
-                    $coinColor = $m[3];
-                @endphp
-
-                <div class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] flex transition-all group overflow-hidden">
-                    {{-- Asset Display Block --}}
-                    <div class="flex-1 flex gap-6 p-6 min-w-0 text-left items-center">
-                        {{-- Icon Column --}}
-                        <div class="shrink-0">
-                            <div class="w-14 h-14 border-3 border-zinc-900 flex items-center justify-center text-white text-2xl font-black shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]"
-                                style="background: {{ $coinColor }}">
-                                {{ $m[2] }}
-                            </div>
-                        </div>
-
-                        {{-- Main Content Column --}}
-                        <div class="flex-1 min-w-0">
-                            {{-- Header: Verified Icon + Alias --}}
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xl font-black text-zinc-900 uppercase tracking-tighter italic truncate">
-                                    {{ $fullAlias }}
-                                </span>
+                    <div class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] flex transition-all group overflow-hidden">
+                        {{-- Asset Display Block --}}
+                        <div class="flex-1 flex gap-6 p-6 min-w-0 text-left items-center">
+                            {{-- Icon Column --}}
+                            <div class="shrink-0">
+                                <div class="w-14 h-14 border-3 border-zinc-900 flex items-center justify-center text-white text-2xl font-black shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]"
+                                    style="background: {{ $coinColor }}">
+                                    {{ $m[2] }}
+                                </div>
                             </div>
 
-                            {{-- Network Info --}}
-                            <div class="flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
-                                <span>{{ $m[5] }}</span>
-                                <span class="text-zinc-200">/</span>
-                                <span>{{ $m[1] }}</span>
-                                <span class="text-zinc-200">/</span>
-                                <code class="font-mono text-[11px] opacity-70">{{ substr($address->address, 0, 8) }}...{{ substr($address->address, -8) }}</code>
-                            </div>
-
-                            {{-- Balance --}}
-                            <div class="mt-3 flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-lg font-black font-mono text-zinc-900 bg-zinc-50 px-3 py-1 border-2 border-zinc-100">
-                                        {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
-                                        <span class="text-[10px] text-zinc-400 font-black ml-1">{{ $m[1] }}</span>
+                            {{-- Main Content Column --}}
+                            <div class="flex-1 min-w-0">
+                                {{-- Header: Verified Icon + Alias --}}
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-xl font-black text-zinc-900 uppercase tracking-tighter italic truncate">
+                                        {{ $fullAlias }}
                                     </span>
                                 </div>
 
-                                @if(str_contains($address->network, 'arbitrum'))
-                                    <button type="button" 
-                                        onclick="event.stopPropagation(); openSendModal('{{ $address->id }}', '{{ $address->network }}', '{{ $m[1] }}', '{{ $address->balance ?? 0 }}')"
-                                        class="px-4 py-2 bg-[#D6FF00] border-3 border-zinc-900 text-zinc-900 text-[10px] font-black uppercase tracking-widest shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:scale-95">
-                                        Отправить
-                                    </button>
-                                @endif
+                                {{-- Network Info --}}
+                                <div class="flex items-center gap-2 text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+                                    <span>{{ $m[5] }}</span>
+                                    <span class="text-zinc-200">/</span>
+                                    <span>{{ $m[1] }}</span>
+                                    <span class="text-zinc-200">/</span>
+                                    <code class="font-mono text-[11px] opacity-70">{{ substr($address->address, 0, 8) }}...{{ substr($address->address, -8) }}</code>
+                                </div>
+
+                                {{-- Balance --}}
+                                <div class="mt-3 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-lg font-black font-mono text-zinc-900 bg-zinc-50 px-3 py-1 border-2 border-zinc-100">
+                                            {{ rtrim(rtrim(number_format($address->balance ?? 0, 8, '.', ''), '0'), '.') ?: '0' }}
+                                            <span class="text-[10px] text-zinc-400 font-black ml-1">{{ $m[1] }}</span>
+                                        </span>
+                                    </div>
+
+                                    @if(str_contains($address->network, 'arbitrum'))
+                                        <button type="button" 
+                                            onclick="event.stopPropagation(); openSendModal('{{ $address->id }}', '{{ $address->network }}', '{{ $m[1] }}', '{{ $address->balance ?? 0 }}')"
+                                            class="px-4 py-2 bg-[#D6FF00] border-3 border-zinc-900 text-zinc-900 text-[10px] font-black uppercase tracking-widest shadow-[3px_3px_0px_0px_rgba(24,24,27,1)] active:scale-95">
+                                            Отправить
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    {{-- Action Column (Delete) --}}
-                    <div class="shrink-0 flex items-center px-4 border-l-4 border-zinc-900 bg-zinc-50">
-                        <form id="delete-wallet-form-{{ $address->id }}"
-                            action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
-                            class="inline">
-                            @csrf @method('DELETE')
-                            <button type="button"
-                                onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
-                                class="w-12 h-12 bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:border-red-600 hover:text-white hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </form>
+                        {{-- Action Column (Delete) --}}
+                        <div class="shrink-0 flex items-center px-4 border-l-4 border-zinc-900 bg-zinc-50">
+                            <form id="delete-wallet-form-{{ $address->id }}"
+                                action="{{ route('shop.customers.account.crypto.delete', $address->id) }}" method="POST"
+                                class="inline">
+                                @csrf @method('DELETE')
+                                <button type="button"
+                                    onclick="confirmWalletDeletion('{{ $address->id }}', '{{ $address->alias ?: $address->address }}')"
+                                    class="w-12 h-12 bg-white border-2 border-zinc-200 flex items-center justify-center text-zinc-400 hover:bg-red-600 hover:border-red-600 hover:text-white hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
 
-            <button onclick="goToAddWallet()"
-                class="w-full mt-8 p-8 border-4 border-dashed border-zinc-200 bg-white hover:border-[#D6FF00] hover:bg-zinc-50 transition-all flex flex-col items-center justify-center gap-4 group">
-                <div class="w-12 h-12 bg-zinc-100 border-2 border-zinc-200 flex items-center justify-center text-2xl text-zinc-400 group-hover:bg-[#D6FF00] group-hover:border-zinc-900 group-hover:text-zinc-900 transition-all">
-                    +
-                </div>
-                <span class="text-[13px] font-black uppercase tracking-[0.2em] text-zinc-400 group-hover:text-zinc-900">Добавить новый кошелек</span>
-            </button>
-        </div>
+                <button onclick="goToAddWallet()"
+                    class="w-full mt-8 p-8 border-4 border-dashed border-zinc-200 bg-white hover:border-[#D6FF00] hover:bg-zinc-50 transition-all flex flex-col items-center justify-center gap-4 group">
+                    <div class="w-12 h-12 bg-zinc-100 border-2 border-zinc-200 flex items-center justify-center text-2xl text-zinc-400 group-hover:bg-[#D6FF00] group-hover:border-zinc-900 group-hover:text-zinc-900 transition-all">
+                        +
+                    </div>
+                    <span class="text-[13px] font-black uppercase tracking-[0.2em] text-zinc-400 group-hover:text-zinc-900">Добавить новый кошелек</span>
+                </button>
+            </div>
+        @endif
 
 
 
         {{-- Step: B2C Details removed --}}
 
 
-        {{-- Step: Send (New) --}}
-        <div id="step-send" class="hidden">
-            <div class="bg-white border border-zinc-100 box-shadow-sm p-6 space-y-8">
-                <div class="flex items-center gap-4 border-b border-zinc-50 pb-8">
-                    <div id="send-coin-icon" class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">📤</div>
-                    <div>
-                        <h3 class="text-[20px] font-black text-zinc-900 leading-tight tracking-tight">Перевод активов</h3>
-                        <p id="send-network-label" class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] mt-1.5 opacity-80">
-                            Ethereum Network (Arbitrum)
-                        </p>
-                    </div>
-                </div>
-
-                <div class="space-y-6">
-                    {{-- Recipient --}}
-                    <div>
-                        <label class="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Получатель</label>
-                        <div class="relative">
-                            <input type="text" id="send-recipient" oninput="resolveRecipient(this.value)"
-                                placeholder="@alias или 0x..."
-                                class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[14px] text-zinc-900 focus:bg-white focus:border-[#7C45F5] transition-all">
-                            <div id="recipient-resolve-status" class="absolute right-5 top-1/2 -translate-y-1/2 text-[11px] font-bold"></div>
-                        </div>
-                        <p class="text-[11px] text-zinc-400 mt-2 italic px-1" id="recipient-resolved-addr"></p>
-                    </div>
-
-                    {{-- Amount --}}
-                    <div>
-                        <label class="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Сумма</label>
-                        <div class="relative">
-                            <input type="number" id="send-amount" step="any" placeholder="0.00"
-                                class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[24px] font-black text-zinc-900 focus:bg-white focus:border-[#7C45F5] transition-all">
-                            <div class="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 font-black" id="send-coin-symbol">ETH</div>
-                        </div>
-                        <div class="flex justify-between items-center mt-2 px-1">
-                            <p class="text-[11px] text-zinc-400">Доступно: <span id="send-max-balance" class="font-bold text-zinc-600">0.0000</span></p>
-                            <button type="button" onclick="setMaxSendAmount()" class="text-[10px] font-black uppercase text-[#7C45F5] hover:underline">Макс.</button>
+        @if($user->is_investor)
+            {{-- Step: Send (New) --}}
+            <div id="step-send" class="hidden">
+                <div class="bg-white border border-zinc-100 box-shadow-sm p-6 space-y-8">
+                    <div class="flex items-center gap-4 border-b border-zinc-50 pb-8">
+                        <div id="send-coin-icon" class="w-14 h-14 bg-violet-50 flex items-center justify-center text-3xl shadow-inner">📤</div>
+                        <div>
+                            <h3 class="text-[20px] font-black text-zinc-900 leading-tight tracking-tight">Перевод активов</h3>
+                            <p id="send-network-label" class="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] mt-1.5 opacity-80">
+                                Ethereum Network (Arbitrum)
+                            </p>
                         </div>
                     </div>
 
-                    {{-- Passkey Authorization Button --}}
-                    <div class="pt-6">
-                        <button type="button" id="initiate-send-btn" onclick="authorizeAndSend()"
-                            class="w-full bg-zinc-900 hover:bg-[#7C45F5] text-white font-black py-5 px-10 shadow-xl transition-all active:scale-95 flex items-center justify-center gap-4 text-[14px] uppercase tracking-[0.2em]">
-                            <span id="send-btn-text">Подписать и отправить</span>
-                            <span id="send-btn-passkey-icon">🔐</span>
-                            <div id="send-btn-loader" class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin"></div>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    <div class="space-y-6">
+                        {{-- Recipient --}}
+                        <div>
+                            <label class="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Получатель</label>
+                            <div class="relative">
+                                <input type="text" id="send-recipient" oninput="resolveRecipient(this.value)"
+                                    placeholder="@alias или 0x..."
+                                    class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[14px] text-zinc-900 focus:bg-white focus:border-[#7C45F5] transition-all">
+                                <div id="recipient-resolve-status" class="absolute right-5 top-1/2 -translate-y-1/2 text-[11px] font-bold"></div>
+                            </div>
+                            <p class="text-[11px] text-zinc-400 mt-2 italic px-1" id="recipient-resolved-addr"></p>
+                        </div>
 
-        {{-- Step: Add Wallet --}}
-        <div id="step-add-wallet" class="hidden space-y-8">
-            <div class="bg-white border border-zinc-100 box-shadow-sm p-5 md:p-6">
-                {{-- Coin Selection --}}
-                <div class="space-y-4">
-                    <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Выберите актив
-                    </p>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        @foreach(['bitcoin' => 'Bitcoin', 'ethereum' => 'Ethereum', 'usdt' => 'USDT', 'ton' => 'TON', 'dash' => 'Dash'] as $id => $name)
-                            <button type="button"
-                                id="coin-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
-                                onclick="selCoin('{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}')"
-                                class="flex flex-col items-center justify-center p-5 border border-zinc-100 bg-white hover:border-violet-100 transition-all active:scale-95 group relative overflow-hidden">
-                                <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">
-                                    {{ $allAssets[$id === 'usdt' ? 'usdt_ton' : $id]['icon'] }}
-                                </span>
-                                <span id="coin-label-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
-                                    class="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
-                                    {{ $id }}
-                                </span>
-                                <div
-                                    class="absolute -bottom-1 -right-1 w-4 h-4 bg-zinc-50 rotate-45 group-hover:bg-violet-50 transition-colors">
-                                </div>
+                        {{-- Amount --}}
+                        <div>
+                            <label class="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-3">Сумма</label>
+                            <div class="relative">
+                                <input type="number" id="send-amount" step="any" placeholder="0.00"
+                                    class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[24px] font-black text-zinc-900 focus:bg-white focus:border-[#7C45F5] transition-all">
+                                <div class="absolute right-5 top-1/2 -translate-y-1/2 text-zinc-400 font-black" id="send-coin-symbol">ETH</div>
+                            </div>
+                            <div class="flex justify-between items-center mt-2 px-1">
+                                <p class="text-[11px] text-zinc-400">Доступно: <span id="send-max-balance" class="font-bold text-zinc-600">0.0000</span></p>
+                                <button type="button" onclick="setMaxSendAmount()" class="text-[10px] font-black uppercase text-[#7C45F5] hover:underline">Макс.</button>
+                            </div>
+                        </div>
+
+                        {{-- Passkey Authorization Button --}}
+                        <div class="pt-6">
+                            <button type="button" id="initiate-send-btn" onclick="authorizeAndSend()"
+                                class="w-full bg-zinc-900 hover:bg-[#7C45F5] text-white font-black py-5 px-10 shadow-xl transition-all active:scale-95 flex items-center justify-center gap-4 text-[14px] uppercase tracking-[0.2em]">
+                                <span id="send-btn-text">Подписать и отправить</span>
+                                <span id="send-btn-passkey-icon">🔐</span>
+                                <div id="send-btn-loader" class="hidden w-5 h-5 border-2 border-white border-t-transparent animate-spin"></div>
                             </button>
-                        @endforeach
+                        </div>
                     </div>
                 </div>
+            </div>
+        @endif
 
-                {{-- Network Selection (Appears after coin) --}}
-                <div id="wallet-network-section" class="hidden space-y-4 pt-10 border-t border-zinc-50 mt-10">
-                    <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Сеть для
-                        пополнения</p>
-                    <div id="network-options-container" class="grid grid-cols-1 gap-3">
-                        {{-- Populated by JS --}}
-                    </div>
-                </div>
-
-                {{-- Address Input Section --}}
-                <div id="wallet-addr-section" class="hidden space-y-4 pt-10 border-t border-zinc-50 mt-10">
-                    <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Адрес вашего
-                        кошелька</p>
-                    <div class="relative">
-                        <input type="text" id="wallet-addr-input" oninput="onWalletInput(this.value)"
-                            placeholder="Введите адрес кошелька..."
-                            class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[14px] text-zinc-900 placeholder:text-zinc-200 focus:bg-white focus:border-[#7C45F5] focus:ring-1 focus:ring-violet-100 transition-all">
-                        <div class="absolute right-5 top-1/2 -translate-y-1/2 flex gap-2">
-                            <div class="w-2 h-2 rounded-none bg-zinc-200" id="addr-valid-dot"></div>
+        @if($user->is_investor)
+            {{-- Step: Add Wallet --}}
+            <div id="step-add-wallet" class="hidden space-y-8">
+                <div class="bg-white border border-zinc-100 box-shadow-sm p-5 md:p-6">
+                    {{-- Coin Selection --}}
+                    <div class="space-y-4">
+                        <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Выберите актив
+                        </p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            @foreach(['bitcoin' => 'Bitcoin', 'ethereum' => 'Ethereum', 'usdt' => 'USDT', 'ton' => 'TON', 'dash' => 'Dash'] as $id => $name)
+                                <button type="button"
+                                    id="coin-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
+                                    onclick="selCoin('{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}')"
+                                    class="flex flex-col items-center justify-center p-5 border border-zinc-100 bg-white hover:border-violet-100 transition-all active:scale-95 group relative overflow-hidden">
+                                    <span class="text-2xl mb-2 group-hover:scale-110 transition-transform">
+                                        {{ $allAssets[$id === 'usdt' ? 'usdt_ton' : $id]['icon'] }}
+                                    </span>
+                                    <span id="coin-label-{{ $id === 'bitcoin' ? 'btc' : ($id === 'ethereum' ? 'eth' : $id) }}"
+                                        class="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                                        {{ $id }}
+                                    </span>
+                                    <div
+                                        class="absolute -bottom-1 -right-1 w-4 h-4 bg-zinc-50 rotate-45 group-hover:bg-violet-50 transition-colors">
+                                    </div>
+                                </button>
+                            @endforeach
                         </div>
                     </div>
 
-                    <p class="text-[11px] text-zinc-400 italic">
-                        Пожалуйста, указывайте только адрес кошелька, с которого будете совершать пополнение.
-                    </p>
+                    {{-- Network Selection (Appears after coin) --}}
+                    <div id="wallet-network-section" class="hidden space-y-4 pt-10 border-t border-zinc-50 mt-10">
+                        <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Сеть активов</p>
+                        <div id="network-options-container" class="grid grid-cols-1 gap-3">
+                            {{-- Populated by JS --}}
+                        </div>
+                    </div>
 
-                    <form action="{{ route('shop.customers.account.crypto.store') }}" method="POST" id="add-wallet-form"
-                        class="pt-6">
-                        @csrf
-                        <input type="hidden" name="network" id="wallet-net-input">
-                        <input type="hidden" name="address" id="wallet-addr-hidden">
-                        <input type="hidden" name="alias" id="wallet-alias-input">
+                    {{-- Address Input Section --}}
+                    <div id="wallet-addr-section" class="hidden space-y-4 pt-10 border-t border-zinc-50 mt-10">
+                        <p class="text-[10px] text-zinc-400 uppercase font-black tracking-[0.2em] opacity-80">Адрес вашего
+                            кошелька</p>
+                        <div class="relative">
+                            <input type="text" id="wallet-addr-input" oninput="onWalletInput(this.value)"
+                                placeholder="Введите адрес кошелька..."
+                                class="w-full bg-zinc-50 border border-zinc-100 p-5 font-mono text-[14px] text-zinc-900 placeholder:text-zinc-200 focus:bg-white focus:border-[#7C45F5] focus:ring-1 focus:ring-violet-100 transition-all">
+                            <div class="absolute right-5 top-1/2 -translate-y-1/2 flex gap-2">
+                                <div class="w-2 h-2 rounded-none bg-zinc-200" id="addr-valid-dot"></div>
+                            </div>
+                        </div>
 
-                        <button type="button" id="wallet-add-btn" disabled onclick="submitWalletAdd()"
-                            class="w-full bg-zinc-900 text-white font-black py-5 px-10 shadow-xl opacity-40 cursor-not-allowed transition-all active:scale-95 uppercase tracking-[0.2em] text-[14px] hover:bg-[#7C45F5]">
-                            Подключить кошелек
-                        </button>
-                    </form>
+                        <p class="text-[11px] text-zinc-400 italic px-1">
+                            Пожалуйста, указывайте только адрес кошелька, которым вы планируете пользоваться.
+                        </p>
+
+                        <form action="{{ route('shop.customers.account.crypto.store') }}" method="POST" id="add-wallet-form"
+                            class="pt-6">
+                            @csrf
+                            <input type="hidden" name="network" id="wallet-net-input">
+                            <input type="hidden" name="address" id="wallet-addr-hidden">
+                            <input type="hidden" name="alias" id="wallet-alias-input">
+
+                            <button type="button" id="wallet-add-btn" disabled onclick="submitWalletAdd()"
+                                class="w-full bg-zinc-900 text-white font-black py-5 px-10 shadow-xl opacity-40 cursor-not-allowed transition-all active:scale-95 uppercase tracking-[0.2em] text-[14px] hover:bg-[#7C45F5]">
+                                Подключить кошелек
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
     </div>
 
     @push('scripts')
@@ -642,11 +653,20 @@
             const initialTitle = "Meanly Wallet";
             let _sendContext = { walletId: null, network: null, symbol: null, balance: 0 };
 
+            const isInvestor = @json($user->is_investor);
+
             function switchStep(newStep) {
                 if (currentStep === newStep) return;
 
+                // Security/UX guard: non-investors can't reach certain steps
+                const investorSteps = ['management', 'add-wallet', 'empty', 'send'];
+                if (!isInvestor && investorSteps.includes(newStep)) {
+                    switchStep('dashboard');
+                    return;
+                }
+
                 // Track previous step for smarter "Back" navigation
-                if (['dashboard', 'management', 'organizations', 'b2b-management'].includes(currentStep)) {
+                if (['dashboard', 'management'].includes(currentStep)) {
                     prevStep = currentStep;
                 }
 
@@ -731,7 +751,6 @@
 
             function handleStepBack() {
                 if (currentStep === 'send') {
-                    // If we came from management, go back to management. Otherwise (from dashboard), go back to dashboard.
                     switchStep(prevStep === 'management' ? 'management' : 'dashboard');
                 }
                 else if (currentStep === 'transactions') switchStep('dashboard');
