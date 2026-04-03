@@ -54,11 +54,11 @@ class ProcessWelcomeMintingJob implements ShouldQueue
 
         // 2. Ensure customer has a blockchain address (credits_id)
         if (empty($customer->credits_id) || !str_starts_with($customer->credits_id, '0x')) {
-            Log::error("ProcessWelcomeMintingJob: Customer [{$customer->id}] has no valid Arbitrum address in 'credits_id'.");
+            Log::error("ProcessWelcomeMintingJob: Customer [{$customer->id}] has no valid Arbitrum address in 'credits_id'. Account address: " . ($customer->credits_id ?? 'empty'));
             return;
         }
 
-        Log::info("ProcessWelcomeMintingJob: Starting Welcome Minting for Customer [{$customer->id}] (Address: {$customer->credits_id}).");
+        Log::info("ProcessWelcomeMintingJob: Starting Welcome Minting. CustomerID: {$customer->id}, Username: {$customer->username}, Address: {$customer->credits_id}, Amount: {$this->amount}");
 
         // 3. Mint Meanly Coin (ERC20)
         $reason = "Registration Bonus";

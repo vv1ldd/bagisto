@@ -113,6 +113,15 @@ class RegistrationController extends Controller
             return response()->json(['message' => 'Этот псевдоним регистрируется прямо сейчас другим пользователем. Попробуйте другой.', 'errors' => ['username' => ['Этот псевдоним регистрируется прямо сейчас.']]], 422);
         }
 
+        // 3. Idempotency Check: If we already prepared an address for this username in this session, REUSE IT.
+        $existingData = session('pending_registration_data');
+        if ($existingData && ($existingData['username'] ?? '') === $username && !empty($existingData['credits_id'])) {
+            $mockCustomer = new \Webkul\Customer\Models\Customer($existingData);
+            $mockCustomer->transient_passkey_id = $existingData['credits_id'];
+            
+            return app(\Webkul\Shop\Http\Controllers\Customer\PasskeyController::class)->registerOptions(request(), app(\Spatie\LaravelPasskeys\Actions\GeneratePasskeyRegisterOptionsAction::class), $mockCustomer);
+        }
+
         // Lock for 5 minutes
         Cache::put($lockKey, session()->getId(), now()->addMinutes(5));
 
