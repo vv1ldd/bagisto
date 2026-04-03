@@ -32,8 +32,13 @@
 
         <div class="flex-auto pb-8  bg-white border border-gray-100">
 
-            <div class="px-5 pt-6 pb-2">
-                <h1 class="text-[20px] font-bold text-zinc-900 leading-tight">
+            <div class="px-0 pt-0 mb-6 flex items-center gap-3">
+                <button type="button" 
+                    onclick="window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
+                    <span class="icon-arrow-left text-xl font-black"></span>
+                </button>
+                <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">
                     @lang('shop::app.customers.account.orders.title')
                 </h1>
             </div>

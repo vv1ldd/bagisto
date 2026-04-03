@@ -20,7 +20,8 @@ $menuIcons = [
     {{-- Header with Back Button --}}
     <div class="flex items-center gap-3 mb-6 px-0 pt-0">
         <button type="button" 
-            onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.home.index') }}'"
+            id="account-back-button"
+            onclick="const referrer = document.referrer; if (referrer && !referrer.includes('/account')) { window.location.href = referrer; } else { window.location.href = '{{ route('shop.home.index') }}'; }"
             class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
             <span class="icon-arrow-left text-xl font-black"></span>
         </button>

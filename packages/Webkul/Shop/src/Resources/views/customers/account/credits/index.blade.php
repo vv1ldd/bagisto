@@ -1,5 +1,15 @@
 <x-shop::layouts.account :is-cardless="true" :title="__('Meanly Wallet')">
-    <div class="mt-0 mb-8 w-full max-w-[800px] mx-auto px-2">
+    <div class="relative w-full max-w-[500px] mx-auto px-4 mt-2 mb-10">
+        {{-- Header with Back Button --}}
+        <div class="flex items-center gap-3 mb-6 px-0 pt-0">
+            <button type="button" 
+                id="account-back-button"
+                onclick="window.location.href = '{{ route('shop.customers.account.index') }}'"
+                class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
+                <span class="icon-arrow-left text-xl font-black"></span>
+            </button>
+            <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">Мой кошелек</h1>
+        </div>
         @php
             $user = auth()->guard('customer')->user();
             $balances = $user->balances;
@@ -1260,12 +1270,12 @@
 
             function updateHeader() {
                 const titleEl = document.querySelector('h1');
-                const layoutBackBtn = document.querySelector('button[onclick*="window.history.back()"]');
+                const layoutBackBtn = document.getElementById('account-back-button');
 
                 if (layoutBackBtn) {
                     // Repurpose layout back button for SPA steps
                     if (currentStep === 'dashboard' || currentStep === 'transactions' || currentStep === 'nfts') {
-                        layoutBackBtn.onclick = () => { window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'; };
+                        layoutBackBtn.onclick = () => { window.location.href = '{{ route('shop.customers.account.index') }}'; };
                     } else {
                         layoutBackBtn.onclick = (e) => { e.preventDefault(); handleStepBack(); };
                     }

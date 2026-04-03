@@ -18,15 +18,15 @@
     </x-shop::layouts.split-screen>
 @else
     <x-shop::layouts.account :is-cardless="true" :back-link="route('shop.customers.account.index')">
-        <div class="relative w-full max-w-[600px] mx-auto">
+        <div class="relative w-full max-w-[500px] mx-auto px-4 mt-2 mb-10">
             {{-- Header with Back Button --}}
-            <div class="flex items-center gap-3 mb-2 px-4 pt-2">
+            <div class="flex items-center gap-3 mb-6 px-0 pt-0">
                 <button type="button" 
-                    onclick="window.history.length > 1 ? window.history.back() : window.location.href = '{{ route('shop.customers.account.index') }}'"
-                    class="w-12 h-12 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
-                    <span class="icon-arrow-left text-2xl font-black"></span>
+                    onclick="window.location.href = '{{ route('shop.customers.account.index') }}'"
+                    class="w-10 h-10 bg-[#D6FF00] border-4 border-black flex items-center justify-center text-black active:scale-95 transition-all box-box-shadow-sm hover:translate-x-1 hover:translate-y-1 hover:box-shadow-none">
+                    <span class="icon-arrow-left text-xl font-black"></span>
                 </button>
-                <h1 class="text-3xl font-black text-white uppercase tracking-tighter mix-blend-difference">{{ $pageTitle }}</h1>
+                <h1 class="text-xl font-black text-zinc-900 uppercase tracking-tighter">{{ $pageTitle }}</h1>
             </div>
 
             <div class="p-0">
