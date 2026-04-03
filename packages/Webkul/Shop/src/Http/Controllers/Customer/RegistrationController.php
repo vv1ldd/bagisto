@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use Webkul\Core\Repositories\SubscribersListRepository;
@@ -101,14 +102,11 @@ class RegistrationController extends Controller
         ]);
 
         $username = $request->input('username');
-        
-        // 1. Double check DB uniqueness
-        if ($this->customerRepository->where('username', $username)->exists()) {
-        $username = $request->input('username');
         $deviceName = $request->input('device_name', 'Default Device');
 
-        if (!$username) {
-            return response()->json(['message' => 'Username is required'], 422);
+        // 1. Double check DB uniqueness
+        if ($this->customerRepository->where('username', $username)->exists()) {
+             return response()->json(['message' => 'Этот псевдоним уже занят', 'errors' => ['username' => ['Этот псевдоним уже занят']]], 422);
         }
 
         // Global reservation key to prevent address desynchronization across devices
