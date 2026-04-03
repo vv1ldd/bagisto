@@ -91,6 +91,7 @@ class CreditController extends Controller
                 'username' => $user->username,
                 'is_investor' => $isInvestor,
                 'meanly_coin_balance' => (float)$user->total_credits,
+                'needs_upgrade' => ($user->credits_id && str_starts_with($user->credits_id, 'M-')) || ($user->credits_id && str_starts_with($user->credits_id, '0x') && is_null($user->encrypted_private_key)),
             ],
             'balances' => $balances,
             'addresses' => $allAddresses,

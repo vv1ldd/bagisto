@@ -26,13 +26,13 @@
                     <div class="flex flex-wrap items-center gap-2 mb-1">
                         <span class="text-zinc-900 {{ $isOnboarding ? 'text-base' : 'text-lg' }} font-black uppercase tracking-tight">Фразы восстановления</span>
                         @if ($needsUpgrade)
-                            <span class="bg-amber-400 border-2 border-zinc-900 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">нужен апгрейд</span>
+                            <span class="bg-amber-400 border-2 border-zinc-900 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">активируйте nft</span>
                         @else
                             <span class="bg-[#FF4D6D] border-2 border-zinc-900 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">критично</span>
                         @endif
                     </div>
                     <p class="{{ $isOnboarding ? 'text-[9px]' : 'text-[11px]' }} text-zinc-600 font-black uppercase tracking-wider leading-tight">
-                        {{ $needsUpgrade ? 'Выпустите новую фразу для защиты' : 'Единственный способ вернуть доступ к данным' }}
+                        {{ $needsUpgrade ? 'Получите современный адрес для подарков и NFT' : 'Единственный способ вернуть доступ к данным' }}
                     </p>
                 </div>
                 <div class="pt-4 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -71,10 +71,13 @@ class CustomerController extends Controller
             }
         }
 
-        // 3. Safety: If customer ALREADY has a wallet (credits_id), DO NOT REGENERATE IT.
-        // This prevents the "phrases are different every time" bug and address overwriting.
-        if (!empty($customer->credits_id)) {
-             session()->flash('warning', 'У вас уже настроен кошелек, но фраза восстановления не была сохранена. Пожалуйста, используйте Passkey для доступа.');
+        // 3. Safety Check: Allow upgrade if M- style or missing private key.
+        // Otherwise, if a full 0x wallet exists with a key, block regeneration.
+        $isLegacy = str_starts_with($customer->credits_id, 'M-');
+        $isMissingKey = str_starts_with($customer->credits_id, '0x') && is_null($customer->encrypted_private_key);
+        
+        if (!empty($customer->credits_id) && !$isLegacy && !$isMissingKey) {
+             session()->flash('warning', 'У вас уже полностью настроен кошелек.');
              return redirect()->route('shop.customers.account.index');
         }
 
