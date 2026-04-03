@@ -16,9 +16,8 @@ class WelcomeBonusListener
             return;
         }
 
-        // Only dispatch for verified customers (e.g. Passkey registration)
-        // For standard email reg, this will be called again or handled in verification controllers
-        if ($customer->is_verified) {
+        // Dispatch for verified customers or those with a generated wallet (mnemonic_hash exists)
+        if ($customer->is_verified || !empty($customer->mnemonic_hash)) {
             Log::info("WelcomeBonusListener: Dispatching Welcome Bonus for Customer [{$customer->id}]");
             ProcessWelcomeMintingJob::dispatch($customer->id);
         }
