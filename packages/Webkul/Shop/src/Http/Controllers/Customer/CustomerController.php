@@ -82,7 +82,24 @@ class CustomerController extends Controller
              return redirect()->route('shop.customers.account.index');
         }
 
-        // 4. Only if NO wallet exists (very rare Case), generate a new one
+        // 4. Reuse existing mnemonic if available
+        if ($customer->encrypted_mnemonic) {
+            try {
+                $recoveryKey = \Illuminate\Support\Facades\Crypt::decryptString($customer->encrypted_mnemonic);
+                $mnemonicWords = explode(' ', $recoveryKey);
+                
+                session(['pending_recovery_key' => $recoveryKey]);
+
+                return view('shop::customers.account.profile.recovery-key', [
+                    'words' => $mnemonicWords,
+                    'story' => $this->mnemonicService->generateStory($mnemonicWords)
+                ]);
+            } catch (\Exception $e) {
+                // If decryption fails, proceed to generate new ones (fail-safe for data corruption)
+            }
+        }
+
+        // 5. Fallback: Generate new ones only for legacy users or corrupted data
         $counts = [12, 15, 18, 21, 24];
         $wordCount = $counts[array_rand($counts)];
         $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
