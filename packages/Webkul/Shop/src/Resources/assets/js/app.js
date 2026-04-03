@@ -231,12 +231,18 @@ import CallOverlay from "./components/CallOverlay.vue";
 import Messenger from "./components/Messenger.vue";
 import RoomJoiner from "./components/RoomJoiner.vue";
 import MeetingInviter from "./components/MeetingInviter.vue";
+import WalletDashboard from "./components/WalletDashboard.vue";
+import SendAssetModal from "./components/SendAssetModal.vue";
+import AddWalletModal from "./components/AddWalletModal.vue";
 
 app.directive("debounce", Debounce);
 app.component("v-call-overlay", CallOverlay);
 app.component("v-messenger", Messenger);
 app.component("v-room-joiner", RoomJoiner);
 app.component("v-meeting-inviter", MeetingInviter);
+app.component("v-wallet-dashboard", WalletDashboard);
+app.component("v-send-asset-modal", SendAssetModal);
+app.component("v-add-wallet-modal", AddWalletModal);
 
 
 export default app;

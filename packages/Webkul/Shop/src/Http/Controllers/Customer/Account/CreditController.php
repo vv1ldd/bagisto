@@ -21,15 +21,9 @@ class CreditController extends Controller
      */
     public function index()
     {
-        \Illuminate\Support\Facades\Log::debug('CreditController: Entering index.', [
-            'customer_id' => auth()->guard('customer')->id(),
-            'session_id' => session()->getId(),
-        ]);
-
         $user = auth()->guard('customer')->user();
         $isInvestor = (bool) $user->is_investor;
 
-        // Trigger syncs only if relevant
         if ($isInvestor) {
             $this->syncService->syncCustomerDeposits($user);
             $this->syncService->syncPendingWeb3Transactions($user);
@@ -39,47 +33,74 @@ class CreditController extends Controller
             ? $user->crypto_addresses()->orderBy('network')->get() 
             : collect([]);
 
+        // Formatted balances for investor grid
         $balances = $isInvestor 
-            ? $user->balances 
+            ? $user->balances->keyBy('currency_code')->map(fn($b) => (float)$b->balance)
             : collect([]);
 
-        // Combine Credits (Transactions) and Orders for everyone
+        // Transactions & Orders combined
         $credits = $user->credits()->get()->map(function ($item) {
-            $item->merged_type = 'transaction';
-            return $item;
+            return [
+                'id' => 'tx-' . $item->id,
+                'type' => 'credit',
+                'amount' => (float)$item->amount,
+                'status' => $item->status,
+                'created_at' => $item->created_at->toIso8601String(),
+                'formatted_date' => $item->created_at->format('d M Y, H:i'),
+                'description' => $item->comment ?: 'Credit Transaction',
+            ];
         });
 
         $orders = $user->orders()->get()->map(function ($item) {
-            $item->merged_type = 'order';
-            return $item;
+            return [
+                'id' => 'ord-' . $item->id,
+                'increment_id' => $item->increment_id,
+                'type' => 'order',
+                'amount' => (float)$item->grand_total,
+                'status' => $item->status,
+                'created_at' => $item->created_at->toIso8601String(),
+                'formatted_date' => $item->created_at->format('d M Y, H:i'),
+                'description' => 'Order #' . $item->increment_id,
+            ];
         });
 
-        $mergedCollection = $credits->concat($orders)->sortByDesc('created_at');
-
-        // Manual Pagination
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 20;
-        $currentItems = $mergedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
-        
-        $transactions = new LengthAwarePaginator($currentItems, $mergedCollection->count(), $perPage, $currentPage, [
-            'path' => LengthAwarePaginator::resolveCurrentPath(),
-        ]);
+        $transactions = $credits->concat($orders)->sortByDesc('created_at')->values();
 
         $allAssets = [
-            'bitcoin' => ['icon' => '₿'],
-            'ethereum' => ['icon' => 'Ξ'],
-            'ton' => ['icon' => '💎'],
-            'usdt_ton' => ['icon' => '₮'],
-            'dash' => ['icon' => 'Đ']
+            'bitcoin' => ['icon' => '₿', 'name' => 'Bitcoin'],
+            'ethereum' => ['icon' => 'Ξ', 'name' => 'Ethereum'],
+            'ton' => ['icon' => '💎', 'name' => 'TON'],
+            'usdt_ton' => ['icon' => '₮', 'name' => 'USDT (TON)'],
+            'dash' => ['icon' => 'Đ', 'name' => 'Dash']
         ];
 
-        // Fetch successful orders for NFT display
         $nftOrders = $user->orders()
             ->whereIn('status', ['processing', 'completed', 'closed'])
             ->orderBy('id', 'desc')
-            ->get();
+            ->get()
+            ->map(fn($o) => [
+                'id' => $o->id,
+                'increment_id' => $o->increment_id,
+                'status' => $o->status,
+            ]);
 
-        return view('shop::customers.account.credits.index', compact('allAddresses', 'transactions', 'allAssets', 'nftOrders', 'balances'));
+        $walletData = [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'is_investor' => $isInvestor,
+                'meanly_coin_balance' => (float)$user->total_credits,
+            ],
+            'balances' => $balances,
+            'addresses' => $allAddresses,
+            'transactions' => $transactions,
+            'assets_config' => $allAssets,
+            'nfts' => $nftOrders,
+            'current_step' => request('step', 'dashboard'),
+        ];
+
+        return view('shop::customers.account.credits.index', compact('walletData'));
     }
 
     /**
