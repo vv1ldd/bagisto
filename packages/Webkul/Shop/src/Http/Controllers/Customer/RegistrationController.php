@@ -104,86 +104,52 @@ class RegistrationController extends Controller
         
         // 1. Double check DB uniqueness
         if ($this->customerRepository->where('username', $username)->exists()) {
-             return response()->json(['message' => 'Этот псевдоним уже занят', 'errors' => ['username' => ['Этот псевдоним уже занят']]], 422);
+        $username = $request->input('username');
+        $deviceName = $request->input('device_name', 'Default Device');
+
+        if (!$username) {
+            return response()->json(['message' => 'Username is required'], 422);
         }
 
-        // 2. Concurrency Check via Cache Lock
-        $lockKey = 'registration:username:' . strtolower($username);
-        if (Cache::has($lockKey) && Cache::get($lockKey) !== session()->getId()) {
-            return response()->json(['message' => 'Этот псевдоним регистрируется прямо сейчас другим пользователем. Попробуйте другой.', 'errors' => ['username' => ['Этот псевдоним регистрируется прямо сейчас.']]], 422);
-        }
+        // Global reservation key to prevent address desynchronization across devices
+        $reservationKey = 'registration_reservation:' . strtolower($username);
+        $reservedData = Cache::get($reservationKey);
 
-        // 3. Idempotency Check: If we already prepared an address for this username in this session, REUSE IT.
-        $existingData = session('pending_registration_data');
-        if ($existingData && ($existingData['username'] ?? '') === $username && !empty($existingData['credits_id'])) {
-            $mockCustomer = new \Webkul\Customer\Models\Customer($existingData);
-            $mockCustomer->transient_passkey_id = $existingData['credits_id'];
+        if ($reservedData) {
+            $mnemonicWords = $reservedData['mnemonic'];
+            $recoveryKey = implode(' ', $mnemonicWords);
+            $creditsId = $reservedData['credits_id'];
+        } else {
+            // Generate new BIP39 mnemonic
+            $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
+            $recoveryKey = implode(' ', $mnemonicWords);
             
-            return app(\Webkul\Shop\Http\Controllers\Customer\PasskeyController::class)->registerOptions(request(), app(\Spatie\LaravelPasskeys\Actions\GeneratePasskeyRegisterOptionsAction::class), $mockCustomer);
+            $wData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
+            $creditsId = $wData['address'] ?? null;
+
+            // Reserve for 1 hour
+            Cache::put($reservationKey, [
+                'mnemonic'   => $mnemonicWords,
+                'credits_id' => $creditsId,
+            ], now()->addHour());
         }
 
-        // Lock for 5 minutes
-        Cache::put($lockKey, session()->getId(), now()->addMinutes(5));
-
-        $currentIp = request()->header('CF-Connecting-IP')
-            ?? request()->header('X-Forwarded-For')
-            ?? request()->header('X-Real-IP')
-            ?? request()->ip();
-
-        if (str_contains($currentIp, ',')) {
-            $currentIp = trim(explode(',', $currentIp)[0]);
-        }
-
-        // Generate a random-length BIP39 mnemonic (12 words for passkey)
-        $mnemonicWords = $this->mnemonicService->generateMnemonic(12);
-        $recoveryKey = implode(' ', $mnemonicWords);
-        $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
-        
-        // Derive full wallet (address + private key)
-        $walletData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
-        $blockchainAddress = $walletData['address'];
-        $encryptedPrivateKey = \Illuminate\Support\Facades\Crypt::encryptString($walletData['private_key']);
-
-        // Store in session — will be shown after passkey registration
-        session(['pending_recovery_key' => $recoveryKey]);
-
-        // Generate data for future insertion
-        $customerGroup = core()->getConfigData('customer.settings.create_new_account_options.default_group');
-        
-        $data = [
-            'first_name' => 'Пользователь',
-            'last_name' => '',
-            'username' => $username,
-            'credits_alias' => $username,
-            'credits_id' => $blockchainAddress,
-            'email' => null, // Allowed per migration
-            'password' => bcrypt(Str::random(40)),
-            'mnemonic_hash' => $mnemonicHash,
-            'encrypted_private_key' => $encryptedPrivateKey,
-            'api_token' => Str::random(80),
-            'is_verified' => 1,
-            'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])?->getKey(),
-            'channel_id' => core()->getCurrentChannel()?->getKey(),
-            'token' => md5(uniqid(rand(), true)),
-            'registration_ip' => $currentIp,
-            'last_login_ip' => $currentIp,
-            'status' => 1,
-            'subscribed_to_news_letter' => 1,
-        ];
-
-        // Ensure we don't accidentally reuse an existing placeholder (we want passkeys to correspond 1-to-1)
-        
-        // Abstract a Mock Customer for options generation
-        $mockCustomer = new \Webkul\Customer\Models\Customer($data);
-        $mockCustomer->transient_passkey_id = $data['credits_id']; 
-        
-        // Store in session
+        // Store all necessary data in session for the final store() call
         session([
-            'pending_registration_data' => $data,
-            'pending_registration_id' => $data['credits_id']
+            'pending_registration_data' => [
+                'username'    => $username,
+                'device_name' => $deviceName,
+                'credits_id'  => $creditsId,
+            ],
+            'pending_recovery_key' => $recoveryKey
         ]);
 
-        // Return passkey options via the PasskeyController logic
+        $mockCustomer = new \Webkul\Customer\Models\Customer([
+            'username' => $username,
+            'credits_id' => $creditsId
+        ]);
+        $mockCustomer->transient_passkey_id = $creditsId;
+
         return app(\Webkul\Shop\Http\Controllers\Customer\PasskeyController::class)->registerOptions(request(), app(\Spatie\LaravelPasskeys\Actions\GeneratePasskeyRegisterOptionsAction::class), $mockCustomer);
     }
 
@@ -225,7 +191,7 @@ class RegistrationController extends Controller
         
         $walletData = $this->blockchainAddressService->deriveEthereumWallet($mnemonicWords);
         $blockchainAddress = $walletData['address'];
-        $encryptedPrivateKey = \Illuminate\Support\Facades\Crypt::encryptString($walletData['private_key']);
+        $privateKeyHex = $walletData['private_key'];
         $publicKeyData = $this->blockchainAddressService->derivePublicKeyData($mnemonicWords);
 
         // Store in session — will be shown after email link click
@@ -242,9 +208,11 @@ class RegistrationController extends Controller
             'password' => bcrypt($recoveryKey),
             'mnemonic_hash' => $mnemonicHash,
             'credits_id' => $blockchainAddress,
-            'encrypted_private_key' => $encryptedPrivateKey,
+            'encrypted_private_key' => $privateKeyHex ? Crypt::encryptString($privateKeyHex) : null,
+            'encrypted_mnemonic'    => Crypt::encryptString($recoveryKey),
             'public_key' => $publicKeyData['public_key'] ?? null,
             'public_key_hash' => $publicKeyData['public_key_hash'] ?? null,
+            'is_matrix_enabled'     => 1,
             'api_token' => Str::random(80),
             'is_verified' => 1,
             'customer_group_id' => $this->customerGroupRepository->findOneWhere(['code' => $customerGroup])?->getKey(),

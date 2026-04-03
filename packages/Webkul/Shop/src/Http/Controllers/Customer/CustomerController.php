@@ -42,40 +42,65 @@ class CustomerController extends Controller
     {
         $customer = auth()->guard('customer')->user();
 
-        // If already backed up and VERIFIED, just redirect to the view screen
-        if ($customer->mnemonic_hash && $customer->mnemonic_verified_at && session()->has('pending_recovery_key')) {
-            $words = explode(' ', session('pending_recovery_key'));
+        // 1. If we have a pending key in session (first time setup flow), show it
+        if (session()->has('pending_recovery_key')) {
+            $recoveryKey = session('pending_recovery_key');
+            $words = explode(' ', $recoveryKey);
+            
             return view('shop::customers.account.profile.recovery-key', [
                 'words' => $words,
                 'story' => $this->mnemonicService->generateStory($words)
             ]);
         }
 
-        // Generate a new BIP39 mnemonic
+        // 2. If already exists in DB (encrypted_mnemonic), decrypt and show it
+        if (!empty($customer->encrypted_mnemonic)) {
+            try {
+                $recoveryKey = \Illuminate\Support\Facades\Crypt::decryptString($customer->encrypted_mnemonic);
+                $words = explode(' ', $recoveryKey);
+                
+                // Also put it back into session for the verify step if needed
+                session(['pending_recovery_key' => $recoveryKey]);
+
+                return view('shop::customers.account.profile.recovery-key', [
+                    'words' => $words,
+                    'story' => $this->mnemonicService->generateStory($words)
+                ]);
+            } catch (\Exception $e) {
+                // Decryption failed or data corrupted
+            }
+        }
+
+        // 3. Safety: If customer ALREADY has a wallet (credits_id), DO NOT REGENERATE IT.
+        // This prevents the "phrases are different every time" bug and address overwriting.
+        if (!empty($customer->credits_id)) {
+             session()->flash('warning', 'У вас уже настроен кошелек, но фраза восстановления не была сохранена. Пожалуйста, используйте Passkey для доступа.');
+             return redirect()->route('shop.customers.account.index');
+        }
+
+        // 4. Only if NO wallet exists (very rare Case), generate a new one
         $counts = [12, 15, 18, 21, 24];
         $wordCount = $counts[array_rand($counts)];
         $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
         $recoveryKey = implode(' ', $mnemonicWords);
         $mnemonicHash = $this->mnemonicService->hashMnemonic($mnemonicWords);
 
-        // Derive deterministic fields
         $blockchainAddressService = app(\Webkul\Customer\Services\BlockchainAddressService::class);
         $wData = $blockchainAddressService->deriveEthereumWallet($mnemonicWords);
         $blockchainAddress = $wData['address'] ?? null;
         $privateKeyHex = $wData['private_key'] ?? null;
         $publicKeyData = $blockchainAddressService->derivePublicKeyData($mnemonicWords);
 
-        // Save the hash, encrypted PK, and derived fields to the customer record
         $this->customerRepository->update([
             'mnemonic_hash'         => $mnemonicHash,
             'encrypted_private_key' => $privateKeyHex ? \Illuminate\Support\Facades\Crypt::encryptString($privateKeyHex) : null,
+            'encrypted_mnemonic'    => \Illuminate\Support\Facades\Crypt::encryptString($recoveryKey),
             'credits_id'            => $blockchainAddress,
             'public_key'            => $publicKeyData['public_key'] ?? null,
             'public_key_hash'       => $publicKeyData['public_key_hash'] ?? null,
-            'mnemonic_verified_at'  => null, // Reset verification on new key
+            'mnemonic_verified_at'  => null,
         ], $customer->id);
 
-        // Store full phrase in session so recovery-key view can display it
         session(['pending_recovery_key' => $recoveryKey]);
 
         return view('shop::customers.account.profile.recovery-key', [
