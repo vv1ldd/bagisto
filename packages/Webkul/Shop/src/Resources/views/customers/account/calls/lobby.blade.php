@@ -23,7 +23,7 @@
             </p>
 
             <div class="flex flex-col gap-4">
-                <a href="{{ route('shop.customer.register.index') }}" 
+                <a href="{{ route('shop.customers.register.index') }}" 
                    class="w-full text-center px-8 py-5 bg-[#7C45F5] text-white text-xl font-black uppercase tracking-widest border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-1 active:translate-y-1 transition-all">
                     Войти и начать
                 </a>
