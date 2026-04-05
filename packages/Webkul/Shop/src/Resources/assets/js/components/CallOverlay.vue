@@ -107,6 +107,11 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4" />
                         </svg>
                     </button>
+                    <button @click.stop="toggleScreenShare" :class="[isSharingScreen ? 'bg-[#7C45F5]' : 'bg-zinc-800']" class="h-14 w-14 flex items-center justify-center border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </button>
                     <button @click.stop="endCall" class="h-14 w-14 bg-red-500 flex items-center justify-center border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
@@ -167,6 +172,7 @@ export default {
                 ],
                 iceCandidatePoolSize: 2
             },
+            isSharingScreen: false,
         };
     },
     computed: {
@@ -279,11 +285,12 @@ export default {
                 return;
             }
 
-            if (['offer', 'answer', 'candidate', 'hangup'].includes(signal.type)) {
+            if (['offer', 'answer', 'candidate', 'hangup', 'poke'].includes(signal.type)) {
                 if (signal.type === 'offer') this.handleOffer(peerKey, signal);
                 else if (signal.type === 'answer') this.handleAnswer(peerKey, signal);
                 else if (signal.type === 'candidate') this.handleCandidate(peerKey, signal);
                 else if (signal.type === 'hangup') this.cleanup('Собеседник вышел');
+                else if (signal.type === 'poke') this.initiateNegotiation(peerKey, signal.sender_name);
             }
         },
 
@@ -360,6 +367,35 @@ export default {
         toggleMic() {
             this.isMicOn = !this.isMicOn;
             this.localStream.getAudioTracks().forEach(t => t.enabled = this.isMicOn);
+        },
+        async toggleScreenShare() {
+            try {
+                if (!this.isSharingScreen) {
+                    const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                    const screenTrack = screenStream.getVideoTracks()[0];
+                    
+                    Object.values(this.peers).forEach(peer => {
+                        if (peer.pc) {
+                            const sender = peer.pc.getSenders().find(s => s.track.kind === 'video');
+                            if (sender) sender.replaceTrack(screenTrack);
+                        }
+                    });
+
+                    screenTrack.onended = () => this.toggleScreenShare(); // Auto revert
+                    this.isSharingScreen = true;
+                    if (this.$refs.localVideoMain) this.$refs.localVideoMain.srcObject = screenStream;
+                } else {
+                    const videoTrack = this.localStream.getVideoTracks()[0];
+                    Object.values(this.peers).forEach(peer => {
+                        if (peer.pc) {
+                            const sender = peer.pc.getSenders().find(s => s.track.kind === 'video');
+                            if (sender) sender.replaceTrack(videoTrack);
+                        }
+                    });
+                    this.isSharingScreen = false;
+                    if (this.$refs.localVideoMain) this.$refs.localVideoMain.srcObject = this.localStream;
+                }
+            } catch (e) { console.error('Screen share failed', e); }
         },
         endCall() { this.sendSignal({ type: 'hangup' }); this.cleanup(); },
         normalizeSDP(sdp) {
