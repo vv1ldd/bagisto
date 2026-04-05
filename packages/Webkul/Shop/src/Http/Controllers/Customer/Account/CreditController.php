@@ -38,6 +38,21 @@ class CreditController extends Controller
             ? $user->balances->keyBy('currency_code')->map(fn($b) => (float)$b->balance)
             : collect([]);
 
+        // [DECENTRALIZATION] Fetch real blockchain balance for Meanly Coin (MC)
+        // This ensures the dashboard always reflects what is on-chain.
+        $arbitrumAddress = $user->crypto_addresses()->where('network', 'arbitrum_one')->first();
+        if ($arbitrumAddress) {
+            try {
+                // Synchronize the ERC20 balance from Arbiscan
+                $this->syncService->syncMeanlyCoin($arbitrumAddress);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Blockchain Sync Failed for {$user->id}: " . $e->getMessage());
+            }
+        }
+
+        // Get the updated MC balance from customer_balances table
+        $meanlyCoinBalance = (float) ($user->balances()->where('currency_code', 'meanly_coin')->first()?->amount ?? 0);
+
         // Transactions & Orders combined
         $credits = $user->credits()->get()->map(function ($item) {
             return [
@@ -92,7 +107,7 @@ class CreditController extends Controller
                 'credits_id' => $user->credits_id ?? '',
                 'credits_alias' => $user->credits_alias ?? '',
                 'is_investor' => $isInvestor,
-                'meanly_coin_balance' => (float)$user->total_credits,
+                'meanly_coin_balance' => $meanlyCoinBalance,
                 'pending_activation' => ($user->credits_id && str_starts_with($user->credits_id, 'M-')) || 
                                        ($user->credits_id && str_starts_with($user->credits_id, '0x') && is_null($user->mnemonic_verified_at)),
             ],

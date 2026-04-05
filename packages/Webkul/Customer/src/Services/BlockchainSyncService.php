@@ -1056,7 +1056,7 @@ class BlockchainSyncService
     /**
      * Sync Meanly Coin balance for a customer.
      */
-    protected function syncMeanlyCoin(CryptoAddress $cryptoAddress): void
+    public function syncMeanlyCoin(CryptoAddress $cryptoAddress): void
     {
         $balance = $this->fetchMeanlyCoinBalance($cryptoAddress->address);
         if ($balance === null) return;
