@@ -95,21 +95,7 @@ class CreditController extends Controller
                 ];
             });
 
-        $orders = $user->orders()->get()->map(function ($item) {
-            return [
-                'id' => 'ord-' . $item->id,
-                'increment_id' => $item->increment_id,
-                'type' => 'order',
-                'amount' => (float)$item->grand_total,
-                'currency' => $item->order_currency_code,
-                'status' => $item->status,
-                'created_at' => $item->created_at->toIso8601String(),
-                'formatted_date' => $item->created_at->format('d M Y, H:i'),
-                'description' => 'Оплата заказа #' . $item->increment_id,
-            ];
-        });
-
-        $transactions = $credits->concat($orders)->sortByDesc('created_at')->values();
+        $transactions = $credits->sortByDesc('created_at')->values();
 
         $allAssets = [
             'bitcoin' => ['icon' => '₿', 'name' => 'Bitcoin'],
@@ -119,8 +105,20 @@ class CreditController extends Controller
             'dash' => ['icon' => 'Đ', 'name' => 'Dash']
         ];
 
+        $nfts = collect([
+            [
+                'id' => 'registration',
+                'type' => 'achievement',
+                'title' => 'Первая ачивка',
+                'description' => 'Добро пожаловать в Meanly! Ваша регистрация подтверждена в блокчейне.',
+                'image' => asset('images/branded-nfts/welcome_nft.png'),
+                'date' => $user->created_at->format('d M Y'),
+                'is_verified' => true,
+            ]
+        ]);
+
         $nftOrders = $user->orders()
-            ->whereIn('status', ['processing', 'completed', 'closed'])
+            ->whereIn('status', ['processing', 'completed', 'ordered', 'closed'])
             ->with(['items.product'])
             ->orderBy('id', 'desc')
             ->get()
@@ -128,10 +126,21 @@ class CreditController extends Controller
                 'id' => $o->id,
                 'increment_id' => $o->increment_id,
                 'status' => $o->status,
-                'image' => $o->items->first()?->product?->base_image_url,
+                'type' => 'order',
+                'title' => 'Asset #' . $o->increment_id,
+                'image' => asset('images/branded-nfts/order_nft.png'),
                 'date' => $o->created_at->format('d M Y'),
                 'is_verified' => true,
+                'grand_total' => (float)$o->grand_total,
+                'currency' => $o->order_currency_code,
+                'items' => $o->items->map(fn($i) => [
+                    'name' => $i->name,
+                    'qty' => (int)$i->qty_ordered,
+                    'price' => (float)$i->price,
+                ]),
             ]);
+
+        $allNfts = $nfts->concat($nftOrders);
 
         $walletData = [
             'user' => [
@@ -149,7 +158,7 @@ class CreditController extends Controller
             'addresses' => $allAddresses,
             'transactions' => $transactions,
             'assets_config' => $allAssets,
-            'nfts' => $nftOrders,
+            'nfts' => $allNfts,
             'current_step' => request('step', 'dashboard'),
         ];
 

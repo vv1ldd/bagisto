@@ -196,7 +196,8 @@
                     <div v-if="currentTab === 'nfts'">
                         <div v-if="data.nfts.length > 0" class="grid grid-cols-2 gap-4 sm:gap-6">
                             <div v-for="nft in data.nfts" :key="nft.id"
-                                class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group relative hover:-translate-y-2 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#D6FF00] transition-all duration-300 overflow-hidden flex flex-col">
+                                @click="openNftDetails(nft)"
+                                class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group relative hover:-translate-y-2 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#D6FF00] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer">
                                 
                                 <!-- Arbitrum Badge -->
                                 <div class="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-zinc-900 px-2 py-1 border border-zinc-700 shadow-sm">
@@ -206,7 +207,7 @@
 
                                 <!-- NFT Image Holder -->
                                 <div class="aspect-square bg-zinc-50 flex items-center justify-center border-b-4 border-zinc-900 overflow-hidden relative">
-                                     <img v-if="nft.image" :src="nft.image" :alt="nft.increment_id" 
+                                     <img v-if="nft.image" :src="nft.image" :alt="nft.title" 
                                           class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
                                      <div v-else class="text-6xl group-hover:scale-125 transition-transform duration-500 select-none grayscale group-hover:grayscale-0">💎</div>
                                      
@@ -221,7 +222,7 @@
                                             <span class="text-[9px] font-black text-zinc-900 bg-[#D6FF00] px-1.5 py-0.5 border-2 border-zinc-900 uppercase">Verified</span>
                                             <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest">{{ nft.date }}</span>
                                         </div>
-                                        <h3 class="text-[12px] font-black text-zinc-900 uppercase tracking-tighter truncate leading-tight">Asset #{{ nft.increment_id }}</h3>
+                                        <h3 class="text-[12px] font-black text-zinc-900 uppercase tracking-tighter truncate leading-tight">{{ nft.title }}</h3>
                                     </div>
                                     
                                     <div class="mt-4 flex items-center justify-between border-t-2 border-zinc-900 pt-3">
@@ -256,6 +257,61 @@
             @submit="handleAddWalletAction"
         ></v-add-wallet-modal>
 
+        <!-- NFT Details Modal -->
+        <transition name="fade">
+            <div v-if="isNftDetailsOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-zinc-900/40 backdrop-blur-sm">
+                <div @click.stop class="w-full max-w-[450px] bg-white border-4 border-zinc-900 shadow-[8px_8px_0px_0px_rgba(24,24,27,1)] overflow-hidden">
+                    <!-- Modal Header -->
+                    <div class="bg-zinc-900 p-4 flex justify-between items-center">
+                        <h2 class="text-white text-[12px] font-black uppercase tracking-[0.2em] italic">{{ selectedNft.title }}</h2>
+                        <button @click="isNftDetailsOpen = false" class="text-white hover:text-[#D6FF00] text-xl font-black">×</button>
+                    </div>
+
+                    <!-- Modal Body -->
+                    <div class="p-8">
+                        <div class="bg-zinc-50 border-4 border-zinc-900 p-2 mb-8 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] relative overflow-hidden aspect-video flex items-center justify-center">
+                            <img :src="selectedNft.image" class="w-full h-full object-cover" />
+                        </div>
+
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1 italic">Описание</p>
+                                <p v-if="selectedNft.type === 'achievement'" class="text-[14px] font-black text-zinc-900 uppercase tracking-tighter italic">{{ selectedNft.description }}</p>
+                                <p v-else class="text-[14px] font-black text-zinc-900 uppercase tracking-tighter italic">Уникальный цифровой актив, подтверждающий ваш заказ в сети Meanly Mainnet.</p>
+                            </div>
+
+                            <div v-if="selectedNft.type === 'order' && selectedNft.items" class="space-y-4">
+                                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2 italic">Состав заказа</p>
+                                <div v-for="item in selectedNft.items" class="flex justify-between items-center border-b-2 border-zinc-100 pb-2">
+                                    <span class="text-[11px] font-black text-zinc-900 uppercase tracking-tight italic">{{ item.name }} x{{ item.qty }}</span>
+                                    <span class="text-[11px] font-black text-zinc-900 uppercase italic">{{ (item.price * item.qty).toFixed(2) }} {{ selectedNft.currency }}</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2">
+                                    <span class="text-[12px] font-black text-zinc-900 uppercase tracking-widest italic">Итого:</span>
+                                    <span class="text-[14px] font-black text-zinc-900 uppercase italic">{{ selectedNft.grand_total }} {{ selectedNft.currency }}</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 pt-4">
+                                <div class="bg-zinc-100 p-3 border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                                    <p class="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-1">Дата</p>
+                                    <p class="text-[10px] font-black text-zinc-900 uppercase italic">{{ selectedNft.date }}</p>
+                                </div>
+                                <div class="bg-zinc-100 p-3 border-2 border-zinc-900 shadow-[3px_3px_0px_0px_rgba(24,24,27,1)]">
+                                    <p class="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-1">Тип</p>
+                                    <p class="text-[10px] font-black text-zinc-900 uppercase italic">{{ selectedNft.type === 'achievement' ? 'Ачивка' : 'Заказ' }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button @click="isNftDetailsOpen = false" class="w-full mt-10 bg-zinc-900 text-white py-4 text-[12px] font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(214,255,0,1)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                            Закрыть
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
         <!-- Footnote -->
         <p class="mt-8 text-center text-[10px] text-zinc-400 font-black uppercase tracking-[0.4em] italic opacity-60">
             Powered by Meanly Protocol
@@ -279,12 +335,14 @@ const currentTab = ref(props.data.current_step || 'dashboard');
 // Modal states
 const isSendOpen = ref(false);
 const isAddWalletOpen = ref(false);
+const isNftDetailsOpen = ref(false);
+const selectedNft = ref({});
 const sendContext = ref({ network: '', symbol: '', balance: 0 });
 
 const tabs = [
     { id: 'dashboard', name: 'Обзор' },
     { id: 'transactions', name: 'Транзакции' },
-    { id: 'nfts', name: 'NFT' }
+    { id: 'nfts', name: 'Библиотека' }
 ];
 
 const openSendModal = (address) => {
@@ -294,6 +352,11 @@ const openSendModal = (address) => {
         balance: parseFloat(address.balance || 0)
     };
     isSendOpen.value = true;
+};
+
+const openNftDetails = (nft) => {
+    selectedNft.value = nft;
+    isNftDetailsOpen.value = true;
 };
 
 const handleSendAction = async (formData) => {
