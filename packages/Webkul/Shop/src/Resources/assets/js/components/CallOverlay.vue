@@ -1378,34 +1378,36 @@ export default {
                 
                 // Add all participants to our peer list if not already there
                 participants.forEach(p => {
-                    if (p.session_id !== this.sessionUniqueId && !this.peers[p.session_id]) {
+                    const pid = p.session_id;
+                    if (pid !== this.sessionUniqueId && !this.peers[pid]) {
                         console.log(`Room: Auto-discovered peer ${p.name} via session_started`);
                         this.peers = {
                             ...this.peers,
-                            [p.session_id]: { 
+                            [pid]: { 
                                 name: p.name, hash: null, pc: null, stream: null, connected: false, 
                                 streamReady: false, hasVideo: false, hasAudio: false,
                                 iceQueue: [], fingerprint: null, lastSeen: Date.now(), isReady: true
                             }
                         };
-                    } else if (p.session_id !== this.sessionUniqueId) {
-                        this.peers[p.session_id].isReady = true;
+                    } else if (pid !== this.sessionUniqueId) {
+                        this.peers[pid].isReady = true;
                     }
                 });
 
+                // Ensure both are in the call grid immediately
+                this.isJoined = true;
+
                 // DETERMINISTIC ACTION: Only the initiator starts negotiation
                 if (initiatorId === this.sessionUniqueId) {
-                    console.log('Room: I am the DETERMINISTIC INITIATOR. Starting negotiation with all peers.');
-                    this.peerIds.forEach(id => {
-                        this.initiateNegotiation(id, this.peers[id].name);
+                    console.log('Room: I am the DETERMINISTIC INITIATOR. Starting negotiation...');
+                    // Use participants list directly to avoid reactivity delays with this.peerIds
+                    participants.forEach(p => {
+                        if (p.session_id !== this.sessionUniqueId) {
+                            this.initiateNegotiation(p.session_id, p.name);
+                        }
                     });
                 } else {
                     console.log(`Room: I am the ANSWERER. Waiting for offer from ${initiatorId}.`);
-                    
-                    // ROBUST AUTO-JOIN: Ensure the answerer is also in "call mode"
-                    if (!this.isJoined) {
-                        this.isJoined = true;
-                    }
                 }
             } else if (signal.type === 'ready') {
                 console.log(`WebRTC: Received legacy READY from ${senderName}.`);
@@ -1605,8 +1607,19 @@ export default {
         },
 
         async handleOffer(id, name, signal) {
-            const peer = this.peers[id];
-            if (!peer) return;
+            let peer = this.peers[id];
+            if (!peer) {
+                console.log(`WebRTC: Receiving OFFER for missing peer - creating record for ${id}`);
+                this.peers = {
+                    ...this.peers,
+                    [id]: { 
+                        name: name || id, hash: null, pc: null, stream: null, connected: false, 
+                        streamReady: false, hasVideo: false, hasAudio: false,
+                        iceQueue: [], fingerprint: null, lastSeen: Date.now(), isReady: true
+                    }
+                };
+                peer = this.peers[id];
+            }
 
             const pc = this.createPeerConnection(id, name);
             const isPolite = this.sessionUniqueId > id; 
@@ -1670,7 +1683,19 @@ export default {
         },
 
         async handleAnswer(id, signal) {
-            const peer = this.peers[id];
+            let peer = this.peers[id];
+            if (!peer) {
+                console.log(`WebRTC: Receiving ANSWER for missing peer - creating record for ${id}`);
+                this.peers = {
+                    ...this.peers,
+                    [id]: { 
+                        name: id, hash: null, pc: null, stream: null, connected: false, 
+                        streamReady: false, hasVideo: false, hasAudio: false,
+                        iceQueue: [], fingerprint: null, lastSeen: Date.now(), isReady: true
+                    }
+                };
+                peer = this.peers[id];
+            }
             if (peer && peer.pc) {
                 if (signal.fingerprint) peer.fingerprint = signal.fingerprint;
                 try {
