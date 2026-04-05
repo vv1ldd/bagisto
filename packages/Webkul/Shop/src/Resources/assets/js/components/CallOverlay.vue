@@ -31,6 +31,15 @@
                                autoplay muted playsinline 
                                :style="zoomStyle"
                                class="w-full h-full object-cover mirror"></video>
+                        <!-- Local Identity Badge -->
+                        <div class="absolute bottom-6 left-6 z-20 flex flex-col items-start gap-1">
+                            <span class="px-4 py-1.5 bg-black/60 backdrop-blur-md text-xs font-black uppercase tracking-wider text-white border border-white/10">
+                                {{ localUserName }} (Вы)
+                            </span>
+                            <span v-if="shortAddress" class="px-2.5 py-1 bg-[#7C45F5] backdrop-blur-md text-[10px] font-mono text-white border border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                {{ shortAddress }}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
@@ -63,8 +72,17 @@
             <div v-else-if="peerCount > 1" class="w-full h-full relative p-2 md:p-4 transition-all duration-500">
                 <div :class="gridClass" class="grid w-full h-full gap-2 md:gap-4 transition-all duration-500">
                     <div v-for="id in peerIds" :key="id" 
-                        class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center">
+                        class="relative overflow-hidden rounded-2xl bg-zinc-900 border border-white/10 flex flex-col items-center justify-center group/peer">
                         <video :id="'video_' + id" autoplay playsinline class="w-full h-full object-cover"></video>
+                        <!-- Floating Identity Badge -->
+                        <div class="absolute bottom-4 left-4 z-20 flex flex-col items-start gap-1">
+                            <span class="px-3 py-1 bg-black/60 backdrop-blur-md text-[10px] font-black uppercase tracking-wider text-white border border-white/10">
+                                {{ peers[id].name }}
+                            </span>
+                            <span v-if="peers[id].user_id" class="px-2 py-0.5 bg-[#7C45F5]/80 backdrop-blur-md text-[8px] font-mono text-white/90 border border-white/10">
+                                {{ peers[id].user_id.substring(0, 6) }}...{{ peers[id].user_id.slice(-4) }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -186,6 +204,10 @@ export default {
         peerIds() { return Object.keys(this.peers).sort(); },
         peerCount() { return this.peerIds.length; },
         isFocusedOnSelf() { return this.focusedPeerId === 'local'; },
+        shortAddress() {
+            if (!this.localHash || !this.localHash.startsWith('0x')) return null;
+            return `${this.localHash.substring(0, 6)}...${this.localHash.slice(-4)}`;
+        },
         zoomStyle() {
             return {
                 transform: `scale(${this.zoomLevel}) translate3d(${this.panX}px, ${this.panY}px, 0)`,
