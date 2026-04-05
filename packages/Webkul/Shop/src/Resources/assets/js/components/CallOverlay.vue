@@ -822,18 +822,33 @@ export default {
             this.showStartButton = false;
             this.isLocalReady = true;
 
-            // Send ready signal to any existing peers
-            Object.keys(this.peers).forEach(id => {
-                this.sendSignal({ type: 'ready', target: id, fingerprint: this.localFingerprint });
-                
-                // If the remote peer is already ready, start negotiation
-                if (this.peers[id] && this.peers[id].isReady) {
-                    const isInitiator = this.sessionUniqueId < id; // STANDARD: Lower ID initiates
-                    if (isInitiator) {
-                        this.initiateNegotiation(id, this.peers[id].name);
+            // MANDATORY: Generate fingerprint if missing before starting
+            if (!this.localFingerprint) {
+                console.log('Room: Fingerprint missing at start. Urgent generation...');
+                this.generateLocalFingerprint();
+            }
+
+            // AGGRESSIVE SIGNALING: Send ready signal and retry to overcome initial latency 🕵️‍♂️📲🔄🚀
+            const broadcastReady = () => {
+                Object.keys(this.peers).forEach(id => {
+                    this.sendSignal({ type: 'ready', target: id, fingerprint: this.localFingerprint });
+                    
+                    // If the remote peer is already ready, start negotiation
+                    if (this.peers[id] && this.peers[id].isReady) {
+                        const isInitiator = this.sessionUniqueId < id; 
+                        if (isInitiator) {
+                            this.initiateNegotiation(id, this.peers[id].name);
+                        }
                     }
-                }
-            });
+                });
+            };
+
+            broadcastReady();
+            setTimeout(broadcastReady, 500);  // Sync Retry 1
+            setTimeout(broadcastReady, 1500); // Sync Retry 2
+            
+            // Also send presence immediately to update everyone
+            this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint, is_ready: true });
 
             this.toggleFullscreen();
             this.$nextTick(() => {
@@ -1379,8 +1394,16 @@ export default {
                         }
 
                         if (isInitiator) {
-                            this.initiateNegotiation(peerKey, senderName);
+                            // DECISIVE NEGOTIATION: Even if PC exists but is in 'new' or 'failed', force a restart.
+                            const pcState = peer.pc?.connectionState;
+                            if (!peer.pc || ['new', 'failed', 'disconnected'].includes(pcState)) {
+                                this.initiateNegotiation(peerKey, senderName);
+                            } else {
+                                console.log(`Room: ${peerKey} already has active connection state ${pcState}. Skipping initial negotiation.`);
+                            }
                         }
+                    } else {
+                        console.log(`Room: Peer ${senderName} is READY but I am waiting for user gesture.`);
                     }
                 }
             } else if (['offer', 'answer', 'candidate', 'hangup', 'poke'].includes(signal.type)) {
@@ -1569,7 +1592,7 @@ export default {
                         peer.reconnecting = false;
                     }
                 }
-            }, 10000); // Increased from 5s to 10s to be less aggressive during initial connection
+            }, 6000); // Reduced from 10s to 6s for better responsiveness 🕵️‍♂️🔄🚀
         },
 
         async handleOffer(id, name, signal) {
