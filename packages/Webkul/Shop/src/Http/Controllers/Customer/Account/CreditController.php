@@ -54,17 +54,43 @@ class CreditController extends Controller
         $meanlyCoinBalance = (float) ($user->balances()->where('currency_code', 'meanly_coin')->first()?->amount ?? 0);
 
         // Transactions & Orders combined
-        $credits = $user->credits()->get()->map(function ($item) {
-            return [
-                'id' => 'tx-' . $item->id,
-                'type' => 'credit',
-                'amount' => (float)$item->amount,
-                'status' => $item->status,
-                'created_at' => $item->created_at->toIso8601String(),
-                'formatted_date' => $item->created_at->format('d M Y, H:i'),
-                'description' => $item->comment ?: 'Credit Transaction',
-            ];
-        });
+        $credits = $user->credits()
+            ->get()
+            ->filter(function ($item) {
+                // Hide technical SBP minting/withdrawals as they are redundant with bank apps
+                $notes = strtolower($item->notes ?: '');
+                if ($item->type === 'deposit' && (str_contains($notes, 'минтинг') || str_contains($notes, 'сбп'))) {
+                    return false;
+                }
+
+                // Hide order payments from credits to avoid duplication with the orders list
+                if (in_array($item->type, ['order_payment', 'purchase'])) {
+                    return false;
+                }
+
+                return true;
+            })
+            ->map(function ($item) {
+                $description = $item->notes ?: 'Транзакция';
+
+                if ($item->type === 'registration_minting') {
+                    $description = 'Приветственные бонусы';
+                } elseif ($item->type === 'cashback') {
+                    $description = 'Кэшбэк за покупку';
+                } elseif ($item->type === 'order_refund') {
+                    $description = 'Возврат за заказ';
+                }
+
+                return [
+                    'id' => 'tx-' . $item->id,
+                    'type' => 'credit',
+                    'amount' => (float)$item->amount,
+                    'status' => $item->status,
+                    'created_at' => $item->created_at->toIso8601String(),
+                    'formatted_date' => $item->created_at->format('d M Y, H:i'),
+                    'description' => $description,
+                ];
+            });
 
         $orders = $user->orders()->get()->map(function ($item) {
             return [
@@ -75,7 +101,7 @@ class CreditController extends Controller
                 'status' => $item->status,
                 'created_at' => $item->created_at->toIso8601String(),
                 'formatted_date' => $item->created_at->format('d M Y, H:i'),
-                'description' => 'Order #' . $item->increment_id,
+                'description' => 'Оплата заказа #' . $item->increment_id,
             ];
         });
 
