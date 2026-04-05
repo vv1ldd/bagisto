@@ -202,29 +202,47 @@
 
                                 <!-- Vector Card Visual -->
                                 <div :class="['aspect-square flex items-center justify-center border-b-4 border-zinc-900 overflow-hidden relative group-hover:scale-105 transition-transform duration-700',
-                                             nft.type === 'achievement' ? 'bg-[#D6FF00]' : 'bg-white']">
+                                             nft.type === 'achievement' ? 'bg-[#D6FF00] nft-pattern-dots' : 'bg-white nft-pattern-grid']">
                                      
-                                     <!-- Vector Star for Welcome -->
-                                     <div v-if="nft.type === 'achievement'" class="relative flex flex-col items-center">
-                                         <svg class="w-32 h-32 fill-zinc-900 drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)]" viewBox="0 0 24 24">
+                                     <!-- Shimmer/Holographic Foil -->
+                                     <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transform-gpu rotate-12 z-20 pointer-events-none"></div>
+
+                                     <!-- Vector Star for Welcome (Layered) -->
+                                     <div v-if="nft.type === 'achievement'" class="relative flex flex-col items-center animate-nft-float">
+                                         <!-- Shadow Layer -->
+                                         <svg class="absolute top-1 left-1 w-32 h-32 fill-zinc-900 opacity-20" viewBox="0 0 24 24">
                                              <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
                                          </svg>
-                                         <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black text-white uppercase tracking-widest mt-1">Hello</span>
+                                         <!-- Base Layer -->
+                                         <svg class="w-32 h-32 fill-zinc-900 drop-shadow-[4px_4px_0px_rgba(0,0,0,0.3)]" viewBox="0 0 24 24">
+                                             <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
+                                         </svg>
+                                         <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black text-[#D6FF00] uppercase tracking-widest mt-1">Hello</span>
                                      </div>
 
-                                     <!-- Vector Crystal for Order -->
-                                     <div v-else class="relative flex flex-col items-center">
-                                         <svg class="w-36 h-36 stroke-zinc-900 stroke-[1.5] fill-[#00C2FF] drop-shadow-[6px_6px_0px_rgba(0,0,0,0.1)]" viewBox="0 0 24 24">
+                                     <!-- Vector Crystal for Order (Layered) -->
+                                     <div v-else class="relative flex flex-col items-center animate-nft-float-slow">
+                                         <!-- Shadow Layer -->
+                                         <svg class="absolute top-1.5 left-1.5 w-36 h-36 stroke-zinc-900 stroke-[1] fill-transparent opacity-10" viewBox="0 0 24 24">
+                                             <path d="M12 2L2 7l10 5 10-5-10-5z M2 7v10l10 5 10-5V7l-10 5-10-5z" />
+                                         </svg>
+                                         <!-- Base Layer -->
+                                         <svg class="w-36 h-36 stroke-zinc-900 stroke-[1.5] fill-[#00C2FF] drop-shadow-[8px_8px_0px_rgba(0,0,0,0.15)]" viewBox="0 0 24 24">
                                              <path d="M12 2L2 7l10 5 10-5-10-5z M2 7v10l10 5 10-5V7l-10 5-10-5z" />
                                          </svg>
                                          <span class="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black text-zinc-900 uppercase tracking-widest bg-white/80 px-2 py-0.5 border border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">ASSET</span>
                                      </div>
 
                                      <!-- Branded Card Text Overlays -->
-                                     <div class="absolute bottom-2 left-0 right-0 px-3 flex justify-between items-center opacity-40">
-                                         <span class="text-[8px] font-black text-zinc-900 uppercase tracking-widest italic">Meanly Collect</span>
+                                     <div class="absolute bottom-2 left-0 right-0 px-3 flex justify-between items-center opacity-60 mix-blend-multiply">
+                                         <span class="text-[8px] font-black text-zinc-900 uppercase tracking-widest italic flex items-center gap-1">
+                                             <span class="w-1.5 h-1.5 bg-zinc-900"></span> Meanly Collect
+                                         </span>
                                          <span class="text-[8px] font-black text-zinc-900 uppercase tracking-widest italic">{{ nft.date }}</span>
                                      </div>
+
+                                     <!-- Grain Overlay -->
+                                     <div class="nft-grain-overlay"></div>
                                 </div>
 
                                 <!-- Footer Info -->
@@ -449,4 +467,41 @@ const formatBalance = (val) => {
   opacity: 0;
   transform: translateY(10px);
 }
+    .nft-grain-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 40;
+        pointer-events: none;
+        opacity: 0.15;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .nft-pattern-dots {
+        background-image: radial-gradient(rgba(24, 24, 27, 0.15) 1px, transparent 1px);
+        background-size: 8px 8px;
+    }
+
+    .nft-pattern-grid {
+        background-image: linear-gradient(rgba(24, 24, 27, 0.05) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(24, 24, 27, 0.05) 1px, transparent 1px);
+        background-size: 16px 16px;
+    }
+
+    .animate-nft-float {
+        animation: nft-float 4s ease-in-out infinite;
+    }
+
+    .animate-nft-float-slow {
+        animation: nft-float-slow 6s ease-in-out infinite;
+    }
+
+    @keyframes nft-float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-8px) rotate(2deg); }
+    }
+
+    @keyframes nft-float-slow {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-5px) rotate(-1.5deg); }
+    }
 </style>
