@@ -244,8 +244,8 @@
 
                 <div class="relative z-10 flex flex-col items-center justify-center pointer-events-none">
                     <div class="text-center px-8 pointer-events-auto">
-                        <!-- Permanent, Hardware-Accelerated Spinner -->
-                        <div class="w-10 h-10 md:w-12 md:h-12 border-2 border-[#7C45F5] border-r-transparent animate-spin-robust mb-6 mx-auto shadow-[0_0_20px_rgba(124,69,245,0.2)]"></div>
+                        <!-- Permanent, Hardware-Accelerated Spinner (Redesigned to Neobrutalist Square) -->
+                        <div class="w-12 h-12 md:w-14 md:h-14 bg-[#7C45F5] border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] animate-spin-robust mb-8 mx-auto rotate-45"></div>
 
                         <template v-if="(signalingState === 'unavailable' || signalingState === 'failed') && !signalingGraceActive">
                             <div class="bg-black/40 backdrop-blur-3xl p-6 rounded-[32px] border border-red-500/10 max-w-xs mx-auto animate-fade-in-up">
@@ -289,17 +289,17 @@
                     <!-- 1. Focus Toggle -->
                     <button v-show="peerCount >= 1" 
                             @click.stop="toggleFocus()"
-                            :class="[isFocusedOnSelf ? 'bg-white/10 text-white' : 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30']"
-                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border border-white/10 backdrop-blur-md">
+                            :class="[isFocusedOnSelf ? 'bg-zinc-100 text-zinc-900' : 'bg-[#7C45F5] text-white']"
+                            class="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
                     </button>
 
                     <!-- 2. Screen Share -->
                     <button v-if="!isMobile" @click.stop="toggleScreenShare" 
-                            :class="[isSharingScreen ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'bg-white/10 text-white backdrop-blur-xl border border-white/10']"
-                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 shadow-2xl">
+                            :class="[isSharingScreen ? 'bg-emerald-500 text-white' : 'bg-zinc-800 text-white']"
+                            class="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
@@ -307,20 +307,20 @@
 
                     <!-- 3. Camera Toggle -->
                     <button @click.stop="toggleCamera" 
-                            :class="[isCameraOn ? 'bg-white/10 text-white backdrop-blur-xl border-white/10' : 'bg-red-600/90 text-white shadow-lg shadow-red-600/30 border-red-500/50']"
-                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border">
+                            :class="[isCameraOn ? 'bg-zinc-800 text-white' : 'bg-red-500 text-white']"
+                            class="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                         <svg v-if="isCameraOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                         <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                         </svg>
                     </button>
 
                     <!-- 4. Microphone Toggle -->
                     <button @click.stop="toggleMic" 
-                            :class="[isMicOn ? 'bg-[#7C45F5] text-white shadow-lg shadow-[#7C45F5]/30' : 'bg-red-600/90 text-white shadow-lg shadow-red-600/30 border-red-500/50']"
-                            class="h-12 w-12 md:h-16 md:w-16 flex items-center justify-center transition-all hover:scale-110 active:scale-90 border">
+                            :class="[isMicOn ? 'bg-[#7C45F5] text-white' : 'bg-red-500 text-white']"
+                            class="h-14 w-14 md:h-16 md:w-16 flex items-center justify-center transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                         <svg v-if="isMicOn" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                         </svg>
@@ -329,9 +329,9 @@
                         </svg>
                     </button>
 
-                    <!-- 5. End Call (Distinct Red) -->
+                    <!-- 5. End Call -->
                     <button @click.stop="endCall" 
-                            class="h-12 w-12 md:h-16 md:w-16 bg-red-600 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-xl border border-red-500/30">
+                            class="h-14 w-14 md:h-16 md:w-16 bg-red-500 text-white flex items-center justify-center transition-all hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -2312,12 +2312,13 @@ input, textarea {
 }
 
 @keyframes spin-robust {
-    0% { transform: rotate(0deg) translate3d(0,0,0); }
-    100% { transform: rotate(360deg) translate3d(0,0,0); }
+    0% { transform: rotate(0deg) translate3d(0,0,0) scale(1.0); }
+    50% { transform: rotate(180deg) translate3d(0,0,0) scale(1.2); }
+    100% { transform: rotate(360deg) translate3d(0,0,0) scale(1.0); }
 }
 
 .animate-spin-robust {
-    animation: spin-robust 1.2s linear infinite;
+    animation: spin-robust 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67) infinite;
     will-change: transform;
 }
 
