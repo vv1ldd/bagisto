@@ -177,25 +177,33 @@ class CallController extends Controller
         // CHECK IF BOTH ARE READY 🕵️‍♂️🔄🚀
         $readyParticipants = array_values($roomState);
         if (count($readyParticipants) >= 2) {
-            // Deterministic initiator: lexicographically smaller session ID
+            // Deterministic roles (initiator / receiver)
             usort($readyParticipants, fn($a, $b) => strcmp($a['session_id'], $b['session_id']));
+            
             $initiator = $readyParticipants[0];
+            $receiver  = $readyParticipants[1];
 
-            Log::info("WebRTC: State Sync - Session Started for Room {$roomUuid}", [
-                'participants' => array_column($readyParticipants, 'session_id'),
-                'initiator'    => $initiator['session_id']
+            Log::info("WebRTC: State Sync v2 - Session Started for Room {$roomUuid}", [
+                'initiator' => $initiator['session_id'],
+                'receiver'  => $receiver['session_id'],
+                'version'   => 1
             ]);
 
-            // Fire the global room signal and tell everyone who is the initiator
+            // Fire the global room signal and tell everyone the roles
             event(new \Webkul\Shop\Events\RoomCallSignal($roomUuid, 'System', [
                 'type'                 => 'session_started',
+                'version'              => 1,
+                'sessionId'            => $roomUuid, // Protocol: sessionId matches roomUuid
                 'initiator_session_id' => $initiator['session_id'],
-                'participants'         => $readyParticipants
-            ]));
+                'receiver_session_id'  => $receiver['session_id'],
+                'participants'         => $readyParticipants,
+                'timestamp'            => time() * 1000 // ms for JS compatibility
+            ], 0)); // Pass 0 as System fromUserId
         }
 
         return response()->json([
             'status'       => 'success',
+            'version'      => 1,
             'participants' => array_values($roomState)
         ]);
     }

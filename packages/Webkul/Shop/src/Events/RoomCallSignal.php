@@ -23,7 +23,8 @@ class RoomCallSignal implements ShouldBroadcastNow
     public function __construct(
         public string $uuid,
         public string $senderName,
-        public array $signalData
+        public array $signalData,
+        public int|string $fromUserId = 0
     ) {
     }
 
@@ -45,6 +46,7 @@ class RoomCallSignal implements ShouldBroadcastNow
     public function broadcastWith()
     {
         return [
+            'from_user_id' => $this->fromUserId,
             'sender_name' => $this->senderName,
             'signal_data' => $this->signalData,
         ];
