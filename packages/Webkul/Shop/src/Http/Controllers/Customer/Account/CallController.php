@@ -135,4 +135,68 @@ class CallController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+
+    /**
+     * Update participant readiness state for a room.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function ready()
+    {
+        $request = request();
+        $request->validate([
+            'room_uuid'  => 'required|string',
+            'session_id' => 'required|string',
+            'is_ready'   => 'required|boolean',
+        ]);
+
+        $roomUuid = $request->input('room_uuid');
+        $sessionId = $request->input('session_id');
+        $isReady = $request->input('is_ready');
+        $user = auth()->guard('customer')->user();
+
+        $cacheKey = "call_room_state_{$roomUuid}";
+        $roomState = \Illuminate\Support\Facades\Cache::get($cacheKey, []);
+
+        if ($isReady) {
+            $roomState[$sessionId] = [
+                'user_id'    => $user?->id,
+                'name'       => $user->username ?? $user->first_name ?? 'Гость',
+                'session_id' => $sessionId,
+                'last_seen'  => time(),
+            ];
+        } else {
+            unset($roomState[$sessionId]);
+        }
+
+        // Cleanup old sessions (older than 1 minute)
+        $roomState = array_filter($roomState, fn($s) => $s['last_seen'] > (time() - 60));
+        
+        \Illuminate\Support\Facades\Cache::put($cacheKey, $roomState, 300); // 5 min TTL
+
+        // CHECK IF BOTH ARE READY 🕵️‍♂️🔄🚀
+        $readyParticipants = array_values($roomState);
+        if (count($readyParticipants) >= 2) {
+            // Deterministic initiator: lexicographically smaller session ID
+            usort($readyParticipants, fn($a, $b) => strcmp($a['session_id'], $b['session_id']));
+            $initiator = $readyParticipants[0];
+
+            Log::info("WebRTC: State Sync - Session Started for Room {$roomUuid}", [
+                'participants' => array_column($readyParticipants, 'session_id'),
+                'initiator'    => $initiator['session_id']
+            ]);
+
+            // Fire the global room signal and tell everyone who is the initiator
+            event(new \Webkul\Shop\Events\RoomCallSignal($roomUuid, 'System', [
+                'type'                 => 'session_started',
+                'initiator_session_id' => $initiator['session_id'],
+                'participants'         => $readyParticipants
+            ]));
+        }
+
+        return response()->json([
+            'status'       => 'success',
+            'participants' => array_values($roomState)
+        ]);
+    }
 }

@@ -817,38 +817,31 @@ export default {
             this.userActivity();
         },
 
-        startConversation() {
-            console.log('UI: Starting conversation via user gesture');
+        async startConversation() {
+            console.log('UI: Starting conversation via user gesture (State-Driven)');
             this.showStartButton = false;
             this.isLocalReady = true;
 
             // MANDATORY: Generate fingerprint if missing before starting
             if (!this.localFingerprint) {
                 console.log('Room: Fingerprint missing at start. Urgent generation...');
-                this.generateLocalFingerprint();
+                await this.generateLocalFingerprint();
             }
 
-            // AGGRESSIVE SIGNALING: Send ready signal and retry to overcome initial latency 🕵️‍♂️📲🔄🚀
-            const broadcastReady = () => {
-                Object.keys(this.peers).forEach(id => {
-                    this.sendSignal({ type: 'ready', target: id, fingerprint: this.localFingerprint });
-                    
-                    // If the remote peer is already ready, start negotiation
-                    if (this.peers[id] && this.peers[id].isReady) {
-                        const isInitiator = this.sessionUniqueId < id; 
-                        if (isInitiator) {
-                            this.initiateNegotiation(id, this.peers[id].name);
-                        }
-                    }
+            // STATE-DRIVEN BROADCAST: Tell the server we are ready 🕵️‍♂️🔄🚀
+            try {
+                await axios.post('/account/calls/ready', {
+                    room_uuid: this.roomUuid,
+                    session_id: this.sessionUniqueId,
+                    is_ready: true,
+                    _token: document.querySelector('meta[name="csrf-token"]')?.content
                 });
-            };
-
-            broadcastReady();
-            setTimeout(broadcastReady, 500);  // Sync Retry 1
-            setTimeout(broadcastReady, 1500); // Sync Retry 2
-            
-            // Also send presence immediately to update everyone
-            this.sendSignal({ type: 'presence', fingerprint: this.localFingerprint, is_ready: true });
+                console.log('Room: Server notified of readiness.');
+            } catch (e) {
+                console.error('Room: Failed to notify server of readiness', e);
+                // Fallback to old behavior if API fails
+                this.sendSignal({ type: 'ready', target: null, fingerprint: this.localFingerprint });
+            }
 
             this.toggleFullscreen();
             this.$nextTick(() => {
@@ -1378,33 +1371,49 @@ export default {
                          this.sendSignal({ type: 'ready', target: peerKey, fingerprint: this.localFingerprint });
                     }
                 }
+            } else if (signal.type === 'session_started') {
+                console.log(`WebRTC: State Sync - SESSION STARTED RECEIVED! 🕵️‍♂️🔄🚀`);
+                const initiatorId = signal.initiator_session_id;
+                const participants = signal.participants || [];
+                
+                // Add all participants to our peer list if not already there
+                participants.forEach(p => {
+                    if (p.session_id !== this.sessionUniqueId && !this.peers[p.session_id]) {
+                        console.log(`Room: Auto-discovered peer ${p.name} via session_started`);
+                        this.peers = {
+                            ...this.peers,
+                            [p.session_id]: { 
+                                name: p.name, hash: null, pc: null, stream: null, connected: false, 
+                                streamReady: false, hasVideo: false, hasAudio: false,
+                                iceQueue: [], fingerprint: null, lastSeen: Date.now(), isReady: true
+                            }
+                        };
+                    } else if (p.session_id !== this.sessionUniqueId) {
+                        this.peers[p.session_id].isReady = true;
+                    }
+                });
+
+                // DETERMINISTIC ACTION: Only the initiator starts negotiation
+                if (initiatorId === this.sessionUniqueId) {
+                    console.log('Room: I am the DETERMINISTIC INITIATOR. Starting negotiation with all peers.');
+                    this.peerIds.forEach(id => {
+                        this.initiateNegotiation(id, this.peers[id].name);
+                    });
+                } else {
+                    console.log(`Room: I am the ANSWERER. Waiting for offer from ${initiatorId}.`);
+                    
+                    // ROBUST AUTO-JOIN: Ensure the answerer is also in "call mode"
+                    if (!this.isJoined) {
+                        this.isJoined = true;
+                    }
+                }
             } else if (signal.type === 'ready') {
-                console.log(`WebRTC: Received READY from ${senderName}.`);
+                console.log(`WebRTC: Received legacy READY from ${senderName}.`);
                 const peer = this.peers[peerKey];
                 if (peer) {
                     peer.isReady = true;
-                    if (this.isLocalReady) {
-                        // Both are ready! Start the connection if initiator.
-                        const isInitiator = this.sessionUniqueId < peerKey; // STANDARD: Lower ID initiates
-                        
-                        // AUTOMATIC RE-ENTRY: If we are in the lobby but both are ready, join automatically.🕵️‍♂️🔄🚀
-                        if (!this.isJoined) {
-                            console.log('Room: Auto-joining call because both sides are READY');
-                            this.isJoined = true;
-                        }
-
-                        if (isInitiator) {
-                            // DECISIVE NEGOTIATION: Even if PC exists but is in 'new' or 'failed', force a restart.
-                            const pcState = peer.pc?.connectionState;
-                            if (!peer.pc || ['new', 'failed', 'disconnected'].includes(pcState)) {
-                                this.initiateNegotiation(peerKey, senderName);
-                            } else {
-                                console.log(`Room: ${peerKey} already has active connection state ${pcState}. Skipping initial negotiation.`);
-                            }
-                        }
-                    } else {
-                        console.log(`Room: Peer ${senderName} is READY but I am waiting for user gesture.`);
-                    }
+                    // In state-driven mode, we mostly rely on session_started, 
+                    // but we keep legacy 'ready' as a fallback for P2P direct sync.
                 }
             } else if (['offer', 'answer', 'candidate', 'hangup', 'poke'].includes(signal.type)) {
                 if (signal.type === 'offer') {
