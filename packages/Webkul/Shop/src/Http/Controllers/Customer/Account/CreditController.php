@@ -76,7 +76,9 @@ class CreditController extends Controller
                 if ($item->type === 'registration_minting') {
                     $description = 'Приветственные бонусы';
                 } elseif ($item->type === 'cashback') {
-                    $description = 'Кэшбэк за покупку';
+                    preg_match('/#(\d+)/', $item->notes, $matches);
+                    $orderId = $matches[1] ?? '';
+                    $description = 'Кэшбэк за покупку' . ($orderId ? ' #' . $orderId : '');
                 } elseif ($item->type === 'order_refund') {
                     $description = 'Возврат за заказ';
                 }
