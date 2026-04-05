@@ -172,4 +172,27 @@ class CallController extends Controller
             'participants' => array_values($roomState)
         ]);
     }
+
+    /**
+     * Public Meeting Lobby for Viral Onboarding.
+     *
+     * @param  string  $roomUuid
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function lobby($roomUuid)
+    {
+        // 1. If already logged in, jump directly to the call view
+        if (auth()->guard('customer')->check()) {
+            return redirect()->route('shop.customers.account.calls.index', ['uuid' => $roomUuid]);
+        }
+
+        // 2. Store the room UUID in session for post-registration redirect 🕵️‍♂️🚀
+        session(['meeting_join_room' => $roomUuid]);
+
+        // 3. Show the "Viral Invitation" Lobby screen
+        return view('shop::customers.account.calls.lobby', [
+            'room_uuid' => $roomUuid,
+            'is_guest'  => true
+        ]);
+    }
 }

@@ -107,6 +107,12 @@ Route::controller(TetrisController::class)->prefix('tetris')->group(function () 
 });
 
 /**
+ * Viral Meeting Invitations
+ */
+Route::get('meetings/join/{room_uuid}', [\Webkul\Shop\Http\Controllers\Customer\Account\CallController::class, 'lobby'])
+    ->name('shop.meetings.join');
+
+/**
  * Guest Video Calls
  */
 Route::controller(\Webkul\Shop\Http\Controllers\GuestCallController::class)->prefix('call')->group(function () {

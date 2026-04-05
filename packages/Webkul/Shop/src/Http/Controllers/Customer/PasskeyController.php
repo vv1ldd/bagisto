@@ -283,9 +283,15 @@ class PasskeyController extends Controller
 
             \Illuminate\Support\Facades\DB::commit();
 
-            $redirectUrl = $isNewRegistration 
-                ? route('shop.customers.account.onboarding.security')
-                : redirect()->intended(route('shop.customers.account.onboarding.security'))->getTargetUrl();
+            $meetingRoom = session('meeting_join_room');
+            if ($meetingRoom) {
+                $redirectUrl = route('shop.customers.account.calls.index', ['uuid' => $meetingRoom]);
+                session()->forget('meeting_join_room');
+            } else {
+                $redirectUrl = $isNewRegistration 
+                    ? route('shop.customers.account.onboarding.security')
+                    : redirect()->intended(route('shop.customers.account.onboarding.security'))->getTargetUrl();
+            }
 
             return response()->json([
                 'message'      => 'Passkey registered successfully.',
@@ -510,7 +516,13 @@ class PasskeyController extends Controller
 
             session()->forget('passkey-authentication-options-json');
 
-            $redirectUrl = redirect()->intended(route('shop.home.index'))->getTargetUrl();
+            $meetingRoom = session('meeting_join_room');
+            if ($meetingRoom) {
+                $redirectUrl = route('shop.customers.account.calls.index', ['uuid' => $meetingRoom]);
+                session()->forget('meeting_join_room');
+            } else {
+                $redirectUrl = redirect()->intended(route('shop.home.index'))->getTargetUrl();
+            }
 
             return response()->json([
                 'message' => 'Successfully authenticated.',

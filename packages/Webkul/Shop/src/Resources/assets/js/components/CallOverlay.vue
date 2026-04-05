@@ -20,7 +20,7 @@
                      @touchmove="handleTouchMove">
                     
                     <div class="w-full h-full relative overflow-hidden" v-show="!isFocusedOnSelf">
-                         <video :id="'video_' + peerIds[0]" 
+                         <video :id="'video_' + activePeerId" 
                                 autoplay playsinline 
                                 :style="zoomStyle"
                                 class="w-full h-full object-cover pointer-events-none"></video>
@@ -35,7 +35,7 @@
                 </div>
 
                 <!-- Handshake Pulse -->
-                <div v-if="peers[peerIds[0]]?.isReady && !peers[peerIds[0]]?.connected" 
+                <div v-if="activePeerId && peers[activePeerId]?.isReady && !peers[activePeerId]?.connected" 
                     class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/60 backdrop-blur-md z-30">
                     <div class="w-12 h-12 bg-[#7C45F5] border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] animate-spin-robust rotate-45 mb-4"></div>
                     <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-white/90">Соединение...</h3>
@@ -82,7 +82,7 @@
             </div>
 
             <!-- Empty/Wait State -->
-            <div v-show="(!peerCount || !peers[peerIds[0]]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/20">
+            <div v-show="(!activePeerId || !peers[activePeerId]?.isReady) && !isCallEnded && !showStartButton" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950/20">
                 <div class="absolute inset-0 overflow-hidden pointer-events-none">
                     <video ref="localVideoWaiting" autoplay muted playsinline class="absolute inset-0 w-full h-full blur-xl opacity-40 object-cover"></video>
                     <div class="absolute inset-0 bg-black/40"></div>
@@ -184,6 +184,12 @@ export default {
                 transform: `scale(${this.zoomLevel}) translate3d(${this.panX}px, ${this.panY}px, 0)`,
                 transition: 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1)'
             };
+        },
+        activePeerId() {
+            // Find the most recently seen ready peer that is not us 🕵️‍♂️🎯🚀
+            return this.peerIds
+                .filter(id => this.peers[id]?.isReady)
+                .sort((a, b) => (this.peers[b]?.lastSeen || 0) - (this.peers[a]?.lastSeen || 0))[0] || null;
         }
     },
     mounted() {
@@ -255,16 +261,28 @@ export default {
         handleSignal(payload) {
             const signal = payload.signal_data;
             const peerKey = signal.sender_session_id;
+            const fromUserId = payload.from_user_id; // Added in v2 payload 🕵️‍♂️📈🚀
             const now = Date.now();
 
             if (signal.sessionId && signal.sessionId !== this.roomUuid) return;
             if (signal.timestamp && (now - signal.timestamp > 20000)) return;
             if (!peerKey || peerKey === this.sessionUniqueId) return;
 
+            // Session De-duplication (The Ghost Slayer) 👻🛑
+            if (fromUserId) {
+                Object.keys(this.peers).forEach(id => {
+                    if (id !== peerKey && this.peers[id].user_id === fromUserId) {
+                        console.log(`WebRTC: Removing ghost session ${id} for user ${fromUserId}`);
+                        if (this.peers[id].pc) this.peers[id].pc.close();
+                        delete this.peers[id];
+                    }
+                });
+            }
+
             if (signal.type === 'presence') {
                 if (!this.peers[peerKey]) {
                     this.peers = { ...this.peers, [peerKey]: { 
-                        name: signal.sender_name, pc: null, stream: null, connected: false,
+                        name: signal.sender_name, user_id: fromUserId, pc: null, stream: null, connected: false,
                         iceQueue: [], isReady: signal.is_ready, lastSeen: now, negotiating: false
                     }};
                 } else {
@@ -349,7 +367,7 @@ export default {
 
         cleanupStalePeers() {
             const now = Date.now();
-            Object.keys(this.peers).forEach(id => { if (now - this.peers[id].lastSeen > 30000) delete this.peers[id]; });
+            Object.keys(this.peers).forEach(id => { if (now - this.peers[id].lastSeen > 12000) delete this.peers[id]; });
         },
 
         cleanup(msg) {
