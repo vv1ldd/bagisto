@@ -52,7 +52,9 @@ class CallController extends Controller
             }
         }
 
-        return view('shop::customers.account.calls.index', compact('contacts'));
+        $roomUuid = request()->get('uuid');
+
+        return view('shop::customers.account.calls.index', compact('contacts', 'roomUuid'));
     }
 
     /**

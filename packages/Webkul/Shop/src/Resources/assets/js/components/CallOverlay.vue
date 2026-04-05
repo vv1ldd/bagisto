@@ -151,6 +151,7 @@
 import axios from 'axios';
 
 export default {
+    props: ['propUuid', 'propUserName', 'propUserHash'],
     data() {
         return {
             isActive: false,
@@ -222,6 +223,9 @@ export default {
         }
     },
     mounted() {
+        if (this.propUuid) {
+            this.joinRoom(this.propUuid, this.propUserName, this.propUserHash);
+        }
         this.$emitter.on('join-room', (payload) => {
             this.joinRoom(payload.uuid, payload.userName, payload.hash, payload.remoteName);
         });
