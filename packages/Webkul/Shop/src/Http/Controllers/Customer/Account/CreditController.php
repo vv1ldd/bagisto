@@ -58,8 +58,8 @@ class CreditController extends Controller
             ->get()
             ->filter(function ($item) {
                 // Hide technical SBP minting/withdrawals as they are redundant with bank apps
-                $notes = strtolower($item->notes ?: '');
-                if ($item->type === 'deposit' && (str_contains($notes, 'минтинг') || str_contains($notes, 'сбп'))) {
+                $notes = $item->notes ?: '';
+                if ($item->type === 'deposit' && (mb_stripos($notes, 'минтинг') !== false || mb_stripos($notes, 'сбп') !== false)) {
                     return false;
                 }
 
@@ -85,6 +85,7 @@ class CreditController extends Controller
                     'id' => 'tx-' . $item->id,
                     'type' => 'credit',
                     'amount' => (float)$item->amount,
+                    'currency' => 'MC',
                     'status' => $item->status,
                     'created_at' => $item->created_at->toIso8601String(),
                     'formatted_date' => $item->created_at->format('d M Y, H:i'),
@@ -98,6 +99,7 @@ class CreditController extends Controller
                 'increment_id' => $item->increment_id,
                 'type' => 'order',
                 'amount' => (float)$item->grand_total,
+                'currency' => $item->order_currency_code,
                 'status' => $item->status,
                 'created_at' => $item->created_at->toIso8601String(),
                 'formatted_date' => $item->created_at->format('d M Y, H:i'),

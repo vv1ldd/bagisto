@@ -67,7 +67,7 @@
                 <div class="w-full bg-white border-4 border-zinc-900 p-6 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(24,24,27,1)] transition-all flex justify-between items-center relative overflow-hidden">
                     <div class="absolute -right-4 -bottom-4 opacity-[0.03] text-[120px] font-black italic select-none pointer-events-none group-hover:opacity-[0.07] transition-all">MC</div>
                     <div class="relative z-10">
-                        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-2 font-black italic">Meanly Coin Balance</p>
+                        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-2 font-black italic">Баланс</p>
                         <div class="flex items-end gap-3">
                             <span class="text-4xl font-black text-zinc-900 tracking-tighter italic leading-none">
                                 <slot name="balance">
@@ -179,7 +179,7 @@
                                 <div class="flex-1 min-w-0">
                                     <div class="flex justify-between items-start mb-1">
                                         <h4 class="text-[14px] font-black text-zinc-900 uppercase tracking-tighter truncate">{{ tx.description }}</h4>
-                                        <span class="text-[14px] font-black text-zinc-900">{{ tx.type === 'credit' ? '+' : '-' }}{{ formatAmount(tx.amount) }} MC</span>
+                                        <span class="text-[14px] font-black text-zinc-900">{{ tx.type === 'credit' ? '+' : '-' }}{{ formatAmount(tx.amount) }} {{ tx.currency }}</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{{ tx.formatted_date }}</span>
