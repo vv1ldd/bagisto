@@ -121,12 +121,16 @@ class CreditController extends Controller
 
         $nftOrders = $user->orders()
             ->whereIn('status', ['processing', 'completed', 'closed'])
+            ->with(['items.product'])
             ->orderBy('id', 'desc')
             ->get()
             ->map(fn($o) => [
                 'id' => $o->id,
                 'increment_id' => $o->increment_id,
                 'status' => $o->status,
+                'image' => $o->items->first()?->product?->base_image_url,
+                'date' => $o->created_at->format('d M Y'),
+                'is_verified' => true,
             ]);
 
         $walletData = [

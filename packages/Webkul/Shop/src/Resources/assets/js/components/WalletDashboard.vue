@@ -191,18 +191,46 @@
                     </div>
                 </transition>
 
-                <!-- NFT TAB remains same -->
+                <!-- NFT TAB (Redesigned) -->
                 <transition name="fade" mode="out-in">
                     <div v-if="currentTab === 'nfts'">
-                        <div v-if="data.nfts.length > 0" class="grid grid-cols-2 gap-6">
-                            <div v-for="order in data.nfts" :key="order.id"
-                                class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group relative">
-                                <div class="aspect-square bg-zinc-100 flex items-center justify-center border-b-4 border-zinc-900 overflow-hidden">
-                                     <div class="text-6xl group-hover:scale-125 transition-transform duration-500 select-none">🖼️</div>
+                        <div v-if="data.nfts.length > 0" class="grid grid-cols-2 gap-4 sm:gap-6">
+                            <div v-for="nft in data.nfts" :key="nft.id"
+                                class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group relative hover:-translate-y-2 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#D6FF00] transition-all duration-300 overflow-hidden flex flex-col">
+                                
+                                <!-- Arbitrum Badge -->
+                                <div class="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-zinc-900 px-2 py-1 border border-zinc-700 shadow-sm">
+                                    <span class="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span>
+                                    <span class="text-[7px] font-black text-white uppercase tracking-widest whitespace-nowrap">Arbitrum One</span>
                                 </div>
-                                <div class="p-4 bg-zinc-900 border-t border-zinc-800 flex items-center justify-between">
-                                    <span class="text-[#D6FF00] font-black text-[10px] uppercase tracking-widest">Asset #{{ order.increment_id }}</span>
-                                    <div class="w-2 h-2 bg-[#D6FF00] rotate-45"></div>
+
+                                <!-- NFT Image Holder -->
+                                <div class="aspect-square bg-zinc-50 flex items-center justify-center border-b-4 border-zinc-900 overflow-hidden relative">
+                                     <img v-if="nft.image" :src="nft.image" :alt="nft.increment_id" 
+                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
+                                     <div v-else class="text-6xl group-hover:scale-125 transition-transform duration-500 select-none grayscale group-hover:grayscale-0">💎</div>
+                                     
+                                     <!-- Holographic Overlay -->
+                                     <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                </div>
+
+                                <!-- Footer Info -->
+                                <div class="p-4 bg-white flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="text-[9px] font-black text-zinc-900 bg-[#D6FF00] px-1.5 py-0.5 border-2 border-zinc-900 uppercase">Verified</span>
+                                            <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest">{{ nft.date }}</span>
+                                        </div>
+                                        <h3 class="text-[12px] font-black text-zinc-900 uppercase tracking-tighter truncate leading-tight">Asset #{{ nft.increment_id }}</h3>
+                                    </div>
+                                    
+                                    <div class="mt-4 flex items-center justify-between border-t-2 border-zinc-900 pt-3">
+                                        <div class="flex flex-col">
+                                            <span class="text-[7px] font-black text-zinc-400 uppercase tracking-widest">Network</span>
+                                            <span class="text-[9px] font-black text-zinc-900 uppercase italic leading-none mt-0.5">Meanly Mainnet</span>
+                                        </div>
+                                        <div class="w-2 h-2 bg-zinc-900 rotate-45 group-hover:bg-[#D6FF00] transition-colors"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
