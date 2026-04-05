@@ -136,11 +136,53 @@
                         </svg>
                         <span v-show="showCopiedTooltip" class="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 text-[10px] font-black uppercase tracking-widest border-2 border-zinc-900 animate-bounce">OK!</span>
                     </button>
+
+                    <!-- FACEID PAYOUT BUTTON 🕵️‍♂️🪙🤴 -->
+                    <button v-if="propOrderData && !payoutSuccess" 
+                            @click.stop="handlePayout" 
+                            :disabled="isPayoutProcessing"
+                            :class="[isPayoutProcessing ? 'bg-zinc-700 opacity-50' : 'bg-[#D6FF00] hover:scale-105']"
+                            class="h-14 px-6 flex items-center justify-center gap-3 border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all group overflow-hidden">
+                        <span v-if="!isPayoutProcessing" class="text-xl group-hover:rotate-12 transition-transform">🪙</span>
+                        <div v-else class="w-5 h-5 border-2 border-zinc-900 border-t-transparent animate-spin"></div>
+                        <span class="text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] italic">
+                            {{ isPayoutProcessing ? 'Оплата...' : 'Оплатить урок' }}
+                        </span>
+                    </button>
+
                     <button @click.stop="endCall" class="h-14 w-14 bg-red-500 flex items-center justify-center border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
+                </div>
+            </div>
+
+            <!-- ETERNAL IDENTITY REMINDER (Nag Banner) 🛡️🚀 -->
+            <div v-if="showMnemonicNag && isActive && !isCallEnded" 
+                 class="absolute top-6 left-1/2 -translate-x-1/2 z-[300] w-full max-w-sm px-4">
+                <div class="bg-amber-400 border-4 border-zinc-900 p-4 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4 group hover:scale-[1.02] transition-all">
+                    <div class="w-10 h-10 bg-zinc-900 flex items-center justify-center text-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)] shrink-0">🛡️</div>
+                    <div class="flex-1">
+                        <p class="text-[9px] font-black text-zinc-900 uppercase tracking-widest leading-none mb-1">Eternal Identity Warning</p>
+                        <p class="text-[11px] font-black text-zinc-900 uppercase tracking-tight italic">Ваш аккаунт требует защиты. Сохраните сид-фразу для доступа к NFT →</p>
+                    </div>
+                    <button @click="showMnemonicNag = false" class="text-zinc-900 opacity-40 hover:opacity-100 text-xl font-black">×</button>
+                </div>
+            </div>
+
+            <!-- PAYOUT SUCCESS OVERLAY ✨💎🤴 -->
+            <div v-if="payoutSuccess" class="absolute inset-0 z-[20000] bg-[#D6FF00] flex flex-col items-center justify-center text-zinc-900 p-10 animate-fade-in touch-auto">
+                <div class="absolute inset-0 pattern-dots opacity-10"></div>
+                <div class="w-24 h-24 bg-zinc-900 flex items-center justify-center text-5xl shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] rotate-3 mb-12">💎</div>
+                <h2 class="text-4xl font-black uppercase tracking-tighter italic text-center leading-none mb-4">Урок оплачен!</h2>
+                <p class="text-[12px] font-black uppercase tracking-[0.3em] text-center mb-10 opacity-70">Монеты MeanlyCoin успешно переведены учителю</p>
+                <div class="bg-white border-4 border-zinc-900 p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-sm">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Hash Транзакции</p>
+                    <p class="text-[10px] font-mono break-all font-bold select-all">{{ payoutTxHash }}</p>
+                </div>
+                <button @click="payoutSuccess = false" class="mt-12 px-10 py-5 bg-zinc-900 text-white text-[12px] font-black uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 transition-all">Вернуться к звонку</button>
+            </div>
                 </div>
             </div>
         </div>
@@ -151,7 +193,7 @@
 import axios from 'axios';
 
 export default {
-    props: ['propUuid', 'propUserName', 'propUserHash'],
+    props: ['propUuid', 'propUserName', 'propUserHash', 'propOrderData', 'propIsVerified'],
     data() {
         return {
             isActive: false,
@@ -181,6 +223,10 @@ export default {
             isInteracting: false,
             interactionTimeout: null,
             controlsVisible: true,
+            isPayoutProcessing: false,
+            payoutSuccess: false,
+            payoutTxHash: null,
+            showMnemonicNag: !this.propIsVerified,
             controlsTimeout: null,
             luminanceInterval: null,
             luminanceCooldown: 0,
@@ -580,6 +626,78 @@ export default {
                 }
             }, 6000);
         },
+
+        async handlePayout() {
+            if (!this.propOrderData) return;
+            
+            this.isPayoutProcessing = true;
+            try {
+                // 1. Get Biometric Options (Challenge)
+                const optionsResponse = await axios.get(`/checkout/sbp/payout-options/${this.propOrderData.id}`);
+                if (!optionsResponse.data.success) throw new Error(optionsResponse.data.message);
+
+                const options = optionsResponse.data.options;
+
+                // 2. Prepare options for WebAuthn API (Binary Conversion)
+                options.challenge = this.base64ToUint8Array(options.challenge);
+                if (options.allowCredentials) {
+                    options.allowCredentials = options.allowCredentials.map(c => ({
+                        ...c,
+                        id: this.base64ToUint8Array(c.id)
+                    }));
+                }
+
+                // 3. Trigger FaceID / TouchID / Passkey prompt
+                const assertion = await navigator.credentials.get({ publicKey: options });
+
+                // 4. Send assertion to release the payment
+                const releaseResponse = await axios.post(`/checkout/sbp/release/${this.propOrderData.id}`, {
+                    passkey_assertion: {
+                        id: assertion.id,
+                        rawId: this.arrayBufferToBase64(assertion.rawId),
+                        type: assertion.type,
+                        response: {
+                            authenticatorData: this.arrayBufferToBase64(assertion.response.authenticatorData),
+                            clientDataJSON: this.arrayBufferToBase64(assertion.response.clientDataJSON),
+                            signature: this.arrayBufferToBase64(assertion.response.signature),
+                            userHandle: assertion.response.userHandle ? this.arrayBufferToBase64(assertion.response.userHandle) : null,
+                        }
+                    },
+                    _token: document.querySelector('meta[name="csrf-token"]')?.content
+                });
+
+                if (releaseResponse.data.success) {
+                    this.payoutTxHash = releaseResponse.data.tx_hash;
+                    this.payoutSuccess = true;
+                } else {
+                    alert('Ошибка оплаты: ' + releaseResponse.data.message);
+                }
+
+            } catch (e) {
+                console.error('Payout failed', e);
+                if (e.name !== 'NotAllowedError') {
+                    alert('Ошибка биометрии: ' + (e.response?.data?.message || e.message));
+                }
+            } finally {
+                this.isPayoutProcessing = false;
+            }
+        },
+
+        base64ToUint8Array(base64) {
+            const binaryString = window.atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) bytes[i] = binaryString.charCodeAt(i);
+            return bytes.buffer;
+        },
+
+        arrayBufferToBase64(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+            return window.btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        }
     }
 };
 </script>

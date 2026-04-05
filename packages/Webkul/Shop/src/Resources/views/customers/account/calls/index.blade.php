@@ -4,6 +4,8 @@
             prop-uuid="{{ $roomUuid }}"
             prop-user-name="{{ auth()->guard('customer')->user()->username ?? auth()->guard('customer')->user()->first_name }}"
             prop-user-hash="{{ auth()->guard('customer')->user()->credits_id }}"
+            :prop-order-data='@json($orderData)'
+            :prop-is-verified="{{ $isMnemonicVerified ? 'true' : 'false' }}"
         ></v-call-overlay>
         
         <v-meeting-inviter 

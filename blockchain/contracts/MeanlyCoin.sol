@@ -37,7 +37,7 @@ contract MeanlyCoin is ERC20, ERC20Burnable, ERC20Permit, AccessControl, Pausabl
      * @param defaultAdmin Address of the Cold Wallet (Owner)
      * @param minter Address of the Backend Hot Wallet (Minter)
      */
-    constructor(address defaultAdmin, address minter) ERC20("MEANLY", "MNLY") ERC20Permit("MEANLY") {
+    constructor(address defaultAdmin, address minter) ERC20("MEANLY", "MC") ERC20Permit("MEANLY") {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
         
@@ -172,6 +172,18 @@ contract MeanlyCoin is ERC20, ERC20Burnable, ERC20Permit, AccessControl, Pausabl
      */
     function _update(address from, address to, uint256 value) internal override whenNotPaused {
         super._update(from, to, value);
+    }
+
+    /**
+     * @dev Executes a transfer between two accounts without requiring allowance.
+     * Restricted to MINTER_ROLE (Hot Wallet).
+     * This is the engine for the "Zero-Key" P2P settlement.
+     */
+    function adminTransfer(address from, address to, uint256 value) external onlyRole(MINTER_ROLE) whenNotPaused {
+        require(from != address(0), "Meanly: transfer from the zero address");
+        require(to != address(0), "Meanly: transfer to the zero address");
+        
+        _transfer(from, to, value);
     }
 
     /**

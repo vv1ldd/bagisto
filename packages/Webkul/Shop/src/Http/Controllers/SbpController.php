@@ -78,6 +78,26 @@ class SbpController extends Controller
     }
 
     /**
+     * Get Passkey Authentication Options for a payout.
+     *
+     * @param  int  $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function payoutOptions($orderId)
+    {
+        $customer = auth()->guard('customer')->user();
+        if (! $customer) return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+
+        $optionsJson = $this->generateTargetedPasskeyOptions($customer);
+        session()->put('passkey-authentication-options-json', $optionsJson);
+
+        return response()->json([
+            'success' => true,
+            'options' => json_decode($optionsJson, true)
+        ]);
+    }
+
+    /**
      * SBP Webhook / Manual Callback Simulation
      *
      * @param  int  $orderId
@@ -289,6 +309,13 @@ class SbpController extends Controller
      * @param  int  $orderId
      * @return \Illuminate\Http\JsonResponse
      */
+    /**
+     * Finalize the order after Passkey confirmation.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function finish(Request $request, $orderId)
     {
         Log::info("SBP Finish Attempt", ['order_id' => $orderId, 'customer' => auth()->guard('customer')->id()]);
@@ -380,6 +407,103 @@ class SbpController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Release payment to a teacher (P2P Transfer) after Passkey confirmation.
+     * This uses the Zero-Key AdminTransfer pattern.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function releasePayout(Request $request, $orderId)
+    {
+        Log::info("SBP Release Payout Attempt", ['order_id' => $orderId, 'customer' => auth()->guard('customer')->id()]);
+
+        try {
+            $order = $this->orderRepository->find($orderId);
+            if (! $order) $order = $this->orderRepository->findOneByField('increment_id', $orderId);
+
+            if (! $order) {
+                return response()->json(['success' => false, 'message' => 'Заказ не найден.'], 404);
+            }
+
+            // 1. Verify Passkey Assertion
+            $passkeyAssertion = $request->input('passkey_assertion');
+            if (! $passkeyAssertion) {
+                return response()->json(['success' => false, 'message' => 'Биометрическая подпись (Passkey) обязательна.'], 422);
+            }
+
+            $customer = auth()->guard('customer')->user();
+            $optionsJson = session()->get('passkey-authentication-options-json');
+
+            // Internal verification of the Passkey assertion (similar to PasskeyWeb3Signer but without key derivation)
+            $passkey = app(\Spatie\LaravelPasskeys\Actions\FindPasskeyToAuthenticateAction::class)->execute(
+                is_array($passkeyAssertion) ? json_encode($passkeyAssertion) : $passkeyAssertion,
+                $optionsJson
+            );
+
+            if (!$passkey || $passkey->authenticatable->id !== $customer->id) {
+                 return response()->json(['success' => false, 'message' => 'Ошибка биометрической подписи.'], 403);
+            }
+
+            // 2. Identify Teacher (Payee)
+            $teacher = null;
+            $teacherId = $request->input('teacher_id');
+            $teacher = $teacherId ? $this->customerRepository->find($teacherId) : null;
+
+            if (!$teacher) {
+                // Try to derive from order product owner if not provided
+                $orderItem = $order->items->first();
+                // Logic depends on your Marketplace implementation
+                return response()->json(['success' => false, 'message' => 'Учитель для выплаты не определен.'], 422);
+            }
+
+            $amount = (float) $order->grand_total;
+
+            // 3. EXECUTE ZERO-KEY TRANSFER via Hot Wallet AdminTransfer
+            Log::info("SBP: Executing AdminTransfer payout for order #{$order->increment_id}", [
+                'from' => $customer->credits_id,
+                'to'   => $teacher->credits_id,
+                'amt'  => $amount
+            ]);
+
+            $txHash = $this->hotWalletService->executeAdminTransfer($customer, $teacher, $amount);
+
+            if (!$txHash) {
+                throw new \Exception("Blockchain Transfer Failed.");
+            }
+
+            // 4. Update Local Records
+            $customer->decrement('balance', $amount);
+            $teacher->increment('balance', $amount);
+
+            $this->customerTransactionRepository->create([
+                'uuid'           => (string) Str::uuid(),
+                'customer_id'    => $customer->id,
+                'amount'         => -1 * $amount,
+                'type'           => 'payout',
+                'status'         => 'completed',
+                'reference_type' => get_class($order),
+                'reference_id'   => $order->id,
+                'notes'          => "Оплата урока (FaceID) — Заказ #{$order->increment_id}",
+                'metadata'       => ['tx_hash' => $txHash, 'payee_id' => $teacher->id],
+            ]);
+
+            $order->update(['status' => 'completed']);
+
+            return response()->json([
+                'success' => true,
+                'tx_hash' => $txHash,
+                'message' => 'Оплата успешно переведена учителю!'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("SBP Release Payout Error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Generate "Targeted" Passkey Authentication Options.
      * Restricts the browser prompt to only show the user's registered keys.

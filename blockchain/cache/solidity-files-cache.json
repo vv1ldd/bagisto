@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/contracts/MeanlyCoin.sol": {
-      "lastModificationDate": 1775004229203,
-      "contentHash": "f4461c48e0c3a4abddc107cc004b7f33",
+      "lastModificationDate": 1775405963207,
+      "contentHash": "89dc8a58730912f4e1bd53dbd5e51cdd",
       "sourceName": "contracts/MeanlyCoin.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -917,8 +917,8 @@
       "artifacts": []
     },
     "/Users/w1ld/Downloads/bagisto-2.3 2/blockchain/contracts/MeanlyGiftNFT.sol": {
-      "lastModificationDate": 1774310578624,
-      "contentHash": "eb64c0eb1684f3181a05afc5fef1fb63",
+      "lastModificationDate": 1775406350560,
+      "contentHash": "de3ca2f4aa20e676d29605f9f8a02870",
       "sourceName": "contracts/MeanlyGiftNFT.sol",
       "solcConfig": {
         "version": "0.8.24",

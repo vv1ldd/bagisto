@@ -89,6 +89,42 @@ class HotWalletService
     }
 
     /**
+     * Executes a Zero-Key P2P transfer between two customers using the adminTransfer function.
+     * This relies on the Hot Wallet's MINTER_ROLE/ADMIN status in MeanlyCoin.sol.
+     */
+    public function executeAdminTransfer(Customer $from, Customer $to, float $amount): ?string
+    {
+        if (empty($this->privateKey) || empty($this->coinAddress)) {
+            Log::error("HotWalletService: Missing configuration for AdminTransfer.");
+            return null;
+        }
+
+        $fromAddress = $this->getPrimaryCryptoAddress($from);
+        $toAddress = $this->getPrimaryCryptoAddress($to);
+
+        if (!$fromAddress || !$toAddress) {
+            Log::error("HotWalletService: Missing crypto addresses for AdminTransfer.");
+            return null;
+        }
+
+        // Convert amount to wei (18 decimals)
+        $amountInWei = bcmul((string) $amount, bcpow('10', '18', 0), 0);
+        
+        // adminTransfer(address,address,uint256) signature hash is 0xda72c1e8
+        $functionSignature = 'da72c1e8';
+        
+        $data = $functionSignature;
+        // Arguments coding: from (32), to (32), amount (32)
+        $data .= str_pad(str_replace('0x', '', strtolower($fromAddress)), 64, '0', STR_PAD_LEFT);
+        $data .= str_pad(str_replace('0x', '', strtolower($toAddress)), 64, '0', STR_PAD_LEFT);
+        $data .= str_pad($this->bcdechex($amountInWei), 64, '0', STR_PAD_LEFT);
+
+        Log::info("HotWalletService: Initiating AdminTransfer from {$fromAddress} to {$toAddress} for {$amount} MNLY");
+        
+        return $this->sendTransaction($this->coinAddress, $data);
+    }
+
+    /**
      * Mints a Meanly Gift NFT (ERC721) to a user's verified crypto address.
      */
     public function mintGift(Customer $customer, string $metadataUri, string $reason = 'Purchase Gift'): ?string

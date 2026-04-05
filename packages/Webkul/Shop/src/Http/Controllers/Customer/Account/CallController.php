@@ -54,7 +54,24 @@ class CallController extends Controller
 
         $roomUuid = request()->get('uuid');
 
-        return view('shop::customers.account.calls.index', compact('contacts', 'roomUuid'));
+        // Find a pending order that might need payout (most recent pending/processing order)
+        $pendingOrder = \Webkul\Sales\Models\Order::where('customer_id', $customer->id)
+            ->whereIn('status', ['pending', 'pending_payment'])
+            ->latest()
+            ->first();
+
+        $orderData = null;
+        if ($pendingOrder) {
+            $orderData = [
+                'id'     => $pendingOrder->id,
+                'amount' => (float) $pendingOrder->grand_total,
+                'currency' => $pendingOrder->order_currency_code
+            ];
+        }
+
+        $isMnemonicVerified = (bool) $customer->mnemonic_verified_at;
+
+        return view('shop::customers.account.calls.index', compact('contacts', 'roomUuid', 'orderData', 'isMnemonicVerified'));
     }
 
     /**
