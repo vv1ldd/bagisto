@@ -71,7 +71,7 @@ class CallController extends Controller
         $toUserId = $request->input('to_user_id');
         $signalData = $request->input('signal_data');
         $fromUser = auth()->guard('customer')->user();
-        $fromUserId = $fromUser?->id;
+        $fromUserId = $fromUser?->credits_id;
 
         if (!$fromUserId) {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
@@ -125,7 +125,7 @@ class CallController extends Controller
 
         if ($isReady) {
             $roomState[$sessionId] = [
-                'user_id'    => $user?->id,
+                'user_id'    => $user?->credits_id,
                 'name'       => $user->username ?? $user->first_name ?? 'Гость',
                 'session_id' => $sessionId,
                 'last_seen'  => time(),
