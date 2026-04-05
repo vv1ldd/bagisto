@@ -207,15 +207,6 @@
                                      <!-- Shimmer/Holographic Foil -->
                                      <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transform-gpu rotate-12 z-20 pointer-events-none"></div>
 
-                                     <!-- Achievement Visual (Icon Removed) -->
-                                     <div v-if="nft.type === 'achievement'" class="relative flex flex-col items-center">
-                                         <span class="text-[12px] font-black text-zinc-900 uppercase tracking-[0.4em] drop-shadow-sm">Hello</span>
-                                     </div>
-
-                                     <!-- Asset Visual (Icon Removed) -->
-                                     <div v-else class="relative flex flex-col items-center">
-                                         <span class="text-[11px] font-black text-zinc-900 uppercase tracking-[0.3em] bg-white px-3 py-1 border-2 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">ASSET</span>
-                                     </div>
 
                                      <!-- Branded Card Text Overlays -->
                                      <div class="absolute bottom-2 left-0 right-0 px-3 flex justify-between items-center opacity-60 mix-blend-multiply">
