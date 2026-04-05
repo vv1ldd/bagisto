@@ -191,7 +191,7 @@
                     </div>
                 </transition>
 
-                <!-- NFT TAB (Redesigned) -->
+                <!-- NFT TAB (Redesigned with CSS/SVG Vector Cards) -->
                 <transition name="fade" mode="out-in">
                     <div v-if="currentTab === 'nfts'">
                         <div v-if="data.nfts.length > 0" class="grid grid-cols-2 gap-4 sm:gap-6">
@@ -200,19 +200,36 @@
                                 class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group relative hover:-translate-y-2 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#D6FF00] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer">
                                 
                                 <!-- Arbitrum Badge -->
-                                <div class="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-zinc-900 px-2 py-1 border border-zinc-700 shadow-sm">
+                                <div class="absolute top-3 left-3 z-30 flex items-center gap-1.5 bg-zinc-900 px-2 py-1 border border-zinc-700 shadow-sm">
                                     <span class="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span>
                                     <span class="text-[7px] font-black text-white uppercase tracking-widest whitespace-nowrap">Arbitrum One</span>
                                 </div>
 
-                                <!-- NFT Image Holder -->
-                                <div class="aspect-square bg-zinc-50 flex items-center justify-center border-b-4 border-zinc-900 overflow-hidden relative">
-                                     <img v-if="nft.image" :src="nft.image" :alt="nft.title" 
-                                          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
-                                     <div v-else class="text-6xl group-hover:scale-125 transition-transform duration-500 select-none grayscale group-hover:grayscale-0">💎</div>
+                                <!-- Vector Card Visual -->
+                                <div :class="['aspect-square flex items-center justify-center border-b-4 border-zinc-900 overflow-hidden relative group-hover:scale-105 transition-transform duration-700',
+                                             nft.type === 'achievement' ? 'bg-[#D6FF00]' : 'bg-white']">
                                      
-                                     <!-- Holographic Overlay -->
-                                     <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                     <!-- Vector Star for Welcome -->
+                                     <div v-if="nft.type === 'achievement'" class="relative flex flex-col items-center">
+                                         <svg class="w-32 h-32 fill-zinc-900 drop-shadow-[4px_4px_0px_rgba(0,0,0,0.2)]" viewBox="0 0 24 24">
+                                             <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
+                                         </svg>
+                                         <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black text-white uppercase tracking-widest mt-1">Hello</span>
+                                     </div>
+
+                                     <!-- Vector Crystal for Order -->
+                                     <div v-else class="relative flex flex-col items-center">
+                                         <svg class="w-36 h-36 stroke-zinc-900 stroke-[1.5] fill-[#00C2FF] drop-shadow-[6px_6px_0px_rgba(0,0,0,0.1)]" viewBox="0 0 24 24">
+                                             <path d="M12 2L2 7l10 5 10-5-10-5z M2 7v10l10 5 10-5V7l-10 5-10-5z" />
+                                         </svg>
+                                         <span class="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black text-zinc-900 uppercase tracking-widest bg-white/80 px-2 py-0.5 border border-zinc-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">ASSET</span>
+                                     </div>
+
+                                     <!-- Branded Card Text Overlays -->
+                                     <div class="absolute bottom-2 left-0 right-0 px-3 flex justify-between items-center opacity-40">
+                                         <span class="text-[8px] font-black text-zinc-900 uppercase tracking-widest italic">Meanly Collect</span>
+                                         <span class="text-[8px] font-black text-zinc-900 uppercase tracking-widest italic">{{ nft.date }}</span>
+                                     </div>
                                 </div>
 
                                 <!-- Footer Info -->
@@ -220,7 +237,7 @@
                                     <div>
                                         <div class="flex items-center gap-2 mb-1">
                                             <span class="text-[9px] font-black text-zinc-900 bg-[#D6FF00] px-1.5 py-0.5 border-2 border-zinc-900 uppercase">Verified</span>
-                                            <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest">{{ nft.date }}</span>
+                                            <span class="text-[8px] font-black text-zinc-400 uppercase tracking-widest">{{ nft.type === 'achievement' ? 'Badge' : 'Item' }}</span>
                                         </div>
                                         <h3 class="text-[12px] font-black text-zinc-900 uppercase tracking-tighter truncate leading-tight">{{ nft.title }}</h3>
                                     </div>
@@ -269,8 +286,16 @@
 
                     <!-- Modal Body -->
                     <div class="p-8">
-                        <div class="bg-zinc-50 border-4 border-zinc-900 p-2 mb-8 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] relative overflow-hidden aspect-video flex items-center justify-center">
-                            <img :src="selectedNft.image" class="w-full h-full object-cover" />
+                        <div :class="['border-4 border-zinc-900 p-2 mb-8 shadow-[4px_4px_0px_0px_rgba(24,24,27,1)] relative overflow-hidden aspect-video flex items-center justify-center',
+                                     selectedNft.type === 'achievement' ? 'bg-[#D6FF00]' : 'bg-white']">
+                            <!-- Star Icon -->
+                            <svg v-if="selectedNft.type === 'achievement'" class="w-24 h-24 fill-zinc-900" viewBox="0 0 24 24">
+                                <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
+                            </svg>
+                            <!-- Crystal Icon -->
+                            <svg v-else class="w-28 h-28 stroke-zinc-900 stroke-[1] fill-[#00C2FF]" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z M2 7v10l10 5 10-5V7l-10 5-10-5z" />
+                            </svg>
                         </div>
 
                         <div class="space-y-6">
