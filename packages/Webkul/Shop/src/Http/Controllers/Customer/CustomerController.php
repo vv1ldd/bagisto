@@ -15,6 +15,7 @@ use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Shop\Http\Requests\Customer\ProfileRequest;
 use Webkul\Shop\Mail\Customer\EmailVerificationNotification;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class CustomerController extends Controller
@@ -67,39 +68,43 @@ class CustomerController extends Controller
                     'story' => $this->mnemonicService->generateStory($words)
                 ]);
             } catch (\Exception $e) {
-                // Decryption failed or data corrupted
+                // Decryption failed - could be due to app key change, etc.
+                Log::error("Failed to decrypt mnemonic for user {$customer->id}: " . $e->getMessage());
             }
         }
 
-        // 3. Safety Check: Allow upgrade if M- style or missing private key.
-        // Otherwise, if a full 0x wallet exists with a key, block regeneration.
-        $isLegacy = str_starts_with($customer->credits_id, 'M-');
-        $isMissingKey = str_starts_with($customer->credits_id, '0x') && is_null($customer->encrypted_private_key);
+        // 3. Last-ditch recovery from registration cache (if it happened recently)
+        $reservationKey = 'registration_reservation:' . strtolower($customer->username);
+        $reservedData = \Illuminate\Support\Facades\Cache::get($reservationKey);
         
-        // Allow proceeding if the wallet is incomplete OR if the mnemonic hasn't been verified yet
-        if (!empty($customer->credits_id) && !$isLegacy && !$isMissingKey && !is_null($customer->mnemonic_verified_at)) {
-             session()->flash('warning', 'У вас уже полностью настроен кошелек.');
+        if ($reservedData && isset($reservedData['mnemonic']) && $reservedData['credits_id'] === $customer->credits_id) {
+            $recoveryKey = implode(' ', $reservedData['mnemonic']);
+            
+            $this->customerRepository->update([
+                'encrypted_mnemonic' => \Illuminate\Support\Facades\Crypt::encryptString($recoveryKey),
+            ], $customer->id);
+
+            session(['pending_recovery_key' => $recoveryKey]);
+
+            return view('shop::customers.account.profile.recovery-key', [
+                'words' => $reservedData['mnemonic'],
+                'story' => $this->mnemonicService->generateStory($reservedData['mnemonic'])
+            ]);
+        }
+
+        // 4. Safety Check: Allow upgrade if M- style or missing address.
+        // Otherwise, if a full 0x wallet exists, BLOCK regeneration to prevent address change.
+        $isLegacy = str_starts_with($customer->credits_id, 'M-');
+        $hasAddress = !empty($customer->credits_id) && str_starts_with($customer->credits_id, '0x');
+        
+        if ($hasAddress && !$isLegacy) {
+             // If we reached here, it means we have an address but NO mnemonic (bug case).
+             // We MUST NOT generate a new one because it would change the user's address.
+             session()->flash('error', 'Ошибка: фраза восстановления не найдена для вашего текущего адреса. Пожалуйста, обратитесь в поддержку.');
              return redirect()->route('shop.customers.account.index');
         }
 
-        // 4. Reuse existing mnemonic if available
-        if ($customer->encrypted_mnemonic) {
-            try {
-                $recoveryKey = \Illuminate\Support\Facades\Crypt::decryptString($customer->encrypted_mnemonic);
-                $mnemonicWords = explode(' ', $recoveryKey);
-                
-                session(['pending_recovery_key' => $recoveryKey]);
-
-                return view('shop::customers.account.profile.recovery-key', [
-                    'words' => $mnemonicWords,
-                    'story' => $this->mnemonicService->generateStory($mnemonicWords)
-                ]);
-            } catch (\Exception $e) {
-                // If decryption fails, proceed to generate new ones (fail-safe for data corruption)
-            }
-        }
-
-        // 5. Fallback: Generate new ones only for legacy users or corrupted data
+        // 5. Fallback: Generate new ones ONLY for legacy users or those without an address
         $counts = [12, 15, 18, 21, 24];
         $wordCount = $counts[array_rand($counts)];
         $mnemonicWords = $this->mnemonicService->generateMnemonic($wordCount);
