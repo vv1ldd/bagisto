@@ -199,11 +199,6 @@
                                 @click="openNftDetails(nft)"
                                 class="bg-white border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(24,24,27,1)] group relative hover:-translate-y-2 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_#D6FF00] transition-all duration-300 overflow-hidden flex flex-col cursor-pointer">
                                 
-                                <!-- Arbitrum Badge -->
-                                <div class="absolute top-3 left-3 z-30 flex items-center gap-1.5 bg-zinc-900 px-2 py-1 border border-zinc-700 shadow-sm">
-                                    <span class="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span>
-                                    <span class="text-[7px] font-black text-white uppercase tracking-widest whitespace-nowrap">Arbitrum One</span>
-                                </div>
 
                                 <!-- Vector Card Visual -->
                                 <div :class="['aspect-square flex items-center justify-center border-b-4 border-zinc-900 overflow-hidden relative group-hover:scale-105 transition-transform duration-700',
