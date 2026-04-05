@@ -69,7 +69,11 @@
                     <div class="relative z-10">
                         <p class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-2 font-black italic">Meanly Coin Balance</p>
                         <div class="flex items-end gap-3">
-                            <span class="text-4xl font-black text-zinc-900 tracking-tighter italic leading-none">{{ formatAmount(data.user.meanly_coin_balance) }}</span>
+                            <span class="text-4xl font-black text-zinc-900 tracking-tighter italic leading-none">
+                                <slot name="balance">
+                                    {{ formatAmount(data.user.meanly_coin_balance) }}
+                                </slot>
+                            </span>
                             <span class="text-sm font-black text-[#D6FF00] bg-zinc-900 px-2 py-0.5 border-2 border-zinc-900 uppercase tracking-widest mb-1 shadow-[3px_3px_0px_0px_rgba(214,255,0,1)]">MC</span>
                         </div>
                     </div>
