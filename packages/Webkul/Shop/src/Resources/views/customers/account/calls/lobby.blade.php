@@ -1,11 +1,9 @@
-@extends('shop::customers.account.index')
+<x-shop::layouts :has-header="true" :has-feature="false" :has-footer="true">
+    <x-slot:title>
+        Приглашение на встречу
+    </x-slot:title>
 
-@section('page_title')
-    Приглашение на встречу
-@endsection
-
-@section('account-content')
-    <div class="flex flex-col items-center justify-center min-h-[60vh] px-4">
+    <div class="flex flex-col items-center justify-center min-h-[60vh] px-4 py-20 bg-zinc-50">
         <div class="w-full max-w-md bg-white border-4 border-black p-8 md:p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] rotate-1 transition-transform hover:rotate-0">
             <div class="mb-10 flex justify-center">
                  <div class="w-20 h-20 bg-[#7C45F5] border-4 border-black flex items-center justify-center -rotate-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
@@ -34,4 +32,4 @@
             </div>
         </div>
     </div>
-@endsection
+</x-shop::layouts>
