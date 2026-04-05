@@ -112,6 +112,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                     </button>
+                    <button @click.stop="copyInviteLink" class="h-14 w-14 bg-zinc-800 flex flex-col items-center justify-center border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all group relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        <span v-show="showCopiedTooltip" class="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-green-500 text-[10px] font-black uppercase tracking-widest border-2 border-zinc-900 animate-bounce">OK!</span>
+                    </button>
                     <button @click.stop="endCall" class="h-14 w-14 bg-red-500 flex items-center justify-center border-4 border-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
@@ -173,6 +179,7 @@ export default {
                 iceCandidatePoolSize: 2
             },
             isSharingScreen: false,
+            showCopiedTooltip: false
         };
     },
     computed: {
@@ -211,6 +218,25 @@ export default {
                 });
             } catch (e) {
                 console.error('Room: Ready relay failed', e);
+            }
+        },
+
+        async copyInviteLink() {
+            const url = `${window.location.origin}/meetings/join/${this.roomUuid}`;
+            try {
+                await navigator.clipboard.writeText(url);
+                this.showCopiedTooltip = true;
+                setTimeout(() => { this.showCopiedTooltip = false; }, 2000);
+            } catch (e) {
+                // Fallback for older browsers or insecure contexts
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                this.showCopiedTooltip = true;
+                setTimeout(() => { this.showCopiedTooltip = false; }, 2000);
             }
         },
 

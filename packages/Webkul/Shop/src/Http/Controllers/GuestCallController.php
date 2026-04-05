@@ -30,7 +30,8 @@ class GuestCallController extends Controller
      */
     public function create()
     {
-        return view('shop::call.create');
+        // Disable legacy guest call creation in favor of Viral Onboarding
+        return redirect()->route('shop.home.index');
     }
 
     /**
@@ -124,64 +125,8 @@ class GuestCallController extends Controller
      */
     public function index($uuid)
     {
-        $session = CallSession::where('uuid', $uuid)->firstOrFail();
-        $hash = request('h');
-        $customer = auth()->guard('customer')->user();
-        $cookieName = 'call_token_' . $uuid;
-        $browserToken = request()->cookie($cookieName);
-
-        if (!$hash && !$customer && !$browserToken) {
-            return abort(403, 'Invitation hash or valid token is required.');
-        }
-
-        // 1. Identify Identity & Validate Hash
-        // Creator can join if they have the hash, are auth creator, or have a creator cookie (if we add one)
-        // For simplicity, creators don't need cookies as they have auth or email-hash
-        $isValidCreator = ($hash === md5($session->caller_email . $uuid)) 
-                        || ($customer && $customer->email === $session->caller_email);
-        
-        $recipients = $session->metadata['all_recipients'] ?? [$session->recipient_email];
-        $isValidGuestRequest = false;
-        
-        // Guest check via hash or auth
-        foreach ($recipients as $email) {
-            if (($hash === md5($email . $uuid)) || ($customer && $customer->email === $email)) {
-                $isValidGuestRequest = true;
-                break;
-            }
-        }
-
-        if (!$isValidCreator && !$isValidGuestRequest && !$browserToken) {
-            return abort(403, 'Invalid or expired invitation link.');
-        }
-
-        // 2. Cookie-Based One-Time "Claim" Logic for Guests
-        if (!$isValidCreator) {
-            $metadata = $session->metadata ?? [];
-            $claimedToken = $metadata['claimed_guest_token'] ?? null;
-
-            // DEVICE HANDOVER: If they have a valid link hash, they can "RE-CLAIM" the slot 🕵️‍♂️📲🔄🚀
-            // This allows switching from PC to Phone using the same link.
-            if ($isValidGuestRequest || !$claimedToken) {
-                // Generative or Refreshative token
-                $newToken = Str::random(60);
-                $metadata['claimed_guest_token'] = $newToken;
-                $metadata['claimed_at'] = now()->toDateTimeString();
-                
-                $session->metadata = $metadata;
-                $session->save();
-
-                // Set cookie for 24 hours
-                \Illuminate\Support\Facades\Cookie::queue($cookieName, $newToken, 1440);
-            } else {
-                // They don't have a valid hash AND the browser token doesn't match the claim
-                if ($browserToken !== $claimedToken) {
-                    return abort(403, 'This invitation link has already been used by another participant. Only 1-on-1 calls are permitted.');
-                }
-            }
-        }
-
-        return view('shop::call.index', compact('session'));
+        // Redirect legacy guest calls to the new Viral Onboarding Lobby 🕵️‍♂️🚀
+        return redirect()->route('shop.meetings.join', ['room_uuid' => $uuid]);
     }
 
     /**
