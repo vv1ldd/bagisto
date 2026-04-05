@@ -202,30 +202,39 @@
                 </button>
             </div>
 
-            <!-- Call Ended Overlay -->
-            <div v-if="isCallEnded" class="absolute inset-0 z-[120] flex flex-col items-center justify-center bg-zinc-950 text-white animate-fade-in">
-                <div class="flex flex-col items-center max-w-sm text-center px-8">
-                    <div class="w-24 h-24 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center mb-8 shadow-2xl">
+            <!-- Call Ended Overlay (Neobrutalist Redesign) -->
+            <div v-if="isCallEnded" class="absolute inset-0 z-[120] flex flex-col items-center justify-center bg-zinc-950 text-white animate-fade-in overflow-hidden">
+                <!-- Background Grain Texture -->
+                <div class="nft-grain-overlay opacity-20"></div>
+
+                <div class="relative z-10 flex flex-col items-center max-w-sm text-center px-8">
+                    <!-- Geometric Octagon/Square Icon -->
+                    <div class="w-24 h-24 bg-zinc-900 border-4 border-zinc-500 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center mb-10 rotate-3 hover:rotate-0 transition-transform duration-500">
                          <span class="text-4xl" :class="{'animate-pulse': !isJoined}">🛑</span>
                     </div>
-                    <h2 class="text-2xl font-black uppercase tracking-widest mb-4">
-                        {{ peerCount === 0 && isActive ? 'Собеседник вышел' : 'Звонок окончен' }}
+
+                    <h2 class="text-3xl font-black uppercase tracking-[0.15em] mb-4 text-white drop-shadow-[4px_4px_0px_rgba(0,0,0,0.5)]">
+                        {{ (peerCount === 0 && isActive) ? 'Собеседник вышел' : 'Звонок окончен' }}
                     </h2>
-                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] leading-relaxed mb-10 px-4">
+                    
+                    <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-[0.2em] leading-relaxed mb-12 px-2">
                         {{ callEndedReason || 'Сессия была завершена. Вы можете вернуться на главную или подождать возвращения.' }}
                     </p>
                     
-                    <div class="flex flex-col gap-4 w-full">
-                        <button @click="resumeWaiting" class="w-full px-8 py-5 bg-[#7C45F5] text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(124,69,245,0.3)] hover:shadow-[0_0_40px_rgba(124,69,245,0.5)]">
+                    <div class="flex flex-col gap-5 w-full">
+                        <button @click="resumeWaiting" 
+                                class="w-full px-8 py-5 bg-[#7C45F5] text-white text-[11px] font-black uppercase tracking-[0.3em] border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-200">
                             Ждать возвращения
                         </button>
                         
-                        <button @click="forceHome" class="w-full px-8 py-5 bg-white/5 text-white/50 text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-white/10 hover:text-white transition-all border border-white/5">
+                        <button @click="forceHome" 
+                                class="w-full px-8 py-5 bg-zinc-800 text-white/70 text-[11px] font-black uppercase tracking-[0.3em] border-4 border-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all duration-200">
                             На главную
                         </button>
                     </div>
 
-                    <button @click="isCallEnded = false; isActive = false" class="mt-8 text-[8px] font-black uppercase tracking-widest text-zinc-700 hover:text-zinc-500 transition-all">
+                    <button @click="isCallEnded = false; isActive = false" 
+                            class="mt-12 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 hover:text-white transition-colors border-b border-transparent hover:border-white/20 pb-1">
                         Остаться на странице
                     </button>
                 </div>
