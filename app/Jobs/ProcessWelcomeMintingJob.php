@@ -76,7 +76,7 @@ class ProcessWelcomeMintingJob implements ShouldQueue
                 'customer_id' => $customer->id,
                 'amount' => $this->amount,
                 'type' => 'registration_minting',
-                'status' => 'completed', 
+                'status' => 'pending', 
                 'notes' => "Минтинг Meanly Coins (Регистрация +{$this->amount})",
                 // 'web3_tx_hash' => $txHash, // Temporarily disabled until migration runs
                 'metadata' => [

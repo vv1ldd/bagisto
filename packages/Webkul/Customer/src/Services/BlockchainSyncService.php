@@ -46,7 +46,7 @@ class BlockchainSyncService
      */
     public function verifyAndStatusUpdate(CustomerTransaction $transaction): bool
     {
-        $txHash = $transaction->web3_tx_hash;
+        $txHash = $transaction->web3_tx_hash ?: ($transaction->metadata['tx_hash'] ?? null);
 
         if (!$txHash) {
             return false;
