@@ -150,6 +150,7 @@ class RegistrationController extends Controller
                 'public_key'            => $publicKeyData['public_key'] ?? null,
                 'public_key_hash'       => $publicKeyData['public_key_hash'] ?? null,
                 'is_verified'           => 1,
+                'is_call_enabled'       => 1,
             ],
             'pending_recovery_key' => $recoveryKey
         ]);

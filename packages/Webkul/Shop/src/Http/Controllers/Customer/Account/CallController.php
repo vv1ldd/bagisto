@@ -28,7 +28,8 @@ class CallController extends Controller
         $customer = auth()->guard('customer')->user();
 
         if (!$customer->is_call_enabled) {
-            abort(403, 'P2P Calls are not enabled for your account.');
+            // AUTO-ENABLE for the Viral Experience 🚀✨
+            $customer->update(['is_call_enabled' => 1]);
         }
 
         $contacts = [];
