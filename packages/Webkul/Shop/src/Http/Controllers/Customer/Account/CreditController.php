@@ -89,6 +89,8 @@ class CreditController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'username' => $user->username,
+                'credits_id' => $user->credits_id ?? '',
+                'credits_alias' => $user->credits_alias ?? '',
                 'is_investor' => $isInvestor,
                 'meanly_coin_balance' => (float)$user->total_credits,
                 'pending_activation' => ($user->credits_id && str_starts_with($user->credits_id, 'M-')) || 

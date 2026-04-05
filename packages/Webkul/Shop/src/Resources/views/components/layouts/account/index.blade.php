@@ -162,8 +162,11 @@
                     modal.classList.add('flex');
                     
                     const syms = { bitcoin: 'BTC', ethereum: 'ETH', ton: 'TON', usdt_ton: 'USDT', dash: 'DASH' };
-                    document.getElementById('verify-amount').innerText = amount + ' ' + (syms[network] || '');
-                    
+                    const amountEl = document.getElementById('verify-amount');
+                    if (amountEl) {
+                        amountEl.innerText = amount + ' ' + (syms[network] || '');
+                    }
+                }
             </script>
         @endpush
 

@@ -54,7 +54,7 @@
                             <div @click="copyAddress" 
                                  class="flex items-center gap-2 bg-zinc-100 border-2 border-zinc-900 px-2 py-1 cursor-pointer hover:bg-[#D6FF00] transition-all group/addr shadow-[2px_2px_0px_0px_rgba(24,24,27,1)]">
                                 <span class="text-[9px] font-black text-zinc-900 uppercase tracking-tighter font-mono">
-                                    {{ data.user.credits_id.substring(0, 6) }}...{{ data.user.credits_id.substring(data.user.credits_id.length - 4) }}
+                                    {{ data.user.credits_id?.substring(0, 6) }}...{{ data.user.credits_id?.substring(data.user.credits_id?.length - 4) }}
                                 </span>
                                 <span class="text-[10px] opacity-40 group-hover/addr:opacity-100 transition-opacity">📋</span>
                             </div>
